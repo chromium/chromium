@@ -2639,7 +2639,6 @@
 <translation id="2798347533012571708">保留更新</translation>
 <translation id="2799162042226656283">你的 Chrome</translation>
 <translation id="2799223571221894425">重新啟動</translation>
-<translation id="2800309299477632167">自訂按鍵對應</translation>
 <translation id="2800760947029405028">上傳圖片</translation>
 <translation id="2800996978423439835">在任何裝置上存取書籤等其他設定</translation>
 <translation id="2801134910297796778">已登入 <ph name="EMAIL" /></translation>
@@ -8273,7 +8272,6 @@
 <translation id="6831043979455480757">翻譯</translation>
 <translation id="6832218595502288407">靠左對齊</translation>
 <translation id="6832815922179448173">{MULTI_GROUP_TAB_COUNT,plural, =0{要移除分頁並刪除群組嗎？}=1{要移除分頁並刪除群組嗎？}other{要移除分頁並刪除群組嗎？}}</translation>
-<translation id="6833103209700200188">頁尾</translation>
 <translation id="6833479554815567477">分頁已從包含「<ph name="GROUP_CONTENTS" />」的「<ph name="GROUP_NAME" />」群組中移除</translation>
 <translation id="6833753236242482566">平衡 (建議選項)</translation>
 <translation id="6835762382653651563">請連線至網際網路，以更新您的 <ph name="DEVICE_TYPE" />。</translation>

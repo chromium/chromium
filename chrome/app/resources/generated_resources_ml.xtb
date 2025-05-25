@@ -2636,7 +2636,6 @@
 <translation id="2798347533012571708">അപ്ഡേറ്റുകൾ നിലനിർത്തുക</translation>
 <translation id="2799162042226656283">നിങ്ങളുടെ Chrome</translation>
 <translation id="2799223571221894425">വീണ്ടും സമാരംഭിക്കുക</translation>
-<translation id="2800309299477632167">ഇഷ്‌ടാനുസൃത കീമാപ്പ്</translation>
 <translation id="2800760947029405028">ഒരു ചിത്രം അപ്‌ലോഡ് ചെയ്യുക</translation>
 <translation id="2800996978423439835">നിങ്ങളുടെ എല്ലാ ഉപകരണങ്ങളിലും ബുക്ക്‌മാർക്കുകളും മറ്റും നേടുക</translation>
 <translation id="2801134910297796778"><ph name="EMAIL" /> എന്നതിലേക്ക് സൈൻ ഇൻ ചെയ്തു</translation>
@@ -8279,7 +8278,6 @@
 <translation id="6831043979455480757">വിവർത്തനം ചെയ്യുക</translation>
 <translation id="6832218595502288407">ഇടതുഭാഗത്ത് അലൈൻ ചെയ്യുക</translation>
 <translation id="6832815922179448173">{MULTI_GROUP_TAB_COUNT,plural, =0{ടാബ് നീക്കം ചെയ്ത് ഗ്രൂപ്പ് ഇല്ലാതാക്കണോ?}=1{ടാബുകൾ നീക്കം ചെയ്ത് ഗ്രൂപ്പ് ഇല്ലാതാക്കണോ?}other{ടാബുകൾ നീക്കം ചെയ്ത് ഗ്രൂപ്പുകൾ ഇല്ലാതാക്കണോ?}}</translation>
-<translation id="6833103209700200188">അടിക്കുറിപ്പ്</translation>
 <translation id="6833479554815567477"><ph name="GROUP_NAME" /> ഗ്രൂപ്പിൽ നിന്ന് ടാബ് നീക്കം ചെയ്തു - <ph name="GROUP_CONTENTS" /></translation>
 <translation id="6833753236242482566">ബാലൻസ്‌ഡ് (നിർദ്ദേശിക്കുന്നത്)</translation>
 <translation id="6835762382653651563">നിങ്ങളുടെ <ph name="DEVICE_TYPE" /> അപ്‌ഡേറ്റ് ചെയ്യാൻ ഇന്റർനെറ്റിൽ കണക്റ്റ് ചെയ്യുക.</translation>
@@ -9986,6 +9984,7 @@
 <translation id="8037801708772278989">തൊട്ടുമുമ്പ് പരിശോധിച്ചു</translation>
 <translation id="8038111231936746805">(ഡിഫോൾട്ട്)</translation>
 <translation id="8039151841428107077">{NUM_OF_FILES,plural, =1{<ph name="CLOUD_PROVIDER" /> എന്നതിലേക്ക് ഒരു ഫയൽ പകർത്തുന്നു}other{<ph name="CLOUD_PROVIDER" /> എന്നതിലേക്ക് {NUM_OF_FILES} ഫയലുകൾ പകർത്തുന്നു}}</translation>
+<translation id="8039525676147630657">നിങ്ങളുടെ ChromeOS പതിപ്പ് അപ്‌ഡേറ്റ് ചെയ്തുകഴിഞ്ഞാൽ ഈ Chrome ആപ്പ് പ്രവർത്തിക്കുന്നത് നിർത്തും. നിങ്ങൾക്ക് നിലനിർത്തണമെന്നുള്ള ഏത് ആപ്പ് ഡാറ്റയും സംരക്ഷിക്കുക. നിങ്ങളുടെ ഓപ്ഷനുകളെ കുറിച്ചറിയാൻ, ആപ്പ് ഡെവലപ്പറെയോ ഐടി പിന്തുണാ ടീമിനെയോ ബന്ധപ്പെടുക.</translation>
 <translation id="8041089156583427627">ഫീഡ്ബാക്ക് അയയ്ക്കുക</translation>
 <translation id="8041093619605951337">സന്തോഷം</translation>
 <translation id="8041267120753677077">നിങ്ങളുടെ ഫോണിലെ ആപ്പുകൾ സ്‌ട്രീം ചെയ്യുക</translation>

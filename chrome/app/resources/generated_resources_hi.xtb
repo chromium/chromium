@@ -2653,7 +2653,6 @@
 <translation id="2798347533012571708">अपडेट जारी रखें</translation>
 <translation id="2799162042226656283">आपका Chrome</translation>
 <translation id="2799223571221894425">फिर से लॉन्‍च करें</translation>
-<translation id="2800309299477632167">कस्टम कीमैप</translation>
 <translation id="2800760947029405028">एक इमेज अपलोड करें</translation>
 <translation id="2800996978423439835">अपने सभी डिवाइसों पर अपने बुकमार्क वगैरह इस्तेमाल करें</translation>
 <translation id="2801134910297796778">आपने <ph name="EMAIL" /> में साइन इन किया है</translation>
@@ -8296,7 +8295,6 @@
 <translation id="6831043979455480757">Translate</translation>
 <translation id="6832218595502288407">बाईं ओर अलाइन करें</translation>
 <translation id="6832815922179448173">{MULTI_GROUP_TAB_COUNT,plural, =0{क्या टैब को हटाकर ग्रुप मिटाना है?}=1{क्या टैब को हटाकर ग्रुप मिटाना है?}one{क्या टैब को हटाकर ग्रुप मिटाना है?}other{क्या टैब हटाकर ग्रुप मिटाने हैं?}}</translation>
-<translation id="6833103209700200188">पादलेख</translation>
 <translation id="6833479554815567477"><ph name="GROUP_NAME" /> ग्रुप में मौजूद टैब हटाया गया - <ph name="GROUP_CONTENTS" /></translation>
 <translation id="6833753236242482566">बैलेंस तरीके से (सुझाया गया)</translation>
 <translation id="6835762382653651563">अपने <ph name="DEVICE_TYPE" /> को अपडेट करने के लिए कृपया इंटरनेट से कनेक्ट करें.</translation>

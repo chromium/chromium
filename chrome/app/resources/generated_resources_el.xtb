@@ -2652,7 +2652,6 @@
 <translation id="2798347533012571708">Διατήρηση ενημερώσεων</translation>
 <translation id="2799162042226656283">Το δικό σας Chrome</translation>
 <translation id="2799223571221894425">Επανεκκίνηση</translation>
-<translation id="2800309299477632167">Προσαρμοσμένη διάταξη πληκτρολογίου</translation>
 <translation id="2800760947029405028">Μεταφόρτωση εικόνας</translation>
 <translation id="2800996978423439835">Αποκτήστε πρόσβαση στους σελιδοδείκτες και άλλα δεδομένα σε όλες τις συσκευές σας</translation>
 <translation id="2801134910297796778">Έχετε συνδεθεί στο <ph name="EMAIL" /></translation>
@@ -4625,7 +4624,7 @@
 <translation id="4191892134568599822">Λήψη με τη λειτουργία <ph name="FEATURE_NAME" />;</translation>
 <translation id="4192024474038595073">{NUM_SITES,plural, =1{Καταργήθηκαν οι άδειες για 1 ιστότοπο που δεν χρησιμοποιείται}other{Καταργήθηκαν οι άδειες για {NUM_SITES} ιστοτόπους που δεν χρησιμοποιούνται}}</translation>
 <translation id="4192850928807059784"><ph name="BEGIN_PARAGRAPH1" />Αποκλειστικά για <ph name="DEVICE_TYPE" />.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Το generative AI είναι πειραματικό, βρίσκεται σε πρώιμο στάδιο ανάπτυξης και προς το παρόν έχει περιορισμένη διαθεσιμότητα.<ph name="END_PARAGRAPH2" /></translation>
+    <ph name="BEGIN_PARAGRAPH2" />Το παραγωγικό AI είναι πειραματικό, βρίσκεται σε πρώιμο στάδιο ανάπτυξης και προς το παρόν έχει περιορισμένη διαθεσιμότητα.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="4193251682249731404">Αξιόπιστη αρχή έκδοσης πιστοποιητικών (CA)</translation>
 <translation id="4193575319002689239">Εμφάνιση καρτών</translation>
 <translation id="419427585139779713">Εισαγάγετε μία συλλαβή κάθε φορά</translation>
@@ -8297,7 +8296,6 @@
 <translation id="6831043979455480757">Μετάφραση</translation>
 <translation id="6832218595502288407">Στοίχιση στα αριστερά</translation>
 <translation id="6832815922179448173">{MULTI_GROUP_TAB_COUNT,plural, =0{Κατάργηση καρτέλας και διαγραφή ομάδας;}=1{Κατάργηση καρτέλας και διαγραφή ομάδας;}other{Κατάργηση καρτελών και διαγραφή ομάδων;}}</translation>
-<translation id="6833103209700200188">Υποσέλιδο</translation>
 <translation id="6833479554815567477">Η καρτέλα καταργήθηκε από την ομάδα <ph name="GROUP_NAME" /> - <ph name="GROUP_CONTENTS" /></translation>
 <translation id="6833753236242482566">Ισορροπημένη (συνιστάται)</translation>
 <translation id="6835762382653651563">Συνδεθείτε στο Διαδίκτυο για να ενημερώσετε τη συσκευή σας <ph name="DEVICE_TYPE" />.</translation>
@@ -10013,7 +10011,7 @@
 <translation id="8044262338717486897">Η εφαρμογή <ph name="LINUX_APP_NAME" /> δεν αποκρίνεται.</translation>
 <translation id="8044899503464538266">Αργά</translation>
 <translation id="8045253504249021590">Ο συγχρονισμός έχει διακοπεί μέσω του Πίνακα ελέγχου Google.</translation>
-<translation id="8045752459073395242">Μάθετε περισσότερα σχετικά με τη χρήση του generative AI στην εργασία</translation>
+<translation id="8045752459073395242">Μάθετε περισσότερα σχετικά με τη χρήση του παραγωγικού AI στην εργασία</translation>
 <translation id="8045923671629973368">Εισαγάγετε αναγνωριστικό εφαρμογής ή URL στο webstore</translation>
 <translation id="804786196054284061">Άδεια χρήσης τελικού χρήστη</translation>
 <translation id="8048596485169033655">Λήψη αρχείων σχολιασμού κύριου κόμβου… <ph name="PERCENT" />%</translation>

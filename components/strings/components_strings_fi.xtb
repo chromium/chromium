@@ -636,6 +636,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="2088913896151127116">Lisää teksti</translation>
 <translation id="2090451897496479509">Pyydä lisätietoa palveluntarjoajalta</translation>
 <translation id="2091887806945687916">Ääni</translation>
+<translation id="2093184051799735948">Tee haku hakukoneella <ph name="ENGINE_NAME" /> tai kirjoita URL-osoite</translation>
 <translation id="2093982008204312032">Google Chrome yrittää laittaa Windows Hellon pois päältä salasanojen täyttämistä varten.</translation>
 <translation id="2094505752054353250">Verkkotunnukset eivät ole yhteensopivat</translation>
 <translation id="2094704029599359040">Versiotiedot</translation>

@@ -2636,7 +2636,6 @@
 <translation id="2798347533012571708">Жаңартып тұру</translation>
 <translation id="2799162042226656283">Сіздің Chrome браузеріңіз</translation>
 <translation id="2799223571221894425">Қайта іске қосу</translation>
-<translation id="2800309299477632167">Арнаулы пернелер картасы</translation>
 <translation id="2800760947029405028">Кескін жүктеп салу</translation>
 <translation id="2800996978423439835">Бетбелгілер және т.б. ақпарат барлық құрылғыда болады</translation>
 <translation id="2801134910297796778"><ph name="EMAIL" /> аккаунтына кірдіңіз</translation>
@@ -8273,7 +8272,6 @@
 <translation id="6831043979455480757">Аудару</translation>
 <translation id="6832218595502288407">Сол жаққа туралау</translation>
 <translation id="6832815922179448173">{MULTI_GROUP_TAB_COUNT,plural, =0{Қойындыны өшіріп, топты жою қажет пе?}=1{Қойындыларды өшіріп, топты жою қажет пе?}other{Қойындыларды өшіріп, топтарды жою қажет пе?}}</translation>
-<translation id="6833103209700200188">Төменгі деректеме</translation>
 <translation id="6833479554815567477">Қойынды "<ph name="GROUP_NAME" />" тобынан (<ph name="GROUP_CONTENTS" />) өшірілді.</translation>
 <translation id="6833753236242482566">Теңдестірілген (ұсынылады)</translation>
 <translation id="6835762382653651563"><ph name="DEVICE_TYPE" /> жаңарту үшін, интернетке қосылыңыз.</translation>

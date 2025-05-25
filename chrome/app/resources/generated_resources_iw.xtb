@@ -2651,7 +2651,6 @@
 <translation id="2798347533012571708">המשך קבלת עדכונים</translation>
 <translation id="2799162042226656283">‏ה-Chrome שלך</translation>
 <translation id="2799223571221894425">הפעלה מחדש</translation>
-<translation id="2800309299477632167">מיפוי מקשים בהתאמה אישית</translation>
 <translation id="2800760947029405028">העלאת תמונה</translation>
 <translation id="2800996978423439835">איך מקבלים גישה לסימניות ולנתונים נוספים בכל המכשירים</translation>
 <translation id="2801134910297796778">נכנסת לחשבון <ph name="EMAIL" /></translation>
@@ -8300,7 +8299,6 @@
 <translation id="6831043979455480757">תרגום</translation>
 <translation id="6832218595502288407">יישור לשמאל</translation>
 <translation id="6832815922179448173">{MULTI_GROUP_TAB_COUNT,plural, =0{להסיר את הכרטיסייה ולמחוק את הקבוצה?}=1{להסיר את הכרטיסיות ולמחוק את הקבוצה?}one{להסיר את הכרטיסיות ולמחוק את הקבוצות?}two{להסיר את הכרטיסיות ולמחוק את הקבוצות?}other{להסיר את הכרטיסיות ולמחוק את הקבוצות?}}</translation>
-<translation id="6833103209700200188">כותרת תחתונה</translation>
 <translation id="6833479554815567477">הכרטיסייה הוסרה מהקבוצה <ph name="GROUP_NAME" /> ‏– <ph name="GROUP_CONTENTS" /></translation>
 <translation id="6833753236242482566">מאוזן (מומלץ)</translation>
 <translation id="6835762382653651563">יש להתחבר לאינטרנט כדי לעדכן את ה-<ph name="DEVICE_TYPE" />.</translation>
@@ -10007,6 +10005,7 @@
 <translation id="8037801708772278989">התבצעה בדיקה עכשיו</translation>
 <translation id="8038111231936746805">(ברירת מחדל)</translation>
 <translation id="8039151841428107077">{NUM_OF_FILES,plural, =1{קובץ אחד מועתק אל <ph name="CLOUD_PROVIDER" />}one{{NUM_OF_FILES} קבצים מועתקים אל <ph name="CLOUD_PROVIDER" />}two{{NUM_OF_FILES} קבצים מועתקים אל <ph name="CLOUD_PROVIDER" />}other{{NUM_OF_FILES} קבצים מועתקים אל <ph name="CLOUD_PROVIDER" />}}</translation>
+<translation id="8039525676147630657">‏אפליקציית Chrome הזו תפסיק לפעול לאחר עדכון גרסת ChromeOS. אפשר לשמור את כל נתוני האפליקציה שרוצים. כדי לקבל מידע על האפשרויות, צריך לפנות למפתח האפליקציה או לצוות התמיכה ב-IT.</translation>
 <translation id="8041089156583427627"> שליחת משוב</translation>
 <translation id="8041093619605951337">שמחה</translation>
 <translation id="8041267120753677077">שידור אפליקציות מהטלפון</translation>

@@ -243,6 +243,7 @@
 <translation id="1972325230031091483">Pregledat ćete brže jer se sadržaj učitava proaktivno na osnovu vaše posjete trenutnoj web stranici</translation>
 <translation id="1974060860693918893">Napredno</translation>
 <translation id="1977621687170192347">Uključite "Zatraži otvaranje linkova iz drugih aplikacija u anonimnom načinu rada".</translation>
+<translation id="1979055159547313322">Računom <ph name="USER_EMAIL" /> upravlja domena <ph name="HOSTED_DOMAIN" />, koja će možda moći pregledati određene informacije, uključujući</translation>
 <translation id="1979188886349613713">Uključite ekstenzije fajlova koje web lokacija nije navela</translation>
 <translation id="1980417445547898121">{count,plural, =1{Dohvatite {count} nedavnu aktivnu karticu s drugog uređaja na ovom iPhoneu}one{Dohvatite {count} nedavnu aktivnu karticu s drugog uređaja na ovom iPhoneu}few{Dohvatite {count} nedavne aktivne kartice s drugog uređaja na ovom iPhoneu}other{Dohvatite {count} nedavnih aktivnih kartica s drugog uređaja na ovom iPhoneu}}</translation>
 <translation id="1981118202195772574">Mobilni uređaj</translation>
@@ -278,6 +279,7 @@
 <translation id="2103075008456228677">Otvori history.google.com</translation>
 <translation id="2104436223719117661">Popularna pretraživanja</translation>
 <translation id="21133533946938348">Zakači karticu</translation>
+<translation id="2117650889962717098">Zadržite privatnost pregledanja prelaskom na anonimni način rada</translation>
 <translation id="2119636449201577317">Otvaranje u aplikaciji…</translation>
 <translation id="2120553909046681540">Vaša organizacija je isključila privatno pregledavanje.</translation>
 <translation id="2122754583996902531">Vašim preglednikom se upravlja. <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
@@ -562,6 +564,7 @@ Ako je primjenjivo, pogledajte uputstva pretraživača da saznate kako izbrisati
 <translation id="3348387552617855658">Ova kartica vam pomaže da pratite svoje pakete i pruža vam važne novosti o isporukama.</translation>
 <translation id="3349031117032695619">Blokiraj skočne prozore</translation>
 <translation id="3349676726073650389">Web lokacije i pretraživanja koja pratite se pohranjuju na vaš Google račun. Možete upravljati sadržajem koji pratite u postavkama kad god želite.</translation>
+<translation id="3353037916374303415"><ph name="EMAIL" />. Ovim računom se upravlja.</translation>
 <translation id="3365529507898144230">Sačuvaj na Fotografijama</translation>
 <translation id="3371831930909698441">Dostupan je Prevodilac. Opcije su dostupne pri dnu ekrana.</translation>
 <translation id="3377063233124932127">Vaše sačuvane oznake, lozinke i drugo su sada na vrhu prikaza.</translation>
@@ -670,6 +673,7 @@ Ako je primjenjivo, pogledajte uputstva pretraživača da saznate kako izbrisati
 <translation id="3875783148670536197">Pokaži mi kako</translation>
 <translation id="3878657761594430423">Hvatač lista</translation>
 <translation id="3885587018298784481">Pridružite se porodičnoj grupi</translation>
+<translation id="3888230626190453136">Pregledajte u anonimnom načinu rada</translation>
 <translation id="3888863481921783344">Ovo će se koristiti za prikazivanje potencijalnih pozvanih osoba na vaš događaj.</translation>
 <translation id="3891414008432200754">Cijena</translation>
 <translation id="3892144330757387737">Svoju historiju ćete pronaći ovdje</translation>

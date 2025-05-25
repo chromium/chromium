@@ -278,6 +278,7 @@
 <translation id="2103075008456228677">Avaa history.google.com</translation>
 <translation id="2104436223719117661">Trendaavat haut</translation>
 <translation id="21133533946938348">Kiinnitä välilehti</translation>
+<translation id="2117650889962717098">Selaa yksityisesti incognito-tilassa</translation>
 <translation id="2119636449201577317">Avaa…</translation>
 <translation id="2120553909046681540">Organisaatiosi on laittanut yksityisen selaamisen pois päältä.</translation>
 <translation id="2122754583996902531">Tämä on ylläpidetty selain. <ph name="BEGIN_LINK" />Lue lisää<ph name="END_LINK" /></translation>
@@ -562,6 +563,7 @@ Katso tarvittaessa hakukoneesi ohjeet hakuhistorian poistamiselle.</translation>
 <translation id="3348387552617855658">Tämän kortin avulla voit seurata pakettejasi ja saada tärkeitä toimitusilmoituksia.</translation>
 <translation id="3349031117032695619">Estä ponnahdusikkunat</translation>
 <translation id="3349676726073650389">Seuraamasi sivustot ja haut tallennetaan Google-tilillesi. Voit muuttaa seuraamiasi kohteita milloin tahansa asetuksissa.</translation>
+<translation id="3353037916374303415"><ph name="EMAIL" />. Tämä on hallinnoitu tili</translation>
 <translation id="3365529507898144230">Tallenna Kuviin</translation>
 <translation id="3371831930909698441">Kääntäjä on käytössä. Asetukset löytyvät näytön alalaidasta.</translation>
 <translation id="3377063233124932127">Tallennetut kirjanmerkit, salasanat ja muut tiedot ovat nyt ylhäällä.</translation>
@@ -670,6 +672,7 @@ Katso tarvittaessa hakukoneesi ohjeet hakuhistorian poistamiselle.</translation>
 <translation id="3875783148670536197">Näytä miten</translation>
 <translation id="3878657761594430423">Paneelin koonmuuttaja</translation>
 <translation id="3885587018298784481">Liity perheryhmään</translation>
+<translation id="3888230626190453136">Incognito-selaaminen</translation>
 <translation id="3888863481921783344">Sinulle näytetään mahdollisia osallistujia tapahtumaan.</translation>
 <translation id="3891414008432200754">Hinta</translation>
 <translation id="3892144330757387737">Näet historiasi täällä</translation>

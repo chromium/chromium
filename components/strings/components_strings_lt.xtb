@@ -2445,6 +2445,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="519422657042045905">Komentaras nepasiekiamas</translation>
 <translation id="5200063972779787617">Adreso išsaugojimas paskyroje</translation>
 <translation id="5201306358585911203">Šiame puslapyje įterptame puslapyje nurodyta:</translation>
+<translation id="5203716867500274632">Administratorius įgalino sinchronizuoti toliau nurodytus elementus tarp ankstesnių ir dabartinių seansų visuose „ChromeOS“ įrenginiuose.</translation>
 <translation id="5205114269877707377"><ph name="OMNIBOX_ACTION_FOCUSED_FRIENDLY_MATCH_TEXT" />, paspauskite tabuliavimo klavišą, kad naršytumėte pasiekiamus veiksmus, tada paspauskite „Enter“, kad atliktumėte pasirinktą veiksmą.</translation>
 <translation id="5205222826937269299">Būtina nurodyti pavadinimą</translation>
 <translation id="5206392433295093945">Miegamasis</translation>
@@ -2604,6 +2605,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="5472588168895083535">Rankų stebėjimas užblokuotas</translation>
 <translation id="547963486735802022">Pabandykite dar kartą perkelti failus</translation>
 <translation id="5481076368049295676">Šiuo turiniu gali būti bandoma priversti jus įrenginyje įdiegti pavojingą programinę įrangą, kuri vagia arba ištrina jūsų informaciją. <ph name="BEGIN_LINK" />Rodyti vis tiek<ph name="END_LINK" /></translation>
+<translation id="5481604577800516617">Langų ir skirtukų išdėstymas</translation>
 <translation id="5481682542063333508">Siūlyti rašymo pagalbą</translation>
 <translation id="54817484435770891">Tinkamo adreso pridėjimas</translation>
 <translation id="5483838506518938965">Viskas nustatyta</translation>
@@ -4278,6 +4280,7 @@ Papildoma išsami informacija:
 <translation id="8352849934814541340">Šio įrenginio administratorius įdiegė papildomų funkcijų programų. Naudojant programas galima pasiekti kai kuriuos jūsų duomenis.</translation>
 <translation id="8355270400102541638">Vietinės strigties kontekstas:</translation>
 <translation id="8363502534493474904">Išjungti lėktuvo režimą</translation>
+<translation id="8363929499301563123">Svetainių slapukai (prisijungimo būsena neseniai lankytose svetainėse bus išsaugota)</translation>
 <translation id="8364627913115013041">Nenustatyta.</translation>
 <translation id="8366057325711477500">Pasaulio naujienos</translation>
 <translation id="836616551641291797">Sužinokite daugiau, kaip tvarkoma naršyklė</translation>

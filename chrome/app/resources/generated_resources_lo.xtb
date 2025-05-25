@@ -2651,7 +2651,6 @@
 <translation id="2798347533012571708">ຮັບອັບເດດຕໍ່ໄປ</translation>
 <translation id="2799162042226656283">Chrome ຂອງທ່ານ</translation>
 <translation id="2799223571221894425">ເລີ່ມເປີດໃຊ້ໃໝ່</translation>
-<translation id="2800309299477632167">ແຜນຜັງປຸ່ມແບບກຳນົດເອງ</translation>
 <translation id="2800760947029405028">ອັບໂຫລດຮູບ</translation>
 <translation id="2800996978423439835">ຮັບບຸກມາກ ແລະ ຂໍ້ມູນອື່ນໆໃນທຸກອຸປະກອນຂອງທ່ານ</translation>
 <translation id="2801134910297796778">ເຂົ້າສູ່ລະບົບ <ph name="EMAIL" /> ແລ້ວ</translation>
@@ -8294,7 +8293,6 @@
 <translation id="6831043979455480757">ແປພາສາ</translation>
 <translation id="6832218595502288407">ຈັດຕຳແໜ່ງໄວ້ຊ້າຍ</translation>
 <translation id="6832815922179448173">{MULTI_GROUP_TAB_COUNT,plural, =0{ລຶບແຖບອອກ ແລະ ລຶບກຸ່ມບໍ?}=1{ລຶບແຖບອອກ ແລະ ລຶບກຸ່ມບໍ?}other{ລຶບແຖບອອກ ແລະ ລຶບກຸ່ມບໍ?}}</translation>
-<translation id="6833103209700200188">ຂໍ້ຄວາມທ້າຍໜ້າ</translation>
 <translation id="6833479554815567477">ລຶບແຖບອອກຈາກກຸ່ມ <ph name="GROUP_NAME" /> - <ph name="GROUP_CONTENTS" /> ແລ້ວ</translation>
 <translation id="6833753236242482566">ສົມດຸນ (ແນະນຳ)</translation>
 <translation id="6835762382653651563">ກະ​ລຸ​ນາ​ເຊື່ອມ​ຕໍ່​ກັບ​ອິນ​ເຕີ​ເນັດເພື່ອອັບເດດ <ph name="DEVICE_TYPE" /> ຂອງ​ທ່ານ.</translation>
@@ -9998,6 +9996,7 @@
 <translation id="8037801708772278989">ຫາກໍກວດແລ້ວຕອນນີ້</translation>
 <translation id="8038111231936746805">(ມາດຕະຖານ)</translation>
 <translation id="8039151841428107077">{NUM_OF_FILES,plural, =1{ກຳລັງສຳເນົາ 1 ໄຟລ໌ໄປໃສ່ <ph name="CLOUD_PROVIDER" />}other{ກຳລັງສຳເນົາ {NUM_OF_FILES} ໄຟລ໌ໄປໃສ່ <ph name="CLOUD_PROVIDER" />}}</translation>
+<translation id="8039525676147630657">ແອັບ Chrome ນີ້ຈະຢຸດເຮັດວຽກຫຼັງຈາກທີ່ເວີຊັນ ChromeOS ຂອງທ່ານອັບເດດແລ້ວ. ບັນທຶກຂໍ້ມູນແອັບໃດໆທີ່ທ່ານຕ້ອງການເກັບໄວ້. ເພື່ອສຶກສາກ່ຽວກັບຕົວເລືອກຂອງທ່ານ, ກະລຸນາຕິດຕໍ່ນັກພັດທະນາແອັບ ຫຼື ທີມງານຊ່ວຍເຫຼືອດ້ານ IT ຂອງທ່ານ.</translation>
 <translation id="8041089156583427627">ສົ່ງຄຳຕິຊົມ</translation>
 <translation id="8041093619605951337">ມີຄວາມສຸກ</translation>
 <translation id="8041267120753677077">ສະຕຣີມແອັບຂອງໂທລະສັບທ່ານ</translation>

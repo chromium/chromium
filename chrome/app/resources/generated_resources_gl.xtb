@@ -2638,7 +2638,6 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="2798347533012571708">Non desactivar actualizacións</translation>
 <translation id="2799162042226656283">O teu Chrome</translation>
 <translation id="2799223571221894425">Iniciar de novo</translation>
-<translation id="2800309299477632167">Mapa de teclas personalizado</translation>
 <translation id="2800760947029405028">Subir unha imaxe</translation>
 <translation id="2800996978423439835">Accede aos teus marcadores e moito máis en todos os teus dispositivos</translation>
 <translation id="2801134910297796778">Sesión iniciada en <ph name="EMAIL" /></translation>
@@ -5166,6 +5165,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="4585793705637313973">Editar páxina</translation>
 <translation id="4586275095964870617">Non se puido abrir <ph name="URL" /> nun navegador alternativo. Ponte en contacto coa persoa que administra o teu sistema.</translation>
 <translation id="4587589328781138893">Sitios</translation>
+<translation id="4588497044036650559">Abrir a páxina de opcións da extensión da páxina Nova pestana na pestana actual</translation>
 <translation id="4588749726511456218">Aceleración do desprazamento. <ph name="LINK_BEGIN" />Máis información<ph name="LINK_END" /></translation>
 <translation id="4589197033939192905">Parece que <ph name="PASSWORD_DOMAIN" /> e <ph name="DOMAIN" /> están relacionados. Comproba que <ph name="DOMAIN" /> é de confianza antes de usar o teu contrasinal.</translation>
 <translation id="4589713469967853491">Os rexistros escribíronse correctamente no directorio Descargas.</translation>
@@ -8281,7 +8281,6 @@ Se máis tarde decides que non queres usar Voice Match, tan só tes que desactiv
 <translation id="6831043979455480757">Traducir</translation>
 <translation id="6832218595502288407">Aliñar á esquerda</translation>
 <translation id="6832815922179448173">{MULTI_GROUP_TAB_COUNT,plural, =0{Queres quitar a pestana e eliminar o grupo?}=1{Queres quitar as pestanas e eliminar o grupo?}other{Queres quitar as pestanas e eliminar os grupos?}}</translation>
-<translation id="6833103209700200188">Pé de páxina</translation>
 <translation id="6833479554815567477">A pestana quitouse automaticamente do grupo <ph name="GROUP_NAME" /> (<ph name="GROUP_CONTENTS" />)</translation>
 <translation id="6833753236242482566">Equilibrado (opción recomendada)</translation>
 <translation id="6835762382653651563">Conéctate a Internet para actualizar o teu dispositivo <ph name="DEVICE_TYPE" />.</translation>
@@ -9139,6 +9138,7 @@ Se máis tarde decides que non queres usar Voice Match, tan só tes que desactiv
 <translation id="7461924472993315131">Marcar cun alfinete</translation>
 <translation id="746216226901520237">A próxima vez, o teléfono desbloqueará o teu <ph name="DEVICE_TYPE" />. Podes desactivar Smart Lock en Configuración.</translation>
 <translation id="746329643760972486">macOS</translation>
+<translation id="7463985990119325874">A túa organización controla como se poden usar os datos recompilados por estas funcións.</translation>
 <translation id="7464645554245611385">Última actualización desta pestana</translation>
 <translation id="7465522323587461835">{NUM_OPEN_TABS,plural, =1{# pestana aberta, preme o botón para activar/desactivar a franxa de pestanas}other{# pestanas abertas, preme o botón para activar/desactivar a franxa de pestanas}}</translation>
 <translation id="7465635034594602553">Produciuse un erro. Agarda uns poucos minutos e executa <ph name="APP_NAME" /> de novo.</translation>
@@ -11702,6 +11702,7 @@ Consulta máis información sobre os datos que recompila Google e por que o fai 
 <translation id="934244546219308557">Ponlle un nome a este grupo</translation>
 <translation id="93480724622239549">Erro</translation>
 <translation id="9354763467503131">Permiso concedido para instalar aplicacións web no teu dispositivo</translation>
+<translation id="936329857119665832">Ábrese na pestana actual</translation>
 <translation id="936646668635477464">Cámara e micrófono</translation>
 <translation id="936801553271523408">Datos de diagnóstico do sistema</translation>
 <translation id="93766956588638423">Reparar extensión</translation>

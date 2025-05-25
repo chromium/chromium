@@ -2640,7 +2640,6 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2798347533012571708">Garder les mises à jour</translation>
 <translation id="2799162042226656283">Votre Chrome</translation>
 <translation id="2799223571221894425">Relancer</translation>
-<translation id="2800309299477632167">Jeu de raccourcis clavier personnalisé</translation>
 <translation id="2800760947029405028">Importer une image</translation>
 <translation id="2800996978423439835">Accédez à vos favoris et bien plus sur tous vos appareils</translation>
 <translation id="2801134910297796778">Connecté à <ph name="EMAIL" /></translation>
@@ -8283,7 +8282,6 @@ Vous avez # autres mots de passe compromis. Le Gestionnaire de mots de passe Go
 <translation id="6831043979455480757">Traduire</translation>
 <translation id="6832218595502288407">Aligner à gauche</translation>
 <translation id="6832815922179448173">{MULTI_GROUP_TAB_COUNT,plural, =0{Supprimer l'onglet et le groupe ?}=1{Supprimer les onglets et le groupe ?}one{Supprimer les onglets et le groupe ?}other{Supprimer les onglets et les groupes ?}}</translation>
-<translation id="6833103209700200188">Pied de page</translation>
 <translation id="6833479554815567477">Onglet supprimé du groupe <ph name="GROUP_NAME" /> - <ph name="GROUP_CONTENTS" /></translation>
 <translation id="6833753236242482566">Équilibré (recommandé)</translation>
 <translation id="6835762382653651563">Connectez-vous à Internet pour mettre à jour votre <ph name="DEVICE_TYPE" />.</translation>
@@ -9218,7 +9216,7 @@ Vous avez # autres mots de passe compromis. Le Gestionnaire de mots de passe Go
 <translation id="7514239104543605883">Copier sur votre appareil</translation>
 <translation id="7514365320538308">Télécharger</translation>
 <translation id="7514417110442087199">Ajouter une attribution</translation>
-<translation id="7515139121338932179">Pour partager votre fenêtre, utilisez l'outil de sélection de fenêtre de votre système</translation>
+<translation id="7515139121338932179">Pour partager votre fenêtre, utilisez le sélecteur de fenêtre de votre système</translation>
 <translation id="751523031290522286"><ph name="APP_NAME" /> est bloqué par l'administrateur. Vous avez besoin de son autorisation pour l'utiliser.</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7516641972665276706">Page suivante</translation>
@@ -9825,7 +9823,7 @@ Appuyez sur un contacteur ou une touche associé(e) pour supprimer l'association
 <translation id="7933518760693751884">Cliquez sur l'icône des favoris pour enregistrer une page et la lire plus tard</translation>
 <translation id="7933634003144813719">Gérer les dossiers partagés</translation>
 <translation id="793531125873261495">Erreur lors du téléchargement de la machine virtuelle. Veuillez réessayer.</translation>
-<translation id="7936195481975600746">Pour partager votre écran, utilisez l'outil de sélection d'écran de votre système</translation>
+<translation id="7936195481975600746">Pour partager votre écran, utilisez le sélecteur d'écran de votre système</translation>
 <translation id="7937809006412909895">Collecte des données de diagnostic…</translation>
 <translation id="7938881824185772026">Labs</translation>
 <translation id="7939062555109487992">Options avancées</translation>

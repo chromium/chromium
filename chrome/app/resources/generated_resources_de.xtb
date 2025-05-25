@@ -560,7 +560,7 @@ Du kannst deine Passwörter jederzeit im <ph name="GOOGLE_PASSWORD_MANAGER" /> p
 <translation id="1383381142702995121">Diese Erweiterung verwalten</translation>
 <translation id="1383597849754832576">Sprachdateien können nicht heruntergeladen werden. Versuch es später noch einmal.</translation>
 <translation id="1383861834909034572">Nach Download öffnen</translation>
-<translation id="1383876407941801731">Durchsuchen</translation>
+<translation id="1383876407941801731">Suchen</translation>
 <translation id="1384849755549338773">Google Übersetzer für Websites in anderen Sprachen anbieten</translation>
 <translation id="1384959399684842514">Download angehalten</translation>
 <translation id="1388253969141979417">Dürfen mein Mikrofon verwenden</translation>
@@ -2636,7 +2636,6 @@ Diese Aktion wirkt sich nicht auf Lesezeichen, Passwörter und den Verlauf aus.<
 <translation id="2798347533012571708">Updates behalten</translation>
 <translation id="2799162042226656283">Mein Chrome</translation>
 <translation id="2799223571221894425">Neu starten</translation>
-<translation id="2800309299477632167">Benutzerdefinierte Tastaturbelegung</translation>
 <translation id="2800760947029405028">Bild hochladen</translation>
 <translation id="2800996978423439835">Lesezeichen und andere Daten auf allen deinen Geräten abrufen</translation>
 <translation id="2801134910297796778">Angemeldet als <ph name="EMAIL" /></translation>
@@ -8273,7 +8272,6 @@ Du hast # weitere kompromittierte Passwörter. Der Google Passwortmanager empfi
 <translation id="6831043979455480757">Übersetzen</translation>
 <translation id="6832218595502288407">Linksbündig</translation>
 <translation id="6832815922179448173">{MULTI_GROUP_TAB_COUNT,plural, =0{Tab entfernen und Gruppe löschen?}=1{Tabs entfernen und Gruppe löschen?}other{Tabs entfernen und Gruppen löschen?}}</translation>
-<translation id="6833103209700200188">Footer-Element</translation>
 <translation id="6833479554815567477">Tab wurde aus folgender Gruppe entfernt: <ph name="GROUP_NAME" /> – <ph name="GROUP_CONTENTS" /></translation>
 <translation id="6833753236242482566">Ausgewogen (empfohlen)</translation>
 <translation id="6835762382653651563">Stelle eine Internetverbindung her, um dein Gerät (<ph name="DEVICE_TYPE" />) zu aktualisieren.</translation>

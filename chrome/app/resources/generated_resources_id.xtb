@@ -2652,7 +2652,6 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="2798347533012571708">Simpan update</translation>
 <translation id="2799162042226656283">Chrome Anda</translation>
 <translation id="2799223571221894425">Luncurkan Ulang</translation>
-<translation id="2800309299477632167">Konfigurasi tombol khusus</translation>
 <translation id="2800760947029405028">Upload gambar</translation>
 <translation id="2800996978423439835">Dapatkan bookmark dan info Anda yang lain di semua perangkat Anda</translation>
 <translation id="2801134910297796778">Login ke <ph name="EMAIL" /></translation>
@@ -8296,7 +8295,6 @@ Anda memiliki # sandi lainnya yang telah dibobol. Pengelola Sandi Google merekom
 <translation id="6831043979455480757">Terjemahkan</translation>
 <translation id="6832218595502288407">Rata kiri</translation>
 <translation id="6832815922179448173">{MULTI_GROUP_TAB_COUNT,plural, =0{Hapus Tab dan Grup?}=1{Hapus Tab dan Grup?}other{Hapus Tab dan Grup?}}</translation>
-<translation id="6833103209700200188">Footer</translation>
 <translation id="6833479554815567477">Tab dihapus dari grup <ph name="GROUP_NAME" /> - <ph name="GROUP_CONTENTS" /></translation>
 <translation id="6833753236242482566">Seimbang (direkomendasikan)</translation>
 <translation id="6835762382653651563">Sambungkan ke internet untuk memperbarui <ph name="DEVICE_TYPE" /> Anda.</translation>

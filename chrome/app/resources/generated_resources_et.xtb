@@ -2643,7 +2643,6 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="2798347533012571708">Säilita värskendused</translation>
 <translation id="2799162042226656283">Teie Chrome</translation>
 <translation id="2799223571221894425">Taaskäivita</translation>
-<translation id="2800309299477632167">Kohandatud klahvitabel</translation>
 <translation id="2800760947029405028">Laadige üles pilt</translation>
 <translation id="2800996978423439835">Pääsege järjehoidjatele ja muule sisule juurde kõigis oma seadmetes</translation>
 <translation id="2801134910297796778">Sisse logitud kontole <ph name="EMAIL" /></translation>
@@ -8287,7 +8286,6 @@ Teil on veel # ohustatud parooli. Google'i paroolihaldur soovitab kohe neid paro
 <translation id="6831043979455480757">Tõlgi</translation>
 <translation id="6832218595502288407">Joonda vasakule</translation>
 <translation id="6832815922179448173">{MULTI_GROUP_TAB_COUNT,plural, =0{Kas eemaldada vaheleht ja kustutada grupp?}=1{Kas eemaldada vahelehed ja kustutada grupp?}other{Kas eemaldada vahelehed ja kustutada grupid?}}</translation>
-<translation id="6833103209700200188">Jalus</translation>
 <translation id="6833479554815567477">Vaheleht eemaldati grupist <ph name="GROUP_NAME" /> – <ph name="GROUP_CONTENTS" /></translation>
 <translation id="6833753236242482566">Tasakaalustatud (soovitatud)</translation>
 <translation id="6835762382653651563">Seadme <ph name="DEVICE_TYPE" /> värskendamiseks looge ühendus Internetiga.</translation>

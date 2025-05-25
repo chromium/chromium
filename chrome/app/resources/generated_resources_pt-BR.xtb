@@ -2652,7 +2652,6 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2798347533012571708">Manter atualizações</translation>
 <translation id="2799162042226656283">Seu Chrome</translation>
 <translation id="2799223571221894425">Reiniciar</translation>
-<translation id="2800309299477632167">Mapa de atalhos personalizado</translation>
 <translation id="2800760947029405028">Fazer upload de uma imagem</translation>
 <translation id="2800996978423439835">Acesse favoritos e muito mais em todos os seus dispositivos</translation>
 <translation id="2801134910297796778">Conectado a <ph name="EMAIL" /></translation>
@@ -8300,7 +8299,6 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="6831043979455480757">Traduzir</translation>
 <translation id="6832218595502288407">Alinhar à esquerda</translation>
 <translation id="6832815922179448173">{MULTI_GROUP_TAB_COUNT,plural, =0{Remover guia e excluir grupo?}=1{Remover guia e excluir grupo?}one{Remover guia e excluir grupo?}other{Remover guias e excluir grupo?}}</translation>
-<translation id="6833103209700200188">Rodapé</translation>
 <translation id="6833479554815567477">A guia foi removida do grupo <ph name="GROUP_NAME" />: <ph name="GROUP_CONTENTS" /></translation>
 <translation id="6833753236242482566">Equilibrada (recomendado)</translation>
 <translation id="6835762382653651563">Conecte-se à Internet para atualizar seu <ph name="DEVICE_TYPE" />.</translation>
@@ -10008,6 +10006,7 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
 <translation id="8037801708772278989">Verificado agora mesmo</translation>
 <translation id="8038111231936746805">(padrão)</translation>
 <translation id="8039151841428107077">{NUM_OF_FILES,plural, =1{Copiando 1 arquivo para o <ph name="CLOUD_PROVIDER" />}one{Copiando {NUM_OF_FILES} arquivo para o <ph name="CLOUD_PROVIDER" />}other{Copiando {NUM_OF_FILES} arquivos para o <ph name="CLOUD_PROVIDER" />}}</translation>
+<translation id="8039525676147630657">Este app do Chrome vai deixar de funcionar depois que a versão do ChromeOS for atualizada. Salve os dados que você quer manter do app. Para saber mais sobre as opções disponíveis, entre em contato com o desenvolvedor do app ou sua equipe de suporte de TI.</translation>
 <translation id="8041089156583427627">Enviar feedback</translation>
 <translation id="8041093619605951337">Alegre</translation>
 <translation id="8041267120753677077">Fazer transmissão dos apps no seu smartphone</translation>

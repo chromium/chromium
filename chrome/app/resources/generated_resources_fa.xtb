@@ -17,7 +17,7 @@
 <translation id="1006873397406093306">این افزونه می‌تواند داده‌هایتان را در سایت‌ها بخواند و تغییر دهد. می‌توانید سایت‌هایی را که این افزونه به آن‌ها دسترسی دارد کنترل کنید.</translation>
 <translation id="1007057452468855774">‏روشن کردن «فروشگاه Google Play»</translation>
 <translation id="1008186147501209563">صادرکردن نشانک‌ها</translation>
-<translation id="1008261151167010035"><ph name="BRAND" /> به‌خاطر می‌آورد چگونه به سیستم وارد شدید و درصورت امکان شما را به‌طور خودکار به سیستم وارد می‌کند. وقتی خاموش باشد، هر بار از شما درخواست می‌شود اطلاعات را تأیید کنید.</translation>
+<translation id="1008261151167010035">‫<ph name="BRAND" /> به‌خاطر می‌آورد چگونه به سیستم وارد شدید و درصورت امکان شما را به‌طور خودکار به سیستم وارد می‌کند. وقتی خاموش باشد، هر بار از شما درخواست می‌شود اطلاعات را تأیید کنید.</translation>
 <translation id="1008557486741366299">حالا نه</translation>
 <translation id="100881991356161927">نام سایت</translation>
 <translation id="1009663062402466586">کنترل‌های بازی اکنون دردسترس است</translation>
@@ -2649,7 +2649,6 @@
 <translation id="2798347533012571708">حفظ به‌روزرسانی‌ها</translation>
 <translation id="2799162042226656283">‏‫Chrome شما</translation>
 <translation id="2799223571221894425">راه‌اندازی مجدد</translation>
-<translation id="2800309299477632167">نقشه‌کلید سفارشی</translation>
 <translation id="2800760947029405028">بارگذاری تصویر</translation>
 <translation id="2800996978423439835">در همه دستگاه‌های خود به نشانک‌ها و موارد دیگر دسترسی داشته باشید</translation>
 <translation id="2801134910297796778">به سیستم <ph name="EMAIL" /> وارد شده‌اید</translation>
@@ -8295,7 +8294,6 @@
 <translation id="6831043979455480757">ترجمه</translation>
 <translation id="6832218595502288407">تراز به چپ</translation>
 <translation id="6832815922179448173">{MULTI_GROUP_TAB_COUNT,plural, =0{برگه برداشته و گروه حذف شود؟}=1{برگه برداشته و گروه حذف شود؟}one{برگه برداشته و گروه حذف شود؟}other{برگه‌ها برداشته و گروه‌ها حذف شود؟}}</translation>
-<translation id="6833103209700200188">پاورقی</translation>
 <translation id="6833479554815567477">برگه از گروه <ph name="GROUP_NAME" /> برداشته شد - <ph name="GROUP_CONTENTS" /></translation>
 <translation id="6833753236242482566">متعادل (توصیه می‌شود)</translation>
 <translation id="6835762382653651563">برای به‌روزرسانی <ph name="DEVICE_TYPE" />، لطفاً به اینترنت وصل شوید.</translation>
@@ -10113,7 +10111,7 @@
 <translation id="8110489095782891123">درحال بارگیری فهرست مخاطبین…</translation>
 <translation id="8114925369073821854">اجازه میکروفون <ph name="APP_NAME" /></translation>
 <translation id="8116972784401310538">مدیر &amp;نشانک</translation>
-<translation id="8118276691321086429"><ph name="PASSWORD_MANAGER_BRAND" /> به‌خاطر می‌آورد چگونه به سیستم وارد شدید و درصورت امکان شما را به‌طور خودکار به سیستم وارد می‌کند. وقتی خاموش باشد، هر بار از شما درخواست می‌شود اطلاعات را تأیید کنید.</translation>
+<translation id="8118276691321086429">‫<ph name="PASSWORD_MANAGER_BRAND" /> به‌خاطر می‌آورد چگونه به سیستم وارد شدید و درصورت امکان شما را به‌طور خودکار به سیستم وارد می‌کند. وقتی خاموش باشد، هر بار از شما درخواست می‌شود اطلاعات را تأیید کنید.</translation>
 <translation id="8118362518458010043">‏توسط Chrome غیرفعال شده است. ممکن است این افزونه ناامن باشد.</translation>
 <translation id="8118448640060360549">{EXTENSIONS_COUNT,plural, =1{‫# نشانک}one{‫# نشانک}other{‫# نشانک}}</translation>
 <translation id="8118488170956489476">سازمانتان<ph name="BEGIN_LINK" />مرورگر را مدیریت می‌کند<ph name="END_LINK" /></translation>

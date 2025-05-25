@@ -243,6 +243,7 @@
 <translation id="1972325230031091483">Je browst sneller, omdat content proactief wordt geladen op basis van je huidige webpagina</translation>
 <translation id="1974060860693918893">Geavanceerd</translation>
 <translation id="1977621687170192347">Zet 'Vragen om links uit andere apps te openen in de incognitomodus' aan.</translation>
+<translation id="1979055159547313322">Het account <ph name="USER_EMAIL" /> wordt beheerd door <ph name="HOSTED_DOMAIN" />. Dit domein kan bepaalde informatie bekijken, waaronder</translation>
 <translation id="1979188886349613713">Bestandsextensies opnemen die niet zijn gespecificeerd door de website</translation>
 <translation id="1980417445547898121">{count,plural, =1{Krijg {count} recent actief tabblad van je andere apparaat op deze iPhone}other{Krijg {count} recent actieve tabbladen van je andere apparaat op deze iPhone}}</translation>
 <translation id="1981118202195772574">Mobiel</translation>
@@ -278,6 +279,7 @@
 <translation id="2103075008456228677">history.google.com openen</translation>
 <translation id="2104436223719117661">Trending zoekopdrachten</translation>
 <translation id="21133533946938348">Tabblad vastzetten</translation>
+<translation id="2117650889962717098">Schakel over naar de incognitomodus om privé te browsen</translation>
 <translation id="2119636449201577317">Openen in…</translation>
 <translation id="2120553909046681540">Je organisatie heeft privé browsen uitgezet.</translation>
 <translation id="2122754583996902531">Je browser wordt beheerd. <ph name="BEGIN_LINK" />Meer informatie<ph name="END_LINK" /></translation>
@@ -562,6 +564,7 @@ Bekijk de instructies van je zoekmachine voor het verwijderen van je zoekgeschie
 <translation id="3348387552617855658">Met deze kaart kun je bijhouden waar je pakketten zijn en krijg je belangrijke updates over de bezorging.</translation>
 <translation id="3349031117032695619">Pop-ups blokkeren</translation>
 <translation id="3349676726073650389">De sites en zoekopdrachten die je volgt, worden opgeslagen in je Google-account. Je kunt je gevolgde items altijd beheren via de instellingen.</translation>
+<translation id="3353037916374303415"><ph name="EMAIL" />. Dit account wordt beheerd.</translation>
 <translation id="3365529507898144230">Opslaan in Foto's</translation>
 <translation id="3371831930909698441">Vertalen is beschikbaar. Opties beschikbaar onderaan het scherm.</translation>
 <translation id="3377063233124932127">Je opgeslagen bookmarks, wachtwoorden enz. staan nu bovenaan.</translation>
@@ -670,6 +673,7 @@ Bekijk de instructies van je zoekmachine voor het verwijderen van je zoekgeschie
 <translation id="3875783148670536197">Laten zien</translation>
 <translation id="3878657761594430423">Bladgrijper</translation>
 <translation id="3885587018298784481">Lid worden van een gezinsgroep</translation>
+<translation id="3888230626190453136">Incognito browsen</translation>
 <translation id="3888863481921783344">Dit wordt gebruikt om je mogelijke genodigden voor je evenement te tonen.</translation>
 <translation id="3891414008432200754">Prijs</translation>
 <translation id="3892144330757387737">Hier vind je je geschiedenis</translation>

@@ -2625,7 +2625,6 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2798347533012571708">Zachowaj aktualizacje</translation>
 <translation id="2799162042226656283">Twoja przeglądarka Chrome</translation>
 <translation id="2799223571221894425">Uruchom ponownie</translation>
-<translation id="2800309299477632167">Niestandardowa mapa klawiszy</translation>
 <translation id="2800760947029405028">Prześlij obraz</translation>
 <translation id="2800996978423439835">Pobierz zakładki, historię i inne ustawienia na wszystkie swoje urządzenia</translation>
 <translation id="2801134910297796778">Używasz konta <ph name="EMAIL" /></translation>
@@ -8264,7 +8263,6 @@ Masz jeszcze # przejętego hasła. Menedżer haseł Google zaleca, aby jak najs
 <translation id="6831043979455480757">Tłumacz</translation>
 <translation id="6832218595502288407">Wyrównaj do lewej</translation>
 <translation id="6832815922179448173">{MULTI_GROUP_TAB_COUNT,plural, =0{Usunąć kartę i grupę?}=1{Usunąć kartę i grupę?}few{Usunąć karty i grupy?}many{Usunąć karty i grupy?}other{Usunąć karty i grupy?}}</translation>
-<translation id="6833103209700200188">Stopka</translation>
 <translation id="6833479554815567477">Karta została usunięta z grupy <ph name="GROUP_NAME" /> – <ph name="GROUP_CONTENTS" /></translation>
 <translation id="6833753236242482566">Zrównoważone (zalecane)</translation>
 <translation id="6835762382653651563">Aby zaktualizować urządzenie <ph name="DEVICE_TYPE" />, połącz się z internetem.</translation>
@@ -9971,6 +9969,7 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 <translation id="8037801708772278989">Sprawdzono przed chwilą</translation>
 <translation id="8038111231936746805">(domyślnie)</translation>
 <translation id="8039151841428107077">{NUM_OF_FILES,plural, =1{Kopiuję 1 plik do usługi <ph name="CLOUD_PROVIDER" />}few{Kopiuję {NUM_OF_FILES} pliki do usługi <ph name="CLOUD_PROVIDER" />}many{Kopiuję {NUM_OF_FILES} plików do usługi <ph name="CLOUD_PROVIDER" />}other{Kopiuję {NUM_OF_FILES} pliku do usługi <ph name="CLOUD_PROVIDER" />}}</translation>
+<translation id="8039525676147630657">Po zaktualizowaniu wersji ChromeOS ta aplikacja Chrome przestanie działać. Zapisz dane aplikacji, które chcesz zachować. Aby dowiedzieć się, jakie masz możliwości, skontaktuj się z deweloperem aplikacji lub zespołem pomocy IT.</translation>
 <translation id="8041089156583427627">Prześlij opinię</translation>
 <translation id="8041093619605951337">Radosny</translation>
 <translation id="8041267120753677077">Odtwarzaj strumieniowo aplikacje z telefonu</translation>

@@ -2446,6 +2446,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="519422657042045905">Không có chú thích</translation>
 <translation id="5200063972779787617">Lưu địa chỉ trong tài khoản</translation>
 <translation id="5201306358585911203">Một trang được nhúng trên trang này cho biết</translation>
+<translation id="5203716867500274632">Quản trị viên đã cho phép đồng bộ hoá những nội dung sau giữa phiên trước và phiên hiện tại trên các thiết bị ChromeOS của bạn:</translation>
 <translation id="5205114269877707377"><ph name="OMNIBOX_ACTION_FOCUSED_FRIENDLY_MATCH_TEXT" />, nhấn phím Tab để duyệt xem các thao tác có sẵn, sau đó nhấn phím Enter để thực thi thao tác đã chọn.</translation>
 <translation id="5205222826937269299">Cần có tên</translation>
 <translation id="5206392433295093945">Phòng ngủ</translation>
@@ -2605,6 +2606,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="5472588168895083535">Đã chặn tính năng theo dõi cử chỉ tay</translation>
 <translation id="547963486735802022">Hãy thử chuyển các tệp lần nữa</translation>
 <translation id="5481076368049295676">Nội dung này có thể tìm cách cài đặt phần mềm nguy hiểm trên thiết bị của bạn để lấy cắp hoặc xóa thông tin. <ph name="BEGIN_LINK" />Vẫn hiển thị<ph name="END_LINK" /></translation>
+<translation id="5481604577800516617">Sắp xếp các cửa sổ và thẻ</translation>
 <translation id="5481682542063333508">Đề xuất hỗ trợ viết</translation>
 <translation id="54817484435770891">Thêm địa chỉ hợp lệ</translation>
 <translation id="5483838506518938965">Bạn đã hoàn tất</translation>
@@ -4279,6 +4281,7 @@ Thông tin chi tiết bổ sung:
 <translation id="8352849934814541340">Quản trị viên của thiết bị này đã cài đặt một số ứng dụng nhằm bổ sung chức năng. Các ứng dụng sẽ có quyền truy cập vào một số dữ liệu của bạn.</translation>
 <translation id="8355270400102541638">Bối cảnh dẫn đến sự cố trên máy:</translation>
 <translation id="8363502534493474904">Tắt chế độ trên máy bay</translation>
+<translation id="8363929499301563123">Cookie của trang web (trạng thái đã đăng nhập trên các trang web bạn truy cập gần đây sẽ được giữ nguyên)</translation>
 <translation id="8364627913115013041">Chưa đặt.</translation>
 <translation id="8366057325711477500">Tin tức thế giới</translation>
 <translation id="836616551641291797">Tìm hiểu thêm về cách quản lý trình duyệt</translation>

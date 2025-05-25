@@ -2287,6 +2287,13 @@ Voor de privacy ondersteunt dit beleid geen updates van de beleidswaarde tijdens
 De gebruiker kan erop vertrouwen dat er geen andere apps zijn die de schermen kunnen vastleggen na het inloggen als dit nog niet was toegestaan bij de start van de sessie.</translation>
 <translation id="2615240493030733717">Informatie over tijdzone rapporteren</translation>
 <translation id="2619258867868873629">De bestemming Opslaan als pdf en de bestemming Opslaan in Google Drive op <ph name="PRODUCT_OS_NAME" />-apparaten</translation>
+<translation id="262035875928535253">Stel de lijst met domeinen in waarvoor <ph name="PRODUCT_NAME" /> <ph name="PASSWORD_MANAGER_NAME" /> moet uitzetten. Dit betekent dat de workflows Opslaan en Invullen worden uitgezet, zodat wachtwoorden voor die websites niet worden opgeslagen of automatisch worden ingevuld in webformulieren.
+
+Als een domein in de lijst staat, wordt <ph name="PASSWORD_MANAGER_NAME" /> voor dat domein uitgezet.
+
+Als een domein niet in de lijst staat, is <ph name="PASSWORD_MANAGER_NAME" /> beschikbaar voor dat domein.
+
+Als je het beleid niet instelt, is <ph name="PASSWORD_MANAGER_NAME" /> beschikbaar voor alle domeinen.</translation>
 <translation id="2621290137818374425">Als je het beleid instelt, wordt de handhaving van vereisten voor openbaarmaking via Certificaattransparantie uitgezet voor de hostnamen in de opgegeven URL's. Hoewel het moeilijker wordt om misbruik van certificaten vast te stellen, kunnen hosts certificaten blijven gebruiken die anders niet zouden worden vertrouwd (omdat deze niet op de juiste manier openbaar zijn gemaakt).
 
 Als je het beleid niet instelt, betekent dit dat als certificaten die openbaar moeten worden gemaakt via Certificaattransparantie niet openbaar worden gemaakt, de betreffende certificaten niet door <ph name="PRODUCT_NAME" /> worden vertrouwd.
@@ -9252,6 +9259,7 @@ Als je geen beleid opgeeft, zijn er geen uitzonderingen toegestaan op <ph name="
           Als je het beleid instelt op False of niet instelt, wordt de functie voor automatisch versturen van pincodes niet toegepast op het vergrendelscherm en het inlogscherm van gebruikers.
 
           Als dit beleid is ingesteld, kunnen gebruikers de functie niet aanzetten.</translation>
+<translation id="7612030083959326401">De lijst met domeinen instellen waarvoor <ph name="PASSWORD_MANAGER_NAME" /> (Opslaan en Invullen) wordt uitgezet</translation>
 <translation id="7612059745454194563">Niet toestaan dat de promotie voor de extensie voor inloggegevensproviders wordt getoond</translation>
 <translation id="7612157962821894603">Markeringen voor het hele systeem die worden toegepast bij het starten van <ph name="PRODUCT_NAME" /></translation>
 <translation id="7613115815080726221">De tijdsduur zonder gebruikersinvoer waarna de actie voor inactiviteit wordt ondernomen (in milliseconden)</translation>

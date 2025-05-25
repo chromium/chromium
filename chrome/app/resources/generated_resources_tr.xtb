@@ -2637,7 +2637,6 @@ Cihazınızda Family Link uygulamasını yükleyerek bu hesabın ayarlarını y�
 <translation id="2798347533012571708">Güncellemeleri koru</translation>
 <translation id="2799162042226656283">Chrome'unuz</translation>
 <translation id="2799223571221894425">Yeniden başlat</translation>
-<translation id="2800309299477632167">Özel tuş eşleme</translation>
 <translation id="2800760947029405028">Resim yükle</translation>
 <translation id="2800996978423439835">Yer işaretlerinizi, geçmişinizi ve diğerlerini tüm cihazlarınızda kullanın</translation>
 <translation id="2801134910297796778"><ph name="EMAIL" /> hesabında oturum açıldı</translation>
@@ -6931,7 +6930,7 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="5868434909835797817">Cihazınızın mikrofonu kapalı</translation>
 <translation id="5868479397518301468">Oturum açma işlemi zaman aşımına uğradı</translation>
 <translation id="5868822853313956582">Cihaz renklerine uygun hale getir</translation>
-<translation id="5869029295770560994">Tamam, Anladım</translation>
+<translation id="5869029295770560994">Anladım</translation>
 <translation id="5869522115854928033">Kayıtlı şifreler</translation>
 <translation id="5870086504539785141">Erişilebilirlik menüsünü kapat</translation>
 <translation id="5870155679953074650">Donanım hataları</translation>
@@ -8279,7 +8278,6 @@ Sızdırılmış # şifreniz daha var. Google Şifre Yöneticisi bu şifreleri h
 <translation id="6831043979455480757">Çevir</translation>
 <translation id="6832218595502288407">Sola hizala</translation>
 <translation id="6832815922179448173">{MULTI_GROUP_TAB_COUNT,plural, =0{Sekme kaldırılıp grup silinsin mi?}=1{Sekmeler kaldırılıp grup silinsin mi?}other{Sekmeler kaldırılıp gruplar silinsin mi?}}</translation>
-<translation id="6833103209700200188">Alt bilgi</translation>
 <translation id="6833479554815567477">Sekme, <ph name="GROUP_NAME" /> adlı gruptan kaldırıldı - <ph name="GROUP_CONTENTS" /></translation>
 <translation id="6833753236242482566">Dengeli (önerilen)</translation>
 <translation id="6835762382653651563"><ph name="DEVICE_TYPE" /> cihazınızı güncellemek için lütfen İnternet'e bağlanın.</translation>

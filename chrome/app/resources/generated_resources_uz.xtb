@@ -2643,7 +2643,6 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="2798347533012571708">Yangilanib tursin</translation>
 <translation id="2799162042226656283">Chrome</translation>
 <translation id="2799223571221894425">Qaytadan ishga tushirish</translation>
-<translation id="2800309299477632167">Maxsus tugmalar joylashuvi</translation>
 <translation id="2800760947029405028">Rasm yuklash</translation>
 <translation id="2800996978423439835">Bukmarklar, tarix va sozlamalarni barcha qurilmalarda sinxronlang</translation>
 <translation id="2801134910297796778"><ph name="EMAIL" /> hisobiga kirildi</translation>
@@ -8285,7 +8284,6 @@ Yana # ta oshkor qilingan parollaringiz bor. Google Parollar menejeri ularni hoz
 <translation id="6831043979455480757">Tarjima</translation>
 <translation id="6832218595502288407">Chapga tekislash</translation>
 <translation id="6832815922179448173">{MULTI_GROUP_TAB_COUNT,plural, =0{Varaq olib tashlanib, guruh oʻchirilsinmi?}=1{Varaqlar olib tashlanib, guruh oʻchirilsinmi?}other{Varaqlar olib tashlanib, guruhlar oʻchirilsinmi?}}</translation>
-<translation id="6833103209700200188">Futer</translation>
 <translation id="6833479554815567477">Varaq <ph name="GROUP_NAME" /> guruhidan olib tashlandi – <ph name="GROUP_CONTENTS" /></translation>
 <translation id="6833753236242482566">Muvozanatli (tavsiya etiladi)</translation>
 <translation id="6835762382653651563"><ph name="DEVICE_TYPE" /> qurilmasini yangilash uchun Internetga ulaning.</translation>

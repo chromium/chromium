@@ -2225,7 +2225,7 @@
 <translation id="2514465118223423406">マウスの接続時</translation>
 <translation id="2514938842036917377"><ph name="SITE_NAME" />、関連サイト、インストールされたアプリにより保存された <ph name="TOTAL_USAGE" /> のデータを削除します</translation>
 <translation id="2515586267016047495">Alt</translation>
-<translation id="251722524540674480">ユーザー名の確認</translation>
+<translation id="251722524540674480">ユーザー名を確認</translation>
 <translation id="2517472476991765520">スキャン</translation>
 <translation id="2518024842978892609">ユーザーのクライアント証明書の使用</translation>
 <translation id="2518620532958109495">全画面表示への自動切り替えを許可するサイト</translation>
@@ -2633,7 +2633,6 @@
 <translation id="2798347533012571708">常に更新</translation>
 <translation id="2799162042226656283">Chrome</translation>
 <translation id="2799223571221894425">再起動</translation>
-<translation id="2800309299477632167">カスタム</translation>
 <translation id="2800760947029405028">画像をアップロード</translation>
 <translation id="2800996978423439835">すべてのデバイスでブックマーク、その他の設定にアクセス</translation>
 <translation id="2801134910297796778"><ph name="EMAIL" /> にログインしました</translation>
@@ -8265,7 +8264,6 @@
 <translation id="6831043979455480757">翻訳</translation>
 <translation id="6832218595502288407">左揃え</translation>
 <translation id="6832815922179448173">{MULTI_GROUP_TAB_COUNT,plural, =0{タブとグループを削除しますか？}=1{タブとグループを削除しますか？}other{タブとグループを削除しますか？}}</translation>
-<translation id="6833103209700200188">フッター</translation>
 <translation id="6833479554815567477">タブを <ph name="GROUP_NAME" /> グループから削除しました - <ph name="GROUP_CONTENTS" /></translation>
 <translation id="6833753236242482566">バランス重視（推奨）</translation>
 <translation id="6835762382653651563"><ph name="DEVICE_TYPE" /> を更新するにはインターネットに接続してください。</translation>

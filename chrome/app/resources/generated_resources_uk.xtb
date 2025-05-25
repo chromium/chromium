@@ -2655,7 +2655,6 @@
 <translation id="2798347533012571708">Оновлювати автоматично</translation>
 <translation id="2799162042226656283">Ваш вебпереглядач Chrome</translation>
 <translation id="2799223571221894425">Перезапустити</translation>
-<translation id="2800309299477632167">Власна карта клавіш</translation>
 <translation id="2800760947029405028">Завантажити зображення</translation>
 <translation id="2800996978423439835">Користуйтеся закладками й інші даними на всіх своїх пристроях</translation>
 <translation id="2801134910297796778">Ви ввійшли в обліковий запис <ph name="EMAIL" /></translation>
@@ -8300,7 +8299,6 @@
 <translation id="6831043979455480757">Перекласти</translation>
 <translation id="6832218595502288407">Вирівняти за лівим краєм</translation>
 <translation id="6832815922179448173">{MULTI_GROUP_TAB_COUNT,plural, =0{Вилучити вкладку й видалити групу?}=1{Вилучити вкладки й видалити групу?}one{Вилучити вкладки й видалити групи?}few{Вилучити вкладки й видалити групи?}many{Вилучити вкладки й видалити групи?}other{Вилучити вкладки й видалити групи?}}</translation>
-<translation id="6833103209700200188">Нижній колонтитул</translation>
 <translation id="6833479554815567477">Вкладку видалено з групи "<ph name="GROUP_NAME" />" – <ph name="GROUP_CONTENTS" /></translation>
 <translation id="6833753236242482566">Збалансоване (рекомендовано)</translation>
 <translation id="6835762382653651563">Щоб оновити свій <ph name="DEVICE_TYPE" />, під’єднайтеся до Інтернету.</translation>
@@ -10007,6 +10005,7 @@
 <translation id="8037801708772278989">Щойно перевірено</translation>
 <translation id="8038111231936746805">(за умовчанням)</translation>
 <translation id="8039151841428107077">{NUM_OF_FILES,plural, =1{Копіювання 1 файлу в сервіс <ph name="CLOUD_PROVIDER" />}one{Копіювання {NUM_OF_FILES} файлу в сервіс <ph name="CLOUD_PROVIDER" />}few{Копіювання {NUM_OF_FILES} файлів у сервіс <ph name="CLOUD_PROVIDER" />}many{Копіювання {NUM_OF_FILES} файлів у сервіс <ph name="CLOUD_PROVIDER" />}other{Копіювання {NUM_OF_FILES} файлу в сервіс <ph name="CLOUD_PROVIDER" />}}</translation>
+<translation id="8039525676147630657">Цей додаток Chrome перестане працювати після оновлення ChromeOS. Збережіть усі його дані, які вам потрібні. Щоб дізнатися більше про доступні варіанти, зв’яжіться з розробником додатка або командою IT-підтримки.</translation>
 <translation id="8041089156583427627">Надіслати відгук</translation>
 <translation id="8041093619605951337">Щасливий</translation>
 <translation id="8041267120753677077">Транслювати контент із додатків на вашому телефоні</translation>

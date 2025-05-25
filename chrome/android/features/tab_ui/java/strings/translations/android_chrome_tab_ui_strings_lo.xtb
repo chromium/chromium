@@ -120,6 +120,7 @@
 <translation id="6051432659151380973">ກຸ່ມແຖບຂອງທ່ານຈະບັນທຶກໂດຍອັດຕະໂນມັດ</translation>
 <translation id="6054741997831917303">ລາຄາຂອງສິນຄ້ານນີ້ຫຼຸດລົງຈາກ <ph name="PREVIOUS_PRICE" /> ເປັນ <ph name="NEW_PRICE" /> ເມື່ອບໍ່ດົນມານີ້</translation>
 <translation id="6109251075362363230">ຕອນນີ້ລະບົບຍັງຈະເກັບແຖບທີ່ຊ້ຳກັນທັງໝົດໄວ້ໃນແຟ້ມນຳ, ຍົກເວັ້ນສຳເນົາທີ່ໃຊ້ຫຼ້າສຸດ.</translation>
+<translation id="61924696525243173">{WINDOW_COUNT,plural, =1{ຍ້າຍກຸ່ມໄປໃສ່ໜ້າຈໍໃໝ່}other{ຍ້າຍກຸ່ມໄປໃສ່ໜ້າຈໍອື່ນ}}</translation>
 <translation id="6193448654517602979">ເລືອກແຖບ</translation>
 <translation id="6212567362666004597">ເພີ່ມແຖບໃສ່ກຸ່ມ</translation>
 <translation id="6220820548421939212">ໄດ້. ຕົກລົງ</translation>

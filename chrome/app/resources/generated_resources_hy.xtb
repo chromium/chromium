@@ -2639,7 +2639,6 @@
 <translation id="2798347533012571708">Չանջատել թարմացումները</translation>
 <translation id="2799162042226656283">Ձեր Chrome-ը</translation>
 <translation id="2799223571221894425">Վերագործարկել</translation>
-<translation id="2800309299477632167">Ստեղնաշարի հատուկ դասավորություն</translation>
 <translation id="2800760947029405028">Վերբեռնել պատկեր</translation>
 <translation id="2800996978423439835">Օգտագործեք ձեր էջանիշները և մյուս տվյալները ձեր բոլոր սարքերում</translation>
 <translation id="2801134910297796778">Մուտք գործած հաշիվը՝ <ph name="EMAIL" /></translation>
@@ -8279,7 +8278,6 @@
 <translation id="6831043979455480757">Թարգմանել</translation>
 <translation id="6832218595502288407">Հավասարեցնել ձախ եզրով</translation>
 <translation id="6832815922179448173">{MULTI_GROUP_TAB_COUNT,plural, =0{Հեռացնե՞լ ներդիրը և ջնջել խումբը}=1{Հեռացնե՞լ ներդիրները և ջնջել խումբը}one{Հեռացնե՞լ ներդիրները և ջնջել խումբը}other{Հեռացնե՞լ ներդիրները և ջնջել խմբերը}}</translation>
-<translation id="6833103209700200188">Էջատակ</translation>
 <translation id="6833479554815567477">Ներդիրը հեռացվեց «<ph name="GROUP_NAME" />» խմբից – <ph name="GROUP_CONTENTS" /></translation>
 <translation id="6833753236242482566">Հավասարակշռված (խորհուրդ է տրվում)</translation>
 <translation id="6835762382653651563">Ձեր <ph name="DEVICE_TYPE" /> սարքը թարմացնելու համար կապակցվեք համացանցին:</translation>

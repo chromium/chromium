@@ -120,6 +120,7 @@
 <translation id="6051432659151380973">Fanegruppene dine lagres automatisk</translation>
 <translation id="6054741997831917303">Prisen på denne varen falt nylig fra <ph name="PREVIOUS_PRICE" /> til <ph name="NEW_PRICE" /></translation>
 <translation id="6109251075362363230">Alle duplikatfaner blir nå også arkivert, med unntak av den sist brukte kopien.</translation>
+<translation id="61924696525243173">{WINDOW_COUNT,plural, =1{Flytt gruppen til et nytt vindu}other{Flytt gruppen til et annet vindu}}</translation>
 <translation id="6193448654517602979">Velg faner</translation>
 <translation id="6212567362666004597">Legg fanen til i en gruppe</translation>
 <translation id="6220820548421939212">Ja. Jeg er med</translation>

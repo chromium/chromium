@@ -120,6 +120,7 @@
 <translation id="6051432659151380973">Je tabbladgroepen worden automatisch opgeslagen</translation>
 <translation id="6054741997831917303">De prijs van dit item is recent verlaagd van <ph name="PREVIOUS_PRICE" /> naar <ph name="NEW_PRICE" /></translation>
 <translation id="6109251075362363230">Alle dubbele tabbladen worden nu ook gearchiveerd, met uitzondering van het meest recent gebruikte exemplaar.</translation>
+<translation id="61924696525243173">{WINDOW_COUNT,plural, =1{Groep verplaatsen naar nieuw venster}other{Groep verplaatsen naar ander venster}}</translation>
 <translation id="6193448654517602979">Tabbladen selecteren</translation>
 <translation id="6212567362666004597">Tabblad toevoegen aan groep</translation>
 <translation id="6220820548421939212">Ja. Nu aanzetten</translation>

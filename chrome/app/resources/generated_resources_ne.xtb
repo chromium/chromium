@@ -2636,7 +2636,6 @@
 <translation id="2798347533012571708">स्वतः अपडेट गरिराखियोस्</translation>
 <translation id="2799162042226656283">तपाईंको Chrome</translation>
 <translation id="2799223571221894425">पुन: सुरुवात गर्नुहोस्</translation>
-<translation id="2800309299477632167">कस्टम किम्याप</translation>
 <translation id="2800760947029405028">कुनै फोटो अपलोड गर्नुहोस्</translation>
 <translation id="2800996978423439835">आफ्ना बुकमार्कलगायतका थप कुराहरू आफ्ना सबै डिभाइसमा प्राप्त गर्नुहोस्</translation>
 <translation id="2801134910297796778"><ph name="EMAIL" /> मा साइन इन गरिएको छ</translation>
@@ -8277,7 +8276,6 @@
 <translation id="6831043979455480757">अनुवाद गर्नुहोस्</translation>
 <translation id="6832218595502288407">बायाँतिर एलाइन गर्नुहोस्</translation>
 <translation id="6832815922179448173">{MULTI_GROUP_TAB_COUNT,plural, =0{ट्याब हटाउने र समूह मेटाउने हो?}=1{ट्याबहरू हटाउने र समूह मेटाउने हो?}other{ट्याबहरू हटाउने र समूहहरू मेटाउने हो?}}</translation>
-<translation id="6833103209700200188">फुटर</translation>
 <translation id="6833479554815567477">यो ट्याब <ph name="GROUP_NAME" /> समूहबाट हटाइयो - <ph name="GROUP_CONTENTS" /></translation>
 <translation id="6833753236242482566">सन्तुलित (सिफारिस गरिएको)</translation>
 <translation id="6835762382653651563">कृपया तपाईँको <ph name="DEVICE_TYPE" /> अद्यावधिक गर्न इन्टरनेटमा कनेक्ट गर्नुहोस्।</translation>

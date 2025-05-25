@@ -890,7 +890,7 @@ Dozvole koje ste već dali aplikacijama mogu da važe za ovaj nalog. Možete da
 <translation id="1606566847233779212">Želite da uklonite konkretne sajtove koje ste dodali?</translation>
 <translation id="1607139524282324606">Obriši unos</translation>
 <translation id="1607499585984539560">Korisnik nije povezan sa domenom</translation>
-<translation id="1607540893439314147"><ph name="BEGIN_PARAGRAPH1" />Ćaskajte sa Gemini-jem da biste počeli da pišete, planirate, učite i drugo uz Google veštačku inteligenciju.<ph name="END_PARAGRAPH1" />
+<translation id="1607540893439314147"><ph name="BEGIN_PARAGRAPH1" />Četujte sa Gemini-jem da biste počeli da pišete, planirate, učite i drugo uz Google veštačku inteligenciju.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Posle podešavanja počnite da koristite Gemini tako što ćete izabrati aplikaciju Gemini na polici u dnu ekrana.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="1608668830839595724">Još radnji za izabrane stavke</translation>
 <translation id="1610272688494140697">Podešavanja aplikacije</translation>
@@ -1009,7 +1009,7 @@ Dozvole koje ste već dali aplikacijama mogu da važe za ovaj nalog. Možete da
 <translation id="1682696837763999627">Veliki kursor miša</translation>
 <translation id="1682867089915960590">Želite da uključite navigaciju kursorom?</translation>
 <translation id="1686550358074589746">Omogući unos prevlačenjem</translation>
-<translation id="1686785653877010442">Sajtovi obično šalju obaveštenja da bi vas obavestili o udarnim vestima ili porukama ćaskanja.</translation>
+<translation id="1686785653877010442">Sajtovi obično šalju obaveštenja da bi vas obavestili o udarnim vestima ili porukama četa.</translation>
 <translation id="168715261339224929">Da bi vam obeleživači bili dostupni na svim uređajima, uključite sinhronizaciju.</translation>
 <translation id="1688935057616748272">Unesite neko slovo</translation>
 <translation id="1689333818294560261">Nadimak</translation>
@@ -2637,7 +2637,6 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="2798347533012571708">Zadrži ažuriranja</translation>
 <translation id="2799162042226656283">Vaš Chrome</translation>
 <translation id="2799223571221894425">Ponovo pokreni</translation>
-<translation id="2800309299477632167">Prilagođena mapa tastera</translation>
 <translation id="2800760947029405028">Otpremi sliku</translation>
 <translation id="2800996978423439835">Neka vam obeleživači i drugi sadržaj budu dostupni na svim uređajima</translation>
 <translation id="2801134910297796778">Prijavljeni ste na <ph name="EMAIL" /></translation>
@@ -4724,7 +4723,7 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="4268516942564021145">Ovo podešavanje nije dostupno za nalog.</translation>
 <translation id="4270393598798225102">Verzija <ph name="NUMBER" /></translation>
 <translation id="4274667386947315930">Podaci za prijavljivanje</translation>
-<translation id="4274673989874969668">Kada napustite sajt, on obično nastavlja sinhronizaciju da bi završio zadatke poput otpremanja slika ili slanja poruke ćaskanja</translation>
+<translation id="4274673989874969668">Kada napustite sajt, on obično nastavlja sinhronizaciju da bi završio zadatke poput otpremanja slika ili slanja čet poruke</translation>
 <translation id="4275291496240508082">Zvuk pri pokretanju</translation>
 <translation id="4275397969489577657">Omogući evidentiranje strima događaja</translation>
 <translation id="4275788652681621337">Zatvori bočnu tablu</translation>
@@ -8284,7 +8283,6 @@ Imate još # ugroženih lozinki. Google menadžer lozinki preporučuje da odmah 
 <translation id="6831043979455480757">Prevedi</translation>
 <translation id="6832218595502288407">Poravnaj levo</translation>
 <translation id="6832815922179448173">{MULTI_GROUP_TAB_COUNT,plural, =0{Želite da uklonite karticu i izbrišete grupu?}=1{Želite da uklonite kartice i izbrišete grupu?}one{Želite da uklonite kartice i izbrišete grupe?}few{Želite da uklonite kartice i izbrišete grupe?}other{Želite da uklonite kartice i izbrišete grupe?}}</translation>
-<translation id="6833103209700200188">Podnožje</translation>
 <translation id="6833479554815567477">Kartica je uklonjena iz grupe <ph name="GROUP_NAME" /> – <ph name="GROUP_CONTENTS" /></translation>
 <translation id="6833753236242482566">Uravnoteženo (preporučeno)</translation>
 <translation id="6835762382653651563">Povežite se na internet da biste ažurirali <ph name="DEVICE_TYPE" />.</translation>
@@ -8299,7 +8297,7 @@ Imate još # ugroženih lozinki. Google menadžer lozinki preporučuje da odmah 
 <translation id="6842135459748401207">Samo uređaji prijavljeni na <ph name="USER_EMAIL" /></translation>
 <translation id="6842136130964845393">Da biste bili sigurni da uvek možete da pristupate sačuvanim lozinkama, potvrdite da ste to vi</translation>
 <translation id="6842749380892715807">XML liste sajtova su poslednji put preuzete: <ph name="LAST_DATE_DOWNLOAD" />.</translation>
-<translation id="6842868554183332230">Sajtovi obično otkrivaju kada aktivno koristite uređaj radi podešavanja dostupnosti u aplikacijama za ćaskanje</translation>
+<translation id="6842868554183332230">Sajtovi obično otkrivaju kada aktivno koristite uređaj radi podešavanja dostupnosti u aplikacijama za čet</translation>
 <translation id="6843264316370513305">Otklanjanje grešaka na mreži</translation>
 <translation id="6843423766595476978">Opcija Hej Google je spremna</translation>
 <translation id="6843725295806269523">isključi zvuk</translation>
@@ -9040,7 +9038,7 @@ Imate još # ugroženih lozinki. Google menadžer lozinki preporučuje da odmah 
 <translation id="7392118418926456391">Skeniranje virusa nije uspelo</translation>
 <translation id="7392915005464253525">P&amp;onovo otvori zatvoren prozor</translation>
 <translation id="7393073300870882456">{COUNT,plural, =1{1 stavka je kopirana}one{{COUNT} stavka je kopirana}few{{COUNT} stavke su kopirane}other{{COUNT} stavki je kopirano}}</translation>
-<translation id="7393435859300249877">Dobićete obaveštenje ako pričate dok vam je mikrofon isključen kada koristite određene aplikacije, na primer, aplikacije za video ćaskanje. Zvuk ostaje na uređaju.</translation>
+<translation id="7393435859300249877">Dobićete obaveštenje ako pričate dok vam je mikrofon isključen kada koristite određene aplikacije, na primer, aplikacije za video čet. Zvuk ostaje na uređaju.</translation>
 <translation id="7395008140803590549">Brisanje sertifikata nije uspelo</translation>
 <translation id="7395163818609347230">Promenjena veličina prozora sa desne strane</translation>
 <translation id="7395774987022469191">Ceo ekran</translation>
@@ -10844,7 +10842,7 @@ Datoteka ključa: <ph name="KEY_FILE" />
 <translation id="8645354835496065562">Nastavi da dozvoljavaš pristup senzorima</translation>
 <translation id="8645920082661222035">Otkriva opasne događaje pre nego što se dogode i upozorava vas na njih</translation>
 <translation id="8646209145740351125">Onemogućite sinhronizaciju</translation>
-<translation id="864637694230589560">Sajtovi obično šalju obaveštenja da bi vas obavestili o udarnim vestima ili porukama ćaskanja</translation>
+<translation id="864637694230589560">Sajtovi obično šalju obaveštenja da bi vas obavestili o udarnim vestima ili porukama četa</translation>
 <translation id="8647385344110255847">Uz vašu dozvolu, dete može da koristi Google Play za instaliranje aplikacija</translation>
 <translation id="8647834505253004544">Veb-adresa nije važeća</translation>
 <translation id="8648252583955599667"><ph name="GET_HELP_LINK" /> ili <ph name="RE_SCAN_LINK" /></translation>
@@ -11799,7 +11797,7 @@ To može da obuhvata informacije o instaliranom softveru, fajlovima, pregledaču
 <translation id="994289308992179865">&amp;Ponavljaj</translation>
 <translation id="995755448277384931">Dodajte IBAN</translation>
 <translation id="996250603853062861">Uspostavljanje bezbedne veze...</translation>
-<translation id="997143476478634194">Sajtovi automatski prate ovo podešavanje kada ih posetite. Sajtovi obično šalju obaveštenja da bi vas obavestili o udarnim vestima ili porukama ćaskanja.</translation>
+<translation id="997143476478634194">Sajtovi automatski prate ovo podešavanje kada ih posetite. Sajtovi obično šalju obaveštenja da bi vas obavestili o udarnim vestima ili porukama četa.</translation>
 <translation id="99731366405731005">Uključite <ph name="LINK1_BEGIN" />Chrome sinhronizaciju<ph name="LINK1_END" /> da biste koristili WiFi sinhronizaciju. <ph name="LINK2_BEGIN" />Saznajte više<ph name="LINK2_END" /></translation>
 <translation id="998347228911661591">Sinhronizujte grupe kartica</translation>
 <translation id="998747458861718449">P&amp;regledaj</translation>

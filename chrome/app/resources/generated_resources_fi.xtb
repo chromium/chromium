@@ -2651,7 +2651,6 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="2798347533012571708">Pidä päivitykset</translation>
 <translation id="2799162042226656283">Oma Chrome</translation>
 <translation id="2799223571221894425">Käynnistä uudelleen</translation>
-<translation id="2800309299477632167">Oma näppäinkartta</translation>
 <translation id="2800760947029405028">Lähetä kuva</translation>
 <translation id="2800996978423439835">Siirrä kirjanmerkit ja muut tiedot kaikille laitteille</translation>
 <translation id="2801134910297796778">Olet kirjautunut tilille <ph name="EMAIL" /></translation>
@@ -8292,7 +8291,6 @@ Sinulla on vielä # vaarantunutta salasanaa. Google Salasanat suosittelee, että
 <translation id="6831043979455480757">Käännä</translation>
 <translation id="6832218595502288407">Tasaa vasemmalle</translation>
 <translation id="6832815922179448173">{MULTI_GROUP_TAB_COUNT,plural, =0{Poistetaanko välilehti ja ryhmä?}=1{Poistetaanko välilehdet ja ryhmä?}other{Poistetaanko välilehdet ja ryhmät?}}</translation>
-<translation id="6833103209700200188">Alaviite</translation>
 <translation id="6833479554815567477">Välilehti poistettu ryhmästä <ph name="GROUP_NAME" /> – <ph name="GROUP_CONTENTS" /></translation>
 <translation id="6833753236242482566">Tasapainoinen (suositus)</translation>
 <translation id="6835762382653651563">Muodosta internetyhteys, niin voit päivittää laitteen <ph name="DEVICE_TYPE" />.</translation>

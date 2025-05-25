@@ -2644,7 +2644,6 @@
 <translation id="2798347533012571708">الإبقاء على التحديثات</translation>
 <translation id="2799162042226656283">‏بياناتك على Chrome</translation>
 <translation id="2799223571221894425">إعادة تشغيل</translation>
-<translation id="2800309299477632167">خريطة المفاتيح المخصَّصة</translation>
 <translation id="2800760947029405028">تحميل صورة</translation>
 <translation id="2800996978423439835">احتفِظ بإشاراتك المرجعية وغيرها على جميع أجهزتك</translation>
 <translation id="2801134910297796778">تم تسجيل دخول <ph name="EMAIL" />.</translation>
@@ -8294,7 +8293,6 @@
 <translation id="6831043979455480757">ترجمة</translation>
 <translation id="6832218595502288407">محاذاة إلى اليسار</translation>
 <translation id="6832815922179448173">{MULTI_GROUP_TAB_COUNT,plural, =0{هل تريد إزالة علامة التبويب وحذف المجموعة؟}=1{هل تريد إزالة علامة التبويب وحذف المجموعة؟}two{هل تريد إزالة علامتَي التبويب وحذف المجموعتين؟}few{هل تريد إزالة علامات التبويب وحذف المجموعات؟}many{هل تريد إزالة علامات التبويب وحذف المجموعات؟}other{هل تريد إزالة علامات التبويب وحذف المجموعات؟}}</translation>
-<translation id="6833103209700200188">تذييل</translation>
 <translation id="6833479554815567477">تمت إزالة علامة التبويب من المجموعة <ph name="GROUP_NAME" /> والتي تحتوي على <ph name="GROUP_CONTENTS" />.</translation>
 <translation id="6833753236242482566">متوازن (خيار مُقترَح)</translation>
 <translation id="6835762382653651563">يُرجى الاتصال بالإنترنت لتحديث <ph name="DEVICE_TYPE" />.</translation>

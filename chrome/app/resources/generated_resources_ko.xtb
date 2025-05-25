@@ -2654,7 +2654,6 @@
 <translation id="2798347533012571708">업데이트 유지</translation>
 <translation id="2799162042226656283">내 Chrome</translation>
 <translation id="2799223571221894425">다시 시작</translation>
-<translation id="2800309299477632167">맞춤 키맵</translation>
 <translation id="2800760947029405028">이미지 업로드</translation>
 <translation id="2800996978423439835">모든 기기에 북마크, 방문기록 등을 가져오세요</translation>
 <translation id="2801134910297796778"><ph name="EMAIL" />에 로그인</translation>
@@ -8297,7 +8296,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6831043979455480757">번역</translation>
 <translation id="6832218595502288407">왼쪽 정렬</translation>
 <translation id="6832815922179448173">{MULTI_GROUP_TAB_COUNT,plural, =0{탭 및 그룹을 삭제하시겠습니까?}=1{탭 및 그룹을 삭제하시겠습니까?}other{탭 및 그룹을 삭제하시겠습니까?}}</translation>
-<translation id="6833103209700200188">바닥글</translation>
 <translation id="6833479554815567477"><ph name="GROUP_NAME" /> 그룹에서 탭이 삭제됨 - <ph name="GROUP_CONTENTS" /></translation>
 <translation id="6833753236242482566">균형(권장)</translation>
 <translation id="6835762382653651563"><ph name="DEVICE_TYPE" />을(를) 업데이트하려면 인터넷에 연결하세요.</translation>

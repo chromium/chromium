@@ -5847,6 +5847,7 @@ chính sách này trong khi trình duyệt đang chạy.</translation>
 <translation id="5194683382395300627">Cho phép dùng <ph name="ASSISTANT_PRODUCT_NAME" /> trên web, ví dụ: để bật chế độ tự động thay đổi mật khẩu</translation>
 <translation id="5196630732055960309">Cho phép API Xử lý tệp trên các ứng dụng web này</translation>
 <translation id="5205352023880027050">Không bật tính năng EphemeralNetworkPolicies.</translation>
+<translation id="5205385499831960279">Áp dụng quy định hạn chế đối với các yêu cầu gửi đến thiết bị đầu cuối trên mạng cục bộ</translation>
 <translation id="5206454085187851382">Nếu bạn chọn <ph name="PRINTERS_ALLOWLIST" /> cho <ph name="PRINTERS_BULK_ACCESS_MODE_POLICY_NAME" />, việc đặt <ph name="PRINTERS_BULK_ALLOWLIST_POLICY_NAME" /> sẽ chỉ định những máy in mà người dùng có thể sử dụng. Người dùng chỉ có thể sử dụng những máy in có mã nhận dạng khớp với giá trị trong chính sách này. Các mã nhận dạng này phải tương ứng với trường <ph name="ID_FIELD" /> hoặc <ph name="GUID_FIELD" /> ở tệp được chỉ định trong <ph name="PRINTERS_BULK_CONFIGURATION_POLICY_NAME" />.</translation>
 <translation id="5207543664699568887">Định cấu hình liệu <ph name="PRODUCT_NAME" /> trên Linux có sử dụng các thông báo hệ thống hay không.
 
@@ -6765,6 +6766,7 @@ Trên <ph name="MS_WIN_NAME" />, chính sách này chỉ có trên các phiên b
 
       Lưu ý: Hệ số tỷ lệ phải từ 100% trở lên.</translation>
 <translation id="5740636973289452345">Bật chính sách báo cáo thông tin về tiện ích và trình bổ trợ</translation>
+<translation id="5740716956489996914">Sử dụng hành vi mặc định khi xác định xem các trang web có thể gửi yêu cầu đến thiết bị đầu cuối trên mạng cục bộ hay không</translation>
 <translation id="5741110260062082926">Tắt Orca</translation>
 <translation id="5746149754419996562">Cho phép Tiện ích xem nhanh hiện diện trên <ph name="PRODUCT_OS_NAME" />. Cụ thể, người dùng sẽ có thể truy cập các tiện ích này qua khối ngày trên kệ.
 Khi bạn bật chính sách này, Tiện ích xem nhanh sẽ bật trên <ph name="PRODUCT_OS_NAME" />.
@@ -7739,6 +7741,7 @@ Xem danh sách các biến mà bạn có thể sử dụng (https://www.chromium
 
 Nếu bạn không đặt chính sách này, <ph name="PRODUCT_OS_NAME" /> sẽ sử dụng thư mục "Downloads" (Tệp đã tải xuống) mặc định để lưu trữ nội dung ghi màn hình và người dùng có thể thay đổi vị trí lưu trữ.</translation>
 <translation id="6377031865393559909">Cho phép người dùng sử dụng các mẫu không gian làm việc</translation>
+<translation id="6377570995433636383">Chỉ định xem có áp dụng quy định hạn chế đối với các yêu cầu gửi đến thiết bị đầu cuối trên mạng cục bộ hay không</translation>
 <translation id="6378076389057087301">Chỉ định xem hoạt động âm thanh có ảnh hưởng đến việc quản lý nguồn không</translation>
 <translation id="6378393933102834628">Nếu bạn đặt chính sách này thành True, thì lối tắt ứng dụng sẽ hiển thị. Nếu bạn đặt chính sách này thành False, thì lối tắt này sẽ không hiển thị.
 
@@ -11455,6 +11458,11 @@ Nếu bạn đặt chính sách này thành Disabled (Tắt) thì tất cả cá
       Nếu một mẫu URL có trong cả chính sách này và chính sách <ph name="SENSORS_BLOCKED_FOR_URLS_POLICY_NAME" /> thì chính sách thứ hai sẽ được ưu tiên và việc sử dụng cảm biến chuyển động hoặc cảm biến ánh sáng sẽ bị chặn.
 
       Để biết thông tin chi tiết về các mẫu <ph name="URL_LABEL" /> hợp lệ, vui lòng xem tại https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. Cho phép sử dụng ký tự đại diện <ph name="WILDCARD_VALUE" />.</translation>
+<translation id="9002299469625801504">Nếu bạn đặt chính sách này thành Bật thì bất cứ khi nào một cảnh báo dự kiến sẽ xuất hiện trong <ph name="DEV_TOOLS_NAME" /> do không kiểm tra được <ph name="LOCAL_NETWORK_ACCCESS" />, yêu cầu chính sẽ bị chặn.
+
+Nếu bạn đặt chính sách này thành Tắt hoặc không đặt, các yêu cầu <ph name="LOCAL_NETWORK_ACCESS" /> sẽ sử dụng chế độ xử lý mặc định cho các yêu cầu này.
+
+Hãy truy cập https://github.com/explainers-by-googlers/local-network-access để biết các quy định hạn chế về <ph name="LOCAL_NETWORK_ACCESS" />.</translation>
 <translation id="9003823644527627017">Định cấu hình máy ảo Bruschetta trên <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="9004469022085379212">Nếu bạn đặt chính sách này thành Bật, thì thiết bị sẽ chạy máy ảo trên <ph name="PRODUCT_OS_NAME" />. Bạn phải bật <ph name="VIRTUAL_MACHINES_ALLOWED_POLICY_NAME" /> và <ph name="CROSTINI_ALLOWED_POLICY_NAME" /> thì mới có thể sử dụng <ph name="PRODUCT_CROSTINI_NAME" />. Nếu bạn đặt chính sách này thành Tắt, thì thiết bị sẽ không thể chạy máy ảo. Khi bạn chuyển chính sách này thành Tắt, chính sách sẽ được áp dụng cho các máy ảo mới đang khởi động, chứ không phải các máy đã chạy.
 

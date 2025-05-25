@@ -2639,7 +2639,6 @@
 <translation id="2798347533012571708">განახლებების შენარჩუნება</translation>
 <translation id="2799162042226656283">თქვენი Chrome</translation>
 <translation id="2799223571221894425">ხელახლა გაშვება</translation>
-<translation id="2800309299477632167">კლავიშთა მორგებული განლაგება</translation>
 <translation id="2800760947029405028">სურათის ატვირთვა</translation>
 <translation id="2800996978423439835">მიიღეთ თქვენი სანიშნეები და სხვა მონაცემები თქვენს ყველა მოწყობილობაზე</translation>
 <translation id="2801134910297796778">შესული ხართ <ph name="EMAIL" />-ში</translation>
@@ -8283,7 +8282,6 @@
 <translation id="6831043979455480757">თარგმნა</translation>
 <translation id="6832218595502288407">მარცხნივ გასწორება</translation>
 <translation id="6832815922179448173">{MULTI_GROUP_TAB_COUNT,plural, =0{ამოიშალოს ჩანართი და წაიშალოს ჯგუფი?}=1{ამოიშალოს ჩანართები და წაიშალოს ჯგუფი?}other{ამოიშალოს ჩანართები და წაიშალოს ჯგუფები?}}</translation>
-<translation id="6833103209700200188">ქვედა კოლონტიტული</translation>
 <translation id="6833479554815567477">ჩანართი ამოიშალა ჯგუფიდან <ph name="GROUP_NAME" /> — <ph name="GROUP_CONTENTS" /></translation>
 <translation id="6833753236242482566">ბალანსირებული (რეკომენდებული)</translation>
 <translation id="6835762382653651563"><ph name="DEVICE_TYPE" />-ის განსაახლებლად, გთხოვთ, დაუკავშირდეთ ინტერნეტს.</translation>
@@ -9988,6 +9986,7 @@
 <translation id="8037801708772278989">შემოწმდა რამდენიმე წამის წინ</translation>
 <translation id="8038111231936746805">(ნაგულისხმევი)</translation>
 <translation id="8039151841428107077">{NUM_OF_FILES,plural, =1{მიმდინარეობს 1 ფაილის კოპირება <ph name="CLOUD_PROVIDER" />-ში}other{მიმდინარეობს {NUM_OF_FILES} ფაილის კოპირება <ph name="CLOUD_PROVIDER" />-ში}}</translation>
+<translation id="8039525676147630657">ეს Chrome-ის აპი მას შემდეგ შეწყვეტს მუშაობას, რაც ChromeOS-ის ვერსია განახლდება. შეინახეთ აპის ნებისმიერი მონაცემი, რომლის შეანრჩუნებაც გსურთ. თქვენი ვარიანტების შესახებ მეტის გასაგებად დაუკავშირდით აპის დეველოპერს ან თქვენს IT მხარდაჭერის გუნდს.</translation>
 <translation id="8041089156583427627">გამოხმაურება</translation>
 <translation id="8041093619605951337">ბედნიერი</translation>
 <translation id="8041267120753677077">შეასრულეთ თქვენი ტელეფონის აპების სტრიმინგი</translation>

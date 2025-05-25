@@ -2639,7 +2639,6 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="2798347533012571708">Mantén les actualitzacions</translation>
 <translation id="2799162042226656283">El teu Chrome</translation>
 <translation id="2799223571221894425">Reinicia</translation>
-<translation id="2800309299477632167">Mapa de teclat personalitzat</translation>
 <translation id="2800760947029405028">Penja una imatge</translation>
 <translation id="2800996978423439835">Accedeix a les teves adreces d'interès i més elements en tots els dispositius</translation>
 <translation id="2801134910297796778">Sessió iniciada a <ph name="EMAIL" /></translation>
@@ -8277,7 +8276,6 @@ Tens # contrasenyes més en perill. El gestor de contrasenyes de Google recomana
 <translation id="6831043979455480757">Tradueix</translation>
 <translation id="6832218595502288407">Alinea a l'esquerra</translation>
 <translation id="6832815922179448173">{MULTI_GROUP_TAB_COUNT,plural, =0{Vols suprimir la pestanya i el grup?}=1{Vols suprimir la pestanya i el grup?}other{Vols suprimir les pestanyes i els grups?}}</translation>
-<translation id="6833103209700200188">Peu</translation>
 <translation id="6833479554815567477">La pestanya s'ha suprimit del grup <ph name="GROUP_NAME" />: <ph name="GROUP_CONTENTS" /></translation>
 <translation id="6833753236242482566">Equilibrat (opció recomanada)</translation>
 <translation id="6835762382653651563">Connecteu-vos a Internet per actualitzar el dispositiu <ph name="DEVICE_TYPE" />.</translation>

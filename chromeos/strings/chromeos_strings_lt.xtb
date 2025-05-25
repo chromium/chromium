@@ -206,6 +206,7 @@
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1758459542619182298"><ph name="CONTROL_TYPE" /> <ph name="KEY_LIST" /></translation>
 <translation id="1759842336958782510">Chrome</translation>
+<translation id="1762353673362288306">Dabar galite naudoti tik Mokymosi įrankius</translation>
 <translation id="1762483337755424125">Transkribuotas tekstas</translation>
 <translation id="1765169783255151332">Sparčiai perjunkite klavišus</translation>
 <translation id="1768959921651994223">Tapatybės nustatymo tipas</translation>
@@ -1613,6 +1614,7 @@ Atsisiųskite transkribavimo modelį (iki 100 MB), kad gautumėte transkribuotus
 <translation id="8088963492174775412">Paspauskite, kad įrašytumėte</translation>
 <translation id="8094062939584182041">Leisti „Google“ siųsti jums el. laišką apie šią problemą</translation>
 <translation id="8104083085214006426">Naudojate atvirąjį ir nesaugų tinklą</translation>
+<translation id="8108879170356113798">Mokymosi įrankius galėsite naudoti tik po <ph name="NUM_SECONDS" /> sek.</translation>
 <translation id="811820734797650957">(„Android“) Galima patikrinti tinklų sietuvo ryšį</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
 <translation id="8131740175452115882">Patvirtinti</translation>

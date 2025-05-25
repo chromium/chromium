@@ -80,6 +80,7 @@
 <translation id="1049743911850919806">Ẩn danh</translation>
 <translation id="1049795001945932310">&amp;Cài đặt ngôn ngữ</translation>
 <translation id="1050693411695664090">Kém</translation>
+<translation id="1053226848101751430">Đã xoá mục</translation>
 <translation id="1053898984916097744">Bắt đầu một nhiệm vụ mới hoặc nhận trợ giúp trong quá trình làm việc.</translation>
 <translation id="1054048317165655285">Hoàn tất quá trình thiết lập trên điện thoại</translation>
 <translation id="1054153489933238809">Mở &amp;hình ảnh gốc trong thẻ mới</translation>
@@ -2250,6 +2251,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="2519250377986324805">Xem cách thực hiện</translation>
 <translation id="2519517390894391510">Tên hồ sơ chứng chỉ</translation>
 <translation id="2520644704042891903">Đang chờ cổng kết nối hiện có...</translation>
+<translation id="2520961587246779103">Các lựa chọn khác cho chế độ xem chia đôi màn hình</translation>
 <translation id="2521427645491031107">Tính năng đồng bộ hoá ứng dụng được thiết lập trong phần Cài đặt thiết bị</translation>
 <translation id="2521835766824839541">bản nhạc trước</translation>
 <translation id="2521854691574443804">Đang kiểm tra để xem tệp <ph name="FILE_NAME" /> có tuân theo các chính sách bảo mật của tổ chức bạn hay không...</translation>
@@ -2652,7 +2654,6 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="2798347533012571708">Duy trì cập nhật</translation>
 <translation id="2799162042226656283">Chrome của bạn</translation>
 <translation id="2799223571221894425">Chạy lại</translation>
-<translation id="2800309299477632167">Sơ đồ bàn phím tuỳ chỉnh</translation>
 <translation id="2800760947029405028">Tải ảnh lên</translation>
 <translation id="2800996978423439835">Sử dụng dấu trang và nhiều nội dung khác trên mọi thiết bị của bạn</translation>
 <translation id="2801134910297796778">Đã đăng nhập vào <ph name="EMAIL" /></translation>
@@ -3198,6 +3199,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="3202578601642193415">Mới nhất</translation>
 <translation id="3204648577100496185">Dữ liệu liên kết với ứng dụng này có thể bị xoá khỏi thiết bị này</translation>
 <translation id="3204717934117444051">Dữ liệu mà bạn chỉ lưu trên thiết bị này sẽ vẫn nằm trong hồ sơ hiện tại. Mật khẩu sẽ không đồng bộ hoá với <ph name="EMAIL" /></translation>
+<translation id="3206289903841621620">Từ điển người dùng <ph name="NUMBER" /></translation>
 <translation id="3207344462385471911">Bạn sẽ thấy các cụm từ tìm kiếm đề xuất và ưu đãi giảm giá hàng hoá mà bạn có thể quan tâm, dựa trên hoạt động gần đây của bạn.
         <ph name="BREAK" />
         <ph name="BREAK" />
@@ -8296,7 +8298,6 @@ Bạn còn # mật khẩu bị lộ nữa. Trình quản lý mật khẩu của 
 <translation id="6831043979455480757">Dịch</translation>
 <translation id="6832218595502288407">Căn trái</translation>
 <translation id="6832815922179448173">{MULTI_GROUP_TAB_COUNT,plural, =0{Loại bỏ thẻ và xoá nhóm?}=1{Loại bỏ các thẻ và xoá nhóm?}other{Loại bỏ các thẻ và xoá các nhóm?}}</translation>
-<translation id="6833103209700200188">Chân trang</translation>
 <translation id="6833479554815567477">Đã di chuyển thẻ khỏi nhóm <ph name="GROUP_NAME" /> – <ph name="GROUP_CONTENTS" /></translation>
 <translation id="6833753236242482566">Cân bằng (nên chọn)</translation>
 <translation id="6835762382653651563">Vui lòng kết nối Internet để cập nhật <ph name="DEVICE_TYPE" /> của bạn.</translation>
@@ -11000,6 +11001,7 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="8729133765463465108">Dùng máy ảnh để quét mã QR</translation>
 <translation id="8730621377337864115">Xong</translation>
 <translation id="8731029916209785242">Quyền (<ph name="FORMATTED_ORIGIN" />)</translation>
+<translation id="8731258351357994801">Mục <ph name="NUMBER" /></translation>
 <translation id="8731268612289859741">Mã bảo mật</translation>
 <translation id="8731629443331803108"><ph name="SITE_NAME" /> muốn: <ph name="PERMISSION" /></translation>
 <translation id="8731787661154643562">Số cổng</translation>

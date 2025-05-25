@@ -2640,7 +2640,6 @@ https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2798347533012571708">Garder les mises à jour</translation>
 <translation id="2799162042226656283">Votre Chrome</translation>
 <translation id="2799223571221894425">Redémarrer</translation>
-<translation id="2800309299477632167">Mappage du clavier personnalisé</translation>
 <translation id="2800760947029405028">Téléverser une image</translation>
 <translation id="2800996978423439835">Accédez à vos favoris et plus encore sur tous vos appareils</translation>
 <translation id="2801134910297796778">Connecté au compte <ph name="EMAIL" /></translation>
@@ -8286,7 +8285,6 @@ Vous pouvez gérer les paramètres à partir du menu de la carte ou afficher plu
 <translation id="6831043979455480757">Traduire</translation>
 <translation id="6832218595502288407">Aligner à gauche</translation>
 <translation id="6832815922179448173">{MULTI_GROUP_TAB_COUNT,plural, =0{Retirer l'onglet et supprimer le groupe?}=1{Retirer l'onglet et supprimer le groupe?}one{Retirer l'onglet et supprimer le groupe?}other{Retirer les onglets et supprimer les groupes?}}</translation>
-<translation id="6833103209700200188">Bas de page</translation>
 <translation id="6833479554815567477">Onglet retiré du groupe <ph name="GROUP_NAME" /> : <ph name="GROUP_CONTENTS" /></translation>
 <translation id="6833753236242482566">Équilibré (recommandé)</translation>
 <translation id="6835762382653651563">Veuillez vous connecter à Internet pour mettre à jour votre <ph name="DEVICE_TYPE" />.</translation>
@@ -9992,6 +9990,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8037801708772278989">Dernière vérification : à l'instant</translation>
 <translation id="8038111231936746805">(par défaut)</translation>
 <translation id="8039151841428107077">{NUM_OF_FILES,plural, =1{Copie de 1 fichier vers <ph name="CLOUD_PROVIDER" /> en cours…}one{Copie de {NUM_OF_FILES} fichier vers <ph name="CLOUD_PROVIDER" /> en cours…}other{Copie de {NUM_OF_FILES} fichiers vers <ph name="CLOUD_PROVIDER" /> en cours…}}</translation>
+<translation id="8039525676147630657">Cette appli Chrome cessera de fonctionner après la mise à jour de votre version de ChromeOS. Enregistrez toutes les données de l'appli que vous souhaitez conserver. Pour en savoir plus sur vos options, communiquez avec le développeur d'applis ou votre équipe d'assistance informatique.</translation>
 <translation id="8041089156583427627">Envoyer des commentaires</translation>
 <translation id="8041093619605951337">Heureux</translation>
 <translation id="8041267120753677077">Diffusez les applications de votre téléphone</translation>
