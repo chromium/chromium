@@ -63,8 +63,11 @@ android_library("java") {
 android_resources("java_resources") {
   sources = [
     "java/res/drawable-night/gpay_pix_logo.xml",
+    "java/res/drawable/facilitated_payments_bolt_icon.xml",
     "java/res/drawable/facilitated_payments_error_icon.xml",
     "java/res/drawable/facilitated_payments_fop_icon_background.xml",
+    "java/res/drawable/facilitated_payments_globe_icon.xml",
+    "java/res/drawable/facilitated_payments_lock_icon.xml",
     "java/res/drawable/gpay_pix_logo.xml",
     "java/res/drawable/lock_icon.xml",
     "java/res/drawable/security_check_illustration.xml",

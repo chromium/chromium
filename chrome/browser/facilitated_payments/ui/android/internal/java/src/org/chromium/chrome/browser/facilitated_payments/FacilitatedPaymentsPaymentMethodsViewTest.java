@@ -631,14 +631,19 @@ public final class FacilitatedPaymentsPaymentMethodsViewTest {
                 });
         BottomSheetTestSupport.waitForOpen(mBottomSheetController);
 
+        ImageView productIcon = mView.getContentView().findViewById(R.id.product_icon);
+        assertNotNull(productIcon);
         TextView title = mView.getContentView().findViewById(R.id.title);
         assertThat(title.getText(), is("Pay with Pix directly in Chrome"));
         TextView valuePropMessage1 = mView.getContentView().findViewById(R.id.value_prop_message_1);
         assertThat(valuePropMessage1.getText(), is("Enable Pix by linking your account quickly"));
+        assertNotNull(valuePropMessage1.getCompoundDrawablesRelative()[0]);
         TextView valuePropMessage2 = mView.getContentView().findViewById(R.id.value_prop_message_2);
         assertThat(valuePropMessage2.getText(), is("Pay in Chrome without using your bank app"));
+        assertNotNull(valuePropMessage2.getCompoundDrawablesRelative()[0]);
         TextView valuePropMessage3 = mView.getContentView().findViewById(R.id.value_prop_message_3);
         assertThat(valuePropMessage3.getText(), is("Encryption protects your personal info"));
+        assertNotNull(valuePropMessage3.getCompoundDrawablesRelative()[0]);
     }
 
     private RecyclerView getSheetItems() {

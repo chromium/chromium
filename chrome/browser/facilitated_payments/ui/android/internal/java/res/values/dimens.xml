@@ -46,4 +46,5 @@ found in the LICENSE file.
     <dimen name="pix_account_linking_prompt_value_prop_vertical_padding">10dp</dimen>
     <dimen name="pix_account_linking_prompt_inter_value_prop_vertical_margin">2dp</dimen>
     <dimen name="pix_account_linking_prompt_value_prop_message_margin_horizontal">8dp</dimen>
+    <dimen name="pix_account_linking_prompt_value_prop_icon_padding">16dp</dimen>
 </resources>
