@@ -52,29 +52,32 @@ base::Time GetEffectiveTimestamp(const Mechanism& mechanism) {
           std::get_if<Mechanism::Credential>(&mechanism.type)) {
     return cred_variant->value().last_used_time.value_or(base::Time::Min());
   }
-  return base::Time();
+  return base::Time::Min();
 }
 
 // Helper function to deduplicate mechanisms for each account.
-// `original_mechanisms_for_move` is the vector from which mechanisms will be
-// moved.
+// Goes through all the accounts and finds the best password, enclave passkey
+// and the passkey for each account. Then selects the best credential for the
+// account based on the following rules:
+// Rule 1: Enclave Passkey vs Platform Passkey -> Enclave Passkey.
+// Rule 2: Enclave Passkey vs Password -> Most recent.
+// Rule 3: Password vs Platform Passkey -> Platform Passkey.
 std::vector<Mechanism> DeduplicateMechanismsByAccount(
     const std::map<std::u16string, std::vector<const Mechanism*>>&
-        grouped_by_account,
-    std::vector<Mechanism>& original_mechanisms_for_move) {
+        grouped_by_account) {
   std::vector<Mechanism> deduplicated_mechanisms;
 
   for (auto const& [account_name, account_mechanisms] : grouped_by_account) {
     const Mechanism* selected_mechanism = nullptr;
 
     const Mechanism* best_enclave_passkey = nullptr;
-    base::Time best_enclave_passkey_timestamp = base::Time();
+    base::Time best_enclave_passkey_timestamp = base::Time::Min();
 
     const Mechanism* best_platform_passkey = nullptr;
-    base::Time best_platform_passkey_timestamp = base::Time();
+    base::Time best_platform_passkey_timestamp = base::Time::Min();
 
     const Mechanism* best_password = nullptr;
-    base::Time best_password_timestamp = base::Time();
+    base::Time best_password_timestamp = base::Time::Min();
 
     const Mechanism* best_unknown = nullptr;
 
@@ -85,8 +88,9 @@ std::vector<Mechanism> DeduplicateMechanismsByAccount(
         case SortableMechanismType::kEnclavePasskey: {
           base::Time current_enclave_passkey_timestamp =
               GetEffectiveTimestamp(*mechanism);
-          if (current_enclave_passkey_timestamp >
-              best_enclave_passkey_timestamp) {
+          if (best_enclave_passkey == nullptr ||
+              current_enclave_passkey_timestamp >
+                  best_enclave_passkey_timestamp) {
             best_enclave_passkey = mechanism;
             best_enclave_passkey_timestamp = current_enclave_passkey_timestamp;
           }
@@ -95,8 +99,9 @@ std::vector<Mechanism> DeduplicateMechanismsByAccount(
         case SortableMechanismType::kPlatformPasskey: {
           base::Time current_platform_passkey_timestamp =
               GetEffectiveTimestamp(*mechanism);
-          if (current_platform_passkey_timestamp >
-              best_platform_passkey_timestamp) {
+          if (best_platform_passkey == nullptr ||
+              current_platform_passkey_timestamp >
+                  best_platform_passkey_timestamp) {
             best_platform_passkey = mechanism;
             best_platform_passkey_timestamp =
                 current_platform_passkey_timestamp;
@@ -106,7 +111,8 @@ std::vector<Mechanism> DeduplicateMechanismsByAccount(
         case SortableMechanismType::kPassword: {
           base::Time current_password_timestamp =
               GetEffectiveTimestamp(*mechanism);
-          if (best_password_timestamp < current_password_timestamp) {
+          if (best_password == nullptr ||
+              best_password_timestamp < current_password_timestamp) {
             best_password = mechanism;
             best_password_timestamp = current_password_timestamp;
           }
@@ -118,11 +124,6 @@ std::vector<Mechanism> DeduplicateMechanismsByAccount(
         }
       }
     }
-
-    // Apply the deduplication rules:
-    // Rule 1: Enclave Passkey vs Platform Passkey -> Enclave Passkey.
-    // Rule 2: Enclave Passkey vs Password -> Most recent.
-    // Rule 3: Password vs Platform Passkey -> Platform Passkey.
 
     if (best_enclave_passkey) {
       // Enclave Passkey is present.
@@ -216,7 +217,7 @@ std::vector<Mechanism> MechanismSorter::ProcessMechanisms(
   // 2. Deduplicate mechanisms.
   //    Pass the `mechanisms` copy to allow moving from it.
   std::vector<Mechanism> deduplicated_mechanisms =
-      DeduplicateMechanismsByAccount(grouped_by_account, mechanisms);
+      DeduplicateMechanismsByAccount(grouped_by_account);
 
   // 3. Sort the deduplicated mechanisms.
   //    `deduplicated_mechanisms` is already a new vector, pass by value.
