@@ -32,6 +32,7 @@ import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymen
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.SCREEN_VIEW_MODEL;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.SequenceScreen.ERROR_SCREEN;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.SequenceScreen.FOP_SELECTOR;
+import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.SequenceScreen.PIX_ACCOUNT_LINKING_PROMPT;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.SequenceScreen.PROGRESS_SCREEN;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.SequenceScreen.UNINITIALIZED;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.VISIBLE_STATE;
@@ -201,7 +202,12 @@ class FacilitatedPaymentsPaymentMethodsMediator {
     }
 
     void showPixAccountLinkingPrompt() {
-        // TODO(crbug.com/417330610): Build and show the prompt in a bottom sheet.
+        // Set {@link VISIBLE_STATE} to the placeholder state which is a no-op, and then update the
+        // screen to the Pix account linking prompt. Finally update {@link VISIBLE_STATE} to show
+        // the new screen.
+        mModel.set(VISIBLE_STATE, SWAPPING_SCREEN);
+        mModel.set(SCREEN, PIX_ACCOUNT_LINKING_PROMPT);
+        mModel.set(VISIBLE_STATE, SHOWN);
     }
 
     @VisibleForTesting

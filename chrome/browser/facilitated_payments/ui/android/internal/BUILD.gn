@@ -28,6 +28,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/facilitated_payments/FacilitatedPaymentsPaymentMethodsViewBinder.java",
     "java/src/org/chromium/chrome/browser/facilitated_payments/FacilitatedPaymentsPaymentMethodsViewBridge.java",
     "java/src/org/chromium/chrome/browser/facilitated_payments/FacilitatedPaymentsProgressScreen.java",
+    "java/src/org/chromium/chrome/browser/facilitated_payments/PixAccountLinkingPrompt.java",
   ]
 
   srcjar_deps = [ ":jni" ]

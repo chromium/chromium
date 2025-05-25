@@ -79,6 +79,8 @@ class FacilitatedPaymentsPaymentMethodsProperties {
         int PROGRESS_SCREEN = 2;
         // The screen showing an error message.
         int ERROR_SCREEN = 3;
+        // The screen showing the PIX account linking prompt.
+        int PIX_ACCOUNT_LINKING_PROMPT = 4;
     }
 
     /**

@@ -20,6 +20,7 @@ import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymen
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.SCREEN_VIEW_MODEL;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.SequenceScreen.ERROR_SCREEN;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.SequenceScreen.FOP_SELECTOR;
+import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.SequenceScreen.PIX_ACCOUNT_LINKING_PROMPT;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.SequenceScreen.PROGRESS_SCREEN;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.UI_EVENT_LISTENER;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.VISIBLE_STATE;
@@ -598,6 +599,24 @@ public final class FacilitatedPaymentsPaymentMethodsViewTest {
 
         // Verify that the error screen is shown.
         assertThat(mView.getContentView().isShown(), is(true));
+        assertThat(
+                containsViewWithId((ViewGroup) mView.getContentView(), R.id.error_screen),
+                is(true));
+    }
+
+    @Test
+    @MediumTest
+    public void testPixAccountLinkingPromptShown() {
+        runOnUiThreadBlocking(
+                () -> {
+                    mModel.set(SCREEN, PIX_ACCOUNT_LINKING_PROMPT);
+                    mModel.set(VISIBLE_STATE, SHOWN);
+                });
+        BottomSheetTestSupport.waitForOpen(mBottomSheetController);
+
+        // Verify that the placeholder (currently progress screen layout) is shown.
+        // TODO(crbug.com/417330610): Update this check when actual layout is in place. Also add a
+        // test to verify prompt contents.
         assertThat(
                 containsViewWithId((ViewGroup) mView.getContentView(), R.id.error_screen),
                 is(true));
