@@ -96,6 +96,6 @@
     # TODO(crbug.com/419882718): TestSystemMsiInstallerStandaloneSetup.exe is
     # produced by signing files using `signtool.exe` on each build, so the
     # builds of this file are non-deterministic.
-    'TestSystemMsiInstallerStandaloneSetup.exe',
+    'test_installer\\TestSystemMsiInstallerStandaloneSetup.exe',
   ],
 }
