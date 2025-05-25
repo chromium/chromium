@@ -211,4 +211,10 @@ BASE_FEATURE_PARAM(int,
                    "timeout_ms",
                    kDefaultImmediateMediationTimeoutMs);
 
+// Enabled by default. Remove the flag and the logic (as if the flag is in
+// disabled state) when the WebAuthenticationImmediateGet origin trial is over.
+BASE_FEATURE(kWebAuthnImmediateGetAutoselect,
+             "WebAuthenticationImmediateGetAutoselect",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 }  // namespace device
