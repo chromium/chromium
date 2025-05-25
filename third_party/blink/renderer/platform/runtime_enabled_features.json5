@@ -2633,6 +2633,10 @@
       status: "stable",
     },
     {
+      name: "IgnoreOutOfFlowPositionForPreviousText",
+      status: "experimental",
+    },
+    {
       name: "ImageDataPixelFormat",
       status: "stable",
     },
