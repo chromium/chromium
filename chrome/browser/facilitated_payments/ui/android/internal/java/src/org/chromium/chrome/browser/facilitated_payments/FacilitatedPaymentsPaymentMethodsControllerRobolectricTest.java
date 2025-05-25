@@ -42,6 +42,7 @@ import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymen
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.PixAccountLinkingPromptProperties.DECLINE_BUTTON_CALLBACK;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.SCREEN;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.SCREEN_VIEW_MODEL;
+import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.SURVIVES_NAVIGATION;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.SequenceScreen.ERROR_SCREEN;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.SequenceScreen.FOP_SELECTOR;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.SequenceScreen.PIX_ACCOUNT_LINKING_PROMPT;
@@ -211,6 +212,7 @@ public class FacilitatedPaymentsPaymentMethodsControllerRobolectricTest {
         assertThat(mFacilitatedPaymentsPaymentMethodsModel.get(SCREEN), is(UNINITIALIZED));
         assertNull(mFacilitatedPaymentsPaymentMethodsModel.get(SCREEN_VIEW_MODEL));
         assertNotNull(mFacilitatedPaymentsPaymentMethodsModel.get(UI_EVENT_LISTENER));
+        assertThat(mFacilitatedPaymentsPaymentMethodsModel.get(SURVIVES_NAVIGATION), is(false));
     }
 
     @Test
@@ -226,6 +228,7 @@ public class FacilitatedPaymentsPaymentMethodsControllerRobolectricTest {
                 mFacilitatedPaymentsPaymentMethodsModel
                         .get(SCREEN_VIEW_MODEL)
                         .containsKey(SCREEN_ITEMS));
+        assertThat(mFacilitatedPaymentsPaymentMethodsModel.get(SURVIVES_NAVIGATION), is(false));
     }
 
     @Test
@@ -241,6 +244,7 @@ public class FacilitatedPaymentsPaymentMethodsControllerRobolectricTest {
                 mFacilitatedPaymentsPaymentMethodsModel
                         .get(SCREEN_VIEW_MODEL)
                         .containsKey(SCREEN_ITEMS));
+        assertThat(mFacilitatedPaymentsPaymentMethodsModel.get(SURVIVES_NAVIGATION), is(false));
     }
 
     @Test
@@ -833,6 +837,7 @@ public class FacilitatedPaymentsPaymentMethodsControllerRobolectricTest {
                         .get(SCREEN_VIEW_MODEL)
                         .getAllProperties()
                         .size());
+        assertThat(mFacilitatedPaymentsPaymentMethodsModel.get(SURVIVES_NAVIGATION), is(false));
     }
 
     @Test
@@ -851,6 +856,7 @@ public class FacilitatedPaymentsPaymentMethodsControllerRobolectricTest {
                                 .getAllProperties();
         assertThat(propertyKeys, hasSize(1));
         assertThat(propertyKeys, contains(PRIMARY_BUTTON_CALLBACK));
+        assertThat(mFacilitatedPaymentsPaymentMethodsModel.get(SURVIVES_NAVIGATION), is(false));
     }
 
     @Test
@@ -878,17 +884,16 @@ public class FacilitatedPaymentsPaymentMethodsControllerRobolectricTest {
                 mFacilitatedPaymentsPaymentMethodsModel.get(SCREEN),
                 is(PIX_ACCOUNT_LINKING_PROMPT));
         assertNotNull(mFacilitatedPaymentsPaymentMethodsModel.get(SCREEN_VIEW_MODEL));
-
         // Verify screen view properties.
         List<PropertyKey> propertyKeys =
                 (List<PropertyKey>)
                         mFacilitatedPaymentsPaymentMethodsModel
                                 .get(SCREEN_VIEW_MODEL)
                                 .getAllProperties();
-
         assertThat(propertyKeys, hasSize(2));
         assertThat(
                 propertyKeys, containsInAnyOrder(ACCEPT_BUTTON_CALLBACK, DECLINE_BUTTON_CALLBACK));
+        assertThat(mFacilitatedPaymentsPaymentMethodsModel.get(SURVIVES_NAVIGATION), is(true));
     }
 
     @Test

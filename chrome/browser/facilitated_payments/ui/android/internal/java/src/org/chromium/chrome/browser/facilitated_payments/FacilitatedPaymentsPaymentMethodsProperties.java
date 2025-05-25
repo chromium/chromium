@@ -15,6 +15,7 @@ import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModel.ReadableIntPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.ReadableObjectPropertyKey;
+import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableIntPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 
@@ -30,9 +31,11 @@ class FacilitatedPaymentsPaymentMethodsProperties {
             new WritableObjectPropertyKey("screen_view_model");
     static final ReadableObjectPropertyKey<Callback<Integer>> UI_EVENT_LISTENER =
             new ReadableObjectPropertyKey<>("ui_event_listener");
+    static final WritableBooleanPropertyKey SURVIVES_NAVIGATION =
+            new WritableBooleanPropertyKey("survives_navigation");
 
     static final PropertyKey[] ALL_KEYS = {
-        VISIBLE_STATE, SCREEN, SCREEN_VIEW_MODEL, UI_EVENT_LISTENER
+        VISIBLE_STATE, SCREEN, SCREEN_VIEW_MODEL, UI_EVENT_LISTENER, SURVIVES_NAVIGATION
     };
 
     // TODO: b/348595414 - Rename to FopSelectorItemType and move to a separate directory.

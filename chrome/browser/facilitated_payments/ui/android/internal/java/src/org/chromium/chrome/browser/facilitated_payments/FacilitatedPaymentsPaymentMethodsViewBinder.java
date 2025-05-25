@@ -25,6 +25,7 @@ import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymen
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.HeaderProperties.TITLE;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.SCREEN;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.SCREEN_VIEW_MODEL;
+import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.SURVIVES_NAVIGATION;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.SequenceScreen.ERROR_SCREEN;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.SequenceScreen.FOP_SELECTOR;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.SequenceScreen.PIX_ACCOUNT_LINKING_PROMPT;
@@ -130,6 +131,8 @@ class FacilitatedPaymentsPaymentMethodsViewBinder {
             // update the {@code view} for this property. Intentional fall-through.
         } else if (propertyKey == UI_EVENT_LISTENER) {
             view.setUiEventListener(model.get(UI_EVENT_LISTENER));
+        } else if (propertyKey == SURVIVES_NAVIGATION) {
+            view.setSurvivesNavigation(model.get(SURVIVES_NAVIGATION));
         } else {
             assert false : "Unhandled update to property:" + propertyKey;
         }

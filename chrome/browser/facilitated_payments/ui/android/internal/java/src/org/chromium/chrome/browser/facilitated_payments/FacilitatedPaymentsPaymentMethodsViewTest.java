@@ -18,6 +18,7 @@ import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymen
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.ItemType.EWALLET;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.SCREEN;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.SCREEN_VIEW_MODEL;
+import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.SURVIVES_NAVIGATION;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.SequenceScreen.ERROR_SCREEN;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.SequenceScreen.FOP_SELECTOR;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.SequenceScreen.PIX_ACCOUNT_LINKING_PROMPT;
@@ -651,6 +652,28 @@ public final class FacilitatedPaymentsPaymentMethodsViewTest {
         assertThat(acceptButton.getText(), is("Enable Pix in Wallet"));
         ButtonCompat declineButton = mView.getContentView().findViewById(R.id.decline_button);
         assertThat(declineButton.getText(), is("No thanks"));
+    }
+
+    @Test
+    @MediumTest
+    public void testViewLifecycleCanBeManipulatedByTheModel() {
+        // Verify that the view's initial state does not survive page navigations (does not have a
+        // custom lifecycle).
+        assertThat(mView.hasCustomLifecycle(), is(false));
+
+        runOnUiThreadBlocking(
+                () -> {
+                    mModel.set(SURVIVES_NAVIGATION, true);
+                });
+
+        assertThat(mView.hasCustomLifecycle(), is(true));
+
+        runOnUiThreadBlocking(
+                () -> {
+                    mModel.set(SURVIVES_NAVIGATION, false);
+                });
+
+        assertThat(mView.hasCustomLifecycle(), is(false));
     }
 
     private RecyclerView getSheetItems() {

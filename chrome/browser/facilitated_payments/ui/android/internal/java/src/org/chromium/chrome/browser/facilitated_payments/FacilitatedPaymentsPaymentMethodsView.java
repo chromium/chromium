@@ -44,6 +44,7 @@ class FacilitatedPaymentsPaymentMethodsView implements BottomSheetContent {
     // The new screen to be shown replacing {@link #mCurrentScreen}.
     private @Nullable FacilitatedPaymentsSequenceView mNextScreen;
     private @Nullable Callback<Integer> mUiEventListener;
+    private boolean mHasCustomLifecycle;
 
     private final BottomSheetObserver mBottomSheetObserver =
             new EmptyBottomSheetObserver() {
@@ -139,6 +140,16 @@ class FacilitatedPaymentsPaymentMethodsView implements BottomSheetContent {
     }
 
     /**
+     * Sets a bit informing whether or not the bottom sheet closes on page navigations.
+     *
+     * @param survivesNavigation A boolean which if set to true prevents the bottom sheet from
+     *     closing during page navigations.
+     */
+    void setSurvivesNavigation(boolean survivesNavigation) {
+        mHasCustomLifecycle = survivesNavigation;
+    }
+
+    /**
      * @return {@link #mScreenHolder}, the parent view where the screen to be shown is added.
      */
     FrameLayout getScreenHolder() {
@@ -172,6 +183,11 @@ class FacilitatedPaymentsPaymentMethodsView implements BottomSheetContent {
     @Override
     public boolean swipeToDismissEnabled() {
         return false;
+    }
+
+    @Override
+    public boolean hasCustomLifecycle() {
+        return mHasCustomLifecycle;
     }
 
     @Override
