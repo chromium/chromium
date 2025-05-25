@@ -19,14 +19,10 @@ public class PixAccountLinkingPrompt implements FacilitatedPaymentsSequenceView 
 
     @Override
     public void setupView(FrameLayout viewContainer) {
-        // TODO(crbug.com/417330610): Replace with actual layout for PIX account linking.
         mView =
                 (LinearLayout)
                         LayoutInflater.from(viewContainer.getContext())
-                                .inflate(
-                                        R.layout.facilitated_payments_error_screen,
-                                        viewContainer,
-                                        false);
+                                .inflate(R.layout.pix_account_linking_prompt, viewContainer, false);
     }
 
     @Override

@@ -614,12 +614,31 @@ public final class FacilitatedPaymentsPaymentMethodsViewTest {
                 });
         BottomSheetTestSupport.waitForOpen(mBottomSheetController);
 
-        // Verify that the placeholder (currently progress screen layout) is shown.
-        // TODO(crbug.com/417330610): Update this check when actual layout is in place. Also add a
-        // test to verify prompt contents.
+        // Verify that the Pix account linking prompt is shown.
         assertThat(
-                containsViewWithId((ViewGroup) mView.getContentView(), R.id.error_screen),
+                containsViewWithId(
+                        (ViewGroup) mView.getContentView(), R.id.pix_account_linking_prompt),
                 is(true));
+    }
+
+    @Test
+    @MediumTest
+    public void testPixAccountLinkingPromptContents() {
+        runOnUiThreadBlocking(
+                () -> {
+                    mModel.set(SCREEN, PIX_ACCOUNT_LINKING_PROMPT);
+                    mModel.set(VISIBLE_STATE, SHOWN);
+                });
+        BottomSheetTestSupport.waitForOpen(mBottomSheetController);
+
+        TextView title = mView.getContentView().findViewById(R.id.title);
+        assertThat(title.getText(), is("Pay with Pix directly in Chrome"));
+        TextView valuePropMessage1 = mView.getContentView().findViewById(R.id.value_prop_message_1);
+        assertThat(valuePropMessage1.getText(), is("Enable Pix by linking your account quickly"));
+        TextView valuePropMessage2 = mView.getContentView().findViewById(R.id.value_prop_message_2);
+        assertThat(valuePropMessage2.getText(), is("Pay in Chrome without using your bank app"));
+        TextView valuePropMessage3 = mView.getContentView().findViewById(R.id.value_prop_message_3);
+        assertThat(valuePropMessage3.getText(), is("Encryption protects your personal info"));
     }
 
     private RecyclerView getSheetItems() {
