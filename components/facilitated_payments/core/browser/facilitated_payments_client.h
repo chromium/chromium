@@ -113,11 +113,15 @@ class FacilitatedPaymentsClient : public autofill::RiskDataLoader {
   // returned so check before use.
   virtual autofill::StrikeDatabase* GetStrikeDatabase() = 0;
 
+  // Virtual so it can be overridden in tests.
+  virtual void InitPixAccountLinkingFlow();
+
   // Checks if Pix account linking is supported by the platform.
   virtual bool IsPixAccountLinkingSupported() const;
 
-  // Virtual so it can be overridden in tests.
-  virtual void InitPixAccountLinkingFlow();
+  // Shows the PIX account linking prompt. Virtual so it can be overridden in
+  // tests.
+  virtual void ShowPixAccountLinkingPrompt();
 
   void SetPixAccountLinkingManagerForTesting(
       std::unique_ptr<PixAccountLinkingManager> pix_account_linking_manager);

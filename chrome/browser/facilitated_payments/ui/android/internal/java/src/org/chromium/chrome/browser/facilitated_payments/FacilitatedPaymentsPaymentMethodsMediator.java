@@ -200,6 +200,10 @@ class FacilitatedPaymentsPaymentMethodsMediator {
         mDelegate.onUiEvent(uiEvent);
     }
 
+    void showPixAccountLinkingPrompt() {
+        // TODO(crbug.com/417330610): Build and show the prompt in a bottom sheet.
+    }
+
     @VisibleForTesting
     ListItem buildPixHeader(Context context) {
         String title =

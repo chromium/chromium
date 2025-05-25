@@ -68,6 +68,10 @@ class FacilitatedPaymentsController {
 
   void OnEwalletSelected(JNIEnv* env, jlong instrument_id);
 
+  // Asks the `view_` to show the PIX account linking prompt. Virtual for
+  // overriding in tests.
+  virtual void ShowPixAccountLinkingPrompt();
+
   base::android::ScopedJavaLocalRef<jobject> GetJavaObject();
 
   void SetViewForTesting(

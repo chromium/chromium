@@ -177,6 +177,10 @@ bool ChromeFacilitatedPaymentsClient::IsPixAccountLinkingSupported() const {
   return payments::facilitated::IsWalletEligibleForPixAccountLinking();
 }
 
+void ChromeFacilitatedPaymentsClient::ShowPixAccountLinkingPrompt() {
+  facilitated_payments_controller_->ShowPixAccountLinkingPrompt();
+}
+
 void ChromeFacilitatedPaymentsClient::RegisterAllowlists() {
   if (optimization_guide_decider_) {
     if (base::FeatureList::IsEnabled(payments::facilitated::kEwalletPayments)) {

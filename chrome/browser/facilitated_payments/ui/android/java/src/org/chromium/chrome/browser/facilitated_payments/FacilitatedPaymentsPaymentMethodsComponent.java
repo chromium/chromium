@@ -72,4 +72,7 @@ interface FacilitatedPaymentsPaymentMethodsComponent {
 
     /** Close the bottom sheet. */
     void dismiss();
+
+    /** Show the Pix account linking prompt in a bottom sheet. */
+    void showPixAccountLinkingPrompt();
 }

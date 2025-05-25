@@ -36,6 +36,7 @@ class MockFacilitatedPaymentsController : public FacilitatedPaymentsController {
   MOCK_METHOD(void, ShowProgressScreen, (), (override));
   MOCK_METHOD(void, ShowErrorScreen, (), (override));
   MOCK_METHOD(void, Dismiss, (), (override));
+  MOCK_METHOD(void, ShowPixAccountLinkingPrompt, (), (override));
 };
 
 class MockPixAccountLinkingManager
@@ -160,6 +161,14 @@ TEST_F(ChromeFacilitatedPaymentsClientTest, ShowErrorScreen) {
   EXPECT_CALL(controller(), ShowErrorScreen);
 
   base_client().ShowErrorScreen();
+}
+
+// Test that the client forwards call to show Pix account linking prompt to the
+// controller.
+TEST_F(ChromeFacilitatedPaymentsClientTest, ShowPixAccountLinkingPrompt) {
+  EXPECT_CALL(controller(), ShowPixAccountLinkingPrompt);
+
+  base_client().ShowPixAccountLinkingPrompt();
 }
 
 // Test that the controller is able to process requests to show different

@@ -39,13 +39,15 @@ void FacilitatedPaymentsClient::DismissPrompt() {}
 void FacilitatedPaymentsClient::SetUiEventListener(
     base::RepeatingCallback<void(UiEvent)> ui_event_listener) {}
 
+void FacilitatedPaymentsClient::InitPixAccountLinkingFlow() {
+  pix_account_linking_manager_->MaybeShowPixAccountLinkingPrompt();
+}
+
 bool FacilitatedPaymentsClient::IsPixAccountLinkingSupported() const {
   return false;
 }
 
-void FacilitatedPaymentsClient::InitPixAccountLinkingFlow() {
-  pix_account_linking_manager_->MaybeShowPixAccountLinkingPrompt();
-}
+void FacilitatedPaymentsClient::ShowPixAccountLinkingPrompt() {}
 
 void FacilitatedPaymentsClient::SetPixAccountLinkingManagerForTesting(
     std::unique_ptr<PixAccountLinkingManager> pix_account_linking_manager) {

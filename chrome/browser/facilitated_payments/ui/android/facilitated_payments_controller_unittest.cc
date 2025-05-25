@@ -46,6 +46,7 @@ class MockFacilitatedPaymentsBottomSheetBridge
   MOCK_METHOD(void, ShowErrorScreen, (), (override));
   MOCK_METHOD(void, Dismiss, (), (override));
   MOCK_METHOD(void, OnDismissed, (), (override));
+  MOCK_METHOD(void, ShowPixAccountLinkingPrompt, (), (override));
 };
 
 }  // namespace
@@ -122,6 +123,14 @@ TEST_F(FacilitatedPaymentsControllerTest, ShowErrorScreen) {
   EXPECT_CALL(*mock_view_, ShowErrorScreen);
 
   controller_->ShowErrorScreen();
+}
+
+// Test controller forwards call for showing the Pix account linking prompt to
+// the view.
+TEST_F(FacilitatedPaymentsControllerTest, ShowPixAccountLinkingPrompt) {
+  EXPECT_CALL(*mock_view_, ShowPixAccountLinkingPrompt);
+
+  controller_->ShowPixAccountLinkingPrompt();
 }
 
 // Test that the view is able to process requests to show different screens back

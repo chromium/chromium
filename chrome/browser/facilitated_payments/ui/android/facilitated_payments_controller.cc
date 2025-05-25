@@ -110,6 +110,10 @@ void FacilitatedPaymentsController::OnEwalletSelected(JNIEnv* env,
   }
 }
 
+void FacilitatedPaymentsController::ShowPixAccountLinkingPrompt() {
+  view_->ShowPixAccountLinkingPrompt();
+}
+
 base::android::ScopedJavaLocalRef<jobject>
 FacilitatedPaymentsController::GetJavaObject() {
   if (!java_object_) {
