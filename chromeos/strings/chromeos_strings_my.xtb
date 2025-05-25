@@ -589,7 +589,7 @@
 <translation id="3614639364827854748">ဤမီနူးကို ဘယ်ဘက်သို့ ရွှေ့ရန်</translation>
 <translation id="361575905210396100">သင့်အကြံပြုချက်အတွက် ကျေးဇူးတင်ပါသည်</translation>
 <translation id="3621072146987826699">ဆင်</translation>
-<translation id="3628462041319107639">စာသားမှတ်တမ်း မော်ဒယ် ဒေါင်းလုဒ်လုပ်နေသည်…</translation>
+<translation id="3628462041319107639">စာသားမှတ်တမ်း မိုဒယ် ဒေါင်းလုဒ်လုပ်နေသည်…</translation>
 <translation id="3632040286124154621">အကြံပြုချက် ကောင်းသည်</translation>
 <translation id="3632579075709132555">အချက်အလက်ကာကွယ်ရေး ဖန်သားပြင်ပြောင်းရန်</translation>
 <translation id="3634941468757842845">အပြင်အဆင် ရွေးရန်</translation>
@@ -818,7 +818,7 @@
 <translation id="458794348635939462">ဆာဗာပင်ရင်းအားလုံးကို ဖြေရှင်း၍မရပါ</translation>
 <translation id="4593212453765072419">ပရောက်စီ အထောက်အထားစိစစ်ရန် လိုအပ်သည်</translation>
 <translation id="4594021849294327751">စာသားမှတ်တမ်း ပြုလုပ်ရန်</translation>
-<translation id="4594541568452132351">စာသားမှတ်တမ်း ဘာသာစကားကို ရွေးပြီး မော်ဒယ် ဒေါင်းလုဒ်လုပ်ခြင်း</translation>
+<translation id="4594541568452132351">စာသားမှတ်တမ်း ဘာသာစကားကို ရွေးပြီး မိုဒယ် ဒေါင်းလုဒ်လုပ်ခြင်း</translation>
 <translation id="4600301862817165514">ကြယ်များ အလွန်လျင်မြန်စွာ ဖြတ်သန်းနေသော ဂလက်ဆီအတွင်း နီယွန်မီးများဖြင့် မောင်းနှင်နေသော Delorean ယာဉ်တစ်စီး</translation>
 <translation id="4609350030397390689">ကီးဘုတ်တောက်ပမှု လျှော့ရန်</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />၊ <ph name="PRINTER_NAME" />၊ <ph name="CREATION_TIME" />၊ စာမျက်နှာ <ph name="TOTAL_PAGE_NUMBER" /> မျက်နှာအနက် <ph name="PRINTED_PAGE_NUMBER" /> မျက်နှာ။ ပရင့်ထုတ်ရန်ဖိုင် ပယ်ဖျက်ရန် enter နှိပ်ပါ။</translation>
@@ -1087,7 +1087,7 @@
 <translation id="5860033963881614850">ပိတ်ထား</translation>
 <translation id="5860491529813859533">ဖွင့်ရန်</translation>
 <translation id="586463370326011345">လျှပ်စီး</translation>
-<translation id="5875913454160982848">စာသားမှတ်တမ်း မော်ဒယ် ဒေါင်းလုဒ်လုပ်ရန်</translation>
+<translation id="5875913454160982848">စာသားမှတ်တမ်း မိုဒယ် ဒေါင်းလုဒ်လုပ်ရန်</translation>
 <translation id="5876385649737594562">ရွေးရန် ဖွင့်ပါ</translation>
 <translation id="5877503382465267833"><ph name="RECORDING_NAME" /> ခဏရပ်ရန်</translation>
 <translation id="588258955323874662">မျက်နှာပြင် အပြည့်</translation>
@@ -1466,7 +1466,7 @@
 <translation id="7415801143053185905">HTTP တုံ့ပြန်ချိန် အလွန်ကြာနေသည်</translation>
 <translation id="7418738250896500352">ရှင်းလင်းအောင်လုပ်ရန် စကားလုံး များလွန်းသည်</translation>
 <translation id="7425037327577270384">ကူရေးပေးပါ</translation>
-<translation id="7425832472614771259"><ph name="LANGUAGE_NAME" /> စာသားမှတ်တမ်း မော်ဒယ် <ph name="PROGRESS_PERCENTAGE" />% ဒေါင်းလုဒ်လုပ်ပြီးပြီ</translation>
+<translation id="7425832472614771259"><ph name="LANGUAGE_NAME" /> စာသားမှတ်တမ်း မိုဒယ် <ph name="PROGRESS_PERCENTAGE" />% ဒေါင်းလုဒ်လုပ်ပြီးပြီ</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7438298994385592770">ဤ APN ကို ပိတ်၍မရပါ (သို့) ဖယ်ရှား၍မရပါ။ ဖွင့်ထားသော <ph name="ATTACH" /> APN များကို ပိတ်ထားကြောင်း (သို့) ဖယ်ရှားထားကြောင်း သေချာပါစေ။</translation>
 <translation id="7458970041932198923">ချန်နယ်ပုံများကို ကြည့်ရန်နှင့် သတ်မှတ်ရန် ကွန်ရက်ချိတ်ဆက်ပြီး စာမျက်နှာကို ပြန်လည်စတင်ပါ။</translation>
@@ -1838,7 +1838,7 @@
 <translation id="9100765901046053179">အဆင့်မြင့် ဆက်တင်များ</translation>
 <translation id="910415269708673980"><ph name="PRINCIPAL_NAME" /> အတွက် လက်မှတ်ကို ပြန်လည်စတင်ပါ</translation>
 <translation id="9106415115617144481">စာမျက်နှာ <ph name="PAGE_NUMBER" /> ကို စကင်ဖတ်နေသည်</translation>
-<translation id="9108856746036501072">Recorder သည် စကားသံနှင့် အသံသွင်းချက်များအတွက် စာသားမှတ်တမ်းများ ပြုလုပ်နိုင်သည်။ နောက်တစ်ဆင့်တွင် စာသားမှတ်တမ်း ဘာသာစကားကို ရွေးပြီး မော်ဒယ် (၁၀၀ MB အထိ) ဒေါင်းလုဒ်လုပ်ပါ။</translation>
+<translation id="9108856746036501072">Recorder သည် စကားသံနှင့် အသံသွင်းချက်များအတွက် စာသားမှတ်တမ်းများ ပြုလုပ်နိုင်သည်။ နောက်တစ်ဆင့်တွင် စာသားမှတ်တမ်း ဘာသာစကားကို ရွေးပြီး မိုဒယ် (၁၀၀ MB အထိ) ဒေါင်းလုဒ်လုပ်ပါ။</translation>
 <translation id="9111102763498581341">သော့ဖွင့်ရန်</translation>
 <translation id="9122492456897874028">အကြောင်းအရာ အကျဉ်းချုပ်ရန်၊ အဓိပ္ပာယ်ဖွင့်ဆိုချက် ရယူရန် စသည်</translation>
 <translation id="9122602430962285795">ပြန်ချိတ်ဆက်ရန် ဆက်တင်များသို့ သွားပါ</translation>
