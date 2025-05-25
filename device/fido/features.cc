@@ -195,11 +195,15 @@ BASE_FEATURE_PARAM(int,
                    "window_seconds",
                    kDefaultWindowSeconds);
 
-// Enabled by default for the Origin Trial. Do not remove until the Origin Trial
-// expires.
+// Enabled by default on Desktop for the Origin Trial. Do not remove until the
+// Origin Trial expires.
 BASE_FEATURE(kWebAuthnImmediateGet,
              "WebAuthenticationImmediateGet",
+#if BUILDFLAG(IS_ANDROID)
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#else
              base::FEATURE_ENABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(IS_ANDROID)
 
 BASE_FEATURE_PARAM(int,
                    kWebAuthnImmediateMediationTimeoutMilliseconds,
