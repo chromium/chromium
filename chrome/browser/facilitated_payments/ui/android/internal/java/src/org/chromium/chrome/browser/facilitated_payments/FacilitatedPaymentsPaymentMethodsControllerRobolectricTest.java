@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.facilitated_payments;
 import static androidx.test.espresso.matcher.ViewMatchers.assertThat;
 
 import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
@@ -37,6 +38,8 @@ import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymen
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.ItemType.EWALLET;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.ItemType.FOOTER;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.ItemType.HEADER;
+import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.PixAccountLinkingPromptProperties.ACCEPT_BUTTON_CALLBACK;
+import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.PixAccountLinkingPromptProperties.DECLINE_BUTTON_CALLBACK;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.SCREEN;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.SCREEN_VIEW_MODEL;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.SequenceScreen.ERROR_SCREEN;
@@ -875,15 +878,43 @@ public class FacilitatedPaymentsPaymentMethodsControllerRobolectricTest {
                 mFacilitatedPaymentsPaymentMethodsModel.get(SCREEN),
                 is(PIX_ACCOUNT_LINKING_PROMPT));
         assertNotNull(mFacilitatedPaymentsPaymentMethodsModel.get(SCREEN_VIEW_MODEL));
-        // Placeholder screen doesn't have any view properties currently.
-        // TODO(crbug.com/417330610): Update this test with prompt properties. Also add tests to
-        // verify prompt interactions.
-        assertEquals(
-                0,
-                mFacilitatedPaymentsPaymentMethodsModel
-                        .get(SCREEN_VIEW_MODEL)
-                        .getAllProperties()
-                        .size());
+
+        // Verify screen view properties.
+        List<PropertyKey> propertyKeys =
+                (List<PropertyKey>)
+                        mFacilitatedPaymentsPaymentMethodsModel
+                                .get(SCREEN_VIEW_MODEL)
+                                .getAllProperties();
+
+        assertThat(propertyKeys, hasSize(2));
+        assertThat(
+                propertyKeys, containsInAnyOrder(ACCEPT_BUTTON_CALLBACK, DECLINE_BUTTON_CALLBACK));
+    }
+
+    @Test
+    public void testAcceptingPixAccountLinkingPromptInformsDelegate() {
+        mCoordinator.showPixAccountLinkingPrompt();
+
+        // Simulate clicking the accept button.
+        mFacilitatedPaymentsPaymentMethodsModel
+                .get(SCREEN_VIEW_MODEL)
+                .get(ACCEPT_BUTTON_CALLBACK)
+                .onClick(null);
+
+        verify(mDelegateMock).onPixAccountLinkingPromptAccepted();
+    }
+
+    @Test
+    public void testDecliningPixAccountLinkingPromptInformsDelegate() {
+        mCoordinator.showPixAccountLinkingPrompt();
+
+        // Simulate clicking the accept button.
+        mFacilitatedPaymentsPaymentMethodsModel
+                .get(SCREEN_VIEW_MODEL)
+                .get(DECLINE_BUTTON_CALLBACK)
+                .onClick(null);
+
+        verify(mDelegateMock).onPixAccountLinkingPromptDeclined();
     }
 
     @Test

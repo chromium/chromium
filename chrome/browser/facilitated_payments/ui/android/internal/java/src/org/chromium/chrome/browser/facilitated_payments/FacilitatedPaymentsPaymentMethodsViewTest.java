@@ -633,8 +633,10 @@ public final class FacilitatedPaymentsPaymentMethodsViewTest {
 
         ImageView productIcon = mView.getContentView().findViewById(R.id.product_icon);
         assertNotNull(productIcon);
+
         TextView title = mView.getContentView().findViewById(R.id.title);
         assertThat(title.getText(), is("Pay with Pix directly in Chrome"));
+
         TextView valuePropMessage1 = mView.getContentView().findViewById(R.id.value_prop_message_1);
         assertThat(valuePropMessage1.getText(), is("Enable Pix by linking your account quickly"));
         assertNotNull(valuePropMessage1.getCompoundDrawablesRelative()[0]);
@@ -644,6 +646,11 @@ public final class FacilitatedPaymentsPaymentMethodsViewTest {
         TextView valuePropMessage3 = mView.getContentView().findViewById(R.id.value_prop_message_3);
         assertThat(valuePropMessage3.getText(), is("Encryption protects your personal info"));
         assertNotNull(valuePropMessage3.getCompoundDrawablesRelative()[0]);
+
+        ButtonCompat acceptButton = mView.getContentView().findViewById(R.id.accept_button);
+        assertThat(acceptButton.getText(), is("Enable Pix in Wallet"));
+        ButtonCompat declineButton = mView.getContentView().findViewById(R.id.decline_button);
+        assertThat(declineButton.getText(), is("No thanks"));
     }
 
     private RecyclerView getSheetItems() {

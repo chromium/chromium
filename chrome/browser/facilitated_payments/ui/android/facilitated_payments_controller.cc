@@ -114,6 +114,16 @@ void FacilitatedPaymentsController::ShowPixAccountLinkingPrompt() {
   view_->ShowPixAccountLinkingPrompt();
 }
 
+void FacilitatedPaymentsController::OnPixAccountLinkingPromptAccepted(
+    JNIEnv* env) {
+  // TODO(crbug.com/417330610): Implement the callback.
+}
+
+void FacilitatedPaymentsController::OnPixAccountLinkingPromptDeclined(
+    JNIEnv* env) {
+  // TODO(crbug.com/417330610): Implement the callback.
+}
+
 base::android::ScopedJavaLocalRef<jobject>
 FacilitatedPaymentsController::GetJavaObject() {
   if (!java_object_) {

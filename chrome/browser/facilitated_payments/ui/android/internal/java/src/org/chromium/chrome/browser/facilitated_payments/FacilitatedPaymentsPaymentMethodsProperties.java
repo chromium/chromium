@@ -225,5 +225,19 @@ class FacilitatedPaymentsPaymentMethodsProperties {
         private ErrorScreenProperties() {}
     }
 
+    /**
+     * Properties defined here reflect the visible state of the Pix account linking prompt shown in
+     * a bottom sheet.
+     */
+    static class PixAccountLinkingPromptProperties {
+        static final WritableObjectPropertyKey<OnClickListener> ACCEPT_BUTTON_CALLBACK =
+                new WritableObjectPropertyKey<>("accept_button_callback");
+        static final WritableObjectPropertyKey<OnClickListener> DECLINE_BUTTON_CALLBACK =
+                new WritableObjectPropertyKey<>("decline_button_callback");
+
+        /** All the properties of Pix account linking prompt. */
+        static final PropertyKey[] ALL_KEYS = {ACCEPT_BUTTON_CALLBACK, DECLINE_BUTTON_CALLBACK};
+    }
+
     private FacilitatedPaymentsPaymentMethodsProperties() {}
 }

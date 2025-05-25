@@ -84,6 +84,22 @@ class FacilitatedPaymentsPaymentMethodsControllerBridge
         return true;
     }
 
+    @Override
+    public void onPixAccountLinkingPromptAccepted() {
+        if (mNativeFacilitatedPaymentsController != 0) {
+            FacilitatedPaymentsPaymentMethodsControllerBridgeJni.get()
+                    .onPixAccountLinkingPromptAccepted(mNativeFacilitatedPaymentsController);
+        }
+    }
+
+    @Override
+    public void onPixAccountLinkingPromptDeclined() {
+        if (mNativeFacilitatedPaymentsController != 0) {
+            FacilitatedPaymentsPaymentMethodsControllerBridgeJni.get()
+                    .onPixAccountLinkingPromptDeclined(mNativeFacilitatedPaymentsController);
+        }
+    }
+
     @NativeMethods
     interface Natives {
         void onUiEvent(long nativeFacilitatedPaymentsController, @UiEvent int uiEvent);
@@ -91,5 +107,9 @@ class FacilitatedPaymentsPaymentMethodsControllerBridge
         void onBankAccountSelected(long nativeFacilitatedPaymentsController, long instrumentId);
 
         void onEwalletSelected(long nativeFacilitatedPaymentsController, long instrumentId);
+
+        void onPixAccountLinkingPromptAccepted(long nativeFacilitatedPaymentsController);
+
+        void onPixAccountLinkingPromptDeclined(long nativeFacilitatedPaymentsController);
     }
 }

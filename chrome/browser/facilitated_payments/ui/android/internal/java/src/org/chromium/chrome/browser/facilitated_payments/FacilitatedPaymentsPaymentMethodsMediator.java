@@ -28,6 +28,8 @@ import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymen
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.ItemType.BANK_ACCOUNT;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.ItemType.CONTINUE_BUTTON;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.ItemType.EWALLET;
+import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.PixAccountLinkingPromptProperties.ACCEPT_BUTTON_CALLBACK;
+import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.PixAccountLinkingPromptProperties.DECLINE_BUTTON_CALLBACK;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.SCREEN;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.SCREEN_VIEW_MODEL;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.SequenceScreen.ERROR_SCREEN;
@@ -207,6 +209,11 @@ class FacilitatedPaymentsPaymentMethodsMediator {
         // the new screen.
         mModel.set(VISIBLE_STATE, SWAPPING_SCREEN);
         mModel.set(SCREEN, PIX_ACCOUNT_LINKING_PROMPT);
+        // Set Pix account linking prompt properties and show the prompt.
+        mModel.get(SCREEN_VIEW_MODEL)
+                .set(ACCEPT_BUTTON_CALLBACK, v -> mDelegate.onPixAccountLinkingPromptAccepted());
+        mModel.get(SCREEN_VIEW_MODEL)
+                .set(DECLINE_BUTTON_CALLBACK, v -> mDelegate.onPixAccountLinkingPromptDeclined());
         mModel.set(VISIBLE_STATE, SHOWN);
     }
 

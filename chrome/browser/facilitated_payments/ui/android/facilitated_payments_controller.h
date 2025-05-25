@@ -72,6 +72,14 @@ class FacilitatedPaymentsController {
   // overriding in tests.
   virtual void ShowPixAccountLinkingPrompt();
 
+  // Called by the Java view to communicate acceptance of Pix account linking
+  // prompt.
+  void OnPixAccountLinkingPromptAccepted(JNIEnv* env);
+
+  // Called by the Java view to communicate that the Pix account linking prompt
+  // was declined.
+  void OnPixAccountLinkingPromptDeclined(JNIEnv* env);
+
   base::android::ScopedJavaLocalRef<jobject> GetJavaObject();
 
   void SetViewForTesting(

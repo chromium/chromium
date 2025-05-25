@@ -73,4 +73,21 @@ found in the LICENSE file.
         android:drawablePadding="@dimen/pix_account_linking_prompt_value_prop_icon_padding"
         android:text="@string/pix_account_linking_prompt_value_prop_message_3"
         android:textAppearance="@style/TextAppearance.TextLarge.Primary" />
+
+    <org.chromium.ui.widget.ButtonCompat
+        android:id="@+id/accept_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/pix_account_linking_prompt_accept_button_top_margin"
+        style="@style/FilledButton"
+        android:text="@string/pix_account_linking_prompt_accept" />
+
+    <org.chromium.ui.widget.ButtonCompat
+        android:id="@+id/decline_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="9dp"
+        android:layout_marginHorizontal="@dimen/pix_account_linking_prompt_decline_button_top_margin"
+        style="@style/TextButton"
+        android:text="@string/pix_account_linking_prompt_decline" />
 </LinearLayout>
