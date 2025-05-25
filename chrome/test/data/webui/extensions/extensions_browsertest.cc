@@ -4,15 +4,12 @@
 
 #include "base/strings/stringprintf.h"
 #include "build/buildflag.h"
+#include "chrome/browser/ui/webui/extensions/extension_settings_test_base.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/web_ui_mocha_browser_test.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/buildflags/buildflags.h"
-
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-#include "chrome/browser/ui/webui/extensions/extension_settings_test_base.h"
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 class ExtensionsBrowserTest : public WebUIMochaBrowserTest {
  protected:
@@ -543,8 +540,6 @@ IN_PROC_BROWSER_TEST_F(CrExtensionsManagerUnitTest,
   RunTestCase("CheckDrawerSitePermissionsVisibility");
 }
 
-// TODO(crbug.com/392777363): Enable tests on desktop android.
-#if BUILDFLAG(ENABLE_EXTENSIONS)
 class CrExtensionsManagerTestWithMultipleExtensionTypesInstalled
     : public ExtensionSettingsTestBase {
  protected:
@@ -567,6 +562,8 @@ class CrExtensionsManagerTestWithMultipleExtensionTypesInstalled
   }
 };
 
+// TODO(crbug.com/392777363): Enable on desktop android.
+#if BUILDFLAG(ENABLE_EXTENSIONS)
 IN_PROC_BROWSER_TEST_F(
     CrExtensionsManagerTestWithMultipleExtensionTypesInstalled,
     ItemListVisibility) {
@@ -622,6 +619,7 @@ IN_PROC_BROWSER_TEST_F(
   InstallPrerequisites();
   RunTestCase("ShowUnsupportedDeveloperExtensionDisabledToast");
 }
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 class CrExtensionsManagerTestWithIdQueryParam
     : public ExtensionSettingsTestBase {
@@ -643,11 +641,14 @@ class CrExtensionsManagerTestWithIdQueryParam
   }
 };
 
+// TODO(crbug.com/392777363): Enable on desktop android.
+#if BUILDFLAG(ENABLE_EXTENSIONS)
 IN_PROC_BROWSER_TEST_F(CrExtensionsManagerTestWithIdQueryParam,
                        UrlNavigationToDetails) {
   InstallPrerequisites();
   RunTestCase("UrlNavigationToDetails");
 }
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 // Disabled as flaky. TODO(crbug.com/40719203): Enable this test.
 IN_PROC_BROWSER_TEST_F(CrExtensionsManagerTestWithIdQueryParam,
@@ -728,6 +729,8 @@ class CrExtensionsErrorConsoleTest : public ExtensionSettingsTestBase {
   }
 };
 
+// TODO(crbug.com/392777363): Enable on desktop android.
+#if BUILDFLAG(ENABLE_EXTENSIONS)
 IN_PROC_BROWSER_TEST_F(CrExtensionsErrorConsoleTest, TestUpDownErrors) {
   SetDevModeEnabled(true);
   // TODO(crbug.com/40804030): Update the associated extensions to
@@ -741,6 +744,7 @@ IN_PROC_BROWSER_TEST_F(CrExtensionsErrorConsoleTest, TestUpDownErrors) {
   SetDevModeEnabled(false);
   SetSilenceDeprecatedManifestVersionWarnings(false);
 }
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 ////////////////////////////////////////////////////////////////////////////////
 // Extension Keyboard Shortcuts Tests
@@ -889,5 +893,3 @@ IN_PROC_BROWSER_TEST_F(CrExtensionsNavigationHelperTest, PushAndReplaceState) {
 IN_PROC_BROWSER_TEST_F(CrExtensionsNavigationHelperTest, SupportedRoutes) {
   RunTestCase("SupportedRoutes");
 }
-
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
