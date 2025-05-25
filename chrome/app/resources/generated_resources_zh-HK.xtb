@@ -80,6 +80,7 @@
 <translation id="1049743911850919806">無痕</translation>
 <translation id="1049795001945932310">語言設定(&amp;L)</translation>
 <translation id="1050693411695664090">欠佳</translation>
+<translation id="1053226848101751430">已刪除項目</translation>
 <translation id="1053898984916097744">開始新工作，或在過程中取得協助。</translation>
 <translation id="1054048317165655285">在手機上完成設定</translation>
 <translation id="1054153489933238809">在新分頁中開啟原始圖片(&amp;I)</translation>
@@ -2250,6 +2251,7 @@
 <translation id="2519250377986324805">查看操作說明</translation>
 <translation id="2519517390894391510">憑證設定檔名稱</translation>
 <translation id="2520644704042891903">正在等待可用的通訊端…</translation>
+<translation id="2520961587246779103">更多分割檢視選項</translation>
 <translation id="2521427645491031107">在裝置「設定」中設定應用程式同步功能</translation>
 <translation id="2521835766824839541">上一首歌</translation>
 <translation id="2521854691574443804">正在檢查 <ph name="FILE_NAME" /> 是否符合您機構的安全性政策…</translation>
@@ -3194,6 +3196,7 @@
 <translation id="3202578601642193415">最新記錄</translation>
 <translation id="3204648577100496185">系統可能會從裝置中移除與此應用程式相關的資料</translation>
 <translation id="3204717934117444051">只儲存在此裝置上的資料會保留在現有設定檔中，不會同步至 <ph name="EMAIL" /></translation>
+<translation id="3206289903841621620">用戶字典 <ph name="NUMBER" /></translation>
 <translation id="3207344462385471911">系統會根據你的近期活動，顯示你可能感興趣的建議搜尋與購物折扣。
         <ph name="BREAK" />
         <ph name="BREAK" />
@@ -9988,6 +9991,7 @@
 <translation id="8037801708772278989">剛檢查過</translation>
 <translation id="8038111231936746805">(預設)</translation>
 <translation id="8039151841428107077">{NUM_OF_FILES,plural, =1{正在將 1 個檔案複製至 <ph name="CLOUD_PROVIDER" />}other{正在將 {NUM_OF_FILES} 個檔案複製至 <ph name="CLOUD_PROVIDER" />}}</translation>
+<translation id="8039525676147630657">ChromeOS 版本更新後，此 Chrome 應用程式就會停止運作。請儲存要保留的所有應用程式資料。如要瞭解可用的選項，請聯絡應用程式開發人員或 IT 支援團隊。</translation>
 <translation id="8041089156583427627">提供意見</translation>
 <translation id="8041093619605951337">高興</translation>
 <translation id="8041267120753677077">串流播放手機應用程式內容</translation>
@@ -10981,6 +10985,7 @@
 <translation id="8729133765463465108">使用相機掃瞄 QR 碼</translation>
 <translation id="8730621377337864115">完成</translation>
 <translation id="8731029916209785242">權限 (<ph name="FORMATTED_ORIGIN" />)</translation>
+<translation id="8731258351357994801">項目 <ph name="NUMBER" /></translation>
 <translation id="8731268612289859741">安全碼</translation>
 <translation id="8731629443331803108"><ph name="SITE_NAME" /> 需要你批准：<ph name="PERMISSION" /></translation>
 <translation id="8731787661154643562">連接埠號碼</translation>

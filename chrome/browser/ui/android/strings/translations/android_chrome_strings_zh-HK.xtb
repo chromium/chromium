@@ -376,6 +376,7 @@
 <translation id="2718352093833049315">僅限 Wi-Fi 連線時</translation>
 <translation id="2718846868787000099">為了要以您偏好的語言顯示內容，您瀏覽的網站將能看到偏好設定</translation>
 <translation id="2723001399770238859">音效檔案</translation>
+<translation id="2734335652257251631">顯示閱讀模式</translation>
 <translation id="2739887572830526131">如果保留群組，你之後可新增分頁；如果不再使用，則可刪除群組。</translation>
 <translation id="2742373789128106053">目前無法使用「<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />」。</translation>
 <translation id="2760805590727089264">MM / YY</translation>
@@ -1746,6 +1747,7 @@
 <translation id="8676789164135894283">登入驗證</translation>
 <translation id="8683039184091909753">圖片</translation>
 <translation id="8688183792442786085"><ph name="TAB_TITLE" />，已選取的分頁</translation>
+<translation id="8693232767599693749">要進入閱讀模式嗎？</translation>
 <translation id="8697753151306746444">改為分享視窗或畫面</translation>
 <translation id="869891660844655955">到期日</translation>
 <translation id="8699120352855309748">不要詢問是否翻譯這些語言</translation>

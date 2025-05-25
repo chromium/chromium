@@ -10000,6 +10000,7 @@
 <translation id="8037801708772278989">كلمات المرور التي تم التحقق منها الآن</translation>
 <translation id="8038111231936746805">(تلقائي)</translation>
 <translation id="8039151841428107077">{NUM_OF_FILES,plural, =1{جارٍ نسخ ملف واحد إلى <ph name="CLOUD_PROVIDER" />}zero{جارٍ نسخ {NUM_OF_FILES} ملف إلى <ph name="CLOUD_PROVIDER" />}two{جارٍ نسخ ملفين ({NUM_OF_FILES}) إلى <ph name="CLOUD_PROVIDER" />}few{جارٍ نسخ {NUM_OF_FILES} ملفات إلى <ph name="CLOUD_PROVIDER" />}many{جارٍ نسخ {NUM_OF_FILES} ملفًا إلى <ph name="CLOUD_PROVIDER" />}other{جارٍ نسخ {NUM_OF_FILES} ملف إلى <ph name="CLOUD_PROVIDER" />}}</translation>
+<translation id="8039525676147630657">‏سيتوقّف تطبيق Chrome هذا عن العمل بعد تحديث إصدار ChromeOS. ويمكنك حفظ بيانات التطبيق المُراد الاحتفاظ بها. للتعرّف على الخيارات المتاحة، يمكنك التواصل مع مطوّر التطبيق أو فريق دعم تكنولوجيا المعلومات.</translation>
 <translation id="8041089156583427627">إرسال ملاحظات</translation>
 <translation id="8041093619605951337">مبهج</translation>
 <translation id="8041267120753677077">بث تطبيقات هاتفك</translation>

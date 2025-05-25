@@ -278,6 +278,7 @@
 <translation id="2103075008456228677">เปิด history.google.com</translation>
 <translation id="2104436223719117661">การค้นหาที่มาแรง</translation>
 <translation id="21133533946938348">ปักหมุดแท็บ</translation>
+<translation id="2117650889962717098">รักษาความเป็นส่วนตัวในการท่องเว็บโดยเปลี่ยนไปใช้โหมดไม่ระบุตัวตน</translation>
 <translation id="2119636449201577317">เปิดใน…</translation>
 <translation id="2120553909046681540">องค์กรปิดการท่องเว็บแบบส่วนตัวไว้</translation>
 <translation id="2122754583996902531">เบราว์เซอร์ของคุณมีการจัดการ <ph name="BEGIN_LINK" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK" /></translation>
@@ -562,6 +563,7 @@
 <translation id="3348387552617855658">การ์ดนี้ช่วยให้คุณติดตามพัสดุภัณฑ์และให้ข้อมูลอัปเดตที่สำคัญเกี่ยวกับการนำส่งได้</translation>
 <translation id="3349031117032695619">บล็อกป๊อปอัป</translation>
 <translation id="3349676726073650389">ระบบจะบันทึกเว็บไซต์และการค้นหาที่คุณติดตามไว้ในบัญชี Google คุณจัดการการติดตามในการตั้งค่าได้ทุกเมื่อ</translation>
+<translation id="3353037916374303415"><ph name="EMAIL" /> บัญชีนี้มีการจัดการ</translation>
 <translation id="3365529507898144230">บันทึกใน Photos</translation>
 <translation id="3371831930909698441">มีบริการแปลภาษา ตัวเลือกจะอยู่ทางด้านล่างของหน้าจอ</translation>
 <translation id="3377063233124932127">ตอนนี้บุ๊กมาร์ก รหัสผ่าน และข้อมูลอื่นๆ ที่บันทึกไว้ย้ายไปอยู่ด้านบนแล้ว</translation>
@@ -670,6 +672,7 @@
 <translation id="3875783148670536197">แสดงวิธีการ</translation>
 <translation id="3878657761594430423">เครื่องมือจับชีต</translation>
 <translation id="3885587018298784481">เข้าร่วมกลุ่มครอบครัว</translation>
+<translation id="3888230626190453136">ท่องเว็บในโหมดไม่ระบุตัวตน</translation>
 <translation id="3888863481921783344">ระบบจะใช้เพื่อแสดงว่าผู้ใดสามารถได้รับเชิญให้เข้าร่วมกิจกรรมของคุณ</translation>
 <translation id="3891414008432200754">ราคา</translation>
 <translation id="3892144330757387737">คุณจะเห็นประวัติการเข้าชมที่นี่</translation>

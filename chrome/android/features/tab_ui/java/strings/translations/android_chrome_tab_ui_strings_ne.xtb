@@ -120,6 +120,7 @@
 <translation id="6051432659151380973">तपाईंका ट्याब समूहहरू स्वतः सेभ हुन्छन्</translation>
 <translation id="6054741997831917303">यो वस्तुको मूल्य हालसालै घटेर <ph name="PREVIOUS_PRICE" /> बाट <ph name="NEW_PRICE" /> भएको छ</translation>
 <translation id="6109251075362363230">सबैभन्दा हालसालै प्रयोग गरिएको दोहोरिएको ट्याबबाहेक दोहोरिएका सबै ट्याबहरू अब अभिलेखमा राखिने छन्।</translation>
+<translation id="61924696525243173">{WINDOW_COUNT,plural, =1{समूह सारेर नयाँ विन्डोमा लैजानुहोस्}other{समूह सारेर अर्को विन्डोमा लैजानुहोस्}}</translation>
 <translation id="6193448654517602979">ट्याबहरू चयन गर्नुहोस्</translation>
 <translation id="6212567362666004597">यो ट्याब समूहमा हाल्नुहोस्</translation>
 <translation id="6220820548421939212">अँ। म चाहन्छु</translation>

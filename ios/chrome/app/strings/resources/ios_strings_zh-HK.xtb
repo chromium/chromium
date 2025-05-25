@@ -243,6 +243,7 @@
 <translation id="1972325230031091483">系統會根據您目前瀏覽的網頁主動載入內容，助您加快瀏覽速度</translation>
 <translation id="1974060860693918893">進階選項</translation>
 <translation id="1977621687170192347">開啟「要求在無痕模式中開啟其他應用程式的連結」。</translation>
+<translation id="1979055159547313322">帳戶 (<ph name="USER_EMAIL" />) 是由 <ph name="HOSTED_DOMAIN" /> 管理，管理者或許可查看部分資料，包括</translation>
 <translation id="1979188886349613713">包括網站未指明的副檔名</translation>
 <translation id="1980417445547898121">{count,plural, =1{在此 iPhone 上開啟最近在其他裝置使用的 {count} 個分頁}other{在此 iPhone 上開啟最近在其他裝置使用的 {count} 個分頁}}</translation>
 <translation id="1981118202195772574">流動模式</translation>
@@ -264,6 +265,7 @@
 <translation id="2044681667265133332">帳戶 <ph name="USER_EMAIL" /> 由 <ph name="HOSTED_DOMAIN" /> 管理，管理員可以查看某些資料。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">新項目</translation>
 <translation id="2049727122989709386"><ph name="COUNT" /> 個帳戶正在使用同一個密碼</translation>
+<translation id="2054044186557130763">登入 <ph name="NAME" /> (<ph name="EMAIL" />，由你的機構管理)。</translation>
 <translation id="2059166748188874810">自治市</translation>
 <translation id="2060638295449304809">此地址只會儲存至此裝置。如要在其他裝置上使用，請將項目儲存至 Google 帳戶 <ph name="USER_EMAIL" /></translation>
 <translation id="20638360198452347">單位類型選取器</translation>
@@ -278,6 +280,7 @@
 <translation id="2103075008456228677">開啟 history.google.com</translation>
 <translation id="2104436223719117661">熱門搜尋</translation>
 <translation id="21133533946938348">固定分頁</translation>
+<translation id="2117650889962717098">切換至無痕模式，確保瀏覽資料保密</translation>
 <translation id="2119636449201577317">開啟方式…</translation>
 <translation id="2120553909046681540">你的機構已關閉私密瀏覽功能。</translation>
 <translation id="2122754583996902531">您的瀏覽器受管理。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
@@ -562,6 +565,7 @@
 <translation id="3348387552617855658">你可透過此資訊卡追蹤包裹及查看重要的送貨通知。</translation>
 <translation id="3349031117032695619">封鎖彈出式視窗</translation>
 <translation id="3349676726073650389">你追蹤的網站和搜尋內容會儲存在 Google 帳戶中。隨時可前往設定管理追蹤項目。</translation>
+<translation id="3353037916374303415"><ph name="EMAIL" />。這是受管帳戶。</translation>
 <translation id="3365529507898144230">儲存在「相片」中</translation>
 <translation id="3371831930909698441">有可以用嘅翻譯。你可以喺接近畫面底部附近搵到選項。</translation>
 <translation id="3377063233124932127">您儲存的書籤、密碼等內容現在會在頂端顯示。</translation>
@@ -610,6 +614,7 @@
 <translation id="3572607909481582402">在你的 Google 帳戶中</translation>
 <translation id="3575234738189584619">用「智能鏡頭」搜尋</translation>
 <translation id="3575426792457739946">此清單包含所有已載入的個人檔案。</translation>
+<translation id="3578866308944526475"><ph name="EMAIL" />，該帳戶由你的機構管理。</translation>
 <translation id="3581564640715911333">詢問是否將網頁內容翻譯成其他語言</translation>
 <translation id="3587885837929752825">你的機構已限制你可儲存在 Google 帳戶中的內容。</translation>
 <translation id="3588820906588687999">在新分頁中開啟圖片</translation>
@@ -670,6 +675,7 @@
 <translation id="3875783148670536197">顯示方法</translation>
 <translation id="3878657761594430423">表格擷取器</translation>
 <translation id="3885587018298784481">加入家庭群組</translation>
+<translation id="3888230626190453136">在無痕模式中瀏覽</translation>
 <translation id="3888863481921783344">系統會透過此操作，向您顯示可能受邀出席活動的人。</translation>
 <translation id="3891414008432200754">價格</translation>
 <translation id="3892144330757387737">您可在此查看記錄</translation>
@@ -876,6 +882,9 @@
 <translation id="4669618761237477717">你的機構要求你私密瀏覽內容。在無痕模式下，系統不會同步分頁群組。
 <ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="467189612236587057">撥打電話聯絡商家</translation>
+<translation id="4673565891421389203">登入受管帳戶後，就能將機構相關的瀏覽資料 (包括分頁、記錄和密碼) 與其他瀏覽資料分開。
+
+       選擇如何處理此裝置上現有的瀏覽資料。</translation>
 <translation id="4682496302933121474">要翻譯網頁嗎？</translation>
 <translation id="4682686630151240767">1. 開啟 iPhone 的「設定」</translation>
 <translation id="4699172675775169585">快取圖片和檔案</translation>
@@ -884,6 +893,7 @@
 <translation id="4719927025381752090">提供翻譯</translation>
 <translation id="4720530280568305198">你選取的項目已在新分頁中開啟</translation>
 <translation id="472259426228234149">價格 100 - 180 美元</translation>
+<translation id="4735849923335729414">登入 <ph name="EMAIL" /> (由你的機構管理)。</translation>
 <translation id="473775607612524610">更新</translation>
 <translation id="474209246745757965">使用相機購物和翻譯</translation>
 <translation id="4742407542027196863">管理密碼…</translation>
@@ -956,6 +966,7 @@
 <translation id="4985921635659180565">檔案預定刪除後，便無法取消操作。</translation>
 <translation id="498624032394115435">任何擁有連結的人均可編輯所有分頁。</translation>
 <translation id="4989065233040279145">選擇「<ph name="FILENAME" />」的儲存位置</translation>
+<translation id="499122600724363620"><ph name="NAME" />，<ph name="EMAIL" />，該帳戶由你的機構管理。</translation>
 <translation id="4992255726304765516">分頁群組顏色係<ph name="COLOR" /></translation>
 <translation id="5005498671520578047">複製密碼</translation>
 <translation id="5012914568031465281">無法追蹤價格。</translation>
@@ -1015,6 +1026,7 @@
 <translation id="5234094073825090254">{count,plural, =1{書籤已儲存至 Google 帳戶 ({email})。}other{書籤已儲存至 Google 帳戶 ({email})。}}</translation>
 <translation id="5234764350956374838">關閉</translation>
 <translation id="5238596603078743134"><ph name="BEGIN_BOLD" /><ph name="USERNAME" /><ph name="END_BOLD" />現在透過「Google 密碼管理工具」登入 <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" /> 時，可以使用你的使用者名稱和密碼。</translation>
+<translation id="5241106044372754566">目前選取 <ph name="NAME" />，<ph name="EMAIL" />，該帳戶由你的機構管理。請選擇帳戶。</translation>
 <translation id="5242899254250321823">變更網站上的密碼</translation>
 <translation id="5248640482715684545">此網站正在嘗試開啟另一個應用程式。</translation>
 <translation id="5250371859659394278">來源不明</translation>
@@ -1071,6 +1083,7 @@
 <translation id="5524590039848017563">收合咗主要工具列按鈕</translation>
 <translation id="553151287733286479">{COUNT,plural, =1{{COUNT} 個安全度低的密碼}other{{COUNT} 個安全度低的密碼}}</translation>
 <translation id="5532545557415295622">閒置逾時對話框</translation>
+<translation id="5547868626772433490">問 Gemini</translation>
 <translation id="5548760955356983418">「Handoff」讓您可在此裝置上開始瀏覽網站，然後輕易在 Mac 上繼續瀏覽。目前開啟的網站將會在 Mac 的 Dock 中顯示。
 
 您必須先在「設定」的「一般」部分啟用 Handoff，且裝置須使用相同的 iCloud 帳戶。</translation>
@@ -1282,6 +1295,9 @@
 <translation id="6339793034470834130">如要使用「網絡檢查工具」，請透過連接線連線至電腦的 Safari，並從「開發」選單存取 iPhone。您可透過電腦，在 Safari 設定的「進階」部分中啟用「開發」選單。</translation>
 <translation id="6340285871011301182">無法進行部分翻譯。</translation>
 <translation id="6340526405444716530">個人化</translation>
+<translation id="6341140761912903432">登入受管帳戶後，就能將機構相關的瀏覽資料 (包括分頁、記錄和密碼) 與其他瀏覽資料分開。
+
+       現有瀏覽資料將會分開保存。只要登出受管帳戶，就能使用這些資料。</translation>
 <translation id="6342069812937806050">剛剛完成</translation>
 <translation id="6344533709188026708">專屬工作空間</translation>
 <translation id="6347953390226388422">{count,plural, =1{此地址將會從您的 Google 帳戶 (<ph name="USER_EMAIL" />) 及此裝置上刪除。}other{這些地址將會從您的 Google 帳戶 (<ph name="USER_EMAIL" />) 及此裝置上刪除。}}</translation>
@@ -1954,6 +1970,7 @@
 <translation id="8923178205567790913">密碼</translation>
 <translation id="892776311701544612">瞭解詳情…</translation>
 <translation id="8928133177108699615">桌面模式</translation>
+<translation id="8928426232677696166">目前選取 <ph name="EMAIL" />，該帳戶由你的機構管理。請選擇帳戶。</translation>
 <translation id="894191600409472540">建立安全度高的密碼</translation>
 <translation id="8943780400130412484">要開始新的下載嗎？</translation>
 <translation id="8944844131570002190">開啟位置…</translation>

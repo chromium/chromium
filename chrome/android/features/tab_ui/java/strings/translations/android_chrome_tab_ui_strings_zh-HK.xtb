@@ -120,6 +120,7 @@
 <translation id="6051432659151380973">分頁群組將會自動儲存</translation>
 <translation id="6054741997831917303">呢件商品嘅價格最近由 <ph name="PREVIOUS_PRICE" /> 減到 <ph name="NEW_PRICE" /></translation>
 <translation id="6109251075362363230">所有重複的分頁現在亦會封存 (最近使用的重複分頁除外)。</translation>
+<translation id="61924696525243173">{WINDOW_COUNT,plural, =1{將群組移至新視窗}other{將群組移至另一個視窗}}</translation>
 <translation id="6193448654517602979">選取分頁</translation>
 <translation id="6212567362666004597">將分頁加入群組</translation>
 <translation id="6220820548421939212">是，我同意</translation>
@@ -176,6 +177,7 @@
 <translation id="7942349550061667556">紅色</translation>
 <translation id="7961015016161918242">從來沒有</translation>
 <translation id="7966321538264951561">閂建議。</translation>
+<translation id="796696298310625748">{WINDOW_COUNT,plural, =1{將分頁移至新視窗}other{將分頁移至其他視窗}}</translation>
 <translation id="799469866974412355">其他裝置建立的新群組</translation>
 <translation id="8029301326595421733">關於呢間商店嘅資料宜家顯示喺成個畫面</translation>
 <translation id="8053770993984522566">分頁群組清單，目前顯示於畫面下半部</translation>
@@ -197,6 +199,7 @@
 <translation id="8730621377337864115">完成</translation>
 <translation id="8730999928494395583">系統將會從此裝置移除你在這些無痕式分頁中的活動</translation>
 <translation id="875848103419578654">{NUM_MONTHS,plural, =1{<ph name="NUM_MONTHS_ONE" /> 個月前建立}other{<ph name="NUM_MONTHS_MANY" /> 個月前建立}}</translation>
+<translation id="8813708480179818649">從群組中移除分頁</translation>
 <translation id="8820741577754260431">在分頁上查看降價資料</translation>
 <translation id="883379923675618699">Chrome 會自動關閉閒置部分中 3 個月未曾使用的項目。你現在或隨時都可以在「設定」中關閉此功能。</translation>
 <translation id="8887921976452567404">你可以在「最近開啟的分頁」和「分頁群組」部分重新開啟已關閉的分頁和群組。</translation>

@@ -9981,6 +9981,7 @@
 <translation id="8037801708772278989">भर्खरै जाँच गरिएको</translation>
 <translation id="8038111231936746805">(डिफल्ट)</translation>
 <translation id="8039151841428107077">{NUM_OF_FILES,plural, =1{एउटा फाइल कपी गरेर <ph name="CLOUD_PROVIDER" /> मा पेस्ट गरिँदै छ}other{{NUM_OF_FILES} वटा फाइल कपी गरेर <ph name="CLOUD_PROVIDER" /> मा पेस्ट गरिँदै छन्}}</translation>
+<translation id="8039525676147630657">Chrome को यो एपले तपाईंको ChromeOS को संस्करण अपडेट भएपछि काम गर्न छाड्ने छ। आफूले राख्न चाहेका एपसम्बन्धी सबै डेटा सेभ गर्नुहोस्। आफ्ना लागि उपलब्ध विकल्पहरूका बारेमा जान्न यो एपका विकासकर्ता वा आफ्नो IT ग्राहक सेवा टोलीलाई सम्पर्क गर्नुहोस्।</translation>
 <translation id="8041089156583427627">प्रतिक्रिया पठाउनुहोस्।</translation>
 <translation id="8041093619605951337">खुसी</translation>
 <translation id="8041267120753677077">आफ्नो फोनका एपहरू चलाउनुहोस्</translation>
