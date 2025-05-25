@@ -27,8 +27,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/session_sync_service_factory.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
-#include "chrome/browser/ui/views/frame/browser_view.h"
-#include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -343,9 +341,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionSessionsTest, RestoreNonEditableTabstrip) {
   // of a tab dragging session.
   Browser* non_editable_browser =
       Browser::Create(Browser::CreateParams(browser()->profile(), true));
-  non_editable_browser->GetBrowserView()
-      .tabstrip()
-      ->SetTabStripNotEditableForTesting();
+  non_editable_browser->window()->SetTabStripNotEditableForTesting();
 
   EXPECT_TRUE(base::MatchPattern(
       utils::RunFunctionAndReturnError(

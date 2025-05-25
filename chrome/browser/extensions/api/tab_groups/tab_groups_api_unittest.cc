@@ -837,7 +837,7 @@ TEST_F(TabGroupsApiUnitTest, IsTabStripEditable) {
   }
 
   // Make tab strip uneditable.
-  browser_window()->SetIsTabStripEditable(false);
+  browser_window()->SetTabStripNotEditableForTesting();
   EXPECT_FALSE(browser_window()->IsTabStripEditable());
 
   // Succeed querying group when tab strip is not editable.

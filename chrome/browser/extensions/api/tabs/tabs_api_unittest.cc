@@ -225,7 +225,7 @@ TEST_F(TabsApiUnitTest, IsTabStripEditable) {
   }
 
   // Start logical drag.
-  browser_window()->SetIsTabStripEditable(false);
+  browser_window()->SetTabStripNotEditableForTesting();
   ASSERT_FALSE(browser_window()->IsTabStripEditable());
 
   // Succeed with updates that don't interact with the tab strip model.

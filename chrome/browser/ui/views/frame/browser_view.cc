@@ -3385,6 +3385,10 @@ bool BrowserView::IsTabStripEditable() const {
   return tabstrip_->IsTabStripEditable();
 }
 
+void BrowserView::SetTabStripNotEditableForTesting() {
+  tabstrip_->SetTabStripNotEditableForTesting();
+}
+
 bool BrowserView::IsToolbarVisible() const {
 #if BUILDFLAG(IS_MAC)
   // Immersive full screen makes it possible to display the toolbar when

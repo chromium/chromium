@@ -231,8 +231,8 @@ bool TestBrowserWindow::IsTabStripEditable() const {
   return is_tab_strip_editable_;
 }
 
-void TestBrowserWindow::SetIsTabStripEditable(bool is_editable) {
-  is_tab_strip_editable_ = is_editable;
+void TestBrowserWindow::SetTabStripNotEditableForTesting() {
+  is_tab_strip_editable_ = false;
 }
 
 bool TestBrowserWindow::IsToolbarVisible() const {
