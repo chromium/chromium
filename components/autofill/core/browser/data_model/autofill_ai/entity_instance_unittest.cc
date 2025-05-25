@@ -77,6 +77,28 @@ TEST(AutofillEntityInstanceTest, Attributes_NormalizedType) {
   EXPECT_EQ(GetInfo(passport_number, ADDRESS_HOME_STREET_NAME), u"LR0123456");
 }
 
+// Tests that AttributeInstance localizes the country name.
+TEST(AutofillEntityInstanceTest, Attributes_CountryLocalization) {
+  AttributeInstance passport_country((AttributeType(kPassportCountry)));
+  passport_country.SetInfo(PASSPORT_ISSUING_COUNTRY, u"SE",
+                           /*app_locale=*/"", /*format_string=*/u"",
+                           VerificationStatus::kObserved);
+
+  EXPECT_EQ(GetInfo(passport_country, PASSPORT_ISSUING_COUNTRY,
+                    {.app_locale = kAppLocaleUS}),
+            u"Sweden");
+  EXPECT_EQ(GetInfo(passport_country, ADDRESS_HOME_COUNTRY,
+                    {.app_locale = kAppLocaleUS}),
+            u"Sweden");
+
+  EXPECT_EQ(GetInfo(passport_country, PASSPORT_ISSUING_COUNTRY,
+                    {.app_locale = "de-DE"}),
+            u"Schweden");
+  EXPECT_EQ(
+      GetInfo(passport_country, ADDRESS_HOME_COUNTRY, {.app_locale = "de-DE"}),
+      u"Schweden");
+}
+
 // Tests that AttributeInstance appropriately manages structured names.
 TEST(AutofillEntityInstanceTest, Attributes_StructuredName) {
   AttributeInstance passport_name((AttributeType(kPassportName)));

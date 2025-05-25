@@ -179,12 +179,10 @@ void AttributeInstance::SetRawInfo(FieldType type,
 FieldTypeSet AttributeInstance::GetSupportedTypes() const {
   return std::visit(
       base::Overloaded{
-          [&](const CountryInfo&) {
-            return FieldTypeSet{ADDRESS_HOME_COUNTRY};
-          },
+          [&](const CountryInfo&) { return FieldTypeSet{type_.field_type()}; },
           [&](const DateInfo&) { return FieldTypeSet{type_.field_type()}; },
           [&](const NameInfo& name) { return name.GetSupportedTypes(); },
-          [&](const StateInfo&) { return FieldTypeSet{ADDRESS_HOME_STATE}; },
+          [&](const StateInfo&) { return FieldTypeSet{type_.field_type()}; },
           [&](const std::u16string&) {
             return FieldTypeSet{type_.field_type()};
           }},
@@ -194,12 +192,10 @@ FieldTypeSet AttributeInstance::GetSupportedTypes() const {
 FieldTypeSet AttributeInstance::GetDatabaseStoredTypes() const {
   return std::visit(
       base::Overloaded{
-          [&](const CountryInfo&) {
-            return FieldTypeSet{ADDRESS_HOME_COUNTRY};
-          },
+          [&](const CountryInfo&) { return FieldTypeSet{type_.field_type()}; },
           [&](const DateInfo&) { return FieldTypeSet{type_.field_type()}; },
           [&](const NameInfo&) { return NameInfo::kDatabaseStoredTypes; },
-          [&](const StateInfo&) { return FieldTypeSet{ADDRESS_HOME_STATE}; },
+          [&](const StateInfo&) { return FieldTypeSet{type_.field_type()}; },
           [&](const std::u16string&) {
             return FieldTypeSet{type_.field_type()};
           }},
@@ -218,10 +214,10 @@ FieldType AttributeInstance::GetNormalizedType(FieldType info_type) const {
     // that case, we assume the type is the top-level type of the attribute.
     return std::visit(
         base::Overloaded{
-            [&](const CountryInfo&) { return ADDRESS_HOME_COUNTRY; },
+            [&](const CountryInfo&) { return type().field_type(); },
             [&](const DateInfo&) { return type().field_type(); },
             [&](const NameInfo&) { return NAME_FULL; },
-            [&](const StateInfo&) { return ADDRESS_HOME_STATE; },
+            [&](const StateInfo&) { return type().field_type(); },
             [&](const std::u16string&) { return type().field_type(); }},
         info_);
   }
