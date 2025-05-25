@@ -105,12 +105,9 @@ IN_PROC_BROWSER_TEST_F(CrExtensionsTest, SitePermissionsList) {
   RunTest("extensions/site_permissions_list_test.js", "mocha.run()");
 }
 
-// TODO(crbug.com/392777363): Enable this test on desktop android.
-#if BUILDFLAG(ENABLE_EXTENSIONS)
 IN_PROC_BROWSER_TEST_F(CrExtensionsTest, UrlUtil) {
   RunTest("extensions/url_util_test.js", "mocha.run()");
 }
-#endif
 
 IN_PROC_BROWSER_TEST_F(CrExtensionsTest, SitePermissionsEditPermissionsDialog) {
   RunTest("extensions/site_permissions_edit_permissions_dialog_test.js",

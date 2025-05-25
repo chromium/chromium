@@ -5,15 +5,17 @@
 import 'chrome://extensions/extensions.js';
 
 import {getFaviconUrl} from 'chrome://extensions/extensions.js';
+import {isAndroid} from 'chrome://resources/js/platform.js';
 import {assertEquals} from 'chrome://webui-test/chai_assert.js';
 
 suite('UrlUtilTest', function() {
   function getExpectedImageSet(url: string): string {
+    const scale = isAndroid ? window.devicePixelRatio : 2;
     return 'image-set(' +
         'url("chrome://favicon2/?size=20&scaleFactor=1x&pageUrl=' +
         encodeURIComponent(url) + '&allowGoogleServerFallback=0") 1x, ' +
-        'url("chrome://favicon2/?size=20&scaleFactor=2x&pageUrl=' +
-        encodeURIComponent(url) + '&allowGoogleServerFallback=0") 2x)';
+        `url("chrome://favicon2/?size=20&scaleFactor=${scale}x&pageUrl=` +
+        encodeURIComponent(url) + `&allowGoogleServerFallback=0") ${scale}x)`;
   }
 
   test('favicon for normal URL', function() {
