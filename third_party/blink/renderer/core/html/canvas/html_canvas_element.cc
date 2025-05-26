@@ -1186,8 +1186,8 @@ void HTMLCanvasElement::Paint(GraphicsContext& context,
 
 void HTMLCanvasElement::PaintInternal(GraphicsContext& context,
                                       const PhysicalRect& r) {
-  context_->PaintRenderingResultsToCanvas(kFrontBuffer);
-  CanvasResourceProvider* provider = ResourceProvider();
+  CanvasResourceProvider* provider =
+      context_->PaintRenderingResultsToCanvas(kFrontBuffer);
 
   if (provider != nullptr) {
     // For 2D Canvas, there are two ways of render Canvas for printing:
@@ -1312,9 +1312,11 @@ scoped_refptr<StaticBitmapImage> HTMLCanvasElement::Snapshot(
     image_bitmap = OffscreenCanvasFrame()->Bitmap();
   } else if (IsWebGL()) {
     if (context_->CreationAttributes().premultiplied_alpha) {
-      context_->PaintRenderingResultsToCanvas(source_buffer);
-      if (ResourceProvider())
-        image_bitmap = ResourceProvider()->Snapshot(reason);
+      CanvasResourceProvider* provider =
+          context_->PaintRenderingResultsToCanvas(source_buffer);
+      if (provider) {
+        image_bitmap = provider->Snapshot(reason);
+      }
     } else {
       image_bitmap =
           context_->GetRGBAUnacceleratedStaticBitmapImage(source_buffer);
@@ -1974,11 +1976,10 @@ HTMLCanvasElement::GetSourceImageForCanvasInternal(FlushReason reason,
       // Because WebGL/WebGPU sources always require copying the back buffer,
       // we use PaintRenderingResultsToCanvas instead of GetImage in order to
       // keep a cached copy of the backing in the canvas's resource provider.
-      RenderingContext()->PaintRenderingResultsToCanvas(kBackBuffer);
-      // TODO(sunnyps): Check what PaintRenderingResultsToCanvas returns. It
-      // seems the above returns false unexpectedly in some tests.
-      if (ResourceProvider()) {
-        image = ResourceProvider()->Snapshot(reason);
+      CanvasResourceProvider* provider =
+          RenderingContext()->PaintRenderingResultsToCanvas(kBackBuffer);
+      if (provider) {
+        image = provider->Snapshot(reason);
       }
     } else if (RenderingContext()) {
       // This is either CanvasRenderingContext2D or ImageBitmapRenderingContext.
