@@ -66,8 +66,13 @@ class SpacingApplier {
         // glyph is next to `current_item`'s first glyph, since the two glyphs
         // meet the condition of adding spacing.
         // https://drafts.csswg.org/css-text-4/#propdef-text-autospace.
+        const ComputedStyle* last_style = last_item_->Style();
+        const float last_spacing =
+            last_style == &style
+                ? spacing
+                : TextAutoSpace::GetSpacingWidth(last_style->GetFont());
         offsets_with_spacing_.emplace_back(
-            OffsetWithSpacing({.offset = *offset, .spacing = spacing}));
+            OffsetWithSpacing({.offset = *offset, .spacing = last_spacing}));
         ++offset;
       } else {
         // This branch holds an assumption that RTL texts cannot be ideograph.
