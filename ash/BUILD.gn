@@ -4580,7 +4580,7 @@ test("ash_unittests") {
     "wm/system_gesture_event_filter_unittest.cc",
     "wm/system_modal_container_layout_manager_unittest.cc",
     "wm/system_panel_view_unittest.cc",
-    "wm/tablet_mode/accelerometer_test_data_literals.cc",
+    "wm/tablet_mode/accelerometer_test_data_literals.h",
     "wm/tablet_mode/tablet_mode_controller_unittest.cc",
     "wm/tablet_mode/tablet_mode_multitask_cue_controller_unittest.cc",
     "wm/tablet_mode/tablet_mode_multitask_menu_unittest.cc",

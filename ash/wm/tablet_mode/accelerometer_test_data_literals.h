@@ -1,12 +1,21 @@
-// Copyright 2014 The Chromium Authors
+// Copyright 2025 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <iterator>
+#ifndef ASH_WM_TABLET_MODE_ACCELEROMETER_TEST_DATA_LITERALS_H_
+#define ASH_WM_TABLET_MODE_ACCELEROMETER_TEST_DATA_LITERALS_H_
+
+#include <array>
 
 namespace ash {
 
-extern const float kAccelerometerLaptopModeTestData[] = {
+// Test accelerometer data taken with the lid at less than 180 degrees while
+// shaking the device around. The data is to be interpreted in groups of 6 where
+// each 6 values corresponds to the base accelerometer (-y / g, -x / g, -z / g)
+// followed by the lid accelerometer (-y / g , x / g, z / g).
+
+// clang-format off
+inline constexpr auto kAccelerometerLaptopModeTestData = std::to_array<float>({
     -0.166016f,   -0.00488281f,  0.924805f,     -0.770508f,    -0.0488281f,
     -0.510742f,   -0.199219f,    -0.0078125f,   0.953125f,     -0.782227f,
     -0.0244141f,  -0.652344f,    -0.177734f,    -0.0136719f,   0.936523f,
@@ -554,11 +563,18 @@ extern const float kAccelerometerLaptopModeTestData[] = {
     1.0459f,      -0.972656f,    -0.0605469f,   -0.228516f,    0.0507812f,
     -0.0810547f,  0.956055f,     -0.9375f,      -0.18457f,     -0.275391f,
     0.0703125f,   -0.0986328f,   0.948242f,     -0.928711f,    -0.162109f,
-    -0.333008f};
-extern const size_t kAccelerometerLaptopModeTestDataLength =
-    std::size(kAccelerometerLaptopModeTestData);
+    -0.333008f});
+// clang-format on
+static_assert(kAccelerometerLaptopModeTestData.size() == 2736,
+              "Declared array size does not match actual data length.");
 
-extern const float kAccelerometerFullyOpenTestData[] = {
+// Test accelerometer data taken with the lid open 360 degrees while
+// shaking the device around. The data is to be interpreted in groups of 6 where
+// each 6 values corresponds to the base accelerometer (-y / g, -x / g, -z / g)
+// followed by the lid accelerometer (-y / g , x / g, z / g).
+
+// clang-format off
+inline constexpr auto kAccelerometerFullyOpenTestData = std::to_array<float>({
     0.892578f,    -0.0810547f,  0.0146484f,    0.929688f,     -0.0644531f,
     -0.0234375f,  0.996094f,    -0.0136719f,   0.0185547f,    1.02344f,
     -0.0615234f,  -0.0449219f,  0.978516f,     0.125977f,     0.0400391f,
@@ -992,11 +1008,18 @@ extern const float kAccelerometerFullyOpenTestData[] = {
     0.347656f,    0.926758f,    -0.0371094f,   0.266602f,     0.894531f,
     -0.00683594f, 0.345703f,    0.926758f,     -0.0478516f,   0.269531f,
     0.887695f,    0.0146484f,   0.360352f,     0.927734f,     -0.03125f,
-    0.272461f};
-extern const size_t kAccelerometerFullyOpenTestDataLength =
-    std::size(kAccelerometerFullyOpenTestData);
+    0.272461f});
+// clang-format on
+static_assert(kAccelerometerFullyOpenTestData.size() == 2166,
+              "Declared array size does not match actual data length.");
 
-extern const float kAccelerometerVerticalHingeTestData[] = {
+// Test accelerometer data taken with the lid open 360 degrees while the device
+// hinge was nearly vertical, while shaking the device around. The data is to be
+// interpreted in groups of 6 where each 6 values corresponds to the X, Y, and Z
+// readings from the base and lid accelerometers in this order.
+
+// clang-format off
+inline constexpr auto kAccelerometerVerticalHingeTestData = std::to_array<float>({
     -0.0766145f,  6.02381f,     7.85298f,     -0.268151f,   -8.84897f,
     -1.3216f,     -0.402226f,   5.11401f,     8.77236f,     -1.10133f,
     -10.1706f,    1.24498f,     -1.18752f,    6.40688f,     8.0924f,
@@ -1993,12 +2016,18 @@ extern const float kAccelerometerVerticalHingeTestData[] = {
     -1.00556f,    -9.5385f,     0.497994f,    0.162806f,    -8.47547f,
     4.32872f,     0.248997f,    -9.165f,      -2.27928f,    0.143652f,
     -8.6287f,     4.47237f,     0.354342f,    -9.51935f,    0.986411f,
-};
+});
+// clang-format on
+static_assert(kAccelerometerVerticalHingeTestData.size() == 4980,
+              "Declared array size does not match actual data length.");
 
-extern const size_t kAccelerometerVerticalHingeTestDataLength =
-    std::size(kAccelerometerVerticalHingeTestData);
+// Test accelerometer data taken with the lid open 360 degrees while the device
+// hinge was nearly vertical, while shaking the device around. The data is to be
+// interpreted in groups of 6 where each 6 values corresponds to the X, Y, and Z
+// readings from the base and lid accelerometers in this order.
 
-extern const float kAccelerometerVerticalHingeUnstableAnglesTestData[] = {
+// clang-format off
+inline constexpr auto kAccelerometerVerticalHingeUnstableAnglesTestData = std::to_array<float>({
     8.5904f,   -1.36948f,  -3.74453f,   8.72447f,  1.1971f,    4.00311f,
     8.80109f,  -3.08373f,  2.27928f,    8.95431f,  -1.90578f,  -1.10133f,
     8.93516f,  -2.03986f,  0.248997f,   9.05008f,  1.53229f,   -0.708684f,
@@ -2020,9 +2049,11 @@ extern const float kAccelerometerVerticalHingeUnstableAnglesTestData[] = {
     -9.03093f, 1.06303f,   1.39821f,    -8.8777f,  -4.47237f,  -0.632069f,
     -8.74362f, -1.83875f,  -0.0957681f, -7.92002f, 1.0343f,    -3.84988f,
     -8.92558f, 0.440533f,  1.26414f,    -8.71489f, -0.153229f, -3.64876f,
-};
-
-extern const size_t kAccelerometerVerticalHingeUnstableAnglesTestDataLength =
-    std::size(kAccelerometerVerticalHingeUnstableAnglesTestData);
+});
+// clang-format on
+static_assert(kAccelerometerVerticalHingeUnstableAnglesTestData.size() == 126,
+              "Declared array size does not match actual data length.");
 
 }  // namespace ash
+
+#endif  // ASH_WM_TABLET_MODE_ACCELEROMETER_TEST_DATA_LITERALS_H_

@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ash/login/ui/login_pin_view.h"
 
+#include <array>
 #include <memory>
 
 #include "ash/login/ui/login_button.h"
@@ -54,7 +50,7 @@ namespace {
 // Values for the ink drop.
 constexpr int kInkDropCornerRadiusDp = 24;
 
-constexpr const char* kPinLabels[] = {
+constexpr std::array<const char*, 10> kPinLabels = {
     "+",      // 0
     "",       // 1
     " ABC",   // 2

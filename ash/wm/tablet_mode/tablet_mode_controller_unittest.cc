@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 
 #include <math.h>
@@ -34,6 +29,7 @@
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/splitview/split_view_controller.h"
 #include "ash/wm/splitview/split_view_utils.h"
+#include "ash/wm/tablet_mode/accelerometer_test_data_literals.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller_test_api.h"
 #include "ash/wm/toplevel_window_event_handler.h"
 #include "ash/wm/window_util.h"
@@ -92,29 +88,6 @@ constexpr char kExitHistogram[] = "Ash.TabletMode.AnimationSmoothness.Exit";
 constexpr char kLsbReleaseContent[] = "CHROMEOS_RELEASE_NAME=Chromium OS\n";
 
 }  // namespace
-
-// Test accelerometer data taken with the lid at less than 180 degrees while
-// shaking the device around. The data is to be interpreted in groups of 6 where
-// each 6 values corresponds to the base accelerometer (-y / g, -x / g, -z / g)
-// followed by the lid accelerometer (-y / g , x / g, z / g).
-extern const float kAccelerometerLaptopModeTestData[];
-extern const size_t kAccelerometerLaptopModeTestDataLength;
-
-// Test accelerometer data taken with the lid open 360 degrees while
-// shaking the device around. The data is to be interpreted in groups of 6 where
-// each 6 values corresponds to the base accelerometer (-y / g, -x / g, -z / g)
-// followed by the lid accelerometer (-y / g , x / g, z / g).
-extern const float kAccelerometerFullyOpenTestData[];
-extern const size_t kAccelerometerFullyOpenTestDataLength;
-
-// Test accelerometer data taken with the lid open 360 degrees while the device
-// hinge was nearly vertical, while shaking the device around. The data is to be
-// interpreted in groups of 6 where each 6 values corresponds to the X, Y, and Z
-// readings from the base and lid accelerometers in this order.
-extern const float kAccelerometerVerticalHingeTestData[];
-extern const size_t kAccelerometerVerticalHingeTestDataLength;
-extern const float kAccelerometerVerticalHingeUnstableAnglesTestData[];
-extern const size_t kAccelerometerVerticalHingeUnstableAnglesTestDataLength;
 
 class TabletModeControllerTest : public AshTestBase {
  public:
@@ -569,8 +542,8 @@ TEST_F(TabletModeControllerTest, LaptopTest) {
   // transitions into tabletmode / tablet mode while shaking the device around
   // with the hinge at less than 180 degrees. Note the conversion from device
   // data to accelerometer updates consistent with accelerometer_reader.cc.
-  ASSERT_EQ(0u, kAccelerometerLaptopModeTestDataLength % 6);
-  for (size_t i = 0; i < kAccelerometerLaptopModeTestDataLength / 6; ++i) {
+  ASSERT_EQ(0u, kAccelerometerLaptopModeTestData.size() % 6);
+  for (size_t i = 0; i < kAccelerometerLaptopModeTestData.size() / 6; ++i) {
     gfx::Vector3dF base(-kAccelerometerLaptopModeTestData[i * 6 + 1],
                         -kAccelerometerLaptopModeTestData[i * 6],
                         -kAccelerometerLaptopModeTestData[i * 6 + 2]);
@@ -596,8 +569,8 @@ TEST_F(TabletModeControllerTest, TabletModeTest) {
   // transitions out of tabletmode / tablet mode while shaking the device
   // around. Note the conversion from device data to accelerometer updates
   // consistent with accelerometer_reader.cc.
-  ASSERT_EQ(0u, kAccelerometerFullyOpenTestDataLength % 6);
-  for (size_t i = 0; i < kAccelerometerFullyOpenTestDataLength / 6; ++i) {
+  ASSERT_EQ(0u, kAccelerometerFullyOpenTestData.size() % 6);
+  for (size_t i = 0; i < kAccelerometerFullyOpenTestData.size() / 6; ++i) {
     gfx::Vector3dF base(-kAccelerometerFullyOpenTestData[i * 6 + 1],
                         -kAccelerometerFullyOpenTestData[i * 6],
                         -kAccelerometerFullyOpenTestData[i * 6 + 2]);
@@ -618,8 +591,8 @@ TEST_F(TabletModeControllerTest, VerticalHingeTest) {
   // transitions out of tabletmode / tablet mode while shaking the device
   // around, while the hinge is nearly vertical. The data was captured from
   // maxmimize_mode_controller.cc and does not require conversion.
-  ASSERT_EQ(0u, kAccelerometerVerticalHingeTestDataLength % 6);
-  for (size_t i = 0; i < kAccelerometerVerticalHingeTestDataLength / 6; ++i) {
+  ASSERT_EQ(0u, kAccelerometerVerticalHingeTestData.size() % 6);
+  for (size_t i = 0; i < kAccelerometerVerticalHingeTestData.size() / 6; ++i) {
     gfx::Vector3dF base(kAccelerometerVerticalHingeTestData[i * 6],
                         kAccelerometerVerticalHingeTestData[i * 6 + 1],
                         kAccelerometerVerticalHingeTestData[i * 6 + 2]);
@@ -760,9 +733,9 @@ TEST_F(TabletModeControllerTest, VerticalHingeUnstableAnglesTest) {
   // transitions out of tabletmode / tablet mode while shaking the device
   // around, while the hinge is nearly vertical. The data was captured
   // from maxmimize_mode_controller.cc and does not require conversion.
-  ASSERT_EQ(0u, kAccelerometerVerticalHingeUnstableAnglesTestDataLength % 6);
+  ASSERT_EQ(0u, kAccelerometerVerticalHingeUnstableAnglesTestData.size() % 6);
   for (size_t i = 0;
-       i < kAccelerometerVerticalHingeUnstableAnglesTestDataLength / 6; ++i) {
+       i < kAccelerometerVerticalHingeUnstableAnglesTestData.size() / 6; ++i) {
     gfx::Vector3dF base(
         kAccelerometerVerticalHingeUnstableAnglesTestData[i * 6],
         kAccelerometerVerticalHingeUnstableAnglesTestData[i * 6 + 1],

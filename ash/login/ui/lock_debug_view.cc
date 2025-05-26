@@ -2,14 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ash/login/ui/lock_debug_view.h"
 
 #include <algorithm>
+#include <array>
 #include <map>
 #include <memory>
 #include <optional>
@@ -67,19 +63,20 @@
 namespace ash {
 namespace {
 
-constexpr const char* kDebugUserNames[] = {
+constexpr std::array<const char*, 6> kDebugUserNames = {
     "Angelina Johnson", "Marcus Cohen", "Chris Wallace",
     "Debbie Craig",     "Stella Wong",  "Stephanie Wade",
 };
 
-constexpr const char* kDebugPublicAccountNames[] = {
+constexpr std::array<const char*, 4> kDebugPublicAccountNames = {
     "Seattle Public Library",
     "San Jose Public Library",
     "Sunnyvale Public Library",
     "Mountain View Public Library",
 };
 
-constexpr const char* kDebugDetachableBases[] = {"Base A", "Base B", "Base C"};
+constexpr std::array<const char*, 3> kDebugDetachableBases = {
+    "Base A", "Base B", "Base C"};
 
 constexpr const char kDebugOsVersion[] =
     "Chromium 64.0.3279.0 (Platform 10146.0.0 dev-channel peppy test)";

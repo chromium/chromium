@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ash/public/cpp/login/login_utils.h"
 
 #include <string_view>
@@ -38,9 +33,7 @@ UserAvatar BuildAshUserAvatarForUser(const user_manager::User& user) {
   };
 
   if (user.has_image_bytes()) {
-    avatar.bytes.assign(
-        user.image_bytes()->front(),
-        user.image_bytes()->front() + user.image_bytes()->size());
+    avatar.bytes.assign(user.image_bytes()->begin(), user.image_bytes()->end());
   } else if (user.image_is_stub()) {
     load_image_from_resource(IDR_LOGIN_DEFAULT_USER);
   }
