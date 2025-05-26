@@ -2568,6 +2568,9 @@ bool SelectorChecker::CheckPseudoElement(const SelectorCheckingContext& context,
     case CSSSelector::kPseudoDetailsContent:
       return MatchesUAShadowElement(element,
                                     shadow_element_names::kIdDetailsContent);
+    case CSSSelector::kPseudoPermissionIcon:
+      return MatchesUAShadowElement(element,
+                                    shadow_element_names::kIdPermissionIcon);
     case CSSSelector::kPseudoWebKitCustomElement:
       return MatchesUAShadowElement(element, selector.Value());
     case CSSSelector::kPseudoBlinkInternalElement:

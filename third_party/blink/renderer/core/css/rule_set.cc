@@ -298,6 +298,7 @@ bool ShouldStopExtractingAtPseudoElement(
     case CSSSelector::kPseudoPlaceholder:
     case CSSSelector::kPseudoFileSelectorButton:
     case CSSSelector::kPseudoDetailsContent:
+    case CSSSelector::kPseudoPermissionIcon:
     case CSSSelector::kPseudoPicker:
     case CSSSelector::kPseudoWebKitCustomElement:
     case CSSSelector::kPseudoBlinkInternalElement:
@@ -358,6 +359,7 @@ static bool ExtractSelectorValues(const CSSSelector* selector,
         case CSSSelector::kPseudoFocusVisible:
         case CSSSelector::kPseudoPlaceholder:
         case CSSSelector::kPseudoDetailsContent:
+        case CSSSelector::kPseudoPermissionIcon:
         case CSSSelector::kPseudoFileSelectorButton:
         case CSSSelector::kPseudoHost:
         case CSSSelector::kPseudoHostContext:

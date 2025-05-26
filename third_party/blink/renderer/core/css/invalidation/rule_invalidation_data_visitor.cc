@@ -100,6 +100,7 @@ bool SupportsInvalidation(CSSSelector::PseudoType type) {
     case CSSSelector::kPseudoNot:
     case CSSSelector::kPseudoPlaceholder:
     case CSSSelector::kPseudoDetailsContent:
+    case CSSSelector::kPseudoPermissionIcon:
     case CSSSelector::kPseudoFileSelectorButton:
     case CSSSelector::kPseudoResizer:
     case CSSSelector::kPseudoRoot:

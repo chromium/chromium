@@ -289,6 +289,7 @@ class CORE_EXPORT CSSSelector {
     kPseudoPermissionElementInvalidStyle,
     kPseudoPermissionElementOccluded,
     kPseudoPermissionGranted,
+    kPseudoPermissionIcon,
     kPseudoPlaceholder,
     kPseudoPlaceholderShown,
     kPseudoReadOnly,

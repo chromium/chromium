@@ -270,6 +270,8 @@ protocol::DOM::PseudoType InspectorDOMAgent::ProtocolPseudoElementType(
       return protocol::DOM::PseudoTypeEnum::FileSelectorButton;
     case kPseudoIdDetailsContent:
       return protocol::DOM::PseudoTypeEnum::DetailsContent;
+    case kPseudoIdPermissionIcon:
+      return protocol::DOM::PseudoTypeEnum::PermissionIcon;
     case kPseudoIdPickerSelect:
       return protocol::DOM::PseudoTypeEnum::Picker;
     case kPseudoIdViewTransition:
@@ -392,6 +394,9 @@ PseudoId InspectorDOMAgent::ProtocolPseudoTypeToPseudoId(
   }
   if (type == protocol::DOM::PseudoTypeEnum::DetailsContent) {
     return kPseudoIdDetailsContent;
+  }
+  if (type == protocol::DOM::PseudoTypeEnum::PermissionIcon) {
+    return kPseudoIdPermissionIcon;
   }
   if (type == protocol::DOM::PseudoTypeEnum::Picker) {
     return kPseudoIdPickerSelect;

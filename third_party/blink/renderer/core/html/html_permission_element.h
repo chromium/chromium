@@ -18,6 +18,7 @@
 #include "third_party/blink/renderer/core/frame/cached_permission_status.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
+#include "third_party/blink/renderer/core/html/html_permission_icon_element.h"
 #include "third_party/blink/renderer/core/intersection_observer/intersection_observer.h"
 #include "third_party/blink/renderer/core/scroll/scroll_snapshot_client.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
@@ -535,6 +536,7 @@ class CORE_EXPORT HTMLPermissionElement final
   HashMap<DisableReason, base::TimeTicks> clicking_disabled_reasons_;
 
   Member<HTMLSpanElement> permission_text_span_;
+  Member<HTMLPermissionIconElement> permission_internal_icon_;
   Member<IntersectionObserver> intersection_observer_;
 
   // Keeps track of the time a request was created.

@@ -8420,6 +8420,7 @@ void Element::SetShadowPseudoId(const AtomicString& id) {
     DCHECK(type == CSSSelector::kPseudoWebKitCustomElement ||
            type == CSSSelector::kPseudoBlinkInternalElement ||
            type == CSSSelector::kPseudoDetailsContent ||
+           type == CSSSelector::kPseudoPermissionIcon ||
            id == shadow_element_names::kPickerSelect)
         << "type: " << type << ", id: " << id;
   }

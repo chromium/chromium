@@ -379,6 +379,8 @@ PseudoId CSSSelector::GetPseudoId(PseudoType type) {
       return kPseudoIdFileSelectorButton;
     case kPseudoDetailsContent:
       return kPseudoIdDetailsContent;
+    case kPseudoPermissionIcon:
+      return kPseudoIdPermissionIcon;
     case kPseudoPicker:
       // NOTE: When we support more than one argument to ::picker() we will
       // need to refactor something here (possibly the callers of this method)
@@ -643,6 +645,7 @@ constexpr static NameToPseudoStruct kPseudoTypeWithoutArgumentsMap[] = {
     {"out-of-range", CSSSelector::kPseudoOutOfRange},
     {"past", CSSSelector::kPseudoPastCue},
     {"paused", CSSSelector::kPseudoPaused},
+    {"permission-icon", CSSSelector::kPseudoPermissionIcon},
     {"picker-icon", CSSSelector::kPseudoPickerIcon},
     {"picture-in-picture", CSSSelector::kPseudoPictureInPicture},
     {"placeholder", CSSSelector::kPseudoPlaceholder},
@@ -923,6 +926,11 @@ void CSSSelector::UpdatePseudoType(const AtomicString& value,
     case kPseudoViewTransitionOld:
     case kPseudoViewTransitionNew:
     case kPseudoDetailsContent:
+      if (Match() != kPseudoElement) {
+        bits_.set<PseudoTypeField>(kPseudoUnknown);
+      }
+      break;
+    case kPseudoPermissionIcon:
       if (Match() != kPseudoElement) {
         bits_.set<PseudoTypeField>(kPseudoUnknown);
       }
@@ -1635,7 +1643,8 @@ bool CSSSelector::IsTreeAbidingPseudoElement() const {
 
 /* static */ bool CSSSelector::IsElementBackedPseudoElement(
     CSSSelector::PseudoType pseudo) {
-  return pseudo == kPseudoDetailsContent || pseudo == kPseudoPicker;
+  return pseudo == kPseudoDetailsContent || pseudo == kPseudoPicker ||
+         pseudo == kPseudoPermissionIcon;
 }
 
 bool CSSSelector::IsElementBackedPseudoElement() const {
@@ -1685,6 +1694,7 @@ bool CSSSelector::IsAllowedAfterPart() const {
     case kPseudoWebKitCustomElement:
     case kPseudoBlinkInternalElement:
     case kPseudoDetailsContent:
+    case kPseudoPermissionIcon:
     case kPseudoViewTransition:
     case kPseudoViewTransitionGroup:
     case kPseudoViewTransitionImagePair:

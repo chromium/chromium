@@ -3012,6 +3012,7 @@ domain DOM
       file-selector-button
       details-content
       picker
+      permission-icon
 
   # Shadow root type.
   type ShadowRootType extends string

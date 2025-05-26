@@ -49,3 +49,11 @@ permission::-internal-permission-text {
   word-wrap: normal;
   word-spacing: inherit;
 }
+
+::permission-icon {
+  display: flex;
+  width: 1.3em;
+  height: 1.3em;
+  margin: auto;
+  float: inline-start;
+}

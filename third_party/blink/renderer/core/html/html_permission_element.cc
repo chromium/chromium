@@ -450,6 +450,7 @@ void HTMLPermissionElement::Trace(Visitor* visitor) const {
   visitor->Trace(permission_service_);
   visitor->Trace(embedded_permission_control_receiver_);
   visitor->Trace(permission_text_span_);
+  visitor->Trace(permission_internal_icon_);
   visitor->Trace(intersection_observer_);
   visitor->Trace(disable_reason_expire_timer_);
   HTMLElement::Trace(visitor);
@@ -783,6 +784,12 @@ void HTMLPermissionElement::AttributeChanged(
 }
 
 void HTMLPermissionElement::DidAddUserAgentShadowRoot(ShadowRoot& root) {
+  if (RuntimeEnabledFeatures::PermissionElementIconEnabled(
+          GetDocument().GetExecutionContext())) {
+    permission_internal_icon_ =
+        MakeGarbageCollected<HTMLPermissionIconElement>(GetDocument());
+    root.AppendChild(permission_internal_icon_);
+  }
   permission_text_span_ = MakeGarbageCollected<HTMLSpanElement>(GetDocument());
   permission_text_span_->SetShadowPseudoId(
       shadow_element_names::kPseudoInternalPermissionTextSpan);
@@ -1398,7 +1405,16 @@ void HTMLPermissionElement::UpdateText() {
     permission_name = permission_status_map_.begin()->key;
     permission_count = permission_status_map_.size();
   }
-
+  if (RuntimeEnabledFeatures::PermissionElementIconEnabled(
+          GetDocument().GetExecutionContext())) {
+    GetTaskRunner()->PostTask(
+        FROM_HERE,
+        WTF::BindOnce(&HTMLPermissionIconElement::SetIcon,
+                      WrapWeakPersistent(permission_internal_icon_.Get()),
+                      permission_count == 1 ? permission_name
+                                            : PermissionName::VIDEO_CAPTURE,
+                      is_precise_location_));
+  }
   AtomicString language_string = ComputeInheritedLanguage().LowerASCII();
 
   uint16_t untranslated_message_id =
@@ -1727,7 +1743,10 @@ void HTMLPermissionElement::EnableFallbackMode() {
   UserAgentShadowRoot()->AppendChild(
       MakeGarbageCollected<HTMLSlotElement>(GetDocument()));
   UserAgentShadowRoot()->RemoveChild(permission_text_span_);
-
+  if (RuntimeEnabledFeatures::PermissionElementIconEnabled(
+          GetDocument().GetExecutionContext())) {
+    UserAgentShadowRoot()->RemoveChild(permission_internal_icon_);
+  }
   MaybeDispatchValidationChangeEvent();
 }
 
