@@ -905,7 +905,7 @@ public abstract class ChromeFeatureList {
     public static final CachedFlag sUseChimeAndroidSdk =
             newCachedFlag(USE_CHIME_ANDROID_SDK, false);
     public static final CachedFlag sUseActivityManagerForTabActivation =
-            newCachedFlag(USE_ACTIVITY_MANAGER_FOR_TAB_ACTIVATION, false);
+            newCachedFlag(USE_ACTIVITY_MANAGER_FOR_TAB_ACTIVATION, true);
     public static final CachedFlag sUseLibunwindstackNativeUnwinderAndroid =
             newCachedFlag(USE_LIBUNWINDSTACK_NATIVE_UNWINDER_ANDROID, true);
     public static final CachedFlag sWebApkMinShellApkVersion =
