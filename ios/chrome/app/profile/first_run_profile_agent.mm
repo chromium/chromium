@@ -6,12 +6,14 @@
 
 #import "base/check.h"
 #import "base/check_op.h"
+#import "components/feature_engagement/public/tracker.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/app/application_delegate/startup_information.h"
 #import "ios/chrome/app/profile/profile_init_stage.h"
 #import "ios/chrome/app/profile/profile_state.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_utils.h"
 #import "ios/chrome/browser/device_orientation/ui_bundled/scoped_force_portrait_orientation.h"
+#import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/first_run/ui_bundled/first_run_coordinator.h"
 #import "ios/chrome/browser/first_run/ui_bundled/first_run_screen_provider.h"
 #import "ios/chrome/browser/first_run/ui_bundled/guided_tour/guided_tour_coordinator.h"
@@ -60,6 +62,9 @@
 
   // Used to force the device orientation in portrait mode on iPhone.
   std::unique_ptr<ScopedForcePortraitOrientation> _scopedForceOrientation;
+
+  // Used to prevent other IPHs from showing during the Guided Tour.
+  std::unique_ptr<feature_engagement::DisplayLockHandle> _displayLock;
 }
 
 #pragma mark - Public
@@ -103,6 +108,15 @@
   AppState* appState = profileState.appState;
   if (appState.startupInformation.isFirstRun) {
     _scopedForceOrientation = ForcePortraitOrientationOnIphone(appState);
+    if (IsBestOfAppFREEnabled()) {
+      id<BrowserProvider> presentingInterface =
+          _presentingSceneState.browserProviderInterface.currentBrowserProvider;
+      Browser* browser = presentingInterface.browser;
+      feature_engagement::Tracker* engagementTracker =
+          feature_engagement::TrackerFactory::GetForProfile(
+              browser->GetProfile()->GetOriginalProfile());
+      _displayLock = engagementTracker->AcquireDisplayLock();
+    }
   }
 }
 
@@ -255,7 +269,9 @@
 }
 
 - (void)guidedTourCompleted {
-  // TODO(crbug.com/413461470): Implement
+  _displayLock.reset();
+  _scopedForceOrientation.reset();
+  [self.profileState removeAgent:self];
 }
 
 #pragma mark - GuidedTourCoordinatorDelegate
@@ -288,6 +304,7 @@
 
 - (void)dismissGuidedTourPromo {
   [_guidedTourPromoCoordinator stopWithCompletion:nil];
+  [self guidedTourCompleted];
 }
 
 - (void)startGuidedTour {
