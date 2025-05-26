@@ -16857,14 +16857,14 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled_Uniform_20250520",
+                    "name": "Enabled_Uniform_20250526",
                     "params": {
                         "en_site_id": "N5wFxEDQr0ugnJ3q1cK0SNopqcEc",
                         "hats_histogram_name": "Feedback.HappinessTrackingSurvey.PerformanceControlsPPMSurvey",
                         "hats_survey_ukm_id": "1027171324",
                         "ppm_survey_segment_name1": "ChromeOS",
                         "ppm_survey_uniform_sample": "true",
-                        "probability": "0.108",
+                        "probability": "1.0",
                         "survey": "performance-ppm"
                     },
                     "enable_features": [
@@ -16879,7 +16879,7 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled_Uniform_20250520",
+                    "name": "Enabled_Uniform_20250526",
                     "params": {
                         "en_site_id": "N5wFxEDQr0ugnJ3q1cK0SNopqcEc",
                         "hats_histogram_name": "Feedback.HappinessTrackingSurvey.PerformanceControlsPPMSurvey",
@@ -16901,7 +16901,7 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled_Uniform_20250520",
+                    "name": "Enabled_Uniform_20250526",
                     "params": {
                         "en_site_id": "N5wFxEDQr0ugnJ3q1cK0SNopqcEc",
                         "hats_histogram_name": "Feedback.HappinessTrackingSurvey.PerformanceControlsPPMSurvey",
@@ -16911,32 +16911,6 @@
                         "ppm_survey_segment_name2": "Mac, over 8 GB",
                         "ppm_survey_uniform_sample": "true",
                         "probability": "0.252",
-                        "survey": "performance-ppm"
-                    },
-                    "enable_features": [
-                        "PerformanceControlsPPMSurvey"
-                    ]
-                }
-            ]
-        },
-        {
-            "platforms": [
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_Uniform_20250520",
-                    "params": {
-                        "en_site_id": "N5wFxEDQr0ugnJ3q1cK0SNopqcEc",
-                        "hats_histogram_name": "Feedback.HappinessTrackingSurvey.PerformanceControlsPPMSurvey",
-                        "hats_survey_ukm_id": "1027171324",
-                        "ppm_survey_segment_max_memory_gb1": "4",
-                        "ppm_survey_segment_max_memory_gb2": "8",
-                        "ppm_survey_segment_name1": "Windows, up to 4 GB",
-                        "ppm_survey_segment_name2": "",
-                        "ppm_survey_segment_name3": "",
-                        "ppm_survey_uniform_sample": "true",
-                        "probability": "0.088",
                         "survey": "performance-ppm"
                     },
                     "enable_features": [
