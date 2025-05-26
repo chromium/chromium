@@ -36,11 +36,6 @@ class ReadingListEventRouter : public KeyedService,
   void ReadingListDidUpdateEntry(const ReadingListModel* model,
                                  const GURL& url) override;
 
-  // TODO(crbug.com/40260548): Remove when MoveEntry is replaced with
-  // UpdateEntry Called when the read status of an entry is changed.
-  void ReadingListDidMoveEntry(const ReadingListModel* model,
-                               const GURL& url) override;
-
   void DispatchEvent(events::HistogramValue histogram_value,
                      const std::string& event_name,
                      base::Value::List args);

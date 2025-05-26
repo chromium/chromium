@@ -128,7 +128,7 @@ void ReadingListDownloadService::ReadingListDidAddEntry(
   ProcessNewEntry(url);
 }
 
-void ReadingListDownloadService::ReadingListDidMoveEntry(
+void ReadingListDownloadService::ReadingListDidUpdateEntry(
     const ReadingListModel* model,
     const GURL& url) {
   DCHECK_EQ(reading_list_model_, model);

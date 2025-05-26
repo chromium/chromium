@@ -67,8 +67,8 @@ class ReadingListDownloadService
   void ReadingListDidAddEntry(const ReadingListModel* model,
                               const GURL& url,
                               reading_list::EntrySource entry_source) override;
-  void ReadingListDidMoveEntry(const ReadingListModel* model,
-                               const GURL& url) override;
+  void ReadingListDidUpdateEntry(const ReadingListModel* model,
+                                 const GURL& url) override;
 
  private:
   // Checks the model and determines which entries are processed and which

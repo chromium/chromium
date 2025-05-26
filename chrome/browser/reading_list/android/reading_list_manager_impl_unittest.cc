@@ -371,7 +371,7 @@ TEST_F(ReadingListManagerImplTest, ReadingListWillRemoveEntry) {
 
 // Verifies the bookmark node is updated when sync or other source updates the
 // reading list entry from |reading_list_model_|.
-TEST_F(ReadingListManagerImplTest, ReadingListWillMoveEntry) {
+TEST_F(ReadingListManagerImplTest, ReadingListWillUpateEntry) {
   GURL url(kURL);
 
   // Adds a node.

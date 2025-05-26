@@ -303,7 +303,7 @@ void DualReadingListModel::SetReadStatusIfExists(const GURL& url, bool read) {
   const bool notify_observers = entry->IsRead() != read;
 
   if (notify_observers) {
-    NotifyObserversWithWillMoveEntry(url);
+    NotifyObserversWithWillUpdateEntry(url);
     UpdateEntryStateCountersOnEntryRemoval(*entry);
   }
 
@@ -321,7 +321,7 @@ void DualReadingListModel::SetReadStatusIfExists(const GURL& url, bool read) {
 
   if (notify_observers) {
     UpdateEntryStateCountersOnEntryInsertion(*GetEntryByURL(url));
-    NotifyObserversWithDidMoveEntry(url);
+    NotifyObserversWithDidUpdateEntry(url);
     NotifyObserversWithDidApplyChanges();
   }
 }
@@ -576,28 +576,6 @@ void DualReadingListModel::ReadingListDidRemoveEntry(
   NotifyObserversWithDidRemoveEntry(url);
 }
 
-void DualReadingListModel::ReadingListWillMoveEntry(
-    const ReadingListModel* model,
-    const GURL& url) {
-  if (!loaded() || suppress_observer_notifications_) {
-    return;
-  }
-
-  NotifyObserversWithWillMoveEntry(url);
-  UpdateEntryStateCountersOnEntryRemoval(*GetEntryByURL(url));
-}
-
-void DualReadingListModel::ReadingListDidMoveEntry(
-    const ReadingListModel* model,
-    const GURL& url) {
-  if (!loaded() || suppress_observer_notifications_) {
-    return;
-  }
-
-  UpdateEntryStateCountersOnEntryInsertion(*GetEntryByURL(url));
-  NotifyObserversWithDidMoveEntry(url);
-}
-
 void DualReadingListModel::ReadingListWillAddEntry(
     const ReadingListModel* model,
     const ReadingListEntry& entry) {
@@ -649,6 +627,7 @@ void DualReadingListModel::ReadingListWillUpdateEntry(
     return;
   }
   NotifyObserversWithWillUpdateEntry(url);
+  UpdateEntryStateCountersOnEntryRemoval(*GetEntryByURL(url));
 }
 
 void DualReadingListModel::ReadingListDidUpdateEntry(
@@ -657,6 +636,7 @@ void DualReadingListModel::ReadingListDidUpdateEntry(
   if (!loaded() || suppress_observer_notifications_) {
     return;
   }
+  UpdateEntryStateCountersOnEntryInsertion(*GetEntryByURL(url));
   NotifyObserversWithDidUpdateEntry(url);
 }
 
@@ -694,18 +674,6 @@ void DualReadingListModel::NotifyObserversWithWillRemoveEntry(const GURL& url) {
 void DualReadingListModel::NotifyObserversWithDidRemoveEntry(const GURL& url) {
   for (auto& observer : observers_) {
     observer.ReadingListDidRemoveEntry(this, url);
-  }
-}
-
-void DualReadingListModel::NotifyObserversWithWillMoveEntry(const GURL& url) {
-  for (auto& observer : observers_) {
-    observer.ReadingListWillMoveEntry(this, url);
-  }
-}
-
-void DualReadingListModel::NotifyObserversWithDidMoveEntry(const GURL& url) {
-  for (auto& observer : observers_) {
-    observer.ReadingListDidMoveEntry(this, url);
   }
 }
 

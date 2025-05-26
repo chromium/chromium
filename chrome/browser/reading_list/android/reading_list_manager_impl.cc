@@ -96,16 +96,6 @@ void ReadingListManagerImpl::ReadingListWillRemoveEntry(
   RemoveBookmark(url);
 }
 
-void ReadingListManagerImpl::ReadingListDidMoveEntry(
-    const ReadingListModel* model,
-    const GURL& url) {
-  DCHECK(reading_list_model_->loaded());
-  scoped_refptr<const ReadingListEntry> moved_entry =
-      reading_list_model_->GetEntryByURL(url);
-  DCHECK(moved_entry);
-  AddOrUpdateBookmark(moved_entry.get());
-}
-
 void ReadingListManagerImpl::ReadingListDidUpdateEntry(
     const ReadingListModel* model,
     const GURL& url) {

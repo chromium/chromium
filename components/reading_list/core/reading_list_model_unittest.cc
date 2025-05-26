@@ -511,8 +511,8 @@ TEST_F(ReadingListModelTest, SyncMergeEntry) {
   EXPECT_CALL(observer_, ReadingListDidUpdateEntry(_, _)).Times(0);
 
   testing::InSequence seq;
-  EXPECT_CALL(observer_, ReadingListWillMoveEntry(model_.get(), url));
-  EXPECT_CALL(observer_, ReadingListDidMoveEntry(model_.get(), url));
+  EXPECT_CALL(observer_, ReadingListWillUpdateEntry(model_.get(), url));
+  EXPECT_CALL(observer_, ReadingListDidUpdateEntry(model_.get(), url));
   EXPECT_CALL(observer_, ReadingListDidApplyChanges(model_.get()));
 
   // DCHECKs verify that sync updates are issued as batch updates.
@@ -639,8 +639,8 @@ TEST_F(ReadingListModelTest, ReadEntry) {
                             /*estimated_read_time=*/base::TimeDelta());
 
   testing::InSequence seq;
-  EXPECT_CALL(observer_, ReadingListWillMoveEntry(model_.get(), url));
-  EXPECT_CALL(observer_, ReadingListDidMoveEntry(model_.get(), url));
+  EXPECT_CALL(observer_, ReadingListWillUpdateEntry(model_.get(), url));
+  EXPECT_CALL(observer_, ReadingListDidUpdateEntry(model_.get(), url));
   EXPECT_CALL(observer_, ReadingListDidApplyChanges(model_.get()));
 
   model_->SetReadStatusIfExists(url, true);
@@ -696,8 +696,8 @@ TEST_F(ReadingListModelTest, UnreadEntry) {
   ASSERT_EQ(1ul, ReadSize());
 
   testing::InSequence seq;
-  EXPECT_CALL(observer_, ReadingListWillMoveEntry(model_.get(), url));
-  EXPECT_CALL(observer_, ReadingListDidMoveEntry(model_.get(), url));
+  EXPECT_CALL(observer_, ReadingListWillUpdateEntry(model_.get(), url));
+  EXPECT_CALL(observer_, ReadingListDidUpdateEntry(model_.get(), url));
   EXPECT_CALL(observer_, ReadingListDidApplyChanges(model_.get()));
 
   model_->SetReadStatusIfExists(url, false);
