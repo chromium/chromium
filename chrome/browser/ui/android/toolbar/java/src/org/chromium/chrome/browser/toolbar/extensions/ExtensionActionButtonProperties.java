@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.toolbar.extensions;
 
 import android.graphics.Bitmap;
+import android.view.View;
 
 import androidx.annotation.IntDef;
 
@@ -32,6 +33,10 @@ public class ExtensionActionButtonProperties {
     /** The action ID (i.e. extension ID). */
     public static final WritableObjectPropertyKey<String> ID = new WritableObjectPropertyKey<>();
 
+    /** The primary-click listener. */
+    public static final WritableObjectPropertyKey<View.OnClickListener> ON_CLICK_LISTENER =
+            new WritableObjectPropertyKey<>();
+
     /**
      * The title of the action. It is the name of the extension by default, but an extension can
      * update it programmatically.
@@ -39,5 +44,6 @@ public class ExtensionActionButtonProperties {
     public static final WritableObjectPropertyKey<String> TITLE = new WritableObjectPropertyKey<>();
 
     /** The list of all keys defined here. */
-    public static final PropertyKey[] ALL_KEYS = new PropertyKey[] {ICON, ID, TITLE};
+    public static final PropertyKey[] ALL_KEYS =
+            new PropertyKey[] {ICON, ID, ON_CLICK_LISTENER, TITLE};
 }

@@ -27,6 +27,8 @@ public class ExtensionActionButtonViewBinder {
             // TODO: Investigate the correct resizing method.
             bitmap.setDensity(120);
             button.setImageBitmap(bitmap);
+        } else if (key == ExtensionActionButtonProperties.ON_CLICK_LISTENER) {
+            button.setOnClickListener(model.get(ExtensionActionButtonProperties.ON_CLICK_LISTENER));
         }
     }
 }
