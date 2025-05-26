@@ -1234,7 +1234,7 @@ bool AXObject::AriaIntAttribute(const QualifiedName& attribute,
     value_if_less_than_1 = 1;
   } else {
     // For now, try to get the illegal attribute, but catch the error.
-    NOTREACHED(base::NotFatalUntil::M133) << "Not an int attribute.";
+    NOTREACHED() << "Not an int attribute.";
   }
 
   if (out_value) {

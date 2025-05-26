@@ -13,7 +13,7 @@
 namespace base {
 
 ScopedBoostPriority::ScopedBoostPriority(ThreadType target_thread_type) {
-  CHECK_LT(target_thread_type, ThreadType::kRealtimeAudio, NotFatalUntil::M133);
+  CHECK_LT(target_thread_type, ThreadType::kRealtimeAudio);
   const ThreadType original_thread_type =
       PlatformThread::GetCurrentThreadType();
   const bool should_boost = original_thread_type < target_thread_type &&

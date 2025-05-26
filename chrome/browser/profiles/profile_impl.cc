@@ -27,7 +27,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
-#include "base/not_fatal_until.h"
 #include "base/path_service.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -1119,17 +1118,13 @@ void ProfileImpl::OnLocaleReady(CreateMode create_mode) {
   // the services affected by the migration are.
   // TODO(crbug.com/369297671): Remove one year after launching
   // kForceMigrateSyncingUserToSignedIn on all //chrome platforms.
-  CHECK(GetPrefs(), base::NotFatalUntil::M133);
-  CHECK(!IdentityManagerFactory::GetForProfileIfExists(this),
-        base::NotFatalUntil::M133);
-  CHECK(!SyncServiceFactory::HasSyncService(this), base::NotFatalUntil::M133);
-  CHECK(!BookmarkModelFactory::GetForBrowserContextIfExists(this),
-        base::NotFatalUntil::M133);
-  CHECK(!ProfilePasswordStoreFactory::HasStore(this),
-        base::NotFatalUntil::M133);
-  CHECK(!AccountPasswordStoreFactory::HasStore(this),
-        base::NotFatalUntil::M133);
-  CHECK(!ReadingListModelFactory::HasModel(this), base::NotFatalUntil::M133);
+  CHECK(GetPrefs());
+  CHECK(!IdentityManagerFactory::GetForProfileIfExists(this));
+  CHECK(!SyncServiceFactory::HasSyncService(this));
+  CHECK(!BookmarkModelFactory::GetForBrowserContextIfExists(this));
+  CHECK(!ProfilePasswordStoreFactory::HasStore(this));
+  CHECK(!AccountPasswordStoreFactory::HasStore(this));
+  CHECK(!ReadingListModelFactory::HasModel(this));
   browser_sync::MaybeMigrateSyncingUserToSignedIn(GetPath(), GetPrefs());
 
 #if BUILDFLAG(IS_ANDROID)

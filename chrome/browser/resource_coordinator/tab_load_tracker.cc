@@ -9,7 +9,6 @@
 
 #include "base/check_op.h"
 #include "base/containers/contains.h"
-#include "base/not_fatal_until.h"
 #include "base/observer_list.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/resource_coordinator/resource_coordinator_parts.h"
@@ -210,7 +209,7 @@ TabLoadTracker::LoadingState TabLoadTracker::DetermineLoadingState(
 
 void TabLoadTracker::TransitionToUnloaded(content::WebContents* web_contents) {
   auto it = tabs_.find(web_contents);
-  CHECK(it != tabs_.end(), base::NotFatalUntil::M133);
+  CHECK(it != tabs_.end());
   // The tab could already be UNLOADED if it hasn't yet started loading. This
   // can happen if the renderer crashes between the UNLOADED and LOADING states.
   if (it->second.loading_state == UNLOADED) {
