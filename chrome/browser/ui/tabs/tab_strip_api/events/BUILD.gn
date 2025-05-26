@@ -1,0 +1,32 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("events") {
+  sources = [
+    "event.h",
+    "event_transformation.cc",
+    "event_transformation.h",
+    "tab_strip_event_recorder.cc",
+    "tab_strip_event_recorder.h",
+  ]
+
+  deps = [
+    "//chrome/browser/ui/tabs:tab_strip_model_observer",
+    "//chrome/browser/ui/tabs/tab_strip_api:mojom",
+    "//chrome/browser/ui/tabs/tab_strip_api:types",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "tab_strip_event_recorder_unittest.cc" ]
+
+  deps = [
+    ":events",
+    "//base/test:test_support",
+    "//chrome/browser/ui/tabs/tab_strip_api:mojom",
+    "//testing/gtest",
+  ]
+}

@@ -10,7 +10,7 @@
 namespace tabs_api {
 namespace {
 
-TEST(TabsApiMojoTraitsTest, Convert) {
+TEST(TabsStripServiceMojoTraitsTest, Convert) {
   TabId original(TabId::Type::kCollection, "super_secret_id");
 
   auto serialized = mojom::TabId::Serialize(&original);

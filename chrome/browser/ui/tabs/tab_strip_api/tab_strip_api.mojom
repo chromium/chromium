@@ -60,7 +60,10 @@ struct TabsSnapshot {
   array<Tab> tabs;
   // Updates to tabs would be sent through this update stream. Clients may
   // subscribe to this stream to receive update events.
-  pending_receiver<TabsObserver> stream;
+  // The interface is associated with the interface used to retrieve this
+  // stream. This means that the ordering of the message between the remote
+  // and the observation stream is preserved.
+  pending_associated_receiver<TabsObserver> stream;
 };
 
 // The TabStripService is an object that lives alongside the
@@ -104,11 +107,24 @@ interface TabStripService {
       => result<mojo_base.mojom.Empty, mojo_base.mojom.Error>;
 };
 
+// TODO (crbug.com/411134070). Add in missing TabData.
+struct OnTabsCreatedEvent {
+  // Tab ids of the newly created tabs.
+  array<TabId> tabs;
+};
+
+struct OnTabsClosedEvent {
+  // Tab ids of the closed tabs.
+  array<TabId> tabs;
+};
+
 // TODO (crbug.com/412955607)
 // TabsObserver is not a CheckedObserver. There is a potential UaF if the
 // observer list attempts to call a destroyed TabsObserver that hasn't removed
 // itself from the list.
 interface TabsObserver {
-  // TODO (crbug.com/411134070). Add in missing TabData.
-  OnTabsCreated(array<Position> pos);
+  // When new tabs have been created on the tab strip.
+  OnTabsCreated(OnTabsCreatedEvent event);
+  // When tabs have been closed on the tab strip.
+  OnTabsClosed(OnTabsClosedEvent event);
 };
