@@ -2265,7 +2265,7 @@ using UserFeedbackDataCallback =
 }
 
 - (void)showPriceTrackingNotificationsSettings {
-  CHECK(!self.signinCoordinator, base::NotFatalUntil::M134);
+  CHECK(!self.signinCoordinator);
   if (self.settingsNavigationController) {
     __weak SceneController* weakSelf = self;
     [self closePresentedViews:NO

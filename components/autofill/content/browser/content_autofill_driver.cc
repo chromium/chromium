@@ -422,8 +422,7 @@ ukm::SourceId ContentAutofillDriver::GetPageUkmSourceId() const {
     // TODO(crbug.com/380129810): When `return ukm::kInvalidSourceId` is
     // removed, FormInteractionsUkmLogger::CanLog() doesn't need to check the
     // `ukm::SourceId` anymore.
-    NOTREACHED(base::NotFatalUntil::M134);
-    return ukm::kInvalidSourceId;
+    NOTREACHED();
   }
   return render_frame_host_->GetPageUkmSourceId();
 }

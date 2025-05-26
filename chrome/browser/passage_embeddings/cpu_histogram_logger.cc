@@ -104,7 +104,7 @@ void CpuHistogramLogger::CpuObserver::OnResourceUsageUpdated(
       // proportion tracker might skip the final measurement due to a race.
       return;
     }
-    CHECK_EQ(cpu_proportion.size(), 1ul, base::NotFatalUntil::M134);
+    CHECK_EQ(cpu_proportion.size(), 1ul);
     int sample = cpu_proportion.begin()->second * kCpuUsageFactor;
     base::UmaHistogramCustomCounts("History.Embeddings.Embedder.CpuUsage2",
                                    sample, kCpuUsageMin, kCpuUsageMax,

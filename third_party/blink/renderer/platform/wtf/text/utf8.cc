@@ -34,7 +34,6 @@
 #include <unicode/utf16.h>
 
 #include "base/check.h"
-#include "base/not_fatal_until.h"
 #include "base/notreached.h"
 #include "third_party/blink/renderer/platform/wtf/text/ascii_ctype.h"
 #include "third_party/blink/renderer/platform/wtf/text/character_names.h"
@@ -166,11 +165,9 @@ ConversionStatus ConvertUTF16ToUTF8(const UChar** source_start,
     } else if (ch < (UChar32)0x110000) {
       bytes_to_write = 4;
     } else {
-      // TODO(crbug.com/329702346): Surrogate pairs cannot represent codepoints
-      // higher than 0x10FFFF, so this should not be reachable.
-      NOTREACHED(base::NotFatalUntil::M134);
-      bytes_to_write = 3;
-      ch = kReplacementCharacter;
+      // Surrogate pairs cannot represent codepoints higher than 0x10FFFF, so
+      // this should not be reachable.
+      NOTREACHED();
     }
 
     target += bytes_to_write;
@@ -348,17 +345,10 @@ ConversionStatus ConvertUTF8ToUTF16(const uint8_t** source_start,
       *target++ = U16_LEAD(character);
       *target++ = U16_TRAIL(character);
     } else {
-      // TODO(crbug.com/329702346): This should never happen;
-      // InlineUTF8SequenceLength() can never return a value higher than 4, and
-      // a 4-byte UTF-8 sequence can never encode anything higher than 0x10FFFF.
-      NOTREACHED(base::NotFatalUntil::M134);
-      if (strict) {
-        source -= utf8_sequence_length;  // return to the start
-        status = kSourceIllegal;
-        break;  // Bail out; shouldn't continue
-      } else {
-        *target++ = kReplacementCharacter;
-      }
+      // This should never happen; InlineUTF8SequenceLength() can never return
+      // a value higher than 4, and a 4-byte UTF-8 sequence can never encode
+      // anything higher than 0x10FFFF.
+      NOTREACHED();
     }
   }
   *source_start = source;
