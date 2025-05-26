@@ -47,6 +47,8 @@ class CodePointIterator {
     explicit Utf16(base::span<const CharT> span)
         : Utf16(reinterpret_cast<const UChar*>(span.data()), span.size()) {}
 
+    // Constructor for creating a 'begin' iterator from a span of 16-bit
+    // characters.
     template <typename CharT>
       requires(std::is_integral_v<CharT> && sizeof(CharT) == 2)
     static Utf16 End(base::span<const CharT> span) {
@@ -54,11 +56,18 @@ class CodePointIterator {
                    0};
     }
 
+    // Returns a `end` iterator for `this` iterator.
+    Utf16 EndForThis() const { return Utf16{data_ + length_, 0}; }
+
     bool operator==(const Utf16& other) const { return data_ == other.data_; }
     bool operator!=(const Utf16& other) const { return !(*this == other); }
 
     UChar32 operator*() const;
     void operator++();
+
+    // Advance the iterator by the number of code units. Note that this is
+    // different from `operator+`, which advances by the number of code points.
+    void AdvanceByCodeUnits(wtf_size_t by);
 
    private:
     friend class CodePointIterator;
@@ -122,6 +131,13 @@ inline UChar32 CodePointIterator::Utf16::operator*() const {
   code_point_length_ = 0;
   U16_NEXT(data_, code_point_length_, length_, ch);
   return ch;
+}
+
+inline void CodePointIterator::Utf16::AdvanceByCodeUnits(wtf_size_t by) {
+  CHECK_LE(by, length_);
+  data_ += by;
+  length_ -= by;
+  code_point_length_ = 0;
 }
 
 inline void CodePointIterator::Utf16::operator++() {
