@@ -94,7 +94,6 @@ void AutofillAiModelExecutorImpl::OnModelExecuted(
     optimization_guide::OptimizationGuideModelExecutionResult execution_result,
     std::unique_ptr<optimization_guide::proto::FormsClassificationsLoggingData>
         logging_data) {
-  LogModelPredictions(std::move(logging_data));
   const FormSignature form_signature = CalculateFormSignature(form_data);
   ongoing_queries_.erase(form_signature);
 
@@ -116,6 +115,7 @@ void AutofillAiModelExecutorImpl::OnModelExecuted(
     return;
   }
 
+  LogModelPredictions(std::move(logging_data));
   const size_t response_size = response->field_responses_size();
   if (response_size == 0) {
     model_cache_->Update(form_signature, {}, {});

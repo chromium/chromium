@@ -328,7 +328,7 @@ TEST_F(AutofillAiModelExecutorImplTest, WrongTypeReturned) {
   engine()->GetPredictions(form, on_model_executed.Get(), std::nullopt);
 }
 
-TEST_F(AutofillAiModelExecutorImplTest, MQLSUpload) {
+TEST_F(AutofillAiModelExecutorImplTest, MqlsUpload) {
   base::test::ScopedFeatureList features;
   features.InitWithFeatures(
       /*enabled_features=*/
@@ -368,6 +368,40 @@ TEST_F(AutofillAiModelExecutorImplTest, MQLSUpload) {
       uploaded_logs[0]->forms_classifications();
   EXPECT_THAT(log.request(), EqualsProto(expected_request));
   EXPECT_THAT(log.response(), EqualsProto(response));
+}
+
+// Tests that no MQLS log is sent if the server returned with an error.
+TEST_F(AutofillAiModelExecutorImplTest, NoMqlsUploadOnError) {
+  base::test::ScopedFeatureList features;
+  features.InitWithFeatures(
+      /*enabled_features=*/
+      {optimization_guide::features::kFormsClassificationsMqlsLogging,
+       autofill::features::kAutofillAiUploadModelRequestAndResponse},
+      /*disabled_features=*/{});
+
+  const FormData form;
+  MockOnModelExecutedCallback on_model_executed;
+  EXPECT_CALL(
+      *model_executor(),
+      ExecuteModel(
+          optimization_guide::ModelBasedCapabilityKey::kFormsClassifications, _,
+          _, An<OptimizationGuideModelExecutionResultCallback>()))
+      .WillOnce(base::test::RunOnceCallback<3>(
+          OptimizationGuideModelExecutionResult(
+              base::unexpected(
+                  OptimizationGuideModelExecutionError::FromModelExecutionError(
+                      OptimizationGuideModelExecutionError::
+                          ModelExecutionError::kGenericFailure)),
+              /*execution_info=*/nullptr),
+          /*log_entry=*/nullptr));
+  EXPECT_CALL(model_cache(),
+              Update(CalculateFormSignature(form),
+                     EqualsProto(AutofillAiTypeResponse()), IsEmpty()));
+  EXPECT_CALL(on_model_executed, Run(form.global_id()));
+
+  engine()->GetPredictions(form, on_model_executed.Get(), std::nullopt);
+
+  EXPECT_THAT(mqls_uploader().uploaded_logs(), IsEmpty());
 }
 
 }  // namespace
