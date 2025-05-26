@@ -4385,6 +4385,9 @@ Press an assigned switch or key to remove assignment.
   <message name="IDS_SETTINGS_PRINTING_CUPS_PRINTER_ADVANCED_CONFIG_SELECT_DRIVER" desc="Label for the file selector to manually select a PPD file from the user's file system.">
     Alternatively, select printer PPD. <ph name="LINK_BEGIN">&lt;a&gt;</ph>Learn more<ph name="LINK_END">&lt;/a&gt;</ph>
   </message>
+  <message name="IDS_SETTINGS_PRINTING_CUPS_PRINTER_MANAGED_PRINTER_PPD" desc="Label for the text box displaying a path to the used PPD file for the active printer.">
+    Printer PPD
+  </message>
   <message name="IDS_SETTINGS_PRINTING_CUPS_PRINTER_SELECT_DRIVER" desc="Label for the file selector to manually select a PPD file from the user's file system.">
     or select PPD. <ph name="LINK_BEGIN">&lt;a&gt;</ph>Learn more<ph name="LINK_END">&lt;/a&gt;</ph>
   </message>
