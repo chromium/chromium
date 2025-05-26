@@ -455,7 +455,7 @@ TEST_F(LegacySWPictureLayerImplTest, ViewportRectForTilePriorityIsCached) {
             active_layer()->viewport_rect_for_tile_priority_in_content_space());
 }
 
-TEST_F(LegacySWPictureLayerImplTest, ClonePartialInvalidation) {
+TEST_F(NoLowResPictureLayerImplTest, ClonePartialInvalidation) {
   gfx::Size layer_bounds(400, 400);
   gfx::Rect layer_invalidation(150, 200, 30, 180);
 
@@ -485,7 +485,7 @@ TEST_F(LegacySWPictureLayerImplTest, ClonePartialInvalidation) {
                               gfx::Size(50, 50), layer_invalidation);
 
   EXPECT_EQ(1u, pending_layer()->num_tilings());
-  EXPECT_EQ(3u, active_layer()->num_tilings());
+  EXPECT_EQ(2u, active_layer()->num_tilings());
 
   const PictureLayerTilingSet* tilings = pending_layer()->tilings();
   EXPECT_GT(tilings->num_tilings(), 0u);
