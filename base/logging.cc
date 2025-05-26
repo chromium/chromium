@@ -33,7 +33,6 @@
 #include "base/functional/callback.h"
 #include "base/immediate_crash.h"
 #include "base/no_destructor.h"
-#include "base/not_fatal_until.h"
 #include "base/path_service.h"
 #include "base/pending_task.h"
 #include "base/posix/eintr_wrapper.h"
@@ -550,13 +549,13 @@ bool BaseInitLoggingImpl(const LoggingSettings& settings) {
 
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
   if (settings.log_file) {
-    CHECK(settings.log_file_path.empty(), base::NotFatalUntil::M127);
+    CHECK(settings.log_file_path.empty());
     g_log_file = settings.log_file;
     return true;
   }
 #endif  // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
 
-  CHECK(!settings.log_file_path.empty(), base::NotFatalUntil::M127)
+  CHECK(!settings.log_file_path.empty())
       << "LOG_TO_FILE set but no log_file_path!";
 
   if (!g_log_file_name) {

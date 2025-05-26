@@ -38,8 +38,8 @@ void DistillerPage::DistillPage(
     const dom_distiller::proto::DomDistillerOptions options,
     DistillerPageCallback callback) {
   CHECK(ready_);
-  CHECK(callback, base::NotFatalUntil::M127);
-  CHECK(!distiller_page_callback_, base::NotFatalUntil::M127);
+  CHECK(callback);
+  CHECK(!distiller_page_callback_);
   // It is only possible to distill one page at a time. |ready_| is reset when
   // the callback to OnDistillationDone happens.
   ready_ = false;

@@ -1241,8 +1241,8 @@ void TemplateURLService::SetUserSelectedDefaultSearchProvider(
       // kicked in after a choice screen was shown, that could be a way to
       // enter this state
       // TODO(crbug.com/328041262): Investigate mitigation options.
-      CHECK_NE(choice_made_location, search_engines::ChoiceMadeLocation::kOther,
-               base::NotFatalUntil::M127);
+      CHECK_NE(choice_made_location,
+               search_engines::ChoiceMadeLocation::kOther);
     }
   } else {
     // We rely on the DefaultSearchManager to call ApplyDefaultSearchChange if,

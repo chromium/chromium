@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/web_applications/web_app_proto_utils.h"
-#include "base/not_fatal_until.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/proto/web_app_url_pattern.pb.h"
@@ -399,7 +398,7 @@ std::optional<TabStrip> ProtoToTabStrip(proto::TabStrip tab_strip_proto) {
 }
 
 std::string RelativeManifestIdPath(webapps::ManifestId manifest_id) {
-  CHECK(manifest_id.is_valid(), base::NotFatalUntil::M127);
+  CHECK(manifest_id.is_valid());
   // The relative id does not include the initial '/' character.
   std::string relative_manifest_id_path = manifest_id.PathForRequest();
   if (relative_manifest_id_path.starts_with("/")) {

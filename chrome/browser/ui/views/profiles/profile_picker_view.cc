@@ -463,7 +463,7 @@ void ProfilePickerView::OnLocalProfileInitialized(
   if (!profile) {
     NOTREACHED() << "Local fail in creating new profile";
   }
-  CHECK(!signin_util::IsForceSigninEnabled(), base::NotFatalUntil::M127);
+  CHECK(!signin_util::IsForceSigninEnabled());
 
   // Apply a new color to the profile or use the default theme.
   // TODO(b/328587059): Share the theme color logic with the same code in

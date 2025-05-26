@@ -241,18 +241,15 @@ AXObject* BlinkAXTreeSource::ChildAt(const AXObject* node, size_t index) const {
   // The child may be invalid due to issues in blink accessibility code.
   CHECK(child);
   if (child->IsDetached()) {
-    NOTREACHED(base::NotFatalUntil::M127)
-        << "Should not try to serialize an invalid child:" << "\nParent: "
-        << node->ToString().Utf8() << "\nChild: " << child->ToString().Utf8();
-    return nullptr;
+    NOTREACHED() << "Should not try to serialize an invalid child:"
+                 << "\nParent: " << node->ToString().Utf8()
+                 << "\nChild: " << child->ToString().Utf8();
   }
 
   if (!child->IsIncludedInTree()) {
-    NOTREACHED(base::NotFatalUntil::M127)
-        << "Should not receive unincluded child."
-        << "\nChild: " << child->ToString().Utf8()
-        << "\nParent: " << node->ToString().Utf8();
-    return nullptr;
+    NOTREACHED() << "Should not receive unincluded child."
+                 << "\nChild: " << child->ToString().Utf8()
+                 << "\nParent: " << node->ToString().Utf8();
   }
 
   // These should not be produced by Blink. They are only needed on Mac and

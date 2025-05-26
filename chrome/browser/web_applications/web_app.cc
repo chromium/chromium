@@ -704,8 +704,7 @@ void WebApp::SetSyncProto(sync_pb::WebAppSpecifics sync_proto) {
   CHECK(manifest_id().is_valid());
   std::string relative_manifest_id_path = RelativeManifestIdPath(manifest_id());
   if (sync_proto.has_relative_manifest_id()) {
-    CHECK_EQ(sync_proto.relative_manifest_id(), relative_manifest_id_path,
-             base::NotFatalUntil::M127);
+    CHECK_EQ(sync_proto.relative_manifest_id(), relative_manifest_id_path);
   } else {
     sync_proto.set_relative_manifest_id(relative_manifest_id_path);
   }
@@ -750,7 +749,7 @@ void WebApp::SetManifestId(const webapps::ManifestId& manifest_id) {
   CHECK(manifest_id.is_valid());
   CHECK(start_url_.is_empty() || url::IsSameOriginWith(start_url_, manifest_id))
       << start_url_.spec() << " vs " << manifest_id.spec();
-  CHECK(!manifest_id.has_ref(), base::NotFatalUntil::M127);
+  CHECK(!manifest_id.has_ref());
   manifest_id_ = manifest_id;
 
   // Ensure sync proto is initialized and remains consistent. Logic in
