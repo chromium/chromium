@@ -248,6 +248,19 @@ void BrowserWindowFeatures::InitPostWindowConstruction(Browser* browser) {
             std::make_unique<extensions::Mv2DisabledDialogController>(browser);
       }
     }
+
+    if (features::HasTabSearchToolbarButton()) {
+      // TODO(crbug.com/360163254): We should really be using
+      // Browser::GetBrowserView, which always returns a non-null BrowserView
+      // in production, but this crashes during unittests using
+      // BrowserWithTestWindowTest; these should eventually be refactored.
+      if (BrowserView* browser_view =
+              BrowserView::GetBrowserViewForBrowser(browser)) {
+        tab_search_toolbar_button_controller_ =
+            std::make_unique<TabSearchToolbarButtonController>(
+                browser_view, browser_view->GetTabSearchBubbleHost());
+      }
+    }
   }
 
   if (browser->is_type_normal() || browser->is_type_app()) {
@@ -305,11 +318,6 @@ void BrowserWindowFeatures::InitPostBrowserViewConstruction(
       cast_browser_controller_ =
           std::make_unique<media_router::CastBrowserController>(
               browser_view->browser());
-    }
-
-    if (features::HasTabSearchToolbarButton()) {
-      tab_search_toolbar_button_controller_ =
-          std::make_unique<TabSearchToolbarButtonController>(browser_view);
     }
   }
 

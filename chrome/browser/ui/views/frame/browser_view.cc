@@ -1202,13 +1202,6 @@ BrowserView::~BrowserView() {
   // other cleanups that destroy views referenced in the layout manager.
   SetLayoutManager(nullptr);
 
-  auto* tab_search_toolbar_button_controller =
-      browser_->GetFeatures().tab_search_toolbar_button_controller();
-  if (tab_search_toolbar_button_controller) {
-    tab_search_bubble_host_->RemoveObserver(
-        tab_search_toolbar_button_controller);
-  }
-
   tab_search_bubble_host_.reset();
 
   // Destroy the top controls slide controller first as it depends on the
@@ -5292,8 +5285,6 @@ void BrowserView::AddedToWidget() {
       tab_search_bubble_host_ = std::make_unique<TabSearchBubbleHost>(
           toolbar_->tab_search_button(), browser_.get(),
           tabstrip_->AsWeakPtr());
-      tab_search_bubble_host_->AddObserver(
-          browser_->GetFeatures().tab_search_toolbar_button_controller());
     } else {
       tab_search_bubble_host_ = std::make_unique<TabSearchBubbleHost>(
           tab_strip_region_view_->GetTabSearchButton(), browser_.get(),
