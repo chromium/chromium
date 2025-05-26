@@ -80,6 +80,10 @@ bool DateInputType::SetMillisecondToDateComponents(double value,
   return date->SetMillisecondsSinceEpochForDate(value);
 }
 
+bool DateInputType::CanSetSuggestedValue() {
+  return true;
+}
+
 void DateInputType::WarnIfValueIsInvalid(const String& value) const {
   if (value != GetElement().SanitizeValue(value))
     AddWarningToConsole(
