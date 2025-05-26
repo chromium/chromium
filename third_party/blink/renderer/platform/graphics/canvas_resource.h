@@ -88,10 +88,6 @@ class PLATFORM_EXPORT CanvasResource
   // The bounds for this resource.
   gfx::Size Size() const { return GetClientSharedImage()->size(); }
 
-  viz::SharedImageFormat GetFormat() const {
-    return GetClientSharedImage()->format();
-  }
-
   const gfx::ColorSpace& GetColorSpace() const { return color_space_; }
 
   SkAlphaType GetAlphaType() const { return alpha_type_; }
