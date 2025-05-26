@@ -24,23 +24,23 @@ DialogModel::Button::Params::~Params() = default;
 
 DialogModel::Button::Params& DialogModel::Button::Params::SetId(
     ElementIdentifier id) {
-  CHECK(!id_, base::NotFatalUntil::M123);
-  CHECK(id, base::NotFatalUntil::M123);
+  CHECK(!id_);
+  CHECK(id);
   id_ = id;
   return *this;
 }
 
 DialogModel::Button::Params& DialogModel::Button::Params::SetLabel(
     std::u16string label) {
-  CHECK(label_.empty(), base::NotFatalUntil::M123);
-  CHECK(!label.empty(), base::NotFatalUntil::M123);
+  CHECK(label_.empty());
+  CHECK(!label.empty());
   label_ = label;
   return *this;
 }
 
 DialogModel::Button::Params& DialogModel::Button::Params::SetStyle(
     std::optional<ButtonStyle> style) {
-  CHECK(style_ != style, base::NotFatalUntil::M123);
+  CHECK(style_ != style);
   style_ = style;
   return *this;
 }
@@ -65,7 +65,7 @@ DialogModel::Button::Button(
       style_(params.style_),
       is_enabled_(params.is_enabled_),
       callback_(std::move(callback)) {
-  CHECK(callback_, base::NotFatalUntil::M123);
+  CHECK(callback_);
 }
 
 DialogModel::Button::~Button() = default;
@@ -82,11 +82,11 @@ DialogModel::Builder::Builder(std::unique_ptr<DialogModelDelegate> delegate)
 DialogModel::Builder::Builder() : Builder(nullptr) {}
 
 DialogModel::Builder::~Builder() {
-  CHECK(!model_, base::NotFatalUntil::M123) << "Model should've been built.";
+  CHECK(!model_) << "Model should've been built.";
 }
 
 std::unique_ptr<DialogModel> DialogModel::Builder::Build() {
-  CHECK(model_, base::NotFatalUntil::M123);
+  CHECK(model_);
   return std::move(model_);
 }
 
@@ -133,18 +133,18 @@ DialogModel::Builder& DialogModel::Builder::AddExtraButton(
     base::RepeatingCallback<void(const Event&)> callback,
     const DialogModel::Button::Params& params) {
   CHECK(params.is_visible_);
-  CHECK(!model_->extra_button_, base::NotFatalUntil::M123);
-  CHECK(!model_->extra_link_, base::NotFatalUntil::M123);
+  CHECK(!model_->extra_button_);
+  CHECK(!model_->extra_link_);
   // Extra buttons are required to have labels.
-  CHECK(!params.label_.empty(), base::NotFatalUntil::M123);
+  CHECK(!params.label_.empty());
   model_->extra_button_.emplace(std::move(callback), params);
   return *this;
 }
 
 DialogModel::Builder& DialogModel::Builder::AddExtraLink(
     DialogModelLabel::TextReplacement link) {
-  CHECK(!model_->extra_button_, base::NotFatalUntil::M123);
-  CHECK(!model_->extra_link_, base::NotFatalUntil::M123);
+  CHECK(!model_->extra_button_);
+  CHECK(!model_->extra_link_);
   model_->extra_link_.emplace(std::move(link));
   return *this;
 }
@@ -152,16 +152,16 @@ DialogModel::Builder& DialogModel::Builder::AddExtraLink(
 DialogModel::Builder& DialogModel::Builder::OverrideDefaultButton(
     mojom::DialogButton button) {
   // This can only be called once.
-  CHECK(!model_->override_default_button_, base::NotFatalUntil::M123);
+  CHECK(!model_->override_default_button_);
   // Confirm the button exists.
   switch (button) {
     case mojom::DialogButton::kNone:
       break;
     case mojom::DialogButton::kOk:
-      CHECK(model_->ok_button_, base::NotFatalUntil::M123);
+      CHECK(model_->ok_button_);
       break;
     case mojom::DialogButton::kCancel:
-      CHECK(model_->cancel_button_, base::NotFatalUntil::M123);
+      CHECK(model_->cancel_button_);
       break;
   }
   model_->override_default_button_ = button;
@@ -171,9 +171,9 @@ DialogModel::Builder& DialogModel::Builder::OverrideDefaultButton(
 DialogModel::Builder& DialogModel::Builder::SetInitiallyFocusedField(
     ElementIdentifier id) {
   // This must be called with a non-null id
-  CHECK(id, base::NotFatalUntil::M123);
+  CHECK(id);
   // This can only be called once.
-  CHECK(!model_->initially_focused_field_, base::NotFatalUntil::M123);
+  CHECK(!model_->initially_focused_field_);
   model_->initially_focused_field_ = id;
   return *this;
 }

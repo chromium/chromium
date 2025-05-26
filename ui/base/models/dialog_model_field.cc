@@ -45,7 +45,7 @@ DialogModelLabel::DialogModelLabel(std::u16string fixed_string)
     : message_id_(-1), string_(std::move(fixed_string)) {}
 
 const std::u16string& DialogModelLabel::GetString() const {
-  CHECK(replacements_.empty(), base::NotFatalUntil::M123);
+  CHECK(replacements_.empty());
   return string_;
 }
 
@@ -116,17 +116,17 @@ void DialogModelField::SetVisible(bool visible) {
 }
 
 DialogModelParagraph* DialogModelField::AsParagraph() {
-  CHECK_EQ(type_, kParagraph, base::NotFatalUntil::M123);
+  CHECK_EQ(type_, kParagraph);
   return static_cast<DialogModelParagraph*>(this);
 }
 
 DialogModelCheckbox* DialogModelField::AsCheckbox() {
-  CHECK_EQ(type_, kCheckbox, base::NotFatalUntil::M123);
+  CHECK_EQ(type_, kCheckbox);
   return static_cast<DialogModelCheckbox*>(this);
 }
 
 DialogModelCombobox* DialogModelField::AsCombobox() {
-  CHECK_EQ(type_, kCombobox, base::NotFatalUntil::M123);
+  CHECK_EQ(type_, kCombobox);
   return static_cast<DialogModelCombobox*>(this);
 }
 
@@ -135,17 +135,17 @@ DialogModelMenuItem* DialogModelField::AsMenuItem() {
 }
 
 const DialogModelMenuItem* DialogModelField::AsMenuItem() const {
-  CHECK_EQ(type_, kMenuItem, base::NotFatalUntil::M123);
+  CHECK_EQ(type_, kMenuItem);
   return static_cast<const DialogModelMenuItem*>(this);
 }
 
 const DialogModelTitleItem* DialogModelField::AsTitleItem() const {
-  CHECK_EQ(type_, kTitleItem, base::NotFatalUntil::M123);
+  CHECK_EQ(type_, kTitleItem);
   return static_cast<const DialogModelTitleItem*>(this);
 }
 
 DialogModelTextfield* DialogModelField::AsTextfield() {
-  CHECK_EQ(type_, kTextfield, base::NotFatalUntil::M123);
+  CHECK_EQ(type_, kTextfield);
   return static_cast<DialogModelTextfield*>(this);
 }
 
@@ -155,7 +155,7 @@ DialogModelPasswordField* DialogModelField::AsPasswordField() {
 }
 
 DialogModelCustomField* DialogModelField::AsCustomField() {
-  CHECK_EQ(type_, kCustom, base::NotFatalUntil::M123);
+  CHECK_EQ(type_, kCustom);
   return static_cast<DialogModelCustomField*>(this);
 }
 
@@ -238,8 +238,8 @@ DialogModelMenuItem::Params& DialogModelMenuItem::Params::SetIsEnabled(
 
 DialogModelMenuItem::Params& DialogModelMenuItem::Params::SetId(
     ElementIdentifier id) {
-  CHECK(!id_, base::NotFatalUntil::M123);
-  CHECK(id, base::NotFatalUntil::M123);
+  CHECK(!id_);
+  CHECK(id);
   id_ = id;
   return *this;
 }
@@ -259,7 +259,7 @@ DialogModelMenuItem::~DialogModelMenuItem() = default;
 
 void DialogModelMenuItem::OnActivated(base::PassKey<DialogModelFieldHost>,
                                       int event_flags) {
-  CHECK(callback_, base::NotFatalUntil::M123);
+  CHECK(callback_);
   callback_.Run(event_flags);
 }
 
@@ -298,8 +298,7 @@ DialogModelTextfield::DialogModelTextfield(
       text_(std::move(text)) {
   // Textfields need either an accessible name or label or the screenreader will
   // not be able to announce anything sensible.
-  CHECK(!label_.empty() || !accessible_name_.empty(),
-        base::NotFatalUntil::M123);
+  CHECK(!label_.empty() || !accessible_name_.empty());
 }
 
 DialogModelTextfield::~DialogModelTextfield() = default;

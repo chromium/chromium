@@ -44,8 +44,7 @@ MenuModel::ItemType DialogModelMenuModelAdapter::GetTypeAt(size_t index) const {
 
 MenuSeparatorType DialogModelMenuModelAdapter::GetSeparatorTypeAt(
     size_t index) const {
-  CHECK_EQ(GetField(index)->type(), DialogModelField::kSeparator,
-           base::NotFatalUntil::M123);
+  CHECK_EQ(GetField(index)->type(), DialogModelField::kSeparator);
   return MenuSeparatorType::NORMAL_SEPARATOR;
 }
 
@@ -101,7 +100,7 @@ ButtonMenuItemModel* DialogModelMenuModelAdapter::GetButtonMenuItemAt(
 }
 
 bool DialogModelMenuModelAdapter::IsEnabledAt(size_t index) const {
-  CHECK_LT(index, GetItemCount(), base::NotFatalUntil::M123);
+  CHECK_LT(index, GetItemCount());
 
   const DialogModelField* const field = GetField(index);
   // Non-interactive title should be disabled.
@@ -114,7 +113,7 @@ bool DialogModelMenuModelAdapter::IsEnabledAt(size_t index) const {
 
 ui::ElementIdentifier DialogModelMenuModelAdapter::GetElementIdentifierAt(
     size_t index) const {
-  CHECK_LT(index, GetItemCount(), base::NotFatalUntil::M123);
+  CHECK_LT(index, GetItemCount());
 
   const DialogModelField* const field = GetField(index);
   if (field->type() == DialogModelField::kTitleItem) {
@@ -140,7 +139,7 @@ void DialogModelMenuModelAdapter::ActivatedAt(size_t index, int event_flags) {
 
 const DialogModelField* DialogModelMenuModelAdapter::GetField(
     size_t index) const {
-  CHECK_LT(index, GetItemCount(), base::NotFatalUntil::M123);
+  CHECK_LT(index, GetItemCount());
   return model_->fields(DialogModelHost::GetPassKey())[index].get();
 }
 
