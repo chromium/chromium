@@ -13,6 +13,7 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/i18n/number_formatting.h"
+#include "base/i18n/rtl.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
@@ -43,6 +44,7 @@
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/tabs/tab_strip_prefs.h"
 #include "chrome/browser/ui/toolbar/chrome_labs/chrome_labs_model.h"
 #include "chrome/browser/ui/toolbar/chrome_labs/chrome_labs_prefs.h"
 #include "chrome/browser/ui/toolbar/chrome_labs/chrome_labs_utils.h"
@@ -69,6 +71,7 @@
 #include "chrome/browser/ui/views/performance_controls/battery_saver_button.h"
 #include "chrome/browser/ui/views/performance_controls/performance_intervention_button.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
+#include "chrome/browser/ui/views/tabs/tab_strip_controller.h"
 #include "chrome/browser/ui/views/toolbar/app_menu.h"
 #include "chrome/browser/ui/views/toolbar/back_forward_button.h"
 #include "chrome/browser/ui/views/toolbar/browser_app_menu_button.h"
@@ -258,6 +261,9 @@ ToolbarView::~ToolbarView() {
 
   for (const auto& view_and_command : GetViewCommandMap()) {
     chrome::RemoveCommandObserver(browser_, view_and_command.second, this);
+  }
+  if (browser_view_->GetSupportsTabStrip()) {
+    browser()->GetTabStripModel()->RemoveObserver(this);
   }
 }
 
@@ -528,6 +534,9 @@ void ToolbarView::Init() {
     if (button) {
       button->set_tag(GetViewCommandMap().at(button->GetID()));
     }
+  }
+  if (browser_view_->GetSupportsTabStrip()) {
+    browser()->GetTabStripModel()->AddObserver(this);
   }
 
   initialized_ = true;
@@ -815,10 +824,11 @@ void ToolbarView::Layout(PassKey) {
 
   // The background views should be behind the top-left and top-right corners
   // of the container_view_.
-  const int corner_radius = GetLayoutConstant(TOOLBAR_CORNER_RADIUS);
-  background_view_left_->SetBounds(0, 0, corner_radius, corner_radius);
-  background_view_right_->SetBounds(width() - corner_radius, 0, corner_radius,
-                                    corner_radius);
+  background_view_left_->SetBounds(0, 0, receding_corner_radius_,
+                                   receding_corner_radius_);
+  background_view_right_->SetBounds(width() - receding_corner_radius_, 0,
+                                    receding_corner_radius_,
+                                    receding_corner_radius_);
 
   if (display_mode_ == DisplayMode::CUSTOM_TAB) {
     custom_tab_bar_->SetBounds(0, 0, width(),
@@ -868,7 +878,6 @@ void ToolbarView::OnThemeChanged() {
 }
 
 void ToolbarView::UpdateClipPath() {
-  const int corner_radius = GetLayoutConstant(TOOLBAR_CORNER_RADIUS);
   const gfx::Rect local_bounds = GetLocalBounds();
   SkPath path;
   // The bottom of the toolbar may be clipped more than necessary in
@@ -882,12 +891,14 @@ void ToolbarView::UpdateClipPath() {
   // enabled on all aura platforms.
   const int extended_height = local_bounds.height() + 2;
   path.moveTo(0, local_bounds.height());
-  path.lineTo(0, corner_radius);
-  path.arcTo(corner_radius, corner_radius, 0, SkPath::kSmall_ArcSize,
-             SkPathDirection::kCW, corner_radius, 0);
-  path.lineTo(local_bounds.width() - corner_radius, 0);
-  path.arcTo(corner_radius, corner_radius, 0, SkPath::kSmall_ArcSize,
-             SkPathDirection::kCW, local_bounds.width(), corner_radius);
+  path.lineTo(0, receding_corner_radius_);
+  path.arcTo(receding_corner_radius_, receding_corner_radius_, 0,
+             SkPath::kSmall_ArcSize, SkPathDirection::kCW,
+             receding_corner_radius_, 0);
+  path.lineTo(local_bounds.width() - receding_corner_radius_, 0);
+  path.arcTo(receding_corner_radius_, receding_corner_radius_, 0,
+             SkPath::kSmall_ArcSize, SkPathDirection::kCW, local_bounds.width(),
+             receding_corner_radius_);
   path.lineTo(local_bounds.width(), extended_height);
   path.lineTo(0, extended_height);
   container_view_->SetClipPath(path);
@@ -1252,6 +1263,34 @@ void ToolbarView::OnTouchUiChanged() {
 
     LoadImages();
     PreferredSizeChanged();
+  }
+}
+
+void ToolbarView::OnTabStripModelChanged(
+    TabStripModel* tab_strip_model,
+    const TabStripModelChange& change,
+    const TabStripSelectionChange& selection) {
+  bool tab_strip_has_trailing_frame_buttons =
+      (browser_view_->tabstrip()->controller()->IsFrameButtonsRightAligned() ^
+       base::i18n::IsRTL());
+  bool tab_strip_has_leading_action_buttons =
+      (!tabs::GetTabSearchTrailingTabstrip(browser()->profile()) &&
+       !features::IsTabSearchMoving());
+  bool first_tab_selected = tab_strip_model->active_index() == 0;
+
+  int new_corner_radius;
+  // If there is anything on the leading side or not the first tab is selected,
+  // then the corner radius is shown, otherwise we hide the corner radius.
+  if (!tab_strip_has_trailing_frame_buttons ||
+      tab_strip_has_leading_action_buttons || !first_tab_selected) {
+    new_corner_radius = GetLayoutConstant(TOOLBAR_CORNER_RADIUS);
+  } else {
+    new_corner_radius = 0;
+  }
+
+  if (receding_corner_radius_ != new_corner_radius) {
+    receding_corner_radius_ = new_corner_radius;
+    InvalidateLayout();
   }
 }
 
