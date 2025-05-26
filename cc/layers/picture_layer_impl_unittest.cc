@@ -743,23 +743,17 @@ TEST_F(LegacySWPictureLayerImplTest, ScaledBoundsOverflowInt) {
       &state, adjusted_scale, active_layer()->contents_opaque());
 }
 
-TEST_F(LegacySWPictureLayerImplTest, PinchGestureTilings) {
+TEST_F(NoLowResPictureLayerImplTest, PinchGestureTilings) {
   gfx::Size layer_bounds(1300, 1900);
 
   float low_res_factor = host_impl()->settings().low_res_contents_scale_factor;
-  // Set up the high and low res tilings before pinch zoom.
   SetupDefaultTrees(layer_bounds);
   ResetTilingsAndRasterScales();
 
   SetContentsScaleOnBothLayers(2.f, 1.0f, 2.f);
-  ASSERT_EQ(active_layer()->num_tilings(), 2u);
+  ASSERT_EQ(active_layer()->num_tilings(), 1u);
   ASSERT_EQ(pending_layer()->num_tilings(), 1u);
   EXPECT_EQ(active_layer()->tilings()->tiling_at(0)->contents_scale_key(), 2.f);
-  EXPECT_EQ(active_layer()->tilings()->tiling_at(1)->contents_scale_key(),
-            2.f * low_res_factor);
-  // One of the tilings has to be a low resolution one.
-  EXPECT_EQ(LOW_RESOLUTION,
-            active_layer()->tilings()->tiling_at(1)->resolution());
 
   // Ensure UpdateTiles won't remove any tilings.
   active_layer()->MarkAllTilingsUsed();
@@ -776,28 +770,19 @@ TEST_F(LegacySWPictureLayerImplTest, PinchGestureTilings) {
   // Zoom out by a small amount. We should create a tiling at half
   // the scale (2/kMaxScaleRatioDuringPinch).
   SetContentsScaleOnBothLayers(1.8f, 1.0f, 1.8f);
-  ASSERT_EQ(3u, active_layer()->tilings()->num_tilings());
+  ASSERT_EQ(2u, active_layer()->tilings()->num_tilings());
   EXPECT_FLOAT_EQ(
       2.0f, active_layer()->tilings()->tiling_at(0)->contents_scale_key());
   EXPECT_FLOAT_EQ(
       1.0f, active_layer()->tilings()->tiling_at(1)->contents_scale_key());
-  EXPECT_FLOAT_EQ(
-      2.0f * low_res_factor,
-      active_layer()->tilings()->tiling_at(2)->contents_scale_key());
-  // Since we're pinching, we shouldn't create a low resolution tiling.
-  EXPECT_FALSE(
-      active_layer()->tilings()->FindTilingWithResolution(LOW_RESOLUTION));
 
   // Ensure UpdateTiles won't remove any tilings.
   active_layer()->MarkAllTilingsUsed();
 
-  // Zoom out further, close to our low-res scale factor. We should
-  // use that tiling as high-res, and not create a new tiling.
+  // Zoom out further. We should create a new tiling.
   SetContentsScaleOnBothLayers(low_res_factor * 2.1f, 1.0f,
                                low_res_factor * 2.1f);
   ASSERT_EQ(3u, active_layer()->tilings()->num_tilings());
-  EXPECT_FALSE(
-      active_layer()->tilings()->FindTilingWithResolution(LOW_RESOLUTION));
 
   // Zoom in a lot now. Since we increase by increments of
   // kMaxScaleRatioDuringPinch, this will create a new tiling at 4.0.
@@ -805,12 +790,6 @@ TEST_F(LegacySWPictureLayerImplTest, PinchGestureTilings) {
   ASSERT_EQ(4u, active_layer()->tilings()->num_tilings());
   EXPECT_FLOAT_EQ(
       4.0f, active_layer()->tilings()->tiling_at(0)->contents_scale_key());
-  // Although one of the tilings matches the low resolution scale, it still
-  // shouldn't be marked as low resolution since we're pinching.
-  auto* low_res_tiling =
-      active_layer()->tilings()->FindTilingWithScaleKey(4.f * low_res_factor);
-  EXPECT_TRUE(low_res_tiling);
-  EXPECT_NE(LOW_RESOLUTION, low_res_tiling->resolution());
 
   // Stop a pinch gesture.
   host_impl()->GetInputHandler().PinchGestureEnd(gfx::Point());
@@ -824,12 +803,6 @@ TEST_F(LegacySWPictureLayerImplTest, PinchGestureTilings) {
   ASSERT_EQ(4u, active_layer()->tilings()->num_tilings());
   EXPECT_FLOAT_EQ(
       4.0f, active_layer()->tilings()->tiling_at(0)->contents_scale_key());
-  // Now that we stopped pinching, the low resolution tiling that existed should
-  // now be marked as low resolution.
-  low_res_tiling =
-      active_layer()->tilings()->FindTilingWithScaleKey(4.f * low_res_factor);
-  EXPECT_TRUE(low_res_tiling);
-  EXPECT_EQ(LOW_RESOLUTION, low_res_tiling->resolution());
 }
 
 TEST_F(LegacySWPictureLayerImplTest, SnappedTilingDuringZoom) {
