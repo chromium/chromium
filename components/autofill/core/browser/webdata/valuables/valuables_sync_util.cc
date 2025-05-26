@@ -59,9 +59,16 @@ std::unique_ptr<syncer::EntityData> CreateEntityDataFromLoyaltyCard(
 
 bool AreAutofillLoyaltyCardSpecificsValid(
     const AutofillValuableSpecifics& specifics) {
+  const auto HasEmptyOrValidProgramLogo =
+      [](const AutofillValuableSpecifics& specifics) {
+        return !specifics.loyalty_card().has_program_logo() ||
+               specifics.loyalty_card().program_logo().empty() ||
+               GURL(specifics.loyalty_card().program_logo()).is_valid();
+      };
+
   return !specifics.id().empty() && specifics.has_loyalty_card() &&
          !specifics.loyalty_card().loyalty_card_number().empty() &&
-         GURL(specifics.loyalty_card().program_logo()).is_valid();
+         HasEmptyOrValidProgramLogo(specifics);
 }
 
 AutofillValuableSpecifics TrimAutofillValuableSpecificsDataForCaching(

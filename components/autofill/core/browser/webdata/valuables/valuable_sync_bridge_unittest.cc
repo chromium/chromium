@@ -187,6 +187,23 @@ TEST_F(ValuableSyncBridgeTest, MergeFullSyncData) {
   EXPECT_THAT(GetAllDataFromTable(), UnorderedElementsAre(remote1, remote2));
 }
 
+// Tests that loyalty cards with empty logo url are synced and stored.
+TEST_F(ValuableSyncBridgeTest, LoyaltyCardsWithNoProgramLogo) {
+  const LoyaltyCard remote1 = LoyaltyCard(
+      ValuableId(std::string("no_logo")), "merchant_name", "program_name",
+      GURL(), "card_number", {GURL("https://domain.example")});
+
+  EXPECT_CALL(mock_processor(), Put).Times(0);
+  EXPECT_CALL(mock_processor(), Delete).Times(0);
+  EXPECT_CALL(backend(), CommitChanges);
+  EXPECT_CALL(backend(),
+              NotifyOnAutofillChangedBySync(syncer::AUTOFILL_VALUABLE));
+
+  EXPECT_TRUE(StartSyncing({remote1}));
+
+  EXPECT_THAT(GetAllDataFromTable(), UnorderedElementsAre(remote1));
+}
+
 // Tests that `MergeFullSyncData()` replaces currently stored loyalty cards.
 TEST_F(ValuableSyncBridgeTest, MergeFullSyncData_ReplacePreviousData) {
   const LoyaltyCard remote1 = TestLoyaltyCard(kId1);
