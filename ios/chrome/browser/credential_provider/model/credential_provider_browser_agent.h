@@ -10,7 +10,6 @@
 #import "base/memory/raw_ptr.h"
 #import "base/scoped_observation.h"
 #import "components/webauthn/core/browser/passkey_model.h"
-#import "ios/chrome/browser/shared/model/browser/browser_observer.h"
 #import "ios/chrome/browser/shared/model/browser/browser_user_data.h"
 
 namespace webauthn {
@@ -21,7 +20,6 @@ class PasskeyModel;
 // notification when required.
 class CredentialProviderBrowserAgent
     : public BrowserUserData<CredentialProviderBrowserAgent>,
-      public BrowserObserver,
       public webauthn::PasskeyModel::Observer {
  public:
   ~CredentialProviderBrowserAgent() override;
@@ -40,22 +38,14 @@ class CredentialProviderBrowserAgent
 
   void RemoveObservers();
 
-  // BrowserObserver::
-  void BrowserDestroyed(Browser* browser) override;
-
   // webauthn::PasskeyModel::Observer:
   void OnPasskeysChanged(
       const std::vector<webauthn::PasskeyModelChange>& changes) override;
   void OnPasskeyModelShuttingDown() override;
   void OnPasskeyModelIsReady(bool is_ready) override;
 
-  // The owning Browser
-  raw_ptr<Browser> browser_;
-
   // Owned by the IOSPasskeyModelFactory which should outlive this class
   raw_ptr<webauthn::PasskeyModel> model_;
-
-  base::ScopedObservation<Browser, BrowserObserver> browser_observation_{this};
 
   base::ScopedObservation<webauthn::PasskeyModel,
                           webauthn::PasskeyModel::Observer>
