@@ -13,6 +13,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/types/id_type.h"
+#include "chrome/browser/actor/task_id.h"
 #include "chrome/browser/actor/tools/tool_controller.h"
 #include "chrome/common/actor.mojom-forward.h"
 #include "components/tabs/public/tab_interface.h"
@@ -75,9 +76,15 @@ class ActorCoordinator {
                  StartTaskCallback callback,
                  std::optional<tabs::TabHandle> tab_handle);
 
-  // Stops the currently running task, if one is active. Callbacks for
+  // Stops the current task, if it's active. Callbacks for
   // in-progress actions are invoked.
   void StopTask();
+  // Pauses the current task, if it's active. Callbacks for in-progress actions
+  // are invoked.
+  void PauseTask();
+
+  // Returns the tab associated with the current task if it exists.
+  tabs::TabInterface* GetTabOfCurrentTask() const;
 
   // Returns true if a task is currently active.
   bool HasTask() const;
@@ -96,8 +103,6 @@ class ActorCoordinator {
 
  private:
   class NewTabWebContentsObserver;
-  struct Task;
-  using TaskId = base::IdType32<Task>;
 
   // Starts a new task, after validating there isn't already a task being
   // initialized or in progress.
@@ -152,6 +157,8 @@ class ActorCoordinator {
 
     TaskId id;
 
+    // TODO(mcnee): Ensure this task can't outlive the tab, then stop using weak
+    // ptr.
     base::WeakPtr<tabs::TabInterface> tab;
     ToolController tool_controller;
 

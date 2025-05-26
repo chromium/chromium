@@ -240,6 +240,8 @@ class GlicBrowserHostImpl implements GlicBrowserHost {
     if (!state.enableActInFocusedTab) {
       this.actInFocusedTab = undefined;
       this.stopActorTask = undefined;
+      this.pauseActorTask = undefined;
+      this.resumeActorTask = undefined;
     }
 
     if (state.alwaysDetachedMode) {
@@ -345,8 +347,20 @@ class GlicBrowserHostImpl implements GlicBrowserHost {
         context.actInFocusedTabResult);
   }
 
-  stopActorTask?(): void {
-    this.sender.requestNoResponse('glicBrowserStopActorTask', undefined);
+  stopActorTask?(taskId?: number): void {
+    this.sender.requestNoResponse(
+        'glicBrowserStopActorTask', {taskId: taskId ?? 0});
+  }
+
+  pauseActorTask?(taskId: number): void {
+    this.sender.requestNoResponse('glicBrowserPauseActorTask', {taskId});
+  }
+
+  async resumeActorTask?(taskId: number, tabContextOptions: TabContextOptions):
+      Promise<TabContextResult> {
+    const response = await this.sender.requestWithResponse(
+        'glicBrowserResumeActorTask', {taskId, tabContextOptions});
+    return convertTabContextResultFromPrivate(response.tabContextResult);
   }
 
   async resizeWindow(

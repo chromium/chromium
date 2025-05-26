@@ -116,7 +116,7 @@ class ActorCoordinator::NewTabWebContentsObserver
 };
 
 // static
-ActorCoordinator::TaskId::Generator ActorCoordinator::Task::id_generator_;
+TaskId::Generator ActorCoordinator::Task::id_generator_;
 
 ActorCoordinator::Action::Action(const BrowserAction& action,
                                  ActionResultCallback callback)
@@ -167,6 +167,21 @@ void ActorCoordinator::StopTask() {
   }
 
   task_state_.reset();
+}
+
+void ActorCoordinator::PauseTask() {
+  if (!task_state_) {
+    return;
+  }
+
+  if (task_state_->current_action) {
+    CompleteAction(
+        MakeResult(mojom::ActionResultCode::kTaskPaused, "Task was paused"));
+  }
+}
+
+tabs::TabInterface* ActorCoordinator::GetTabOfCurrentTask() const {
+  return task_state_ ? task_state_->tab.get() : nullptr;
 }
 
 bool ActorCoordinator::HasTask() const {

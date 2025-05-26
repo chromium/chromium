@@ -12,6 +12,7 @@
 #include "base/containers/flat_set.h"
 #include "base/memory/memory_pressure_listener.h"
 #include "base/memory/raw_ptr.h"
+#include "chrome/browser/actor/task_id.h"
 #include "chrome/browser/glic/host/context/glic_focused_tab_manager.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -200,7 +201,12 @@ class GlicKeyedService : public KeyedService {
       const mojom::GetTabContextOptions& options,
       mojom::WebClientHandler::ActInFocusedTabCallback callback);
 
-  void StopActorTask();
+  void StopActorTask(actor::TaskId task_id);
+  void PauseActorTask(actor::TaskId task_id);
+  void ResumeActorTask(
+      actor::TaskId task_id,
+      const mojom::GetTabContextOptions& context_options,
+      glic::mojom::WebClientHandler::ResumeActorTaskCallback callback);
 
   // Returns true if the associated ActorCoordinator is active on the given
   // `tab`. This can be used by callers to customize certain behaviour that

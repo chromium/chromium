@@ -45,6 +45,7 @@ source_set("actor") {
     "tools/wait_tool.h",
   ]
   public_deps = [
+    ":types",
     "//base",
     "//chrome/browser:browser_public_dependencies",
     "//components/optimization_guide/content/browser",
@@ -64,6 +65,14 @@ source_set("actor") {
     "//net",
     "//url",
   ]
+}
+
+# This target contains only type definitions that may be depended on by other
+# headers without depending on all of :actor.
+# This avoids dependency cycles.
+source_set("types") {
+  sources = [ "task_id.h" ]
+  public_deps = [ "//base" ]
 }
 
 source_set("test_support") {

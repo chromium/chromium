@@ -395,15 +395,33 @@ interface WebClientHandler {
   //
   // Actions can only be executed in a tab after act task has been started.  An
   // act task is started by calling this function with a Navigate BrowserAction
-  // on a tab without an active task.
+  // on a tab without an active task. It is an error to act with a paused task.
   // TODO(crbug.com/407860715): Add an explicit method for starting a task.
   ActInFocusedTab(array<uint8> action_proto, GetTabContextOptions options)
       => (ActInFocusedTabResult result);
 
-  // Immediately stops the actor from taking any further actions and exits
-  // acting mode. Any in flight actions are canceled and their callbacks will be
-  // (asynchronously) invoked. No-op if the actor doesn't have an active task.
-  StopActorTask();
+  // Immediately stops the actor from taking any further actions associated with
+  // the given id and exits acting mode. Any in flight actions are canceled and
+  // their callbacks will be (asynchronously) invoked. No-op if a task with the
+  // given id does not exist. An id of 0 refers to the most recent task.
+  StopActorTask(int32 task_id);
+
+  // Pauses the task associated with the given id. Any restrictions on the tab
+  // which would prevent user interaction with it are lifted. ResumeActorTask
+  // restores these restrictions, and allows for further actions. Any in flight
+  // actions are canceled and their callbacks will be (asynchronously) invoked.
+  // No-op if a task with the given id does not exist. An id of 0 refers to the
+  // most recent task.
+  PauseActorTask(int32 task_id);
+
+  // Resumes a paused task associated with the given id, allowing for further
+  // actions. Any restrictions on the tab lifted by PauseActorTask are
+  // reimposed. After resumption, computes the context of the tab associated
+  // with the task according to the given `context_options` and returns the
+  // result. Returns an error if the task doesn't exist or is not paused. An id
+  // of 0 refers to the most recent task.
+  ResumeActorTask(int32 task_id, GetTabContextOptions context_options)
+      => (GetContextResult result);
 
   // Resize the widget hosting the WebUI to the given size.
   // If `duration` is 0 or less, instantly resize, otherwise run an animation.

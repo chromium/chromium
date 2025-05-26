@@ -17,6 +17,7 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "base/version_info/version_info.h"
+#include "chrome/browser/actor/task_id.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/contextual_cueing/contextual_cueing_features.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
@@ -469,13 +470,34 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
     glic_service_->ActInFocusedTab(action_proto, *options, std::move(callback));
   }
 
-  void StopActorTask() override {
+  void StopActorTask(int32_t task_id) override {
     if (!base::FeatureList::IsEnabled(features::kGlicActor)) {
       receiver_.ReportBadMessage(
           "StopActorTask cannot be called without GlicActor enabled.");
       return;
     }
-    glic_service_->StopActorTask();
+    glic_service_->StopActorTask(actor::TaskId(task_id));
+  }
+
+  void PauseActorTask(int32_t task_id) override {
+    if (!base::FeatureList::IsEnabled(features::kGlicActor)) {
+      receiver_.ReportBadMessage(
+          "PauseActorTask cannot be called without GlicActor enabled.");
+      return;
+    }
+    glic_service_->PauseActorTask(actor::TaskId(task_id));
+  }
+
+  void ResumeActorTask(int32_t task_id,
+                       glic::mojom::GetTabContextOptionsPtr context_options,
+                       ResumeActorTaskCallback callback) override {
+    if (!base::FeatureList::IsEnabled(features::kGlicActor)) {
+      receiver_.ReportBadMessage(
+          "ResumeActorTask cannot be called without GlicActor enabled.");
+      return;
+    }
+    glic_service_->ResumeActorTask(actor::TaskId(task_id), *context_options,
+                                   std::move(callback));
   }
 
   void CaptureScreenshot(CaptureScreenshotCallback callback) override {

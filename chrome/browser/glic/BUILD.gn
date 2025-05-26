@@ -75,6 +75,7 @@ source_set("glic") {
     "//ui/webui",
   ]
   deps = [
+    "//chrome/browser/actor:types",
     "//chrome/common",
     "//components/user_education/common",
   ]

@@ -378,10 +378,25 @@ void GlicKeyedService::ActInFocusedTab(
                          std::move(callback));
 }
 
-void GlicKeyedService::StopActorTask() {
+void GlicKeyedService::StopActorTask(actor::TaskId task_id) {
   CHECK(base::FeatureList::IsEnabled(features::kGlicActor));
   CHECK(actor_controller_);
-  actor_controller_->StopTask();
+  actor_controller_->StopTask(task_id);
+}
+
+void GlicKeyedService::PauseActorTask(actor::TaskId task_id) {
+  CHECK(base::FeatureList::IsEnabled(features::kGlicActor));
+  CHECK(actor_controller_);
+  actor_controller_->PauseTask(task_id);
+}
+
+void GlicKeyedService::ResumeActorTask(
+    actor::TaskId task_id,
+    const mojom::GetTabContextOptions& context_options,
+    glic::mojom::WebClientHandler::ResumeActorTaskCallback callback) {
+  CHECK(base::FeatureList::IsEnabled(features::kGlicActor));
+  CHECK(actor_controller_);
+  actor_controller_->ResumeTask(task_id, context_options, std::move(callback));
 }
 
 bool GlicKeyedService::IsActorCoordinatorActingOnTab(

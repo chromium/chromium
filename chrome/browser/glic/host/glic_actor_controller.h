@@ -7,6 +7,7 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/actor/task_id.h"
 #include "chrome/browser/glic/host/context/glic_tab_data.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/profiles/profile.h"
@@ -42,7 +43,12 @@ class GlicActorController {
            const mojom::GetTabContextOptions& options,
            mojom::WebClientHandler::ActInFocusedTabCallback callback);
 
-  void StopTask();
+  void StopTask(actor::TaskId task_id);
+  void PauseTask(actor::TaskId task_id);
+  void ResumeTask(
+      actor::TaskId task_id,
+      const mojom::GetTabContextOptions& context_options,
+      glic::mojom::WebClientHandler::ResumeActorTaskCallback callback);
 
   bool IsActorCoordinatorActingOnTab(const content::WebContents* tab) const;
 
