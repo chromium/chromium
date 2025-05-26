@@ -670,7 +670,7 @@ def _CountRelocationsFromElf(elf_path):
   args = [path_util.GetReadElfPath(), '-r', elf_path]
   stdout = subprocess.check_output(args).decode('ascii')
   relocations = re.findall(
-      'Relocation section .* at offset .* contains (\d+) entries', stdout)
+      r'Relocation section .* at offset .* contains (\d+) entries', stdout)
   return sum([int(i) for i in relocations])
 
 

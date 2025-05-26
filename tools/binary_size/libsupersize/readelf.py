@@ -22,7 +22,7 @@ def ArchFromElf(elf_path):
   """Returns the GN architecture for the given binary."""
   args = [path_util.GetReadElfPath(), '-h', elf_path]
   stdout = subprocess.check_output(args, encoding='ascii')
-  machine = re.search('Machine:\s*(.+)', stdout).group(1)
+  machine = re.search(r'Machine:\s*(.+)', stdout).group(1)
   if machine == 'Intel 80386':
     return 'x86'
   if machine == 'Advanced Micro Devices X86-64':
