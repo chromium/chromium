@@ -1658,6 +1658,14 @@ config("compiler_deterministic") {
       ldflags += [ "-no-canonical-prefixes" ]
     }
   }
+
+  if (use_libcxx_modules) {
+    cflags += [
+      # This removes absolute paths from .pcm files.
+      "-Xclang",
+      "-fmodule-file-home-is-cwd",
+    ]
+  }
 }
 
 config("clang_revision") {
@@ -1810,10 +1818,6 @@ config("libcxx_module") {
       "-fmodule-map-file=" + modulemap,
       "-fbuiltin-module-map",
       "-fno-implicit-module-maps",
-
-      # This removes absolute paths from .pcm files.
-      "-Xclang",
-      "-fmodule-file-home-is-cwd",
 
       "-Xclang",
       "-fmodules-local-submodule-visibility",  # required for builtins
