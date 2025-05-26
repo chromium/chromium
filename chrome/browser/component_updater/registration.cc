@@ -84,6 +84,7 @@
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/apps/app_service/publishers/chrome_app_deprecation.h"
 #include "chrome/browser/component_updater/smart_dim_component_installer.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
@@ -220,7 +221,8 @@ void RegisterComponentsForUpdate() {
 #if BUILDFLAG(IS_CHROMEOS)
   RegisterSmartDimComponent(cus);
   RegisterAppProvisioningComponent(cus);
-#endif  // !BUILDFLAG(IS_CHROMEOS)
+  apps::chrome_app_deprecation::RegisterAllowlistComponentUpdater(cus);
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(USE_MINIKIN_HYPHENATION) && !BUILDFLAG(IS_ANDROID)
   RegisterHyphenationComponent(cus);

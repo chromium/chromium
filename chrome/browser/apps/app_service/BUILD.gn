@@ -292,6 +292,8 @@ source_set("app_service") {
       "//ui/wm/public",
     ]
 
+    public_deps += [ "publishers/proto" ]
+
     # Needed only to allow circular includes.
     deps += [ "//chrome/browser/chromeos/app_mode" ]
 

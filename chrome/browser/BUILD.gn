@@ -1735,6 +1735,8 @@ static_library("browser") {
 
   if (is_chromeos) {
     sources += [
+      "component_updater/chrome_apps_deprecation_allowlist_component_installer.cc",
+      "component_updater/chrome_apps_deprecation_allowlist_component_installer.h",
       "component_updater/lacros_component_remover.cc",
       "component_updater/lacros_component_remover.h",
     ]
