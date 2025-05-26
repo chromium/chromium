@@ -5,12 +5,14 @@
 #include <memory>
 
 #include "base/strings/utf_string_conversions.h"
+#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_dialogs.h"
-#include "chrome/test/base/browser_with_test_window_test.h"
+#include "chrome/test/base/in_process_browser_test.h"
+#include "content/public/test/browser_test.h"
 #include "ui/base/models/dialog_model_field.h"
 #include "ui/base/test/test_dialog_model_host.h"
 
-using WindowNamePromptTest = BrowserWithTestWindowTest;
+using WindowNamePromptTest = InProcessBrowserTest;
 
 namespace {
 
@@ -23,7 +25,7 @@ std::string GetTextfieldContents(ui::TestDialogModelHost* host) {
   return base::UTF16ToUTF8(host->FindSingleTextfield()->text());
 }
 
-TEST_F(WindowNamePromptTest, OpensWithInitialName) {
+IN_PROC_BROWSER_TEST_F(WindowNamePromptTest, OpensWithInitialName) {
   browser()->SetWindowUserTitle("foobar");
 
   auto host = std::make_unique<ui::TestDialogModelHost>(
@@ -32,7 +34,7 @@ TEST_F(WindowNamePromptTest, OpensWithInitialName) {
   EXPECT_EQ(GetTextfieldContents(host.get()), "foobar");
 }
 
-TEST_F(WindowNamePromptTest, AcceptNonemptySetsName) {
+IN_PROC_BROWSER_TEST_F(WindowNamePromptTest, AcceptNonemptySetsName) {
   auto host = std::make_unique<ui::TestDialogModelHost>(
       chrome::CreateWindowNamePromptDialogModelForTesting(browser()));
 
@@ -44,7 +46,7 @@ TEST_F(WindowNamePromptTest, AcceptNonemptySetsName) {
   EXPECT_EQ(browser()->user_title(), "foo");
 }
 
-TEST_F(WindowNamePromptTest, AcceptEmptyClearsName) {
+IN_PROC_BROWSER_TEST_F(WindowNamePromptTest, AcceptEmptyClearsName) {
   browser()->SetWindowUserTitle("foo");
 
   auto host = std::make_unique<ui::TestDialogModelHost>(
@@ -58,7 +60,7 @@ TEST_F(WindowNamePromptTest, AcceptEmptyClearsName) {
   EXPECT_EQ(browser()->user_title(), "");
 }
 
-TEST_F(WindowNamePromptTest, CancelDoesntTouchName) {
+IN_PROC_BROWSER_TEST_F(WindowNamePromptTest, CancelDoesntTouchName) {
   auto host = std::make_unique<ui::TestDialogModelHost>(
       chrome::CreateWindowNamePromptDialogModelForTesting(browser()));
   SetTextfieldContents(host.get(), "foo");
