@@ -254,15 +254,8 @@ void DesktopDataControlsDialog::Show(base::OnceClosure on_destructed) {
   scoped_ignore_input_events_ =
       top_web_contents->IgnoreInputEvents(std::nullopt);
 
-  if (auto* tab_interface =
-          tabs::TabInterface::MaybeGetFromContents(top_web_contents);
-      tab_interface && tab_interface->CanShowModalUI()) {
-    tab_interface->GetTabFeatures()
-        ->tab_dialog_manager()
-        ->ShowDialogAndBlockTabInteraction(widget_.get());
-  } else {
-    widget_->Show();
-  }
+  constrained_window::ShowModalDialog(widget_->GetNativeWindow(),
+                                      top_web_contents);
 }
 
 void DesktopDataControlsDialog::CloseDialog(
