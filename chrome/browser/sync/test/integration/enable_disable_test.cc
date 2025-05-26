@@ -221,36 +221,27 @@ IN_PROC_BROWSER_TEST_F(EnableDisableSingleClientTest, PRE_EnableAndRestart) {
       Union(types_without_updates, Union(syncer::HighPriorityUserTypes(),
                                          syncer::LowPriorityUserTypes())));
 
-  // Outside Ash, GetUpdates requests except the very first one use
-  // sync_pb::SyncEnums::RECONFIGURATION as a side effect of turning
-  // sync-the-feature on, which trigger
-  // `SyncPrefs::OnFirstSetupCompletePrefChange()` and therefore a normal
-  // reconfiguration. This is somewhat questionable but also not worth changing
-  // given ongoing efforts to deprecate sync-the-feature.
-  const sync_pb::SyncEnums::GetUpdatesOrigin expected_origin_after_first =
-#if BUILDFLAG(IS_CHROMEOS)
-      sync_pb::SyncEnums::NEW_CLIENT;
-#else
-      sync_pb::SyncEnums::RECONFIGURATION;
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
   // Initial sync takes four GetUpdates requests to the server to download:
   // 1. Control types (NIGORI).
   // 2. High-priority user types.
   // 3. Regular-priority types.
   // 4. Low-priority types.
+  //
+  // The sequence of GetUpdatesOrigin below matches what is empirically
+  // observed outside tests when Sync is turned on during desktop FRE using the
+  // advanced sync setup flow (open settings), which is also what tests mimic.
   EXPECT_THAT(
       get_updates_recorder.recorded_requests(),
       ElementsAre(MatchesGetUpdatesRequest(sync_pb::SyncEnums::NEW_CLIENT,
                                            syncer::ControlTypes()),
                   MatchesGetUpdatesRequest(
-                      expected_origin_after_first,
+                      sync_pb::SyncEnums::NEW_CLIENT,
                       Union(syncer::ControlTypes(), high_priority_types)),
                   MatchesGetUpdatesRequest(
-                      expected_origin_after_first,
+                      sync_pb::SyncEnums::NEW_CLIENT,
                       Union(syncer::ControlTypes(), regular_priority_types)),
                   MatchesGetUpdatesRequest(
-                      expected_origin_after_first,
+                      sync_pb::SyncEnums::NEW_CLIENT,
                       Union(syncer::ControlTypes(), low_priority_types))));
 }
 

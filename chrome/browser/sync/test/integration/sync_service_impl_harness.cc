@@ -389,11 +389,11 @@ bool SyncServiceImplHarness::SetupSyncNoWaitForCompletion(
 }
 
 void SyncServiceImplHarness::FinishSyncSetup() {
-  sync_blocker_.reset();
 #if !BUILDFLAG(IS_CHROMEOS)
   service()->GetUserSettings()->SetInitialSyncFeatureSetupComplete(
       syncer::SyncFirstSetupCompleteSource::BASIC_FLOW);
 #endif  // !BUILDFLAG(IS_CHROMEOS)
+  sync_blocker_.reset();
 }
 
 bool SyncServiceImplHarness::AwaitMutualSyncCycleCompletion(
