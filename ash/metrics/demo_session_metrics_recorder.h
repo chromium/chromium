@@ -165,6 +165,9 @@ class ASH_EXPORT DemoSessionMetricsRecorder
   // Get the type of the current demo session.
   static SessionType GetCurrentSessionTypeForTesting();
 
+  // Records cloud policy connections timeout.
+  static void RecordCloudPolicyConnectionTimeout();
+
   // The recorder will create a normal timer by default. Tests should provide a
   // mock timer to control sampling periods.
   explicit DemoSessionMetricsRecorder(
