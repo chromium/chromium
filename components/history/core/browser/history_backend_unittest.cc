@@ -61,6 +61,7 @@
 #include "components/sync/base/features.h"
 #include "sql/sqlite_result_code_values.h"
 #include "sql/test/test_helpers.h"
+#include "sql/transaction.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -233,6 +234,7 @@ class TestHistoryBackend : public HistoryBackend {
   using HistoryBackend::expirer_;
   using HistoryBackend::favicon_backend_;
   using HistoryBackend::recent_redirects_;
+  using HistoryBackend::singleton_transaction_;
 
   VisitTracker& visit_tracker() { return tracker_; }
 
@@ -3275,6 +3277,22 @@ TEST_F(HistoryBackendTest, DatabaseErrorSynchronouslyKillAndNotifyBridge) {
                                  /*begin_time=*/base::Time(),
                                  /*end_time=*/base::Time::Max(),
                                  /*user_initiated*/ true);
+}
+
+// Tests for https://crbug.com/420369590.
+TEST_F(HistoryBackendTest, DatabaseErrorOnClosedDatabase) {
+  // Clear the pending transaction to avoid DCHECKs to trigger. This is required
+  // since we are closing the raw sqlite database.
+  backend_->singleton_transaction_.reset();
+
+  // Close the database. This is simulating a case where the open failed but
+  // the database is not poisoned.
+  backend_->db()->GetDBForTesting().Close();
+
+  // Retrieve the error diagnostic information.
+  std::string result = backend_->db()->GetDiagnosticInfo(
+      static_cast<int>(sql::SqliteResultCode::kCorrupt), nullptr, nullptr);
+  EXPECT_EQ(result, "Database is not opened.");
 }
 
 // Tests that a typed navigation which results in a redirect from HTTP to HTTPS
