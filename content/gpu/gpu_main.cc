@@ -12,8 +12,8 @@
 #include "base/allocator/partition_alloc_support.h"
 #include "base/check.h"
 #include "base/command_line.h"
-#include "base/files/scoped_file.h"
 #include "base/feature_list.h"
+#include "base/files/scoped_file.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/message_loop/message_pump_type.h"
@@ -34,6 +34,7 @@
 #include "base/timer/hi_res_timer_manager.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
+#include "components/viz/service/gl/gpu_log_message_manager.h"
 #include "components/viz/service/main/viz_main_impl.h"
 #include "content/child/child_process.h"
 #include "content/common/content_constants_internal.h"
@@ -266,7 +267,7 @@ int GpuMain(MainFunctionParams parameters) {
 
   // Installs a base::LogMessageHandlerFunction which ensures messages are sent
   // to the GpuProcessHost once the GpuServiceImpl has started.
-  viz::GpuServiceImpl::InstallPreInitializeLogHandler();
+  viz::GpuLogMessageManager::GetInstance()->InstallPreInitializeLogHandler();
 
   // We are experiencing what appear to be memory-stomp issues in the GPU
   // process. These issues seem to be impacting the task executor and listeners

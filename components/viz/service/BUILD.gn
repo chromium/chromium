@@ -223,6 +223,8 @@ viz_component("service") {
     "frame_sinks/video_detector.h",
     "gl/exit_code.cc",
     "gl/exit_code.h",
+    "gl/gpu_log_message_manager.cc",
+    "gl/gpu_log_message_manager.h",
     "gl/gpu_service_impl.cc",
     "gl/gpu_service_impl.h",
     "hit_test/hit_test_aggregator.cc",
