@@ -4,11 +4,9 @@
 
 import("//testing/test.gni")
 
-# Enable wasm target that depends on foo.patch being applied.
-if (!defined(is_wasm)) {
-  is_wasm = current_os == "wasm"
+declare_args() {
+  enable_caspian = false
 }
-
 assert(is_linux || is_chromeos || is_wasm)
 
 source_set("caspian-lib") {
@@ -61,18 +59,26 @@ executable("caspian_cli") {
   cflags = [ "-Wall" ]
 }
 
-if (is_wasm) {
-  executable("caspian_web") {
-    sources = [ "caspian_web.cc" ]
-    deps = [
-      ":caspian-lib",
-      "//third_party/re2:re2",
-    ]
-    ldflags = [
-      "-s",
-      "EXPORTED_FUNCTIONS=['_BuildTree','_GetMetadata','_LoadBeforeSizeFile','_LoadSizeFile','_Open','_QueryAncestryById','_QueryProperty','_free','_malloc']",
-      "-s",
-      "EXPORTED_RUNTIME_METHODS=['ccall','cwrap','UTF8ToString']",
-    ]
+if (enable_caspian) {
+  if (is_wasm) {
+    executable("caspian_web") {
+      sources = [ "caspian_web.cc" ]
+      deps = [
+        ":caspian-lib",
+        "//third_party/re2:re2",
+      ]
+      ldflags = [
+        "-s",
+        "EXPORTED_FUNCTIONS=['_BuildTree','_GetMetadata','_LoadBeforeSizeFile','_LoadSizeFile','_Open','_QueryAncestryById','_QueryProperty','_free','_malloc']",
+        "-s",
+        "EXPORTED_RUNTIME_METHODS=['HEAPU8','ccall','cwrap','UTF8ToString']",
+        "-s",
+        "MAXIMUM_MEMORY=4GB",
+      ]
+    }
+  } else {
+    group("caspian_web") {
+      public_deps = [ ":caspian_web(//build/toolchain/wasm)" ]
+    }
   }
 }

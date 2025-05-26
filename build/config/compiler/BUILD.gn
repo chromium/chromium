@@ -206,7 +206,7 @@ declare_args() {
   # Set to true to use icf, Identical Code Folding.
   use_icf = (is_posix || is_fuchsia) && !is_debug && !using_sanitizer &&
             !use_clang_coverage && current_os != "zos" &&
-            !(is_android && use_order_profiling) && use_lld
+            !(is_android && use_order_profiling) && use_lld && !is_wasm
 }
 
 if (is_android) {
@@ -721,6 +721,20 @@ config("compiler") {
   if (use_relative_vtables_abi) {
     cflags_cc += [ "-fexperimental-relative-c++-abi-vtables" ]
     ldflags += [ "-fexperimental-relative-c++-abi-vtables" ]
+  }
+
+  if (is_wasm) {
+    ldflags += [
+      "-s",
+      "ALLOW_MEMORY_GROWTH=1",
+      "-s",
+      "LLD_REPORT_UNDEFINED=1",
+    ]
+
+    if (is_official_build) {
+      cflags += [ "-flto=full" ]
+      ldflags += [ "-flto=full" ]
+    }
   }
 
   # Add flags for link-time optimization. These flags enable
@@ -3006,6 +3020,9 @@ config("symbols") {
 
     # All configs using /DEBUG should include this:
     configs += [ ":win_pdbaltpath" ]
+  } else if (is_wasm) {
+    cflags = [ "-gseparate-dwarf" ]
+    ldflags = [ "-gseparate-dwarf" ]
   } else {
     cflags = []
     if (is_apple && enable_dsyms) {
