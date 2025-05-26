@@ -544,7 +544,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.CloudExtensionRequestUpdated"
-    enum="EnterpriseCloudExtensionRequestListUpdate" expires_after="2025-10-01">
+    enum="EnterpriseCloudExtensionRequestListUpdate" expires_after="2025-12-01">
   <owner>zmin@chromium.org</owner>
   <owner>src/chrome/browser/enterprise/reporting/OWNERS</owner>
   <summary>
@@ -1835,7 +1835,7 @@ chromium-metrics-reviews@google.com.
     name="Enterprise.DMServerCloudPolicyRequestStatus{EnterpriseDMServerCloudPolicyRequest}"
     enum="EnterpriseDeviceManagementStatus" expires_after="2025-12-01">
   <owner>vincb@google.com</owner>
-  <owner>zmin@google.com</owner>
+  <owner>zmin@chromium.com</owner>
   <summary>
     Records the returned status of fetching cloud policies from the dmserver.
 
@@ -3661,7 +3661,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.UserInfoFetch.HttpErrorCode"
-    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2025-10-19">
+    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2025-12-19">
   <owner>vincb@google.com</owner>
   <owner>zmin@chromium.org</owner>
   <summary>
@@ -3674,7 +3674,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.UserInfoFetch.Status"
-    enum="EnterpriseUserInfoFetchStatus" expires_after="2025-10-26">
+    enum="EnterpriseUserInfoFetchStatus" expires_after="2025-12-26">
   <owner>vincb@google.com</owner>
   <owner>zmin@chromium.org</owner>
   <summary>
@@ -3850,7 +3850,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="EnterpriseCheck.AzureADJoinStatusCheckTime" units="ms"
-    expires_after="2025-07-01">
+    expires_after="2025-12-01">
   <owner>igorruvinov@chromium.org</owner>
   <owner>ydago@chromium.org</owner>
   <owner>pastarmovj@chromium.org</owner>
@@ -3862,7 +3862,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="EnterpriseCheck.InDomain" enum="BooleanEnabled"
-    expires_after="2025-07-01">
+    expires_after="2025-12-01">
   <owner>ydago@chromium.org</owner>
   <owner>pastarmovj@chromium.org</owner>
   <summary>
@@ -3909,7 +3909,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="EnterpriseCheck.IsDomainJoined" enum="BooleanEnabled"
-    expires_after="2025-06-08">
+    expires_after="2025-12-10">
   <owner>pastarmovj@chromium.org</owner>
   <owner>zmin@chromium.org</owner>
   <summary>
@@ -3919,7 +3919,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="EnterpriseCheck.IsEnterpriseUser" enum="BooleanEnabled"
-    expires_after="2025-10-26">
+    expires_after="2025-12-01">
   <owner>pastarmovj@chromium.org</owner>
   <owner>zmin@chromium.org</owner>
   <summary>
@@ -3930,7 +3930,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="EnterpriseCheck.IsFullyManaged2" enum="IsFullyManagedBoolean"
-    expires_after="2025-10-19">
+    expires_after="2025-12-01">
   <owner>twellington@google.com</owner>
   <owner>tedchcoc@chromium.org</owner>
   <summary>
@@ -3941,7 +3941,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="EnterpriseCheck.IsJoinedToAzureAD" enum="BooleanEnabled"
-    expires_after="2025-07-01">
+    expires_after="2025-12-01">
   <owner>igorruvinov@chromium.org</owner>
   <owner>ydago@chromium.org</owner>
   <owner>pastarmovj@chromium.org</owner>
@@ -4030,7 +4030,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="EnterpriseCheck.OSType" enum="OsSuite"
-    expires_after="2025-07-01">
+    expires_after="2025-12-01">
   <owner>ydago@chromium.org</owner>
   <owner>pastarmovj@chromium.org</owner>
   <summary>
@@ -4040,7 +4040,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="EnterpriseCheck.WindowsProfileType" enum="WindowsProfileType"
-    expires_after="2025-11-02">
+    expires_after="2025-12-01">
   <owner>wfh@chromium.org</owner>
   <owner>chrome-platform-security-core@google.com</owner>
   <summary>
