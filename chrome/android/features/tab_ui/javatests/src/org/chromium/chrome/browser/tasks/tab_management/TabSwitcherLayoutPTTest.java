@@ -284,7 +284,7 @@ public class TabSwitcherLayoutPTTest {
 
         ChromeRenderTestRule.sanitize(cta.findViewById(R.id.pane_frame));
         mRenderTestRule.render(
-                cta.findViewById(R.id.pane_frame), "1_tab_group_GTS_card_item_color_icon");
+                cta.findViewById(R.id.pane_frame), "1_tab_group_GTS_card_item_color_icon_v2");
 
         secondPage =
                 tabSwitcher.leaveHubToPreviousTabViaBack(RegularNewTabPageStation.newBuilder());
