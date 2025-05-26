@@ -55,7 +55,7 @@
 #include "components/sync/service/sync_service_utils.h"
 #include "components/sync_device_info/device_info.h"
 #include "components/sync_device_info/device_info_sync_service.h"
-#include "components/sync_device_info/local_device_info_provider_impl.h"
+#include "components/sync_device_info/local_device_info_provider.h"
 #include "components/sync_sessions/open_tabs_ui_delegate.h"
 #include "components/sync_sessions/session_sync_service.h"
 #include "components/sync_sessions/synced_session.h"
@@ -146,16 +146,16 @@ void FloatingWorkspaceService::ScheduleShowingNetworkScreen() {
 }
 
 void FloatingWorkspaceService::InitiateSigninTask() {
-  if (floating_workspace_util::IsInternetConnected()) {
-    syncer::LocalDeviceInfoProviderImpl* local_device_info_provider =
-        static_cast<syncer::LocalDeviceInfoProviderImpl*>(
-            device_info_sync_service_->GetLocalDeviceInfoProvider());
-
+  syncer::LocalDeviceInfoProvider* local_device_info_provider =
+      (device_info_sync_service_->GetLocalDeviceInfoProvider());
+  if (!local_device_info_provider->GetLocalDeviceInfo()) {
     local_device_info_ready_subscription_ =
         local_device_info_provider->RegisterOnInitializedCallback(
             base::BindRepeating(
                 &FloatingWorkspaceService::OnLocalDeviceInfoProviderReady,
                 weak_pointer_factory_.GetWeakPtr()));
+  } else {
+    UpdateLocalDeviceInfo();
   }
 
   if (should_run_restore_) {
@@ -985,7 +985,15 @@ void FloatingWorkspaceService::MaybeSignOutOfCurrentSession() {
       // 1) the device info is not for the current device and 2) the last active
       // timestamp is after the last user activity on this device.
       ash::Shell::Get()->session_controller()->RequestSignOut();
+      return;
     }
+  }
+
+  if (version_ ==
+      floating_workspace_util::FloatingWorkspaceVersion::kAutoSignoutOnly) {
+    // In `kAutoSignoutOnly` mode, we can rely only on the device info
+    // timestamp which was handled above.
+    return;
   }
 
   // As a final resort, if we could not logout via the device info, or
@@ -1138,8 +1146,8 @@ void FloatingWorkspaceService::UpdateLocalDeviceInfo() {
            ->GetLocalDeviceInfo()) {
     return;
   }
-  syncer::LocalDeviceInfoProviderImpl* local_device_info_provider =
-      static_cast<syncer::LocalDeviceInfoProviderImpl*>(
+  syncer::MutableLocalDeviceInfoProvider* local_device_info_provider =
+      static_cast<syncer::MutableLocalDeviceInfoProvider*>(
           device_info_sync_service_->GetLocalDeviceInfoProvider());
   local_device_info_provider->UpdateRecentSignInTime(initialization_time_);
   device_info_sync_service_->RefreshLocalDeviceInfo();

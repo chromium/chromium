@@ -55,6 +55,25 @@ FakeLocalDeviceInfoProvider::RegisterOnInitializedCallback(
   return closure_list_.Add(callback);
 }
 
+void FakeLocalDeviceInfoProvider::Initialize(
+    const std::string& cache_guid,
+    const std::string& client_name,
+    const std::string& manufacturer_name,
+    const std::string& model_name,
+    const std::string& full_hardware_class,
+    const DeviceInfo* device_info_restored_from_store) {}
+
+void FakeLocalDeviceInfoProvider::Clear() {}
+
+void FakeLocalDeviceInfoProvider::UpdateClientName(
+    const std::string& client_name) {
+  device_info_.set_client_name(client_name);
+}
+
+void FakeLocalDeviceInfoProvider::UpdateRecentSignInTime(base::Time time) {
+  device_info_.set_floating_workspace_last_signin_timestamp(time);
+}
+
 void FakeLocalDeviceInfoProvider::SetReady(bool ready) {
   bool got_ready = !ready_ && ready;
   ready_ = ready;
