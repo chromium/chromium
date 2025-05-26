@@ -259,7 +259,10 @@ void CommerceUiTabHelper::UpdatePriceInsightsIconView() {
 
     tab_interface->GetTabFeatures()
         ->commerce_price_insights_page_action_view_controller()
-        ->UpdatePageActionIcon();
+        ->UpdatePageActionIcon(
+            ShouldShowPriceInsightsIconView(),
+            ShouldExpandPageActionIcon(PageActionIconType::kPriceInsights),
+            GetPriceInsightsIconLabelTypeForPage());
     return;
   }
 
