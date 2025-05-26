@@ -8036,6 +8036,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kQuickAnswersMaterialNextUIName,
      flag_descriptions::kQuickAnswersMaterialNextUIDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(chromeos::features::kQuickAnswersMaterialNextUI)},
+    {"magic-boost-revamp-for-quick-answers",
+     flag_descriptions::kMagicBoostUpdateForQuickAnswersName,
+     flag_descriptions::kMagicBoostUpdateForQuickAnswersDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(chromeos::features::kMagicBoostRevampForQuickAnswers)},
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
     {"enable-gamepad-multitouch",

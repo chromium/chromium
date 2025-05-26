@@ -350,6 +350,9 @@ extern const char kFwupdDeveloperModeDescription[];
 extern const char kTangibleSyncName[];
 extern const char kTangibleSyncDescription[];
 
+extern const char kMagicBoostUpdateForQuickAnswersName[];
+extern const char kMagicBoostUpdateForQuickAnswersDescription[];
+
 extern const char kMediaPlaybackWhileNotVisiblePermissionPolicyName[];
 extern const char kMediaPlaybackWhileNotVisiblePermissionPolicyDescription[];
 

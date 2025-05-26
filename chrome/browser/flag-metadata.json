@@ -6318,6 +6318,11 @@
     "expiry_milestone": 145
   },
   {
+    "name": "magic-boost-revamp-for-quick-answers",
+    "owners": [ "hdchuong@chromium.org", "yawano@google.com", "assistive-eng@google.com" ],
+    "expiry_milestone": 144
+  },
+  {
     "name": "mahi",
     "owners": [ "thanhdng@chromium.org", "chrome-knowledge-eng@google.com" ],
     "expiry_milestone": 135
