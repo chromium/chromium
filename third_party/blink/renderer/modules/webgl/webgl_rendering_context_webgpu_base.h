@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/core/html/canvas/canvas_rendering_context.h"
 #include "third_party/blink/renderer/modules/webgl/webgl_context_object_support.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
+#include "third_party/blink/renderer/platform/graphics/gpu/webgpu_swap_buffer_provider.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
@@ -42,7 +43,8 @@ class WebGLVertexArrayObject;
 
 class MODULES_EXPORT WebGLRenderingContextWebGPUBase
     : public WebGLContextObjectSupport,
-      public CanvasRenderingContext {
+      public CanvasRenderingContext,
+      public WebGPUSwapBufferProvider::Client {
  public:
   WebGLRenderingContextWebGPUBase(
       CanvasRenderingContextHost* host,
@@ -54,6 +56,10 @@ class MODULES_EXPORT WebGLRenderingContextWebGPUBase
       delete;
   WebGLRenderingContextWebGPUBase& operator=(
       const WebGLRenderingContextWebGPUBase&) = delete;
+
+  // Extra Web-exposed initAsync while until Dawn operations can be made
+  // blocking in the renderer process.
+  ScriptPromise<IDLUndefined> initAsync(ScriptState* script_state);
 
   // **************************************************************************
   // Start of WebGLRenderingContextBase's IDL methods
@@ -1251,13 +1257,13 @@ class MODULES_EXPORT WebGLRenderingContextWebGPUBase
   SkAlphaType GetAlphaType() const override;
   viz::SharedImageFormat GetSharedImageFormat() const override;
   gfx::ColorSpace GetColorSpace() const override;
+  int ExternallyAllocatedBufferCountPerPixel() override;
   bool isContextLost() const override;
   scoped_refptr<StaticBitmapImage> GetImage(FlushReason) override;
   void SetHdrMetadata(const gfx::HDRMetadata& hdr_metadata) override;
 
   bool IsComposited() const override;
   bool IsPaintable() const override;
-  bool UsingSwapChain() const override;
   void PageVisibilityChanged() override;
   CanvasResourceProvider* PaintRenderingResultsToCanvas(
       SourceDrawingBuffer) override;
@@ -1268,6 +1274,7 @@ class MODULES_EXPORT WebGLRenderingContextWebGPUBase
       VideoFrameCopyCompletedCallback) override;
 
   cc::Layer* CcLayer() const override;
+  void Reshape(int width, int height) override;
   void Stop() override;
   void FinalizeFrame(FlushReason) override;
   bool PushFrame() override;
@@ -1276,9 +1283,37 @@ class MODULES_EXPORT WebGLRenderingContextWebGPUBase
   // End of CanvasRenderingContext implementation
   // **************************************************************************
 
+  // WebGPUSwapBufferProvider::Client implementation
+  void OnTextureTransferred() override;
+  void InitializeLayer(cc::Layer* layer) override;
+  void SetNeedsCompositingUpdate() override;
+  bool IsGPUDeviceDestroyed() override;
+
   void Trace(Visitor*) const override;
 
  private:
+  void InitRequestAdapterCallback(ScriptState* script_state,
+                                  ScriptPromiseResolver<IDLUndefined>* resolver,
+                                  wgpu::RequestAdapterStatus status,
+                                  wgpu::Adapter adapter,
+                                  wgpu::StringView error_message);
+  void InitRequestDeviceCallback(ScriptState* script_state,
+                                 ScriptPromiseResolver<IDLUndefined>* resolver,
+                                 wgpu::RequestDeviceStatus status,
+                                 wgpu::Device device,
+                                 wgpu::StringView error_message);
+
+  // Must be called when an operation happens that should cause the drawing
+  // buffer to be present to the compositor. See WebGL spec Section 2.2 The
+  // Drawing Buffer.
+  void ShouldPresentToCompositor();
+
+  scoped_refptr<DawnControlClientHolder> dawn_control_client_;
+  wgpu::Adapter adapter_;
+  wgpu::Device device_;
+
+  scoped_refptr<WebGPUSwapBufferProvider> swap_buffers_;
+  wgpu::Texture current_swap_buffer_;
 };
 
 }  // namespace blink

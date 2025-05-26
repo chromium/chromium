@@ -64,6 +64,7 @@ class PLATFORM_EXPORT WebGPUSwapBufferProvider
 
   viz::SharedImageFormat Format() const;
   wgpu::TextureFormat TextureFormat() const { return format_; }
+  wgpu::TextureUsage TextureUsage() const { return usage_; }
   gfx::Size Size() const;
   cc::Layer* CcLayer();
   void Neuter();

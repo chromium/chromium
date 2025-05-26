@@ -1,10 +1,19 @@
-// Copyright 2025 The Chromium Authors
-// Use of this source code is governed by a BSD-style license that can be
-// found in the LICENSE file.
+// Copyright 2025 The Chromium Authors Use of this source code is governed by a
+// BSD-style license that can be found in the LICENSE file.
 
 #include "third_party/blink/renderer/modules/webgl/webgl_rendering_context_webgpu_base.h"
 
 #include "base/notimplemented.h"
+#include "third_party/blink/public/platform/web_url.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/core/frame/local_dom_window.h"
+#include "third_party/blink/renderer/platform/graphics/gpu/dawn_control_client_holder.h"
+#include "third_party/blink/renderer/platform/graphics/gpu/webgpu_callback.h"
+#include "third_party/blink/renderer/platform/graphics/skia/skia_utils.h"
+#include "third_party/blink/renderer/platform/graphics/web_graphics_context_3d_provider_util.h"
+#include "third_party/blink/renderer/platform/weborigin/kurl.h"
+#include "third_party/blink/renderer/platform/wtf/functional.h"
+#include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
 
@@ -18,6 +27,122 @@ WebGLRenderingContextWebGPUBase::WebGLRenderingContextWebGPUBase(
       CanvasRenderingContext(host, requested_attributes, api) {}
 
 WebGLRenderingContextWebGPUBase::~WebGLRenderingContextWebGPUBase() {}
+
+ScriptPromise<IDLUndefined> WebGLRenderingContextWebGPUBase::initAsync(
+    ScriptState* script_state) {
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(script_state);
+  auto promise = resolver->Promise();
+
+  // Synchronously connect to the GPU process to use WebGPU.
+  ExecutionContext* execution_context = ExecutionContext::From(script_state);
+  std::unique_ptr<WebGraphicsContext3DProvider> context_provider =
+      Platform::Current()->CreateWebGPUGraphicsContext3DProvider(
+          execution_context->Url());
+
+  if (context_provider == nullptr) {
+    resolver->RejectWithDOMException(
+        DOMExceptionCode::kOperationError,
+        "Failed to create a WebGPU context provider");
+    return promise;
+  }
+
+  // The context provider requires being bound on a single thread because it was
+  // initially designed only for GL.
+  context_provider->BindToCurrentSequence();
+  // Send the execution token to the GPU process, it won't return devices until
+  // it receives it.
+  context_provider->WebGPUInterface()->SetWebGPUExecutionContextToken(
+      To<LocalDOMWindow>(execution_context)->document()->Token());
+
+  // Create the wgpu::Instance (as part of the DawnControlClientHolder).
+  dawn_control_client_ = DawnControlClientHolder::Create(
+      std::move(context_provider),
+      execution_context->GetTaskRunner(TaskType::kWebGPU));
+
+  // Request the adapter, making it resolve the result promise when it is done.
+  auto* callback =
+      MakeWGPUOnceCallback(resolver->WrapCallbackInScriptScope(WTF::BindOnce(
+          &WebGLRenderingContextWebGPUBase::InitRequestAdapterCallback,
+          WrapPersistent(this), WrapPersistent(script_state))));
+
+  dawn_control_client_->GetWGPUInstance().RequestAdapter(
+      nullptr, wgpu::CallbackMode::AllowSpontaneous,
+      callback->UnboundCallback(), callback->AsUserdata());
+  dawn_control_client_->EnsureFlush(ToEventLoop(script_state));
+
+  return promise;
+}
+
+void WebGLRenderingContextWebGPUBase::InitRequestAdapterCallback(
+    ScriptState* script_state,
+    ScriptPromiseResolver<IDLUndefined>* resolver,
+    wgpu::RequestAdapterStatus status,
+    wgpu::Adapter adapter,
+    wgpu::StringView error_message) {
+  if (status != wgpu::RequestAdapterStatus::Success) {
+    resolver->RejectWithDOMException(
+        DOMExceptionCode::kOperationError,
+        WTF::String::FromUTF8WithLatin1Fallback(error_message));
+    return;
+  }
+
+  adapter_ = std::move(adapter);
+
+  // Request the device.
+  auto* callback = MakeWGPUOnceCallback(
+      WTF::BindOnce(&WebGLRenderingContextWebGPUBase::InitRequestDeviceCallback,
+                    WrapPersistent(this), WrapPersistent(script_state),
+                    WrapPersistent(resolver)));
+
+  adapter_.RequestDevice(nullptr, wgpu::CallbackMode::AllowSpontaneous,
+                         callback->UnboundCallback(), callback->AsUserdata());
+  dawn_control_client_->EnsureFlush(ToEventLoop(script_state));
+}
+
+void WebGLRenderingContextWebGPUBase::InitRequestDeviceCallback(
+    ScriptState* script_state,
+    ScriptPromiseResolver<IDLUndefined>* resolver,
+    wgpu::RequestDeviceStatus status,
+    wgpu::Device device,
+    wgpu::StringView error_message) {
+  if (status != wgpu::RequestDeviceStatus::Success) {
+    resolver->RejectWithDOMException(
+        DOMExceptionCode::kOperationError,
+        WTF::String::FromUTF8WithLatin1Fallback(error_message));
+    return;
+  }
+
+  device_ = std::move(device);
+
+  // TODO(413078308): Fill in with a GLES2Interface that will be used by WebGL
+  // objects.
+  WebGLContextObjectSupport::OnContextRestored(nullptr);
+
+  // Create the underlying WebGPUSwapBufferProvider.
+  constexpr wgpu::TextureUsage kDefaultFBOUsages =
+      wgpu::TextureUsage::RenderAttachment | wgpu::TextureUsage::CopySrc |
+      wgpu::TextureUsage::CopySrc;
+#if BUILDFLAG(IS_ANDROID)
+  constexpr wgpu::TextureFormat kDefaultFBON32Format =
+      wgpu::TextureFormat::RGBA8Unorm;
+#else
+  constexpr wgpu::TextureFormat kDefaultFBON32Format =
+      wgpu::TextureFormat::BGRA8Unorm;
+#endif
+
+  // TODO(413078308): Add support for non-SRGB color spaces and HDR metadata.
+  // TODO(413078308): Add support for RGBA16Float drawing buffer.
+  swap_buffers_ = base::AdoptRef(new WebGPUSwapBufferProvider(
+      this, dawn_control_client_, device_, kDefaultFBOUsages,
+      wgpu::TextureUsage::None, kDefaultFBON32Format,
+      PredefinedColorSpace::kSRGB, gfx::HDRMetadata{}));
+
+  // We are required to present to the compositor on context creation.
+  ShouldPresentToCompositor();
+
+  resolver->Resolve();
+}
 
 // ****************************************************************************
 // Start of WebGLRenderingContextBase's IDL methods
@@ -2381,24 +2506,34 @@ void WebGLRenderingContextWebGPUBase::readPixels(
 // Start of CanvasRenderingContext implementation
 // ****************************************************************************
 SkAlphaType WebGLRenderingContextWebGPUBase::GetAlphaType() const {
-  NOTIMPLEMENTED();
-  return SkAlphaType::kUnknown_SkAlphaType;
+  // WebGL spec section 2.2 The Drawing Buffer
+  //
+  //   If defined, the alpha channel is used by the HTML compositor to combine
+  //   the color buffer with the rest of the page.
+  return CreationAttributes().alpha ? kPremul_SkAlphaType : kOpaque_SkAlphaType;
 }
 
 viz::SharedImageFormat WebGLRenderingContextWebGPUBase::GetSharedImageFormat()
     const {
-  NOTIMPLEMENTED();
-  return {};
+  // TODO(413078308): Add support for RGBA16Float drawing buffer.
+  if (swap_buffers_) {
+    return swap_buffers_->Format();
+  }
+  return GetN32FormatForCanvas();
 }
 
 gfx::ColorSpace WebGLRenderingContextWebGPUBase::GetColorSpace() const {
-  NOTIMPLEMENTED();
-  return {};
+  // TODO(413078308): Add support for non-SRGB color spaces.
+  return gfx::ColorSpace::CreateSRGB();
+}
+
+int WebGLRenderingContextWebGPUBase::ExternallyAllocatedBufferCountPerPixel() {
+  // TODO(413078308): Add support configuring MSAA and depth-stencil.
+  return 2;
 }
 
 bool WebGLRenderingContextWebGPUBase::isContextLost() const {
-  NOTIMPLEMENTED();
-  return false;
+  return IsLost();
 }
 
 scoped_refptr<StaticBitmapImage> WebGLRenderingContextWebGPUBase::GetImage(
@@ -2413,18 +2548,11 @@ void WebGLRenderingContextWebGPUBase::SetHdrMetadata(
 }
 
 bool WebGLRenderingContextWebGPUBase::IsComposited() const {
-  NOTIMPLEMENTED();
-  return false;
+  return true;
 }
 
 bool WebGLRenderingContextWebGPUBase::IsPaintable() const {
-  NOTIMPLEMENTED();
-  return false;
-}
-
-bool WebGLRenderingContextWebGPUBase::UsingSwapChain() const {
-  NOTIMPLEMENTED();
-  return false;
+  return true;
 }
 
 void WebGLRenderingContextWebGPUBase::PageVisibilityChanged() {
@@ -2448,8 +2576,14 @@ bool WebGLRenderingContextWebGPUBase::CopyRenderingResultsToVideoFrame(
 }
 
 cc::Layer* WebGLRenderingContextWebGPUBase::CcLayer() const {
-  NOTIMPLEMENTED();
+  if (swap_buffers_) {
+    return swap_buffers_->CcLayer();
+  }
   return nullptr;
+}
+
+void WebGLRenderingContextWebGPUBase::Reshape(int width, int height) {
+  NOTIMPLEMENTED();
 }
 
 void WebGLRenderingContextWebGPUBase::Stop() {
@@ -2469,8 +2603,47 @@ bool WebGLRenderingContextWebGPUBase::PushFrame() {
 // End of CanvasRenderingContext implementation
 // ****************************************************************************
 
+void WebGLRenderingContextWebGPUBase::OnTextureTransferred() {
+  current_swap_buffer_ = nullptr;
+}
+
+void WebGLRenderingContextWebGPUBase::InitializeLayer(cc::Layer* layer) {
+  if (Host()) {
+    Host()->InitializeLayerWithCSSProperties(layer);
+  }
+}
+
+void WebGLRenderingContextWebGPUBase::SetNeedsCompositingUpdate() {
+  if (Host()) {
+    Host()->SetNeedsCompositingUpdate();
+  }
+}
+
+bool WebGLRenderingContextWebGPUBase::IsGPUDeviceDestroyed() {
+  return IsLost();
+}
+
 void WebGLRenderingContextWebGPUBase::Trace(Visitor* visitor) const {
   WebGLContextObjectSupport::Trace(visitor);
   CanvasRenderingContext::Trace(visitor);
 }
+
+void WebGLRenderingContextWebGPUBase::ShouldPresentToCompositor() {
+  if (current_swap_buffer_) {
+    return;
+  }
+  wgpu::TextureDescriptor texDesc;
+  texDesc.size.width = std::max(1, Host()->Size().width());
+  texDesc.size.height = std::max(1, Host()->Size().height());
+  texDesc.usage = swap_buffers_->TextureUsage();
+  texDesc.format = swap_buffers_->TextureFormat();
+  texDesc.dimension = wgpu::TextureDimension::e2D;
+
+  scoped_refptr<WebGPUMailboxTexture> mailbox_texture =
+      swap_buffers_->GetNewTexture(texDesc, GetAlphaType());
+  mailbox_texture->SetNeedsPresent(true);
+
+  current_swap_buffer_ = mailbox_texture->GetTexture();
+}
+
 }  // namespace blink
