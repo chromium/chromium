@@ -307,10 +307,15 @@ IN_PROC_BROWSER_TEST_F(SingleClientCustomPassphraseSyncTest,
   ASSERT_TRUE(AddURL(/*profile=*/0, title, page_url));
 
   // Mimic custom passphrase being set during initial sync setup.
-  ASSERT_TRUE(GetClient(0)->SignInPrimaryAccount(signin::ConsentLevel::kSync));
-  ASSERT_TRUE(GetClient(0)->AwaitEngineInitialization());
-  GetSyncService()->GetUserSettings()->SetEncryptionPassphrase("hunter2");
-  GetClient(0)->FinishSyncSetup();
+  ASSERT_TRUE(GetClient(0)->SetupSyncWithCustomSettings(
+      /*user_settings_callback=*/base::BindOnce(
+          [](syncer::SyncUserSettings* user_settings) {
+            user_settings->SetEncryptionPassphrase("hunter2");
+#if !BUILDFLAG(IS_CHROMEOS)
+            user_settings->SetInitialSyncFeatureSetupComplete(
+                syncer::SyncFirstSetupCompleteSource::ADVANCED_FLOW_CONFIRM);
+#endif  // !BUILDFLAG(IS_CHROMEOS)
+          })));
 
   ASSERT_TRUE(WaitForNigori(PassphraseType::kCustomPassphrase));
   // Ensure that only encrypted bookmarks were committed and that they are

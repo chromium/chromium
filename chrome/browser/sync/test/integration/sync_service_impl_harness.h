@@ -113,23 +113,29 @@ class SyncServiceImplHarness {
   // Enables and configures sync for all available datatypes. Returns true only
   // after sync has been fully initialized and authenticated, and we are ready
   // to process changes.
+  [[nodiscard]] bool SetupSync();
+
+  // Same as above but allows the modify sync settings (e.g. selected types) as
+  // part of the sync flow (advanced flow).
   // |user_settings_callback| will be called once the engine is initialized, but
-  // before actually starting sync, to give the caller a chance to modify sync
-  // settings (mostly the selected data types).
-  [[nodiscard]] bool SetupSync(SetUserSettingsCallback user_settings_callback =
-                                   SetUserSettingsCallback());
+  // before actually starting sync. Note that the caller is responsible for
+  // invoking `SetInitialSyncFeatureSetupComplete()`, if appropriate.
+  [[nodiscard]] bool SetupSyncWithCustomSettings(
+      SetUserSettingsCallback user_settings_callback);
 
   // Enables and configures sync.
   // Does not wait for sync to be ready to process changes -- callers need to
   // ensure this by calling AwaitSyncSetupCompletion() or
   // AwaitSyncTransportActive().
+  [[nodiscard]] bool SetupSyncNoWaitForCompletion();
+
+  // Same as above but allows the modify sync settings (e.g. selected types) as
+  // part of the sync flow (advanced flow).
   // |user_settings_callback| will be called once the engine is initialized, but
-  // before actually starting sync, to give the caller a chance to modify sync
-  // settings (mostly the selected data types).
-  // Returns true on success.
-  [[nodiscard]] bool SetupSyncNoWaitForCompletion(
-      SetUserSettingsCallback user_settings_callback =
-          SetUserSettingsCallback());
+  // before actually starting sync. Note that the caller is responsible for
+  // invoking `SetInitialSyncFeatureSetupComplete()`, if appropriate.
+  [[nodiscard]] bool SetupSyncWithCustomSettingsNoWaitForCompletion(
+      SetUserSettingsCallback user_settings_callback);
 
   // Signals that sync setup is complete, and that PSS may begin syncing.
   // Typically SetupSync does this automatically, but if that returned false,
