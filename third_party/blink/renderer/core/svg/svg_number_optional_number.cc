@@ -33,6 +33,7 @@
 #include "third_party/blink/renderer/core/svg/svg_parser_utilities.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/visitor.h"
+#include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 
 namespace blink {
 
@@ -56,8 +57,8 @@ String SVGNumberOptionalNumber::ValueAsString() const {
     return String::Number(first_number_->Value());
   }
 
-  return String::Number(first_number_->Value()) + " " +
-         String::Number(second_number_->Value());
+  return WTF::StrCat({String::Number(first_number_->Value()), " ",
+                      String::Number(second_number_->Value())});
 }
 
 SVGParsingError SVGNumberOptionalNumber::SetValueAsString(const String& value) {

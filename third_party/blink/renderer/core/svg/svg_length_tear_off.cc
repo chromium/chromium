@@ -35,6 +35,7 @@
 #include "third_party/blink/renderer/core/svg/svg_length_context.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 
 namespace blink {
 
@@ -220,7 +221,7 @@ void SVGLengthTearOff::setValueAsString(const String& str,
   if (status != SVGParseStatus::kNoError) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kSyntaxError,
-        "The value provided ('" + str + "') is invalid.");
+        WTF::StrCat({"The value provided ('", str, "') is invalid."}));
     return;
   }
   CommitChange(SVGPropertyCommitReason::kUpdated);
@@ -236,8 +237,8 @@ void SVGLengthTearOff::newValueSpecifiedUnits(uint16_t unit_type,
   if (!IsValidLengthUnit(unit_type)) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kNotSupportedError,
-        "Cannot set value with unknown or invalid units (" +
-            String::Number(unit_type) + ").");
+        WTF::StrCat({"Cannot set value with unknown or invalid units (",
+                     String::Number(unit_type), ")."}));
     return;
   }
   Target()->NewValueSpecifiedUnits(ToCSSUnitType(unit_type),
@@ -255,8 +256,8 @@ void SVGLengthTearOff::convertToSpecifiedUnits(
   if (!IsValidLengthUnit(unit_type)) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kNotSupportedError,
-        "Cannot convert to unknown or invalid units (" +
-            String::Number(unit_type) + ").");
+        WTF::StrCat({"Cannot convert to unknown or invalid units (",
+                     String::Number(unit_type), ")."}));
     return;
   }
   SVGElement* context_element = ContextElement();
