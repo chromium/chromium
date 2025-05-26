@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_COMMERCE_PRICE_INSIGHTS_PAGE_ACTION_VIEW_CONTROLLER_H_
 #define CHROME_BROWSER_UI_VIEWS_COMMERCE_PRICE_INSIGHTS_PAGE_ACTION_VIEW_CONTROLLER_H_
 
+#include <memory>
+
 #include "base/memory/raw_ref.h"
 #include "chrome/browser/ui/views/commerce/price_insights_icon_view.h"
 
