@@ -138,7 +138,7 @@ NormalizedMurmurHashEntropyProvider ComputeRemainderEntropy(
 // provider doesn't exist so that this function can never select that provider.
 const base::FieldTrial::EntropyProvider& SelectEntropyProviderForSlot(
     const EntropyProviders& entropy_providers,
-    const Layer::EntropyMode& entropy_mode) {
+    Layer::EntropyMode entropy_mode) {
   if (entropy_mode == Layer::LIMITED) {
     return entropy_providers.limited_entropy();
   } else if (entropy_mode == Layer::LOW) {
@@ -163,7 +163,7 @@ bool AreLayerMemberIDsUnique(const Layer& layer_proto) {
 
 VariationsLayers::VariationsLayers(const VariationsSeed& seed,
                                    const EntropyProviders& entropy_providers)
-    : nil_entropy({0, 1}) {
+    : nil_entropy_({0, 1}) {
   // Don't activate any layer-constrained studies in benchmarking mode to
   // maintain deterministic behavior.
   if (entropy_providers.benchmarking_enabled()) {
@@ -193,7 +193,7 @@ VariationsLayers::VariationsLayers(const VariationsSeed& seed,
   }
 }
 
-VariationsLayers::VariationsLayers() : nil_entropy({0, 1}) {}
+VariationsLayers::VariationsLayers() : nil_entropy_({0, 1}) {}
 
 VariationsLayers::~VariationsLayers() = default;
 
@@ -436,7 +436,7 @@ const base::FieldTrial::EntropyProvider& VariationsLayers::GetRemainderEntropy(
     // TODO(crbug.com/41492242): Remove CreateTrialsForStudy fuzzer, then
     // uncomment this.
     // NOTREACHED();
-    return nil_entropy;
+    return nil_entropy_;
   }
   return layer_info->remainder_entropy;
 }

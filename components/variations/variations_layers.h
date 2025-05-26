@@ -42,7 +42,7 @@ enum class InvalidLayerReason {
 // with studies that require a different member to be active.
 class COMPONENT_EXPORT(VARIATIONS) VariationsLayers {
  public:
-  // Instantiates a `VariationsLayers` object with the given `seed`, and
+  // Instantiates a `VariationsLayers` object with `seed` and
   // `entropy_providers`.
   VariationsLayers(const VariationsSeed& seed,
                    const EntropyProviders& entropy_providers);
@@ -125,7 +125,7 @@ class COMPONENT_EXPORT(VARIATIONS) VariationsLayers {
   // the layer is not active.
   std::optional<Layer::EntropyMode> GetEntropyMode(uint32_t layer_id) const;
 
-  NormalizedMurmurHashEntropyProvider nil_entropy;
+  NormalizedMurmurHashEntropyProvider nil_entropy_;
   std::map<uint32_t, LayerInfo> active_member_for_layer_;
 };
 
