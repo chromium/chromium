@@ -5606,9 +5606,6 @@ crbug.com/1167309 fast/canvas/canvas-createImageBitmap-drawImage.html [ Failure 
 # Sheriff 2021-01-20
 crbug.com/1168522 external/wpt/focus/iframe-activeelement-after-focusing-out-iframes.html [ Failure Pass ]
 
-# DevTools roll
-crbug.com/40118109 http/tests/devtools/console/console-correct-suggestions.js [ Failure Pass ]
-
 # Flaky test
 
 # Temporarily disabled to unblock https://crrev.com/c/2979697
