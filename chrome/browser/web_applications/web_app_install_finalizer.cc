@@ -19,7 +19,6 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/not_fatal_until.h"
 #include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
@@ -144,8 +143,7 @@ void ApplyUserDisplayModeSyncMitigations(
   }
 
   // Guaranteed by EnsureAppsHaveUserDisplayModeForCurrentPlatform().
-  CHECK(web_app.sync_proto().has_user_display_mode_cros(),
-        base::NotFatalUntil::M125);
+  CHECK(web_app.sync_proto().has_user_display_mode_cros());
 
   // Don't mitigate installations from sync, this is only for installs that will
   // be newly uploaded to sync.

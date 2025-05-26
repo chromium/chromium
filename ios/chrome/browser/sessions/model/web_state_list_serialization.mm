@@ -433,7 +433,7 @@ std::vector<web::WebState*> DeserializeWebStateListInternal(
     if (base::FeatureList::IsEnabled(
             session::features::kSessionRestorationSessionIDCheck)) {
       web::WebStateID web_state_id = web_state->GetUniqueIdentifier();
-      CHECK(web_state_id.valid(), base::NotFatalUntil::M125);
+      CHECK(web_state_id.valid());
       if (!max_identifier.is_valid() ||
           max_identifier.id() < web_state_id.identifier()) {
         max_identifier = web_state_id.ToSessionID();

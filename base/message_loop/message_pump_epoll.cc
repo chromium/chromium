@@ -421,12 +421,12 @@ void MessagePumpEpoll::UnregisterInterest(
 
   const int fd = interest->params().fd;
   auto entry_it = entries_.find(fd);
-  CHECK(entry_it != entries_.end(), base::NotFatalUntil::M125);
+  CHECK(entry_it != entries_.end());
 
   EpollEventEntry& entry = entry_it->second;
   auto& interests = entry.interests;
   auto* it = std::ranges::find(interests, interest);
-  CHECK(it != interests.end(), base::NotFatalUntil::M125);
+  CHECK(it != interests.end());
   interests.erase(it);
 
   if (interests.empty()) {

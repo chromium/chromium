@@ -415,10 +415,9 @@ void ModelExecutionFeaturesController::OnFeatureSettingPrefChanged(
   // When the feature is enabled, check the user is valid to enable the
   // feature.
   CHECK(!is_enabled ||
-            GetCurrentUserValidityResult(feature,
-                                         /*skip_enterprise_check=*/false) ==
-                ModelExecutionFeaturesController::UserValidityResult::kValid,
-        base::NotFatalUntil::M125);
+        GetCurrentUserValidityResult(feature,
+                                     /*skip_enterprise_check=*/false) ==
+            ModelExecutionFeaturesController::UserValidityResult::kValid);
 
   if (pref_value != prefs::FeatureOptInState::kNotInitialized) {
     base::UmaHistogramBoolean(

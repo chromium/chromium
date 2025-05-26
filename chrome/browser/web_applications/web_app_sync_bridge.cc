@@ -25,7 +25,6 @@
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/not_fatal_until.h"
 #include "base/strings/to_string.h"
 #include "base/types/expected.h"
 #include "base/types/pass_key.h"
@@ -370,7 +369,7 @@ void WebAppSyncBridge::SetAppManifestUpdateTime(const webapps::AppId& app_id,
 
 void WebAppSyncBridge::SetUserPageOrdinal(const webapps::AppId& app_id,
                                           syncer::StringOrdinal page_ordinal) {
-  CHECK(page_ordinal.IsValid(), base::NotFatalUntil::M126);
+  CHECK(page_ordinal.IsValid());
   ScopedRegistryUpdate update = BeginUpdate();
   WebApp* web_app = update->UpdateApp(app_id);
   // Due to the extensions sync system setting ordinals on sync, this can get
@@ -390,7 +389,7 @@ void WebAppSyncBridge::SetUserPageOrdinal(const webapps::AppId& app_id,
 void WebAppSyncBridge::SetUserLaunchOrdinal(
     const webapps::AppId& app_id,
     syncer::StringOrdinal launch_ordinal) {
-  CHECK(launch_ordinal.IsValid(), base::NotFatalUntil::M126);
+  CHECK(launch_ordinal.IsValid());
   ScopedRegistryUpdate update = BeginUpdate();
   // Due to the extensions sync system setting ordinals on sync, this can get
   // called before the app is installed in the web apps system. Until apps are
@@ -523,7 +522,7 @@ void WebAppSyncBridge::UpdateRegistrar(
   }
   for (const webapps::AppId& app_id : update_data->apps_to_delete) {
     auto it = registrar_->registry().find(app_id);
-    CHECK(it != registrar_->registry().end(), base::NotFatalUntil::M130);
+    CHECK(it != registrar_->registry().end());
     registrar_->registry().erase(it);
   }
 }
@@ -542,7 +541,7 @@ void WebAppSyncBridge::UpdateSync(
 
   for (const std::unique_ptr<WebApp>& new_app : update_data.apps_to_create) {
     if (new_app->IsSynced()) {
-      CHECK(new_app->manifest_id().is_valid(), base::NotFatalUntil::M125);
+      CHECK(new_app->manifest_id().is_valid());
       change_processor()->Put(new_app->app_id(), CreateSyncEntityData(*new_app),
                               metadata_change_list);
     }
@@ -558,7 +557,7 @@ void WebAppSyncBridge::UpdateSync(
     // the app if IsSynced flag stays true. Exclude the app from the sync "view"
     // if IsSynced flag becomes false.
     if (new_state->IsSynced()) {
-      CHECK(new_state->manifest_id().is_valid(), base::NotFatalUntil::M125);
+      CHECK(new_state->manifest_id().is_valid());
       // Only call 'Put' if it wasn't synced, or if the sync data has changed.
       // TODO(https://crbug.com/409867622): We can remove this optimization
       // after tests are updated to use a Fake version instead of the Mock
@@ -917,12 +916,12 @@ std::unique_ptr<syncer::DataBatch> WebAppSyncBridge::GetAllDataForDebugging() {
 
 std::string WebAppSyncBridge::GetClientTag(
     const syncer::EntityData& entity_data) const {
-  CHECK(entity_data.specifics.has_web_app(), base::NotFatalUntil::M125);
+  CHECK(entity_data.specifics.has_web_app());
   base::expected<webapps::ManifestId, StorageKeyParseResult> manifest_id =
       ParseManifestIdFromSyncEntity(entity_data.specifics.web_app());
   // This is guaranteed to be true, as the contract for this function is that
   // IsEntityDataValid must be true.
-  CHECK(manifest_id.has_value(), base::NotFatalUntil::M125);
+  CHECK(manifest_id.has_value());
   return GenerateAppIdFromManifestId(manifest_id.value());
 }
 

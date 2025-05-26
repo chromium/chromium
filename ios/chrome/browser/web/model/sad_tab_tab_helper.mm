@@ -134,7 +134,7 @@ void SadTabTabHelper::WebStateDestroyed(web::WebState* web_state) {
 }
 
 void SadTabTabHelper::WebStateRealized(web::WebState* web_state) {
-  CHECK(!background_notification_observer_, base::NotFatalUntil::M125);
+  CHECK(!background_notification_observer_);
   CreateNotificationObserver();
 }
 
