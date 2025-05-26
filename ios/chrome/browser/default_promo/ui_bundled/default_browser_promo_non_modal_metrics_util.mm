@@ -85,7 +85,7 @@ void LogNonModalPromoAction(NonModalPromoAction action,
 
     default:
       // TODO(crbug.com/327429982): M124 validation necessary.
-      NOTREACHED(base::NotFatalUntil::M126);
+      NOTREACHED();
   }
 
   UmaHistogramEnumeration(histogramString, action);

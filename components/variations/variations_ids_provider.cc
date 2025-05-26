@@ -229,7 +229,7 @@ bool VariationsIdsProvider::ForceDisableVariationIds(
 
 void VariationsIdsProvider::AddObserver(Observer* observer) {
   base::AutoLock scoped_lock(lock_);
-  CHECK(!base::Contains(observer_list_, observer), base::NotFatalUntil::M126);
+  CHECK(!base::Contains(observer_list_, observer));
   observer_list_.push_back(observer);
 }
 

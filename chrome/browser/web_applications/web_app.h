@@ -15,7 +15,6 @@
 
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
-#include "base/not_fatal_until.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "base/version.h"
@@ -258,9 +257,9 @@ class WebApp {
   // wins.
   const sync_pb::WebAppSpecifics& sync_proto() const {
     // Ensure the sync proto has been initialized.
-    CHECK(sync_proto_.has_start_url(), base::NotFatalUntil::M126);
-    CHECK(GURL(sync_proto_.start_url()).is_valid(), base::NotFatalUntil::M126);
-    CHECK(sync_proto_.has_relative_manifest_id(), base::NotFatalUntil::M126);
+    CHECK(sync_proto_.has_start_url());
+    CHECK(GURL(sync_proto_.start_url()).is_valid());
+    CHECK(sync_proto_.has_relative_manifest_id());
     return sync_proto_;
   }
 

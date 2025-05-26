@@ -49,8 +49,7 @@ CursorController* CursorController::GetInstance() {
 
 void CursorController::AddCursorObserver(CursorObserver* observer) {
   base::AutoLock lock(cursor_observers_lock_);
-  CHECK(!base::Contains(cursor_observers_, observer),
-        base::NotFatalUntil::M126);
+  CHECK(!base::Contains(cursor_observers_, observer));
   cursor_observers_.push_back(observer);
 }
 

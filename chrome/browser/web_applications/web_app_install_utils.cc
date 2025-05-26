@@ -31,7 +31,6 @@
 #include "base/metrics/histogram.h"
 #include "base/metrics/histogram_base.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/not_fatal_until.h"
 #include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
@@ -1136,8 +1135,8 @@ void SetWebAppManifestFields(const WebAppInstallInfo& web_app_info,
   sync_pb::WebAppSpecifics sync_proto = web_app.sync_proto();
   // Sync proto has already been initialized by setting the start_url and/or
   // manifest_id above.
-  CHECK(sync_proto.has_start_url(), base::NotFatalUntil::M126);
-  CHECK(sync_proto.has_relative_manifest_id(), base::NotFatalUntil::M126);
+  CHECK(sync_proto.has_start_url());
+  CHECK(sync_proto.has_relative_manifest_id());
   sync_proto.set_name(base::UTF16ToUTF8(web_app_info.title));
   sync_proto.clear_theme_color();
   if (web_app_info.theme_color.has_value()) {

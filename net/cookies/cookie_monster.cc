@@ -1735,7 +1735,7 @@ void CookieMonster::SetCanonicalCookie(
   // source type to kOther (or kHTTP/kScript where applicable). See
   // CookieSourceType in net/cookies/cookie_constants.h for more.
   if (cc->SourceType() == CookieSourceType::kUnknown) {
-    CHECK_IS_TEST(base::NotFatalUntil::M126);
+    CHECK_IS_TEST();
   }
 #endif
 
