@@ -955,6 +955,8 @@ static_library("ui") {
         "android/toolbar/extension_actions_bridge_factory.cc",
         "android/toolbar/extension_actions_bridge_factory.h",
       ]
+
+      deps += [ "//extensions/browser:extension_action_enums" ]
     }
   } else {
     # !is_android

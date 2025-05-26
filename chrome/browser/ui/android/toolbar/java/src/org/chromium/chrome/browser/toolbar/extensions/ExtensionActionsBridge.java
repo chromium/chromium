@@ -16,6 +16,8 @@ import org.chromium.base.ObserverList;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.content_public.browser.WebContents;
+import org.chromium.extensions.ShowAction;
 
 /** A JNI bridge providing access to information of extension actions in the toolbar. */
 @NullMarked
@@ -78,6 +80,16 @@ public class ExtensionActionsBridge {
     public Bitmap getActionIcon(String actionId, int tabId) {
         return ExtensionActionsBridgeJni.get()
                 .getActionIcon(mNativeExtensionActionsBridge, actionId, tabId);
+    }
+
+    /**
+     * Runs an extension action.
+     *
+     * <p>It returns a {@link ShowAction} enum indicating what UI action the caller should perform.
+     */
+    public @ShowAction int runAction(String actionId, WebContents webContents) {
+        return ExtensionActionsBridgeJni.get()
+                .runAction(mNativeExtensionActionsBridge, actionId, webContents);
     }
 
     @CalledByNative
@@ -177,5 +189,10 @@ public class ExtensionActionsBridge {
                 long nativeExtensionActionsBridge,
                 @JniType("std::string") String actionId,
                 int tabId);
+
+        int runAction(
+                long nativeExtensionActionsBridge,
+                @JniType("std::string") String actionId,
+                WebContents webContents);
     }
 }
