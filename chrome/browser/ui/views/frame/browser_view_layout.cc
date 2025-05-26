@@ -40,7 +40,6 @@
 #include "components/web_modal/web_contents_modal_dialog_host.h"
 #include "ui/base/hit_test.h"
 #include "ui/base/ui_base_features.h"
-#include "ui/compositor/compositor_switches.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
@@ -72,7 +71,7 @@ const int kConstrainedWindowOverlap = 3;
 // hack once the pixel canvas is enabled on all aura platforms.  Note that macOS
 // supports integer scale only, so this isn't necessary on macOS.
 void SetClipPathWithBottomAllowance(views::View* view) {
-  if (!ui::IsPixelCanvasRecordingEnabled()) {
+  if (!features::IsPixelCanvasRecordingEnabled()) {
     constexpr int kBottomPaintAllowance = 2;
     const gfx::Rect local_bounds = view->GetLocalBounds();
     const int extended_height = local_bounds.height() + kBottomPaintAllowance;
@@ -600,7 +599,7 @@ int BrowserViewLayout::LayoutBookmarkBar(int top) {
   bookmark_bar_->SetBounds(vertical_layout_rect_.x(), top,
                            vertical_layout_rect_.width(), bookmark_bar_height);
   SetClipPathWithBottomAllowance(bookmark_bar_);
-  if (!ui::IsPixelCanvasRecordingEnabled()) {
+  if (!features::IsPixelCanvasRecordingEnabled()) {
     // Make sure the contents separator is painted last as the background for
     // BookmarkVieBar/ToolbarView may paint over it otherwise.
     // TODO(crbug.com/41344902): Remove once the pixel canvas is enabled on

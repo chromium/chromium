@@ -333,6 +333,7 @@ component("gfx") {
     "//mojo/public/cpp/bindings:struct_traits",
     "//skia",
     "//third_party/zlib",
+    "//ui/base:features",
     "//ui/base:ozone_buildflags",
     "//ui/base:ui_data_pack",
   ]
@@ -401,7 +402,6 @@ component("gfx") {
 
   # Windows.
   if (is_win) {
-    deps += [ "//ui/base:features" ]
     libs = [
       "setupapi.lib",
       "dwmapi.lib",

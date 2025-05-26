@@ -247,6 +247,11 @@ BASE_DECLARE_FEATURE(kAsyncFullscreenWindowState);
 COMPONENT_EXPORT(UI_BASE_FEATURES)
 BASE_DECLARE_FEATURE(kClipboardChangeEvent);
 
+COMPONENT_EXPORT(UI_BASE_FEATURES)
+BASE_DECLARE_FEATURE(kEnablePixelCanvasRecording);
+
+bool COMPONENT_EXPORT(UI_BASE_FEATURES) IsPixelCanvasRecordingEnabled();
+
 }  // namespace features
 
 #endif  // UI_BASE_UI_BASE_FEATURES_H_

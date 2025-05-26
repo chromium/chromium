@@ -25,22 +25,6 @@ const char kDisableVsyncForTests[] = "disable-vsync-for-tests";
 
 }  // namespace switches
 
-namespace features {
-
-// If enabled, all draw commands recorded on canvas are done in pixel aligned
-// measurements. This also enables scaling of all elements in views and layers
-// to be done via corner points. See https://crbug.com/720596 for details.
-BASE_FEATURE(kEnablePixelCanvasRecording,
-             "enable-pixel-canvas-recording",
-#if BUILDFLAG(IS_CHROMEOS)
-             base::FEATURE_ENABLED_BY_DEFAULT
-#else
-             base::FEATURE_DISABLED_BY_DEFAULT
-#endif
-);
-
-}  // namespace features
-
 namespace ui {
 
 bool IsUIZeroCopyEnabled() {
@@ -52,10 +36,6 @@ bool IsUIZeroCopyEnabled() {
 #else
   return command_line.HasSwitch(switches::kUIEnableZeroCopy);
 #endif
-}
-
-bool IsPixelCanvasRecordingEnabled() {
-  return base::FeatureList::IsEnabled(features::kEnablePixelCanvasRecording);
 }
 
 }  // namespace ui
