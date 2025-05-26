@@ -61,6 +61,13 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(/services/network/public/cpp/content_decoding_interceptor.h:ContentDecodingInterceptorClientType) -->
 
+<variants name="DHCPProvisionReason">
+  <variant name="Connect"/>
+  <variant name="LeaseExpiration"/>
+  <variant name="Roaming"/>
+  <variant name="SuspendResume"/>
+</variants>
+
 <variants name="HTTPRequestConnectionProtocol">
   <variant name="Multiplexed"/>
   <variant name="Simple"/>
@@ -4789,6 +4796,18 @@ chromium-metrics-reviews@google.com.
   <token key="Technology" variants="PhysicalTechnology"/>
 </histogram>
 
+<histogram name="Network.Shill.{Technology}.DHCPv4RenewRebind"
+    enum="DHCPv4RenewRebind" expires_after="2025-12-31">
+  <owner>chenzikai@google.com</owner>
+  <owner>cros-network-metrics@google.com</owner>
+  <summary>
+    ChromeOS network performance metric that tracks the number of successful
+    DHCPv4 Renew/Rebind events for {Technology}. The metric will be emitted once
+    per DHCPv4 Renew/Rebind event in shill.
+  </summary>
+  <token key="Technology" variants="PhysicalTechnology"/>
+</histogram>
+
 <histogram name="Network.Shill.{Technology}.IPType" enum="NetworkIPType"
     expires_after="2025-12-31">
   <owner>jiejiang@chromium.org</owner>
@@ -4816,6 +4835,20 @@ chromium-metrics-reviews@google.com.
     kernel.
   </summary>
   <token key="Technology" variants="PhysicalTechnology"/>
+</histogram>
+
+<histogram
+    name="Network.Shill.{Technology}.{DHCPProvisionReason}.DHCPv4ProvisionResult"
+    enum="DHCPv4ProvisionResult" expires_after="2025-12-31">
+  <owner>chenzikai@google.com</owner>
+  <owner>cros-network-metrics@google.com</owner>
+  <summary>
+    ChromeOS network performance metric that tracks the DHCPv4 provision result
+    for {Technology} due to {DHCPProvisionReason}. The metric is emitted once
+    the provisioning is done (either succeeded or failed).
+  </summary>
+  <token key="Technology" variants="PhysicalTechnology"/>
+  <token key="DHCPProvisionReason" variants="DHCPProvisionReason"/>
 </histogram>
 
 <histogram name="Network.TrafficCounters.{Technology}.AverageDailyDataUsage"
