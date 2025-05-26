@@ -8150,6 +8150,11 @@
     "expiry_milestone": 145
   },
   {
+    "name": "reader-mode-page-eligibility-enabled",
+    "owners": ["fernandex@google.com", "qpubert@google.com", "bling-flags@google.com"],
+    "expiry_milestone": 145
+  },
+  {
     "name": "reading-list-enable-sync-transport-mode-upon-sign-in",
     "owners": [ "mmrashad@google.com", "rsult@google.com", "uno-desktop@google.com" ],
     "expiry_milestone": 140

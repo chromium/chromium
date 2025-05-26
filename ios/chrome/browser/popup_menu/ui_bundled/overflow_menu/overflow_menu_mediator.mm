@@ -1602,6 +1602,13 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
     return NO;
   }
 
+  // Reader Mode is always enabled in the Overflow menu if the triggering
+  // heuristic is disabled.
+  if (!base::FeatureList::IsEnabled(
+          kEnableReaderModePageEligibilityForToolsMenu)) {
+    return YES;
+  }
+
   ReaderModeTabHelper* helper =
       ReaderModeTabHelper::FromWebState(self.webState);
   return helper && helper->CurrentPageSupportsReaderMode();
