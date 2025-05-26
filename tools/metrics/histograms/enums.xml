@@ -13800,6 +13800,7 @@ from previous Chrome versions.
   <int value="-35256214" label="InterestFeedNoticeCardAutoDismiss:enabled"/>
   <int value="-35002051" label="DefaultBucketUsesRelaxedDurability:enabled"/>
   <int value="-34898620" label="RendererSideContentDecoding:disabled"/>
+  <int value="-33771076" label="MemoryPurgeOnFreezeLimit:disabled"/>
   <int value="-33240310" label="AppShimNotificationAttribution:enabled"/>
   <int value="-32712825" label="CrOSEnforceSystemAec:disabled"/>
   <int value="-31484570"
@@ -15214,6 +15215,7 @@ from previous Chrome versions.
   <int value="494939785" label="InsecureFormSubmissionInterstitial:disabled"/>
   <int value="495177253" label="CastStreamingWinHardwareH264:enabled"/>
   <int value="495435958" label="PageInfoAboutThisSiteMoreInfo:enabled"/>
+  <int value="495620535" label="MemoryPurgeOnFreezeLimit:enabled"/>
   <int value="496491728" label="SiteSearchSettingsPolicy:enabled"/>
   <int value="496667708" label="ArcInputOverlay:disabled"/>
   <int value="497039057" label="AdaptiveChargingForTesting:disabled"/>

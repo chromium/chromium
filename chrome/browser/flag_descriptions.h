@@ -3243,6 +3243,9 @@ extern const char kImprovedPasswordChangeServiceDescription[];
 extern const char kInfiniteTabsFreezingName[];
 extern const char kInfiniteTabsFreezingDescription[];
 
+extern const char kMemoryPurgeOnFreezeLimitName[];
+extern const char kMemoryPurgeOnFreezeLimitDescription[];
+
 extern const char kKeyboardLockPromptName[];
 extern const char kKeyboardLockPromptDescription[];
 

@@ -5528,6 +5528,12 @@ const char kInfiniteTabsFreezingDescription[] =
     "functionality (e.g. playing audio, handling a video call) are not "
     "eligible for freezing.";
 
+const char kMemoryPurgeOnFreezeLimitName[] = "Memory Purge on Freeze Limit";
+const char kMemoryPurgeOnFreezeLimitDescription[] =
+    "Do not purge memory in renderers with frozen pages more than once per "
+    "backgrounded interval, to minimize overhead when pages are periodically "
+    "unfrozen. To be enabled with memory-purge-on-freeze-limit.";
+
 const char kKeyboardLockPromptName[] = "Keyboard Lock prompt";
 const char kKeyboardLockPromptDescription[] =
     "Requesting to use the keyboard lock API causes a permission prompt to be "
