@@ -8,7 +8,6 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
 #include "base/json/json_writer.h"
-#include "base/not_fatal_until.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engine_choice/search_engine_choice_dialog_service.h"
@@ -154,7 +153,7 @@ void SearchEngineChoiceUI::Initialize(
   if (entry_point_ != SearchEngineChoiceDialogService::EntryPoint::kDialog) {
     // This callback should always be populated.
     // TODO(b/344899110): Cleanup once the bug root cause is found.
-    CHECK(on_choice_made_callback_, base::NotFatalUntil::M131);
+    CHECK(on_choice_made_callback_);
   }
 }
 
@@ -166,7 +165,7 @@ void SearchEngineChoiceUI::HandleSearchEngineChoiceMade(
     // is a bug. (Or the initialization was skipped, but that would point to
     // users manually entering the URL, which is not supported)
     // TODO(b/344899110): Cleanup once the bug root cause is found.
-    CHECK(on_choice_made_callback_, base::NotFatalUntil::M131);
+    CHECK(on_choice_made_callback_);
   }
 
   SearchEngineChoiceDialogService* search_engine_choice_dialog_service =

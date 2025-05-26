@@ -10,7 +10,6 @@
 #include "base/command_line.h"
 #include "base/functional/function_ref.h"
 #include "base/memory/raw_ptr.h"
-#include "base/not_fatal_until.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
@@ -369,7 +368,7 @@ void WindowSizer::AdjustBoundsToBeVisibleOnDisplay(
   bounds->set_width(std::max(kMinVisibleWidth, bounds->width()));
 
   const gfx::Rect work_area = display.work_area();
-  CHECK(!work_area.IsEmpty(), base::NotFatalUntil::M131);
+  CHECK(!work_area.IsEmpty());
   // Ensure that the title bar is not above the work area.
   if (bounds->y() < work_area.y()) {
     bounds->set_y(work_area.y());
