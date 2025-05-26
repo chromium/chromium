@@ -292,6 +292,7 @@
 #include "chrome/browser/fast_checkout/fast_checkout_capabilities_fetcher_factory.h"
 #include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "chrome/browser/media/android/cdm/media_drm_origin_id_manager_factory.h"
+#include "chrome/browser/password_manager/android/one_time_passwords/android_sms_otp_backend_factory.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_activity_types_factory.h"
 #include "chrome/browser/search_resumption/start_suggest_service_factory.h"
 #include "chrome/browser/signin/signin_manager_android_factory.h"
@@ -666,6 +667,9 @@ void ChromeBrowserMainExtraPartsProfiles::
 #endif
   AffiliationServiceFactory::GetInstance();
   AiDataKeyedServiceFactory::GetInstance();
+#if BUILDFLAG(IS_ANDROID)
+  AndroidSmsOtpBackendFactory::GetInstance();
+#endif
   AnnouncementNotificationServiceFactory::GetInstance();
 #if BUILDFLAG(IS_CHROMEOS)
   app_list::AppListSyncableServiceFactory::GetInstance();
