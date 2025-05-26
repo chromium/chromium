@@ -241,4 +241,121 @@ TEST_F(HttpStreamPoolIPEndPointStateTrackerTest,
               Optional(IPEndPointState::kFailed));
 }
 
+TEST_F(HttpStreamPoolIPEndPointStateTrackerTest, PreferNonSlowIPEndPoint) {
+  const IPEndPoint ip_endpoint_v6 = MakeIPEndPoint("2001:db8::1");
+  const IPEndPoint ip_endpoint_v4 = MakeIPEndPoint("192.0.2.1");
+
+  resolver()
+      .ConfigureDefaultResolution()
+      .add_endpoint(ServiceEndpointBuilder()
+                        .add_ip_endpoint(ip_endpoint_v6)
+                        .add_ip_endpoint(ip_endpoint_v4)
+                        .endpoint())
+      .CompleteStartSynchronously(OK);
+
+  std::unique_ptr<FakeDelegate> delegate = CreateDelegate();
+  IPEndPointStateTracker tracker(delegate.get());
+
+  // The first attempt gets the IPv6 endpoint. Mark the endpoint as slow and
+  // successful.
+  EXPECT_THAT(tracker.GetIPEndPointToAttemptTcpBased(),
+              Optional(ip_endpoint_v6));
+  tracker.OnEndpointSlow(ip_endpoint_v6);
+  tracker.OnEndpointSlowSucceeded(ip_endpoint_v6);
+  EXPECT_THAT(tracker.GetState(ip_endpoint_v6),
+              Optional(IPEndPointState::kSlowSucceeded));
+
+  // Subsequent attempts get the IPv4 endpoint because it is considered as
+  // non-slow.
+  // TODO(crbug.com/383606724): Note that there is no callback for non-slow
+  // success attempts. We would want to add non-slow success callback to
+  // improve the logic to select IPEndPoints.
+  EXPECT_THAT(tracker.GetIPEndPointToAttemptTcpBased(),
+              Optional(ip_endpoint_v4));
+  EXPECT_THAT(tracker.GetIPEndPointToAttemptTcpBased(),
+              Optional(ip_endpoint_v4));
+  EXPECT_FALSE(tracker.GetState(ip_endpoint_v4).has_value());
+}
+
+// Tests that a slow-attempting endpoint is used as a last resort option.
+TEST_F(HttpStreamPoolIPEndPointStateTrackerTest, UseSlowAttemptingIPEndPoint) {
+  // An endpoint that is slow.
+  const IPEndPoint ip_endpoint_slow = MakeIPEndPoint("2001:db8::1");
+  // An endpoint that fails.
+  const IPEndPoint ip_endpoint_failure = MakeIPEndPoint("192.0.2.1");
+
+  resolver()
+      .ConfigureDefaultResolution()
+      .add_endpoint(ServiceEndpointBuilder()
+                        .add_ip_endpoint(ip_endpoint_slow)
+                        .add_ip_endpoint(ip_endpoint_failure)
+                        .endpoint())
+      .CompleteStartSynchronously(OK);
+
+  std::unique_ptr<FakeDelegate> delegate = CreateDelegate();
+  IPEndPointStateTracker tracker(delegate.get());
+
+  // The first attempt gets `ip_endpoint_slow` because the endpoint isn't
+  // attempted yet and considered as non-slow. Mark the endpoint slow
+  // attempting.
+  EXPECT_THAT(tracker.GetIPEndPointToAttemptTcpBased(),
+              Optional(ip_endpoint_slow));
+  tracker.OnEndpointSlow(ip_endpoint_slow);
+  EXPECT_THAT(tracker.GetState(ip_endpoint_slow),
+              Optional(IPEndPointState::kSlowAttempting));
+
+  // The second attempt gets `ip_endpoint_failure` because the endpoint isn't
+  // attempted yet. Mark `ip_endpoint_failure` failed.
+  EXPECT_THAT(tracker.GetIPEndPointToAttemptTcpBased(),
+              Optional(ip_endpoint_failure));
+  tracker.OnEndpointFailed(ip_endpoint_failure);
+  EXPECT_THAT(tracker.GetState(ip_endpoint_failure),
+              Optional(IPEndPointState::kFailed));
+
+  // The third attempt gets `ip_endpoint_slow` as a last resort option.
+  EXPECT_THAT(tracker.GetIPEndPointToAttemptTcpBased(),
+              Optional(ip_endpoint_slow));
+}
+
+TEST_F(HttpStreamPoolIPEndPointStateTrackerTest,
+       PreferSlowSucceededToSlowAttempting) {
+  // An endpoint that is slow but succeeds.
+  const IPEndPoint ip_endpoint_slow_success = MakeIPEndPoint("2001:db8::1");
+  // An endpoint that is slow.
+  const IPEndPoint ip_endpoint_slow = MakeIPEndPoint("192.0.2.1");
+
+  resolver()
+      .ConfigureDefaultResolution()
+      .add_endpoint(ServiceEndpointBuilder()
+                        .add_ip_endpoint(ip_endpoint_slow_success)
+                        .add_ip_endpoint(ip_endpoint_slow)
+                        .endpoint())
+      .CompleteStartSynchronously(OK);
+
+  std::unique_ptr<FakeDelegate> delegate = CreateDelegate();
+  IPEndPointStateTracker tracker(delegate.get());
+
+  // The first attempt gets `ip_endpoint_slow_success`. Mark the endpoint slow
+  // succeeded.
+  EXPECT_THAT(tracker.GetIPEndPointToAttemptTcpBased(),
+              Optional(ip_endpoint_slow_success));
+  tracker.OnEndpointSlow(ip_endpoint_slow_success);
+  tracker.OnEndpointSlowSucceeded(ip_endpoint_slow_success);
+  EXPECT_THAT(tracker.GetState(ip_endpoint_slow_success),
+              Optional(IPEndPointState::kSlowSucceeded));
+
+  // The second attempt gets `ip_endpoint_slow` because the endpoint isn't
+  // attempted yet. Mark `ip_endpoint_slow` slow.
+  EXPECT_THAT(tracker.GetIPEndPointToAttemptTcpBased(),
+              Optional(ip_endpoint_slow));
+  tracker.OnEndpointSlow(ip_endpoint_slow);
+  EXPECT_THAT(tracker.GetState(ip_endpoint_slow),
+              Optional(IPEndPointState::kSlowAttempting));
+
+  // The third attempt gets `ip_endpoint_slow_success` because we prefer
+  // succeeded endpoints than slow attempting endpoints.
+  EXPECT_THAT(tracker.GetIPEndPointToAttemptTcpBased(),
+              Optional(ip_endpoint_slow_success));
+}
+
 }  // namespace net
