@@ -315,6 +315,9 @@ $ autoninja -C out/Debug-iphonesimulator content_shell
 
 ## Blink for tvOS builds and running
 
+Note: To build Blink for tvOS, make sure that the tvOS SDK and the tvOS
+simulator are installed on your system.
+
 Blink for tvOS is an experimental project that aims to port Blink to Apple tvOS.
 Due to platform limitations, specifically because tvOS does not support
 multi-process applications, Blink for tvOS runs in a single-process mode only.
@@ -322,6 +325,10 @@ As a result, there is no security isolation, since all content runs within the
 same process. Therefore, it is intended solely for loading trusted content.
 Please note that this project is still under development and considered
 unstable.
+
+tvOS is an iOS-based platform, and within the Chromium project, it is treated as
+a variant of the iOS build. As such, the same setup instructions used for iOS
+also apply to tvOS.
 
 If you use the `setup-gn.py` script as described above, it will automatically
 create `out/${configuration}-appletvsimulator` and
