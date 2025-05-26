@@ -20,7 +20,6 @@
 #include "base/metrics/histogram_shared_memory.h"
 #include "base/metrics/persistent_histogram_allocator.h"
 #include "base/metrics/persistent_memory_allocator.h"
-#include "base/not_fatal_until.h"
 #include "base/observer_list.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -95,7 +94,7 @@ base::LazyInstance<base::ObserverList<BrowserChildProcessObserver>::Unchecked>::
 void NotifyProcessLaunchedAndConnected(const ChildProcessData& data) {
   // Assert that the process is valid, as guaranteed in a comment on the
   // declaration of `BrowserChildProcessLaunchedAndConnected()`.
-  CHECK(data.GetProcess().IsValid(), base::NotFatalUntil::M130);
+  CHECK(data.GetProcess().IsValid());
 
   for (auto& observer : g_browser_child_process_observers.Get())
     observer.BrowserChildProcessLaunchedAndConnected(data);

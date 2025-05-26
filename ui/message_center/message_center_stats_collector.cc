@@ -11,7 +11,6 @@
 
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
-#include "base/not_fatal_until.h"
 #include "ui/message_center/message_center.h"
 
 namespace message_center {
@@ -68,7 +67,7 @@ void MessageCenterStatsCollector::OnNotificationAdded(
   stats_[notification_id] = NotificationStats(notification_id);
 
   auto iter = stats_.find(notification_id);
-  CHECK(iter != stats_.end(), base::NotFatalUntil::M130);
+  CHECK(iter != stats_.end());
 
   stats_[notification_id].CollectAction(NOTIFICATION_ACTION_ADD);
 

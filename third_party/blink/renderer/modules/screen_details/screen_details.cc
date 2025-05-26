@@ -5,7 +5,6 @@
 #include "third_party/blink/renderer/modules/screen_details/screen_details.h"
 
 #include "base/containers/contains.h"
-#include "base/not_fatal_until.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
@@ -37,7 +36,7 @@ ScreenDetailed* ScreenDetails::currentScreen() const {
 
   auto it = std::ranges::find(screens_, current_display_id_,
                               &ScreenDetailed::DisplayId);
-  CHECK(it != screens_.end(), base::NotFatalUntil::M130);
+  CHECK(it != screens_.end());
   return it->Get();
 }
 
@@ -141,7 +140,7 @@ void ScreenDetails::UpdateScreenInfosImpl(LocalDOMWindow* window,
       auto id = screen->DisplayId();
       auto new_it = std::ranges::find(new_infos.screen_infos, id,
                                       &display::ScreenInfo::display_id);
-      CHECK(new_it != new_infos.screen_infos.end(), base::NotFatalUntil::M130);
+      CHECK(new_it != new_infos.screen_infos.end());
       auto old_it = std::ranges::find(prev_screen_infos_.screen_infos, id,
                                       &display::ScreenInfo::display_id);
       if (old_it != prev_screen_infos_.screen_infos.end() &&

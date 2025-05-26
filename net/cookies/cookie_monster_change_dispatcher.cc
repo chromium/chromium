@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "base/functional/bind.h"
-#include "base/not_fatal_until.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/task_runner.h"
 #include "net/base/features.h"
@@ -252,14 +251,12 @@ void CookieMonsterChangeDispatcher::UnlinkSubscription(
 
   auto cookie_domain_map_iterator =
       cookie_domain_map_.find(subscription->domain_key());
-  CHECK(cookie_domain_map_iterator != cookie_domain_map_.end(),
-        base::NotFatalUntil::M130);
+  CHECK(cookie_domain_map_iterator != cookie_domain_map_.end());
 
   CookieNameMap& cookie_name_map = cookie_domain_map_iterator->second;
   auto cookie_name_map_iterator =
       cookie_name_map.find(subscription->name_key());
-  CHECK(cookie_name_map_iterator != cookie_name_map.end(),
-        base::NotFatalUntil::M130);
+  CHECK(cookie_name_map_iterator != cookie_name_map.end());
 
   SubscriptionList& subscription_list = cookie_name_map_iterator->second;
   subscription->RemoveFromList();

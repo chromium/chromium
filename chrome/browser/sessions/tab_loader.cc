@@ -11,7 +11,6 @@
 #include "base/memory/memory_pressure_monitor.h"
 #include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
-#include "base/not_fatal_until.h"
 #include "base/system/sys_info.h"
 #include "base/time/default_tick_clock.h"
 #include "base/trace_event/memory_pressure_level_proto.h"
@@ -487,7 +486,7 @@ void TabLoader::MarkTabAsLoadInitiated(WebContents* contents) {
   // This can only be called for a tab that is waiting to be loaded so this
   // should never fail.
   auto it = FindTabToLoad(contents);
-  CHECK(it != tabs_to_load_.end(), base::NotFatalUntil::M130);
+  CHECK(it != tabs_to_load_.end());
   tabs_to_load_.erase(it);
   delegate_->RemoveTabForScoring(contents);
 
@@ -544,7 +543,7 @@ void TabLoader::MarkTabAsDeferred(content::WebContents* contents) {
   // This can only be called for a tab that is waiting to be loaded so this
   // should never fail.
   auto it = FindTabToLoad(contents);
-  CHECK(it != tabs_to_load_.end(), base::NotFatalUntil::M130);
+  CHECK(it != tabs_to_load_.end());
   tabs_to_load_.erase(it);
   delegate_->RemoveTabForScoring(contents);
 }

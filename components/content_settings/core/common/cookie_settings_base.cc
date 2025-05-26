@@ -12,7 +12,6 @@
 #include "base/check.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/not_fatal_until.h"
 #include "base/notreached.h"
 #include "base/rand_util.h"
 #include "base/types/optional_ref.h"
@@ -177,7 +176,7 @@ CookieSettingsBase::CookieSettingWithMetadata::CookieSettingWithMetadata(
 bool CookieSettingsBase::CookieSettingWithMetadata::
     BlockedByThirdPartyCookieBlocking() const {
   const bool out = !IsAllowed(cookie_setting_) && allow_partitioned_cookies_;
-  CHECK(!out || is_third_party_request_, base::NotFatalUntil::M130);
+  CHECK(!out || is_third_party_request_);
   return out;
 }
 

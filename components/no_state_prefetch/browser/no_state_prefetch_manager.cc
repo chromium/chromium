@@ -24,7 +24,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/field_trial.h"
-#include "base/not_fatal_until.h"
 #include "base/notreached.h"
 #include "base/strings/string_util.h"
 #include "base/system/sys_info.h"
@@ -302,7 +301,7 @@ void NoStatePrefetchManager::MoveEntryToPendingDelete(
   DCHECK(entry);
 
   auto it = FindIteratorForNoStatePrefetchContents(entry);
-  CHECK(it != active_prefetches_.end(), base::NotFatalUntil::M130);
+  CHECK(it != active_prefetches_.end());
   to_delete_prefetches_.push_back(std::move(*it));
   active_prefetches_.erase(it);
   // Destroy the old WebContents relatively promptly to reduce resource usage.

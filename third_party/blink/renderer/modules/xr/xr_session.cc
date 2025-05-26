@@ -13,7 +13,6 @@
 #include "base/containers/contains.h"
 #include "base/dcheck_is_on.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/not_fatal_until.h"
 #include "base/trace_event/trace_event.h"
 #include "base/types/pass_key.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
@@ -1312,7 +1311,7 @@ void XRSession::ProcessAnchorsData(
     // already moved to |updated_anchors|. Otherwise just copy it over as-is.
     if (it_updated == updated_anchors.end()) {
       auto it = anchor_ids_to_anchors_.find(anchor_id);
-      CHECK(it != anchor_ids_to_anchors_.end(), base::NotFatalUntil::M130);
+      CHECK(it != anchor_ids_to_anchors_.end());
       updated_anchors.insert(anchor_id, it->value);
     }
   }

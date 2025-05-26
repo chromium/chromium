@@ -15,7 +15,6 @@
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/not_fatal_until.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/values.h"
 #include "chrome/browser/web_applications/locks/partitioned_lock.h"
@@ -240,7 +239,7 @@ void PartitionedLockManager::LockReleased(base::Location request_location,
   // This iterator is guaranteed to stay valid because
   // AcquireNextLockOrPostCompletion does not modify the `locks_` map.
   LocksMap::iterator it = locks_.find(lock_id);
-  CHECK(it != locks_.end(), base::NotFatalUntil::M130);
+  CHECK(it != locks_.end());
   Lock& lock = it->second;
 
   // First, decrement the lock `acquired_count`.

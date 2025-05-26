@@ -15,7 +15,6 @@
 
 #include "base/functional/bind.h"
 #include "base/memory/ref_counted.h"
-#include "base/not_fatal_until.h"
 #include "base/strings/string_util.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
@@ -99,7 +98,7 @@ void EmbedderUserScriptLoader::LoadScripts(
     }
 
     auto iter = script_render_info_map_.find(script->id());
-    CHECK(iter != script_render_info_map_.end(), base::NotFatalUntil::M130);
+    CHECK(iter != script_render_info_map_.end());
     int render_process_id = iter->second.render_process_id;
     int render_frame_id = iter->second.render_frame_id;
 

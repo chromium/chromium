@@ -9,7 +9,6 @@
 #include <utility>
 
 #include "base/check.h"
-#include "base/not_fatal_until.h"
 
 namespace net {
 
@@ -78,7 +77,7 @@ void MockAsyncProxyResolver::AddCancelledJob(std::unique_ptr<Job> job) {
 void MockAsyncProxyResolver::RemovePendingJob(Job* job) {
   DCHECK(job);
   auto it = std::ranges::find(pending_jobs_, job);
-  CHECK(it != pending_jobs_.end(), base::NotFatalUntil::M130);
+  CHECK(it != pending_jobs_.end());
   pending_jobs_.erase(it);
 }
 
@@ -158,7 +157,7 @@ int MockAsyncProxyResolverFactory::CreateProxyResolver(
 
 void MockAsyncProxyResolverFactory::RemovePendingRequest(Request* request) {
   auto it = std::ranges::find(pending_requests_, request);
-  CHECK(it != pending_requests_.end(), base::NotFatalUntil::M130);
+  CHECK(it != pending_requests_.end());
   pending_requests_.erase(it);
 }
 

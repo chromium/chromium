@@ -11,7 +11,6 @@
 
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/not_fatal_until.h"
 #include "base/notreached.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/task_traits.h"
@@ -491,7 +490,7 @@ void OnDeviceModelService::DeleteModel(
     return;
   }
   auto it = models_.find(model.get());
-  CHECK(it != models_.end(), base::NotFatalUntil::M130);
+  CHECK(it != models_.end());
   models_.erase(it);
 }
 

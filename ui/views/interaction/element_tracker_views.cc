@@ -15,7 +15,6 @@
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
-#include "base/not_fatal_until.h"
 #include "base/scoped_multi_source_observation.h"
 #include "base/scoped_observation.h"
 #include "ui/base/interaction/element_identifier.h"
@@ -90,13 +89,13 @@ class ElementTrackerViews::ElementDataViews : public ViewObserver,
 
   TrackedElementViews* GetElementForView(View* view) {
     const auto it = view_data_lookup_.find(view);
-    CHECK(it != view_data_lookup_.end(), base::NotFatalUntil::M130);
+    CHECK(it != view_data_lookup_.end());
     return it->second->element.get();
   }
 
   void NotifyViewActivated(View* view) {
     const auto it = view_data_lookup_.find(view);
-    CHECK(it != view_data_lookup_.end(), base::NotFatalUntil::M130);
+    CHECK(it != view_data_lookup_.end());
     if (it->second->visible()) {
       ui::ElementTracker::GetFrameworkDelegate()->NotifyElementActivated(
           it->second->element.get());
@@ -199,7 +198,7 @@ class ElementTrackerViews::ElementDataViews : public ViewObserver,
   void UpdateVisible(View* view,
                      UpdateReason update_reason = UpdateReason::kGeneral) {
     const auto it = view_data_lookup_.find(view);
-    CHECK(it != view_data_lookup_.end(), base::NotFatalUntil::M130);
+    CHECK(it != view_data_lookup_.end());
     ViewData& data = *it->second;
     const ui::ElementContext old_context = data.context;
     data.context = (update_reason == UpdateReason::kRemoveFromWidget)
@@ -434,7 +433,7 @@ void ElementTrackerViews::UnregisterView(ui::ElementIdentifier element_id,
                                          View* view) {
   DCHECK(view);
   const auto it = element_data_.find(element_id);
-  CHECK(it != element_data_.end(), base::NotFatalUntil::M130);
+  CHECK(it != element_data_.end());
   it->second.RemoveView(view);
 }
 
@@ -442,7 +441,7 @@ void ElementTrackerViews::NotifyViewActivated(ui::ElementIdentifier element_id,
                                               View* view) {
   DCHECK(view);
   const auto it = element_data_.find(element_id);
-  CHECK(it != element_data_.end(), base::NotFatalUntil::M130);
+  CHECK(it != element_data_.end());
   it->second.NotifyViewActivated(view);
 }
 

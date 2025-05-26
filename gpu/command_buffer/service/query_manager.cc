@@ -15,7 +15,6 @@
 #include "base/atomicops.h"
 #include "base/check_op.h"
 #include "base/functional/bind.h"
-#include "base/not_fatal_until.h"
 #include "base/notreached.h"
 #include "base/time/time.h"
 #include "ui/gl/gl_bindings.h"
@@ -515,7 +514,7 @@ void QueryManager::EndQuery(Query* query, base::subtle::Atomic32 submit_count) {
 
   // Remove from active query map if it is active.
   ActiveQueryMap::iterator active_it = active_queries_.find(query->target());
-  CHECK(active_it != active_queries_.end(), base::NotFatalUntil::M130);
+  CHECK(active_it != active_queries_.end());
   DCHECK(query == active_it->second.get());
   active_queries_.erase(active_it);
 

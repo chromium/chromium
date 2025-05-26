@@ -18,7 +18,6 @@
 #include "base/functional/callback.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/not_fatal_until.h"
 #include "base/notreached.h"
 #include "base/rand_util.h"
 #include "base/strings/escape.h"
@@ -248,7 +247,7 @@ void PingManager::OnURLLoaderComplete(
     network::SimpleURLLoader* source,
     std::unique_ptr<std::string> response_body) {
   auto it = safebrowsing_reports_.find(source);
-  CHECK(it != safebrowsing_reports_.end(), base::NotFatalUntil::M130);
+  CHECK(it != safebrowsing_reports_.end());
   safebrowsing_reports_.erase(it);
   if (!on_url_loader_complete_callback_.is_null()) {
     std::move(on_url_loader_complete_callback_).Run();

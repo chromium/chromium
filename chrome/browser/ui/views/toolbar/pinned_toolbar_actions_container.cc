@@ -15,7 +15,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
-#include "base/not_fatal_until.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "chrome/browser/profiles/profile.h"
@@ -398,7 +397,7 @@ void PinnedToolbarActionsContainer::WriteDragDataForView(
   DCHECK(data);
 
   const auto iter = std::ranges::find(pinned_buttons_, sender);
-  CHECK(iter != pinned_buttons_.end(), base::NotFatalUntil::M130);
+  CHECK(iter != pinned_buttons_.end());
   auto* button = (*iter).get();
 
   ui::ImageModel icon =

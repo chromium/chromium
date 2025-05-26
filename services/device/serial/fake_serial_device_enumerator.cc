@@ -6,7 +6,6 @@
 
 #include <utility>
 
-#include "base/not_fatal_until.h"
 
 namespace device {
 
@@ -24,7 +23,7 @@ void FakeSerialEnumerator::AddDevicePath(const base::FilePath& path) {
 
 void FakeSerialEnumerator::RemoveDevicePath(const base::FilePath& path) {
   auto it = paths_.find(path);
-  CHECK(it != paths_.end(), base::NotFatalUntil::M130);
+  CHECK(it != paths_.end());
   base::UnguessableToken token = it->second;
   paths_.erase(it);
   RemovePort(token);

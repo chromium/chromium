@@ -10,7 +10,6 @@
 #include <algorithm>
 
 #include "base/logging.h"
-#include "base/not_fatal_until.h"
 #include "ui/gfx/linux/drm_util_linux.h"
 #include "ui/ozone/platform/wayland/host/wayland_buffer_factory.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
@@ -146,7 +145,7 @@ void WaylandZwpLinuxDmabuf::NotifyRequestCreateBufferDone(
   auto it = std::ranges::find(pending_params_, params, [](const auto& item) {
     return item.first.get();
   });
-  CHECK(it != pending_params_.end(), base::NotFatalUntil::M130);
+  CHECK(it != pending_params_.end());
   std::move(it->second).Run(wl::Object<wl_buffer>(new_buffer));
   pending_params_.erase(it);
   connection_->Flush();

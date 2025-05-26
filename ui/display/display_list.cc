@@ -5,7 +5,6 @@
 #include "ui/display/display_list.h"
 
 #include "base/memory/ptr_util.h"
-#include "base/not_fatal_until.h"
 #include "base/observer_list.h"
 #include "ui/display/display_observer.h"
 
@@ -48,7 +47,7 @@ uint32_t DisplayList::UpdateDisplay(const Display& display) {
 
 uint32_t DisplayList::UpdateDisplay(const Display& display, Type type) {
   auto iter = FindDisplayByIdInternal(display.id());
-  CHECK(iter != displays_.end(), base::NotFatalUntil::M130);
+  CHECK(iter != displays_.end());
 
   Display* local_display = &(*iter);
   uint32_t changed_values = 0;
@@ -124,7 +123,7 @@ void DisplayList::AddDisplay(const Display& display, Type type) {
 
 void DisplayList::RemoveDisplay(int64_t id) {
   auto iter = FindDisplayByIdInternal(id);
-  CHECK(displays_.end() != iter, base::NotFatalUntil::M130);
+  CHECK(displays_.end() != iter);
   if (id == primary_id_) {
     // The primary display can only be removed if it is the last display.
     // Users must choose a new primary before removing an old primary display.

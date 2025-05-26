@@ -5,7 +5,6 @@
 #include "ppapi/shared_impl/ppb_video_decoder_shared.h"
 
 #include "base/check.h"
-#include "base/not_fatal_until.h"
 #include "gpu/command_buffer/client/gles2_implementation.h"
 #include "ppapi/c/pp_errors.h"
 #include "ppapi/shared_impl/ppb_graphics_3d_shared.h"
@@ -90,7 +89,7 @@ void PPB_VideoDecoder_Shared::RunBitstreamBufferCallback(
     int32_t result) {
   CallbackById::iterator it =
       bitstream_buffer_callbacks_.find(bitstream_buffer_id);
-  CHECK(it != bitstream_buffer_callbacks_.end(), base::NotFatalUntil::M130);
+  CHECK(it != bitstream_buffer_callbacks_.end());
   scoped_refptr<TrackedCallback> cc = it->second;
   bitstream_buffer_callbacks_.erase(it);
   cc->Run(PP_OK);

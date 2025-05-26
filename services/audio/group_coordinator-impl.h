@@ -10,7 +10,6 @@
 #include "base/compiler_specific.h"
 #include "base/containers/contains.h"
 #include "base/no_destructor.h"
-#include "base/not_fatal_until.h"
 
 #if DCHECK_IS_ON()
 #define DCHECK_INCREMENT_MUTATION_COUNT() ++mutation_count_
@@ -67,7 +66,7 @@ void GroupCoordinator<Member>::UnregisterMember(
   const auto group_it = FindGroup(group_id);
   std::vector<Member*>& members = group_it->second.members;
   const auto member_it = std::ranges::find(members, member);
-  CHECK(member_it != members.end(), base::NotFatalUntil::M130);
+  CHECK(member_it != members.end());
   members.erase(member_it);
   DCHECK_INCREMENT_MUTATION_COUNT();
   DCHECK_REMEMBER_CURRENT_MUTATION_COUNT();
@@ -103,7 +102,7 @@ void GroupCoordinator<Member>::RemoveObserver(
   const auto group_it = FindGroup(group_id);
   std::vector<Observer*>& observers = group_it->second.observers;
   const auto it = std::ranges::find(observers, observer);
-  CHECK(it != observers.end(), base::NotFatalUntil::M130);
+  CHECK(it != observers.end());
   observers.erase(it);
   DCHECK_INCREMENT_MUTATION_COUNT();
 

@@ -15,7 +15,6 @@
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/not_fatal_until.h"
 #include "base/types/cxx23_to_underlying.h"
 #include "build/build_config.h"
 #include "media/audio/audio_device_description.h"
@@ -212,7 +211,7 @@ void AudioRendererMixerManager::ReturnMixer(AudioRendererMixer* mixer) {
     dead_it = std::ranges::find(
         dead_mixers_, mixer,
         [](const AudioRendererMixerReference& val) { return val.mixer.get(); });
-    CHECK(dead_it != dead_mixers_.end(), base::NotFatalUntil::M130);
+    CHECK(dead_it != dead_mixers_.end());
   }
 
   auto& mixer_ref = it == mixers_.end() ? *dead_it : it->second;

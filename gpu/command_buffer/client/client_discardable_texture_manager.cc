@@ -5,7 +5,6 @@
 #include "gpu/command_buffer/client/client_discardable_texture_manager.h"
 
 #include "base/containers/contains.h"
-#include "base/not_fatal_until.h"
 
 namespace gpu {
 
@@ -58,7 +57,7 @@ void ClientDiscardableTextureManager::UnlockTexture(
     bool* should_unbind_texture) {
   base::AutoLock hold(lock_);
   auto found = texture_entries_.find(texture_id);
-  CHECK(found != texture_entries_.end(), base::NotFatalUntil::M130);
+  CHECK(found != texture_entries_.end());
   TextureEntry& entry = found->second;
   DCHECK_GT(entry.client_lock_count, 0u);
   --entry.client_lock_count;

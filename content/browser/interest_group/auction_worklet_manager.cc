@@ -27,7 +27,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/not_fatal_until.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/trace_event/trace_event.h"
@@ -375,8 +374,7 @@ void AuctionWorkletManager::WorkletOwner::RegisterHandle(HandleKey handle) {
 void AuctionWorkletManager::WorkletOwner::UnregisterHandle(HandleKey handle) {
   auto it = registered_devtools_auction_ids_.find(
       handle.second->devtools_auction_id_);
-  CHECK(it != registered_devtools_auction_ids_.end(),
-        base::NotFatalUntil::M130);
+  CHECK(it != registered_devtools_auction_ids_.end());
   --it->second;
   if (it->second == 0) {
     registered_devtools_auction_ids_.erase(it);

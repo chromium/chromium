@@ -12,7 +12,6 @@
 #include <memory>
 
 #include "base/memory/ptr_util.h"
-#include "base/not_fatal_until.h"
 #include "base/test/test_mock_time_task_runner.h"
 #include "base/time/time.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -118,7 +117,7 @@ class MockMemoryUsageMonitor : public MemoryUsageMonitor {
 
     std::vector<Persistent<Page>>::iterator it = dummy_pages_.begin();
     while (Page::OrdinaryPages().size() < page_count) {
-      CHECK(it != dummy_pages_.end(), base::NotFatalUntil::M130);
+      CHECK(it != dummy_pages_.end());
       Page::OrdinaryPages().insert(it->Get());
       it++;
     }

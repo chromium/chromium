@@ -7,7 +7,6 @@
 
 #include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
-#include "base/not_fatal_until.h"
 #include "components/performance_manager/public/voting/voting.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -155,7 +154,7 @@ void DummyVoteObserver<VoteImpl>::OnVoteChanged(VoterId<VoteImpl> voter_id,
                                                 const ContextType* context,
                                                 const VoteImpl& new_vote) {
   auto it = votes_by_voter_id_[voter_id].find(context);
-  CHECK(it != votes_by_voter_id_[voter_id].end(), base::NotFatalUntil::M130);
+  CHECK(it != votes_by_voter_id_[voter_id].end());
   it->second = new_vote;
 }
 
@@ -164,7 +163,7 @@ void DummyVoteObserver<VoteImpl>::OnVoteInvalidated(
     VoterId<VoteImpl> voter_id,
     const ContextType* context) {
   auto it = votes_by_voter_id_.find(voter_id);
-  CHECK(it != votes_by_voter_id_.end(), base::NotFatalUntil::M130);
+  CHECK(it != votes_by_voter_id_.end());
 
   base::flat_map<const ContextType*, VoteImpl>& votes = it->second;
   size_t removed = votes.erase(context);

@@ -446,7 +446,7 @@ void LogPriceDropMetrics(web::WebState* web_state) {
     // should be a search result from a different window. Since this item is not
     // from the current browser, no UI updates will be sent to the current grid.
     // Notify the current grid consumer about the change.
-    CHECK(_modeHolder.mode == TabGridMode::kSearch, base::NotFatalUntil::M130);
+    CHECK(_modeHolder.mode == TabGridMode::kSearch);
     GridItemIdentifier* identifierToRemove =
         [GridItemIdentifier groupIdentifier:group];
     [self.consumer removeItemWithIdentifier:identifierToRemove
@@ -486,7 +486,7 @@ void LogPriceDropMetrics(web::WebState* web_state) {
     // should be a search result from a different window. Since this item is not
     // from the current browser, no UI updates will be sent to the current grid.
     // Notify the current grid consumer about the change.
-    CHECK(_modeHolder.mode == TabGridMode::kSearch, base::NotFatalUntil::M130);
+    CHECK(_modeHolder.mode == TabGridMode::kSearch);
     GridItemIdentifier* identifierToRemove =
         [GridItemIdentifier groupIdentifier:group];
     [self.consumer removeItemWithIdentifier:identifierToRemove

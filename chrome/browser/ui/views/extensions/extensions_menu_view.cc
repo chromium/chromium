@@ -11,7 +11,6 @@
 #include "base/feature_list.h"
 #include "base/i18n/case_conversion.h"
 #include "base/memory/ptr_util.h"
-#include "base/not_fatal_until.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/chrome_pages.h"
@@ -456,7 +455,7 @@ void ExtensionsMenuView::OnToolbarActionRemoved(
                                 [](const ExtensionMenuItemView* item) {
                                   return item->view_controller()->GetId();
                                 });
-  CHECK(iter != extensions_menu_items_.end(), base::NotFatalUntil::M130);
+  CHECK(iter != extensions_menu_items_.end());
   ExtensionMenuItemView* const view = *iter;
   DCHECK(Contains(view));
   view->parent()->RemoveChildViewT(view);

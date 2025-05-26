@@ -15,7 +15,6 @@
 #include "base/check_op.h"
 #include "base/containers/contains.h"
 #include "base/containers/heap_array.h"
-#include "base/not_fatal_until.h"
 #include "base/notreached.h"
 #include "gpu/command_buffer/common/gles2_cmd_utils.h"
 #include "gpu/command_buffer/service/framebuffer_completeness_cache.h"
@@ -1113,7 +1112,7 @@ gfx::Size Framebuffer::GetFramebufferValidSize() const {
   // all of the attachments have the same dimensions. So it's okay to just pick
   // any arbitrary attachment and return it as the min size.
   auto it = attachments_.begin();
-  CHECK(it != attachments_.end(), base::NotFatalUntil::M130);
+  CHECK(it != attachments_.end());
   const auto& attachment = it->second;
   return gfx::Size(attachment->width(), attachment->height());
 }

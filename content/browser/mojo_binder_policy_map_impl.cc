@@ -8,7 +8,6 @@
 
 #include "base/feature_list.h"
 #include "base/no_destructor.h"
-#include "base/not_fatal_until.h"
 #include "content/common/dom_automation_controller.mojom.h"
 #include "content/common/frame.mojom.h"
 #include "content/public/browser/content_browser_client.h"
@@ -286,7 +285,7 @@ MojoBinderNonAssociatedPolicy
 MojoBinderPolicyMapImpl::GetNonAssociatedMojoBinderPolicyOrDieForTesting(
     const std::string& interface_name) const {
   const auto& found = non_associated_policy_map_.find(interface_name);
-  CHECK(found != non_associated_policy_map_.end(), base::NotFatalUntil::M130);
+  CHECK(found != non_associated_policy_map_.end());
   return found->second;
 }
 
@@ -294,7 +293,7 @@ MojoBinderAssociatedPolicy
 MojoBinderPolicyMapImpl::GetAssociatedMojoBinderPolicyOrDieForTesting(
     const std::string& interface_name) const {
   const auto& found = associated_policy_map_.find(interface_name);
-  CHECK(found != associated_policy_map_.end(), base::NotFatalUntil::M130);
+  CHECK(found != associated_policy_map_.end());
   return found->second;
 }
 

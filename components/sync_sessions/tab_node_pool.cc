@@ -9,7 +9,6 @@
 #include <utility>
 
 #include "base/logging.h"
-#include "base/not_fatal_until.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/protocol/session_specifics.pb.h"
 #include "components/sync_sessions/synced_tab_delegate.h"
@@ -40,7 +39,7 @@ void TabNodePool::AssociateTabNode(int tab_node_id, SessionID tab_id) {
   // This is a new node association, the sync node should be free.
   // Remove node from free node pool and then associate it with the tab.
   auto it = free_nodes_pool_.find(tab_node_id);
-  CHECK(it != free_nodes_pool_.end(), base::NotFatalUntil::M130);
+  CHECK(it != free_nodes_pool_.end());
   free_nodes_pool_.erase(it);
 
   DCHECK(nodeid_tabid_map_.find(tab_node_id) == nodeid_tabid_map_.end());

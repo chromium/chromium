@@ -25,7 +25,6 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/not_fatal_until.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "base/types/pass_key.h"
@@ -353,7 +352,7 @@ void FencedFrameReporter::OnUrlMappingReady(
     ReportingUrlMap reporting_url_map,
     std::optional<ReportingMacros> reporting_ad_macros) {
   auto it = reporting_metadata_.find(reporting_destination);
-  CHECK(it != reporting_metadata_.end(), base::NotFatalUntil::M130);
+  CHECK(it != reporting_metadata_.end());
   DCHECK(!it->second.reporting_url_map);
   DCHECK(!it->second.reporting_ad_macros);
 

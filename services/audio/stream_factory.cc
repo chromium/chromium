@@ -9,7 +9,6 @@
 
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
-#include "base/not_fatal_until.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/trace_event/trace_event.h"
 #include "base/unguessable_token.h"
@@ -295,7 +294,7 @@ void StreamFactory::DestroyLoopbackStream(LoopbackStream* stream) {
 
   const auto it =
       std::ranges::find_if(loopback_streams_, base::MatchesUniquePtr(stream));
-  CHECK(it != loopback_streams_.end(), base::NotFatalUntil::M130);
+  CHECK(it != loopback_streams_.end());
   loopback_streams_.erase(it);
 
   // If all LoopbackStreams have ended, stop and join the worker thread.

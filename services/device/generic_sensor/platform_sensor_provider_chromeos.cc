@@ -12,7 +12,6 @@
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/not_fatal_until.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chromeos/components/sensors/sensor_util.h"
@@ -352,7 +351,7 @@ void PlatformSensorProviderChromeOS::GetAttributesCallback(
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   auto it = sensors_.find(id);
-  CHECK(it != sensors_.end(), base::NotFatalUntil::M130);
+  CHECK(it != sensors_.end());
   auto& sensor = it->second;
   DCHECK(sensor.remote.is_bound());
 

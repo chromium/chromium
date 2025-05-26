@@ -23,7 +23,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/not_fatal_until.h"
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/sequenced_task_runner.h"
@@ -572,7 +571,7 @@ void AccountManager::UpdateToken(
 
   DCHECK_EQ(init_state_, InitializationState::kInitialized);
   auto it = accounts_.find(account_key);
-  CHECK(it != accounts_.end(), base::NotFatalUntil::M130)
+  CHECK(it != accounts_.end())
       << "UpdateToken cannot be used for adding accounts";
   UpsertAccountInternal(account_key, AccountInfo{it->second.raw_email, token});
 }

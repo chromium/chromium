@@ -11,7 +11,6 @@
 
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/not_fatal_until.h"
 #include "base/notreached.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/android/resource_mapper.h"
@@ -271,8 +270,7 @@ void HatsServiceAndroid::RecordSurveyAsShown(std::string trigger_id) {
                           return pair.second.trigger_id;
                         });
 
-  CHECK(trigger_survey_config != survey_configs_by_triggers_.end(),
-        base::NotFatalUntil::M130);
+  CHECK(trigger_survey_config != survey_configs_by_triggers_.end());
   std::string trigger = trigger_survey_config->first;
 
   UMA_HISTOGRAM_ENUMERATION(kHatsShouldShowSurveyReasonAndroidHistogram,

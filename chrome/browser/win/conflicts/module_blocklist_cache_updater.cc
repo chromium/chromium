@@ -14,7 +14,6 @@
 #include "base/functional/bind.h"
 #include "base/hash/sha1.h"
 #include "base/i18n/case_conversion.h"
-#include "base/not_fatal_until.h"
 #include "base/path_service.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
@@ -261,7 +260,7 @@ const ModuleBlocklistCacheUpdater::ModuleBlockingState&
 ModuleBlocklistCacheUpdater::GetModuleBlockingState(
     const ModuleInfoKey& module_key) const {
   auto it = module_blocking_states_.find(module_key);
-  CHECK(it != module_blocking_states_.end(), base::NotFatalUntil::M130);
+  CHECK(it != module_blocking_states_.end());
   return it->second;
 }
 

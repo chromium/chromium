@@ -19,7 +19,6 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/not_fatal_until.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/system/sys_info.h"
 #include "base/time/time.h"
@@ -648,7 +647,7 @@ int HistoryFuzzyProvider::AddConvertedMatches(const ACMatches& matches,
   // so ranking of the final result set will be more nuanced than ranking here.
   ACMatches::const_iterator it = std::min_element(
       matches.begin(), matches.end(), AutocompleteMatch::MoreRelevant);
-  CHECK(it != matches.end(), base::NotFatalUntil::M130);
+  CHECK(it != matches.end());
   matches_.push_back(*it);
 
   // Update match in place. Note, `match.provider` will be reassigned after

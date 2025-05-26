@@ -21,7 +21,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ptr_exclusion.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/not_fatal_until.h"
 #include "base/strings/string_split.h"
 #include "build/build_config.h"
 #include "components/autofill/core/browser/field_types.h"
@@ -748,8 +747,7 @@ const FormFieldData* FindUsernameFieldBaseHeuristics(
     FormDataParser::Mode mode,
     Interactability best_interactability,
     bool is_fallback) {
-  CHECK(first_relevant_password != processed_fields.end(),
-        base::NotFatalUntil::M130);
+  CHECK(first_relevant_password != processed_fields.end());
 
   // For saving filter out empty fields and fields with values which are not
   // username.
@@ -873,8 +871,7 @@ void ParseUsingBaseHeuristics(
       }
     }
   }
-  CHECK(first_relevant_password != processed_fields.end(),
-        base::NotFatalUntil::M130);
+  CHECK(first_relevant_password != processed_fields.end());
 
   if (found_fields->username) {
     return;

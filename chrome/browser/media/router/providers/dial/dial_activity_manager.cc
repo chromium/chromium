@@ -10,7 +10,6 @@
 
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
-#include "base/not_fatal_until.h"
 #include "base/strings/string_split.h"
 #include "chrome/browser/media/router/discovery/dial/dial_app_discovery_service.h"
 #include "chrome/browser/media/router/providers/dial/dial_internal_message_util.h"
@@ -241,7 +240,7 @@ void DialActivityManager::StopApp(
     mojom::MediaRouteProvider::TerminateRouteCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto record_it = records_.find(route_id);
-  CHECK(record_it != records_.end(), base::NotFatalUntil::M130);
+  CHECK(record_it != records_.end());
   std::unique_ptr<Record>& record = record_it->second;
   DCHECK(!record->pending_stop_request);
 

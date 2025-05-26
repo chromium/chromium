@@ -7,7 +7,6 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/metrics/field_trial_params.h"
-#include "base/not_fatal_until.h"
 #include "base/strings/string_number_conversions.h"
 #include "content/browser/background_fetch/background_fetch_data_manager.h"
 #include "content/browser/background_fetch/background_fetch_delegate_proxy.h"
@@ -245,7 +244,7 @@ void BackgroundFetchScheduler::DidMarkForDeletion(
     return;
 
   auto it = completed_fetches_.find(registration_id.unique_id());
-  CHECK(it != completed_fetches_.end(), base::NotFatalUntil::M130);
+  CHECK(it != completed_fetches_.end());
 
   blink::mojom::BackgroundFetchRegistrationDataPtr& registration_data =
       it->second->registration;

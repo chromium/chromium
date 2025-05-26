@@ -4,7 +4,6 @@
 
 #include "third_party/blink/renderer/platform/scheduler/main_thread/pending_user_input.h"
 
-#include "base/not_fatal_until.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
@@ -40,7 +39,7 @@ void PendingUserInput::Monitor::OnDequeue(
     return;
 
   auto it = pending_events_.find(AttributionGroup(attribution));
-  CHECK_NE(it, pending_events_.end(), base::NotFatalUntil::M130);
+  CHECK_NE(it, pending_events_.end());
 
   auto& value = it->value;
   if (IsContinuousEventType(type)) {

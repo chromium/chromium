@@ -44,7 +44,7 @@ TabLoadTracker::LoadingState TabLoadTracker::GetLoadingState(
     content::WebContents* web_contents) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto it = tabs_.find(web_contents);
-  CHECK(it != tabs_.end(), base::NotFatalUntil::M130);
+  CHECK(it != tabs_.end());
   return it->second.loading_state;
 }
 
@@ -87,7 +87,7 @@ void TabLoadTracker::TransitionStateForTesting(
     content::WebContents* web_contents,
     LoadingState loading_state) {
   auto it = tabs_.find(web_contents);
-  CHECK(it != tabs_.end(), base::NotFatalUntil::M130);
+  CHECK(it != tabs_.end());
   TransitionState(it, loading_state);
 }
 
@@ -113,7 +113,7 @@ void TabLoadTracker::StartTracking(content::WebContents* web_contents) {
 void TabLoadTracker::StopTracking(content::WebContents* web_contents) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto it = tabs_.find(web_contents);
-  CHECK(it != tabs_.end(), base::NotFatalUntil::M130);
+  CHECK(it != tabs_.end());
 
   auto loading_state = it->second.loading_state;
   DCHECK_NE(0u, state_counts_[static_cast<size_t>(it->second.loading_state)]);
@@ -132,14 +132,14 @@ void TabLoadTracker::PrimaryPageChanged(content::WebContents* web_contents) {
     return;
 
   auto it = tabs_.find(web_contents);
-  CHECK(it != tabs_.end(), base::NotFatalUntil::M130);
+  CHECK(it != tabs_.end());
   TransitionState(it, LOADING);
 }
 
 void TabLoadTracker::DidStopLoading(content::WebContents* web_contents) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto it = tabs_.find(web_contents);
-  CHECK(it != tabs_.end(), base::NotFatalUntil::M130);
+  CHECK(it != tabs_.end());
 
   // Corner case: An unloaded tab that starts loading but never receives a
   // response transitions to the LOADED state when loading stops, without

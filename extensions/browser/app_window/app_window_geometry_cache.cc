@@ -11,7 +11,6 @@
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/json/values_util.h"
-#include "base/not_fatal_until.h"
 #include "base/observer_list.h"
 #include "base/strings/string_number_conversions.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
@@ -151,7 +150,7 @@ bool AppWindowGeometryCache::GetGeometry(
   if (extension_data_it == cache_.end()) {
     LoadGeometryFromStorage(extension_id);
     extension_data_it = cache_.find(extension_id);
-    CHECK(extension_data_it != cache_.end(), base::NotFatalUntil::M130);
+    CHECK(extension_data_it != cache_.end());
   }
 
   auto window_data_it = extension_data_it->second.find(window_id);

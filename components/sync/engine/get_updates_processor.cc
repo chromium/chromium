@@ -12,7 +12,6 @@
 #include <vector>
 
 #include "base/logging.h"
-#include "base/not_fatal_until.h"
 #include "base/trace_event/trace_event.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/engine/cycle/status_controller.h"
@@ -204,7 +203,7 @@ void GetUpdatesProcessor::PrepareGetUpdates(
 
   for (DataType type : gu_types) {
     auto handler_it = update_handler_map_->find(type);
-    CHECK(handler_it != update_handler_map_->end(), base::NotFatalUntil::M130)
+    CHECK(handler_it != update_handler_map_->end())
         << "Failed to look up handler for " << DataTypeToDebugString(type);
     sync_pb::DataTypeProgressMarker* progress_marker =
         get_updates->add_from_progress_marker();

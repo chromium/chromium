@@ -20,7 +20,6 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
-#include "base/not_fatal_until.h"
 #include "base/notreached.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/sequenced_task_runner.h"
@@ -1600,7 +1599,7 @@ void WebRequestProxyingURLLoaderFactory::OnLoaderCreated(
   }
 
   auto request_it = requests_.find(it->second);
-  CHECK(request_it != requests_.end(), base::NotFatalUntil::M130);
+  CHECK(request_it != requests_.end());
   request_it->second->OnLoaderCreated(std::move(receiver));
 }
 
@@ -1640,7 +1639,7 @@ void WebRequestProxyingURLLoaderFactory::HandleAuthRequest(
   }
 
   auto request_it = requests_.find(it->second);
-  CHECK(request_it != requests_.end(), base::NotFatalUntil::M130);
+  CHECK(request_it != requests_.end());
   request_it->second->HandleAuthRequest(auth_info, std::move(response_headers),
                                         std::move(callback));
 }

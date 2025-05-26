@@ -10,7 +10,6 @@
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
-#include "base/not_fatal_until.h"
 #include "base/task/lazy_thread_pool_task_runner.h"
 #include "base/task/sequenced_task_runner.h"
 #include "build/branding_buildflags.h"
@@ -227,7 +226,7 @@ void ModuleDatabase::OnModuleAddedToBlocklist(const base::FilePath& module_path,
       ModuleInfoKey(module_path, module_size, module_time_date_stamp));
 
   // Only known modules should be added to the blocklist.
-  CHECK(iter != modules_.end(), base::NotFatalUntil::M130);
+  CHECK(iter != modules_.end());
 
   iter->second.module_properties |= ModuleInfoData::kPropertyAddedToBlocklist;
 }

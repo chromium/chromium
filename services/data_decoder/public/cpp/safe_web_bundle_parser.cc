@@ -9,7 +9,6 @@
 
 #include "base/check.h"
 #include "base/functional/bind.h"
-#include "base/not_fatal_until.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/types/expected.h"
@@ -270,7 +269,7 @@ void SafeWebBundleParser::OnResponseParsed(
     web_package::mojom::BundleResponsePtr response,
     web_package::mojom::BundleResponseParseErrorPtr error) {
   auto it = response_callbacks_.find(callback_id);
-  CHECK(it != response_callbacks_.end(), base::NotFatalUntil::M130);
+  CHECK(it != response_callbacks_.end());
   auto callback = std::move(it->second);
   response_callbacks_.erase(it);
   std::move(callback).Run(std::move(response), std::move(error));

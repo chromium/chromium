@@ -4,7 +4,6 @@
 
 #include "chrome/browser/task_manager/providers/worker_task_provider.h"
 
-#include "base/not_fatal_until.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/task_manager/providers/per_profile_worker_task_tracker.h"
@@ -56,8 +55,7 @@ void WorkerTaskProvider::OnProfileWillBeDestroyed(Profile* profile) {
   observed_profiles_.RemoveObservation(profile);
 
   auto it = per_profile_worker_task_trackers_.find(profile);
-  CHECK(it != per_profile_worker_task_trackers_.end(),
-        base::NotFatalUntil::M130);
+  CHECK(it != per_profile_worker_task_trackers_.end());
   per_profile_worker_task_trackers_.erase(it);
 }
 

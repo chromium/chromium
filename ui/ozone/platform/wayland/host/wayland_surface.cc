@@ -22,7 +22,6 @@
 #include "base/files/scoped_file.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
-#include "base/not_fatal_until.h"
 #include "base/trace_event/trace_event.h"
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/geometry/rect.h"
@@ -889,7 +888,7 @@ void WaylandSurface::ExplicitRelease(
     zwp_linux_buffer_release_v1* linux_buffer_release,
     base::ScopedFD fence) {
   auto iter = linux_buffer_releases_legacy_.find(linux_buffer_release);
-  CHECK(iter != linux_buffer_releases_legacy_.end(), base::NotFatalUntil::M130);
+  CHECK(iter != linux_buffer_releases_legacy_.end());
   DCHECK(iter->second.buffer);
   std::move(iter->second.explicit_release_callback)
       .Run(iter->second.buffer.get(), std::move(fence));

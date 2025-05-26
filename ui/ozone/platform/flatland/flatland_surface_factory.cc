@@ -14,7 +14,6 @@
 #include "base/fuchsia/process_context.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
-#include "base/not_fatal_until.h"
 #include "base/task/single_thread_task_runner.h"
 #include "gpu/vulkan/vulkan_device_queue.h"
 #include "third_party/angle/src/common/fuchsia_egl/fuchsia_egl.h"
@@ -237,7 +236,7 @@ void FlatlandSurfaceFactory::AddSurface(gfx::AcceleratedWidget widget,
 void FlatlandSurfaceFactory::RemoveSurface(gfx::AcceleratedWidget widget) {
   base::AutoLock lock(surface_lock_);
   auto it = surface_map_.find(widget);
-  CHECK(it != surface_map_.end(), base::NotFatalUntil::M130);
+  CHECK(it != surface_map_.end());
   FlatlandSurface* surface = it->second;
   surface->AssertBelongsToCurrentThread();
   surface_map_.erase(it);

@@ -6,7 +6,6 @@
 
 #include <algorithm>
 
-#include "base/not_fatal_until.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -66,10 +65,9 @@ std::u16string BluetoothScanningPromptController::GetOption(
   DCHECK_LT(index, device_ids_.size());
   const std::string& device_id = device_ids_[index];
   const auto& device_name_it = device_id_to_name_map_.find(device_id);
-  CHECK(device_name_it != device_id_to_name_map_.end(),
-        base::NotFatalUntil::M130);
+  CHECK(device_name_it != device_id_to_name_map_.end());
   const auto& it = device_name_counts_.find(device_name_it->second);
-  CHECK(it != device_name_counts_.end(), base::NotFatalUntil::M130);
+  CHECK(it != device_name_counts_.end());
   return it->second == 1
              ? device_name_it->second
              : l10n_util::GetStringFUTF16(
@@ -120,7 +118,7 @@ void BluetoothScanningPromptController::AddOrUpdateDevice(
       name_it->second = device_name_for_display;
 
       const auto& it = device_name_counts_.find(previous_device_name);
-      CHECK(it != device_name_counts_.end(), base::NotFatalUntil::M130);
+      CHECK(it != device_name_counts_.end());
       DCHECK_GT(it->second, 0);
 
       if (--(it->second) == 0)
@@ -131,7 +129,7 @@ void BluetoothScanningPromptController::AddOrUpdateDevice(
 
     auto device_id_it = std::ranges::find(device_ids_, device_id);
 
-    CHECK(device_id_it != device_ids_.end(), base::NotFatalUntil::M130);
+    CHECK(device_id_it != device_ids_.end());
     if (view())
       view()->OnOptionUpdated(device_id_it - device_ids_.begin());
     return;

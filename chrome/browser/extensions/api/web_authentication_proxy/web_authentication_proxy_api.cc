@@ -6,7 +6,6 @@
 
 #include "base/functional/bind.h"
 #include "base/logging.h"
-#include "base/not_fatal_until.h"
 #include "chrome/browser/extensions/api/web_authentication_proxy/web_authentication_proxy_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/extensions/api/web_authentication_proxy.h"
@@ -59,7 +58,7 @@ void WebAuthenticationProxyAPI::OnListenerRemoved(
     return;
   }
   auto it = session_state_change_notifiers_.find(details.extension_id);
-  CHECK(it != session_state_change_notifiers_.end(), base::NotFatalUntil::M130);
+  CHECK(it != session_state_change_notifiers_.end());
   session_state_change_notifiers_.erase(it);
 }
 

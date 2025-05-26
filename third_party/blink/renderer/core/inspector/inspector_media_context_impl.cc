@@ -7,7 +7,6 @@
 #include <unordered_set>
 #include <utility>
 
-#include "base/not_fatal_until.h"
 #include "base/unguessable_token.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
@@ -60,7 +59,7 @@ Vector<WebString> MediaInspectorContextImpl::AllPlayerIdsAndMarkSent() {
 const MediaPlayer& MediaInspectorContextImpl::MediaPlayerFromId(
     const WebString& player_id) {
   const auto& player = players_.find(player_id);
-  CHECK_NE(player, players_.end(), base::NotFatalUntil::M130);
+  CHECK_NE(player, players_.end());
   return *player->value;
 }
 

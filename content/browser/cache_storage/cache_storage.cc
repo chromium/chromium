@@ -26,7 +26,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/not_fatal_until.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -1022,7 +1021,7 @@ void CacheStorage::CacheUnreferenced(CacheStorageCache* cache) {
   // The CacheStorage is not actively being referenced.  Close the cache
   // immediately.
   auto cache_map_it = cache_map_.find(cache->cache_name());
-  CHECK(cache_map_it != cache_map_.end(), base::NotFatalUntil::M130);
+  CHECK(cache_map_it != cache_map_.end());
 
   cache_map_it->second.reset();
 }
@@ -1229,7 +1228,7 @@ void CacheStorage::DeleteCacheDidWriteIndex(
   cache_index_->FinalizeDoomedCache();
 
   auto map_iter = cache_map_.find(impl->cache_name());
-  CHECK(map_iter != cache_map_.end(), base::NotFatalUntil::M130);
+  CHECK(map_iter != cache_map_.end());
 
   doomed_caches_.insert(
       std::make_pair(map_iter->second.get(), std::move(map_iter->second)));
@@ -1259,7 +1258,7 @@ void CacheStorage::DeleteCacheDidGetSize(CacheStorageCache* doomed_cache,
 
   cache_loader_->CleanUpDeletedCache(doomed_cache);
   auto doomed_caches_iter = doomed_caches_.find(doomed_cache);
-  CHECK(doomed_caches_iter != doomed_caches_.end(), base::NotFatalUntil::M130);
+  CHECK(doomed_caches_iter != doomed_caches_.end());
   doomed_caches_.erase(doomed_caches_iter);
 }
 

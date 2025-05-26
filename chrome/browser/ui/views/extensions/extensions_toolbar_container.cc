@@ -11,7 +11,6 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/no_destructor.h"
-#include "base/not_fatal_until.h"
 #include "build/build_config.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
@@ -263,7 +262,7 @@ void ExtensionsToolbarContainer::RemoveAction(
 
   auto iter = std::ranges::find(actions_, action_id,
                                 &ToolbarActionViewController::GetId);
-  CHECK(iter != actions_.end(), base::NotFatalUntil::M130);
+  CHECK(iter != actions_.end());
   // Ensure the action outlives the UI element to perform any cleanup.
   std::unique_ptr<ToolbarActionViewController> controller = std::move(*iter);
   actions_.erase(iter);
@@ -886,7 +885,7 @@ views::View::DropCallback ExtensionsToolbarContainer::GetDropCallback(
 void ExtensionsToolbarContainer::OnWidgetDestroying(views::Widget* widget) {
   auto iter =
       std::ranges::find(anchored_widgets_, widget, &AnchoredWidget::widget);
-  CHECK(iter != anchored_widgets_.end(), base::NotFatalUntil::M130);
+  CHECK(iter != anchored_widgets_.end());
   iter->widget->RemoveObserver(this);
   const std::string extension_id = std::move(iter->extension_id);
   anchored_widgets_.erase(iter);

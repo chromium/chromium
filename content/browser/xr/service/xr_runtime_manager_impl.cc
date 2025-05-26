@@ -14,7 +14,6 @@
 #include "base/lazy_instance.h"
 #include "base/memory/singleton.h"
 #include "base/no_destructor.h"
-#include "base/not_fatal_until.h"
 #include "base/observer_list.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/trace_event/trace_event.h"
@@ -631,7 +630,7 @@ void XRRuntimeManagerImpl::RemoveRuntime(device::mojom::XRDeviceId id) {
 
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   auto it = runtimes_.find(id);
-  CHECK(it != runtimes_.end(), base::NotFatalUntil::M130);
+  CHECK(it != runtimes_.end());
 
   GetLoggerManager().RecordRuntimeRemoved(id);
 

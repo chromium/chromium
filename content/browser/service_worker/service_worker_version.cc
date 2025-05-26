@@ -22,7 +22,6 @@
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/not_fatal_until.h"
 #include "base/observer_list.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
@@ -1010,7 +1009,7 @@ void ServiceWorkerVersion::OnControlleeNavigationCommitted(
 #if DCHECK_IS_ON()
   // Ensures this function is only called for a known window client.
   auto it = controllee_map_.find(client_uuid);
-  CHECK(it != controllee_map_.end(), base::NotFatalUntil::M130);
+  CHECK(it != controllee_map_.end());
 
   DCHECK_EQ(it->second->GetClientType(),
             blink::mojom::ServiceWorkerClientType::kWindow);
@@ -3033,7 +3032,7 @@ ServiceWorkerVersion::compared_script_info_map() const {
 ServiceWorkerUpdateChecker::ComparedScriptInfo
 ServiceWorkerVersion::TakeComparedScriptInfo(const GURL& script_url) {
   auto it = compared_script_info_map_.find(script_url);
-  CHECK(it != compared_script_info_map_.end(), base::NotFatalUntil::M130);
+  CHECK(it != compared_script_info_map_.end());
   ServiceWorkerUpdateChecker::ComparedScriptInfo info = std::move(it->second);
   compared_script_info_map_.erase(it);
   return info;

@@ -19,7 +19,6 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/not_fatal_until.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_offset_string_conversions.h"
@@ -2703,7 +2702,7 @@ bool PepperPluginInstanceImpl::DecrementTextureReferenceCount(
     const viz::TransferableResource& resource) {
   auto it = std::ranges::find(texture_ref_counts_, resource.mailbox(),
                               &MailboxRefCount::first);
-  CHECK(it != texture_ref_counts_.end(), base::NotFatalUntil::M130);
+  CHECK(it != texture_ref_counts_.end());
 
   if (it->second == 1) {
     texture_ref_counts_.erase(it);

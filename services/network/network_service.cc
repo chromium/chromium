@@ -30,7 +30,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/not_fatal_until.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
@@ -1171,7 +1170,7 @@ void NetworkService::DestroyNetworkContexts() {
 void NetworkService::OnNetworkContextConnectionClosed(
     NetworkContext* network_context) {
   auto it = owned_network_contexts_.find(network_context);
-  CHECK(it != owned_network_contexts_.end(), base::NotFatalUntil::M130);
+  CHECK(it != owned_network_contexts_.end());
   if (file_net_log_observer_) {
     net_log_polled_data_list_.Append(
         net::GetNetInfo(network_context->url_request_context()));

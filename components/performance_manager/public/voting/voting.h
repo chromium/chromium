@@ -50,7 +50,6 @@
 #include "base/containers/flat_map.h"
 #include "base/dcheck_is_on.h"
 #include "base/memory/raw_ptr.h"
-#include "base/not_fatal_until.h"
 #include "base/types/id_type.h"
 #include "base/types/pass_key.h"
 
@@ -300,7 +299,7 @@ void VotingChannel<VoteImpl>::ChangeVote(const ContextType* context,
 #if DCHECK_IS_ON()
   // Ensure that a vote exists for this context.
   auto it = votes_.find(context);
-  CHECK(it != votes_.end(), base::NotFatalUntil::M130);
+  CHECK(it != votes_.end());
 
   // Ensure the vote was actually changed.
   DCHECK(new_vote != it->second);

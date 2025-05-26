@@ -7,7 +7,6 @@
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
 #include "base/containers/flat_set.h"
-#include "base/not_fatal_until.h"
 #include "base/notreached.h"
 #include "base/synchronization/lock.h"
 
@@ -61,7 +60,7 @@ void ClientPaintCache::FinalizePendingEntries() {
 void ClientPaintCache::AbortPendingEntries() {
   for (const auto& entry : pending_entries_) {
     auto it = cache_map_.Peek(entry);
-    CHECK(it != cache_map_.end(), base::NotFatalUntil::M130);
+    CHECK(it != cache_map_.end());
     EraseFromMap(it);
   }
   pending_entries_.clear();

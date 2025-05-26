@@ -10,7 +10,6 @@
 #include <utility>
 
 #include "base/functional/bind.h"
-#include "base/not_fatal_until.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
@@ -140,7 +139,7 @@ std::u16string UsbChooserController::GetOption(size_t index) const {
   DCHECK_LT(index, devices_.size());
   const std::u16string& device_name = devices_[index].second;
   const auto& it = device_name_map_.find(device_name);
-  CHECK(it != device_name_map_.end(), base::NotFatalUntil::M130);
+  CHECK(it != device_name_map_.end());
 
   if (it->second == 1)
     return device_name;

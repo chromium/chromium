@@ -16,7 +16,6 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
-#include "base/not_fatal_until.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_checker.h"
@@ -513,7 +512,7 @@ class OverlayProcessorWebView::Manager
   OverlaySurface& GetOverlaySurfaceLocked(uint64_t id) {
     lock_.AssertAcquired();
     auto surface = overlay_surfaces_.find(id);
-    CHECK(surface != overlay_surfaces_.end(), base::NotFatalUntil::M130);
+    CHECK(surface != overlay_surfaces_.end());
     return surface->second;
   }
 
@@ -880,7 +879,7 @@ void OverlayProcessorWebView::UpdateOverlayResource(
     const gfx::RectF& uv_rect) {
   DCHECK(resource_provider_);
   auto overlay = overlays_.find(frame_sink_id);
-  CHECK(overlay != overlays_.end(), base::NotFatalUntil::M130);
+  CHECK(overlay != overlays_.end());
 
   DCHECK(resource_provider_->IsOverlayCandidate(new_resource_id));
 
@@ -911,7 +910,7 @@ void OverlayProcessorWebView::ReturnResource(viz::ResourceId resource_id,
   // OverlayManager return resources. When we delete last lock resource will be
   // return to the client.
   auto it = locked_resources_.find(resource_id);
-  CHECK(it != locked_resources_.end(), base::NotFatalUntil::M130);
+  CHECK(it != locked_resources_.end());
   locked_resources_.erase(it);
 
   DCHECK(resource_lock_count_.contains(surface_id.frame_sink_id()));
@@ -940,7 +939,7 @@ bool OverlayProcessorWebView::ProcessForFrameSinkId(
     const viz::FrameSinkId& frame_sink_id,
     const viz::ResolvedFrameData* frame_data) {
   auto it = overlays_.find(frame_sink_id);
-  CHECK(it != overlays_.end(), base::NotFatalUntil::M130);
+  CHECK(it != overlays_.end());
   auto& overlay = it->second;
 
   const auto& passes = frame_data->GetResolvedPasses();

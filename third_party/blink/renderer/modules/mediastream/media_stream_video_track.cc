@@ -13,7 +13,6 @@
 #include "base/location.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/not_fatal_until.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
@@ -952,7 +951,7 @@ static void AddSinkInternal(Vector<WebMediaStreamSink*>* sinks,
 static void RemoveSinkInternal(Vector<WebMediaStreamSink*>* sinks,
                                WebMediaStreamSink* sink) {
   auto it = std::ranges::find(*sinks, sink);
-  CHECK(it != sinks->end(), base::NotFatalUntil::M130);
+  CHECK(it != sinks->end());
   sinks->erase(it);
 }
 

@@ -338,7 +338,7 @@ std::unique_ptr<net::UploadDataStream> CreateUploadDataStream(
             body, element.As<DataElementBytes>()));
         break;
       case network::mojom::DataElementDataView::Tag::kFile:
-        CHECK(opened_file != opened_files.end(), base::NotFatalUntil::M130);
+        CHECK(opened_file != opened_files.end());
         element_readers.push_back(std::make_unique<FileElementReader>(
             body, file_task_runner, element.As<network::DataElementFile>(),
             std::move(*opened_file++)));

@@ -19,7 +19,6 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/not_fatal_until.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
@@ -495,7 +494,7 @@ void ServiceWorkerClientOwner::UpdateServiceWorkerClientClientID(
     const std::string& current_client_uuid,
     const std::string& new_client_uuid) {
   auto it = service_worker_clients_by_uuid_.find(current_client_uuid);
-  CHECK(it != service_worker_clients_by_uuid_.end(), base::NotFatalUntil::M130);
+  CHECK(it != service_worker_clients_by_uuid_.end());
   std::unique_ptr<ServiceWorkerClient> service_worker_client =
       std::move(it->second);
   service_worker_clients_by_uuid_.erase(it);
@@ -973,7 +972,7 @@ void ServiceWorkerContextCore::AddLiveVersion(ServiceWorkerVersion* version) {
 void ServiceWorkerContextCore::RemoveLiveVersion(int64_t id) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   auto it = live_versions_.find(id);
-  CHECK(it != live_versions_.end(), base::NotFatalUntil::M130);
+  CHECK(it != live_versions_.end());
   ServiceWorkerVersion* version = it->second;
 
   if (version->running_status() != blink::EmbeddedWorkerStatus::kStopped) {

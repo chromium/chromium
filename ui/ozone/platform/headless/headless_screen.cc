@@ -149,7 +149,7 @@ const std::vector<display::Display>& HeadlessScreen::GetAllDisplays() const {
 
 display::Display HeadlessScreen::GetPrimaryDisplay() const {
   auto iter = display_list_.GetPrimaryDisplayIterator();
-  CHECK(iter != display_list_.displays().end(), base::NotFatalUntil::M130);
+  CHECK(iter != display_list_.displays().end());
   return *iter;
 }
 

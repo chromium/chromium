@@ -7,7 +7,6 @@
 #include <memory>
 #include <optional>
 
-#include "base/not_fatal_until.h"
 #include "base/types/optional_util.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/layout/baseline_utils.h"
@@ -3125,8 +3124,7 @@ FlexLayoutAlgorithm::GiveItemsFinalPositionAndSizeForFragmentation(
             AdjustOffsetForNextLine(flex_lines, flex_line_idx, item_expansion);
           } else {
             auto it = row_cross_size_updates_.find(flex_line_idx + 1);
-            CHECK_NE(it, row_cross_size_updates_.end(),
-                     base::NotFatalUntil::M130);
+            CHECK_NE(it, row_cross_size_updates_.end());
             if (item_expansion > it->value) {
               AdjustOffsetForNextLine(flex_lines, flex_line_idx,
                                       item_expansion - it->value);

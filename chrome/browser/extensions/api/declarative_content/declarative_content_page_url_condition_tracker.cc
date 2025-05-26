@@ -7,7 +7,6 @@
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
-#include "base/not_fatal_until.h"
 #include "base/strings/stringprintf.h"
 #include "base/values.h"
 #include "components/url_matcher/url_matcher_factory.h"
@@ -204,7 +203,7 @@ bool DeclarativeContentPageUrlConditionTracker::EvaluatePredicate(
   const DeclarativeContentPageUrlPredicate* typed_predicate =
       static_cast<const DeclarativeContentPageUrlPredicate*>(predicate);
   auto loc = per_web_contents_tracker_.find(tab);
-  CHECK(loc != per_web_contents_tracker_.end(), base::NotFatalUntil::M130);
+  CHECK(loc != per_web_contents_tracker_.end());
   const std::set<base::MatcherStringPattern::ID>& web_contents_id_matches =
       loc->second->matches();
   return base::Contains(web_contents_id_matches,

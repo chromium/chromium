@@ -7,7 +7,6 @@
 #include "base/containers/flat_map.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
-#include "base/not_fatal_until.h"
 #include "base/process/process.h"
 #include "base/synchronization/lock.h"
 #include "base/task/single_thread_task_runner.h"
@@ -103,8 +102,7 @@ void ClientProcessImpl::OnChromeMemoryDumpDone(
   DCHECK(success || !process_memory_dump);
 
   auto callback_it = pending_chrome_callbacks_.find(dump_guid);
-  CHECK(callback_it != pending_chrome_callbacks_.end(),
-        base::NotFatalUntil::M130);
+  CHECK(callback_it != pending_chrome_callbacks_.end());
 
   auto callback = std::move(callback_it->second);
   pending_chrome_callbacks_.erase(callback_it);

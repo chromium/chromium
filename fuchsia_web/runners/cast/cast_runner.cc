@@ -20,7 +20,6 @@
 #include "base/fuchsia/process_context.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
-#include "base/not_fatal_until.h"
 #include "base/process/process.h"
 #include "base/strings/strcat.h"
 #include "base/time/time.h"
@@ -462,7 +461,7 @@ WebContentRunner* CastRunner::CreateIsolatedRunner(
 
 void CastRunner::OnIsolatedContextEmpty(WebContentRunner* context) {
   auto it = isolated_contexts_.find(context);
-  CHECK(it != isolated_contexts_.end(), base::NotFatalUntil::M130);
+  CHECK(it != isolated_contexts_.end());
   isolated_contexts_.erase(it);
 }
 

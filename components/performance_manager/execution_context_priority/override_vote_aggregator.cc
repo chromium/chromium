@@ -4,8 +4,6 @@
 
 #include "components/performance_manager/public/execution_context_priority/override_vote_aggregator.h"
 
-#include "base/not_fatal_until.h"
-
 namespace performance_manager {
 namespace execution_context_priority {
 
@@ -175,7 +173,7 @@ const Vote& OverrideVoteAggregator::VoteData::GetChosenVote() const {
 OverrideVoteAggregator::VoteDataMap::iterator
 OverrideVoteAggregator::GetVoteData(const ExecutionContext* execution_context) {
   auto it = vote_data_map_.find(execution_context);
-  CHECK(it != vote_data_map_.end(), base::NotFatalUntil::M130);
+  CHECK(it != vote_data_map_.end());
   return it;
 }
 

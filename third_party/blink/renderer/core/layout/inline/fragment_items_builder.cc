@@ -4,7 +4,6 @@
 
 #include "third_party/blink/renderer/core/layout/inline/fragment_items_builder.h"
 
-#include "base/not_fatal_until.h"
 #include "third_party/blink/renderer/core/layout/box_fragment_builder.h"
 #include "third_party/blink/renderer/core/layout/geometry/writing_mode_converter.h"
 #include "third_party/blink/renderer/core/layout/inline/fragment_items.h"
@@ -402,7 +401,7 @@ void FragmentItemsBuilder::ConvertToPhysical(const PhysicalSize& outer_size) {
         line_converter.SetOuterSize(line_box_bounds.size);
         while (--descendants_count) {
           ++i;
-          CHECK_NE(i, items_.size(), base::NotFatalUntil::M130);
+          CHECK_NE(i, items_.size());
           ItemWithOffset& descendant_item_with_offset = items_[i];
           item = &descendant_item_with_offset.item;
           item->SetOffset(

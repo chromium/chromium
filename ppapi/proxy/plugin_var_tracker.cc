@@ -11,7 +11,6 @@
 #include "base/check.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/singleton.h"
-#include "base/not_fatal_until.h"
 #include "ipc/ipc_message.h"
 #include "ppapi/c/dev/ppp_class_deprecated.h"
 #include "ppapi/c/ppb_var.h"
@@ -423,8 +422,8 @@ bool PluginVarTracker::DeleteObjectInfoIfNecessary(VarMap::iterator iter) {
     return false;
 
   // Clean up the host var mapping.
-  CHECK(host_var_to_plugin_var_.find(host_var) != host_var_to_plugin_var_.end(),
-        base::NotFatalUntil::M130);
+  CHECK(host_var_to_plugin_var_.find(host_var) !=
+        host_var_to_plugin_var_.end());
   host_var_to_plugin_var_.erase(host_var);
   return true;
 }

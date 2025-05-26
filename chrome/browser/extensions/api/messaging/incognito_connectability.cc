@@ -10,7 +10,6 @@
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/lazy_instance.h"
-#include "base/not_fatal_until.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/extensions/api/messaging/incognito_connectability_infobar_delegate.h"
 #include "chrome/browser/profiles/profile.h"
@@ -149,7 +148,7 @@ void IncognitoConnectability::OnInteractiveResponse(
 
   PendingOriginMap::iterator origin_it =
       pending_origins_.find(make_pair(extension_id, origin));
-  CHECK(origin_it != pending_origins_.end(), base::NotFatalUntil::M130);
+  CHECK(origin_it != pending_origins_.end());
   PendingOrigin& pending_origin = origin_it->second;
   DCHECK(base::Contains(pending_origin, infobar_manager));
 

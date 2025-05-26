@@ -20,7 +20,6 @@
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/not_fatal_until.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -2428,7 +2427,7 @@ void ChildProcessSecurityPolicyImpl::LockProcess(
 
   base::AutoLock lock(lock_);
   auto state = security_state_.find(child_id);
-  CHECK(state != security_state_.end(), base::NotFatalUntil::M130);
+  CHECK(state != security_state_.end());
   state->second->SetProcessLock(process_lock, context, is_process_used);
 }
 

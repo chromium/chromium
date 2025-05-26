@@ -4,7 +4,6 @@
 
 #include "third_party/blink/renderer/core/timing/event_counts.h"
 
-#include "base/not_fatal_until.h"
 #include "third_party/blink/renderer/core/event_type_names.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string_hash.h"
@@ -43,7 +42,7 @@ class EventCountsIterationSource final
 
 void EventCounts::Add(const AtomicString& event_type) {
   auto iterator = event_count_map_.find(event_type);
-  CHECK_NE(iterator, event_count_map_.end(), base::NotFatalUntil::M130);
+  CHECK_NE(iterator, event_count_map_.end());
   iterator->value++;
 }
 

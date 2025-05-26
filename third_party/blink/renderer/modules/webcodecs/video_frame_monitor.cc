@@ -4,7 +4,6 @@
 
 #include "third_party/blink/renderer/modules/webcodecs/video_frame_monitor.h"
 
-#include "base/not_fatal_until.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 
 namespace blink {
@@ -62,10 +61,10 @@ void VideoFrameMonitor::OnCloseFrameLocked(const std::string& source_id,
   DCHECK(!source_id.empty());
   lock_.AssertAcquired();
   auto it_source = map_.find(source_id);
-  CHECK(it_source != map_.end(), base::NotFatalUntil::M130);
+  CHECK(it_source != map_.end());
   FrameMap& frame_map = it_source->second;
   auto it_frame = frame_map.find(frame_id);
-  CHECK(it_frame != frame_map.end(), base::NotFatalUntil::M130);
+  CHECK(it_frame != frame_map.end());
   DCHECK_GT(it_frame->value, 0);
   if (--it_frame->value == 0) {
     frame_map.erase(it_frame);

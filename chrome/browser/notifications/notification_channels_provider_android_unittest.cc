@@ -12,7 +12,6 @@
 #include "base/functional/callback.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
-#include "base/not_fatal_until.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/single_thread_task_runner.h"
@@ -66,7 +65,7 @@ class FakeNotificationChannelsBridge
     auto it = std::ranges::find(
         channels_, origin,
         [](const Channels::value_type& pair) { return pair.second.origin; });
-    CHECK(it != channels_.end(), base::NotFatalUntil::M130)
+    CHECK(it != channels_.end())
         << "Must call bridge.CreateChannel before SetChannelStatus.";
     it->second.status = status;
   }

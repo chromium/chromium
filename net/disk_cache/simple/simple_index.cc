@@ -12,7 +12,6 @@
 #include "base/check_op.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
-#include "base/not_fatal_until.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/pickle.h"
 #include "base/strings/string_number_conversions.h"
@@ -397,7 +396,7 @@ base::Time SimpleIndex::GetLastUsedTime(uint64_t entry_hash) {
 void SimpleIndex::SetLastUsedTimeForTest(uint64_t entry_hash,
                                          const base::Time last_used) {
   auto it = entries_set_.find(entry_hash);
-  CHECK(it != entries_set_.end(), base::NotFatalUntil::M130);
+  CHECK(it != entries_set_.end());
   it->second.SetLastUsedTime(last_used);
 }
 

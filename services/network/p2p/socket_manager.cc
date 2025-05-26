@@ -11,7 +11,6 @@
 
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
-#include "base/not_fatal_until.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "net/base/address_family.h"
@@ -231,7 +230,7 @@ void P2PSocketManager::AddAcceptedConnection(
 
 void P2PSocketManager::DestroySocket(P2PSocket* socket) {
   auto iter = sockets_.find(socket);
-  CHECK(iter != sockets_.end(), base::NotFatalUntil::M130);
+  CHECK(iter != sockets_.end());
   sockets_.erase(iter);
 }
 

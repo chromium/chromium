@@ -8,7 +8,6 @@
 #include <string_view>
 
 #include "base/metrics/histogram_functions.h"
-#include "base/not_fatal_until.h"
 #include "base/rand_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "components/services/storage/indexed_db/scopes/varint_coding.h"
@@ -41,7 +40,7 @@ WrappingIterator<T>::WrappingIterator(const T* container,
   DCHECK_LT(start_position, container_->size());
   inner_ = container_->begin();
   std::advance(inner_, start_position);
-  CHECK(inner_ != container_->end(), base::NotFatalUntil::M130);
+  CHECK(inner_ != container_->end());
 }
 
 template <typename T>

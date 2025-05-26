@@ -11,7 +11,6 @@
 #include "base/containers/contains.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram.h"
-#include "base/not_fatal_until.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/time/default_clock.h"
@@ -202,7 +201,7 @@ void ResourceLoadScheduler::SetPriority(ClientId client_id,
   auto it = throttle_option_queue.find(ClientIdWithPriority(
       client_id, client_it->value->priority, client_it->value->intra_priority));
 
-  CHECK(it != throttle_option_queue.end(), base::NotFatalUntil::M130);
+  CHECK(it != throttle_option_queue.end());
   throttle_option_queue.erase(it);
 
   client_it->value->priority = priority;

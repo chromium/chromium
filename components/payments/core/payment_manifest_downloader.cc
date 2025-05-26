@@ -13,7 +13,6 @@
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
-#include "base/not_fatal_until.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -187,7 +186,7 @@ void PaymentManifestDownloader::OnURLLoaderRedirect(
     const network::mojom::URLResponseHead& response_head,
     std::vector<std::string>* to_be_removed_headers) {
   auto download_it = downloads_.find(url_loader);
-  CHECK(download_it != downloads_.end(), base::NotFatalUntil::M130);
+  CHECK(download_it != downloads_.end());
 
   std::unique_ptr<Download> download = std::move(download_it->second);
   downloads_.erase(download_it);
@@ -248,7 +247,7 @@ void PaymentManifestDownloader::OnURLLoaderCompleteInternal(
     scoped_refptr<net::HttpResponseHeaders> headers,
     int net_error) {
   auto download_it = downloads_.find(url_loader);
-  CHECK(download_it != downloads_.end(), base::NotFatalUntil::M130);
+  CHECK(download_it != downloads_.end());
 
   std::unique_ptr<Download> download = std::move(download_it->second);
   downloads_.erase(download_it);

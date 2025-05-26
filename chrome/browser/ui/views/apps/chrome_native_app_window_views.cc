@@ -11,7 +11,6 @@
 
 #include "base/containers/span.h"
 #include "base/no_destructor.h"
-#include "base/not_fatal_until.h"
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/app_mode/app_mode_utils.h"
@@ -308,7 +307,7 @@ bool ChromeNativeAppWindowViews::AcceleratorPressed(
   const std::map<ui::Accelerator, int>& accelerator_table =
       GetAcceleratorTable();
   auto iter = accelerator_table.find(accelerator);
-  CHECK(iter != accelerator_table.end(), base::NotFatalUntil::M130);
+  CHECK(iter != accelerator_table.end());
   int command_id = iter->second;
   switch (command_id) {
     case IDC_CLOSE_WINDOW:

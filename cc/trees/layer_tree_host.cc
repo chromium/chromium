@@ -22,7 +22,6 @@
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/not_fatal_until.h"
 #include "base/numerics/safe_math.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
@@ -520,7 +519,7 @@ void LayerTreeHost::NotifyImageDecodeFinished(int request_id,
                                               bool decode_succeeded) {
   DCHECK(IsMainThread());
   auto it = pending_image_decodes_.find(request_id);
-  CHECK(it != pending_image_decodes_.end(), base::NotFatalUntil::M130);
+  CHECK(it != pending_image_decodes_.end());
   // Issue stored callback and remove them from the pending list.
   std::move(it->second.first).Run(decode_succeeded);
   pending_image_decodes_.erase(it);

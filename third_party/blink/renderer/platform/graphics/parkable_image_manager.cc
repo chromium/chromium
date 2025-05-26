@@ -5,7 +5,6 @@
 #include "third_party/blink/renderer/platform/graphics/parkable_image_manager.h"
 
 #include "base/metrics/histogram_functions.h"
-#include "base/not_fatal_until.h"
 #include "base/synchronization/lock.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
@@ -179,7 +178,7 @@ void ParkableImageManager::Remove(ParkableImageImpl* image) {
   // Image could be on disk or unparked. Remove it in either case.
   auto* map = image->is_on_disk() ? &on_disk_images_ : &unparked_images_;
   auto it = map->find(image);
-  CHECK(it != map->end(), base::NotFatalUntil::M130);
+  CHECK(it != map->end());
   map->erase(it);
 }
 

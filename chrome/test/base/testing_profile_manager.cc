@@ -13,7 +13,6 @@
 #include "base/functional/bind.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/not_fatal_until.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/test_file_util.h"
@@ -257,7 +256,7 @@ void TestingProfileManager::DeleteGuestProfile() {
   DCHECK(called_set_up_);
 
   auto it = testing_profiles_.find(kGuestProfileName);
-  CHECK(it != testing_profiles_.end(), base::NotFatalUntil::M130);
+  CHECK(it != testing_profiles_.end());
 
   profile_manager_->profiles_info_.erase(ProfileManager::GetGuestProfilePath());
 }
@@ -267,7 +266,7 @@ void TestingProfileManager::DeleteSystemProfile() {
   DCHECK(called_set_up_);
 
   auto it = testing_profiles_.find(kSystemProfileName);
-  CHECK(it != testing_profiles_.end(), base::NotFatalUntil::M130);
+  CHECK(it != testing_profiles_.end());
 
   profile_manager_->profiles_info_.erase(
       ProfileManager::GetSystemProfilePath());

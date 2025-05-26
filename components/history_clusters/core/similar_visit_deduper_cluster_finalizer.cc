@@ -7,7 +7,6 @@
 #include <algorithm>
 #include <unordered_map>
 
-#include "base/not_fatal_until.h"
 #include "components/history/core/browser/history_types.h"
 #include "components/history_clusters/core/on_device_clustering_util.h"
 #include "components/history_clusters/core/similar_visit.h"
@@ -35,8 +34,7 @@ void SimilarVisitDeduperClusterFinalizer::FinalizeCluster(
     // We are guaranteed to find a matching canonical visit, due to our
     // prepass above.
     auto it = similar_visit_to_canonical_visits.find(SimilarVisit(visit));
-    CHECK(it != similar_visit_to_canonical_visits.end(),
-          base::NotFatalUntil::M130);
+    CHECK(it != similar_visit_to_canonical_visits.end());
     history::ClusterVisit* canonical_visit = it->second;
 
     // If a DIFFERENT visit is the canonical visit for this key, merge

@@ -8,7 +8,6 @@
 #include <string>
 #include <utility>
 
-#include "base/not_fatal_until.h"
 #include "base/task/single_thread_task_runner.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
@@ -158,7 +157,7 @@ WakeLockProvider::WakeLockDataPerType& WakeLockProvider::GetWakeLockDataPerType(
     mojom::WakeLockType type) {
   auto it = wake_lock_store_.find(type);
   // An entry for |type| should always be created in the constructor.
-  CHECK(it != wake_lock_store_.end(), base::NotFatalUntil::M130);
+  CHECK(it != wake_lock_store_.end());
   return *(it->second);
 }
 

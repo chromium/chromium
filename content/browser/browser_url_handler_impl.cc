@@ -8,7 +8,6 @@
 
 #include <algorithm>
 
-#include "base/not_fatal_until.h"
 #include "base/strings/string_util.h"
 #include "content/browser/renderer_host/debug_urls.h"
 #include "content/browser/webui/web_ui_impl.h"
@@ -174,7 +173,7 @@ bool BrowserURLHandlerImpl::ReverseURLRewrite(
 void BrowserURLHandlerImpl::RemoveHandlerForTesting(URLHandler handler) {
   const auto it =
       std::ranges::find(url_handlers_, handler, &HandlerPair::first);
-  CHECK(url_handlers_.end() != it, base::NotFatalUntil::M130);
+  CHECK(url_handlers_.end() != it);
   url_handlers_.erase(it);
 }
 

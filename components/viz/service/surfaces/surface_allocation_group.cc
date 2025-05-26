@@ -9,7 +9,6 @@
 #include <utility>
 
 #include "base/memory/raw_ptr.h"
-#include "base/not_fatal_until.h"
 #include "components/viz/service/surfaces/surface.h"
 #include "components/viz/service/surfaces/surface_manager.h"
 
@@ -45,7 +44,7 @@ void SurfaceAllocationGroup::RegisterSurface(Surface* surface) {
 
 void SurfaceAllocationGroup::UnregisterSurface(Surface* surface) {
   auto it = std::ranges::find(surfaces_, surface);
-  CHECK(it != surfaces_.end(), base::NotFatalUntil::M130);
+  CHECK(it != surfaces_.end());
   surfaces_.erase(it);
   MaybeMarkForDestruction();
 }

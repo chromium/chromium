@@ -24,7 +24,6 @@
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/ref_counted_memory.h"
-#include "base/not_fatal_until.h"
 #include "base/numerics/checked_math.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/sequence_checker.h"
@@ -931,7 +930,7 @@ void UsbDeviceHandleUsbfs::ReleaseInterfaceComplete(int interface_number,
   }
 
   auto it = interfaces_.find(interface_number);
-  CHECK(it != interfaces_.end(), base::NotFatalUntil::M130);
+  CHECK(it != interfaces_.end());
   interfaces_.erase(it);
   if (device_) {
     // Only refresh endpoints if a device is still attached.
@@ -1127,7 +1126,7 @@ UsbDeviceHandleUsbfs::RemoveFromTransferList(Transfer* transfer_ptr) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto it = std::ranges::find(transfers_, transfer_ptr,
                               &std::unique_ptr<Transfer>::get);
-  CHECK(it != transfers_.end(), base::NotFatalUntil::M130);
+  CHECK(it != transfers_.end());
   std::unique_ptr<Transfer> transfer = std::move(*it);
   transfers_.erase(it);
   return transfer;

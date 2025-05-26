@@ -6,7 +6,6 @@
 
 #include <algorithm>
 
-#include "base/not_fatal_until.h"
 
 namespace network {
 
@@ -28,7 +27,7 @@ void KeepaliveStatisticsRecorder::Register(
 void KeepaliveStatisticsRecorder::Unregister(
     const base::UnguessableToken& top_level_frame_id) {
   auto it = per_top_level_frame_records_.find(top_level_frame_id);
-  CHECK(it != per_top_level_frame_records_.end(), base::NotFatalUntil::M130);
+  CHECK(it != per_top_level_frame_records_.end());
 
   if (it->second.num_registrations == 1) {
     per_top_level_frame_records_.erase(it);

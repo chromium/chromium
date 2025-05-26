@@ -7,7 +7,6 @@
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
-#include "base/not_fatal_until.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/single_thread_task_runner.h"
 #include "components/viz/common/quads/compositor_frame.h"
@@ -275,7 +274,7 @@ void ArCompositorFrameSink::ReclaimResources(
       continue;
 
     auto it = id_to_frame_map_.find(resource.id);
-    CHECK(it != id_to_frame_map_.end(), base::NotFatalUntil::M130);
+    CHECK(it != id_to_frame_map_.end());
     auto* rendering_frame = it->second.get();
 
     // While we now know that this resource is associated with this frame, we

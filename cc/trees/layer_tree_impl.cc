@@ -23,7 +23,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/stack_allocated.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/not_fatal_until.h"
 #include "base/notreached.h"
 #include "base/parameter_pack.h"
 #include "base/strings/stringprintf.h"
@@ -2242,7 +2241,7 @@ void LayerTreeImpl::RegisterPictureLayerImpl(PictureLayerImpl* layer) {
 
 void LayerTreeImpl::UnregisterPictureLayerImpl(PictureLayerImpl* layer) {
   auto it = std::ranges::find(picture_layers_, layer);
-  CHECK(it != picture_layers_.end(), base::NotFatalUntil::M130);
+  CHECK(it != picture_layers_.end());
   picture_layers_.erase(it);
 
   // Make sure that |picture_layers_with_paint_worklets_| doesn't get left with
@@ -2258,8 +2257,7 @@ void LayerTreeImpl::NotifyLayerHasPaintWorkletsChanged(PictureLayerImpl* layer,
     DCHECK(insert_pair.second);
   } else {
     auto it = picture_layers_with_paint_worklets_.find(layer);
-    CHECK(it != picture_layers_with_paint_worklets_.end(),
-          base::NotFatalUntil::M130);
+    CHECK(it != picture_layers_with_paint_worklets_.end());
     picture_layers_with_paint_worklets_.erase(it);
   }
 }

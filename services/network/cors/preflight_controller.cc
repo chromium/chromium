@@ -13,7 +13,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/not_fatal_until.h"
 #include "base/strings/string_util.h"
 #include "base/unguessable_token.h"
 #include "net/base/isolation_info.h"
@@ -837,7 +836,7 @@ void PreflightController::ClearCorsPreflightCache(
 
 void PreflightController::RemoveLoader(PreflightLoader* loader) {
   auto it = loaders_.find(loader);
-  CHECK(it != loaders_.end(), base::NotFatalUntil::M130);
+  CHECK(it != loaders_.end());
   loaders_.erase(it);
 }
 

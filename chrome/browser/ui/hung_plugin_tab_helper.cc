@@ -10,7 +10,6 @@
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
-#include "base/not_fatal_until.h"
 #include "base/process/process.h"
 #include "build/build_config.h"
 #include "chrome/browser/hang_monitor/hang_crash_dump.h"
@@ -169,7 +168,7 @@ void HungPluginTabHelper::OnReshowTimer(int child_id) {
   // The timer should have been cancelled if the record isn't in our map
   // anymore.
   auto found = hung_plugins_.find(child_id);
-  CHECK(found != hung_plugins_.end(), base::NotFatalUntil::M130);
+  CHECK(found != hung_plugins_.end());
   DCHECK(!found->second->infobar);
   ShowBar(child_id, found->second.get());
 }

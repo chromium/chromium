@@ -10,7 +10,6 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/not_fatal_until.h"
 #include "base/trace_event/trace_event.h"
 #include "base/types/optional_util.h"
 #include "chrome/browser/predictors/predictors_features.h"
@@ -408,7 +407,7 @@ void PreconnectManager::AllPreresolvesForUrlFinished(PreresolveInfo* info) {
   DCHECK(info);
   DCHECK(info->is_done());
   auto it = preresolve_info_.find(info->url);
-  CHECK(it != preresolve_info_.end(), base::NotFatalUntil::M130);
+  CHECK(it != preresolve_info_.end());
   DCHECK(info == it->second.get());
   if (delegate_)
     delegate_->PreconnectFinished(std::move(info->stats));

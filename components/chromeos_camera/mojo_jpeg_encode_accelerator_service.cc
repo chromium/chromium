@@ -19,7 +19,6 @@
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "base/memory/writable_shared_memory_region.h"
-#include "base/not_fatal_until.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/trace_event.h"
 #include "components/chromeos_camera/common/dmabuf.mojom.h"
@@ -371,7 +370,7 @@ void MojoJpegEncodeAcceleratorService::NotifyEncodeStatus(
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   auto iter = encode_cb_map_.find(task_id);
-  CHECK(iter != encode_cb_map_.end(), base::NotFatalUntil::M130);
+  CHECK(iter != encode_cb_map_.end());
   EncodeWithDmaBufCallback encode_cb = std::move(iter->second);
   encode_cb_map_.erase(iter);
   std::move(encode_cb).Run(encoded_picture_size, error);

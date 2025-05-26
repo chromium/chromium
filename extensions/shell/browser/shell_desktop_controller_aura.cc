@@ -11,7 +11,6 @@
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
 #include "base/memory/raw_ptr.h"
-#include "base/not_fatal_until.h"
 #include "base/run_loop.h"
 #include "build/chromeos_buildflags.h"
 #include "components/keep_alive_registry/keep_alive_registry.h"
@@ -234,7 +233,7 @@ void ShellDesktopControllerAura::CloseRootWindowController(
   const auto it = std::ranges::find(
       root_window_controllers_, root_window_controller,
       [](const auto& candidate_pair) { return candidate_pair.second.get(); });
-  CHECK(it != root_window_controllers_.end(), base::NotFatalUntil::M130);
+  CHECK(it != root_window_controllers_.end());
   TearDownRootWindowController(it->second.get());
   root_window_controllers_.erase(it);
 

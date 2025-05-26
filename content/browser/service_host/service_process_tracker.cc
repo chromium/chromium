@@ -40,7 +40,7 @@ ServiceProcessInfo ServiceProcessTracker::AddProcess(
 void ServiceProcessTracker::NotifyTerminated(ServiceProcessId id) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   auto iter = processes_.find(id);
-  CHECK(iter != processes_.end(), base::NotFatalUntil::M130);
+  CHECK(iter != processes_.end());
 
   for (auto& observer : observers_) {
     observer.OnServiceProcessTerminatedNormally(iter->second.Duplicate());
@@ -51,7 +51,7 @@ void ServiceProcessTracker::NotifyTerminated(ServiceProcessId id) {
 void ServiceProcessTracker::NotifyCrashed(ServiceProcessId id) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   auto iter = processes_.find(id);
-  CHECK(iter != processes_.end(), base::NotFatalUntil::M130);
+  CHECK(iter != processes_.end());
   for (auto& observer : observers_) {
     observer.OnServiceProcessCrashed(iter->second.Duplicate());
   }

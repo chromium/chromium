@@ -8,7 +8,6 @@
 #include <array>
 
 #include "base/i18n/time_formatting.h"
-#include "base/not_fatal_until.h"
 #include "base/rand_util.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
 #include "net/base/load_flags.h"
@@ -270,7 +269,7 @@ void ObliviousHttpRequestHandler::OnDoneConstructingTrustTokenHelper(
   }
 
   auto state_iter = client_state_.find(id);
-  CHECK(state_iter != client_state_.end(), base::NotFatalUntil::M130);
+  CHECK(state_iter != client_state_.end());
 
   RequestState* state = state_iter->second.get();
   state->trust_token_helper = status_or_helper.TakeOrCrash();
@@ -298,7 +297,7 @@ void ObliviousHttpRequestHandler::ContinueHandlingRequest(
     std::optional<net::HttpRequestHeaders> headers,
     mojo::RemoteSetElementId id) {
   auto state_iter = client_state_.find(id);
-  CHECK(state_iter != client_state_.end(), base::NotFatalUntil::M130);
+  CHECK(state_iter != client_state_.end());
   RequestState* state = state_iter->second.get();
 
   std::string bhttp_payload = CreateAndSerializeBhttpMessage(
@@ -398,7 +397,7 @@ void ObliviousHttpRequestHandler::RespondWithError(
   mojom::ObliviousHttpClient* client = clients_.Get(id);
   auto state_iter = client_state_.find(id);
   DCHECK(client);
-  CHECK(state_iter != client_state_.end(), base::NotFatalUntil::M130);
+  CHECK(state_iter != client_state_.end());
   RequestState* state = state_iter->second.get();
   state->net_log.EndEvent(net::NetLogEventType::OBLIVIOUS_HTTP_REQUEST, [&] {
     base::Value::Dict params;
@@ -431,7 +430,7 @@ void ObliviousHttpRequestHandler::OnRequestComplete(
     mojo::RemoteSetElementId id,
     std::unique_ptr<std::string> response) {
   auto state_iter = client_state_.find(id);
-  CHECK(state_iter != client_state_.end(), base::NotFatalUntil::M130);
+  CHECK(state_iter != client_state_.end());
 
   RequestState* state = state_iter->second.get();
   if (!response) {
@@ -520,7 +519,7 @@ void ObliviousHttpRequestHandler::NotifyComplete(
   mojom::ObliviousHttpClient* client = clients_.Get(id);
   auto state_iter = client_state_.find(id);
   DCHECK(client);
-  CHECK(state_iter != client_state_.end(), base::NotFatalUntil::M130);
+  CHECK(state_iter != client_state_.end());
   RequestState* state = state_iter->second.get();
   net::NetLogResponseHeaders(
       state->net_log, net::NetLogEventType::OBLIVIOUS_HTTP_RESPONSE_HEADERS,

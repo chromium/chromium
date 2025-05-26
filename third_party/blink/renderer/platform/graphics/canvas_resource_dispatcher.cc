@@ -7,7 +7,6 @@
 #include <utility>
 
 #include "base/debug/stack_trace.h"
-#include "base/not_fatal_until.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/trace_event.h"
 #include "components/viz/common/quads/compositor_frame.h"
@@ -453,7 +452,7 @@ void CanvasResourceDispatcher::ReclaimResources(
   for (const auto& resource : resources) {
     auto it = exported_resources_.find(resource.id);
 
-    CHECK(it != exported_resources_.end(), base::NotFatalUntil::M130);
+    CHECK(it != exported_resources_.end());
     if (it == exported_resources_.end()) {
       continue;
     }

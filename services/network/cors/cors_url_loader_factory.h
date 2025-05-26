@@ -12,7 +12,6 @@
 #include "base/containers/flat_set.h"
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/memory/raw_ptr.h"
-#include "base/not_fatal_until.h"
 #include "base/rand_util.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -175,7 +174,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CorsURLLoaderFactory final
       std::set<std::unique_ptr<T>, base::UniquePtrComparator>& loaders) {
     context_->LoaderDestroyed(process_id_);
     auto it = loaders.find(loader);
-    CHECK(it != loaders.end(), base::NotFatalUntil::M130);
+    CHECK(it != loaders.end());
     loaders.erase(it);
 
     DeleteIfNeeded();

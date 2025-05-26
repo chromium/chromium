@@ -10,7 +10,6 @@
 #include "base/functional/bind.h"
 #include "base/memory/ref_counted.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/not_fatal_until.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/apps/link_capturing/link_capturing_navigation_throttle.h"
 #include "chrome/browser/apps/link_capturing/metrics/intent_handling_metrics.h"
@@ -378,7 +377,7 @@ void HandleDeviceSelection(WebContents* web_contents,
 
   const auto it =
       std::ranges::find(devices, device_guid, &SharingTargetDeviceInfo::guid);
-  CHECK(it != devices.end(), base::NotFatalUntil::M130);
+  CHECK(it != devices.end());
   const SharingTargetDeviceInfo& device = *it;
 
   ClickToCallUiController::GetOrCreateFromWebContents(web_contents)

@@ -14,7 +14,6 @@
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/not_fatal_until.h"
 #include "base/numerics/byte_conversions.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
@@ -973,7 +972,7 @@ void GeneratedCodeCache::EnqueueOperationAndIssueIfNext(
 std::unique_ptr<GeneratedCodeCache::PendingOperation>
 GeneratedCodeCache::DequeueOperation(PendingOperation* op) {
   auto it = active_entries_map_.find(op->key());
-  CHECK(it != active_entries_map_.end(), base::NotFatalUntil::M130);
+  CHECK(it != active_entries_map_.end());
   DCHECK(!it->second.empty());
   std::unique_ptr<PendingOperation> result = std::move(it->second.front());
   // |op| should be at the front.

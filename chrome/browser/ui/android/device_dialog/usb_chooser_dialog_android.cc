@@ -12,7 +12,6 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
 #include "base/functional/bind.h"
-#include "base/not_fatal_until.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/url_constants.h"
@@ -168,7 +167,7 @@ void UsbChooserDialogAndroid::OnRefreshStateChanged(bool refreshing) {
 void UsbChooserDialogAndroid::OnItemSelected(JNIEnv* env,
                                              std::string& item_id) {
   auto it = std::ranges::find(item_id_map_, item_id);
-  CHECK(it != item_id_map_.end(), base::NotFatalUntil::M130);
+  CHECK(it != item_id_map_.end());
   controller_->Select(
       {static_cast<size_t>(std::distance(item_id_map_.begin(), it))});
   std::move(on_close_).Run();

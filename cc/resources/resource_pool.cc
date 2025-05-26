@@ -17,7 +17,6 @@
 #include "base/containers/contains.h"
 #include "base/format_macros.h"
 #include "base/functional/bind.h"
-#include "base/not_fatal_until.h"
 #include "base/notreached.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
@@ -388,7 +387,7 @@ void ResourcePool::OnResourceReleased(size_t unique_id,
   // If the resource isn't busy then we made it available for reuse already
   // somehow, even though it was exported to the ResourceProvider, or we evicted
   // a resource that was still in use by the display compositor.
-  CHECK(busy_it != busy_resources_.end(), base::NotFatalUntil::M130);
+  CHECK(busy_it != busy_resources_.end());
 
   PoolResource* resource = busy_it->get();
   resource->set_state(PoolResource::kUnused);

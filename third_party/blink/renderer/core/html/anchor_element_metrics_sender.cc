@@ -6,7 +6,6 @@
 
 #include "base/functional/bind.h"
 #include "base/location.h"
-#include "base/not_fatal_until.h"
 #include "base/rand_util.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/input/web_pointer_properties.h"
@@ -379,7 +378,7 @@ void AnchorElementMetricsSender::EnqueueLeftViewport(
     const HTMLAnchorElementBase& element) {
   const auto anchor_id = AnchorElementId(element);
   auto it = anchor_elements_timing_stats_.find(anchor_id);
-  CHECK(it != anchor_elements_timing_stats_.end(), base::NotFatalUntil::M130);
+  CHECK(it != anchor_elements_timing_stats_.end());
   AnchorElementTimingStats& timing_stats = it->value;
   timing_stats.entered_viewport_should_be_enqueued_ = true;
   std::optional<base::TimeTicks>& entered_viewport =
@@ -400,7 +399,7 @@ void AnchorElementMetricsSender::EnqueueEnteredViewport(
     const HTMLAnchorElementBase& element) {
   const auto anchor_id = AnchorElementId(element);
   auto it = anchor_elements_timing_stats_.find(anchor_id);
-  CHECK(it != anchor_elements_timing_stats_.end(), base::NotFatalUntil::M130);
+  CHECK(it != anchor_elements_timing_stats_.end());
   AnchorElementTimingStats& timing_stats = it->value;
   timing_stats.viewport_entry_time_ = clock_->NowTicks();
   if (!timing_stats.entered_viewport_should_be_enqueued_) {

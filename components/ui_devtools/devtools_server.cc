@@ -15,7 +15,6 @@
 #include "base/memory/ptr_util.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
-#include "base/not_fatal_until.h"
 #include "base/path_service.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
@@ -350,7 +349,7 @@ void UiDevToolsServer::OnWebSocketRequest(int connection_id,
 void UiDevToolsServer::OnWebSocketMessage(int connection_id, std::string data) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_);
   auto it = connections_.find(connection_id);
-  CHECK(it != connections_.end(), base::NotFatalUntil::M130);
+  CHECK(it != connections_.end());
   UiDevToolsClient* client = it->second;
   client->Dispatch(data);
 }
