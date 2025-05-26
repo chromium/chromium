@@ -10,6 +10,8 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/test/mock_callback.h"
+#include "base/test/scoped_feature_list.h"
+#include "chrome/browser/win/installer_downloader/installer_downloader_feature.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/infobars/content/content_infobar_manager.h"
 #include "components/infobars/core/infobar.h"
@@ -30,6 +32,9 @@ class InstallerDownloaderInfoBarDelegateTest
  protected:
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
+    feature_list_.InitAndEnableFeatureWithParameters(
+        kInstallerDownloader,
+        {{kLearnMoreUrl.name, "https://example.com/learn_more"}});
     infobars::ContentInfoBarManager::CreateForWebContents(web_contents());
   }
   std::unique_ptr<InstallerDownloaderInfoBarDelegate> CreateDelegate() {
@@ -38,6 +43,7 @@ class InstallerDownloaderInfoBarDelegateTest
   }
   base::MockCallback<base::OnceClosure> mock_accept_cb_;
   base::MockCallback<base::OnceClosure> mock_cancel_cb_;
+  base::test::ScopedFeatureList feature_list_;
 };
 
 TEST_F(InstallerDownloaderInfoBarDelegateTest, CheckInfoBarProperties) {
@@ -55,8 +61,19 @@ TEST_F(InstallerDownloaderInfoBarDelegateTest, CheckInfoBarProperties) {
 }
 
 TEST_F(InstallerDownloaderInfoBarDelegateTest, LinkClicked) {
-  auto delegate = CreateDelegate();
-  EXPECT_TRUE(delegate->LinkClicked(WindowOpenDisposition::CURRENT_TAB));
+  infobars::ContentInfoBarManager* infobar_manager =
+      infobars::ContentInfoBarManager::FromWebContents(web_contents());
+  ASSERT_TRUE(infobar_manager);
+
+  std::unique_ptr<InstallerDownloaderInfoBarDelegate> delegate =
+      CreateDelegate();
+  auto test_infobar = std::make_unique<infobars::InfoBar>(std::move(delegate));
+  infobars::InfoBar* added_infobar_ptr =
+      infobar_manager->AddInfoBar(std::move(test_infobar));
+  ASSERT_TRUE(added_infobar_ptr);
+
+  EXPECT_FALSE(added_infobar_ptr->delegate()->LinkClicked(
+      WindowOpenDisposition::CURRENT_TAB));
 }
 
 TEST_F(InstallerDownloaderInfoBarDelegateTest, AddInfoBarToManager) {
