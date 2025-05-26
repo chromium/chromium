@@ -6577,6 +6577,11 @@
     "expiry_milestone": 96
   },
   {
+    "name": "mvc-update-view-when-model-changed",
+    "owners": [ "acondor@chromium.org" ],
+    "expiry_milestone": 139
+  },
+  {
     "name": "nav-bar-color-animation",
     "owners": [ "clhager@google.com", "wenyufu@chromium.org","twellington@chromium.org" ],
     "expiry_milestone": 150

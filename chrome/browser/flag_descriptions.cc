@@ -1173,6 +1173,14 @@ const char kMediaSessionEnterPictureInPictureDescription[] =
     "Enables the 'enterpictureinpicture' MediaSessionAction to allow websites "
     "to register an action handler for entering picture-in-picture.";
 
+#if BUILDFLAG(IS_ANDROID)
+const char kMvcUpdateViewWhenModelChangedName[] =
+    "MVC Update View when Model Changed";
+const char kMvcUpdateViewWhenModelChangedDescription[] =
+    "Performance optimization to the MVC framework where a View is only "
+    "updated when the corresponding Model changes.";
+#endif  // !BUILDFLAG(IS_ANDROID)
+
 const char kCodeBasedRBDName[] = "Code-based RBD";
 const char kCodeBasedRBDDescription[] = "Enables the Code-based RBD.";
 
