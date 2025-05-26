@@ -1,0 +1,159 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "base/strings/stringprintf.h"
+#include "base/test/metrics/histogram_tester.h"
+#include "base/test/test_future.h"
+#include "chrome/browser/browser_process.h"
+#include "chrome/browser/enterprise/client_certificates/certificate_provisioning_service_factory.h"
+#include "chrome/browser/enterprise/test/management_context_mixin.h"
+#include "chrome/browser/policy/chrome_browser_policy_connector.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser.h"
+#include "chrome/test/base/chrome_test_utils.h"
+#include "chrome/test/base/mixin_based_in_process_browser_test.h"
+#include "chrome/test/base/platform_browser_test.h"
+#include "components/enterprise/browser/controller/chrome_browser_cloud_management_controller.h"
+#include "components/enterprise/client_certificates/core/certificate_provisioning_service.h"
+#include "components/enterprise/client_certificates/core/client_identity.h"
+#include "components/enterprise/client_certificates/core/features.h"
+#include "components/policy/core/common/policy_switches.h"
+#include "components/policy/policy_constants.h"
+#include "components/policy/test_support/embedded_policy_test_server.h"
+#include "content/public/test/browser_test.h"
+#include "crypto/scoped_fake_unexportable_key_provider.h"
+#include "testing/gmock/include/gmock/gmock.h"
+#include "testing/gtest/include/gtest/gtest.h"
+
+namespace client_certificates {
+
+using ManagementContextMixin = enterprise::test::ManagementContextMixin;
+using ManagementContext = enterprise::test::ManagementContext;
+
+namespace {
+
+constexpr char kProfileIssuerCommonName[] = "Profile Root CA";
+constexpr char kBrowserIssuerCommonName[] = "Browser Root CA";
+
+}  // namespace
+
+class ClientCertificateBrowserTest : public MixinBasedInProcessBrowserTest,
+                                     public testing::WithParamInterface<bool> {
+ protected:
+  ClientCertificateBrowserTest() {
+    management_mixin_ = ManagementContextMixin::Create(
+        &mixin_host_, this,
+        {
+            .is_cloud_user_managed = is_profile_scenario(),
+            .is_cloud_machine_managed = !is_profile_scenario(),
+            .affiliated = false,
+        });
+  }
+
+  void SetUpInProcessBrowserTestFixture() override {
+    test_dm_server_ = std::make_unique<policy::EmbeddedPolicyTestServer>();
+    ASSERT_TRUE(test_dm_server_->Start());
+
+    policy::ChromeBrowserPolicyConnector::EnableCommandLineSupportForTesting();
+    base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+    command_line->AppendSwitchASCII(policy::switches::kDeviceManagementUrl,
+                                    test_dm_server_->GetServiceURL().spec());
+
+    MixinBasedInProcessBrowserTest::SetUpInProcessBrowserTestFixture();
+  }
+
+  void SetUserPolicy(bool enable_provisioning) {
+    base::flat_map<std::string, std::optional<base::Value>> policy_values;
+    policy_values.insert(
+        {policy::key::kProvisionManagedClientCertificateForUser,
+         base::Value(enable_provisioning ? 1 : 0)});
+
+    management_mixin()->SetCloudUserPolicies(std::move(policy_values));
+  }
+
+  void SetBrowserPolicy(bool enable_provisioning) {
+    base::flat_map<std::string, std::optional<base::Value>> policy_values;
+    policy_values.insert(
+        {policy::key::kProvisionManagedClientCertificateForBrowser,
+         base::Value(enable_provisioning ? 1 : 0)});
+
+    management_mixin()->SetCloudMachinePolicies(std::move(policy_values));
+  }
+
+  void EnablePolicyAndWaitForIdentity() {
+    CertificateProvisioningService* provisioning_service;
+    if (is_profile_scenario()) {
+      SetUserPolicy(true);
+      provisioning_service =
+          CertificateProvisioningServiceFactory::GetForProfile(
+              browser()->profile());
+    } else {
+      SetBrowserPolicy(true);
+      provisioning_service = g_browser_process->browser_policy_connector()
+                                 ->chrome_browser_cloud_management_controller()
+                                 ->GetCertificateProvisioningService();
+    }
+
+    ASSERT_TRUE(provisioning_service);
+
+    base::test::TestFuture<std::optional<ClientIdentity>> test_future;
+    provisioning_service->GetManagedIdentity(test_future.GetCallback());
+
+    VerifyIdentity(test_future.Get());
+  }
+
+  void VerifyIdentity(const std::optional<ClientIdentity>& managed_identity) {
+    ASSERT_TRUE(managed_identity);
+    ASSERT_TRUE(managed_identity->is_valid());
+
+    // Verify that the right cert was created based on the root CA's CN.
+    auto& cert = managed_identity->certificate;
+    EXPECT_EQ(cert->issuer().common_name, is_profile_scenario()
+                                              ? kProfileIssuerCommonName
+                                              : kBrowserIssuerCommonName);
+  }
+
+  ManagementContextMixin* management_mixin() { return management_mixin_.get(); }
+
+  base::HistogramTester& histogram_tester() { return histogram_tester_; }
+
+  bool is_profile_scenario() const { return GetParam(); }
+
+ private:
+  base::HistogramTester histogram_tester_;
+  std::unique_ptr<policy::EmbeddedPolicyTestServer> test_dm_server_;
+  crypto::ScopedFakeUnexportableKeyProvider scoped_key_provider_;
+  std::unique_ptr<ManagementContextMixin> management_mixin_;
+};
+
+IN_PROC_BROWSER_TEST_P(ClientCertificateBrowserTest, CreateNewIdentity) {
+  EnablePolicyAndWaitForIdentity();
+  histogram_tester().ExpectUniqueSample(
+      base::StringPrintf(
+          "Enterprise.ClientCertificate.%s.Provisioning.CertificateCreation."
+          "Outcome",
+          is_profile_scenario() ? "Profile" : "Browser"),
+      true, 1);
+}
+
+IN_PROC_BROWSER_TEST_P(ClientCertificateBrowserTest, PRE_LoadExistingIdentity) {
+  EnablePolicyAndWaitForIdentity();
+}
+
+IN_PROC_BROWSER_TEST_P(ClientCertificateBrowserTest, LoadExistingIdentity) {
+  EnablePolicyAndWaitForIdentity();
+  histogram_tester().ExpectUniqueSample(
+      base::StringPrintf(
+          "Enterprise.ClientCertificate.%s.Provisioning.ExistingIdentity."
+          "Outcome",
+          is_profile_scenario() ? "Profile" : "Browser"),
+      true, 1);
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    /* no prefix */,
+    ClientCertificateBrowserTest,
+    testing::Bool());
+
+}  // namespace client_certificates

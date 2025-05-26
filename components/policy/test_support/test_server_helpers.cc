@@ -109,6 +109,17 @@ bool GetGoogleLoginFromRequest(const net::test_server::HttpRequest& request,
                                    dm_protocol::kOAuthTokenHeaderPrefix, out);
 }
 
+bool GetProfileIdFromRequest(const net::test_server::HttpRequest& request,
+                             std::string* out) {
+  std::string profile_id =
+      KeyValueFromUrl(request.GetURL(), dm_protocol::kParamProfileID);
+  if (profile_id.empty()) {
+    return false;
+  }
+  *out = profile_id;
+  return true;
+}
+
 std::unique_ptr<HttpResponse> CreateHttpResponse(
     net::HttpStatusCode code,
     const em::DeviceManagementResponse& proto_content) {
