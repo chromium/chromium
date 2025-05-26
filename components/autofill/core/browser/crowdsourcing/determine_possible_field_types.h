@@ -20,6 +20,7 @@ namespace autofill {
 
 class AutofillProfile;
 class CreditCard;
+class EntityInstance;
 class FormStructure;
 class LoyaltyCard;
 
@@ -32,14 +33,16 @@ class LoyaltyCard;
     const FormStructure& form_structure,
     const std::string& app_locale);
 
-// Uses the existing personal data in `profiles`, `credit_cards` and
-// `loyalty_cards` to determine possible field types for the `form`.  This is
-// potentially expensive -- on the order of 50ms even for a small set of
+// Determines the `FieldType`s for which profiles etc. define non-empty
+// values. The result is stored in FormStructure::possible_types().
+//
+// This is potentially expensive -- on the order of 50ms even for a small set of
 // `stored_data`. Hence, it should not run on the UI thread -- to avoid
 // locking up the UI -- nor on the IO thread -- to avoid blocking IPC calls.
 void DeterminePossibleFieldTypesForUpload(
     base::span<const AutofillProfile> profiles,
     base::span<const CreditCard> credit_cards,
+    base::span<const EntityInstance> entities,
     base::span<const LoyaltyCard> loyalty_cards,
     const std::set<FieldGlobalId>& fields_that_match_state,
     std::u16string_view last_unlocked_credit_card_cvc,
@@ -51,6 +54,7 @@ void DeterminePossibleFieldTypesForUpload(
 FieldTypeSet DetermineAvailableFieldTypes(
     base::span<const AutofillProfile> profiles,
     base::span<const CreditCard> credit_cards,
+    base::span<const EntityInstance> entities,
     base::span<const LoyaltyCard> loyalty_cards,
     std::u16string_view last_unlocked_credit_card_cvc,
     const std::string& app_locale);
