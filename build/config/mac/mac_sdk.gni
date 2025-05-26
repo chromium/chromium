@@ -8,6 +8,7 @@ import("//build/config/mac/mac_sdk_overrides.gni")
 import("//build/toolchain/rbe.gni")
 import("//build/toolchain/siso.gni")
 import("//build/toolchain/toolchain.gni")
+import("//build_overrides/build.gni")
 
 # Allow Android builds on macOS
 assert(current_os == "mac" || current_toolchain == default_toolchain ||

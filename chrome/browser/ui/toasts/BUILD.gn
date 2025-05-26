@@ -4,6 +4,7 @@
 
 assert(is_win || is_mac || is_linux || is_chromeos)
 
+import("//build/config/chrome_build.gni")
 import("//build/config/ui.gni")
 
 source_set("toasts") {
