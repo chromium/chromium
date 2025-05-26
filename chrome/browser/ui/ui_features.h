@@ -258,6 +258,7 @@ extern const base::FeatureParam<bool> kPageActionsMigrationOfferNotification;
 extern const base::FeatureParam<bool> kPageActionsMigrationFileSystemAccess;
 extern const base::FeatureParam<bool> kPageActionsMigrationPwaInstall;
 extern const base::FeatureParam<bool> kPageActionsMigrationPriceInsights;
+extern const base::FeatureParam<bool> kPageActionsMigrationManagePasswords;
 
 // Determines whether the "save password" page action displays different UI if
 // the user has said to never save passwords for that site.

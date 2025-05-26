@@ -94,6 +94,14 @@ const PageActionProperties& PageActionPropertiesProvider::GetProperties(
                   .element_identifier = kPriceInsightsChipElementId,
               },
           },
+          {
+              kActionManagePasswords,
+              {
+                  .histogram_name = "ManagePasswords",
+                  .is_ephemeral = true,
+                  .type = PageActionIconType::kManagePasswords,
+              },
+          },
       });
 
   CHECK(kPageActionProperties.contains(action_id));
