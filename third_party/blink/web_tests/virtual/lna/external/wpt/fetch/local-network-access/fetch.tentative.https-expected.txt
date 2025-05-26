@@ -1,0 +1,11 @@
+This is a testharness.js-based test.
+[FAIL] LNA Public to private with permission
+  resolveUrl is not defined
+[FAIL] LNA Public to private with permission denied
+  resolveUrl is not defined
+[FAIL] LNA Public to private http mixed content bypass
+  resolveUrl is not defined
+[FAIL] LNA Public to public http mixed content bypass failure
+  resolveUrl is not defined
+Harness: the test ran to completion.
+

@@ -1,3 +1,17 @@
 This is a testharness.js-based test.
+[FAIL] public to public: success.
+  makeServiceWorkerTest is not defined
+[FAIL] treat-as-public to local: failed preflight.
+  makeServiceWorkerTest is not defined
+[FAIL] treat-as-public to local: success.
+  makeServiceWorkerTest is not defined
+[FAIL] treat-as-public to local (same-origin): no preflight required.
+  makeServiceWorkerTest is not defined
+[FAIL] treat-as-public to private: failed preflight.
+  makeServiceWorkerTest is not defined
+[FAIL] treat-as-public to private: success.
+  makeServiceWorkerTest is not defined
+[FAIL] treat-as-public to public: success.
+  makeServiceWorkerTest is not defined
 Harness: the test ran to completion.
 

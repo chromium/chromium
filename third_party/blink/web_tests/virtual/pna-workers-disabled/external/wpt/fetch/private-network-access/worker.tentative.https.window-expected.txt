@@ -1,0 +1,9 @@
+This is a testharness.js-based test.
+[FAIL] treat-as-public to local: success.
+  workerScriptTest is not defined
+[FAIL] treat-as-public to private: success.
+  workerScriptTest is not defined
+[FAIL] public to public: success.
+  workerScriptTest is not defined
+Harness: the test ran to completion.
+

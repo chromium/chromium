@@ -1,0 +1,35 @@
+This is a testharness.js-based test.
+[FAIL] local to local: no preflight required.
+  xhrTest is not defined
+[FAIL] local to private: no preflight required.
+  xhrTest is not defined
+[FAIL] local to public: no preflight required.
+  xhrTest is not defined
+[FAIL] private to local: failure.
+  xhrTest is not defined
+[FAIL] private to private: no preflight required.
+  xhrTest is not defined
+[FAIL] private to public: no preflight required.
+  xhrTest is not defined
+[FAIL] public to local: failure.
+  xhrTest is not defined
+[FAIL] public to private: failure.
+  xhrTest is not defined
+[FAIL] public to public: no preflight required.
+  xhrTest is not defined
+[FAIL] treat-as-public-address to local: failure.
+  xhrTest is not defined
+[FAIL] treat-as-public-address to private: failure.
+  xhrTest is not defined
+[FAIL] treat-as-public-address to public: no preflight required.
+  xhrTest is not defined
+[FAIL] local https to local: success.
+  xhrTest is not defined
+[FAIL] private https to local: failure.
+  xhrTest is not defined
+[FAIL] public https to local: failure.
+  xhrTest is not defined
+[FAIL] public https to private: failure.
+  xhrTest is not defined
+Harness: the test ran to completion.
+

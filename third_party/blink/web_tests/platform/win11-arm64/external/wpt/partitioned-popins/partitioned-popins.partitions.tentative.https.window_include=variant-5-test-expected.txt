@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+Harness Error. harness_status.status = 1 , harness_status.message = Timeout while running cleanup for test named "Verify Partitioned Popins have access to the proper cookie/storage partitions - Cross-site frame opens alternative-host popin.".
+Harness: the test ran to completion.
+

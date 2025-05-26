@@ -1,0 +1,9 @@
+This is a testharness.js-based test.
+[FAIL] private to local: success.
+  promise_test: Unhandled rejection with value: object "ReferenceError: fetchTest is not defined"
+[FAIL] public to local: success.
+  promise_test: Unhandled rejection with value: object "ReferenceError: fetchTest is not defined"
+[FAIL] public to private: success.
+  promise_test: Unhandled rejection with value: object "ReferenceError: fetchTest is not defined"
+Harness: the test ran to completion.
+

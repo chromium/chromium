@@ -1,9 +1,4 @@
 This is a testharness.js-based test.
-[FAIL] private to local: failed preflight.
-  assert_equals: expected "timeout" but got "success"
-[FAIL] private to local: missing CORS headers.
-  assert_equals: expected "timeout" but got "success"
-[FAIL] private to local: missing PNA header.
-  assert_equals: expected "timeout" but got "success"
+Harness Error. harness_status.status = 1 , harness_status.message = Uncaught ReferenceError: promise_test_parallel is not defined
 Harness: the test ran to completion.
 

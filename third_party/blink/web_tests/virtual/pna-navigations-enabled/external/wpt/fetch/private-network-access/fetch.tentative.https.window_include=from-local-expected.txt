@@ -1,0 +1,10 @@
+This is a testharness.js-based test.
+Harness Error. harness_status.status = 1 , harness_status.message = Uncaught ReferenceError: Server is not defined
+[FAIL] local to local: no preflight required.
+  fetchTest is not defined
+[FAIL] local to private: no preflight required.
+  fetchTest is not defined
+[FAIL] local to public: no preflight required.
+  fetchTest is not defined
+Harness: the test ran to completion.
+

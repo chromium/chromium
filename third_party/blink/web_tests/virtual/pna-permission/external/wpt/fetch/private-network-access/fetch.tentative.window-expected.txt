@@ -1,0 +1,33 @@
+This is a testharness.js-based test.
+[FAIL] local to local: no preflight required.
+  fetchTest is not defined
+[FAIL] local to private: no preflight required.
+  fetchTest is not defined
+[FAIL] local to public: no preflight required.
+  fetchTest is not defined
+[FAIL] private to local: failure.
+  fetchTest is not defined
+[FAIL] private to private: no preflight required.
+  fetchTest is not defined
+[FAIL] private to public: no preflight required.
+  fetchTest is not defined
+[FAIL] public to local: failure.
+  fetchTest is not defined
+[FAIL] public to private: failure.
+  fetchTest is not defined
+[FAIL] public to public: no preflight required.
+  fetchTest is not defined
+[FAIL] treat-as-public-address to local: failure.
+  fetchTest is not defined
+[FAIL] treat-as-public-address to private: failure.
+  fetchTest is not defined
+[FAIL] treat-as-public-address to public: no preflight required.
+  fetchTest is not defined
+[FAIL] private https to local: failure.
+  fetchTest is not defined
+[FAIL] public https to local: failure.
+  fetchTest is not defined
+[FAIL] public https to private: failure.
+  fetchTest is not defined
+Harness: the test ran to completion.
+

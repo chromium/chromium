@@ -1,3 +1,4 @@
 This is a testharness.js-based test.
+Harness Error. harness_status.status = 1 , harness_status.message = Uncaught ReferenceError: promise_test_parallel is not defined
 Harness: the test ran to completion.
 

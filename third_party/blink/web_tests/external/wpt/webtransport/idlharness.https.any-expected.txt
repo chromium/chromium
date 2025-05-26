@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 55 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 58 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] WebTransportDatagramsWritable interface: existence and properties of interface object
   assert_own_property: self does not have own property "WebTransportDatagramsWritable" expected property "WebTransportDatagramsWritable" missing
 [FAIL] WebTransportDatagramsWritable interface object length
@@ -18,6 +18,8 @@ Found 55 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_own_property: self does not have own property "WebTransportDatagramsWritable" expected property "WebTransportDatagramsWritable" missing
 [FAIL] WebTransportDatagramDuplexStream interface: operation createWritable(optional WebTransportSendOptions)
   assert_own_property: interface prototype object missing non-static operation expected property "createWritable" missing
+[FAIL] WebTransport interface: operation exportKeyingMaterial(BufferSource, optional BufferSource)
+  assert_own_property: interface prototype object missing non-static operation expected property "exportKeyingMaterial" missing
 [FAIL] WebTransport interface: attribute reliability
   assert_true: The prototype object must have a property "reliability" expected true got false
 [FAIL] WebTransport interface: attribute congestionControl
@@ -34,6 +36,10 @@ Found 55 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_own_property: interface prototype object missing non-static operation expected property "createSendGroup" missing
 [FAIL] WebTransport interface: attribute supportsReliableOnly
   assert_own_property: The interface object must have a property "supportsReliableOnly" expected property "supportsReliableOnly" missing
+[FAIL] WebTransport interface: webTransport must inherit property "exportKeyingMaterial(BufferSource, optional BufferSource)" with the proper type
+  assert_inherits: property "exportKeyingMaterial" not found in prototype chain
+[FAIL] WebTransport interface: calling exportKeyingMaterial(BufferSource, optional BufferSource) on webTransport with too few arguments must throw TypeError
+  assert_inherits: property "exportKeyingMaterial" not found in prototype chain
 [FAIL] WebTransport interface: webTransport must inherit property "reliability" with the proper type
   assert_inherits: property "reliability" not found in prototype chain
 [FAIL] WebTransport interface: webTransport must inherit property "congestionControl" with the proper type

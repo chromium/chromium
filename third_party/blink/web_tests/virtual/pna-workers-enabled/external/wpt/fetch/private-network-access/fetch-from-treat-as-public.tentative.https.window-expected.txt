@@ -1,0 +1,15 @@
+This is a testharness.js-based test.
+[FAIL] treat-as-public-address to local: failed preflight.
+  fetchTest is not defined
+[FAIL] treat-as-public-address to local: success.
+  fetchTest is not defined
+[FAIL] treat-as-public-address to local (same-origin): no preflight required.
+  fetchTest is not defined
+[FAIL] treat-as-public-address to private: failed preflight.
+  fetchTest is not defined
+[FAIL] treat-as-public-address to private: success.
+  fetchTest is not defined
+[FAIL] treat-as-public-address to public: no preflight required.
+  fetchTest is not defined
+Harness: the test ran to completion.
+

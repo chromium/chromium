@@ -1,0 +1,9 @@
+This is a testharness.js-based test.
+[FAIL] update public to local: success.
+  Server is not defined
+[FAIL] update public to private: success.
+  Server is not defined
+[FAIL] update public to public: success.
+  Server is not defined
+Harness: the test ran to completion.
+

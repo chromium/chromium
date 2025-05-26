@@ -1,0 +1,67 @@
+This is a testharness.js-based test.
+[FAIL] local to private to public: success.
+  fetchTest is not defined
+[FAIL] local to private to local: success.
+  fetchTest is not defined
+[FAIL] private to private to local: failed preflight.
+  fetchTest is not defined
+[FAIL] private to private to local: success.
+  fetchTest is not defined
+[FAIL] private to private to local: no-cors success.
+  fetchTest is not defined
+[FAIL] private to local to private: failed preflight.
+  fetchTest is not defined
+[FAIL] private to local to private: success.
+  fetchTest is not defined
+[FAIL] private to local to private: no-cors success.
+  fetchTest is not defined
+[FAIL] public to private to local: failed first preflight.
+  fetchTest is not defined
+[FAIL] public to private to local: failed second preflight.
+  fetchTest is not defined
+[FAIL] public to private to local: success.
+  fetchTest is not defined
+[FAIL] public to private to local: no-cors success.
+  fetchTest is not defined
+[FAIL] treat-as-public to local to private: failed first preflight.
+  fetchTest is not defined
+[FAIL] treat-as-public to local to private: failed second preflight.
+  fetchTest is not defined
+[FAIL] treat-as-public to local to private: success.
+  fetchTest is not defined
+[FAIL] treat-as-public to local to private: no-cors failed first preflight.
+  fetchTest is not defined
+[FAIL] treat-as-public to local to private: no-cors failed second preflight.
+  fetchTest is not defined
+[FAIL] treat-as-public to local to private: no-cors success.
+  fetchTest is not defined
+[FAIL] treat-as-public to local (same-origin) to private: failed second preflight.
+  fetchTest is not defined
+[FAIL] treat-as-public to local (same-origin) to private: success.
+  fetchTest is not defined
+[FAIL] treat-as-public to local (same-origin) to private: no-cors failed second preflight.
+  fetchTest is not defined
+[FAIL] treat-as-public to local (same-origin) to private: no-cors success.
+  fetchTest is not defined
+[FAIL] treat-as-public to private to local: failed first preflight.
+  fetchTest is not defined
+[FAIL] treat-as-public to private to local: failed second preflight.
+  fetchTest is not defined
+[FAIL] treat-as-public to private to local: success.
+  fetchTest is not defined
+[FAIL] treat-as-public to private to local: no-cors failed first preflight.
+  fetchTest is not defined
+[FAIL] treat-as-public to private to local: no-cors failed second preflight.
+  fetchTest is not defined
+[FAIL] treat-as-public to private to local: no-cors success.
+  fetchTest is not defined
+[FAIL] treat-as-public to private to local (same-origin): failed first preflight.
+  fetchTest is not defined
+[FAIL] treat-as-public to private to local (same-origin): success.
+  fetchTest is not defined
+[FAIL] treat-as-public to private to local (same-origin): no-cors failed first preflight.
+  fetchTest is not defined
+[FAIL] treat-as-public to private to local (same-origin): no-cors success.
+  fetchTest is not defined
+Harness: the test ran to completion.
+

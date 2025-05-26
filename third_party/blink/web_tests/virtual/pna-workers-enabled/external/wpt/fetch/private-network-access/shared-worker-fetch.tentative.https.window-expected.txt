@@ -1,3 +1,33 @@
 This is a testharness.js-based test.
+[FAIL] local to local: success.
+  sharedWorkerFetchTest is not defined
+[FAIL] private to local: failure.
+  sharedWorkerFetchTest is not defined
+[FAIL] private to local: success.
+  sharedWorkerFetchTest is not defined
+[FAIL] private to private: success.
+  sharedWorkerFetchTest is not defined
+[FAIL] public to local: failed preflight.
+  sharedWorkerFetchTest is not defined
+[FAIL] public to local: success.
+  sharedWorkerFetchTest is not defined
+[FAIL] public to private: failed preflight.
+  sharedWorkerFetchTest is not defined
+[FAIL] public to private: success.
+  sharedWorkerFetchTest is not defined
+[FAIL] public to public: success.
+  sharedWorkerFetchTest is not defined
+[FAIL] treat-as-public to local: failed preflight.
+  sharedWorkerFetchTest is not defined
+[FAIL] treat-as-public to local: success.
+  sharedWorkerFetchTest is not defined
+[FAIL] treat-as-public to local (same-origin): no preflight required.
+  sharedWorkerFetchTest is not defined
+[FAIL] treat-as-public to private: failed preflight.
+  sharedWorkerFetchTest is not defined
+[FAIL] treat-as-public to private: success.
+  sharedWorkerFetchTest is not defined
+[FAIL] treat-as-public to public: success.
+  sharedWorkerFetchTest is not defined
 Harness: the test ran to completion.
 
