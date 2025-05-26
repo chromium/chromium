@@ -5626,6 +5626,11 @@
     "expiry_milestone": 140
   },
   {
+    "name": "infinite-tabs-freezing",
+    "owners": [ "fdoray@chromium.org", "catan-team@chromium.org" ],
+    "expiry_milestone": 142
+  },
+  {
     "name": "info-card-acknowledgement-tracking",
     "owners": [ "//chrome/android/feed/OWNERS", "jianli@chromium.org" ],
     "expiry_milestone": 130

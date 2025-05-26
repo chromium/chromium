@@ -3240,6 +3240,9 @@ extern const char kFreezingOnEnergySaverTestingDescription[];
 extern const char kImprovedPasswordChangeServiceName[];
 extern const char kImprovedPasswordChangeServiceDescription[];
 
+extern const char kInfiniteTabsFreezingName[];
+extern const char kInfiniteTabsFreezingDescription[];
+
 extern const char kKeyboardLockPromptName[];
 extern const char kKeyboardLockPromptDescription[];
 

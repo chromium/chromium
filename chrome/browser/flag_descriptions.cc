@@ -5521,6 +5521,13 @@ const char kImprovedPasswordChangeServiceDescription[] =
     "Experimental feature, which offers automatic password change to the user "
     "when they sign in with a credential known to be leaked.";
 
+const char kInfiniteTabsFreezingName[] = "Infinite Tabs Freezing";
+const char kInfiniteTabsFreezingDescription[] =
+    "Freezes eligible tabs which are not in the 5 most recently used ones, to "
+    "preserve Chrome speed as new tabs are created. Tabs providing background "
+    "functionality (e.g. playing audio, handling a video call) are not "
+    "eligible for freezing.";
+
 const char kKeyboardLockPromptName[] = "Keyboard Lock prompt";
 const char kKeyboardLockPromptDescription[] =
     "Requesting to use the keyboard lock API causes a permission prompt to be "

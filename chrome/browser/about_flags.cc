@@ -11225,6 +11225,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kFreezingOnEnergySaverTestingDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(
          performance_manager::features::kFreezingOnBatterySaverForTesting)},
+
+    {"infinite-tabs-freezing", flag_descriptions::kInfiniteTabsFreezingName,
+     flag_descriptions::kInfiniteTabsFreezingDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(performance_manager::features::kInfiniteTabsFreezing)},
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_WIN)

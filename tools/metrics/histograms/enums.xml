@@ -11013,6 +11013,7 @@ from previous Chrome versions.
       label="EnableAutomaticSharedImageManagement:disabled"/>
   <int value="-1096694296" label="UpcomingFollowFeatures:enabled"/>
   <int value="-1096595907" label="disable-new-virtual-keyboard-behavior"/>
+  <int value="-1096531645" label="InfiniteTabsFreezing:enabled"/>
   <int value="-1095947169" label="ModalPermissionDialogView:disabled"/>
   <int value="-1093225454" label="FedCmIdPregistration:disabled"/>
   <int value="-1093224986" label="ArcUnthrottleOnActiveAudioV2:disabled"/>
@@ -14896,6 +14897,7 @@ from previous Chrome versions.
   <int value="373617942" label="PulseaudioLoopbackForCast:disabled"/>
   <int value="373805498" label="OmniboxExpandedStateShape:enabled"/>
   <int value="375032683" label="CellularAllowPerNetworkRoaming:enabled"/>
+  <int value="375323300" label="InfiniteTabsFreezing:disabled"/>
   <int value="375485858" label="EnableZeroStateMixedTypesRanker:disabled"/>
   <int value="375785554" label="UserActivationV2:disabled"/>
   <int value="375934458" label="PortalsCrossOrigin:enabled"/>
