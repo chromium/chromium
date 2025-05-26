@@ -193,6 +193,14 @@ class DisruptiveNotificationPermissionsManager
   // A revocation entry as stored in content settings
   // (ContentSettingsType::REVOKED_DISRUPTIVE_NOTIFICATION_PERMISSIONS).
   struct RevocationEntry {
+    RevocationEntry(RevocationState revocation_state,
+                    double site_engagement,
+                    int daily_notification_count,
+                    base::Time timestamp = base::Time::Now());
+    RevocationEntry(const RevocationEntry& other);
+    RevocationEntry& operator=(const RevocationEntry& other);
+    ~RevocationEntry();
+
     bool operator==(const RevocationEntry& other) const;
 
     RevocationState revocation_state;
@@ -204,6 +212,9 @@ class DisruptiveNotificationPermissionsManager
 
     bool has_reported_proposal = false;
     bool has_reported_false_positive = false;
+
+    int page_visit_count = 0;
+    int notification_click_count = 0;
   };
 
   // Helper class to manage content settings for

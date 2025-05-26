@@ -402,20 +402,24 @@ class RevokedPermissionsServiceTest
     DisruptiveNotificationPermissionsManager::ContentSettingHelper(*hcsm())
         .PersistRevocationEntry(
             GURL(url),
-            DisruptiveNotificationPermissionsManager::RevocationEntry{
-                .revocation_state = DisruptiveNotificationPermissionsManager::
+            DisruptiveNotificationPermissionsManager::RevocationEntry(
+                /*revocation_state=*/DisruptiveNotificationPermissionsManager::
                     RevocationState::kRevoked,
-                .timestamp = clock()->Now()});
+                /*site_engagement=*/0.0,
+                /*daily_notification_count=*/3,
+                /*timestamp=*/clock()->Now()));
   }
 
   void SetupProposedRevokedDisruptiveNotificationSite(std::string url) {
     DisruptiveNotificationPermissionsManager::ContentSettingHelper(*hcsm())
         .PersistRevocationEntry(
             GURL(url),
-            DisruptiveNotificationPermissionsManager::RevocationEntry{
-                .revocation_state = DisruptiveNotificationPermissionsManager::
+            DisruptiveNotificationPermissionsManager::RevocationEntry(
+                /*revocation_state=*/DisruptiveNotificationPermissionsManager::
                     RevocationState::kProposed,
-                .timestamp = clock()->Now()});
+                /*site_engagement=*/0.0,
+                /*daily_notification_count=*/3,
+                /*timestamp=*/clock()->Now()));
   }
 
   void UndoRegrantPermissionsForUrl(
