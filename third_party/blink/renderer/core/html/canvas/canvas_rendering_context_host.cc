@@ -235,6 +235,9 @@ CanvasRenderingContextHost::CreateCanvasResourceProviderWebGL() {
           : !!dispatcher;
 
   if (!provider && use_software_shared_image_provider) {
+    CHECK(format == viz::SharedImageFormat::N32Format() ||
+          format == viz::SinglePlaneFormat::kRGBA_F16);
+
     provider =
         CanvasResourceProvider::CreateSharedImageProviderForSoftwareCompositor(
             Size(), format, alpha_type, color_space, kShouldInitialize,
