@@ -210,9 +210,19 @@ StyleShape::Segment ShapeCommandToShapeSegment(
       bool sweep = arc.Sweep() == CSSValueID::kCw;
       return command.GetType() == SVGPathSegType::kPathSegArcAbs
                  ? StyleShape::Segment(StyleShape::ArcToSegment{
-                       {{target_point}, angle, radius, large, sweep}})
+                       {{target_point},
+                        angle,
+                        radius,
+                        large,
+                        sweep,
+                        arc.HasDirectionAgnosticRadius()}})
                  : StyleShape::Segment(StyleShape::ArcBySegment{
-                       {{target_point}, angle, radius, large, sweep}});
+                       {{target_point},
+                        angle,
+                        radius,
+                        large,
+                        sweep,
+                        arc.HasDirectionAgnosticRadius()}});
     }
     case SVGPathSegType::kPathSegClosePath:
       return StyleShape::CloseSegment{};
@@ -344,9 +354,14 @@ struct ShapeSegmentToShapeCommandVisitor {
         *MakeGarbageCollected<CSSValuePair>(
             CSSPrimitiveValue::CreateFromLength(segment.radius.Width(), zoom),
             CSSPrimitiveValue::CreateFromLength(segment.radius.Height(), zoom),
-            CSSValuePair::IdenticalValuesPolicy::kDropIdenticalValues),
+            RuntimeEnabledFeatures::
+                        CSSShapeFunctionDirectionAgnosticArcEnabled() &&
+                    !segment.has_direction_agnostic_radius
+                ? CSSValuePair::IdenticalValuesPolicy::kKeepIdenticalValues
+                : CSSValuePair::IdenticalValuesPolicy::kDropIdenticalValues),
         segment.large ? CSSValueID::kLarge : CSSValueID::kSmall,
-        segment.sweep ? CSSValueID::kCw : CSSValueID::kCcw);
+        segment.sweep ? CSSValueID::kCw : CSSValueID::kCcw,
+        segment.has_direction_agnostic_radius);
   }
 
   float zoom;

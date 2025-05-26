@@ -1511,6 +1511,10 @@
       depends_on: ["CSSShapeFunction", "CompositeClipPathAnimation"]
     },
     {
+      name: "CSSShapeFunctionDirectionAgnosticArc",
+      status: "test",
+    },
+    {
       name: "CSSShapeFunctionOffsetPath",
       status: "stable",
     },

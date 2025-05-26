@@ -59,12 +59,14 @@ class CSSShapeArcCommand : public CSSShapeCommand {
                      const CSSPrimitiveValue& angle,
                      const CSSValuePair& radius,
                      CSSValueID size,
-                     CSSValueID sweep)
+                     CSSValueID sweep,
+                     bool has_direction_agnostic_radius)
       : CSSShapeCommand(type, end_point),
         angle_(angle),
         radius_(radius),
         size_(size),
-        sweep_(sweep) {
+        sweep_(sweep),
+        has_direction_agnostic_radius_(has_direction_agnostic_radius) {
     CHECK(type == Type::kPathSegArcAbs || type == Type::kPathSegArcRel);
     CHECK(sweep == CSSValueID::kCw || sweep == CSSValueID::kCcw);
     CHECK(size == CSSValueID::kLarge || size == CSSValueID::kSmall);
@@ -73,10 +75,15 @@ class CSSShapeArcCommand : public CSSShapeCommand {
   const CSSValuePair& Radius() const { return *radius_; }
   CSSValueID Size() const { return size_; }
   CSSValueID Sweep() const { return sweep_; }
+  bool HasDirectionAgnosticRadius() const {
+    return has_direction_agnostic_radius_;
+  }
   bool operator==(const CSSShapeArcCommand& other) const {
     return CSSShapeCommand::operator==(other) && sweep_ == other.sweep_ &&
            size_ == other.size_ && radius_ == other.radius_ &&
-           angle_ == other.angle_;
+           angle_ == other.angle_ &&
+           has_direction_agnostic_radius_ ==
+               other.has_direction_agnostic_radius_;
   }
   void Trace(Visitor* visitor) const override {
     visitor->Trace(angle_);
@@ -89,6 +96,7 @@ class CSSShapeArcCommand : public CSSShapeCommand {
   Member<const CSSValuePair> radius_;
   CSSValueID size_;
   CSSValueID sweep_;
+  bool has_direction_agnostic_radius_;
 };
 
 using CSSShapeControlPoint = std::pair<CSSValueID, Member<const CSSValuePair>>;

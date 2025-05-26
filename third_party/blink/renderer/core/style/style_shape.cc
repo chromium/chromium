@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/style/style_shape.h"
 
+#include <numbers>
 #include <variant>
 
 #include "base/memory/stack_allocated.h"
@@ -117,6 +118,12 @@ class SegmentVisitor {
                           FloatValueForLength(segment.y, box_size.height())}});
   }
 
+  gfx::SizeF BoxSizeForDirectionAgnosticSize() const {
+    const float square_dimension =
+        std::hypot(box_size.width(), box_size.height()) / std::numbers::sqrt2;
+    return gfx::SizeF(square_dimension, square_dimension);
+  }
+
   template <SVGPathSegType T>
   void Emit(const StyleShape::ArcSegment<T>& segment, SVGPathSegType command) {
     PathSegmentData arc_data{
@@ -124,7 +131,11 @@ class SegmentVisitor {
         .target_point = PointForLengthPoint(segment.target_point, box_size),
         .arc_sweep = segment.sweep,
         .arc_large = segment.large};
-    gfx::SizeF radius = SizeForLengthSize(segment.radius, box_size);
+
+    gfx::SizeF radius = SizeForLengthSize(
+        segment.radius, segment.has_direction_agnostic_radius
+                            ? BoxSizeForDirectionAgnosticSize()
+                            : box_size);
     arc_data.SetArcRadiusX(radius.width());
     arc_data.SetArcRadiusY(radius.height());
     arc_data.SetArcAngle(segment.angle);
