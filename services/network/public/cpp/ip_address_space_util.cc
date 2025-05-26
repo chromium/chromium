@@ -73,11 +73,20 @@ std::optional<IPAddressSpace> ParseIPAddressSpace(std::string_view str) {
     return IPAddressSpace::kPublic;
   }
 
+  // Keep 'private' as an alias for 'local' until usages of 'private' are
+  // removed from Web Platform Test code base.
+  //
+  // TODO(crbug.com/418737577): remove private alias after Web Platform Test
+  // code base moves to using "local"
   if (str == "private") {
     return IPAddressSpace::kPrivate;
   }
 
   if (str == "local") {
+    return IPAddressSpace::kPrivate;
+  }
+
+  if (str == "loopback") {
     return IPAddressSpace::kLocal;
   }
 

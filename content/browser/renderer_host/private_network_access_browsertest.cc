@@ -405,9 +405,9 @@ class FakeAddressSpaceServer {
       network::mojom::IPAddressSpace space) {
     switch (space) {
       case network::mojom::IPAddressSpace::kLocal:
-        return "local";
+        return "loopback";
       case network::mojom::IPAddressSpace::kPrivate:
-        return "private";
+        return "local";
       case network::mojom::IPAddressSpace::kPublic:
         return "public";
       default:
