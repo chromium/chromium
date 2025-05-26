@@ -144,15 +144,9 @@ class RenderViewBrowserTest : public ContentBrowserTest {
 };
 
 // https://crbug.com/788788
-#if (BUILDFLAG(IS_ANDROID) && defined(ADDRESS_SANITIZER)) || \
-    (BUILDFLAG(IS_LINUX) && defined(MEMORY_SANITIZER))
-#define MAYBE_ConfirmCacheInformationPlumbed \
-  DISABLED_ConfirmCacheInformationPlumbed
-#else
-#define MAYBE_ConfirmCacheInformationPlumbed ConfirmCacheInformationPlumbed
-#endif  // BUILDFLAG(IS_ANDROID) && defined(ADDRESS_SANITIZER)
+// TODO(crbug.com/408394636): Tests are flaky.
 IN_PROC_BROWSER_TEST_F(RenderViewBrowserTest,
-                       MAYBE_ConfirmCacheInformationPlumbed) {
+                       DISABLED_ConfirmCacheInformationPlumbed) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   // Load URL with "nocache" set, to create stale cache.
