@@ -1236,10 +1236,10 @@ void BoxBorderPainter::ComputeBorderProperties() {
 bool BoxBorderPainter::ClipOutlineAsStrokeIfNeeded(
     const ContouredRect& contoured_rect,
     SkClipOp clip_op) const {
-  // We only use stroke for positive outlines with concave corners.
+  // We only use stroke for positive outlines with non-round curvatures.
   // Negative or convex outlines don't require joins and can use the ordinary
   // ContouredRect path.
-  if (!is_uniform_width_ || !outer_.IsRounded() || outer_.IsConvex() ||
+  if (!is_uniform_width_ || !outer_.IsRounded() || outer_.HasRoundCurvature() ||
       outer_outsets_.top <= 0) {
     return false;
   }
@@ -1250,16 +1250,19 @@ bool BoxBorderPainter::ClipOutlineAsStrokeIfNeeded(
   // of the normal PathBuilder ContouredRect path, so that appropriate round
   // joins/caps are rendered.
   const FloatRoundedRect& origin_rect = contoured_rect.GetOriginRect();
-  const Path origin_path = Path::MakeContouredRect(
-      ContouredRect(origin_rect, contoured_rect.GetCornerCurvature()));
+  const Path origin_path =
+      PathBuilder()
+          .AddContouredRect(
+              ContouredRect(origin_rect, contoured_rect.GetCornerCurvature()))
+          .Close()
+          .Finalize();
   StrokeData stroke_data;
   stroke_data.SetThickness(
       contoured_rect.Rect().InsetsFrom(origin_rect.Rect()).width());
   stroke_data.SetLineJoin(LineJoin::kRoundJoin);
-  stroke_data.SetLineCap(LineCap::kRoundCap);
-  SkPath clip_path = origin_path.StrokePath(stroke_data, AffineTransform());
-  clip_path.addPath(origin_path.GetSkPath());
-  context_.ClipPath(clip_path, kAntiAliased, clip_op);
+  SkPath stroke_path = origin_path.StrokePath(stroke_data, AffineTransform());
+  stroke_path.addPath(origin_path.GetSkPath(), SkPath::kAppend_AddPathMode);
+  context_.ClipPath(stroke_path, kAntiAliased, clip_op);
   return true;
 }
 
