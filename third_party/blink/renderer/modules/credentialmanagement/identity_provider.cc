@@ -164,7 +164,13 @@ void OnRegisterIdP(ScriptPromiseResolver<IDLBoolean>* resolver,
           "User declined the permission to register the identity provider."));
       return;
     }
-  };
+    case RegisterIdpStatus::kErrorInvalidConfig: {
+      resolver->Reject(MakeGarbageCollected<DOMException>(
+          DOMExceptionCode::kNotAllowedError,
+          "Invalid identity provider registration config."));
+      return;
+    }
+  }
 }
 
 ScriptPromise<IDLBoolean> IdentityProvider::registerIdentityProvider(

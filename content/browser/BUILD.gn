@@ -2407,6 +2407,8 @@ source_set("browser") {
     "webid/fedcm_accounts_fetcher.h",
     "webid/fedcm_config_fetcher.cc",
     "webid/fedcm_config_fetcher.h",
+    "webid/fedcm_idp_registration_handler.cc",
+    "webid/fedcm_idp_registration_handler.h",
     "webid/fedcm_mappers.cc",
     "webid/fedcm_mappers.h",
     "webid/fedcm_metrics.cc",

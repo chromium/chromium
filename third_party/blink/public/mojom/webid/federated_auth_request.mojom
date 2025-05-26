@@ -4,10 +4,10 @@
 
 module blink.mojom;
 
-import "third_party/blink/public/mojom/credentialmanagement/credential_manager.mojom";
-import "url/mojom/url.mojom";
-import "url/mojom/origin.mojom";
 import "mojo/public/mojom/base/time.mojom";
+import "third_party/blink/public/mojom/credentialmanagement/credential_manager.mojom";
+import "url/mojom/origin.mojom";
+import "url/mojom/url.mojom";
 
 // Implementation of the proposed FedCM API.
 //
@@ -39,26 +39,26 @@ enum RequestUserInfoStatus {
 enum DisconnectStatus {
   kSuccess,
   kErrorTooManyRequests,
-  kError
+  kError,
 };
 
 enum IdpSigninStatus {
   kSignedIn,
-  kSignedOut
+  kSignedOut,
 };
 
 enum RpContext {
   kSignIn,
   kSignUp,
   kUse,
-  kContinue
+  kContinue,
 };
 
 // Don't change the meaning or the order of these values because they are
 // being recorded in metrics and in sync with the counterpart in enums.xml.
 enum RpMode {
   kActive,
-  kPassive
+  kPassive,
 };
 
 // The result of a call to IdentityProvider.register().
@@ -67,7 +67,8 @@ enum RegisterIdpStatus {
   kErrorFeatureDisabled,
   kErrorCrossOriginConfig,
   kErrorNoTransientActivation,
-  kErrorDeclined
+  kErrorDeclined,
+  kErrorInvalidConfig,
 };
 
 // The details of a federated identity provider.
@@ -136,7 +137,8 @@ struct IdentityCredentialDisconnectOptions {
   string account_hint;
 };
 
-// The list of user information that can be returned to an identity provider during a UserInfo API call.
+// The list of user information that can be returned to an identity provider
+// during a UserInfo API call.
 struct IdentityUserInfo {
   string email;
   string given_name;
@@ -196,17 +198,17 @@ interface FederatedAuthRequest {
   // - The error which occurred during the retrieval of a token.
   // - Whether the account was automatically selected.
   RequestToken(array<IdentityProviderGetParameters> idp_get_params,
-      CredentialMediationRequirement requirement) =>
-      (RequestTokenStatus status,
-      url.mojom.Url? selected_identity_provider_config_url,
-      string? token,
-      TokenError? error,
-      bool is_auto_selected);
+               CredentialMediationRequirement requirement)
+      => (RequestTokenStatus status,
+          url.mojom.Url? selected_identity_provider_config_url,
+          string? token,
+          TokenError? error,
+          bool is_auto_selected);
 
   // Requests user info to be generated, given an IDP config.
   // Returns an IdentityUserInfo for each of the user's accounts.
-  RequestUserInfo(IdentityProviderConfig provider) =>
-      (RequestUserInfoStatus status, array<IdentityUserInfo>? user_info);
+  RequestUserInfo(IdentityProviderConfig provider)
+      => (RequestUserInfoStatus status, array<IdentityUserInfo>? user_info);
 
   // Cancels the pending token request, if any.
   CancelTokenRequest();
@@ -220,7 +222,8 @@ interface FederatedAuthRequest {
 
   // Marks the user as logged in/out to the IDP on this origin. 'origin' must
   // not be opaque.
-  SetIdpSigninStatus(url.mojom.Origin origin, IdpSigninStatus status,
+  SetIdpSigninStatus(url.mojom.Origin origin,
+                     IdpSigninStatus status,
                      LoginStatusOptions? options);
 
   // Registers the url as an IdP's configURL of the user's preference.
@@ -233,7 +236,8 @@ interface FederatedAuthRequest {
   CloseModalDialogView();
 
   // Require user mediation with navigator.credentials.preventSilentAccess() as
-  // defined in https://w3c.github.io/webappsec-credential-management/#user-mediation
+  // defined in
+  // https://w3c.github.io/webappsec-credential-management/#user-mediation
   // TODO(https://crbug.com/1441075): There's `PreventSilentAccess` in
   // credential_manager.mojom but that's specific to PasswordManager and it's
   // hard to reuse it as-is. We should unify the implementation for different
@@ -242,6 +246,6 @@ interface FederatedAuthRequest {
 
   // Disconnects the sharing permission for the specified |account_id| from
   // |provider| for the RP identified by |client_id|.
-  Disconnect(IdentityCredentialDisconnectOptions options) =>
-      (DisconnectStatus status);
+  Disconnect(IdentityCredentialDisconnectOptions options)
+      => (DisconnectStatus status);
 };

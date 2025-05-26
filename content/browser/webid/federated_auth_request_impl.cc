@@ -677,6 +677,29 @@ void FederatedAuthRequestImpl::RegisterIdP(const GURL& idp,
     return;
   }
 
+  if (!network_manager_) {
+    network_manager_ = CreateNetworkManager();
+  }
+
+  fedcm_idp_registration_handler_ =
+      std::make_unique<FedCmIdpRegistrationHandler>(
+          render_frame_host(), network_manager_.get(), idp);
+  fedcm_idp_registration_handler_->FetchConfig(
+      base::BindOnce(&FederatedAuthRequestImpl::OnIdpRegistrationConfigFetched,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback), idp));
+}
+
+void FederatedAuthRequestImpl::OnIdpRegistrationConfigFetched(
+    RegisterIdPCallback callback,
+    const GURL& idp,
+    std::vector<FedCmConfigFetcher::FetchResult> fetch_results) {
+  CHECK_EQ(fetch_results.size(), 1u);
+  fedcm_idp_registration_handler_.reset();
+  if (fetch_results[0].error) {
+    std::move(callback).Run(RegisterIdpStatus::kErrorInvalidConfig);
+    return;
+  }
+
   if (!request_dialog_controller_) {
     request_dialog_controller_ = CreateDialogController();
   }

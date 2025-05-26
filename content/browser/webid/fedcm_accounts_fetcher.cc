@@ -215,13 +215,9 @@ void FedCmAccountsFetcher::OnAllConfigAndWellKnownFetched(
       }
     }
 
-    // The login url should be valid unless IdP login status API is
-    // disabled.
-    if (idp_info->metadata.idp_login_url.is_valid()) {
-      federated_auth_request_impl_->SetIdpLoginInfo(
-          idp_info->metadata.idp_login_url, idp_info->provider->login_hint,
-          idp_info->provider->domain_hint);
-    }
+    federated_auth_request_impl_->SetIdpLoginInfo(
+        idp_info->metadata.idp_login_url, idp_info->provider->login_hint,
+        idp_info->provider->domain_hint);
 
     // Make sure that we don't fetch accounts if the IDP sign-in bit is
     // reset to false during the API call. e.g. by the login/logout HEADER.

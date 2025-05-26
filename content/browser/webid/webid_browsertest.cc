@@ -937,6 +937,38 @@ IN_PROC_BROWSER_TEST_F(WebIdIdPRegistryBrowserTest, MultipleRegisteredIdps) {
   EXPECT_EQ(std::string(kToken), EvalJs(shell(), get_script));
 }
 
+IN_PROC_BROWSER_TEST_F(WebIdIdPRegistryBrowserTest,
+                       RegistrationFailsWithInvalidLoginUrl) {
+  GURL configURL = GURL(BaseIdpUrl());
+  auto details = BuildValidConfigDetails();
+  // Set this as empty so that the login URL is invalid.
+  details.login_url = "";
+  idp_server()->SetConfigResponseDetails(details);
+
+  auto mock = std::make_unique<
+      ::testing::NiceMock<MockIdentityRequestDialogController>>();
+  test_browser_client_->SetIdentityRequestDialogController(std::move(mock));
+
+  // We navigate to the IdP's configURL so that we can run
+  // the script below with the IdP's origin as the top level
+  // first party context.
+  EXPECT_TRUE(NavigateToURL(shell(), configURL));
+
+  std::string script = R"(
+        (async () => {
+          await IdentityProvider.register(')" +
+                       configURL.spec() + R"(');
+          // The permission was accepted if the promise resolves.
+          return true;
+        }) ()
+    )";
+
+  EXPECT_EQ("NotAllowedError: Invalid identity provider registration config.",
+            ExtractJsError(EvalJs(shell(), script)));
+
+  EXPECT_TRUE(sharing_context()->GetRegisteredIdPs().empty());
+}
+
 // Verify that IDP sign-in headers work.
 IN_PROC_BROWSER_TEST_F(WebIdIdpSigninStatusBrowserTest, IdpSigninToplevel) {
   GURL url = https_server().GetURL(kRpHostName, "/header/signin");
