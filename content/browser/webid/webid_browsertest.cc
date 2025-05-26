@@ -1945,9 +1945,6 @@ class WebIdDelegationBrowserTest : public WebIdBrowserTest {
     std::vector<base::test::FeatureRef> features;
     features.push_back(features::kFedCm);
     features.push_back(features::kFedCmDelegation);
-    // Needs to reconcile well with the IdP Registration and Multi-IdP API
-    features.push_back(features::kFedCmIdPRegistration);
-    features.push_back(features::kFedCmMultipleIdentityProviders);
     scoped_feature_list_.InitWithFeatures(features, {});
     command_line->AppendSwitch(switches::kIgnoreCertificateErrors);
   }

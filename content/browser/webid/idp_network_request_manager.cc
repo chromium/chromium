@@ -650,7 +650,7 @@ void OnConfigParsed(const GURL& provider,
   idp_metadata.idp_login_url =
       ExtractEndpoint(provider, response, kLoginUrlKey);
 
-  if (IsFedCmIdPRegistrationEnabled()) {
+  if (IsFedCmDelegationEnabled()) {
     const base::Value::List* formats = response.FindList(kFormatsKey);
     if (formats) {
       for (const auto& format : *formats) {
@@ -1212,7 +1212,7 @@ void IdpNetworkRequestManager::SendTokenRequest(
 
   if (idp_blindness) {
     // IdP blindness can only be used when the feature is enabled.
-    DCHECK(IsFedCmIdPRegistrationEnabled());
+    DCHECK(IsFedCmDelegationEnabled());
     // We have to set this to a Origin: null because the underlying loader
     // will  not let us send a request without Origin header if the request
     // method is POST.
