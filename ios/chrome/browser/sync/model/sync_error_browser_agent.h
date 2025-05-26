@@ -81,8 +81,6 @@ class SyncErrorBrowserAgent
   // Returns the state of the Browser
   ProfileIOS* GetProfile();
 
-  raw_ptr<Browser> browser_ = nullptr;
-
   // To observe unrealized WebStates.
   base::ScopedMultiSourceObservation<web::WebState, web::WebStateObserver>
       web_state_observations_{this};

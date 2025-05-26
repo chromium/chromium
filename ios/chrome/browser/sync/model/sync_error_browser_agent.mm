@@ -85,8 +85,7 @@ bool UserActionRequiredToFixPasswordSyncError(ProfileIOS* profile) {
 }  // namespace
 
 SyncErrorBrowserAgent::SyncErrorBrowserAgent(Browser* browser)
-    : BrowserUserData(browser), browser_(browser) {
-  DCHECK(browser_);
+    : BrowserUserData(browser) {
   browser->AddObserver(this);
   browser->GetWebStateList()->AddObserver(this);
   profile_state_observer_ = [[SyncErrorBrowserAgentProfileStateObserver alloc]
@@ -95,9 +94,7 @@ SyncErrorBrowserAgent::SyncErrorBrowserAgent(Browser* browser)
   [profile_state_observer_ start];
 }
 
-SyncErrorBrowserAgent::~SyncErrorBrowserAgent() {
-  DCHECK(!browser_);
-}
+SyncErrorBrowserAgent::~SyncErrorBrowserAgent() = default;
 
 void SyncErrorBrowserAgent::SetUIProviders(
     id<SigninPresenter> signin_presenter_provider,
@@ -130,7 +127,6 @@ void SyncErrorBrowserAgent::BrowserDestroyed(Browser* browser) {
   profile_state_observer_ = nil;
   browser->GetWebStateList()->RemoveObserver(this);
   browser->RemoveObserver(this);
-  browser_ = nullptr;
 }
 
 #pragma mark - WebStateListObserver
