@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 #include "base/strings/strcat.h"
+#include "build/build_config.h"
+#include "build/buildflag.h"
 #include "chrome/browser/extensions/api/user_scripts/user_scripts_apitest.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/webui_url_constants.h"
@@ -106,9 +108,18 @@ class UserScriptsUITest : public InteractiveBrowserTestT<UserScriptsAPITest> {
   }
 };
 
+// TODO(crbug.com/416377497): Re-enable the test.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_ToggleControls_UserScriptsAPIUsage \
+  DISABLED_ToggleControls_UserScriptsAPIUsage
+#else
+#define MAYBE_ToggleControls_UserScriptsAPIUsage \
+  ToggleControls_UserScriptsAPIUsage
+#endif
 // Tests the toggling the UI toggle (dependent on feature) controls whether the
 // user has allowed userScripts API usage.
-IN_PROC_BROWSER_TEST_P(UserScriptsUITest, ToggleControls_UserScriptsAPIUsage) {
+IN_PROC_BROWSER_TEST_P(UserScriptsUITest,
+                       MAYBE_ToggleControls_UserScriptsAPIUsage) {
   // Load extension that has API permission to use the userScripts API, but not
   // the per-extension toggle for userScripts enabled.
   ExtensionTestMessageListener extension_background_started_listener =
