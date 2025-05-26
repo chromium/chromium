@@ -20,7 +20,7 @@
 #include "content/browser/renderer_host/begin_frame_source_ios.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/context_factory.h"
-#include "ui/compositor/compositor_switches.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/gfx/geometry/dip_util.h"
 #include "ui/gfx/geometry/size_conversions.h"
 
@@ -250,7 +250,7 @@ void BrowserCompositorIOS::TransitionToState(State new_state) {
     compositor_ = std::make_unique<ui::Compositor>(
         context_factory->AllocateFrameSinkId(), context_factory,
         base::SingleThreadTaskRunner::GetCurrentDefault(),
-        ui::IsPixelCanvasRecordingEnabled(),
+        features::IsPixelCanvasRecordingEnabled(),
         /*use_external_begin_frame_control=*/true);
     begin_frame_source_ =
         std::make_unique<BeginFrameSourceIOS>(compositor_.get());
