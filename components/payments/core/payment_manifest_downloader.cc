@@ -227,20 +227,18 @@ void PaymentManifestDownloader::OnURLLoaderRedirect(
 
 void PaymentManifestDownloader::OnURLLoaderComplete(
     network::SimpleURLLoader* url_loader,
-    std::unique_ptr<std::string> response_body) {
+    std::optional<std::string> response_body) {
   scoped_refptr<net::HttpResponseHeaders> headers;
   if (url_loader->ResponseInfo()) {
     headers = url_loader->ResponseInfo()->headers;
   }
 
-  std::string response_body_str;
-  if (response_body.get()) {
-    response_body_str = std::move(*response_body);
+  if (!response_body.has_value()) {
+    response_body.emplace();
   }
 
   OnURLLoaderCompleteInternal(url_loader, url_loader->GetFinalURL(),
-                              response_body_str, headers,
-                              url_loader->NetError());
+                              *response_body, headers, url_loader->NetError());
 }
 
 void PaymentManifestDownloader::OnURLLoaderCompleteInternal(
