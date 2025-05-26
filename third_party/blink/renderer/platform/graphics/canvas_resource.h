@@ -86,9 +86,11 @@ class PLATFORM_EXPORT CanvasResource
   virtual bool IsValid() const = 0;
 
   // The bounds for this resource.
-  gfx::Size Size() const { return size_; }
+  gfx::Size Size() const { return GetClientSharedImage()->size(); }
 
-  viz::SharedImageFormat GetFormat() const { return format_; }
+  viz::SharedImageFormat GetFormat() const {
+    return GetClientSharedImage()->format();
+  }
 
   const gfx::ColorSpace& GetColorSpace() const { return color_space_; }
 
@@ -96,7 +98,8 @@ class PLATFORM_EXPORT CanvasResource
 
   // The ClientSharedImage containing information on the SharedImage
   // attached to the resource.
-  virtual scoped_refptr<gpu::ClientSharedImage> GetClientSharedImage() = 0;
+  virtual const scoped_refptr<gpu::ClientSharedImage>& GetClientSharedImage()
+      const = 0;
 
   // A CanvasResource is not thread-safe and does not allow concurrent usage
   // from multiple threads. But it maybe used from any thread. It remains bound
@@ -146,8 +149,6 @@ class PLATFORM_EXPORT CanvasResource
 
  protected:
   CanvasResource(base::WeakPtr<CanvasResourceProvider>,
-                 gfx::Size size,
-                 viz::SharedImageFormat format,
                  SkAlphaType alpha_type,
                  const gfx::ColorSpace& color_space);
 
@@ -188,8 +189,6 @@ class PLATFORM_EXPORT CanvasResource
   }
 
   base::WeakPtr<CanvasResourceProvider> provider_;
-  gfx::Size size_;
-  viz::SharedImageFormat format_;
   SkAlphaType alpha_type_;
   gfx::ColorSpace color_space_;
   bool is_origin_clean_ = true;
@@ -240,8 +239,8 @@ class PLATFORM_EXPORT CanvasResourceSharedImage final : public CanvasResource {
   void WillDraw();
   bool IsLost() const { return owning_thread_data().is_lost; }
 
-  scoped_refptr<gpu::ClientSharedImage> GetClientSharedImage() override;
-  const scoped_refptr<gpu::ClientSharedImage>& GetClientSharedImage() const;
+  const scoped_refptr<gpu::ClientSharedImage>& GetClientSharedImage()
+      const override;
   void OnMemoryDump(base::trace_event::ProcessMemoryDump* pmd,
                     const std::string& parent_path) const;
 
@@ -351,7 +350,8 @@ class PLATFORM_EXPORT ExternalCanvasResource final : public CanvasResource {
   bool IsValid() const override;
   bool CreatesAcceleratedTransferableResources() const override { return true; }
   void NotifyResourceLost() override { resource_is_lost_ = true; }
-  scoped_refptr<gpu::ClientSharedImage> GetClientSharedImage() final {
+  const scoped_refptr<gpu::ClientSharedImage>& GetClientSharedImage()
+      const final {
     return client_si_;
   }
 
@@ -414,7 +414,8 @@ class PLATFORM_EXPORT CanvasResourceSwapChain final : public CanvasResource {
     return back_buffer_shared_image_;
   }
   void PresentSwapChain();
-  scoped_refptr<gpu::ClientSharedImage> GetClientSharedImage() override;
+  const scoped_refptr<gpu::ClientSharedImage>& GetClientSharedImage()
+      const override;
 
  private:
   bool UsesAcceleratedRaster() const final { return true; }

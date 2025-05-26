@@ -58,16 +58,12 @@
 namespace blink {
 
 CanvasResource::CanvasResource(base::WeakPtr<CanvasResourceProvider> provider,
-                               gfx::Size size,
-                               viz::SharedImageFormat format,
                                SkAlphaType alpha_type,
                                const gfx::ColorSpace& color_space)
     : owning_thread_ref_(base::PlatformThread::CurrentRef()),
       owning_thread_task_runner_(
           ThreadScheduler::Current()->CleanupTaskRunner()),
       provider_(std::move(provider)),
-      size_(size),
-      format_(format),
       alpha_type_(alpha_type),
       color_space_(color_space) {}
 
@@ -202,8 +198,10 @@ bool CanvasResource::PrepareTransferableResource(
 }
 
 SkImageInfo CanvasResource::CreateSkImageInfo() const {
-  return SkImageInfo::Make(SkISize::Make(size_.width(), size_.height()),
-                           viz::ToClosestSkColorType(format_), alpha_type_,
+  auto size = GetClientSharedImage()->size();
+  auto format = GetClientSharedImage()->format();
+  return SkImageInfo::Make(SkISize::Make(size.width(), size.height()),
+                           viz::ToClosestSkColorType(format), alpha_type_,
                            color_space_.ToSkColorSpace());
 }
 
@@ -219,8 +217,6 @@ CanvasResourceSharedImage::CanvasResourceSharedImage(
     base::WeakPtr<WebGraphicsSharedImageInterfaceProvider>
         shared_image_interface_provider)
     : CanvasResource(std::move(provider),
-                     size,
-                     format,
                      alpha_type,
                      color_space),
       is_accelerated_(false),
@@ -273,8 +269,6 @@ CanvasResourceSharedImage::CanvasResourceSharedImage(
     bool is_accelerated,
     gpu::SharedImageUsageSet shared_image_usage_flags)
     : CanvasResource(std::move(provider),
-                     size,
-                     format,
                      alpha_type,
                      color_space),
       context_provider_wrapper_(std::move(context_provider_wrapper)),
@@ -588,12 +582,6 @@ scoped_refptr<StaticBitmapImage> CanvasResourceSharedImage::Bitmap() {
   return image;
 }
 
-scoped_refptr<gpu::ClientSharedImage>
-CanvasResourceSharedImage::GetClientSharedImage() {
-  CHECK(owning_thread_data_.client_shared_image);
-  return owning_thread_data_.client_shared_image;
-}
-
 const scoped_refptr<gpu::ClientSharedImage>&
 CanvasResourceSharedImage::GetClientSharedImage() const {
   CHECK(owning_thread_data_.client_shared_image);
@@ -834,8 +822,6 @@ ExternalCanvasResource::ExternalCanvasResource(
     base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper,
     base::WeakPtr<CanvasResourceProvider> provider)
     : CanvasResource(std::move(provider),
-                     client_si->size(),
-                     client_si->format(),
                      kPremul_SkAlphaType,
                      client_si->color_space()),
       client_si_(std::move(client_si)),
@@ -927,8 +913,8 @@ scoped_refptr<StaticBitmapImage> CanvasResourceSwapChain::Bitmap() {
       std::move(release_callback));
 }
 
-scoped_refptr<gpu::ClientSharedImage>
-CanvasResourceSwapChain::GetClientSharedImage() {
+const scoped_refptr<gpu::ClientSharedImage>&
+CanvasResourceSwapChain::GetClientSharedImage() const {
   return front_buffer_shared_image_;
 }
 
@@ -997,8 +983,6 @@ CanvasResourceSwapChain::CanvasResourceSwapChain(
     base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper,
     base::WeakPtr<CanvasResourceProvider> provider)
     : CanvasResource(std::move(provider),
-                     size,
-                     format,
                      alpha_type,
                      color_space),
       context_provider_wrapper_(std::move(context_provider_wrapper)),
