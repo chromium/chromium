@@ -154,6 +154,10 @@ PasskeyBrowserBinder::UnboundKey::~UnboundKey() {
   }
 }
 
+void PasskeyBrowserBinder::UnboundKey::MarkKeyBoundAndReset() {
+  browser_bound_key_ = nullptr;
+}
+
 std::optional<PasskeyBrowserBinder::UnboundKey>
 PasskeyBrowserBinder::CreateUnboundKey(
     const BrowserBoundKeyStore::CredentialInfoList& allowed_algorithms) {
@@ -178,12 +182,17 @@ void PasskeyBrowserBinder::BindKey(UnboundKey key,
                                    const std::vector<uint8_t>& credential_id,
                                    const std::string& relying_party) {
   if (web_data_service_) {
-    // TODO(crbug.com/384954763): Delete the browser bound key from the key
-    // store if the result was false (not successful).
     WebDataServiceBase::Handle handle = web_data_service_->SetBrowserBoundKey(
         credential_id, relying_party, std::move(key.browser_bound_key_id_),
         /*consumer=*/this);
-    set_browser_bound_key_handlers_[handle] = base::DoNothing();
+    set_browser_bound_key_handlers_[handle] = base::BindOnce(
+        [](UnboundKey key, bool success) {
+          if (success) {
+            key.MarkKeyBoundAndReset();
+            // Do not call methods on key past this point.
+          }
+        },
+        std::move(key));
   }
 }
 

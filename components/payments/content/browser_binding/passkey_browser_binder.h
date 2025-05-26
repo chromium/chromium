@@ -102,6 +102,14 @@ class PasskeyBrowserBinder : public WebDataServiceConsumer {
 
    private:
     friend PasskeyBrowserBinder;
+
+    // Marks the BrowserBoundKey as bound. After calling, destruction of this
+    // UnboundKey will not delete the browser bound key.
+    //
+    // Do not call other methods on UnboundKey after calling
+    // MarkKeyBoundAndReset().
+    void MarkKeyBoundAndReset();
+
     std::vector<uint8_t> browser_bound_key_id_;
     std::unique_ptr<BrowserBoundKey> browser_bound_key_;
     scoped_refptr<BrowserBoundKeyStore> key_store_;

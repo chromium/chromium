@@ -135,12 +135,49 @@ TEST_F(PasskeyBrowserBinderTest, BindsBrowserBoundKey) {
           device::PublicKeyCredentialParams::CredentialInfo{.algorithm =
                                                                 kCoseEs256}});
 
+  WebDataServiceBase::Handle web_data_service_handle = 1234;
+  WebDataServiceConsumer* web_data_service_consumer_ = nullptr;
   EXPECT_CALL(*mock_web_data_service_,
               SetBrowserBoundKey(fake_credential_id_, fake_relying_party_,
-                                 fake_bbk_id_, /*consumer=*/NotNull()));
+                                 fake_bbk_id_, /*consumer=*/_))
+      .WillOnce(DoAll(SaveArg<3>(&web_data_service_consumer_),
+                      Return(web_data_service_handle)));
 
   binder->BindKey(std::move(key.value()), fake_credential_id_,
                   fake_relying_party_);
+  ASSERT_TRUE(web_data_service_consumer_);
+  web_data_service_consumer_->OnWebDataServiceRequestDone(
+      web_data_service_handle,
+      std::make_unique<WDResult<bool>>(WDResultType::BOOL_RESULT, true));
+
+  key.reset();
+  EXPECT_TRUE(fake_browser_bound_key_store_->ContainsFakeKey(fake_bbk_id_));
+}
+
+TEST_F(PasskeyBrowserBinderTest, DeletesBrowserBoundKeyIfBindingFails) {
+  std::unique_ptr<PasskeyBrowserBinder> binder = CreatePasskeyBrowserBinder();
+  std::optional<PasskeyBrowserBinder::UnboundKey> key =
+      binder->CreateUnboundKey(/*allowed_algorithms=*/{
+          device::PublicKeyCredentialParams::CredentialInfo{.algorithm =
+                                                                kCoseEs256}});
+
+  WebDataServiceBase::Handle web_data_service_handle = 1234;
+  WebDataServiceConsumer* web_data_service_consumer_ = nullptr;
+  EXPECT_CALL(*mock_web_data_service_,
+              SetBrowserBoundKey(fake_credential_id_, fake_relying_party_,
+                                 fake_bbk_id_, /*consumer=*/_))
+      .WillOnce(DoAll(SaveArg<3>(&web_data_service_consumer_),
+                      Return(web_data_service_handle)));
+
+  binder->BindKey(std::move(key.value()), fake_credential_id_,
+                  fake_relying_party_);
+  ASSERT_TRUE(web_data_service_consumer_);
+  web_data_service_consumer_->OnWebDataServiceRequestDone(
+      web_data_service_handle,
+      std::make_unique<WDResult<bool>>(WDResultType::BOOL_RESULT, false));
+
+  key.reset();
+  EXPECT_FALSE(fake_browser_bound_key_store_->ContainsFakeKey(fake_bbk_id_));
 }
 
 TEST_F(PasskeyBrowserBinderTest,
