@@ -1214,6 +1214,21 @@ Color Color::Dark() const {
                AlphaAsInteger());
 }
 
+float Color::GetLightness(ColorSpace lightness_colorspace) const {
+  DCHECK(lightness_colorspace == ColorSpace::kLab ||
+         lightness_colorspace == ColorSpace::kOklab ||
+         lightness_colorspace == ColorSpace::kLch ||
+         lightness_colorspace == ColorSpace::kOklch ||
+         lightness_colorspace == ColorSpace::kHSL);
+  Color color_with_l = *this;
+  color_with_l.ConvertToColorSpace(lightness_colorspace);
+  if (lightness_colorspace == ColorSpace::kHSL) {
+    return color_with_l.Param2();
+  }
+  DCHECK(IsLightnessFirstComponent(lightness_colorspace));
+  return color_with_l.Param0();
+}
+
 Color Color::Blend(const Color& source) const {
   // TODO(https://crbug.com/1434423): CSS Color level 4 blending is implemented.
   // Remove this function.
@@ -1272,46 +1287,6 @@ void Color::GetRGBA(double& r, double& g, double& b, double& a) const {
   g = Green() / 255.0;
   b = Blue() / 255.0;
   a = Alpha();
-}
-
-// Hue, max and min are returned in range of 0.0 to 1.0.
-void Color::GetHueMaxMin(double& hue, double& max, double& min) const {
-  // This is a helper function to calculate intermediate quantities needed
-  // for conversion to HSL or HWB formats. The algorithm contained below
-  // is a copy of http://en.wikipedia.org/wiki/HSL_color_space.
-  double r = static_cast<double>(Red()) / 255.0;
-  double g = static_cast<double>(Green()) / 255.0;
-  double b = static_cast<double>(Blue()) / 255.0;
-  max = std::max(std::max(r, g), b);
-  min = std::min(std::min(r, g), b);
-
-  if (max == min)
-    hue = 0.0;
-  else if (max == r)
-    hue = (60.0 * ((g - b) / (max - min))) + 360.0;
-  else if (max == g)
-    hue = (60.0 * ((b - r) / (max - min))) + 120.0;
-  else
-    hue = (60.0 * ((r - g) / (max - min))) + 240.0;
-
-  // Adjust for rounding errors and scale to interval 0.0 to 1.0.
-  if (hue >= 360.0)
-    hue -= 360.0;
-  hue /= 360.0;
-}
-
-// Hue, saturation and lightness are returned in range of 0.0 to 1.0.
-void Color::GetHSL(double& hue, double& saturation, double& lightness) const {
-  double max, min;
-  GetHueMaxMin(hue, max, min);
-
-  lightness = 0.5 * (max + min);
-  if (max == min)
-    saturation = 0.0;
-  else if (lightness <= 0.5)
-    saturation = ((max - min) / (max + min));
-  else
-    saturation = ((max - min) / (2.0 - (max + min)));
 }
 
 // From https://www.w3.org/TR/css-color-4/#interpolation

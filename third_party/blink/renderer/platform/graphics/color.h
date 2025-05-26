@@ -339,8 +339,9 @@ class PLATFORM_EXPORT Color {
   void GetRGBA(float& r, float& g, float& b, float& a) const;
   void GetRGBA(double& r, double& g, double& b, double& a) const;
 
-  // Access the color as though it were created using the hsl() syntax.
-  void GetHSL(double& h, double& s, double& l) const;
+  // Get the lightness of the color in the specified colorspace. The colorspace
+  // can be any that has a lightness component (Lab, OkLab, Lch, OkLch or HSL).
+  float GetLightness(ColorSpace lightness_colorspace) const;
 
   Color Light() const;
   Color Dark() const;
@@ -432,7 +433,6 @@ class PLATFORM_EXPORT Color {
   static constexpr int ClampInt255(int x) {
     return x < 0 ? 0 : (x > 255 ? 255 : x);
   }
-  void GetHueMaxMin(double&, double&, double&) const;
 
   std::tuple<float, float, float> ExportAsXYZD50Floats() const;
 
