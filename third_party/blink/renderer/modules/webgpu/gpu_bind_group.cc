@@ -7,7 +7,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_bind_group_descriptor.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_bind_group_entry.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_buffer_binding.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_union_gpubufferbinding_gpuexternaltexture_gpusampler_gputextureview.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_union_gpubuffer_gpubufferbinding_gpuexternaltexture_gpusampler_gputextureview.h"
 #include "third_party/blink/renderer/modules/webgpu/dawn_conversions.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_bind_group_layout.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_buffer.h"
@@ -28,6 +28,11 @@ wgpu::BindGroupEntry AsDawnType(
   };
 
   switch (webgpu_binding->resource()->GetContentType()) {
+    case V8GPUBindingResource::ContentType::kGPUBuffer: {
+      GPUBuffer* buffer = webgpu_binding->resource()->GetAsGPUBuffer();
+      dawn_binding.buffer = AsDawnType(buffer);
+      break;
+    }
     case V8GPUBindingResource::ContentType::kGPUBufferBinding: {
       GPUBufferBinding* buffer =
           webgpu_binding->resource()->GetAsGPUBufferBinding();
