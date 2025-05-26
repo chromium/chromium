@@ -41,6 +41,8 @@
 #import "components/sync/service/sync_user_settings.h"
 #import "ios/chrome/browser/authentication/ui_bundled/cells/table_view_account_item.h"
 #import "ios/chrome/browser/authentication/ui_bundled/change_profile/change_profile_settings_continuation.h"
+#import "ios/chrome/browser/authentication/ui_bundled/continuation.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin/signin_coordinator.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_utils.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin_presenter.h"
 #import "ios/chrome/browser/bubble/ui_bundled/bubble_constants.h"
@@ -229,6 +231,7 @@ struct EnhancedSafeBrowsingActivePromoData
   TableViewSwitchItem* _showMemoryDebugToolsItem;
   // The item related to the safety check.
   SettingsCheckItem* _safetyCheckItem;
+  SigninCoordinator* _signinAndHistorySyncCoordinator;
 
   GoogleServicesSettingsCoordinator* _googleServicesSettingsCoordinator;
   ManageSyncSettingsCoordinator* _manageSyncSettingsCoordinator;
@@ -1447,6 +1450,11 @@ struct EnhancedSafeBrowsingActivePromoData
 
 #pragma mark - Private methods
 
+- (void)stopSigninCoordinator {
+  [_signinAndHistorySyncCoordinator stop];
+  _signinAndHistorySyncCoordinator = nil;
+}
+
 - (void)stopManageSyncSettingsCoordinator {
   [_manageSyncSettingsCoordinator stop];
   _manageSyncSettingsCoordinator.delegate = nil;
@@ -1969,23 +1977,31 @@ struct EnhancedSafeBrowsingActivePromoData
   __weak __typeof(self) weakSelf = self;
   ChangeProfileContinuationProvider provider =
       base::BindRepeating(&CreateChangeProfileSettingsContinuation);
-  ShowSigninCommand* command = [[ShowSigninCommand alloc]
-                      initWithOperation:AuthenticationOperation::
-                                            kSheetSigninAndHistorySync
-                               identity:nil
-                            accessPoint:signin_metrics::AccessPoint::kSettings
-                            promoAction:signin_metrics::PromoAction::
-                                            PROMO_ACTION_NO_SIGNIN_PROMO
-                             completion:^(
-                                 SigninCoordinatorResult result,
-                                 id<SystemIdentity> completionIdentity) {
-                               [weakSelf didFinishSignin];
-                             }
-      changeProfileContinuationProvider:provider];
-  [self.applicationHandler showSignin:command baseViewController:self];
+
+  SigninContextStyle contextStyle = SigninContextStyle::kDefault;
+  signin_metrics::AccessPoint accessPoint =
+      signin_metrics::AccessPoint::kSettings;
+  signin_metrics::PromoAction promoAction =
+      signin_metrics::PromoAction::PROMO_ACTION_NO_SIGNIN_PROMO;
+  _signinAndHistorySyncCoordinator = [SigninCoordinator
+      signinAndHistorySyncCoordinatorWithBaseViewController:self
+                                                    browser:_browser
+                                               contextStyle:contextStyle
+                                                accessPoint:accessPoint
+                                                promoAction:promoAction
+                                        optionalHistorySync:YES
+                                            fullscreenPromo:NO
+                                       continuationProvider:
+                                           DoNothingContinuationProvider()];
+  _signinAndHistorySyncCoordinator.signinCompletion =
+      ^(SigninCoordinatorResult result, id<SystemIdentity> identity) {
+        [weakSelf didFinishSignin];
+      };
+  [_signinAndHistorySyncCoordinator start];
 }
 
 - (void)didFinishSignin {
+  [self stopSigninCoordinator];
   if (_settingsAreDismissed) {
     return;
   }
@@ -2084,6 +2100,7 @@ struct EnhancedSafeBrowsingActivePromoData
   _notificationsObserver.delegate = nil;
   [_notificationsObserver disconnect];
   _notificationsObserver = nil;
+  [self stopSigninCoordinator];
 
   // Clear C++ ivars.
   _voiceLocaleCode.Destroy();
