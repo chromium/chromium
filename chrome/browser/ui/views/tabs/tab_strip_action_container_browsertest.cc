@@ -58,6 +58,7 @@ class TabStripActionContainerBrowserTest : public InProcessBrowserTest {
 #if BUILDFLAG(ENABLE_GLIC)
             features::kGlic,
             features::kGlicRollout,
+            features::kGlicFreWarming,
 #endif
             features::kTabstripComboButton,
             features::kTabstripDeclutter,

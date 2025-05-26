@@ -400,6 +400,11 @@ bool GlicKeyedService::IsContextAccessIndicatorShown(
 }
 
 void GlicKeyedService::TryPreload() {
+  if (base::FeatureList::IsEnabled(features::kGlicDisableWarming) &&
+      !base::FeatureList::IsEnabled(features::kGlicWarming)) {
+    return;
+  }
+
   CHECK(glic_profile_manager_);
   base::TimeDelta delay = GetWarmingDelay();
 
@@ -422,6 +427,11 @@ void GlicKeyedService::TryPreload() {
 }
 
 void GlicKeyedService::TryPreloadFre() {
+  if (base::FeatureList::IsEnabled(features::kGlicDisableWarming) &&
+      !base::FeatureList::IsEnabled(features::kGlicFreWarming)) {
+    return;
+  }
+
   CHECK(glic_profile_manager_);
 
   glic_profile_manager_->ShouldPreloadFreForProfile(
