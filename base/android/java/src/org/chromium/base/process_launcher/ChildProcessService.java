@@ -25,12 +25,9 @@ import android.util.SparseArray;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
-import org.chromium.base.AndroidInfo;
-import org.chromium.base.ApkInfo;
 import org.chromium.base.BaseSwitches;
 import org.chromium.base.CommandLine;
 import org.chromium.base.ContextUtils;
-import org.chromium.base.DeviceInfo;
 import org.chromium.base.EarlyTraceEvent;
 import org.chromium.base.JavaUtils;
 import org.chromium.base.Log;
@@ -100,8 +97,11 @@ public class ChildProcessService {
     // This is the native "Main" thread for the renderer / utility process.
     private Thread mMainThread;
 
-    // All args needed for the main thread to start.
-    private @Nullable IChildProcessArgs mChildProcessArgs;
+    // Parameters received via IPC, only accessed while holding the mMainThread monitor.
+    private String @Nullable [] mCommandLineParams;
+
+    // File descriptors that should be registered natively.
+    private IFileDescriptorInfo @Nullable [] mFdInfos;
 
     @GuardedBy("mLibraryInitializedLock")
     private boolean mLibraryInitialized;
@@ -193,7 +193,7 @@ public class ChildProcessService {
                     parentProcess.finishSetupConnection(
                             pid, zygotePid, startupTimeMillis, relroBundle);
                     mParentProcess = parentProcess;
-                    processConnectionArgs(args, callbacks, binderBox);
+                    processConnectionBundle(args, callbacks, binderBox);
                 }
 
                 @Override
@@ -287,24 +287,17 @@ public class ChildProcessService {
         mMainThread.start();
     }
 
-    private void sendBuildInfoToNative() {
-        assert mChildProcessArgs != null;
-        AndroidInfo.sendToNative(mChildProcessArgs.androidInfo);
-        ApkInfo.sendToNative(mChildProcessArgs.apkInfo);
-        DeviceInfo.sendToNative(mChildProcessArgs.deviceInfo);
-    }
-
     private void mainThreadMain() {
         assumeNonNull(mParentProcess);
         try {
             // CommandLine must be initialized before everything else.
             synchronized (mMainThread) {
-                while (mChildProcessArgs == null) {
+                while (mCommandLineParams == null) {
                     mMainThread.wait();
                 }
             }
             assert mServiceBound;
-            CommandLine.init(mChildProcessArgs.commandLine);
+            CommandLine.init(mCommandLineParams);
 
             if (CommandLine.getInstance()
                     .hasSwitch(BaseSwitches.ANDROID_SKIP_CHILD_SERVICE_INIT_FOR_TESTING)) {
@@ -322,17 +315,22 @@ public class ChildProcessService {
                 mLibraryInitialized = true;
                 mLibraryInitializedLock.notifyAll();
             }
-            sendBuildInfoToNative();
+            synchronized (mMainThread) {
+                mMainThread.notifyAll();
+                while (mFdInfos == null) {
+                    mMainThread.wait();
+                }
+            }
+
             SparseArray<String> idsToKeys = mDelegate.getFileDescriptorsIdsToKeys();
 
-            int numFdInfos = mChildProcessArgs.fileDescriptorInfos.length;
-            int[] fileIds = new int[numFdInfos];
-            String[] keys = new String[numFdInfos];
-            int[] fds = new int[numFdInfos];
-            long[] regionOffsets = new long[numFdInfos];
-            long[] regionSizes = new long[numFdInfos];
-            for (int i = 0; i < numFdInfos; i++) {
-                IFileDescriptorInfo fdInfo = mChildProcessArgs.fileDescriptorInfos[i];
+            int[] fileIds = new int[mFdInfos.length];
+            String[] keys = new String[mFdInfos.length];
+            int[] fds = new int[mFdInfos.length];
+            long[] regionOffsets = new long[mFdInfos.length];
+            long[] regionSizes = new long[mFdInfos.length];
+            for (int i = 0; i < mFdInfos.length; i++) {
+                IFileDescriptorInfo fdInfo = mFdInfos[i];
                 String key = idsToKeys != null ? idsToKeys.get(fdInfo.id) : null;
                 if (key != null) {
                     keys[i] = key;
@@ -425,10 +423,19 @@ public class ChildProcessService {
         sZygoteStartupTimeMillis = zygoteStartupTimeMillis;
     }
 
-    private void processConnectionArgs(
+    private void processConnectionBundle(
             IChildProcessArgs args, List<IBinder> clientInterfaces, IBinder binderBox) {
         synchronized (mMainThread) {
-            mChildProcessArgs = args;
+            if (mCommandLineParams == null) {
+                mCommandLineParams = args.commandLine;
+                mMainThread.notifyAll();
+            }
+            // We must have received the command line by now
+            assert mCommandLineParams != null;
+            IFileDescriptorInfo[] fdInfos = args.fileDescriptorInfos;
+            if (fdInfos != null) {
+                mFdInfos = fdInfos;
+            }
             mDelegate.onConnectionSetup(args, clientInterfaces, binderBox);
             mMainThread.notifyAll();
         }

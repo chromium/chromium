@@ -11,10 +11,7 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
 
-import org.chromium.base.AndroidInfo;
-import org.chromium.base.ApkInfo;
 import org.chromium.base.ContextUtils;
-import org.chromium.base.DeviceInfo;
 import org.chromium.base.Log;
 import org.chromium.base.TraceEvent;
 import org.chromium.build.annotations.NullMarked;
@@ -315,9 +312,6 @@ public class ChildProcessLauncher {
         IChildProcessArgs args = new IChildProcessArgs();
         args.commandLine = mCommandLine;
         args.fileDescriptorInfos = mFilesToBeMapped;
-        args.apkInfo = ApkInfo.getAidlInfo();
-        args.androidInfo = AndroidInfo.getAidlInfo();
-        args.deviceInfo = DeviceInfo.getAidlInfo();
         return args;
     }
 
