@@ -762,13 +762,11 @@ CookieSettingsBase::GetCookieSettingInternal(
           std::get_if<AllowAllCookies>(&choice)) {
     CHECK(IsAllowed(cookie_setting));
     CHECK(!is_third_party_request || !block_third_party_cookies ||
-              allow_cookies->mechanism != ThirdPartyCookieAllowMechanism::kNone,
-          base::NotFatalUntil::M128);
+          allow_cookies->mechanism != ThirdPartyCookieAllowMechanism::kNone);
     // `!is_third_party_request` implies that the exemption reason must be
     // kNone. (It doesn't make sense to exempt a first-party cookie from 3PCD.)
     CHECK(is_third_party_request ||
-              allow_cookies->mechanism == ThirdPartyCookieAllowMechanism::kNone,
-          base::NotFatalUntil::M128);
+          allow_cookies->mechanism == ThirdPartyCookieAllowMechanism::kNone);
 
     FireStorageAccessHistogram(
         GetStorageAccessResult(allow_cookies->mechanism));
@@ -800,9 +798,9 @@ CookieSettingsBase::GetCookieSettingInternal(
   }
 
   if (std::holds_alternative<AllowPartitionedCookies>(choice)) {
-    CHECK(is_third_party_request, base::NotFatalUntil::M128);
-    CHECK(block_third_party_cookies, base::NotFatalUntil::M128);
-    CHECK(!is_explicit_setting, base::NotFatalUntil::M128);
+    CHECK(is_third_party_request);
+    CHECK(block_third_party_cookies);
+    CHECK(!is_explicit_setting);
 
     FireStorageAccessHistogram(StorageAccessResult::ACCESS_BLOCKED);
 
@@ -822,7 +820,7 @@ CookieSettingsBase::GetCookieSettingInternal(
   }
 
   CHECK(std::holds_alternative<BlockAllCookies>(choice));
-  CHECK_EQ(cookie_setting, CONTENT_SETTING_BLOCK, base::NotFatalUntil::M128);
+  CHECK_EQ(cookie_setting, CONTENT_SETTING_BLOCK);
   FireStorageAccessHistogram(StorageAccessResult::ACCESS_BLOCKED);
 
   if (info) {

@@ -18,7 +18,6 @@
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/field_trial_params.h"
-#include "base/not_fatal_until.h"
 #include "base/notreached.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -406,7 +405,7 @@ jboolean TemplateUrlServiceAndroid::SetPlayAPISearchEngine(
         jimage_translate_target_language_param_key) {
   // The function is scheduled to run only when the service is loaded, see
   // `TemplateUrlService#runWhenLoaded()`.
-  CHECK(template_url_service_->loaded(), base::NotFatalUntil::M128);
+  CHECK(template_url_service_->loaded());
 
   // Check if there is already a search engine created by a regulatory program.
   TemplateURLService::TemplateURLVector template_urls =
