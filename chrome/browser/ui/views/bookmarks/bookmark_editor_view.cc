@@ -325,6 +325,14 @@ void BookmarkEditorView::BookmarkNodeRemoved(const BookmarkNode* parent,
   }
 }
 
+void BookmarkEditorView::BookmarkNodeChanged(
+    const bookmarks::BookmarkNode* node) {
+  // Only reset for folders, since bookmarks (urls) are not shown in the dialog.
+  if (node->is_folder()) {
+    Reset();
+  }
+}
+
 void BookmarkEditorView::BookmarkAllUserNodesRemoved(
     const std::set<GURL>& removed_urls,
     const base::Location& location) {
