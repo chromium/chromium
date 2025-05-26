@@ -4,6 +4,7 @@
 
 import("//build/config/ozone.gni")
 import("//build/config/ui.gni")
+import("//ui/gl/features.gni")
 
 assert(use_ozone)
 
@@ -43,6 +44,10 @@ source_set("common") {
     "//ui/gl",
     "//ui/gl:buildflags",
   ]
+
+  if (use_static_angle) {
+    deps += [ "//third_party/angle:libGLESv2_thin_static" ]
+  }
 
   data_deps = [ "//third_party/angle:includes" ]
 

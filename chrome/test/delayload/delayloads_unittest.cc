@@ -504,7 +504,7 @@ TEST_F(MinimumWindowsSupportTest, ChromeExtraDlls) {
       // These are not yet supported for Arm64.
       L"dxcompiler.dll", L"dxil.dll",
 #endif  // !defined(ARCH_CPU_ARM64
-      L"libEGL.dll", L"libGLESv2.dll", L"vk_swiftshader.dll", L"vulkan-1.dll"};
+      L"vk_swiftshader.dll", L"vulkan-1.dll"};
   for (const auto& dll : extra_dlls) {
     Validate(dll);
   }
