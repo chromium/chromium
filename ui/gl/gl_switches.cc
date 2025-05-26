@@ -349,9 +349,17 @@ bool IsDefaultANGLEVulkan() {
     return false;
 
 #if BUILDFLAG(IS_ANDROID)
+  // Samsung GPUs already use ANGLE as the GLES driver.  Always choose
+  // ANGLE/Vulkan on these GPUs to avoid the inefficiencies of translating
+  // over ANGLE twice.
+  if (active_gpu.driverId == VK_DRIVER_ID_SAMSUNG_PROPRIETARY) {
+    return true;
+  }
+
   // Exclude SwiftShader-based Android emulators for now.
-  if (active_gpu.driverId == VK_DRIVER_ID_GOOGLE_SWIFTSHADER)
+  if (active_gpu.driverId == VK_DRIVER_ID_GOOGLE_SWIFTSHADER) {
     return false;
+  }
 
   // Encountered bugs with older Imagination drivers.  New drivers seem fixed,
   // but disabled for the sake of experiment for now. crbug.com/371512561
