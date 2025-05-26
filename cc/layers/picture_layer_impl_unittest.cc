@@ -662,7 +662,7 @@ TEST_F(LegacySWPictureLayerImplTest, PendingLayerOnlyHasHighResTiling) {
       7.26f, pending_layer()->tilings()->tiling_at(0)->contents_scale_key());
 }
 
-TEST_F(LegacySWPictureLayerImplTest, CreateTilingsEvenIfTwinHasNone) {
+TEST_F(NoLowResPictureLayerImplTest, CreateTilingsEvenIfTwinHasNone) {
   // This test makes sure that if a layer can have tilings, then a commit makes
   // it not able to have tilings (empty size), and then a future commit that
   // makes it valid again should be able to create tilings.
@@ -679,7 +679,7 @@ TEST_F(LegacySWPictureLayerImplTest, CreateTilingsEvenIfTwinHasNone) {
   ActivateTree();
   SetupPendingTree(empty_raster_source);
   EXPECT_FALSE(pending_layer()->CanHaveTilings());
-  ASSERT_EQ(2u, active_layer()->tilings()->num_tilings());
+  ASSERT_EQ(1u, active_layer()->tilings()->num_tilings());
   ASSERT_EQ(0u, pending_layer()->tilings()->num_tilings());
 
   ActivateTree();
