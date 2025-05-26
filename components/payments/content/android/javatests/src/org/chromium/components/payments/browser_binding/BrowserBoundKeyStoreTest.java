@@ -17,6 +17,7 @@ import androidx.annotation.RequiresApi;
 import androidx.test.filters.MediumTest;
 import androidx.test.platform.app.InstrumentationRegistry;
 
+import org.junit.After;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -61,16 +62,25 @@ public class BrowserBoundKeyStoreTest {
         return params;
     }
 
+    private static final byte[] BBK_ID = new byte[] {0x0a, 0x0b, 0x0c, 0x0d};
+
+    @After
+    public void removeBbk() {
+        if (isStrongBoxAvailable()) {
+            BrowserBoundKeyStore browserBoundKeyStore = BrowserBoundKeyStore.getInstance();
+            browserBoundKeyStore.deleteBrowserBoundKey(BBK_ID);
+        }
+    }
+
     @Test
     @RequiresApi(Build.VERSION_CODES.P)
     public void testCreatesNewEcKey() {
         assumeTrue(isStrongBoxAvailable());
         BrowserBoundKeyStore browserBoundKeyStore = BrowserBoundKeyStore.getInstance();
-        byte[] credentialId = new byte[] {0x0a, 0x0b, 0x0c, 0x0d};
 
         BrowserBoundKey bbk =
                 browserBoundKeyStore.getOrCreateBrowserBoundKeyForCredentialId(
-                        credentialId, ALLOWED_ALGORITHMS);
+                        BBK_ID, ALLOWED_ALGORITHMS);
 
         KeyPair keyPair = bbk.getKeyPairForTesting();
 
@@ -82,15 +92,15 @@ public class BrowserBoundKeyStoreTest {
     public void testFindsExistingKey() throws Exception {
         assumeTrue(isStrongBoxAvailable());
         BrowserBoundKeyStore browserBoundKeyStore = BrowserBoundKeyStore.getInstance();
-        byte[] credentialId = new byte[] {0x0a, 0x0b, 0x0c, 0x0d};
         byte[] clientData = new byte[] {0x01, 0x02, 0x03, 0x04};
         BrowserBoundKey bbk1 =
                 browserBoundKeyStore.getOrCreateBrowserBoundKeyForCredentialId(
-                        credentialId, ALLOWED_ALGORITHMS);
+                        BBK_ID, ALLOWED_ALGORITHMS);
 
+        // Provide an empty list of algorithms expecting the existing key to be returned.
         BrowserBoundKey bbk2 =
                 browserBoundKeyStore.getOrCreateBrowserBoundKeyForCredentialId(
-                        credentialId, ALLOWED_ALGORITHMS);
+                        BBK_ID, Arrays.asList());
         byte[] signature2 = bbk2.sign(clientData);
 
         // Verify the BBK2's signature using BBK1's public key.
@@ -105,10 +115,9 @@ public class BrowserBoundKeyStoreTest {
     public void testDoesCreateKeyWithUnsupportedAlgorithm() throws Exception {
         assumeTrue(isStrongBoxAvailable());
         BrowserBoundKeyStore browserBoundKeyStore = BrowserBoundKeyStore.getInstance();
-        byte[] credentialId = new byte[] {0x0a, 0x0b, 0x0c, 0x0d};
         BrowserBoundKey bbk =
                 browserBoundKeyStore.getOrCreateBrowserBoundKeyForCredentialId(
-                        credentialId,
+                        BBK_ID,
                         Arrays.asList(createCredentialParameters(/* algorithmIdentifier= */ 0)));
 
         assertNull(bbk);
@@ -119,16 +128,15 @@ public class BrowserBoundKeyStoreTest {
     public void testDeletesAKey() throws Exception {
         assumeTrue(isStrongBoxAvailable());
         BrowserBoundKeyStore browserBoundKeyStore = BrowserBoundKeyStore.getInstance();
-        byte[] bbkId = new byte[] {0x0a, 0x0b, 0x0c, 0x0d};
         BrowserBoundKey bbk =
                 browserBoundKeyStore.getOrCreateBrowserBoundKeyForCredentialId(
-                        bbkId, ALLOWED_ALGORITHMS);
+                        BBK_ID, ALLOWED_ALGORITHMS);
         assertNotNull(bbk);
 
-        browserBoundKeyStore.deleteBrowserBoundKey(bbkId);
+        browserBoundKeyStore.deleteBrowserBoundKey(BBK_ID);
         BrowserBoundKey bbkAfter =
                 browserBoundKeyStore.getOrCreateBrowserBoundKeyForCredentialId(
-                        bbkId, ALLOWED_ALGORITHMS);
+                        BBK_ID, ALLOWED_ALGORITHMS);
 
         assertNotNull(bbkAfter);
         // Assert a new bbk was created by comparing the public keys.

@@ -94,8 +94,10 @@ public final class BrowserBoundKeyStore {
     /**
      * Get the corresponding browser bound key (or creates it).
      *
-     * @param identifier An identifier for the corresponding passkey credential id.
-     * @param allowedAlgorithms A list of allowed credential parameters.
+     * @param identifier An identifier for the browser bound key.
+     * @param allowedAlgorithms A list of allowed credential parameters used if the key needs to be
+     *     created. Consequently, if this list is empty no key will be created but an existing one
+     *     may be returned.
      * @return The BrowserBoundKey object or null when the key pair could not be created.
      */
     @CalledByNative
@@ -105,12 +107,9 @@ public final class BrowserBoundKeyStore {
         // TODO(crbug.com/377278827): Generate a random alias and store the association in a table,
         // so that browser bound public keys can be included in clientDataJson on passkey creation
         // time when the identifier is not know.
-        if (!containsEs256(allowedAlgorithms)) {
-            return null;
-        }
         String keyStoreAlias = keyStoreAliasOf(identifier);
         BrowserBoundKey browserBoundKey = getBrowserBoundKey(identifier, keyStoreAlias);
-        if (browserBoundKey == null) {
+        if (browserBoundKey == null && containsEs256(allowedAlgorithms)) {
             browserBoundKey = createBrowserBoundKey(identifier, keyStoreAlias);
         }
         return browserBoundKey;
