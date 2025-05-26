@@ -1354,9 +1354,7 @@ TEST_F(HttpStreamPoolAttemptManagerTest, IPEndPointsSlow) {
   endpoint_request->CallOnServiceEndpointRequestFinished(OK);
   RunUntilIdle();
   AttemptManager* manager =
-      pool()
-          .GetOrCreateGroupForTesting(requester.GetStreamKey())
-          .attempt_manager();
+      pool().GetGroupForTesting(requester.GetStreamKey())->attempt_manager();
   ASSERT_EQ(manager->TcpBasedAttemptCount(), 1u);
   ASSERT_FALSE(request->completed());
 
@@ -1370,6 +1368,19 @@ TEST_F(HttpStreamPoolAttemptManagerTest, IPEndPointsSlow) {
   FastForwardBy(HttpStreamPool::GetConnectionAttemptDelay());
   ASSERT_TRUE(request->completed());
   EXPECT_THAT(requester.result(), Optional(IsOk()));
+
+  // Slow attempts should be canceled.
+  ASSERT_EQ(pool()
+                .GetGroupForTesting(requester.GetStreamKey())
+                ->ConnectingStreamSocketCount(),
+            0u);
+  ASSERT_TRUE(requester.associated_attempt_manager()->is_shutting_down());
+
+  // Reset request so that AttemptManager can complete.
+  requester.ResetRequest();
+
+  WaitForAttemptManagerComplete(requester.associated_attempt_manager().get());
+  ASSERT_FALSE(requester.associated_attempt_manager());
 }
 
 TEST_F(HttpStreamPoolAttemptManagerTest,
@@ -1472,12 +1483,13 @@ TEST_F(HttpStreamPoolAttemptManagerTest,
       LoadTimingInfo::ConnectTiming());
   stream.reset();
   ASSERT_EQ(group.IdleStreamSocketCount(), 0u);
-  ASSERT_EQ(group.ActiveStreamSocketCount(), 2u);
+  // The in-flight attempt should be canceled.
+  ASSERT_EQ(group.ActiveStreamSocketCount(), 1u);
 
   // Fire the slow timer. It should not attempt another connection.
   FastForwardBy(HttpStreamPool::GetConnectionAttemptDelay());
   ASSERT_EQ(group.IdleStreamSocketCount(), 0u);
-  ASSERT_EQ(group.ActiveStreamSocketCount(), 2u);
+  ASSERT_EQ(group.ActiveStreamSocketCount(), 1u);
 
   requester.WaitForResult();
   EXPECT_THAT(requester.result(), Optional(IsOk()));

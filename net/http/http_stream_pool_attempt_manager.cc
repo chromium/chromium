@@ -1450,6 +1450,10 @@ void HttpStreamPool::AttemptManager::NotifyPreconnectsComplete(int rv) {
         preconnect_jobs_.extract(preconnect_jobs_.begin()).value();
     NotifyJobOfPreconnectComplete(std::move(job), rv);
   }
+
+  // TODO(crbug.com/414173943): Start draining if there is no request/preconnect
+  // jobs.
+
   // TODO(crbug.com/396998469): Do we still need this? Remove if this is not
   // needed.
   MaybeCompleteLater();
@@ -1471,6 +1475,9 @@ void HttpStreamPool::AttemptManager::ProcessPreconnectsAfterAttemptComplete(
     raw_ptr<Job> job = preconnect_jobs_.extract(it).value();
     NotifyJobOfPreconnectComplete(std::move(job), rv);
   }
+
+  // TODO(crbug.com/414173943): Start draining if there is no request/preconnect
+  // jobs.
 
   // TODO(crbug.com/396998469): Do we still need this? Remove if this is not
   // needed.
@@ -1516,10 +1523,12 @@ bool HttpStreamPool::AttemptManager::HasAvailableSpdySession() const {
       spdy_session_key(), IsIpBasedPoolingEnabled(), /*is_websocket=*/false);
 }
 
-void HttpStreamPool::AttemptManager::StartDraining() {
+void HttpStreamPool::AttemptManager::MaybeStartDraining() {
+  if (!request_jobs_.empty() || !preconnect_jobs_.empty()) {
+    return;
+  }
+
   CHECK_EQ(availability_state_, AvailabilityState::kAvailable);
-  CHECK(request_jobs_.empty());
-  CHECK(preconnect_jobs_.empty());
   CHECK(!CanComplete());
   availability_state_ = AvailabilityState::kDraining;
   service_endpoint_request_.reset();
@@ -1542,13 +1551,13 @@ void HttpStreamPool::AttemptManager::StartDraining() {
 
 void HttpStreamPool::AttemptManager::MaybeCreateSpdyStreamAndNotify(
     base::WeakPtr<SpdySession> spdy_session) {
-  CHECK(availability_state_ == AvailabilityState::kAvailable);
-  CHECK(spdy_session);
-  CHECK(spdy_session->IsAvailable());
-
   if (request_jobs_.empty()) {
     return;
   }
+
+  CHECK(availability_state_ == AvailabilityState::kAvailable);
+  CHECK(spdy_session);
+  CHECK(spdy_session->IsAvailable());
 
   std::set<std::string> dns_aliases =
       http_network_session()->spdy_session_pool()->GetDnsAliasesForSessionKey(
@@ -1570,20 +1579,16 @@ void HttpStreamPool::AttemptManager::MaybeCreateSpdyStreamAndNotify(
     CHECK(weak_this);
   }
   CHECK(request_jobs_.empty());
-  // TODO(crbug.com/414173943): Move this StartDraining() call to
-  // somewhere else so that `this` enters the draining state when all jobs are
-  // notified.
-  StartDraining();
 }
 
 void HttpStreamPool::AttemptManager::MaybeCreateQuicStreamAndNotify(
     QuicChromiumClientSession* quic_session) {
-  CHECK(availability_state_ == AvailabilityState::kAvailable);
-  CHECK(quic_session);
-
   if (request_jobs_.empty()) {
     return;
   }
+
+  CHECK(availability_state_ == AvailabilityState::kAvailable);
+  CHECK(quic_session);
 
   std::set<std::string> dns_aliases = quic_session->GetDnsAliasesForSessionKey(
       quic_session_alias_key().session_key());
@@ -1604,10 +1609,6 @@ void HttpStreamPool::AttemptManager::MaybeCreateQuicStreamAndNotify(
     CHECK(weak_this);
   }
   CHECK(request_jobs_.empty());
-  // TODO(crbug.com/414173943): Move this StartDraining() call to
-  // somewhere else so that `this` enters the draining state when all jobs are
-  // notified.
-  StartDraining();
 }
 
 void HttpStreamPool::AttemptManager::NotifyStreamReady(
@@ -1619,6 +1620,7 @@ void HttpStreamPool::AttemptManager::NotifyStreamReady(
                       NetLogWithSourceToFlow(job->request_net_log()),
                       "negotiated_protocol", negotiated_protocol);
   job->OnStreamReady(std::move(stream), negotiated_protocol);
+  MaybeStartDraining();
 }
 
 void HttpStreamPool::AttemptManager::HandleSpdySessionReady(

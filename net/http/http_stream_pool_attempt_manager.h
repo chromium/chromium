@@ -428,7 +428,7 @@ class HttpStreamPool::AttemptManager
 
   bool HasAvailableSpdySession() const;
 
-  void StartDraining();
+  void MaybeStartDraining();
 
   void MaybeCreateSpdyStreamAndNotify(base::WeakPtr<SpdySession> spdy_session);
 
