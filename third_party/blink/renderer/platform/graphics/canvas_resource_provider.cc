@@ -1276,6 +1276,9 @@ CanvasResourceProvider::CreateSharedImageProviderForSoftwareCompositor(
     return nullptr;
   }
 
+  CHECK(format == viz::SharedImageFormat::N32Format() ||
+        format == viz::SinglePlaneFormat::kRGBA_F16);
+
   auto provider = std::make_unique<CanvasResourceProviderSharedImage>(
       size, format, alpha_type, color_space, shared_image_interface_provider,
       resource_host);
