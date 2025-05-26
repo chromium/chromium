@@ -1900,7 +1900,9 @@ public class RootUiCoordinator
                 hasEdgeToEdgeController,
                 isSupportedConfiguration,
                 callSite,
-                (info) -> ChromePureJavaExceptionReporter.reportJavaException(new Throwable(info)));
+                (info) ->
+                        ChromePureJavaExceptionReporter.reportJavaExceptionFromMsg(
+                                info, /* isWarning= */ true));
     }
 
     /** Create a bottom chin for Edge-to-Edge. */

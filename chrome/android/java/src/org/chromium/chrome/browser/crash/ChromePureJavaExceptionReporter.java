@@ -52,6 +52,19 @@ public class ChromePureJavaExceptionReporter extends PureJavaExceptionReporter {
     /**
      * Asynchronously report and upload the stack trace as if it was a crash.
      *
+     * @param msg The message to report.
+     * @param isWarning Whether the message should be treated as a warning.
+     */
+    public static void reportJavaExceptionFromMsg(String msg, boolean isWarning) {
+        if (isWarning) {
+            msg = "This is not a crash. " + msg;
+        }
+        reportJavaException(new Throwable(msg));
+    }
+
+    /**
+     * Asynchronously report and upload the stack trace as if it was a crash.
+     *
      * @param exception The exception to report.
      */
     public static void reportJavaException(Throwable exception) {
