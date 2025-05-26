@@ -52,7 +52,10 @@ public final class ApkInfo {
     // function.
     @CalledByNative
     private static void nativeReadyForFields() {
-        IApkInfo info = getInstance().mIApkInfo;
+        sendToNative(getInstance().mIApkInfo);
+    }
+
+    public static void sendToNative(IApkInfo info) {
         ApkInfoJni.get()
                 .fillFields(
                         /* hostPackageName= */ info.hostPackageName,
@@ -64,9 +67,11 @@ public final class ApkInfo {
                         /* resourcesVersion= */ info.resourcesVersion,
                         /* installerPackageName= */ info.installerPackageName,
                         /* isDebugApp= */ info.isDebugApp,
-                        /* targetSdkVersion= */ ContextUtils.getApplicationContext()
-                                .getApplicationInfo()
-                                .targetSdkVersion);
+                        /* targetSdkVersion= */ info.targetSdkVersion);
+    }
+
+    public static IApkInfo getAidlInfo() {
+        return getInstance().mIApkInfo;
     }
 
     public static String getHostPackageName() {
@@ -281,6 +286,7 @@ public final class ApkInfo {
             }
         }
         mIApkInfo.resourcesVersion = currentResourcesVersion;
+        mIApkInfo.targetSdkVersion = appInfo.targetSdkVersion;
     }
 
     @NativeMethods

@@ -49,15 +49,22 @@ public final class DeviceInfo {
     // function.
     @CalledByNative
     private static void nativeReadyForFields() {
-        IDeviceInfo info = getInstance().mIDeviceInfo;
+        sendToNative(getInstance().mIDeviceInfo);
+    }
+
+    public static void sendToNative(IDeviceInfo info) {
         DeviceInfoJni.get()
                 .fillFields(
-                        /* gmsVersionCode= */ getGmsVersionCode(),
+                        /* gmsVersionCode= */ info.gmsVersionCode,
                         /* isTV= */ info.isTv,
                         /* isAutomotive= */ info.isAutomotive,
                         /* isFoldable= */ info.isFoldable,
                         /* isDesktop= */ info.isDesktop,
                         /* vulkanDeqpLevel= */ info.vulkanDeqpLevel);
+    }
+
+    public static IDeviceInfo getAidlInfo() {
+        return getInstance().mIDeviceInfo;
     }
 
     public static String getGmsVersionCode() {
