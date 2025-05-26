@@ -30,8 +30,7 @@
 }
 
 - (void)dealloc {
-  CHECK(_stopped, base::NotFatalUntil::M140)
-      << "-stop should be called on PrefBackedBoolean";
+  CHECK(_stopped) << "-stop should be called on PrefBackedBoolean";
 }
 
 - (BOOL)value {
