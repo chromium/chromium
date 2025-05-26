@@ -7,16 +7,23 @@
 
 #include "third_party/blink/renderer/core/dom/dom_high_res_time_stamp.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/modules/modules_export.h"
 
 namespace blink {
 
 // Returns a DOMHighResTimeStamp relative to Performance.timeOrigin.
-DOMHighResTimeStamp CalculateRTCEncodedFrameTimestamp(ExecutionContext*,
-                                                      base::TimeTicks);
+MODULES_EXPORT DOMHighResTimeStamp
+CalculateRTCEncodedFrameTimestamp(ExecutionContext*, base::TimeTicks);
+
+// Converts DOMHighResTimeStamp relative to Performance.timeOrigin to a
+// base::TimeTicks.
+MODULES_EXPORT base::TimeTicks RTCEncodedFrameTimestampToTimeTicks(
+    ExecutionContext*,
+    DOMHighResTimeStamp);
 
 // Returns a DOMHighResTimeStamp equivalent to the given delta
-DOMHighResTimeStamp CalculateRTCEncodedFrameTimeDelta(ExecutionContext*,
-                                                      base::TimeDelta);
+MODULES_EXPORT DOMHighResTimeStamp
+CalculateRTCEncodedFrameTimeDelta(ExecutionContext*, base::TimeDelta);
 
 }  // namespace blink
 

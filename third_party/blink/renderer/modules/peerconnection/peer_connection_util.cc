@@ -36,6 +36,13 @@ DOMHighResTimeStamp CalculateRTCEncodedFrameTimestamp(
       performance->CrossOriginIsolatedCapability());
 }
 
+base::TimeTicks RTCEncodedFrameTimestampToTimeTicks(
+    ExecutionContext* context,
+    DOMHighResTimeStamp timestamp) {
+  Performance* performance = GetPerformanceFromExecutionContext(context);
+  return performance->GetTimeOriginInternal() + base::Milliseconds(timestamp);
+}
+
 DOMHighResTimeStamp CalculateRTCEncodedFrameTimeDelta(
     ExecutionContext* context,
     base::TimeDelta time_delta) {
