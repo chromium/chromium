@@ -1785,6 +1785,47 @@ GraphBuilderTflite::CanFuseQuantizeAndGetOutput(const mojom::Pool2d& pool2d) {
 }
 
 std::optional<GraphBuilderTflite::TensorInfo>
+GraphBuilderTflite::CanFuseQuantizeAndGetOutput(const mojom::Reduce& reduce) {
+  // QDQ fusion only support reduce operation with kSum, kMean, kMax and kMin
+  // kinds.
+  if (reduce.kind != mojom::Reduce::Kind::kSum &&
+      reduce.kind != mojom::Reduce::Kind::kMean &&
+      reduce.kind != mojom::Reduce::Kind::kMax &&
+      reduce.kind != mojom::Reduce::Kind::kMin) {
+    return std::nullopt;
+  }
+
+  if (!IsDequantizeOutput(reduce.input_operand_id)) {
+    return std::nullopt;
+  }
+
+  // TODO(crbug.com/413083273): Consider the restriction in GPU delegate.
+  // For XNNPack delegate, input and output operands have to be dequantized from
+  // ints8, the scale and zero point of input and output have to be scaler.
+  // https://source.chromium.org/chromium/chromium/src/+/main:third_party/tflite/src/tensorflow/lite/delegates/xnnpack/xnnpack_delegate.cc;l=4683;drc=884710320aa8a793be1407d8b8091b538658f5e6
+  const mojom::DequantizeLinear& input_dequantize =
+      GetDequantizeOp(reduce.input_operand_id);
+  if (!IsInts8AndScalarScale(input_dequantize)) {
+    return std::nullopt;
+  }
+
+  std::optional<std::pair<OperationId, QuantizateParametersOffset>> next_op =
+      IsNextOpQuantize(reduce.output_operand_id,
+                       {GetOperand(input_dequantize.input_operand_id)
+                            .descriptor.data_type()});
+  if (!next_op) {
+    return std::nullopt;
+  }
+
+  const mojom::QuantizeLinear& output_quantize = GetQuantizeOp(next_op->first);
+  if (!IsInts8AndScalarScale(output_quantize)) {
+    return std::nullopt;
+  }
+
+  return SerializeQuantizedOutput(*next_op);
+}
+
+std::optional<GraphBuilderTflite::TensorInfo>
 GraphBuilderTflite::CanFuseQuantizeAndGetOutput(const mojom::Reshape& reshape) {
   if (!IsDequantizeOutput(reshape.input_operand_id)) {
     return std::nullopt;
@@ -6229,10 +6270,18 @@ auto GraphBuilderTflite::SerializeReciprocal(
 
 auto GraphBuilderTflite::SerializeReduce(const mojom::Reduce& reduce)
     -> base::expected<OperatorOffset, std::string> {
+  std::optional<TensorInfo> quantized_output =
+      CanFuseQuantizeAndGetOutput(reduce);
+  const bool fuse_dequantize = quantized_output.has_value();
   ASSIGN_OR_RETURN(const TensorInfo& input_tensor_info,
-                   SerializeInputTensorInfo(reduce.input_operand_id));
+                   SerializeInputTensorInfo(
+                       reduce.input_operand_id, /*quantize_params=*/0,
+                       /*operation_supports_float16=*/false, fuse_dequantize));
+
   const TensorIndex output_tensor_index =
-      SerializeOutputTensorInfo(reduce.output_operand_id).index;
+      fuse_dequantize
+          ? quantized_output->index
+          : SerializeOutputTensorInfo(reduce.output_operand_id).index;
 
   // Serialize the axes tensor to reduce input tensor.
   ASSIGN_OR_RETURN(const std::vector<int32_t> signed_axes,
