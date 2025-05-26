@@ -284,7 +284,7 @@
 // - external/xnnpack+/src/f32-rdsum/gen/f32-rdsum-7p7x-minmax-avx-c32.c
 // - external/xnnpack+/src/f32-rdsum/gen/f32-rdsum-7p7x-minmax-avx512f-c64.c
 // - external/xnnpack+/src/f32-rdsum/gen/f32-rdsum-7p7x-minmax-scalar.c
-// - external/xnnpack+/src/f32-rdsum/gen/f32-rdsum-7p7x-minmax-sse2-c16.c
+// - external/xnnpack+/src/f32-rdsum/gen/f32-rdsum-7p7x-minmax-sse-c16.c
 // - external/xnnpack+/src/f32-rminmax/gen/f32-rmax-avx-u32-acc4.c
 // - external/xnnpack+/src/f32-rminmax/gen/f32-rmax-avx512f-u64-acc4.c
 // - external/xnnpack+/src/f32-rminmax/gen/f32-rmax-scalar-u4-acc4.c
@@ -511,6 +511,7 @@
 // - external/xnnpack+/src/memory.c
 // - external/xnnpack+/src/microparams-init.c
 // - external/xnnpack+/src/mutex.c
+// - external/xnnpack+/src/params.c
 // - external/xnnpack+/src/qd8-f16-qb4w-gemm/gen/qd8-f16-qb4w-gemm-1x8c8-minmax-avx2.c
 // - external/xnnpack+/src/qd8-f16-qb4w-gemm/gen/qd8-f16-qb4w-gemm-3x8c8-minmax-avx2.c
 // - external/xnnpack+/src/qd8-f16-qc4w-gemm/gen/qd8-f16-qc4w-gemm-1x8c8-minmax-avx2-madd-prfm.c
@@ -961,10 +962,10 @@
 #include <string.h>
 
 static const uint8_t xnn_build_identifier[] = {
-  148,   5, 105, 197, 100, 103, 237,  68,
-  187, 178, 174, 198, 125, 155, 232,  30,
-  119, 251, 111, 140, 128, 138, 239, 243,
-  255, 126,  27, 130, 105, 187, 194, 112
+  149, 211,  46,  48, 250, 232, 248, 229,
+   62, 155, 121, 247,   2, 205,  53, 241,
+   41,   3, 110, 143, 132,  15, 198, 224,
+   93,  92, 171, 189, 231,  92, 246,  74
 };
 
 size_t xnn_experimental_get_build_identifier_size() {

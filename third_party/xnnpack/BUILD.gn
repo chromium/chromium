@@ -178,7 +178,7 @@ if (current_cpu == "x64" || current_cpu == "x86") {
     ":f32-rdminmax_x64",
     ":f32-rdsum_avx-no-avx2-no-f16c-no-fma",
     ":f32-rdsum_avx512f",
-    ":f32-rdsum_sse2-no-sse3",
+    ":f32-rdsum_sse-no-sse2",
     ":f32-rdsum_x64",
     ":f32-rminmax_avx-no-avx2-no-f16c-no-fma",
     ":f32-rminmax_avx512f",
@@ -682,7 +682,7 @@ if (current_cpu == "x64" || current_cpu == "x86") {
     ":f32-rdminmax_x64_standalone",
     ":f32-rdsum_avx-no-avx2-no-f16c-no-fma_standalone",
     ":f32-rdsum_avx512f_standalone",
-    ":f32-rdsum_sse2-no-sse3_standalone",
+    ":f32-rdsum_sse-no-sse2_standalone",
     ":f32-rdsum_x64_standalone",
     ":f32-rminmax_avx-no-avx2-no-f16c-no-fma_standalone",
     ":f32-rminmax_avx512f_standalone",
@@ -8471,15 +8471,15 @@ if (current_cpu == "x64" || current_cpu == "x86") {
     }
   }
 
-  source_set("f32-rdsum_sse2-no-sse3") {
+  source_set("f32-rdsum_sse-no-sse2") {
     cflags = [
-      "-mno-sse3",
-      "-msse2",
+      "-mno-sse2",
+      "-msse",
     ]
 
     sources = [
       "src/include/xnnpack.h",
-      "src/src/f32-rdsum/gen/f32-rdsum-7p7x-minmax-sse2-c16.c",
+      "src/src/f32-rdsum/gen/f32-rdsum-7p7x-minmax-sse-c16.c",
     ]
 
     configs -= [ "//build/config/compiler:chromium_code" ]
@@ -8497,15 +8497,15 @@ if (current_cpu == "x64" || current_cpu == "x86") {
   }
 
   # This is a target that cannot depend on //base.
-  source_set("f32-rdsum_sse2-no-sse3_standalone") {
+  source_set("f32-rdsum_sse-no-sse2_standalone") {
     cflags = [
-      "-mno-sse3",
-      "-msse2",
+      "-mno-sse2",
+      "-msse",
     ]
 
     sources = [
       "src/include/xnnpack.h",
-      "src/src/f32-rdsum/gen/f32-rdsum-7p7x-minmax-sse2-c16.c",
+      "src/src/f32-rdsum/gen/f32-rdsum-7p7x-minmax-sse-c16.c",
     ]
 
     configs -= [ "//build/config/compiler:chromium_code" ]
