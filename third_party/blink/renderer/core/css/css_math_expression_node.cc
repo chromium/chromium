@@ -295,10 +295,10 @@ CalculationResultCategory CSSMathType::Type() const {
     return kCalcOther;
   }
   BaseType type;
-  std::int16_t types_sum = 0;
-  for (std::uint8_t type_index = 0u; type_index < BaseType::kNumTypes;
+  int16_t types_sum = 0;
+  for (uint8_t type_index = 0u; type_index < BaseType::kNumTypes;
        ++type_index) {
-    std::int8_t type_power = base_type_powers_[type_index];
+    int8_t type_power = base_type_powers_[type_index];
     types_sum += type_power;
     if (type_power != 0) {
       type = BaseType(type_index);
@@ -381,8 +381,8 @@ CSSMathType operator+(CSSMathType type1, CSSMathType type2) {
   if (type1_or_type2_contain_percent &&
       type1_or_type2_contain_key_other_than_percent) {
     // For each base type other than "percent" hint:
-    for (std::uint8_t type_index = 0;
-         type_index < CSSMathType::BaseType::kNumTypes; ++type_index) {
+    for (uint8_t type_index = 0; type_index < CSSMathType::BaseType::kNumTypes;
+         ++type_index) {
       auto type = static_cast<CSSMathType::BaseType>(type_index);
       if (type == kPercent) {
         continue;
@@ -409,6 +409,49 @@ CSSMathType operator+(CSSMathType type1, CSSMathType type2) {
     return CSSMathType::InvalidType();
   }
   return CSSMathType::InvalidType();
+}
+
+CSSMathType operator*(CSSMathType type1, CSSMathType type2) {
+  DCHECK(type1.IsValid() && type2.IsValid());
+  // If both type1 and type2 have non-null percent hints with different values
+  // The types can’t be added. Return failure.
+  if (type1.percentage_hint_.has_value() &&
+      type2.percentage_hint_.has_value() &&
+      type1.percentage_hint_ != type2.percentage_hint_) {
+    return CSSMathType::InvalidType();
+  }
+  // If type1 has a non-null percent hint hint and type2 doesn’t
+  // Apply the percent hint hint to type2.
+  if (type1.percentage_hint_.has_value() &&
+      !type2.percentage_hint_.has_value()) {
+    type2.ApplyHint(type1.percentage_hint_.value());
+  }
+  // Vice versa if type2 has a non-null percent hint and type1 doesn’t.
+  if (!type1.percentage_hint_.has_value() &&
+      type2.percentage_hint_.has_value()) {
+    type1.ApplyHint(type2.percentage_hint_.value());
+  }
+  // Set finalType’s percent hint to type1’s percent hint (we can just use
+  // type1). Copy all of type1’s entries to finalType, then for each baseType →
+  // power of type2:
+  for (uint8_t type_index = 0; type_index < CSSMathType::BaseType::kNumTypes;
+       ++type_index) {
+    type1.base_type_powers_[type_index] += type2.base_type_powers_[type_index];
+  }
+  return type1;
+}
+
+CSSMathType operator/(CSSMathType type1, CSSMathType type2) {
+  return type1 * -type2;
+}
+
+CSSMathType CSSMathType::operator-() const {
+  CSSMathType type(*this);
+  for (uint8_t type_index = 0; type_index < CSSMathType::BaseType::kNumTypes;
+       ++type_index) {
+    type.base_type_powers_[type_index] = -type.base_type_powers_[type_index];
+  }
+  return type;
 }
 
 namespace {

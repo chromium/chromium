@@ -96,7 +96,7 @@ class CSSMathType final {
   DISALLOW_NEW();
 
   // https://drafts.css-houdini.org/css-typed-om-1/#cssnumericvalue-base-type
-  enum BaseType : std::uint8_t {
+  enum BaseType : uint8_t {
     kPercent,
     kLength,
     kAngle,
@@ -125,10 +125,16 @@ class CSSMathType final {
   // https://drafts.css-houdini.org/css-typed-om-1/#cssnumericvalue-add-two-types
   CORE_EXPORT friend CSSMathType operator+(CSSMathType type1,
                                            CSSMathType type2);
+  // https://drafts.css-houdini.org/css-typed-om-1/#cssnumericvalue-multiply-two-types
+  CORE_EXPORT friend CSSMathType operator*(CSSMathType type1,
+                                           CSSMathType type2);
+  CORE_EXPORT friend CSSMathType operator/(CSSMathType type1,
+                                           CSSMathType type2);
+  CORE_EXPORT CSSMathType operator-() const;
 
  private:
   using BaseTypePowers =
-      std::array<std::int8_t, static_cast<size_t>(BaseType::kNumTypes)>;
+      std::array<int8_t, static_cast<size_t>(BaseType::kNumTypes)>;
   using PercentageHint = std::optional<BaseType>;
 
   explicit CSSMathType(bool);

@@ -793,6 +793,32 @@ TEST(CSSMathExpressionNode, CSSMathTypeSum) {
   check_type_sum(percent, percent, true, kCalcPercent);
 }
 
+TEST(CSSMathExpressionNode, CSSMathTypeProduct) {
+  CSSMathType number(kCalcNumber);
+  CSSMathType length(kCalcLength);
+  CSSMathType percent(kCalcPercent);
+
+  EXPECT_EQ((number * number).Type(), kCalcNumber);
+  EXPECT_EQ((number * number / number).Type(), kCalcNumber);
+  EXPECT_EQ((number * length).Type(), kCalcLength);
+  EXPECT_EQ((length / length).Type(), kCalcNumber);
+  EXPECT_EQ((length * length / length).Type(), kCalcLength);
+  EXPECT_EQ((length * length / length / length).Type(), kCalcNumber);
+  EXPECT_EQ((length * length / (length * length)).Type(), kCalcNumber);
+  EXPECT_EQ((length * (length / length) * number).Type(), kCalcLength);
+
+  EXPECT_EQ((length * length).Type(), kCalcOther);
+  EXPECT_EQ((percent * length).Type(), kCalcOther);
+  EXPECT_EQ((percent * percent).Type(), kCalcOther);
+  EXPECT_EQ((number / length).Type(), kCalcOther);
+}
+
+TEST(CSSMathExpressionNode, CSSMathTypeComplex) {
+  CSSMathType length(kCalcLength);
+
+  EXPECT_EQ(((length + length) / length).Type(), kCalcNumber);
+}
+
 }  // anonymous namespace
 
 }  // namespace blink
