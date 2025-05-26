@@ -54,8 +54,8 @@ class RoundedRectBackground : public Background {
  public:
   RoundedRectBackground(ui::ColorVariant color,
                         const gfx::RoundedCornersF& radii,
-                        int for_border_thickness)
-      : radii_(radii), half_thickness_(for_border_thickness / 2.0f) {
+                        const gfx::Insets& insets)
+      : radii_(radii), insets_(insets) {
     SetColor(color);
   }
 
@@ -64,7 +64,7 @@ class RoundedRectBackground : public Background {
 
   void Paint(gfx::Canvas* canvas, View* view) const override {
     gfx::Rect rect(view->GetLocalBounds());
-    rect.Inset(half_thickness_);
+    rect.Inset(insets_);
     SkPath path;
     SkScalar radii[8] = {radii_.upper_left(),  radii_.upper_left(),
                          radii_.upper_right(), radii_.upper_right(),
@@ -91,7 +91,7 @@ class RoundedRectBackground : public Background {
 
  private:
   const gfx::RoundedCornersF radii_;
-  const float half_thickness_;
+  const gfx::Insets insets_;
 };
 
 // ThemedVectorIconBackground is an image drawn on the view's background using
@@ -188,14 +188,20 @@ std::unique_ptr<Background> CreateRoundedRectBackground(
     ui::ColorVariant color,
     const gfx::RoundedCornersF& radii,
     int for_border_thickness) {
+  return CreateRoundedRectBackground(color, radii,
+                                     gfx::Insets(for_border_thickness / 2.0f));
+}
+
+std::unique_ptr<Background> CreateRoundedRectBackground(
+    ui::ColorVariant color,
+    const gfx::RoundedCornersF& radii,
+    const gfx::Insets& insets) {
   // If the radii is not set, fallback to SolidBackground since it results in
   // more efficient tiling by cc. See crbug.com/1464128.
-  if (radii.IsEmpty() && for_border_thickness == 0) {
+  if (radii.IsEmpty() && insets.IsEmpty()) {
     return CreateSolidBackground(color);
   }
-
-  return std::make_unique<RoundedRectBackground>(color, radii,
-                                                 for_border_thickness);
+  return std::make_unique<RoundedRectBackground>(color, radii, insets);
 }
 
 std::unique_ptr<Background> CreateThemedVectorIconBackground(

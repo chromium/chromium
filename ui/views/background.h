@@ -16,6 +16,7 @@
 #include "ui/color/color_id.h"
 #include "ui/color/color_variant.h"
 #include "ui/gfx/color_palette.h"
+#include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/views/views_export.h"
 
@@ -100,6 +101,12 @@ VIEWS_EXPORT std::unique_ptr<Background> CreateRoundedRectBackground(
     ui::ColorVariant color,
     const gfx::RoundedCornersF& radii,
     int for_border_thickness = 0);
+
+// Same as above except the background is inset by the specified insets.
+VIEWS_EXPORT std::unique_ptr<Background> CreateRoundedRectBackground(
+    ui::ColorVariant color,
+    const gfx::RoundedCornersF& radii,
+    const gfx::Insets& insets);
 
 // Creates a background from the specified Painter.
 VIEWS_EXPORT std::unique_ptr<Background> CreateBackgroundFromPainter(
