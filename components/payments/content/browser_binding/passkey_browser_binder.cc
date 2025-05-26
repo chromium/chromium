@@ -156,7 +156,7 @@ PasskeyBrowserBinder::UnboundKey::~UnboundKey() {
 
 std::optional<PasskeyBrowserBinder::UnboundKey>
 PasskeyBrowserBinder::CreateUnboundKey(
-    const BrowserBoundKeyStore::CredentialInfoList& allowed_credentials) {
+    const BrowserBoundKeyStore::CredentialInfoList& allowed_algorithms) {
   // Creates a new random identifier when new browser bound keys are
   // constructed. The returned value is used as the identifier for the browser
   // bound key to be created. The identifier is expected to be sufficiently
@@ -165,7 +165,7 @@ PasskeyBrowserBinder::CreateUnboundKey(
       random_bytes_as_vector_callback_.Run(kBrowserBoundKeyIdLength);
   std::unique_ptr<BrowserBoundKey> browser_bound_key =
       key_store_->GetOrCreateBrowserBoundKeyForCredentialId(
-          browser_bound_key_id, allowed_credentials);
+          browser_bound_key_id, allowed_algorithms);
   if (!browser_bound_key) {
     return std::nullopt;
   }
@@ -215,10 +215,25 @@ void PasskeyBrowserBinder::DeleteBrowserBoundKeys(
       std::move(callback));
 }
 
+void PasskeyBrowserBinder::GetBoundKeyForPasskey(
+    std::vector<uint8_t> credential_id,
+    std::string relying_party,
+    base::OnceCallback<void(std::unique_ptr<BrowserBoundKey>)> callback) {
+  if (!web_data_service_) {
+    std::move(callback).Run(nullptr);
+    return;
+  }
+  auto handle = web_data_service_->GetBrowserBoundKey(
+      std::move(credential_id), std::move(relying_party), /*consumer=*/this);
+  get_browser_bound_key_handlers_[handle] =
+      base::BindOnce(&PasskeyBrowserBinder::GetBrowserBoundKey,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback));
+}
+
 void PasskeyBrowserBinder::GetOrCreateBoundKeyForPasskey(
     std::vector<uint8_t> credential_id,
     std::string relying_party,
-    const BrowserBoundKeyStore::CredentialInfoList& allowed_credentials,
+    const BrowserBoundKeyStore::CredentialInfoList& allowed_algorithms,
     base::OnceCallback<void(std::unique_ptr<BrowserBoundKey>)> callback) {
   if (!web_data_service_) {
     std::move(callback).Run(nullptr);
@@ -231,7 +246,7 @@ void PasskeyBrowserBinder::GetOrCreateBoundKeyForPasskey(
   get_browser_bound_key_handlers_[handle] =
       base::BindOnce(&PasskeyBrowserBinder::GetOrCreateBrowserBoundKey,
                      weak_ptr_factory_.GetWeakPtr(), std::move(credential_id),
-                     std::move(relying_party), std::move(allowed_credentials),
+                     std::move(relying_party), std::move(allowed_algorithms),
                      std::move(callback));
 }
 
@@ -276,10 +291,23 @@ PasskeyBrowserBinder::GetWebDataServiceForTesting() {
   return web_data_service_.get();
 }
 
+void PasskeyBrowserBinder::GetBrowserBoundKey(
+    base::OnceCallback<void(std::unique_ptr<BrowserBoundKey>)> callback,
+    std::vector<uint8_t> existing_browser_bound_key_id) {
+  if (existing_browser_bound_key_id.empty()) {
+    std::move(callback).Run(nullptr);
+    return;
+  }
+  // The BBK is only retrieved: With an empty `allowed_algorithms` no BBK will
+  // be created.
+  std::move(callback).Run(key_store_->GetOrCreateBrowserBoundKeyForCredentialId(
+      existing_browser_bound_key_id, /*allowed_algorithms=*/{}));
+}
+
 void PasskeyBrowserBinder::GetOrCreateBrowserBoundKey(
     std::vector<uint8_t> credential_id,
     std::string relying_party,
-    BrowserBoundKeyStore::CredentialInfoList allowed_credentials,
+    BrowserBoundKeyStore::CredentialInfoList allowed_algorithms,
     base::OnceCallback<void(std::unique_ptr<BrowserBoundKey>)> callback,
     std::vector<uint8_t> browser_bound_key_id) {
   if (browser_bound_key_id.empty()) {
@@ -294,7 +322,7 @@ void PasskeyBrowserBinder::GetOrCreateBrowserBoundKey(
     set_browser_bound_key_handlers_[handle] = base::DoNothing();
   }
   std::move(callback).Run(key_store_->GetOrCreateBrowserBoundKeyForCredentialId(
-      browser_bound_key_id, allowed_credentials));
+      browser_bound_key_id, allowed_algorithms));
 }
 
 }  // namespace payments

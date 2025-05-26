@@ -39,7 +39,7 @@ struct BrowserBoundKeyMetadata;
 //
 // // Create an unbound key.
 // PasskeyBrowserBinder::UnboundKey unbound_key =
-//     binder.CreateUnboundKey(std::move(allowed_credentials));
+//     binder.CreateUnboundKey(std::move(allowed_algorithms));
 //
 // // Get the public key and include it in some authenticator creation request.
 // auto passkey = CreatePasskey(...,
@@ -60,7 +60,7 @@ struct BrowserBoundKeyMetadata;
 // binder_->GetOrCreateBoundKeyForPasskey(
 //     passkey.GetCredentialId(),
 //     passkey.GetRelyingPartyId(),
-//     allowed_credentials,
+//     allowed_algorithms,
 //     [](std::unique_ptr<BrowserBoundKey> key) {
 //       if (!key) {
 //         // Handle the browser bound key could not be found nor created.
@@ -111,15 +111,22 @@ class PasskeyBrowserBinder : public WebDataServiceConsumer {
   // UnboundKey should be bound using BindKey() after the credential id has
   // been created.
   std::optional<UnboundKey> CreateUnboundKey(
-      const BrowserBoundKeyStore::CredentialInfoList& allowed_credentials);
+      const BrowserBoundKeyStore::CredentialInfoList& allowed_algorithms);
+
+  // Gets a browser bound key for the given `credential_id` and `relying_party`
+  // only if a browser bound key already exists for the credential.
+  void GetBoundKeyForPasskey(
+      std::vector<uint8_t> credential_id,
+      std::string relying_party,
+      base::OnceCallback<void(std::unique_ptr<BrowserBoundKey>)> callback);
 
   // Gets or creates a browser bound key for the given `credential_id`,
-  // `relying_party` and `allowed_credentials` returning the browser bound key
+  // `relying_party` and `allowed_algorithms` returning the browser bound key
   // by running `callback`.
   void GetOrCreateBoundKeyForPasskey(
       std::vector<uint8_t> credential_id,
       std::string relying_party,
-      const BrowserBoundKeyStore::CredentialInfoList& allowed_credentials,
+      const BrowserBoundKeyStore::CredentialInfoList& allowed_algorithms,
       base::OnceCallback<void(std::unique_ptr<BrowserBoundKey>)> callback);
 
   // Stores the association of the `key` to a `credential_id` and
@@ -160,13 +167,20 @@ class PasskeyBrowserBinder : public WebDataServiceConsumer {
 
  private:
   // Called after retrieving the possibly empty `existing_browser_bound_key_id`
+  // to retrieve the matching browser bound key. Runs `callback` with nullptr if
+  // there is no matching browser bound key.
+  void GetBrowserBoundKey(
+      base::OnceCallback<void(std::unique_ptr<BrowserBoundKey>)> callback,
+      std::vector<uint8_t> existing_browser_bound_key_id);
+
+  // Called after retrieving the possibly empty `existing_browser_bound_key_id`
   // to retrieve the matching browser bound key. Otherwise creates a new browser
   // bound key and saves its id. The browser bound key is returned by running
   // `callback`.
   void GetOrCreateBrowserBoundKey(
       std::vector<uint8_t> credential_id,
       std::string relying_party,
-      BrowserBoundKeyStore::CredentialInfoList allowed_credentials,
+      BrowserBoundKeyStore::CredentialInfoList allowed_algorithms,
       base::OnceCallback<void(std::unique_ptr<BrowserBoundKey>)> callback,
       std::vector<uint8_t> existing_browser_bound_key_id);
 

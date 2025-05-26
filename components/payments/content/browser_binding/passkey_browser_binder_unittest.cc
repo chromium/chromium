@@ -61,6 +61,7 @@ using ::testing::_;
 using ::testing::AllOf;
 using ::testing::DoAll;
 using ::testing::Eq;
+using ::testing::IsNull;
 using ::testing::NotNull;
 using ::testing::Pointee;
 using ::testing::Property;
@@ -71,7 +72,8 @@ static const int32_t kCoseEs256 = -7;
 
 class PasskeyBrowserBinderTest : public ::testing::Test {
  protected:
-  std::unique_ptr<PasskeyBrowserBinder> CreatePasskeyBrowserBinder() {
+  std::unique_ptr<PasskeyBrowserBinder> CreatePasskeyBrowserBinder(
+      bool is_new_bbk = true) {
     auto binder = std::make_unique<PasskeyBrowserBinder>(
         fake_browser_bound_key_store_, mock_web_data_service_);
     binder->SetRandomBytesAsVectorCallbackForTesting(
@@ -79,10 +81,10 @@ class PasskeyBrowserBinderTest : public ::testing::Test {
           EXPECT_EQ(length, 32u);
           return fake_bbk_id_;
         }));
-    fake_browser_bound_key_store_->PutFakeKey(
-        FakeBrowserBoundKey(fake_bbk_id_, fake_public_key_,
-                            /*signature=*/{}, kCoseEs256,
-                            /*expected_client_data=*/{}));
+    fake_browser_bound_key_store_->PutFakeKey(FakeBrowserBoundKey(
+        fake_bbk_id_, fake_public_key_,
+        /*signature=*/{}, kCoseEs256,
+        /*expected_client_data=*/{}, /*is_new=*/is_new_bbk));
     return binder;
   }
 
@@ -102,7 +104,7 @@ TEST_F(PasskeyBrowserBinderTest, CreatesUnboundKey) {
   std::unique_ptr<PasskeyBrowserBinder> binder = CreatePasskeyBrowserBinder();
 
   std::optional<PasskeyBrowserBinder::UnboundKey> key =
-      binder->CreateUnboundKey(/*allowed_credentials=*/{
+      binder->CreateUnboundKey(/*allowed_algorithms=*/{
           device::PublicKeyCredentialParams::CredentialInfo{.algorithm =
                                                                 kCoseEs256}});
 
@@ -113,7 +115,7 @@ TEST_F(PasskeyBrowserBinderTest, CreatesUnboundKey) {
 TEST_F(PasskeyBrowserBinderTest, DeletesUnboundKey) {
   std::unique_ptr<PasskeyBrowserBinder> binder = CreatePasskeyBrowserBinder();
   std::optional<PasskeyBrowserBinder::UnboundKey> key =
-      binder->CreateUnboundKey(/*allowed_credentials=*/{
+      binder->CreateUnboundKey(/*allowed_algorithms=*/{
           device::PublicKeyCredentialParams::CredentialInfo{.algorithm =
                                                                 kCoseEs256}});
   ASSERT_TRUE(key.has_value());
@@ -129,7 +131,7 @@ TEST_F(PasskeyBrowserBinderTest, DeletesUnboundKey) {
 TEST_F(PasskeyBrowserBinderTest, BindsBrowserBoundKey) {
   std::unique_ptr<PasskeyBrowserBinder> binder = CreatePasskeyBrowserBinder();
   std::optional<PasskeyBrowserBinder::UnboundKey> key =
-      binder->CreateUnboundKey(/*allowed_credentials=*/{
+      binder->CreateUnboundKey(/*allowed_algorithms=*/{
           device::PublicKeyCredentialParams::CredentialInfo{.algorithm =
                                                                 kCoseEs256}});
 
@@ -143,7 +145,8 @@ TEST_F(PasskeyBrowserBinderTest, BindsBrowserBoundKey) {
 
 TEST_F(PasskeyBrowserBinderTest,
        GetOrCreateBoundKeyForPasskeyRetrievesExistingKey) {
-  std::unique_ptr<PasskeyBrowserBinder> binder = CreatePasskeyBrowserBinder();
+  std::unique_ptr<PasskeyBrowserBinder> binder =
+      CreatePasskeyBrowserBinder(/*is_new_bbk=*/false);
   WebDataServiceConsumer* web_data_service_consumer = nullptr;
   WebDataServiceBase::Handle web_data_service_handle = 1234;
   base::MockCallback<base::OnceCallback<void(std::unique_ptr<BrowserBoundKey>)>>
@@ -161,10 +164,38 @@ TEST_F(PasskeyBrowserBinderTest,
                                        fake_public_key_)))));
 
   binder->GetOrCreateBoundKeyForPasskey(
-      fake_credential_id_, fake_relying_party_, /*allowed_credentials=*/
+      fake_credential_id_, fake_relying_party_, /*allowed_algorithms=*/
       {device::PublicKeyCredentialParams::CredentialInfo{.algorithm =
                                                              kCoseEs256}},
       mock_callback.Get());
+  ASSERT_TRUE(web_data_service_consumer);
+  web_data_service_consumer->OnWebDataServiceRequestDone(
+      web_data_service_handle,
+      std::make_unique<WDResult<std::optional<std::vector<uint8_t>>>>(
+          WDResultType::BROWSER_BOUND_KEY, fake_bbk_id_));
+}
+
+TEST_F(PasskeyBrowserBinderTest, GetBoundKeyForPasskeyRetrievesExistingKey) {
+  std::unique_ptr<PasskeyBrowserBinder> binder =
+      CreatePasskeyBrowserBinder(/*is_new_bbk=*/false);
+  WebDataServiceConsumer* web_data_service_consumer = nullptr;
+  WebDataServiceBase::Handle web_data_service_handle = 1234;
+  base::MockCallback<base::OnceCallback<void(std::unique_ptr<BrowserBoundKey>)>>
+      mock_callback;
+
+  EXPECT_CALL(*mock_web_data_service_,
+              GetBrowserBoundKey(fake_credential_id_, fake_relying_party_,
+                                 /*consumer=*/_))
+      .WillOnce(DoAll(SaveArg<2>(&web_data_service_consumer),
+                      Return(web_data_service_handle)));
+  EXPECT_CALL(*mock_web_data_service_, SetBrowserBoundKey).Times(0);
+  EXPECT_CALL(mock_callback,
+              Run(AllOf(NotNull(), Pointee(Property(
+                                       &BrowserBoundKey::GetPublicKeyAsCoseKey,
+                                       fake_public_key_)))));
+
+  binder->GetBoundKeyForPasskey(fake_credential_id_, fake_relying_party_,
+                                mock_callback.Get());
   ASSERT_TRUE(web_data_service_consumer);
   web_data_service_consumer->OnWebDataServiceRequestDone(
       web_data_service_handle,
@@ -195,7 +226,7 @@ TEST_F(PasskeyBrowserBinderTest,
                                        fake_public_key_)))));
 
   binder->GetOrCreateBoundKeyForPasskey(
-      fake_credential_id_, fake_relying_party_, /*allowed_credentials=*/
+      fake_credential_id_, fake_relying_party_, /*allowed_algorithms=*/
       {device::PublicKeyCredentialParams::CredentialInfo{.algorithm =
                                                              kCoseEs256}},
       mock_callback.Get());
@@ -229,10 +260,33 @@ TEST_F(PasskeyBrowserBinderTest,
                                        fake_public_key_)))));
 
   binder->GetOrCreateBoundKeyForPasskey(
-      fake_credential_id_, fake_relying_party_, /*allowed_credentials=*/
+      fake_credential_id_, fake_relying_party_, /*allowed_algorithms=*/
       {device::PublicKeyCredentialParams::CredentialInfo{.algorithm =
                                                              kCoseEs256}},
       mock_callback.Get());
+  ASSERT_TRUE(web_data_service_consumer);
+  web_data_service_consumer->OnWebDataServiceRequestDone(
+      web_data_service_handle,
+      std::make_unique<WDResult<std::optional<std::vector<uint8_t>>>>(
+          WDResultType::BROWSER_BOUND_KEY, std::nullopt));
+}
+
+TEST_F(PasskeyBrowserBinderTest, GetBoundKeyForPasskeyReturnsNullWhenNullOpt) {
+  std::unique_ptr<PasskeyBrowserBinder> binder = CreatePasskeyBrowserBinder();
+  WebDataServiceConsumer* web_data_service_consumer = nullptr;
+  WebDataServiceBase::Handle web_data_service_handle = 1234;
+  base::MockCallback<base::OnceCallback<void(std::unique_ptr<BrowserBoundKey>)>>
+      mock_callback;
+
+  EXPECT_CALL(*mock_web_data_service_,
+              GetBrowserBoundKey(fake_credential_id_, fake_relying_party_,
+                                 /*consumer=*/_))
+      .WillOnce(DoAll(SaveArg<2>(&web_data_service_consumer),
+                      Return(web_data_service_handle)));
+  EXPECT_CALL(mock_callback, Run(IsNull()));
+
+  binder->GetBoundKeyForPasskey(fake_credential_id_, fake_relying_party_,
+                                mock_callback.Get());
   ASSERT_TRUE(web_data_service_consumer);
   web_data_service_consumer->OnWebDataServiceRequestDone(
       web_data_service_handle,

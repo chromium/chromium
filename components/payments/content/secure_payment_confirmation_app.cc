@@ -29,6 +29,7 @@
 #include "components/payments/core/payer_data.h"
 #include "components/payments/core/payments_experimental_features.h"
 #include "components/webauthn/core/browser/internal_authenticator.h"
+#include "content/public/browser/browser_context.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
 #include "crypto/sha2.h"
@@ -147,12 +148,18 @@ void SecurePaymentConfirmationApp::InvokePaymentApp(
       credential_parameters =
           base::ToVector(kDefaultBrowserBoundKeyCredentialParameters);
     }
-    passkey_browser_binder_->GetOrCreateBoundKeyForPasskey(
-        credential_id_, effective_relying_party_identity_,
-        credential_parameters,
-        base::BindOnce(&SecurePaymentConfirmationApp::OnGetBrowserBoundKey,
-                       weak_ptr_factory_.GetWeakPtr(), delegate,
-                       std::move(options)));
+    auto on_get_browser_bound_key_callback = base::BindOnce(
+        &SecurePaymentConfirmationApp::OnGetBrowserBoundKey,
+        weak_ptr_factory_.GetWeakPtr(), delegate, std::move(options));
+    if (web_contents()->GetBrowserContext()->IsOffTheRecord()) {
+      passkey_browser_binder_->GetBoundKeyForPasskey(
+          credential_id_, effective_relying_party_identity_,
+          std::move(on_get_browser_bound_key_callback));
+    } else {
+      passkey_browser_binder_->GetOrCreateBoundKeyForPasskey(
+          credential_id_, effective_relying_party_identity_,
+          credential_parameters, std::move(on_get_browser_bound_key_callback));
+    }
   } else {
     OnGetBrowserBoundKey(delegate, std::move(options),
                          /*browser_bound_key=*/nullptr);

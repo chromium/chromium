@@ -22,11 +22,14 @@ class FakeBrowserBoundKey : public BrowserBoundKey {
   // will match. `Sign()` will compare its input, against
   // `expected_client_data`, returning an empty signature when these do not
   // match.
+  // Set `is_new` to false when the key is expected to be retrieved even when
+  // its algorithm is not listed.
   FakeBrowserBoundKey(std::vector<uint8_t> identifier,
                       std::vector<uint8_t> public_key_as_cose_key,
                       std::vector<uint8_t> signature,
                       int32_t algorithm_identifier,
-                      std::vector<uint8_t> expected_client_data);
+                      std::vector<uint8_t> expected_client_data,
+                      bool is_new = true);
   FakeBrowserBoundKey(const FakeBrowserBoundKey& other);
   FakeBrowserBoundKey& operator=(const FakeBrowserBoundKey& other);
   ~FakeBrowserBoundKey() override;
@@ -36,6 +39,7 @@ class FakeBrowserBoundKey : public BrowserBoundKey {
   std::vector<uint8_t> GetPublicKeyAsCoseKey() const override;
 
   int32_t algorithm_identifier() const { return algorithm_identifier_; }
+  bool is_new() const { return is_new_; }
 
  private:
   std::vector<uint8_t> identifier_;
@@ -43,6 +47,7 @@ class FakeBrowserBoundKey : public BrowserBoundKey {
   std::vector<uint8_t> signature_;
   int32_t algorithm_identifier_;
   std::vector<uint8_t> expected_client_data_;
+  bool is_new_;
 };
 
 }  // namespace payments

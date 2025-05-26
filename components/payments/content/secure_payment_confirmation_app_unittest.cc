@@ -183,8 +183,10 @@ struct BrowserBoundKeyTestParams {
   std::optional<
       std::vector<::device::PublicKeyCredentialParams::CredentialInfo>>
       credential_parameters;
-  int32_t algorithm_identifier;
-  bool expect_browser_bound_key;
+  int32_t algorithm_identifier = 0;
+  bool is_new_bbk = false;
+  bool is_off_the_record = false;
+  bool expect_browser_bound_key = false;
   std::string test_name_suffix;
 };
 
@@ -202,13 +204,50 @@ INSTANTIATE_TEST_SUITE_P(
                     device::CredentialType::kPublicKey,
                     kAlgorithmIdentifier)}},
             .algorithm_identifier = kAlgorithmIdentifier,
+            .is_new_bbk = false,
+            .is_off_the_record = false,
             .expect_browser_bound_key = true,
             .test_name_suffix = "WithSpecifiedAlgorithm",
+        },
+        BrowserBoundKeyTestParams{
+            .credential_parameters =
+                {{device::PublicKeyCredentialParams::CredentialInfo(
+                    device::CredentialType::kPublicKey,
+                    kAlgorithmIdentifier)}},
+            .algorithm_identifier = kAlgorithmIdentifier,
+            .is_new_bbk = true,
+            .is_off_the_record = false,
+            .expect_browser_bound_key = true,
+            .test_name_suffix = "WithoutPreExistingKey",
+        },
+        BrowserBoundKeyTestParams{
+            .credential_parameters =
+                {{device::PublicKeyCredentialParams::CredentialInfo(
+                    device::CredentialType::kPublicKey,
+                    kAlgorithmIdentifier)}},
+            .algorithm_identifier = kAlgorithmIdentifier,
+            .is_new_bbk = false,
+            .is_off_the_record = true,
+            .expect_browser_bound_key = true,
+            .test_name_suffix = "WhenOffTheRecordWithPreExistingKey",
+        },
+        BrowserBoundKeyTestParams{
+            .credential_parameters =
+                {{device::PublicKeyCredentialParams::CredentialInfo(
+                    device::CredentialType::kPublicKey,
+                    kAlgorithmIdentifier)}},
+            .algorithm_identifier = kAlgorithmIdentifier,
+            .is_new_bbk = true,
+            .is_off_the_record = true,
+            .expect_browser_bound_key = false,
+            .test_name_suffix = "WhenOffTheRecordWithoutPreExistingKey",
         },
         BrowserBoundKeyTestParams{
             .credential_parameters = std::nullopt,
             .algorithm_identifier = base::strict_cast<int32_t>(
                 device::CoseAlgorithmIdentifier::kEs256),
+            .is_new_bbk = true,
+            .is_off_the_record = false,
             .expect_browser_bound_key = true,
             .test_name_suffix = "Es256WithDefaults",
         },
@@ -216,12 +255,16 @@ INSTANTIATE_TEST_SUITE_P(
             .credential_parameters = std::nullopt,
             .algorithm_identifier = base::strict_cast<int32_t>(
                 device::CoseAlgorithmIdentifier::kRs256),
+            .is_new_bbk = true,
+            .is_off_the_record = false,
             .expect_browser_bound_key = true,
             .test_name_suffix = "Rs256WithDefaults",
         },
         BrowserBoundKeyTestParams{
             .credential_parameters = std::nullopt,
             .algorithm_identifier = kAlgorithmIdentifier,
+            .is_new_bbk = true,
+            .is_off_the_record = false,
             .expect_browser_bound_key = false,
             .test_name_suffix = "WithNonDefaultAlgorithm",
         }),
@@ -229,8 +272,22 @@ INSTANTIATE_TEST_SUITE_P(
       return info.param.test_name_suffix;
     });
 
+auto InvokeAuthenticatorCallback(std::vector<uint8_t> client_data_json) {
+  auto authenticator_response =
+      blink::mojom::GetAssertionAuthenticatorResponse::New();
+  authenticator_response->info = blink::mojom::CommonCredentialInfo::New();
+  authenticator_response->info->client_data_json = client_data_json;
+  authenticator_response->extensions =
+      blink::mojom::AuthenticationExtensionsClientOutputs::New();
+  return base::test::RunOnceCallback<1>(
+      blink::mojom::AuthenticatorStatus::SUCCESS,
+      std::move(authenticator_response),
+      /*dom_exception_details=*/nullptr);
+}
+
 TEST_P(SecurePaymentConfirmationAppBrowserBindingTest,
        AddsBrowserBoundKeyAndSignature) {
+  context_.set_is_off_the_record(GetParam().is_off_the_record);
   base::test::ScopedFeatureList features(
       blink::features::kSecurePaymentConfirmationBrowserBoundKeys);
   auto authenticator =
@@ -244,18 +301,23 @@ TEST_P(SecurePaymentConfirmationAppBrowserBindingTest,
   const std::vector<uint8_t> browser_bound_key_id({0x0d, 0x0e, 0x0f, 0x10});
   scoped_refptr<MockPaymentManifestWebDataService> mock_service =
       base::MakeRefCounted<MockPaymentManifestWebDataService>();
+  auto binder = std::make_unique<PasskeyBrowserBinder>(browser_bound_key_store_,
+                                                       mock_service);
+  binder->SetRandomBytesAsVectorCallbackForTesting(base::BindRepeating(
+      [](const std::vector<uint8_t>& value, size_t) { return value; },
+      browser_bound_key_id));
   SecurePaymentConfirmationApp app(
       web_contents_, "effective_rp.example", payment_instrument_label_,
       /*payment_instrument_icon=*/std::make_unique<SkBitmap>(), credential_id,
-      std::make_unique<PasskeyBrowserBinder>(browser_bound_key_store_,
-                                             mock_service),
-      url::Origin::Create(GURL("https://merchant.example")), spec_->AsWeakPtr(),
-      MakeRequest(GetParam().credential_parameters), std::move(authenticator),
+      std::move(binder), url::Origin::Create(GURL("https://merchant.example")),
+      spec_->AsWeakPtr(), MakeRequest(GetParam().credential_parameters),
+      std::move(authenticator),
       /*network_label=*/u"", /*network_icon=*/std::make_unique<SkBitmap>(),
       /*issuer_label=*/u"", /*issuer_icon=*/std::make_unique<SkBitmap>());
   browser_bound_key_store_->PutFakeKey(FakeBrowserBoundKey(
       browser_bound_key_id, public_key_as_cose_key, signature,
-      GetParam().algorithm_identifier, client_data_json));
+      GetParam().algorithm_identifier, client_data_json,
+      /*is_new=*/GetParam().is_new_bbk));
   WebDataServiceConsumer* web_data_service_consumer = nullptr;
   WebDataServiceBase::Handle web_data_service_handle = 1234;
   EXPECT_CALL(*mock_service, GetBrowserBoundKey(Eq(credential_id),
@@ -272,29 +334,18 @@ TEST_P(SecurePaymentConfirmationAppBrowserBindingTest,
               ? std::optional<std::vector<uint8_t>>(public_key_as_cose_key)
               : std::nullopt))));
   EXPECT_CALL(*mock_authenticator, GetAssertion(_, _))
-      .WillOnce(
-          [client_data_json](
-              blink::mojom::PublicKeyCredentialRequestOptionsPtr options,
-              webauthn::InternalAuthenticator::GetAssertionCallback callback) {
-            auto authenticator_response =
-                blink::mojom::GetAssertionAuthenticatorResponse::New();
-            authenticator_response->info =
-                blink::mojom::CommonCredentialInfo::New();
-            authenticator_response->info->client_data_json = client_data_json;
-            authenticator_response->extensions =
-                blink::mojom::AuthenticationExtensionsClientOutputs::New();
-            std::move(callback).Run(blink::mojom::AuthenticatorStatus::SUCCESS,
-                                    std::move(authenticator_response),
-                                    /*dom_exception_details=*/nullptr);
-          });
+      .WillOnce(InvokeAuthenticatorCallback(client_data_json));
   app.InvokePaymentApp(/*delegate=*/weak_ptr_factory_.GetWeakPtr());
 
   // Simulate the retrieval of an existing browser bound key.
   ASSERT_TRUE(web_data_service_consumer);
-  web_data_service_consumer->OnWebDataServiceRequestDone(
-      web_data_service_handle,
+  auto metadata_result =
       std::make_unique<WDResult<std::optional<std::vector<uint8_t>>>>(
-          WDResultType::BROWSER_BOUND_KEY, browser_bound_key_id));
+          WDResultType::BROWSER_BOUND_KEY, GetParam().is_new_bbk
+                                               ? std::vector<uint8_t>()
+                                               : browser_bound_key_id);
+  web_data_service_consumer->OnWebDataServiceRequestDone(
+      web_data_service_handle, std::move(metadata_result));
 
   ASSERT_TRUE(on_instrument_details_ready_called_);
   mojom::PaymentResponsePtr payment_response =

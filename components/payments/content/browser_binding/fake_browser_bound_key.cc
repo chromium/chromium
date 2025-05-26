@@ -15,19 +15,22 @@ FakeBrowserBoundKey::FakeBrowserBoundKey(
     std::vector<uint8_t> public_key_as_cose_key,
     std::vector<uint8_t> signature,
     int32_t algorithm_identifier,
-    std::vector<uint8_t> expected_client_data)
+    std::vector<uint8_t> expected_client_data,
+    bool is_new)
     : identifier_(std::move(identifier)),
       public_key_as_cose_key_(std::move(public_key_as_cose_key)),
       signature_(std::move(signature)),
       algorithm_identifier_(algorithm_identifier),
-      expected_client_data_(std::move(expected_client_data)) {}
+      expected_client_data_(std::move(expected_client_data)),
+      is_new_(is_new) {}
 
 FakeBrowserBoundKey::FakeBrowserBoundKey(const FakeBrowserBoundKey& other)
     : identifier_(other.identifier_),
       public_key_as_cose_key_(other.public_key_as_cose_key_),
       signature_(other.signature_),
       algorithm_identifier_(other.algorithm_identifier_),
-      expected_client_data_(other.expected_client_data_) {}
+      expected_client_data_(other.expected_client_data_),
+      is_new_(other.is_new_) {}
 
 FakeBrowserBoundKey& FakeBrowserBoundKey::operator=(
     const FakeBrowserBoundKey& other) {
@@ -35,6 +38,7 @@ FakeBrowserBoundKey& FakeBrowserBoundKey::operator=(
   public_key_as_cose_key_ = other.public_key_as_cose_key_;
   signature_ = other.signature_;
   expected_client_data_ = other.expected_client_data_;
+  is_new_ = other.is_new_;
   return *this;
 }
 

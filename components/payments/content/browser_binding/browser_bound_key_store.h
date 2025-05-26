@@ -33,7 +33,7 @@ class BrowserBoundKeyStore : public base::RefCounted<BrowserBoundKeyStore> {
   // Get (or create if not present) a browser bound key for the given
   // credential_id.
   // `allowed_credentials` is a vector of COSE Algorithm identifiers that
-  // restricts the algorithms of the browser bound key.
+  // restricts the algorithms of the browser bound key when creating a new key.
   virtual std::unique_ptr<BrowserBoundKey>
   GetOrCreateBrowserBoundKeyForCredentialId(
       const std::vector<uint8_t>& credential_id,

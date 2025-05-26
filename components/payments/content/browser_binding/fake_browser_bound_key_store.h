@@ -31,7 +31,7 @@ class FakeBrowserBoundKeyStore : public BrowserBoundKeyStore {
   std::unique_ptr<BrowserBoundKey> GetOrCreateBrowserBoundKeyForCredentialId(
       const std::vector<uint8_t>& credential_id,
       const std::vector<device::PublicKeyCredentialParams::CredentialInfo>&
-          allowed_credentials) override;
+          allowed_algorithms) override;
   void DeleteBrowserBoundKey(std::vector<uint8_t> bbk_id) override;
 
   // Insert a fake key.
