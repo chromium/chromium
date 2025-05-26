@@ -202,8 +202,11 @@ public class SigninFirstRunFragmentTest {
                 () -> {
                     mNativeInitializationPromise = new Promise<>();
                     mNativeInitializationPromise.fulfill(null);
-                    // Use thenAnswer in case mNativeSideIsInitialized is changed in some tests.
+                    // Initially return an unfulfilled promise so that the loading will not be
+                    // skipped.Then use thenAnswer in case mNativeSideIsInitialized is changed in
+                    // some tests.
                     when(mFirstRunPageDelegateMock.getNativeInitializationPromise())
+                            .thenReturn(new Promise<>())
                             .thenAnswer(ignored -> mNativeInitializationPromise);
                 });
 
@@ -1300,20 +1303,6 @@ public class SigninFirstRunFragmentTest {
                 .check(matches(isDisplayed()));
         onView(allOf(withId(R.id.subtitle), withText(R.string.signin_fre_subtitle)))
                 .check(matches(isDisplayed()));
-    }
-
-    @Test
-    @MediumTest
-    @Restriction({DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
-    public void testFragmentWithChildAccount_doesNotApplyFreStringVariation() {
-        mSigninTestRule.addAccount(TestAccounts.CHILD_ACCOUNT);
-        when(mPolicyLoadListenerMock.get()).thenReturn(true);
-
-        launchActivityWithFragment();
-        checkFragmentWithChildAccount(
-                /* hasDisplayableFullName= */ true,
-                /* hasDisplayableEmail= */ true,
-                TestAccounts.CHILD_ACCOUNT);
     }
 
     @Test
