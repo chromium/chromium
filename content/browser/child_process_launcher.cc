@@ -192,9 +192,11 @@ void ChildProcessLauncher::Notify(ChildProcessLauncherHelper::Process process,
     // process.
     auto* port_provider = ChildProcessTaskPortProvider::GetInstance();
     CHECK(port_provider);
-    CHECK(port_provider->TaskForHandle(process_.process.Handle()) ==
-          MACH_PORT_NULL);
-    scoped_port_provider_observation_.Observe(port_provider);
+    if (port_provider->TaskForHandle(process_.process.Handle()) ==
+        MACH_PORT_NULL) {
+      // In the most common case, the task port is not available at launch time.
+      scoped_port_provider_observation_.Observe(port_provider);
+    }
 #endif
 
     // Note:: May delete |this|.
@@ -220,9 +222,15 @@ void ChildProcessLauncher::OnReceivedTaskPort(
     return;
   }
 
-  if (process_.process.Handle() == process_handle && priority_) {
+  // Ignore notifications about different processes.
+  if (process_.process.Handle() != process_handle) {
+    return;
+  }
+
+  scoped_port_provider_observation_.Reset();
+
+  if (priority_) {
     SetProcessPriorityImpl(*priority_);
-    scoped_port_provider_observation_.Reset();
   }
 }
 #endif
