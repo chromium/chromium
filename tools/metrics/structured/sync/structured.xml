@@ -3466,6 +3466,33 @@
       </summary>
     </metric>
   </event>
+
+  <event name="FunctionCall">
+    <summary>
+      Recorded when an instrumented function is called.
+    </summary>
+    <metric name="Name" type="int">
+      <summary>
+        Hash of the function name
+      </summary>
+    </metric>
+    <metric name="Context" type="int">
+      <summary>
+        Hash of the function's context.
+      </summary>
+    </metric>
+    <metric name="TimeSinceSessionStart" type="int">
+      <summary>
+        Time in milliseconds since DevTools sessions start.
+      </summary>
+    </metric>
+    <metric name="SessionId" type="int">
+      <summary>
+        Unique ID of this debugging session. If DevTools is opened on multiple tabs,
+        each instance would have a unique ID.
+      </summary>
+    </metric>
+  </event>
 </project>
 
 <project name="TestProjectOne">

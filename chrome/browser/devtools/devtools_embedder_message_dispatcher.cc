@@ -266,6 +266,23 @@ bool GetValue(const base::Value& value, SettingAccessEvent* event) {
   return true;
 }
 
+bool GetValue(const base::Value& value, FunctionCallEvent* event) {
+  if (!value.is_dict()) {
+    return false;
+  }
+
+  std::optional<int> name = value.GetDict().FindInt("name");
+  if (name) {
+    event->name = *name;
+  }
+
+  std::optional<int> context = value.GetDict().FindInt("context");
+  if (context) {
+    event->context = *context;
+  }
+  return true;
+}
+
 template <typename T>
 struct StorageTraits {
   using StorageType = T;
@@ -458,6 +475,8 @@ DevToolsEmbedderMessageDispatcher::CreateForDevToolsFrontend(
   d->RegisterHandler("recordChange", &Delegate::RecordChange, delegate);
   d->RegisterHandler("recordKeyDown", &Delegate::RecordKeyDown, delegate);
   d->RegisterHandler("recordSettingAccess", &Delegate::RecordSettingAccess,
+                     delegate);
+  d->RegisterHandler("recordFunctionCall", &Delegate::RecordFunctionCall,
                      delegate);
   d->RegisterHandler("registerPreference", &Delegate::RegisterPreference,
                      delegate);

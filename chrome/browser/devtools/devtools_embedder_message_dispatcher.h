@@ -24,6 +24,7 @@ struct DragEvent;
 struct ChangeEvent;
 struct KeyDownEvent;
 struct SettingAccessEvent;
+struct FunctionCallEvent;
 
 /**
  * Dispatcher for messages sent from the DevTools frontend running in an
@@ -127,6 +128,7 @@ class DevToolsEmbedderMessageDispatcher {
     virtual void RecordChange(const ChangeEvent& event) = 0;
     virtual void RecordKeyDown(const KeyDownEvent& event) = 0;
     virtual void RecordSettingAccess(const SettingAccessEvent& event) = 0;
+    virtual void RecordFunctionCall(const FunctionCallEvent& event) = 0;
     virtual void Reattach(DispatchCallback callback) = 0;
     virtual void ReadyForTest() = 0;
     virtual void ConnectionReady() = 0;

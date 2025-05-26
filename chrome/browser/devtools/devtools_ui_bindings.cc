@@ -2155,6 +2155,18 @@ void DevToolsUIBindings::RecordSettingAccess(const SettingAccessEvent& event) {
           .SetSessionId(session_id_for_logging_.GetLowForSerialization()));
 }
 
+void DevToolsUIBindings::RecordFunctionCall(const FunctionCallEvent& event) {
+  if (!MaybeStartLogging()) {
+    return;
+  }
+  metrics::structured::StructuredMetricsClient::Record(
+      metrics::structured::events::v2::dev_tools::FunctionCall()
+          .SetName(event.name)
+          .SetContext(event.context)
+          .SetTimeSinceSessionStart(GetTimeSinceSessionStart().InMilliseconds())
+          .SetSessionId(session_id_for_logging_.GetLowForSerialization()));
+}
+
 void DevToolsUIBindings::DeviceCountChanged(int count) {
   CallClientMethod("DevToolsAPI", "deviceCountUpdated", base::Value(count));
 }
