@@ -2340,7 +2340,7 @@ using UserFeedbackDataCallback =
 
 // Returns YES if the current Tab is available to present a view controller.
 - (BOOL)isTabAvailableToPresentViewController {
-  if (self.signinCoordinator) {
+  if (self.sceneState.signinInProgress) {
     return NO;
   }
   if (self.settingsNavigationController) {
