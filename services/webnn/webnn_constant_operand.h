@@ -5,6 +5,7 @@
 #ifndef SERVICES_WEBNN_WEBNN_CONSTANT_OPERAND_H_
 #define SERVICES_WEBNN_WEBNN_CONSTANT_OPERAND_H_
 
+#include "base/compiler_specific.h"
 #include "base/component_export.h"
 #include "base/containers/heap_array.h"
 #include "base/containers/span.h"
@@ -33,11 +34,13 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNConstantOperand {
 
   // TODO(crbug.com/349428379): Consider instead providing a backend-specific
   // accessor.
-  base::span<const uint8_t> ByteSpan() const { return data_; }
+  base::span<const uint8_t> ByteSpan() const LIFETIME_BOUND { return data_; }
+
+  base::HeapArray<uint8_t> TakeData() { return std::move(data_); }
 
  private:
   const OperandDescriptor descriptor_;
-  const base::HeapArray<uint8_t> data_;
+  base::HeapArray<uint8_t> data_;
 };
 
 }  // namespace webnn

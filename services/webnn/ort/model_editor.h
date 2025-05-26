@@ -42,7 +42,7 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) ModelEditor {
   void AddOutput(base::cstring_view name, const OperandDescriptor& descriptor);
 
   void AddInitializer(base::cstring_view name,
-                      const WebNNConstantOperand& constant_operand);
+                      std::unique_ptr<WebNNConstantOperand> constant_operand);
 
   // Add an initializer directly into the ONNX model.
   // This method could be useful for converting a WebNN operator's attribute to
@@ -80,13 +80,11 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) ModelEditor {
                                base::span<const int64_t> shape,
                                base::span<const uint8_t> data);
 
-  // Add an initializer and copy the data into `ModelInfo::external_data`.
-  // TODO(crbug.com/411452041): Consider transferring the constant data instead
-  // of copying.
+  // Add an initializer and transfer the data into `ModelInfo::external_data`.
   void AddInitializerAsExternalData(base::cstring_view name,
                                     ONNXTensorElementDataType data_type,
                                     base::span<const int64_t> shape,
-                                    base::span<const uint8_t> data);
+                                    base::HeapArray<uint8_t> data);
 
   // Describes where the constant buffer resides in memory.
   ScopedOrtMemoryInfo memory_info_;

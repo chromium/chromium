@@ -37,11 +37,12 @@ TEST_F(WebNNOrtModelEditorTest, AddAndGather) {
   auto add_initializer_desc = OperandDescriptor::CreateForDeserialization(
       OperandDataType::kUint32, {4, 2, 4});
   ASSERT_TRUE(add_initializer_desc.has_value());
-  WebNNConstantOperand add_initializer_operand(
+  auto add_initializer_operand = std::make_unique<WebNNConstantOperand>(
       std::move(add_initializer_desc.value()),
       base::HeapArray<uint8_t>::CopiedFrom(
           base::as_byte_span(add_initializer_data)));
-  model_editor.AddInitializer(add_initializer, add_initializer_operand);
+  model_editor.AddInitializer(add_initializer,
+                              std::move(add_initializer_operand));
 
   constexpr base::cstring_view gather_indices_initializer =
       "gather_indices_initializer";
@@ -50,12 +51,13 @@ TEST_F(WebNNOrtModelEditorTest, AddAndGather) {
   auto gather_indices_initializer_desc =
       OperandDescriptor::CreateForDeserialization(OperandDataType::kInt64, {4});
   ASSERT_TRUE(gather_indices_initializer_desc.has_value());
-  WebNNConstantOperand gather_indices_initializer_operand(
-      std::move(gather_indices_initializer_desc.value()),
-      base::HeapArray<uint8_t>::CopiedFrom(
-          base::as_byte_span(gather_indices_initializer_data)));
+  auto gather_indices_initializer_operand =
+      std::make_unique<WebNNConstantOperand>(
+          std::move(gather_indices_initializer_desc.value()),
+          base::HeapArray<uint8_t>::CopiedFrom(
+              base::as_byte_span(gather_indices_initializer_data)));
   model_editor.AddInitializer(gather_indices_initializer,
-                              gather_indices_initializer_operand);
+                              std::move(gather_indices_initializer_operand));
 
   // Add Add node.
   constexpr base::cstring_view add_output = "add_output";
