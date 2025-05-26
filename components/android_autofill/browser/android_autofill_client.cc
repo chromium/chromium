@@ -23,6 +23,7 @@
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
 #include "components/autofill/core/common/aliases.h"
 #include "components/autofill/core/common/autofill_features.h"
+#include "components/credential_management/android/features.h"
 #include "components/credential_management/android/third_party_credential_manager_impl.h"
 #include "components/prefs/pref_service.h"
 #include "components/security_state/content/security_state_tab_helper.h"
@@ -295,7 +296,12 @@ std::unique_ptr<autofill::AutofillManager> AndroidAutofillClient::CreateManager(
 
 credential_management::ContentCredentialManager*
 AndroidAutofillClient::GetContentCredentialManager() {
-  return &content_credential_manager_;
+  if (base::FeatureList::IsEnabled(
+          credential_management::features::
+              kCredentialManagementThirdPartyWebApiRequestForwarding)) {
+    return &content_credential_manager_;
+  }
+  return nullptr;
 }
 
 }  // namespace android_autofill
