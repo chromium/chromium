@@ -14,6 +14,8 @@ static_library("backend") {
     "plural_string_handler.h",
     "shortcut_input_provider.cc",
     "shortcut_input_provider.h",
+    "webui_syslog_emitter.cc",
+    "webui_syslog_emitter.h",
   ]
 
   deps = [

@@ -187,6 +187,8 @@ static_library("login") {
   public_deps = [
     "//ash/public/cpp",
     "//ash/webui/common:chrome_os_webui_config",
+    "//ash/webui/common/backend",
+    "//ash/webui/common/mojom:webui_syslog_emitter",
     "//base",
     "//chrome/browser:browser_public_dependencies",
     "//chrome/browser/ash/accessibility",

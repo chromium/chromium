@@ -16,6 +16,8 @@
 #include "ash/public/cpp/network_config_service.h"
 #include "ash/public/cpp/resources/grit/ash_public_unscaled_resources.h"
 #include "ash/shell.h"
+#include "ash/webui/common/backend/webui_syslog_emitter.h"
+#include "ash/webui/common/mojom/webui_syslog_emitter.mojom.h"
 #include "ash/webui/common/trusted_types_util.h"
 #include "base/command_line.h"
 #include "base/containers/fixed_flat_set.h"
@@ -698,6 +700,12 @@ void OobeUI::BindInterface(
     mojo::PendingReceiver<screens_factory::mojom::ScreensFactory> receiver) {
   oobe_screens_handler_factory_ =
       std::make_unique<OobeScreensHandlerFactory>(std::move(receiver));
+}
+
+void OobeUI::BindInterface(
+    mojo::PendingReceiver<common::mojom::WebUiSyslogEmitter> receiver) {
+  webui_syslog_emitter_ = std::make_unique<WebUiSyslogEmitter>();
+  webui_syslog_emitter_->BindInterface(std::move(receiver));
 }
 
 void OobeUI::BindInterface(

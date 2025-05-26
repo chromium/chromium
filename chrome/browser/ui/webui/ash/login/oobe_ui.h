@@ -10,6 +10,7 @@
 #include <string>
 #include <vector>
 
+#include "ash/webui/common/backend/webui_syslog_emitter.h"
 #include "ash/webui/common/chrome_os_webui_config.h"
 #include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
@@ -195,6 +196,9 @@ class OobeUI : public ui::MojoWebUIController {
   void BindInterface(
       mojo::PendingReceiver<screens_factory::mojom::ScreensFactory> receiver);
 
+  void BindInterface(
+      mojo::PendingReceiver<common::mojom::WebUiSyslogEmitter> receiver);
+
   static void AddOobeComponents(content::WebUIDataSource* source);
 
   bool ready() const { return ready_; }
@@ -232,6 +236,8 @@ class OobeUI : public ui::MojoWebUIController {
   std::unique_ptr<ui::ColorChangeHandler> color_provider_handler_;
 
   std::unique_ptr<OobeScreensHandlerFactory> oobe_screens_handler_factory_;
+
+  std::unique_ptr<WebUiSyslogEmitter> webui_syslog_emitter_;
 
   std::unique_ptr<ErrorScreen> error_screen_;
 

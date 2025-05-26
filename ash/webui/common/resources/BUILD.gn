@@ -144,6 +144,7 @@ ts_files_ts = [
   "shortcut_input_ui/fake_accelerator_fetcher.ts",
   "shortcut_input_ui/fake_shortcut_input_provider.ts",
   "shortcut_input_ui/shortcut_utils.ts",
+  "logging/webui_syslog_emitter.ts",
   "typescript_utils/strict_query.ts",
   "traffic_counters/traffic_counters_adapter.ts",
 ]
@@ -154,6 +155,7 @@ mojo_files_ts = [
   "metrics/event.mojom-webui.ts",
   "connectivity/passpoint.mojom-webui.ts",
   "hotspot/cros_hotspot_config.mojom-webui.ts",
+  "logging/webui_syslog_emitter.mojom-webui.ts",
   "shortcut_input_ui/accelerator_actions.mojom-webui.ts",
   "shortcut_input_ui/accelerator_info.mojom-webui.ts",
   "shortcut_input_ui/accelerator_keys.mojom-webui.ts",
@@ -291,6 +293,7 @@ webui_ts_library("build_ts") {
     "bluetooth:copy_mojo_files",
     "connectivity:copy_mojo_files",
     "hotspot:copy_mojo_files",
+    "logging:copy_mojo_files",
     "metrics:copy_files",
     "shortcut_input_ui:copy_mojo_files",
     "//ash/webui/common/resources:i18n_behavior",
