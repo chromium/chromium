@@ -22472,6 +22472,9 @@ Called by update_net_error_codes.py.-->
     The url was not eligible to be prefetched because there was a registered
     service worker with no fetch handler.
   </int>
+  <int value="55" label="Prefetch Evicted: BrowsingData Removed">
+    The prefetch was evicted because a user removed browsing data.
+  </int>
 </enum>
 
 <enum name="PrefetchRedirectNetworkContextTransition">
