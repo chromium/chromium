@@ -1277,7 +1277,10 @@ component("base") {
     ]
 
     if (android_ndk_api_level >= 29) {
-      deps += [ ":build_info_aidl_native" ]
+      deps += [
+        ":android_info_aidl_native",
+        ":build_info_aidl_native",
+      ]
     }
 
     if (use_clang_profiling) {
@@ -5204,7 +5207,10 @@ if (is_android) {
   }
 
   android_library("android_info_java") {
-    srcjar_deps = [ ":android_info_jni" ]
+    srcjar_deps = [
+      ":android_info_aidl",
+      ":android_info_jni",
+    ]
     deps = [
       ":tasks_java",
       "//third_party/android_deps:com_google_code_findbugs_jsr305_java",
@@ -5318,15 +5324,20 @@ if (is_android) {
     ]
   }
 
+  android_aidl("android_info_aidl") {
+    import_include = [ "android/java/src" ]
+    sources = [ "android/java/src/org/chromium/base/IAndroidInfo.aidl" ]
+    cpp_root_names = [ "AndroidInfo" ]
+    cpp_package_name = "org/chromium/base"
+  }
+
   android_aidl("build_info_aidl") {
     import_include = [ "android/java/src" ]
     sources = [
-      "android/java/src/org/chromium/base/IAndroidInfo.aidl",
       "android/java/src/org/chromium/base/IApkInfo.aidl",
       "android/java/src/org/chromium/base/IDeviceInfo.aidl",
     ]
     cpp_root_names = [
-      "AndroidInfo",
       "ApkInfo",
       "DeviceInfo",
     ]

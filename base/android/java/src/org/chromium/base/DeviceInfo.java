@@ -49,10 +49,13 @@ public final class DeviceInfo {
     // function.
     @CalledByNative
     private static void nativeReadyForFields() {
-        IDeviceInfo info = getInstance().mIDeviceInfo;
+        sendToNative(getInstance().mIDeviceInfo);
+    }
+
+    public static void sendToNative(IDeviceInfo info) {
         DeviceInfoJni.get()
                 .fillFields(
-                        /* gmsVersionCode= */ getGmsVersionCode(),
+                        /* gmsVersionCode= */ info.gmsVersionCode,
                         /* isTV= */ info.isTv,
                         /* isAutomotive= */ info.isAutomotive,
                         /* isFoldable= */ info.isFoldable,
@@ -60,15 +63,19 @@ public final class DeviceInfo {
                         /* vulkanDeqpLevel= */ info.vulkanDeqpLevel);
     }
 
+    public static IDeviceInfo getAidlInfo() {
+        return getInstance().mIDeviceInfo;
+    }
+
     public static String getGmsVersionCode() {
-        return sGmsVersionCodeForTesting == null
-                ? getInstance().mIDeviceInfo.gmsVersionCode
-                : sGmsVersionCodeForTesting;
+        return getInstance().mIDeviceInfo.gmsVersionCode;
     }
 
     @CalledByNativeForTesting
     public static void setGmsVersionCodeForTest(@JniType("std::string") String gmsVersionCode) {
         sGmsVersionCodeForTesting = gmsVersionCode;
+        // Every time we call getInstance in a test we reconstruct the mIDeviceInfo object, so we
+        // don't need to set mIDeviceInfo's copy here as it'll just get reconstructed.
         ResettersForTesting.register(() -> sGmsVersionCodeForTesting = null);
     }
 
@@ -131,6 +138,9 @@ public final class DeviceInfo {
                 gmsPackageInfo != null
                         ? String.valueOf(packageVersionCode(gmsPackageInfo))
                         : "gms versionCode not available.";
+        if (sGmsVersionCodeForTesting != null) {
+            mIDeviceInfo.gmsVersionCode = sGmsVersionCodeForTesting;
+        }
 
         Context appContext = ContextUtils.getApplicationContext();
         PackageManager pm = appContext.getPackageManager();

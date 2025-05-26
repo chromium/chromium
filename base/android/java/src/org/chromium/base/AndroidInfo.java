@@ -27,26 +27,50 @@ public final class AndroidInfo {
     // function.
     @CalledByNative
     private static void nativeReadyForFields() {
+        sendToNative(getAidlInfo());
+    }
+
+    public static void sendToNative(IAndroidInfo info) {
         AndroidInfoJni.get()
                 .fillFields(
-                        /* brand= */ Build.BRAND,
-                        /* device= */ Build.DEVICE,
-                        /* buildId= */ Build.ID,
-                        /* manufacturer= */ Build.MANUFACTURER,
-                        /* model= */ Build.MODEL,
-                        /* type= */ Build.TYPE,
-                        /* board= */ Build.BOARD,
-                        /* androidBuildFingerprint= */ getAndroidBuildFingerprint(),
-                        /* versionIncremental= */ Build.VERSION.INCREMENTAL,
-                        /* hardware= */ Build.HARDWARE,
-                        /* codeName= */ Build.VERSION.CODENAME,
-                        /* socManufacturer= */ Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
-                                ? Build.SOC_MANUFACTURER
-                                : "",
-                        /* supportedAbis= */ TextUtils.join(", ", Build.SUPPORTED_ABIS),
-                        /* sdkInt= */ Build.VERSION.SDK_INT,
-                        /* isDebugAndroid= */ isDebugAndroid(),
-                        /* securityPatch= */ Build.VERSION.SECURITY_PATCH);
+                        /* brand= */ info.brand,
+                        /* device= */ info.device,
+                        /* buildId= */ info.androidBuildId,
+                        /* manufacturer= */ info.manufacturer,
+                        /* model= */ info.model,
+                        /* type= */ info.buildType,
+                        /* board= */ info.board,
+                        /* androidBuildFingerprint= */ info.androidBuildFp,
+                        /* versionIncremental= */ info.versionIncremental,
+                        /* hardware= */ info.hardware,
+                        /* codename= */ info.codename,
+                        /* socManufacturer= */ info.socManufacturer,
+                        /* supportedAbis= */ info.abiName,
+                        /* sdkInt= */ info.sdkInt,
+                        /* isDebugAndroid= */ info.isDebugAndroid,
+                        /* securityPatch= */ info.securityPatch);
+    }
+
+    public static IAndroidInfo getAidlInfo() {
+        IAndroidInfo info = new IAndroidInfo();
+        info.abiName = getAndroidSupportedAbis();
+        info.androidBuildFp = getAndroidBuildFingerprint();
+        info.androidBuildId = Build.ID;
+        info.board = Build.BOARD;
+        info.brand = Build.BRAND;
+        info.buildType = Build.TYPE;
+        info.codename = Build.VERSION.CODENAME;
+        info.device = Build.DEVICE;
+        info.hardware = Build.HARDWARE;
+        info.isDebugAndroid = isDebugAndroid();
+        info.manufacturer = Build.MANUFACTURER;
+        info.model = Build.MODEL;
+        info.sdkInt = Build.VERSION.SDK_INT;
+        info.securityPatch = Build.VERSION.SECURITY_PATCH;
+        info.socManufacturer =
+                Build.VERSION.SDK_INT >= Build.VERSION_CODES.S ? Build.SOC_MANUFACTURER : "";
+        info.versionIncremental = Build.VERSION.INCREMENTAL;
+        return info;
     }
 
     /* Truncated version of Build.FINGERPRINT (for crash reporting). */
@@ -84,7 +108,7 @@ public final class AndroidInfo {
                 @JniType("std::string") String androidBuildFingerprint,
                 @JniType("std::string") String versionIncremental,
                 @JniType("std::string") String hardware,
-                @JniType("std::string") String codeName,
+                @JniType("std::string") String codename,
                 @JniType("std::string") String socManufacturer,
                 @JniType("std::string") String supportedAbis,
                 int sdkInt,
