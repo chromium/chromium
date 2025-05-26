@@ -7860,3 +7860,40 @@ def CheckTodoBugReferences(input_api, output_api):
         ]
     else:
         return []
+
+def CheckNoBrowserStarInUnittests(input_api, output_api):
+    """Checks that unit-tests don't contain Browser* variables.
+    """
+    problems = []
+
+    def FileFilter(affected_file):
+        """Check unit-tests only"""
+        return input_api.FilterSourceFile(
+            affected_file,
+            files_to_check=(
+              r'.*unittest\.cc$',
+              r'.*unittest\.h$'
+            ),
+            files_to_skip=input_api.DEFAULT_FILES_TO_SKIP,
+        )
+
+    browser_star_pattern = input_api.re.compile(r'\bBrowser\s*\*')
+
+    for f in input_api.AffectedFiles(include_deletes=False,
+                                     file_filter=FileFilter):
+        for line_num, line in f.ChangedContents():
+            match = browser_star_pattern.search(line)
+            if match:
+                problems.append('  %s:%d:%s' %
+                                (f.LocalPath(), line_num, match.group(0)))
+
+    if not problems:
+        return []
+
+    WARNING_MSG="""Do not use "Browser*" type in unittest files (e.g.,
+    "*unittest.cc" or "*unittest.h"). Unit tests should generally
+    not depend on the full Browser class or related components. Consider
+    refactoring to mock dependencies, use test-specific fakes,
+    or determine if a browser_test is more appropriate.
+    """
+    return [output_api.PresubmitPromptWarning(WARNING_MSG, items=problems)]
