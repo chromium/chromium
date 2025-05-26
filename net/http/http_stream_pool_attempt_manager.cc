@@ -116,19 +116,6 @@ std::string_view HttpStreamPool::AttemptManager::TcpBasedAttemptStateToString(
 }
 
 // static
-std::string_view HttpStreamPool::AttemptManager::IPEndPointStateToString(
-    IPEndPointState state) {
-  switch (state) {
-    case IPEndPointState::kFailed:
-      return "Failed";
-    case IPEndPointState::kSlowAttempting:
-      return "SlowAttempting";
-    case IPEndPointState::kSlowSucceeded:
-      return "SlowSucceeded";
-  }
-}
-
-// static
 std::string_view HttpStreamPool::AttemptManager::InitialAttemptStateToString(
     InitialAttemptState state) {
   switch (state) {
@@ -376,6 +363,11 @@ void HttpStreamPool::AttemptManager::OnServiceEndpointRequestFinished(int rv) {
   ProcessServiceEndpointChanges();
 }
 
+HostResolver::ServiceEndpointRequest*
+HttpStreamPool::AttemptManager::GetServiceEndpointRequest() {
+  return service_endpoint_request_.get();
+}
+
 bool HttpStreamPool::AttemptManager::IsSvcbOptional() {
   CHECK(service_endpoint_request_);
   CHECK(pool()->stream_attempt_params()->ssl_client_context);
@@ -388,6 +380,40 @@ bool HttpStreamPool::AttemptManager::IsSvcbOptional() {
   base::span<const ServiceEndpoint> endpoints =
       service_endpoint_request_->GetEndpointResults();
   return !HostResolver::AllProtocolEndpointsHaveEch(endpoints);
+}
+
+bool HttpStreamPool::AttemptManager::HasEnoughTcpBasedAttemptsForSlowIPEndPoint(
+    const IPEndPoint& ip_endpoint) {
+  // TODO(crbug.com/383824591): Consider modifying the value of
+  // IPEndPointStateMap to track the number of in-flight attempts per
+  // IPEndPoint, if this loop is a bottlenek.
+  size_t num_attempts = std::ranges::count(
+      tcp_based_attempts_, ip_endpoint,
+      [](const auto& entry) { return entry->attempt()->ip_endpoint(); });
+
+  return num_attempts >=
+         std::max(request_jobs_.size(), CalculateMaxPreconnectCount());
+}
+
+bool HttpStreamPool::AttemptManager::IsEndpointUsableForTcpBasedAttempt(
+    const ServiceEndpoint& endpoint,
+    bool svcb_optional) {
+  // No ALPNs means that the endpoint is an authority A/AAAA endpoint, even if
+  // we are still in the middle of DNS resolution.
+  if (endpoint.metadata.supported_protocol_alpns.empty()) {
+    return svcb_optional;
+  }
+
+  // See https://www.rfc-editor.org/rfc/rfc9460.html#section-9.3. Endpoints are
+  // usable if there is an overlap between the endpoint's ALPNs and the
+  // configured ones.
+  for (const auto& alpn : endpoint.metadata.supported_protocol_alpns) {
+    if (base::Contains(http_network_session()->GetAlpnProtos(),
+                       NextProtoFromString(alpn))) {
+      return true;
+    }
+  }
+  return false;
 }
 
 HttpStreamPool::AttemptManager::InitialAttemptState
@@ -522,9 +548,7 @@ void HttpStreamPool::AttemptManager::CancelTcpBasedAttempts(
                     StreamSocketCloseReasonToString(reason)}),
       num_cancel_attempts);
 
-  std::erase_if(ip_endpoint_states_, [](const auto& it) {
-    return it.second == IPEndPointState::kSlowAttempting;
-  });
+  ip_endpoint_state_tracker_.RemoveSlowAttemptingEndpoint();
 
   // If possible, try to complete asynchronously to avoid accessing deleted
   // `this` and `group_`. `this` and/or `group_` can be accessed after leaving
@@ -681,7 +705,8 @@ bool HttpStreamPool::AttemptManager::IsStalledByPoolLimit() {
     return false;
   }
 
-  if (!GetIPEndPointToAttemptTcpBased().has_value()) {
+  if (!ip_endpoint_state_tracker_.GetIPEndPointToAttemptTcpBased()
+           .has_value()) {
     return false;
   }
 
@@ -829,14 +854,9 @@ base::Value::Dict HttpStreamPool::AttemptManager::GetInfoAsValue() const {
   dict.Set("ssl_config_num_waiting_callbacks",
            ssl_config_num_waiting_callbacks);
 
-  if (!ip_endpoint_states_.empty()) {
-    base::Value::List ip_endpoint_states;
-    for (const auto& [ip_endpoint, state] : ip_endpoint_states_) {
-      base::Value::Dict state_dict;
-      state_dict.Set("ip_endpoint", ip_endpoint.ToString());
-      state_dict.Set("state", IPEndPointStateToString(state));
-      ip_endpoint_states.Append(std::move(state_dict));
-    }
+  base::Value::List ip_endpoint_states =
+      ip_endpoint_state_tracker_.GetInfoAsValue();
+  if (!ip_endpoint_states.empty()) {
     dict.Set("ip_endpoint_states", std::move(ip_endpoint_states));
   }
 
@@ -1124,7 +1144,8 @@ void HttpStreamPool::AttemptManager::MaybeAttemptTcpBased(
     // implementation.
     CHECK(!HasAvailableSpdySession());
     std::optional<IPEndPoint> ip_endpoint =
-        GetIPEndPointToAttemptTcpBased(exclude_ip_endpoint);
+        ip_endpoint_state_tracker_.GetIPEndPointToAttemptTcpBased(
+            exclude_ip_endpoint);
     if (!ip_endpoint.has_value()) {
       if (service_endpoint_request_finished_ && tcp_based_attempts_.empty()) {
         tcp_based_attempt_state_ = TcpBasedAttemptState::kAllEndpointsFailed;
@@ -1301,107 +1322,6 @@ size_t HttpStreamPool::AttemptManager::PendingCountInternal(
   }
 
   return pending_count - non_slow_count;
-}
-
-std::optional<IPEndPoint>
-HttpStreamPool::AttemptManager::GetIPEndPointToAttemptTcpBased(
-    std::optional<IPEndPoint> exclude_ip_endpoint) {
-  // TODO(crbug.com/383824591): Add a trace event to see if this method is
-  // time consuming.
-
-  if (!service_endpoint_request_ ||
-      service_endpoint_request_->GetEndpointResults().empty()) {
-    return std::nullopt;
-  }
-
-  const bool svcb_optional = IsSvcbOptional();
-  std::optional<IPEndPoint> current_endpoint;
-  std::optional<IPEndPointState> current_state;
-
-  for (bool ip_v6 : {prefer_ipv6_, !prefer_ipv6_}) {
-    for (const auto& service_endpoint :
-         service_endpoint_request_->GetEndpointResults()) {
-      if (!IsEndpointUsableForTcpBasedAttempt(service_endpoint,
-                                              svcb_optional)) {
-        continue;
-      }
-
-      const std::vector<IPEndPoint>& ip_endpoints =
-          ip_v6 ? service_endpoint.ipv6_endpoints
-                : service_endpoint.ipv4_endpoints;
-      FindBetterIPEndPoint(ip_endpoints, exclude_ip_endpoint, current_state,
-                           current_endpoint);
-      if (current_endpoint.has_value() && !current_state.has_value()) {
-        // This endpoint is fast or no connection attempt has been made to it
-        // yet.
-        return current_endpoint;
-      }
-    }
-  }
-
-  // No available IP endpoint, or `current_endpoint` is slow.
-  return current_endpoint;
-}
-
-void HttpStreamPool::AttemptManager::FindBetterIPEndPoint(
-    const std::vector<IPEndPoint>& ip_endpoints,
-    std::optional<IPEndPoint> exclude_ip_endpoint,
-    std::optional<IPEndPointState>& current_state,
-    std::optional<IPEndPoint>& current_endpoint) {
-  for (const auto& ip_endpoint : ip_endpoints) {
-    if (exclude_ip_endpoint.has_value() &&
-        ip_endpoint == *exclude_ip_endpoint) {
-      continue;
-    }
-
-    auto it = ip_endpoint_states_.find(ip_endpoint);
-    if (it == ip_endpoint_states_.end()) {
-      // If there is no state for the IP endpoint it means that we haven't tried
-      // the endpoint yet or previous attempt to the endpoint was fast. Just use
-      // it.
-      current_endpoint = ip_endpoint;
-      current_state = std::nullopt;
-      return;
-    }
-
-    switch (it->second) {
-      case IPEndPointState::kFailed:
-        continue;
-      case IPEndPointState::kSlowAttempting:
-        if (!current_endpoint.has_value() &&
-            !HasEnoughTcpBasedAttemptsForSlowIPEndPoint(ip_endpoint)) {
-          current_endpoint = ip_endpoint;
-          current_state = it->second;
-        }
-        continue;
-      case IPEndPointState::kSlowSucceeded:
-        const bool prefer_slow_succeeded =
-            !current_state.has_value() ||
-            *current_state == IPEndPointState::kSlowAttempting;
-        if (prefer_slow_succeeded &&
-            !HasEnoughTcpBasedAttemptsForSlowIPEndPoint(ip_endpoint)) {
-          current_endpoint = ip_endpoint;
-          current_state = it->second;
-        }
-        continue;
-    }
-  }
-}
-
-bool HttpStreamPool::AttemptManager::HasEnoughTcpBasedAttemptsForSlowIPEndPoint(
-    const IPEndPoint& ip_endpoint) {
-  // TODO(crbug.com/383824591): Consider modifying the value of
-  // IPEndPointStateMap to track the number of in-flight attempts per
-  // IPEndPoint, if this loop is a bottlenek.
-  size_t num_attempts = 0;
-  for (const auto& entry : tcp_based_attempts_) {
-    if (entry->attempt()->ip_endpoint() == ip_endpoint) {
-      ++num_attempts;
-    }
-  }
-
-  return num_attempts >=
-         std::max(request_jobs_.size(), CalculateMaxPreconnectCount());
 }
 
 std::optional<QuicEndpoint>
@@ -1800,9 +1720,8 @@ void HttpStreamPool::AttemptManager::OnTcpBasedAttemptComplete(
     TcpBasedAttempt* raw_attempt,
     int rv) {
   if (rv == OK && raw_attempt->is_slow()) {
-    auto it = ip_endpoint_states_.find(raw_attempt->ip_endpoint());
-    CHECK(it != ip_endpoint_states_.end());
-    it->second = IPEndPointState::kSlowSucceeded;
+    ip_endpoint_state_tracker_.OnEndpointSlowSucceeded(
+        raw_attempt->ip_endpoint());
   }
 
   std::unique_ptr<TcpBasedAttempt> tcp_based_attempt =
@@ -1889,11 +1808,7 @@ void HttpStreamPool::AttemptManager::OnTcpBasedAttemptSlow(
 
   raw_attempt->set_is_slow(true);
   ++slow_tcp_based_attempt_count_;
-  // This will not overwrite the previous value, if it's already tagged as
-  // kSlowSucceeded (Nor will it overwrite other values).
-  ip_endpoint_states_.emplace(raw_attempt->attempt()->ip_endpoint(),
-                              IPEndPointState::kSlowAttempting);
-  prefer_ipv6_ = !raw_attempt->attempt()->ip_endpoint().address().IsIPv6();
+  ip_endpoint_state_tracker_.OnEndpointSlow(raw_attempt->ip_endpoint());
 
   // Don't attempt the same IP endpoint.
   MaybeAttemptTcpBased(/*exclude_ip_endpoint=*/raw_attempt->ip_endpoint());
@@ -1903,9 +1818,8 @@ void HttpStreamPool::AttemptManager::HandleTcpBasedAttemptFailure(
     std::unique_ptr<TcpBasedAttempt> tcp_based_attempt,
     int rv) {
   CHECK_NE(rv, ERR_IO_PENDING);
+  ip_endpoint_state_tracker_.OnEndpointFailed(tcp_based_attempt->ip_endpoint());
   connection_attempts_.emplace_back(tcp_based_attempt->ip_endpoint(), rv);
-  ip_endpoint_states_.insert_or_assign(tcp_based_attempt->ip_endpoint(),
-                                       IPEndPointState::kFailed);
 
   if (tcp_based_attempt->is_aborted()) {
     CHECK_EQ(rv, ERR_ABORTED);
@@ -2032,27 +1946,6 @@ bool HttpStreamPool::AttemptManager::IsEchEnabled() const {
       ->stream_attempt_params()
       ->ssl_client_context->config()
       .ech_enabled;
-}
-
-bool HttpStreamPool::AttemptManager::IsEndpointUsableForTcpBasedAttempt(
-    const ServiceEndpoint& endpoint,
-    bool svcb_optional) {
-  // No ALPNs means that the endpoint is an authority A/AAAA endpoint, even if
-  // we are still in the middle of DNS resolution.
-  if (endpoint.metadata.supported_protocol_alpns.empty()) {
-    return svcb_optional;
-  }
-
-  // See https://www.rfc-editor.org/rfc/rfc9460.html#section-9.3. Endpoints are
-  // usable if there is an overlap between the endpoint's ALPNs and the
-  // configured ones.
-  for (const auto& alpn : endpoint.metadata.supported_protocol_alpns) {
-    if (base::Contains(http_network_session()->GetAlpnProtos(),
-                       NextProtoFromString(alpn))) {
-      return true;
-    }
-  }
-  return false;
 }
 
 void HttpStreamPool::AttemptManager::MaybeMarkQuicBroken() {
