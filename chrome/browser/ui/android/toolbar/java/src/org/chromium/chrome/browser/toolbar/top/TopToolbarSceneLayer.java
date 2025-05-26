@@ -11,7 +11,6 @@ import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.cc.input.OffsetTag;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.layouts.scene_layer.SceneLayer;
 import org.chromium.chrome.browser.layouts.scene_layer.SceneOverlayLayer;
 import org.chromium.components.browser_ui.widget.ClipDrawableProgressBar.DrawingInfo;
@@ -59,10 +58,6 @@ class TopToolbarSceneLayer extends SceneOverlayLayer {
                         model.get(TopToolbarOverlayProperties.VISIBLE),
                         model.get(TopToolbarOverlayProperties.ANONYMIZE),
                         model.get(TopToolbarOverlayProperties.TOOLBAR_OFFSET_TAG));
-
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.DISABLE_COMPOSITED_PROGRESS_BAR)) {
-            return;
-        }
 
         DrawingInfo progressInfo = model.get(TopToolbarOverlayProperties.PROGRESS_BAR_INFO);
         if (progressInfo == null) return;

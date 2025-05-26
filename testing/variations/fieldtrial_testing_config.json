@@ -7917,21 +7917,6 @@
             ]
         }
     ],
-    "DisableCompositedProgressBar": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "DisableCompositedProgressBar"
-                    ]
-                }
-            ]
-        }
-    ],
     "DisableCompressParkableStrings": [
         {
             "platforms": [

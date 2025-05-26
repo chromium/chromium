@@ -277,7 +277,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kCpaSpecUpdate,
     &kCrossDeviceTabPaneAndroid,
     &kDeviceAuthenticatorAndroidx,
-    &kDisableCompositedProgressBar,
     &kDisableListTabSwitcher,
     &kDrawKeyNativeEdgeToEdge,
     &kEdgeToEdgeBottomChin,
@@ -474,10 +473,6 @@ BASE_FEATURE(kAdaptiveButtonInTopToolbarPageSummary,
 
 BASE_FEATURE(kAllowTabClosingUponMinimization,
              "AllowTabClosingUponMinimization",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kDisableCompositedProgressBar,
-             "DisableCompositedProgressBar",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kDisableListTabSwitcher,
