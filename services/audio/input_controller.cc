@@ -35,10 +35,10 @@
 #include "media/base/audio_processing.h"
 #include "media/base/media_switches.h"
 #include "services/audio/audio_manager_power_user.h"
+#include "services/audio/device_output_listener.h"
 #include "services/audio/output_tapper.h"
 #include "services/audio/processing_audio_fifo.h"
 #include "services/audio/reference_output.h"
-#include "services/audio/reference_signal_provider.h"
 
 #if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
 #include "services/audio/audio_processor_handler.h"
@@ -186,7 +186,7 @@ class AudioCallback : public media::AudioInputStream::AudioInputCallback {
 InputController::InputController(
     EventHandler* event_handler,
     SyncWriter* sync_writer,
-    std::unique_ptr<ReferenceSignalProvider> reference_signal_provider,
+    DeviceOutputListener* device_output_listener,
     media::AecdumpRecordingManager* aecdump_recording_manager,
     media::mojom::AudioProcessingConfigPtr processing_config,
     const media::AudioParameters& output_params,
@@ -204,7 +204,7 @@ InputController::InputController(
 
 #if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
   MaybeSetUpAudioProcessing(std::move(processing_config), output_params,
-                            device_params, std::move(reference_signal_provider),
+                            device_params, device_output_listener,
                             aecdump_recording_manager);
 #endif
 }
@@ -214,11 +214,10 @@ void InputController::MaybeSetUpAudioProcessing(
     media::mojom::AudioProcessingConfigPtr processing_config,
     const media::AudioParameters& processing_output_params,
     const media::AudioParameters& device_params,
-    std::unique_ptr<ReferenceSignalProvider> reference_signal_provider,
+    DeviceOutputListener* device_output_listener,
     media::AecdumpRecordingManager* aecdump_recording_manager) {
-  if (!reference_signal_provider) {
+  if (!device_output_listener)
     return;
-  }
 
   if (!(processing_config &&
         processing_config->settings.NeedWebrtcAudioProcessing())) {
@@ -270,7 +269,7 @@ void InputController::MaybeSetUpAudioProcessing(
 
   // Unretained() is safe, since |event_handler_| outlives |output_tapper_|.
   output_tapper_ = std::make_unique<OutputTapper>(
-      std::move(reference_signal_provider), audio_processor_handler_.get(),
+      device_output_listener, audio_processor_handler_.get(),
       base::BindRepeating(&EventHandler::OnLog,
                           base::Unretained(event_handler_)));
 }
@@ -288,7 +287,7 @@ std::unique_ptr<InputController> InputController::Create(
     media::AudioManager* audio_manager,
     EventHandler* event_handler,
     SyncWriter* sync_writer,
-    std::unique_ptr<ReferenceSignalProvider> reference_signal_provider,
+    DeviceOutputListener* device_output_listener,
     media::AecdumpRecordingManager* aecdump_recording_manager,
     media::mojom::AudioProcessingConfigPtr processing_config,
     const media::AudioParameters& params,
@@ -311,7 +310,7 @@ std::unique_ptr<InputController> InputController::Create(
   // Using `new` to access a non-public constructor.
   std::unique_ptr<InputController> controller =
       base::WrapUnique(new InputController(
-          event_handler, sync_writer, std::move(reference_signal_provider),
+          event_handler, sync_writer, device_output_listener,
           aecdump_recording_manager, std::move(processing_config), params,
           device_params, ParamsToStreamType(params)));
 
