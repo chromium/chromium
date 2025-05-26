@@ -135,7 +135,7 @@ TEST_F(RunSegmenterTest, JapaneseHindiEmojiMix) {
         FontFallbackPriority::kEmojiEmoji}});
 }
 
-TEST_F(RunSegmenterTest, CombiningCirlce) {
+TEST_F(RunSegmenterTest, CombiningCircle) {
   CheckRunsHorizontal(
       {{"◌́◌̀◌̈◌̂◌̄◌̊", USCRIPT_COMMON, OrientationIterator::kOrientationKeep,
         FontFallbackPriority::kText}});
