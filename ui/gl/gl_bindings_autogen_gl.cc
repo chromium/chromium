@@ -22,316 +22,317 @@
 
 namespace gl {
 
-void DriverGL::InitializeStaticBindings() {
+void DriverGL::InitializeStaticBindings(GLGetProcAddressProc get_proc_address) {
   GPU_STARTUP_TRACE_EVENT("DriverGL::InitializeStaticBindings");
   fn.glActiveTextureFn = reinterpret_cast<glActiveTextureProc>(
-      GetGLProcAddress("glActiveTexture"));
+      get_proc_address("glActiveTexture"));
   fn.glAttachShaderFn =
-      reinterpret_cast<glAttachShaderProc>(GetGLProcAddress("glAttachShader"));
+      reinterpret_cast<glAttachShaderProc>(get_proc_address("glAttachShader"));
   fn.glBindAttribLocationFn = reinterpret_cast<glBindAttribLocationProc>(
-      GetGLProcAddress("glBindAttribLocation"));
+      get_proc_address("glBindAttribLocation"));
   fn.glBindBufferFn =
-      reinterpret_cast<glBindBufferProc>(GetGLProcAddress("glBindBuffer"));
+      reinterpret_cast<glBindBufferProc>(get_proc_address("glBindBuffer"));
   fn.glBindFramebufferEXTFn = reinterpret_cast<glBindFramebufferEXTProc>(
-      GetGLProcAddress("glBindFramebuffer"));
+      get_proc_address("glBindFramebuffer"));
   fn.glBindRenderbufferEXTFn = reinterpret_cast<glBindRenderbufferEXTProc>(
-      GetGLProcAddress("glBindRenderbuffer"));
+      get_proc_address("glBindRenderbuffer"));
   fn.glBindTextureFn =
-      reinterpret_cast<glBindTextureProc>(GetGLProcAddress("glBindTexture"));
+      reinterpret_cast<glBindTextureProc>(get_proc_address("glBindTexture"));
   fn.glBlendColorFn =
-      reinterpret_cast<glBlendColorProc>(GetGLProcAddress("glBlendColor"));
+      reinterpret_cast<glBlendColorProc>(get_proc_address("glBlendColor"));
   fn.glBlendEquationFn = reinterpret_cast<glBlendEquationProc>(
-      GetGLProcAddress("glBlendEquation"));
+      get_proc_address("glBlendEquation"));
   fn.glBlendEquationSeparateFn = reinterpret_cast<glBlendEquationSeparateProc>(
-      GetGLProcAddress("glBlendEquationSeparate"));
+      get_proc_address("glBlendEquationSeparate"));
   fn.glBlendFuncFn =
-      reinterpret_cast<glBlendFuncProc>(GetGLProcAddress("glBlendFunc"));
+      reinterpret_cast<glBlendFuncProc>(get_proc_address("glBlendFunc"));
   fn.glBlendFuncSeparateFn = reinterpret_cast<glBlendFuncSeparateProc>(
-      GetGLProcAddress("glBlendFuncSeparate"));
+      get_proc_address("glBlendFuncSeparate"));
   fn.glBufferDataFn =
-      reinterpret_cast<glBufferDataProc>(GetGLProcAddress("glBufferData"));
+      reinterpret_cast<glBufferDataProc>(get_proc_address("glBufferData"));
   fn.glBufferSubDataFn = reinterpret_cast<glBufferSubDataProc>(
-      GetGLProcAddress("glBufferSubData"));
+      get_proc_address("glBufferSubData"));
   fn.glCheckFramebufferStatusEXTFn =
       reinterpret_cast<glCheckFramebufferStatusEXTProc>(
-          GetGLProcAddress("glCheckFramebufferStatus"));
-  fn.glClearFn = reinterpret_cast<glClearProc>(GetGLProcAddress("glClear"));
+          get_proc_address("glCheckFramebufferStatus"));
+  fn.glClearFn = reinterpret_cast<glClearProc>(get_proc_address("glClear"));
   fn.glClearColorFn =
-      reinterpret_cast<glClearColorProc>(GetGLProcAddress("glClearColor"));
+      reinterpret_cast<glClearColorProc>(get_proc_address("glClearColor"));
   fn.glClearDepthFn =
-      reinterpret_cast<glClearDepthProc>(GetGLProcAddress("glClearDepth"));
+      reinterpret_cast<glClearDepthProc>(get_proc_address("glClearDepth"));
   fn.glClearDepthfFn =
-      reinterpret_cast<glClearDepthfProc>(GetGLProcAddress("glClearDepthf"));
+      reinterpret_cast<glClearDepthfProc>(get_proc_address("glClearDepthf"));
   fn.glClearStencilFn =
-      reinterpret_cast<glClearStencilProc>(GetGLProcAddress("glClearStencil"));
+      reinterpret_cast<glClearStencilProc>(get_proc_address("glClearStencil"));
   fn.glColorMaskFn =
-      reinterpret_cast<glColorMaskProc>(GetGLProcAddress("glColorMask"));
+      reinterpret_cast<glColorMaskProc>(get_proc_address("glColorMask"));
   fn.glCompileShaderFn = reinterpret_cast<glCompileShaderProc>(
-      GetGLProcAddress("glCompileShader"));
+      get_proc_address("glCompileShader"));
   fn.glCompressedTexImage2DFn = reinterpret_cast<glCompressedTexImage2DProc>(
-      GetGLProcAddress("glCompressedTexImage2D"));
+      get_proc_address("glCompressedTexImage2D"));
   fn.glCompressedTexSubImage2DFn =
       reinterpret_cast<glCompressedTexSubImage2DProc>(
-          GetGLProcAddress("glCompressedTexSubImage2D"));
+          get_proc_address("glCompressedTexSubImage2D"));
   fn.glCopyTexImage2DFn = reinterpret_cast<glCopyTexImage2DProc>(
-      GetGLProcAddress("glCopyTexImage2D"));
+      get_proc_address("glCopyTexImage2D"));
   fn.glCopyTexSubImage2DFn = reinterpret_cast<glCopyTexSubImage2DProc>(
-      GetGLProcAddress("glCopyTexSubImage2D"));
+      get_proc_address("glCopyTexSubImage2D"));
   fn.glCreateProgramFn = reinterpret_cast<glCreateProgramProc>(
-      GetGLProcAddress("glCreateProgram"));
+      get_proc_address("glCreateProgram"));
   fn.glCreateShaderFn =
-      reinterpret_cast<glCreateShaderProc>(GetGLProcAddress("glCreateShader"));
+      reinterpret_cast<glCreateShaderProc>(get_proc_address("glCreateShader"));
   fn.glCullFaceFn =
-      reinterpret_cast<glCullFaceProc>(GetGLProcAddress("glCullFace"));
+      reinterpret_cast<glCullFaceProc>(get_proc_address("glCullFace"));
   fn.glDeleteBuffersARBFn = reinterpret_cast<glDeleteBuffersARBProc>(
-      GetGLProcAddress("glDeleteBuffers"));
+      get_proc_address("glDeleteBuffers"));
   fn.glDeleteFramebuffersEXTFn = reinterpret_cast<glDeleteFramebuffersEXTProc>(
-      GetGLProcAddress("glDeleteFramebuffers"));
+      get_proc_address("glDeleteFramebuffers"));
   fn.glDeleteProgramFn = reinterpret_cast<glDeleteProgramProc>(
-      GetGLProcAddress("glDeleteProgram"));
+      get_proc_address("glDeleteProgram"));
   fn.glDeleteRenderbuffersEXTFn =
       reinterpret_cast<glDeleteRenderbuffersEXTProc>(
-          GetGLProcAddress("glDeleteRenderbuffers"));
+          get_proc_address("glDeleteRenderbuffers"));
   fn.glDeleteShaderFn =
-      reinterpret_cast<glDeleteShaderProc>(GetGLProcAddress("glDeleteShader"));
+      reinterpret_cast<glDeleteShaderProc>(get_proc_address("glDeleteShader"));
   fn.glDeleteTexturesFn = reinterpret_cast<glDeleteTexturesProc>(
-      GetGLProcAddress("glDeleteTextures"));
+      get_proc_address("glDeleteTextures"));
   fn.glDepthFuncFn =
-      reinterpret_cast<glDepthFuncProc>(GetGLProcAddress("glDepthFunc"));
+      reinterpret_cast<glDepthFuncProc>(get_proc_address("glDepthFunc"));
   fn.glDepthMaskFn =
-      reinterpret_cast<glDepthMaskProc>(GetGLProcAddress("glDepthMask"));
+      reinterpret_cast<glDepthMaskProc>(get_proc_address("glDepthMask"));
   fn.glDepthRangeFn =
-      reinterpret_cast<glDepthRangeProc>(GetGLProcAddress("glDepthRange"));
+      reinterpret_cast<glDepthRangeProc>(get_proc_address("glDepthRange"));
   fn.glDepthRangefFn =
-      reinterpret_cast<glDepthRangefProc>(GetGLProcAddress("glDepthRangef"));
+      reinterpret_cast<glDepthRangefProc>(get_proc_address("glDepthRangef"));
   fn.glDetachShaderFn =
-      reinterpret_cast<glDetachShaderProc>(GetGLProcAddress("glDetachShader"));
+      reinterpret_cast<glDetachShaderProc>(get_proc_address("glDetachShader"));
   fn.glDisableFn =
-      reinterpret_cast<glDisableProc>(GetGLProcAddress("glDisable"));
+      reinterpret_cast<glDisableProc>(get_proc_address("glDisable"));
   fn.glDisableVertexAttribArrayFn =
       reinterpret_cast<glDisableVertexAttribArrayProc>(
-          GetGLProcAddress("glDisableVertexAttribArray"));
+          get_proc_address("glDisableVertexAttribArray"));
   fn.glDrawArraysFn =
-      reinterpret_cast<glDrawArraysProc>(GetGLProcAddress("glDrawArrays"));
+      reinterpret_cast<glDrawArraysProc>(get_proc_address("glDrawArrays"));
   fn.glDrawBufferFn =
-      reinterpret_cast<glDrawBufferProc>(GetGLProcAddress("glDrawBuffer"));
+      reinterpret_cast<glDrawBufferProc>(get_proc_address("glDrawBuffer"));
   fn.glDrawElementsFn =
-      reinterpret_cast<glDrawElementsProc>(GetGLProcAddress("glDrawElements"));
-  fn.glEnableFn = reinterpret_cast<glEnableProc>(GetGLProcAddress("glEnable"));
+      reinterpret_cast<glDrawElementsProc>(get_proc_address("glDrawElements"));
+  fn.glEnableFn = reinterpret_cast<glEnableProc>(get_proc_address("glEnable"));
   fn.glEnableVertexAttribArrayFn =
       reinterpret_cast<glEnableVertexAttribArrayProc>(
-          GetGLProcAddress("glEnableVertexAttribArray"));
-  fn.glFinishFn = reinterpret_cast<glFinishProc>(GetGLProcAddress("glFinish"));
-  fn.glFlushFn = reinterpret_cast<glFlushProc>(GetGLProcAddress("glFlush"));
+          get_proc_address("glEnableVertexAttribArray"));
+  fn.glFinishFn = reinterpret_cast<glFinishProc>(get_proc_address("glFinish"));
+  fn.glFlushFn = reinterpret_cast<glFlushProc>(get_proc_address("glFlush"));
   fn.glFramebufferRenderbufferEXTFn =
       reinterpret_cast<glFramebufferRenderbufferEXTProc>(
-          GetGLProcAddress("glFramebufferRenderbuffer"));
+          get_proc_address("glFramebufferRenderbuffer"));
   fn.glFramebufferTexture2DEXTFn =
       reinterpret_cast<glFramebufferTexture2DEXTProc>(
-          GetGLProcAddress("glFramebufferTexture2D"));
+          get_proc_address("glFramebufferTexture2D"));
   fn.glFrontFaceFn =
-      reinterpret_cast<glFrontFaceProc>(GetGLProcAddress("glFrontFace"));
+      reinterpret_cast<glFrontFaceProc>(get_proc_address("glFrontFace"));
   fn.glGenBuffersARBFn =
-      reinterpret_cast<glGenBuffersARBProc>(GetGLProcAddress("glGenBuffers"));
+      reinterpret_cast<glGenBuffersARBProc>(get_proc_address("glGenBuffers"));
   fn.glGenerateMipmapEXTFn = reinterpret_cast<glGenerateMipmapEXTProc>(
-      GetGLProcAddress("glGenerateMipmap"));
+      get_proc_address("glGenerateMipmap"));
   fn.glGenFramebuffersEXTFn = reinterpret_cast<glGenFramebuffersEXTProc>(
-      GetGLProcAddress("glGenFramebuffers"));
+      get_proc_address("glGenFramebuffers"));
   fn.glGenRenderbuffersEXTFn = reinterpret_cast<glGenRenderbuffersEXTProc>(
-      GetGLProcAddress("glGenRenderbuffers"));
+      get_proc_address("glGenRenderbuffers"));
   fn.glGenTexturesFn =
-      reinterpret_cast<glGenTexturesProc>(GetGLProcAddress("glGenTextures"));
+      reinterpret_cast<glGenTexturesProc>(get_proc_address("glGenTextures"));
   fn.glGetActiveAttribFn = reinterpret_cast<glGetActiveAttribProc>(
-      GetGLProcAddress("glGetActiveAttrib"));
+      get_proc_address("glGetActiveAttrib"));
   fn.glGetActiveUniformFn = reinterpret_cast<glGetActiveUniformProc>(
-      GetGLProcAddress("glGetActiveUniform"));
+      get_proc_address("glGetActiveUniform"));
   fn.glGetAttachedShadersFn = reinterpret_cast<glGetAttachedShadersProc>(
-      GetGLProcAddress("glGetAttachedShaders"));
+      get_proc_address("glGetAttachedShaders"));
   fn.glGetAttribLocationFn = reinterpret_cast<glGetAttribLocationProc>(
-      GetGLProcAddress("glGetAttribLocation"));
+      get_proc_address("glGetAttribLocation"));
   fn.glGetBooleanvFn =
-      reinterpret_cast<glGetBooleanvProc>(GetGLProcAddress("glGetBooleanv"));
+      reinterpret_cast<glGetBooleanvProc>(get_proc_address("glGetBooleanv"));
   fn.glGetBufferParameterivFn = reinterpret_cast<glGetBufferParameterivProc>(
-      GetGLProcAddress("glGetBufferParameteriv"));
+      get_proc_address("glGetBufferParameteriv"));
   fn.glGetErrorFn =
-      reinterpret_cast<glGetErrorProc>(GetGLProcAddress("glGetError"));
+      reinterpret_cast<glGetErrorProc>(get_proc_address("glGetError"));
   fn.glGetFloatvFn =
-      reinterpret_cast<glGetFloatvProc>(GetGLProcAddress("glGetFloatv"));
+      reinterpret_cast<glGetFloatvProc>(get_proc_address("glGetFloatv"));
   fn.glGetFramebufferAttachmentParameterivEXTFn =
       reinterpret_cast<glGetFramebufferAttachmentParameterivEXTProc>(
-          GetGLProcAddress("glGetFramebufferAttachmentParameteriv"));
+          get_proc_address("glGetFramebufferAttachmentParameteriv"));
   fn.glGetIntegervFn =
-      reinterpret_cast<glGetIntegervProc>(GetGLProcAddress("glGetIntegerv"));
+      reinterpret_cast<glGetIntegervProc>(get_proc_address("glGetIntegerv"));
   fn.glGetProgramInfoLogFn = reinterpret_cast<glGetProgramInfoLogProc>(
-      GetGLProcAddress("glGetProgramInfoLog"));
+      get_proc_address("glGetProgramInfoLog"));
   fn.glGetProgramivFn =
-      reinterpret_cast<glGetProgramivProc>(GetGLProcAddress("glGetProgramiv"));
+      reinterpret_cast<glGetProgramivProc>(get_proc_address("glGetProgramiv"));
   fn.glGetRenderbufferParameterivEXTFn =
       reinterpret_cast<glGetRenderbufferParameterivEXTProc>(
-          GetGLProcAddress("glGetRenderbufferParameteriv"));
+          get_proc_address("glGetRenderbufferParameteriv"));
   fn.glGetShaderInfoLogFn = reinterpret_cast<glGetShaderInfoLogProc>(
-      GetGLProcAddress("glGetShaderInfoLog"));
+      get_proc_address("glGetShaderInfoLog"));
   fn.glGetShaderivFn =
-      reinterpret_cast<glGetShaderivProc>(GetGLProcAddress("glGetShaderiv"));
+      reinterpret_cast<glGetShaderivProc>(get_proc_address("glGetShaderiv"));
   fn.glGetShaderPrecisionFormatFn =
       reinterpret_cast<glGetShaderPrecisionFormatProc>(
-          GetGLProcAddress("glGetShaderPrecisionFormat"));
+          get_proc_address("glGetShaderPrecisionFormat"));
   fn.glGetShaderSourceFn = reinterpret_cast<glGetShaderSourceProc>(
-      GetGLProcAddress("glGetShaderSource"));
+      get_proc_address("glGetShaderSource"));
   fn.glGetStringFn =
-      reinterpret_cast<glGetStringProc>(GetGLProcAddress("glGetString"));
+      reinterpret_cast<glGetStringProc>(get_proc_address("glGetString"));
   fn.glGetStringiFn =
-      reinterpret_cast<glGetStringiProc>(GetGLProcAddress("glGetStringi"));
+      reinterpret_cast<glGetStringiProc>(get_proc_address("glGetStringi"));
   fn.glGetTexParameterfvFn = reinterpret_cast<glGetTexParameterfvProc>(
-      GetGLProcAddress("glGetTexParameterfv"));
+      get_proc_address("glGetTexParameterfv"));
   fn.glGetTexParameterivFn = reinterpret_cast<glGetTexParameterivProc>(
-      GetGLProcAddress("glGetTexParameteriv"));
+      get_proc_address("glGetTexParameteriv"));
   fn.glGetUniformfvFn =
-      reinterpret_cast<glGetUniformfvProc>(GetGLProcAddress("glGetUniformfv"));
+      reinterpret_cast<glGetUniformfvProc>(get_proc_address("glGetUniformfv"));
   fn.glGetUniformivFn =
-      reinterpret_cast<glGetUniformivProc>(GetGLProcAddress("glGetUniformiv"));
+      reinterpret_cast<glGetUniformivProc>(get_proc_address("glGetUniformiv"));
   fn.glGetUniformLocationFn = reinterpret_cast<glGetUniformLocationProc>(
-      GetGLProcAddress("glGetUniformLocation"));
+      get_proc_address("glGetUniformLocation"));
   fn.glGetVertexAttribfvFn = reinterpret_cast<glGetVertexAttribfvProc>(
-      GetGLProcAddress("glGetVertexAttribfv"));
+      get_proc_address("glGetVertexAttribfv"));
   fn.glGetVertexAttribivFn = reinterpret_cast<glGetVertexAttribivProc>(
-      GetGLProcAddress("glGetVertexAttribiv"));
+      get_proc_address("glGetVertexAttribiv"));
   fn.glGetVertexAttribPointervFn =
       reinterpret_cast<glGetVertexAttribPointervProc>(
-          GetGLProcAddress("glGetVertexAttribPointerv"));
-  fn.glHintFn = reinterpret_cast<glHintProc>(GetGLProcAddress("glHint"));
+          get_proc_address("glGetVertexAttribPointerv"));
+  fn.glHintFn = reinterpret_cast<glHintProc>(get_proc_address("glHint"));
   fn.glIsBufferFn =
-      reinterpret_cast<glIsBufferProc>(GetGLProcAddress("glIsBuffer"));
+      reinterpret_cast<glIsBufferProc>(get_proc_address("glIsBuffer"));
   fn.glIsEnabledFn =
-      reinterpret_cast<glIsEnabledProc>(GetGLProcAddress("glIsEnabled"));
+      reinterpret_cast<glIsEnabledProc>(get_proc_address("glIsEnabled"));
   fn.glIsFramebufferEXTFn = reinterpret_cast<glIsFramebufferEXTProc>(
-      GetGLProcAddress("glIsFramebuffer"));
+      get_proc_address("glIsFramebuffer"));
   fn.glIsProgramFn =
-      reinterpret_cast<glIsProgramProc>(GetGLProcAddress("glIsProgram"));
+      reinterpret_cast<glIsProgramProc>(get_proc_address("glIsProgram"));
   fn.glIsRenderbufferEXTFn = reinterpret_cast<glIsRenderbufferEXTProc>(
-      GetGLProcAddress("glIsRenderbuffer"));
+      get_proc_address("glIsRenderbuffer"));
   fn.glIsShaderFn =
-      reinterpret_cast<glIsShaderProc>(GetGLProcAddress("glIsShader"));
+      reinterpret_cast<glIsShaderProc>(get_proc_address("glIsShader"));
   fn.glIsTextureFn =
-      reinterpret_cast<glIsTextureProc>(GetGLProcAddress("glIsTexture"));
+      reinterpret_cast<glIsTextureProc>(get_proc_address("glIsTexture"));
   fn.glLineWidthFn =
-      reinterpret_cast<glLineWidthProc>(GetGLProcAddress("glLineWidth"));
+      reinterpret_cast<glLineWidthProc>(get_proc_address("glLineWidth"));
   fn.glLinkProgramFn =
-      reinterpret_cast<glLinkProgramProc>(GetGLProcAddress("glLinkProgram"));
+      reinterpret_cast<glLinkProgramProc>(get_proc_address("glLinkProgram"));
   fn.glPixelStoreiFn =
-      reinterpret_cast<glPixelStoreiProc>(GetGLProcAddress("glPixelStorei"));
+      reinterpret_cast<glPixelStoreiProc>(get_proc_address("glPixelStorei"));
   fn.glPointParameteriFn = reinterpret_cast<glPointParameteriProc>(
-      GetGLProcAddress("glPointParameteri"));
+      get_proc_address("glPointParameteri"));
   fn.glPolygonModeFn =
-      reinterpret_cast<glPolygonModeProc>(GetGLProcAddress("glPolygonMode"));
+      reinterpret_cast<glPolygonModeProc>(get_proc_address("glPolygonMode"));
   fn.glPolygonOffsetFn = reinterpret_cast<glPolygonOffsetProc>(
-      GetGLProcAddress("glPolygonOffset"));
+      get_proc_address("glPolygonOffset"));
   fn.glPrimitiveRestartIndexFn = reinterpret_cast<glPrimitiveRestartIndexProc>(
-      GetGLProcAddress("glPrimitiveRestartIndex"));
+      get_proc_address("glPrimitiveRestartIndex"));
   fn.glReadPixelsFn =
-      reinterpret_cast<glReadPixelsProc>(GetGLProcAddress("glReadPixels"));
+      reinterpret_cast<glReadPixelsProc>(get_proc_address("glReadPixels"));
   fn.glReleaseShaderCompilerFn = reinterpret_cast<glReleaseShaderCompilerProc>(
-      GetGLProcAddress("glReleaseShaderCompiler"));
+      get_proc_address("glReleaseShaderCompiler"));
   fn.glRenderbufferStorageEXTFn =
       reinterpret_cast<glRenderbufferStorageEXTProc>(
-          GetGLProcAddress("glRenderbufferStorage"));
+          get_proc_address("glRenderbufferStorage"));
   fn.glSampleCoverageFn = reinterpret_cast<glSampleCoverageProc>(
-      GetGLProcAddress("glSampleCoverage"));
+      get_proc_address("glSampleCoverage"));
   fn.glScissorFn =
-      reinterpret_cast<glScissorProc>(GetGLProcAddress("glScissor"));
+      reinterpret_cast<glScissorProc>(get_proc_address("glScissor"));
   fn.glShaderBinaryFn =
-      reinterpret_cast<glShaderBinaryProc>(GetGLProcAddress("glShaderBinary"));
+      reinterpret_cast<glShaderBinaryProc>(get_proc_address("glShaderBinary"));
   fn.glShaderSourceFn =
-      reinterpret_cast<glShaderSourceProc>(GetGLProcAddress("glShaderSource"));
+      reinterpret_cast<glShaderSourceProc>(get_proc_address("glShaderSource"));
   fn.glStencilFuncFn =
-      reinterpret_cast<glStencilFuncProc>(GetGLProcAddress("glStencilFunc"));
+      reinterpret_cast<glStencilFuncProc>(get_proc_address("glStencilFunc"));
   fn.glStencilFuncSeparateFn = reinterpret_cast<glStencilFuncSeparateProc>(
-      GetGLProcAddress("glStencilFuncSeparate"));
+      get_proc_address("glStencilFuncSeparate"));
   fn.glStencilMaskFn =
-      reinterpret_cast<glStencilMaskProc>(GetGLProcAddress("glStencilMask"));
+      reinterpret_cast<glStencilMaskProc>(get_proc_address("glStencilMask"));
   fn.glStencilMaskSeparateFn = reinterpret_cast<glStencilMaskSeparateProc>(
-      GetGLProcAddress("glStencilMaskSeparate"));
+      get_proc_address("glStencilMaskSeparate"));
   fn.glStencilOpFn =
-      reinterpret_cast<glStencilOpProc>(GetGLProcAddress("glStencilOp"));
+      reinterpret_cast<glStencilOpProc>(get_proc_address("glStencilOp"));
   fn.glStencilOpSeparateFn = reinterpret_cast<glStencilOpSeparateProc>(
-      GetGLProcAddress("glStencilOpSeparate"));
+      get_proc_address("glStencilOpSeparate"));
   fn.glTexImage2DFn =
-      reinterpret_cast<glTexImage2DProc>(GetGLProcAddress("glTexImage2D"));
+      reinterpret_cast<glTexImage2DProc>(get_proc_address("glTexImage2D"));
   fn.glTexParameterfFn = reinterpret_cast<glTexParameterfProc>(
-      GetGLProcAddress("glTexParameterf"));
+      get_proc_address("glTexParameterf"));
   fn.glTexParameterfvFn = reinterpret_cast<glTexParameterfvProc>(
-      GetGLProcAddress("glTexParameterfv"));
+      get_proc_address("glTexParameterfv"));
   fn.glTexParameteriFn = reinterpret_cast<glTexParameteriProc>(
-      GetGLProcAddress("glTexParameteri"));
+      get_proc_address("glTexParameteri"));
   fn.glTexParameterivFn = reinterpret_cast<glTexParameterivProc>(
-      GetGLProcAddress("glTexParameteriv"));
+      get_proc_address("glTexParameteriv"));
   fn.glTexSubImage2DFn = reinterpret_cast<glTexSubImage2DProc>(
-      GetGLProcAddress("glTexSubImage2D"));
+      get_proc_address("glTexSubImage2D"));
   fn.glUniform1fFn =
-      reinterpret_cast<glUniform1fProc>(GetGLProcAddress("glUniform1f"));
+      reinterpret_cast<glUniform1fProc>(get_proc_address("glUniform1f"));
   fn.glUniform1fvFn =
-      reinterpret_cast<glUniform1fvProc>(GetGLProcAddress("glUniform1fv"));
+      reinterpret_cast<glUniform1fvProc>(get_proc_address("glUniform1fv"));
   fn.glUniform1iFn =
-      reinterpret_cast<glUniform1iProc>(GetGLProcAddress("glUniform1i"));
+      reinterpret_cast<glUniform1iProc>(get_proc_address("glUniform1i"));
   fn.glUniform1ivFn =
-      reinterpret_cast<glUniform1ivProc>(GetGLProcAddress("glUniform1iv"));
+      reinterpret_cast<glUniform1ivProc>(get_proc_address("glUniform1iv"));
   fn.glUniform2fFn =
-      reinterpret_cast<glUniform2fProc>(GetGLProcAddress("glUniform2f"));
+      reinterpret_cast<glUniform2fProc>(get_proc_address("glUniform2f"));
   fn.glUniform2fvFn =
-      reinterpret_cast<glUniform2fvProc>(GetGLProcAddress("glUniform2fv"));
+      reinterpret_cast<glUniform2fvProc>(get_proc_address("glUniform2fv"));
   fn.glUniform2iFn =
-      reinterpret_cast<glUniform2iProc>(GetGLProcAddress("glUniform2i"));
+      reinterpret_cast<glUniform2iProc>(get_proc_address("glUniform2i"));
   fn.glUniform2ivFn =
-      reinterpret_cast<glUniform2ivProc>(GetGLProcAddress("glUniform2iv"));
+      reinterpret_cast<glUniform2ivProc>(get_proc_address("glUniform2iv"));
   fn.glUniform3fFn =
-      reinterpret_cast<glUniform3fProc>(GetGLProcAddress("glUniform3f"));
+      reinterpret_cast<glUniform3fProc>(get_proc_address("glUniform3f"));
   fn.glUniform3fvFn =
-      reinterpret_cast<glUniform3fvProc>(GetGLProcAddress("glUniform3fv"));
+      reinterpret_cast<glUniform3fvProc>(get_proc_address("glUniform3fv"));
   fn.glUniform3iFn =
-      reinterpret_cast<glUniform3iProc>(GetGLProcAddress("glUniform3i"));
+      reinterpret_cast<glUniform3iProc>(get_proc_address("glUniform3i"));
   fn.glUniform3ivFn =
-      reinterpret_cast<glUniform3ivProc>(GetGLProcAddress("glUniform3iv"));
+      reinterpret_cast<glUniform3ivProc>(get_proc_address("glUniform3iv"));
   fn.glUniform4fFn =
-      reinterpret_cast<glUniform4fProc>(GetGLProcAddress("glUniform4f"));
+      reinterpret_cast<glUniform4fProc>(get_proc_address("glUniform4f"));
   fn.glUniform4fvFn =
-      reinterpret_cast<glUniform4fvProc>(GetGLProcAddress("glUniform4fv"));
+      reinterpret_cast<glUniform4fvProc>(get_proc_address("glUniform4fv"));
   fn.glUniform4iFn =
-      reinterpret_cast<glUniform4iProc>(GetGLProcAddress("glUniform4i"));
+      reinterpret_cast<glUniform4iProc>(get_proc_address("glUniform4i"));
   fn.glUniform4ivFn =
-      reinterpret_cast<glUniform4ivProc>(GetGLProcAddress("glUniform4iv"));
+      reinterpret_cast<glUniform4ivProc>(get_proc_address("glUniform4iv"));
   fn.glUniformMatrix2fvFn = reinterpret_cast<glUniformMatrix2fvProc>(
-      GetGLProcAddress("glUniformMatrix2fv"));
+      get_proc_address("glUniformMatrix2fv"));
   fn.glUniformMatrix3fvFn = reinterpret_cast<glUniformMatrix3fvProc>(
-      GetGLProcAddress("glUniformMatrix3fv"));
+      get_proc_address("glUniformMatrix3fv"));
   fn.glUniformMatrix4fvFn = reinterpret_cast<glUniformMatrix4fvProc>(
-      GetGLProcAddress("glUniformMatrix4fv"));
+      get_proc_address("glUniformMatrix4fv"));
   fn.glUseProgramFn =
-      reinterpret_cast<glUseProgramProc>(GetGLProcAddress("glUseProgram"));
+      reinterpret_cast<glUseProgramProc>(get_proc_address("glUseProgram"));
   fn.glValidateProgramFn = reinterpret_cast<glValidateProgramProc>(
-      GetGLProcAddress("glValidateProgram"));
+      get_proc_address("glValidateProgram"));
   fn.glVertexAttrib1fFn = reinterpret_cast<glVertexAttrib1fProc>(
-      GetGLProcAddress("glVertexAttrib1f"));
+      get_proc_address("glVertexAttrib1f"));
   fn.glVertexAttrib1fvFn = reinterpret_cast<glVertexAttrib1fvProc>(
-      GetGLProcAddress("glVertexAttrib1fv"));
+      get_proc_address("glVertexAttrib1fv"));
   fn.glVertexAttrib2fFn = reinterpret_cast<glVertexAttrib2fProc>(
-      GetGLProcAddress("glVertexAttrib2f"));
+      get_proc_address("glVertexAttrib2f"));
   fn.glVertexAttrib2fvFn = reinterpret_cast<glVertexAttrib2fvProc>(
-      GetGLProcAddress("glVertexAttrib2fv"));
+      get_proc_address("glVertexAttrib2fv"));
   fn.glVertexAttrib3fFn = reinterpret_cast<glVertexAttrib3fProc>(
-      GetGLProcAddress("glVertexAttrib3f"));
+      get_proc_address("glVertexAttrib3f"));
   fn.glVertexAttrib3fvFn = reinterpret_cast<glVertexAttrib3fvProc>(
-      GetGLProcAddress("glVertexAttrib3fv"));
+      get_proc_address("glVertexAttrib3fv"));
   fn.glVertexAttrib4fFn = reinterpret_cast<glVertexAttrib4fProc>(
-      GetGLProcAddress("glVertexAttrib4f"));
+      get_proc_address("glVertexAttrib4f"));
   fn.glVertexAttrib4fvFn = reinterpret_cast<glVertexAttrib4fvProc>(
-      GetGLProcAddress("glVertexAttrib4fv"));
+      get_proc_address("glVertexAttrib4fv"));
   fn.glVertexAttribPointerFn = reinterpret_cast<glVertexAttribPointerProc>(
-      GetGLProcAddress("glVertexAttribPointer"));
+      get_proc_address("glVertexAttribPointer"));
   fn.glViewportFn =
-      reinterpret_cast<glViewportProc>(GetGLProcAddress("glViewport"));
+      reinterpret_cast<glViewportProc>(get_proc_address("glViewport"));
 }
 
-void DriverGL::InitializeDynamicBindings(const GLVersionInfo* ver,
+void DriverGL::InitializeDynamicBindings(GLGetProcAddressProc get_proc_address,
+                                         const GLVersionInfo* ver,
                                          const gfx::ExtensionSet& extensions) {
   ext.b_GL_AMD_framebuffer_multisample_advanced =
       gfx::HasExtension(extensions, "GL_AMD_framebuffer_multisample_advanced");
@@ -475,744 +476,744 @@ void DriverGL::InitializeDynamicBindings(const GLVersionInfo* ver,
 
   if (ext.b_GL_ANGLE_vulkan_image) {
     fn.glAcquireTexturesANGLEFn = reinterpret_cast<glAcquireTexturesANGLEProc>(
-        GetGLProcAddress("glAcquireTexturesANGLE"));
+        get_proc_address("glAcquireTexturesANGLE"));
   }
 
   if (ver->IsAtLeastGLES(3u, 1u)) {
     fn.glActiveShaderProgramFn = reinterpret_cast<glActiveShaderProgramProc>(
-        GetGLProcAddress("glActiveShaderProgram"));
+        get_proc_address("glActiveShaderProgram"));
   }
 
   if (ext.b_GL_ANGLE_shader_pixel_local_storage) {
     fn.glBeginPixelLocalStorageANGLEFn =
         reinterpret_cast<glBeginPixelLocalStorageANGLEProc>(
-            GetGLProcAddress("glBeginPixelLocalStorageANGLE"));
+            get_proc_address("glBeginPixelLocalStorageANGLE"));
   }
 
   if (ver->IsAtLeastGLES(3u, 0u)) {
     fn.glBeginQueryFn =
-        reinterpret_cast<glBeginQueryProc>(GetGLProcAddress("glBeginQuery"));
+        reinterpret_cast<glBeginQueryProc>(get_proc_address("glBeginQuery"));
   } else if (ext.b_GL_EXT_disjoint_timer_query ||
              ext.b_GL_EXT_occlusion_query_boolean) {
     fn.glBeginQueryFn =
-        reinterpret_cast<glBeginQueryProc>(GetGLProcAddress("glBeginQueryEXT"));
+        reinterpret_cast<glBeginQueryProc>(get_proc_address("glBeginQueryEXT"));
   }
 
   if (ver->IsAtLeastGLES(3u, 0u)) {
     fn.glBeginTransformFeedbackFn =
         reinterpret_cast<glBeginTransformFeedbackProc>(
-            GetGLProcAddress("glBeginTransformFeedback"));
+            get_proc_address("glBeginTransformFeedback"));
   }
 
   if (ver->IsAtLeastGLES(3u, 0u)) {
     fn.glBindBufferBaseFn = reinterpret_cast<glBindBufferBaseProc>(
-        GetGLProcAddress("glBindBufferBase"));
+        get_proc_address("glBindBufferBase"));
   }
 
   if (ver->IsAtLeastGLES(3u, 0u)) {
     fn.glBindBufferRangeFn = reinterpret_cast<glBindBufferRangeProc>(
-        GetGLProcAddress("glBindBufferRange"));
+        get_proc_address("glBindBufferRange"));
   }
 
   if (ext.b_GL_EXT_blend_func_extended) {
     fn.glBindFragDataLocationFn = reinterpret_cast<glBindFragDataLocationProc>(
-        GetGLProcAddress("glBindFragDataLocationEXT"));
+        get_proc_address("glBindFragDataLocationEXT"));
   }
 
   if (ext.b_GL_EXT_blend_func_extended) {
     fn.glBindFragDataLocationIndexedFn =
         reinterpret_cast<glBindFragDataLocationIndexedProc>(
-            GetGLProcAddress("glBindFragDataLocationIndexedEXT"));
+            get_proc_address("glBindFragDataLocationIndexedEXT"));
   }
 
   if (ver->IsAtLeastGLES(3u, 1u)) {
     fn.glBindImageTextureEXTFn = reinterpret_cast<glBindImageTextureEXTProc>(
-        GetGLProcAddress("glBindImageTexture"));
+        get_proc_address("glBindImageTexture"));
   } else if (ext.b_GL_EXT_shader_image_load_store) {
     fn.glBindImageTextureEXTFn = reinterpret_cast<glBindImageTextureEXTProc>(
-        GetGLProcAddress("glBindImageTextureEXT"));
+        get_proc_address("glBindImageTextureEXT"));
   }
 
   if (ver->IsAtLeastGLES(3u, 1u)) {
     fn.glBindProgramPipelineFn = reinterpret_cast<glBindProgramPipelineProc>(
-        GetGLProcAddress("glBindProgramPipeline"));
+        get_proc_address("glBindProgramPipeline"));
   }
 
   if (ver->IsAtLeastGLES(3u, 0u)) {
     fn.glBindSamplerFn =
-        reinterpret_cast<glBindSamplerProc>(GetGLProcAddress("glBindSampler"));
+        reinterpret_cast<glBindSamplerProc>(get_proc_address("glBindSampler"));
   }
 
   if (ver->IsAtLeastGLES(3u, 0u)) {
     fn.glBindTransformFeedbackFn =
         reinterpret_cast<glBindTransformFeedbackProc>(
-            GetGLProcAddress("glBindTransformFeedback"));
+            get_proc_address("glBindTransformFeedback"));
   }
 
   if (ext.b_GL_CHROMIUM_bind_uniform_location) {
     fn.glBindUniformLocationCHROMIUMFn =
         reinterpret_cast<glBindUniformLocationCHROMIUMProc>(
-            GetGLProcAddress("glBindUniformLocationCHROMIUM"));
+            get_proc_address("glBindUniformLocationCHROMIUM"));
   }
 
   if (ver->IsAtLeastGLES(3u, 0u)) {
     fn.glBindVertexArrayOESFn = reinterpret_cast<glBindVertexArrayOESProc>(
-        GetGLProcAddress("glBindVertexArray"));
+        get_proc_address("glBindVertexArray"));
   } else if (ext.b_GL_OES_vertex_array_object) {
     fn.glBindVertexArrayOESFn = reinterpret_cast<glBindVertexArrayOESProc>(
-        GetGLProcAddress("glBindVertexArrayOES"));
+        get_proc_address("glBindVertexArrayOES"));
   }
 
   if (ver->IsAtLeastGLES(3u, 1u)) {
     fn.glBindVertexBufferFn = reinterpret_cast<glBindVertexBufferProc>(
-        GetGLProcAddress("glBindVertexBuffer"));
+        get_proc_address("glBindVertexBuffer"));
   }
 
   if (ext.b_GL_NV_blend_equation_advanced) {
     fn.glBlendBarrierKHRFn = reinterpret_cast<glBlendBarrierKHRProc>(
-        GetGLProcAddress("glBlendBarrierNV"));
+        get_proc_address("glBlendBarrierNV"));
   } else if (ext.b_GL_KHR_blend_equation_advanced) {
     fn.glBlendBarrierKHRFn = reinterpret_cast<glBlendBarrierKHRProc>(
-        GetGLProcAddress("glBlendBarrierKHR"));
+        get_proc_address("glBlendBarrierKHR"));
   }
 
   if (ver->IsAtLeastGLES(3u, 2u)) {
     fn.glBlendEquationiOESFn = reinterpret_cast<glBlendEquationiOESProc>(
-        GetGLProcAddress("glBlendEquationi"));
+        get_proc_address("glBlendEquationi"));
   } else if (ext.b_GL_OES_draw_buffers_indexed) {
     fn.glBlendEquationiOESFn = reinterpret_cast<glBlendEquationiOESProc>(
-        GetGLProcAddress("glBlendEquationiOES"));
+        get_proc_address("glBlendEquationiOES"));
   }
 
   if (ver->IsAtLeastGLES(3u, 2u)) {
     fn.glBlendEquationSeparateiOESFn =
         reinterpret_cast<glBlendEquationSeparateiOESProc>(
-            GetGLProcAddress("glBlendEquationSeparatei"));
+            get_proc_address("glBlendEquationSeparatei"));
   } else if (ext.b_GL_OES_draw_buffers_indexed) {
     fn.glBlendEquationSeparateiOESFn =
         reinterpret_cast<glBlendEquationSeparateiOESProc>(
-            GetGLProcAddress("glBlendEquationSeparateiOES"));
+            get_proc_address("glBlendEquationSeparateiOES"));
   }
 
   if (ver->IsAtLeastGLES(3u, 2u)) {
     fn.glBlendFunciOESFn =
-        reinterpret_cast<glBlendFunciOESProc>(GetGLProcAddress("glBlendFunci"));
+        reinterpret_cast<glBlendFunciOESProc>(get_proc_address("glBlendFunci"));
   } else if (ext.b_GL_OES_draw_buffers_indexed) {
     fn.glBlendFunciOESFn = reinterpret_cast<glBlendFunciOESProc>(
-        GetGLProcAddress("glBlendFunciOES"));
+        get_proc_address("glBlendFunciOES"));
   }
 
   if (ver->IsAtLeastGLES(3u, 2u)) {
     fn.glBlendFuncSeparateiOESFn =
         reinterpret_cast<glBlendFuncSeparateiOESProc>(
-            GetGLProcAddress("glBlendFuncSeparatei"));
+            get_proc_address("glBlendFuncSeparatei"));
   } else if (ext.b_GL_OES_draw_buffers_indexed) {
     fn.glBlendFuncSeparateiOESFn =
         reinterpret_cast<glBlendFuncSeparateiOESProc>(
-            GetGLProcAddress("glBlendFuncSeparateiOES"));
+            get_proc_address("glBlendFuncSeparateiOES"));
   }
 
   if (ver->IsAtLeastGLES(3u, 0u)) {
     fn.glBlitFramebufferFn = reinterpret_cast<glBlitFramebufferProc>(
-        GetGLProcAddress("glBlitFramebuffer"));
+        get_proc_address("glBlitFramebuffer"));
   } else if (ext.b_GL_NV_framebuffer_blit) {
     fn.glBlitFramebufferFn = reinterpret_cast<glBlitFramebufferProc>(
-        GetGLProcAddress("glBlitFramebufferNV"));
+        get_proc_address("glBlitFramebufferNV"));
   } else if (ext.b_GL_ANGLE_framebuffer_blit) {
     fn.glBlitFramebufferFn = reinterpret_cast<glBlitFramebufferProc>(
-        GetGLProcAddress("glBlitFramebufferANGLE"));
+        get_proc_address("glBlitFramebufferANGLE"));
   }
 
   if (ext.b_GL_ANGLE_blob_cache) {
     fn.glBlobCacheCallbacksANGLEFn =
         reinterpret_cast<glBlobCacheCallbacksANGLEProc>(
-            GetGLProcAddress("glBlobCacheCallbacksANGLE"));
+            get_proc_address("glBlobCacheCallbacksANGLE"));
   }
 
   if (ver->IsAtLeastGLES(3u, 0u)) {
     fn.glClearBufferfiFn = reinterpret_cast<glClearBufferfiProc>(
-        GetGLProcAddress("glClearBufferfi"));
+        get_proc_address("glClearBufferfi"));
   }
 
   if (ver->IsAtLeastGLES(3u, 0u)) {
     fn.glClearBufferfvFn = reinterpret_cast<glClearBufferfvProc>(
-        GetGLProcAddress("glClearBufferfv"));
+        get_proc_address("glClearBufferfv"));
   }
 
   if (ver->IsAtLeastGLES(3u, 0u)) {
     fn.glClearBufferivFn = reinterpret_cast<glClearBufferivProc>(
-        GetGLProcAddress("glClearBufferiv"));
+        get_proc_address("glClearBufferiv"));
   }
 
   if (ver->IsAtLeastGLES(3u, 0u)) {
     fn.glClearBufferuivFn = reinterpret_cast<glClearBufferuivProc>(
-        GetGLProcAddress("glClearBufferuiv"));
+        get_proc_address("glClearBufferuiv"));
   }
 
   if (ext.b_GL_EXT_clear_texture) {
     fn.glClearTexImageFn = reinterpret_cast<glClearTexImageProc>(
-        GetGLProcAddress("glClearTexImageEXT"));
+        get_proc_address("glClearTexImageEXT"));
   }
 
   if (ext.b_GL_EXT_clear_texture) {
     fn.glClearTexSubImageFn = reinterpret_cast<glClearTexSubImageProc>(
-        GetGLProcAddress("glClearTexSubImage"));
+        get_proc_address("glClearTexSubImage"));
   } else if (ext.b_GL_EXT_clear_texture) {
     fn.glClearTexSubImageFn = reinterpret_cast<glClearTexSubImageProc>(
-        GetGLProcAddress("glClearTexSubImageEXT"));
+        get_proc_address("glClearTexSubImageEXT"));
   }
 
   if (ver->IsAtLeastGLES(3u, 0u)) {
     fn.glClientWaitSyncFn = reinterpret_cast<glClientWaitSyncProc>(
-        GetGLProcAddress("glClientWaitSync"));
+        get_proc_address("glClientWaitSync"));
   }
 
   if (ext.b_GL_EXT_clip_control) {
     fn.glClipControlEXTFn = reinterpret_cast<glClipControlEXTProc>(
-        GetGLProcAddress("glClipControlEXT"));
+        get_proc_address("glClipControlEXT"));
   }
 
   if (ver->IsAtLeastGLES(3u, 2u)) {
     fn.glColorMaskiOESFn =
-        reinterpret_cast<glColorMaskiOESProc>(GetGLProcAddress("glColorMaski"));
+        reinterpret_cast<glColorMaskiOESProc>(get_proc_address("glColorMaski"));
   } else if (ext.b_GL_OES_draw_buffers_indexed) {
     fn.glColorMaskiOESFn = reinterpret_cast<glColorMaskiOESProc>(
-        GetGLProcAddress("glColorMaskiOES"));
+        get_proc_address("glColorMaskiOES"));
   }
 
   if (ext.b_GL_ANGLE_robust_client_memory) {
     fn.glCompressedTexImage2DRobustANGLEFn =
         reinterpret_cast<glCompressedTexImage2DRobustANGLEProc>(
-            GetGLProcAddress("glCompressedTexImage2DRobustANGLE"));
+            get_proc_address("glCompressedTexImage2DRobustANGLE"));
   }
 
   if (ver->IsAtLeastGLES(3u, 0u)) {
     fn.glCompressedTexImage3DFn = reinterpret_cast<glCompressedTexImage3DProc>(
-        GetGLProcAddress("glCompressedTexImage3D"));
+        get_proc_address("glCompressedTexImage3D"));
   }
 
   if (ext.b_GL_ANGLE_robust_client_memory) {
     fn.glCompressedTexImage3DRobustANGLEFn =
         reinterpret_cast<glCompressedTexImage3DRobustANGLEProc>(
-            GetGLProcAddress("glCompressedTexImage3DRobustANGLE"));
+            get_proc_address("glCompressedTexImage3DRobustANGLE"));
   }
 
   if (ext.b_GL_ANGLE_robust_client_memory) {
     fn.glCompressedTexSubImage2DRobustANGLEFn =
         reinterpret_cast<glCompressedTexSubImage2DRobustANGLEProc>(
-            GetGLProcAddress("glCompressedTexSubImage2DRobustANGLE"));
+            get_proc_address("glCompressedTexSubImage2DRobustANGLE"));
   }
 
   if (ver->IsAtLeastGLES(3u, 0u)) {
     fn.glCompressedTexSubImage3DFn =
         reinterpret_cast<glCompressedTexSubImage3DProc>(
-            GetGLProcAddress("glCompressedTexSubImage3D"));
+            get_proc_address("glCompressedTexSubImage3D"));
   }
 
   if (ext.b_GL_ANGLE_robust_client_memory) {
     fn.glCompressedTexSubImage3DRobustANGLEFn =
         reinterpret_cast<glCompressedTexSubImage3DRobustANGLEProc>(
-            GetGLProcAddress("glCompressedTexSubImage3DRobustANGLE"));
+            get_proc_address("glCompressedTexSubImage3DRobustANGLE"));
   }
 
   if (ver->IsAtLeastGLES(3u, 0u)) {
     fn.glCopyBufferSubDataFn = reinterpret_cast<glCopyBufferSubDataProc>(
-        GetGLProcAddress("glCopyBufferSubData"));
+        get_proc_address("glCopyBufferSubData"));
   }
 
   if (ext.b_GL_CHROMIUM_copy_texture) {
     fn.glCopySubTextureCHROMIUMFn =
         reinterpret_cast<glCopySubTextureCHROMIUMProc>(
-            GetGLProcAddress("glCopySubTextureCHROMIUM"));
+            get_proc_address("glCopySubTextureCHROMIUM"));
   }
 
   if (ver->IsAtLeastGLES(3u, 0u)) {
     fn.glCopyTexSubImage3DFn = reinterpret_cast<glCopyTexSubImage3DProc>(
-        GetGLProcAddress("glCopyTexSubImage3D"));
+        get_proc_address("glCopyTexSubImage3D"));
   }
 
   if (ext.b_GL_CHROMIUM_copy_texture) {
     fn.glCopyTextureCHROMIUMFn = reinterpret_cast<glCopyTextureCHROMIUMProc>(
-        GetGLProcAddress("glCopyTextureCHROMIUM"));
+        get_proc_address("glCopyTextureCHROMIUM"));
   }
 
   if (ext.b_GL_EXT_memory_object) {
     fn.glCreateMemoryObjectsEXTFn =
         reinterpret_cast<glCreateMemoryObjectsEXTProc>(
-            GetGLProcAddress("glCreateMemoryObjectsEXT"));
+            get_proc_address("glCreateMemoryObjectsEXT"));
   }
 
   if (ver->IsAtLeastGLES(3u, 1u)) {
     fn.glCreateShaderProgramvFn = reinterpret_cast<glCreateShaderProgramvProc>(
-        GetGLProcAddress("glCreateShaderProgramv"));
+        get_proc_address("glCreateShaderProgramv"));
   }
 
   if (ver->IsAtLeastGLES(3u, 2u)) {
     fn.glDebugMessageCallbackFn = reinterpret_cast<glDebugMessageCallbackProc>(
-        GetGLProcAddress("glDebugMessageCallback"));
+        get_proc_address("glDebugMessageCallback"));
   } else if (ext.b_GL_KHR_debug) {
     fn.glDebugMessageCallbackFn = reinterpret_cast<glDebugMessageCallbackProc>(
-        GetGLProcAddress("glDebugMessageCallbackKHR"));
+        get_proc_address("glDebugMessageCallbackKHR"));
   }
 
   if (ver->IsAtLeastGLES(3u, 2u)) {
     fn.glDebugMessageControlFn = reinterpret_cast<glDebugMessageControlProc>(
-        GetGLProcAddress("glDebugMessageControl"));
+        get_proc_address("glDebugMessageControl"));
   } else if (ext.b_GL_KHR_debug) {
     fn.glDebugMessageControlFn = reinterpret_cast<glDebugMessageControlProc>(
-        GetGLProcAddress("glDebugMessageControlKHR"));
+        get_proc_address("glDebugMessageControlKHR"));
   }
 
   if (ver->IsAtLeastGLES(3u, 2u)) {
     fn.glDebugMessageInsertFn = reinterpret_cast<glDebugMessageInsertProc>(
-        GetGLProcAddress("glDebugMessageInsert"));
+        get_proc_address("glDebugMessageInsert"));
   } else if (ext.b_GL_KHR_debug) {
     fn.glDebugMessageInsertFn = reinterpret_cast<glDebugMessageInsertProc>(
-        GetGLProcAddress("glDebugMessageInsertKHR"));
+        get_proc_address("glDebugMessageInsertKHR"));
   }
 
   if (ext.b_GL_NV_fence) {
     fn.glDeleteFencesNVFn = reinterpret_cast<glDeleteFencesNVProc>(
-        GetGLProcAddress("glDeleteFencesNV"));
+        get_proc_address("glDeleteFencesNV"));
   }
 
   if (ext.b_GL_EXT_memory_object) {
     fn.glDeleteMemoryObjectsEXTFn =
         reinterpret_cast<glDeleteMemoryObjectsEXTProc>(
-            GetGLProcAddress("glDeleteMemoryObjectsEXT"));
+            get_proc_address("glDeleteMemoryObjectsEXT"));
   }
 
   if (ver->IsAtLeastGLES(3u, 1u)) {
     fn.glDeleteProgramPipelinesFn =
         reinterpret_cast<glDeleteProgramPipelinesProc>(
-            GetGLProcAddress("glDeleteProgramPipelines"));
+            get_proc_address("glDeleteProgramPipelines"));
   }
 
   if (ver->IsAtLeastGLES(3u, 0u)) {
     fn.glDeleteQueriesFn = reinterpret_cast<glDeleteQueriesProc>(
-        GetGLProcAddress("glDeleteQueries"));
+        get_proc_address("glDeleteQueries"));
   } else if (ext.b_GL_EXT_disjoint_timer_query ||
              ext.b_GL_EXT_occlusion_query_boolean) {
     fn.glDeleteQueriesFn = reinterpret_cast<glDeleteQueriesProc>(
-        GetGLProcAddress("glDeleteQueriesEXT"));
+        get_proc_address("glDeleteQueriesEXT"));
   }
 
   if (ver->IsAtLeastGLES(3u, 0u)) {
     fn.glDeleteSamplersFn = reinterpret_cast<glDeleteSamplersProc>(
-        GetGLProcAddress("glDeleteSamplers"));
+        get_proc_address("glDeleteSamplers"));
   }
 
   if (ext.b_GL_EXT_semaphore) {
     fn.glDeleteSemaphoresEXTFn = reinterpret_cast<glDeleteSemaphoresEXTProc>(
-        GetGLProcAddress("glDeleteSemaphoresEXT"));
+        get_proc_address("glDeleteSemaphoresEXT"));
   }
 
   if (ver->IsAtLeastGLES(3u, 0u)) {
     fn.glDeleteSyncFn =
-        reinterpret_cast<glDeleteSyncProc>(GetGLProcAddress("glDeleteSync"));
+        reinterpret_cast<glDeleteSyncProc>(get_proc_address("glDeleteSync"));
   }
 
   if (ver->IsAtLeastGLES(3u, 0u)) {
     fn.glDeleteTransformFeedbacksFn =
         reinterpret_cast<glDeleteTransformFeedbacksProc>(
-            GetGLProcAddress("glDeleteTransformFeedbacks"));
+            get_proc_address("glDeleteTransformFeedbacks"));
   }
 
   if (ver->IsAtLeastGLES(3u, 0u)) {
     fn.glDeleteVertexArraysOESFn =
         reinterpret_cast<glDeleteVertexArraysOESProc>(
-            GetGLProcAddress("glDeleteVertexArrays"));
+            get_proc_address("glDeleteVertexArrays"));
   } else if (ext.b_GL_OES_vertex_array_object) {
     fn.glDeleteVertexArraysOESFn =
         reinterpret_cast<glDeleteVertexArraysOESProc>(
-            GetGLProcAddress("glDeleteVertexArraysOES"));
+            get_proc_address("glDeleteVertexArraysOES"));
   }
 
   if (ext.b_GL_ANGLE_request_extension) {
     fn.glDisableExtensionANGLEFn =
         reinterpret_cast<glDisableExtensionANGLEProc>(
-            GetGLProcAddress("glDisableExtensionANGLE"));
+            get_proc_address("glDisableExtensionANGLE"));
   }
 
   if (ver->IsAtLeastGLES(3u, 2u)) {
     fn.glDisableiOESFn =
-        reinterpret_cast<glDisableiOESProc>(GetGLProcAddress("glDisablei"));
+        reinterpret_cast<glDisableiOESProc>(get_proc_address("glDisablei"));
   } else if (ext.b_GL_OES_draw_buffers_indexed) {
     fn.glDisableiOESFn =
-        reinterpret_cast<glDisableiOESProc>(GetGLProcAddress("glDisableiOES"));
+        reinterpret_cast<glDisableiOESProc>(get_proc_address("glDisableiOES"));
   }
 
   if (ext.b_GL_EXT_discard_framebuffer) {
     fn.glDiscardFramebufferEXTFn =
         reinterpret_cast<glDiscardFramebufferEXTProc>(
-            GetGLProcAddress("glDiscardFramebufferEXT"));
+            get_proc_address("glDiscardFramebufferEXT"));
   }
 
   if (ver->IsAtLeastGLES(3u, 1u)) {
     fn.glDispatchComputeFn = reinterpret_cast<glDispatchComputeProc>(
-        GetGLProcAddress("glDispatchCompute"));
+        get_proc_address("glDispatchCompute"));
   }
 
   if (ver->IsAtLeastGLES(3u, 1u)) {
     fn.glDispatchComputeIndirectFn =
         reinterpret_cast<glDispatchComputeIndirectProc>(
-            GetGLProcAddress("glDispatchComputeIndirect"));
+            get_proc_address("glDispatchComputeIndirect"));
   }
 
   if (ver->IsAtLeastGLES(3u, 1u)) {
     fn.glDrawArraysIndirectFn = reinterpret_cast<glDrawArraysIndirectProc>(
-        GetGLProcAddress("glDrawArraysIndirect"));
+        get_proc_address("glDrawArraysIndirect"));
   }
 
   if (ver->IsAtLeastGLES(3u, 0u)) {
     fn.glDrawArraysInstancedANGLEFn =
         reinterpret_cast<glDrawArraysInstancedANGLEProc>(
-            GetGLProcAddress("glDrawArraysInstanced"));
+            get_proc_address("glDrawArraysInstanced"));
   } else if (ext.b_GL_ANGLE_instanced_arrays) {
     fn.glDrawArraysInstancedANGLEFn =
         reinterpret_cast<glDrawArraysInstancedANGLEProc>(
-            GetGLProcAddress("glDrawArraysInstancedANGLE"));
+            get_proc_address("glDrawArraysInstancedANGLE"));
   }
 
   if (ext.b_GL_EXT_base_instance) {
     fn.glDrawArraysInstancedBaseInstanceANGLEFn =
         reinterpret_cast<glDrawArraysInstancedBaseInstanceANGLEProc>(
-            GetGLProcAddress("glDrawArraysInstancedBaseInstanceEXT"));
+            get_proc_address("glDrawArraysInstancedBaseInstanceEXT"));
   } else if (ext.b_GL_ANGLE_base_vertex_base_instance) {
     fn.glDrawArraysInstancedBaseInstanceANGLEFn =
         reinterpret_cast<glDrawArraysInstancedBaseInstanceANGLEProc>(
-            GetGLProcAddress("glDrawArraysInstancedBaseInstanceANGLE"));
+            get_proc_address("glDrawArraysInstancedBaseInstanceANGLE"));
   }
 
   if (ver->IsAtLeastGLES(3u, 0u)) {
     fn.glDrawBuffersARBFn = reinterpret_cast<glDrawBuffersARBProc>(
-        GetGLProcAddress("glDrawBuffers"));
+        get_proc_address("glDrawBuffers"));
   } else if (ext.b_GL_EXT_draw_buffers) {
     fn.glDrawBuffersARBFn = reinterpret_cast<glDrawBuffersARBProc>(
-        GetGLProcAddress("glDrawBuffersEXT"));
+        get_proc_address("glDrawBuffersEXT"));
   }
 
   if (ver->IsAtLeastGLES(3u, 1u)) {
     fn.glDrawElementsIndirectFn = reinterpret_cast<glDrawElementsIndirectProc>(
-        GetGLProcAddress("glDrawElementsIndirect"));
+        get_proc_address("glDrawElementsIndirect"));
   }
 
   if (ver->IsAtLeastGLES(3u, 0u)) {
     fn.glDrawElementsInstancedANGLEFn =
         reinterpret_cast<glDrawElementsInstancedANGLEProc>(
-            GetGLProcAddress("glDrawElementsInstanced"));
+            get_proc_address("glDrawElementsInstanced"));
   } else if (ext.b_GL_ANGLE_instanced_arrays) {
     fn.glDrawElementsInstancedANGLEFn =
         reinterpret_cast<glDrawElementsInstancedANGLEProc>(
-            GetGLProcAddress("glDrawElementsInstancedANGLE"));
+            get_proc_address("glDrawElementsInstancedANGLE"));
   }
 
   if (ext.b_GL_EXT_base_instance) {
     fn.glDrawElementsInstancedBaseVertexBaseInstanceANGLEFn = reinterpret_cast<
         glDrawElementsInstancedBaseVertexBaseInstanceANGLEProc>(
-        GetGLProcAddress("glDrawElementsInstancedBaseVertexBaseInstanceEXT"));
+        get_proc_address("glDrawElementsInstancedBaseVertexBaseInstanceEXT"));
   } else if (ext.b_GL_ANGLE_base_vertex_base_instance) {
     fn.glDrawElementsInstancedBaseVertexBaseInstanceANGLEFn = reinterpret_cast<
         glDrawElementsInstancedBaseVertexBaseInstanceANGLEProc>(
-        GetGLProcAddress("glDrawElementsInstancedBaseVertexBaseInstanceANGLE"));
+        get_proc_address("glDrawElementsInstancedBaseVertexBaseInstanceANGLE"));
   }
 
   if (ver->IsAtLeastGLES(3u, 0u)) {
     fn.glDrawRangeElementsFn = reinterpret_cast<glDrawRangeElementsProc>(
-        GetGLProcAddress("glDrawRangeElements"));
+        get_proc_address("glDrawRangeElements"));
   }
 
   if (ext.b_GL_OES_EGL_image) {
     fn.glEGLImageTargetRenderbufferStorageOESFn =
         reinterpret_cast<glEGLImageTargetRenderbufferStorageOESProc>(
-            GetGLProcAddress("glEGLImageTargetRenderbufferStorageOES"));
+            get_proc_address("glEGLImageTargetRenderbufferStorageOES"));
   }
 
   if (ext.b_GL_OES_EGL_image) {
     fn.glEGLImageTargetTexture2DOESFn =
         reinterpret_cast<glEGLImageTargetTexture2DOESProc>(
-            GetGLProcAddress("glEGLImageTargetTexture2DOES"));
+            get_proc_address("glEGLImageTargetTexture2DOES"));
   }
 
   if (ver->IsAtLeastGLES(3u, 2u)) {
     fn.glEnableiOESFn =
-        reinterpret_cast<glEnableiOESProc>(GetGLProcAddress("glEnablei"));
+        reinterpret_cast<glEnableiOESProc>(get_proc_address("glEnablei"));
   } else if (ext.b_GL_OES_draw_buffers_indexed) {
     fn.glEnableiOESFn =
-        reinterpret_cast<glEnableiOESProc>(GetGLProcAddress("glEnableiOES"));
+        reinterpret_cast<glEnableiOESProc>(get_proc_address("glEnableiOES"));
   }
 
   if (ext.b_GL_ANGLE_shader_pixel_local_storage) {
     fn.glEndPixelLocalStorageANGLEFn =
         reinterpret_cast<glEndPixelLocalStorageANGLEProc>(
-            GetGLProcAddress("glEndPixelLocalStorageANGLE"));
+            get_proc_address("glEndPixelLocalStorageANGLE"));
   }
 
   if (ver->IsAtLeastGLES(3u, 0u)) {
     fn.glEndQueryFn =
-        reinterpret_cast<glEndQueryProc>(GetGLProcAddress("glEndQuery"));
+        reinterpret_cast<glEndQueryProc>(get_proc_address("glEndQuery"));
   } else if (ext.b_GL_EXT_disjoint_timer_query ||
              ext.b_GL_EXT_occlusion_query_boolean) {
     fn.glEndQueryFn =
-        reinterpret_cast<glEndQueryProc>(GetGLProcAddress("glEndQueryEXT"));
+        reinterpret_cast<glEndQueryProc>(get_proc_address("glEndQueryEXT"));
   }
 
   if (ext.b_GL_QCOM_tiled_rendering) {
     fn.glEndTilingQCOMFn = reinterpret_cast<glEndTilingQCOMProc>(
-        GetGLProcAddress("glEndTilingQCOM"));
+        get_proc_address("glEndTilingQCOM"));
   }
 
   if (ver->IsAtLeastGLES(3u, 0u)) {
     fn.glEndTransformFeedbackFn = reinterpret_cast<glEndTransformFeedbackProc>(
-        GetGLProcAddress("glEndTransformFeedback"));
+        get_proc_address("glEndTransformFeedback"));
   }
 
   if (ver->IsAtLeastGLES(3u, 0u)) {
     fn.glFenceSyncFn =
-        reinterpret_cast<glFenceSyncProc>(GetGLProcAddress("glFenceSync"));
+        reinterpret_cast<glFenceSyncProc>(get_proc_address("glFenceSync"));
   }
 
   if (ext.b_GL_NV_fence) {
     fn.glFinishFenceNVFn = reinterpret_cast<glFinishFenceNVProc>(
-        GetGLProcAddress("glFinishFenceNV"));
+        get_proc_address("glFinishFenceNV"));
   }
 
   if (ver->IsAtLeastGLES(3u, 0u)) {
     fn.glFlushMappedBufferRangeFn =
         reinterpret_cast<glFlushMappedBufferRangeProc>(
-            GetGLProcAddress("glFlushMappedBufferRange"));
+            get_proc_address("glFlushMappedBufferRange"));
   } else if (ext.b_GL_EXT_map_buffer_range) {
     fn.glFlushMappedBufferRangeFn =
         reinterpret_cast<glFlushMappedBufferRangeProc>(
-            GetGLProcAddress("glFlushMappedBufferRangeEXT"));
+            get_proc_address("glFlushMappedBufferRangeEXT"));
   }
 
   if (ext.b_GL_ANGLE_shader_pixel_local_storage) {
     fn.glFramebufferMemorylessPixelLocalStorageANGLEFn =
         reinterpret_cast<glFramebufferMemorylessPixelLocalStorageANGLEProc>(
-            GetGLProcAddress("glFramebufferMemorylessPixelLocalStorageANGLE"));
+            get_proc_address("glFramebufferMemorylessPixelLocalStorageANGLE"));
   }
 
   if (ver->IsAtLeastGLES(3u, 1u)) {
     fn.glFramebufferParameteriFn =
         reinterpret_cast<glFramebufferParameteriProc>(
-            GetGLProcAddress("glFramebufferParameteri"));
+            get_proc_address("glFramebufferParameteri"));
   } else if (ext.b_GL_MESA_framebuffer_flip_y) {
     fn.glFramebufferParameteriFn =
         reinterpret_cast<glFramebufferParameteriProc>(
-            GetGLProcAddress("glFramebufferParameteriMESA"));
+            get_proc_address("glFramebufferParameteriMESA"));
   }
 
   if (ext.b_GL_ANGLE_shader_pixel_local_storage) {
     fn.glFramebufferPixelLocalClearValuefvANGLEFn =
         reinterpret_cast<glFramebufferPixelLocalClearValuefvANGLEProc>(
-            GetGLProcAddress("glFramebufferPixelLocalClearValuefvANGLE"));
+            get_proc_address("glFramebufferPixelLocalClearValuefvANGLE"));
   }
 
   if (ext.b_GL_ANGLE_shader_pixel_local_storage) {
     fn.glFramebufferPixelLocalClearValueivANGLEFn =
         reinterpret_cast<glFramebufferPixelLocalClearValueivANGLEProc>(
-            GetGLProcAddress("glFramebufferPixelLocalClearValueivANGLE"));
+            get_proc_address("glFramebufferPixelLocalClearValueivANGLE"));
   }
 
   if (ext.b_GL_ANGLE_shader_pixel_local_storage) {
     fn.glFramebufferPixelLocalClearValueuivANGLEFn =
         reinterpret_cast<glFramebufferPixelLocalClearValueuivANGLEProc>(
-            GetGLProcAddress("glFramebufferPixelLocalClearValueuivANGLE"));
+            get_proc_address("glFramebufferPixelLocalClearValueuivANGLE"));
   }
 
   if (ext.b_GL_ANGLE_shader_pixel_local_storage) {
     fn.glFramebufferPixelLocalStorageInterruptANGLEFn =
         reinterpret_cast<glFramebufferPixelLocalStorageInterruptANGLEProc>(
-            GetGLProcAddress("glFramebufferPixelLocalStorageInterruptANGLE"));
+            get_proc_address("glFramebufferPixelLocalStorageInterruptANGLE"));
   }
 
   if (ext.b_GL_ANGLE_shader_pixel_local_storage) {
     fn.glFramebufferPixelLocalStorageRestoreANGLEFn =
         reinterpret_cast<glFramebufferPixelLocalStorageRestoreANGLEProc>(
-            GetGLProcAddress("glFramebufferPixelLocalStorageRestoreANGLE"));
+            get_proc_address("glFramebufferPixelLocalStorageRestoreANGLE"));
   }
 
   if (ext.b_GL_EXT_multisampled_render_to_texture) {
     fn.glFramebufferTexture2DMultisampleEXTFn =
         reinterpret_cast<glFramebufferTexture2DMultisampleEXTProc>(
-            GetGLProcAddress("glFramebufferTexture2DMultisampleEXT"));
+            get_proc_address("glFramebufferTexture2DMultisampleEXT"));
   } else if (ext.b_GL_IMG_multisampled_render_to_texture) {
     fn.glFramebufferTexture2DMultisampleEXTFn =
         reinterpret_cast<glFramebufferTexture2DMultisampleEXTProc>(
-            GetGLProcAddress("glFramebufferTexture2DMultisampleIMG"));
+            get_proc_address("glFramebufferTexture2DMultisampleIMG"));
   }
 
   if (ver->IsAtLeastGLES(3u, 0u)) {
     fn.glFramebufferTextureLayerFn =
         reinterpret_cast<glFramebufferTextureLayerProc>(
-            GetGLProcAddress("glFramebufferTextureLayer"));
+            get_proc_address("glFramebufferTextureLayer"));
   }
 
   if (ext.b_GL_OVR_multiview || ext.b_GL_OVR_multiview2) {
     fn.glFramebufferTextureMultiviewOVRFn =
         reinterpret_cast<glFramebufferTextureMultiviewOVRProc>(
-            GetGLProcAddress("glFramebufferTextureMultiviewOVR"));
+            get_proc_address("glFramebufferTextureMultiviewOVR"));
   }
 
   if (ext.b_GL_ANGLE_shader_pixel_local_storage) {
     fn.glFramebufferTexturePixelLocalStorageANGLEFn =
         reinterpret_cast<glFramebufferTexturePixelLocalStorageANGLEProc>(
-            GetGLProcAddress("glFramebufferTexturePixelLocalStorageANGLE"));
+            get_proc_address("glFramebufferTexturePixelLocalStorageANGLE"));
   }
 
   if (ext.b_GL_NV_fence) {
     fn.glGenFencesNVFn =
-        reinterpret_cast<glGenFencesNVProc>(GetGLProcAddress("glGenFencesNV"));
+        reinterpret_cast<glGenFencesNVProc>(get_proc_address("glGenFencesNV"));
   }
 
   if (ver->IsAtLeastGLES(3u, 1u)) {
     fn.glGenProgramPipelinesFn = reinterpret_cast<glGenProgramPipelinesProc>(
-        GetGLProcAddress("glGenProgramPipelines"));
+        get_proc_address("glGenProgramPipelines"));
   }
 
   if (ver->IsAtLeastGLES(3u, 0u)) {
     fn.glGenQueriesFn =
-        reinterpret_cast<glGenQueriesProc>(GetGLProcAddress("glGenQueries"));
+        reinterpret_cast<glGenQueriesProc>(get_proc_address("glGenQueries"));
   } else if (ext.b_GL_EXT_disjoint_timer_query ||
              ext.b_GL_EXT_occlusion_query_boolean) {
     fn.glGenQueriesFn =
-        reinterpret_cast<glGenQueriesProc>(GetGLProcAddress("glGenQueriesEXT"));
+        reinterpret_cast<glGenQueriesProc>(get_proc_address("glGenQueriesEXT"));
   }
 
   if (ver->IsAtLeastGLES(3u, 0u)) {
     fn.glGenSamplersFn =
-        reinterpret_cast<glGenSamplersProc>(GetGLProcAddress("glGenSamplers"));
+        reinterpret_cast<glGenSamplersProc>(get_proc_address("glGenSamplers"));
   }
 
   if (ext.b_GL_EXT_semaphore) {
     fn.glGenSemaphoresEXTFn = reinterpret_cast<glGenSemaphoresEXTProc>(
-        GetGLProcAddress("glGenSemaphoresEXT"));
+        get_proc_address("glGenSemaphoresEXT"));
   }
 
   if (ver->IsAtLeastGLES(3u, 0u)) {
     fn.glGenTransformFeedbacksFn =
         reinterpret_cast<glGenTransformFeedbacksProc>(
-            GetGLProcAddress("glGenTransformFeedbacks"));
+            get_proc_address("glGenTransformFeedbacks"));
   }
 
   if (ver->IsAtLeastGLES(3u, 0u)) {
     fn.glGenVertexArraysOESFn = reinterpret_cast<glGenVertexArraysOESProc>(
-        GetGLProcAddress("glGenVertexArrays"));
+        get_proc_address("glGenVertexArrays"));
   } else if (ext.b_GL_OES_vertex_array_object) {
     fn.glGenVertexArraysOESFn = reinterpret_cast<glGenVertexArraysOESProc>(
-        GetGLProcAddress("glGenVertexArraysOES"));
+        get_proc_address("glGenVertexArraysOES"));
   }
 
   if (ver->IsAtLeastGLES(3u, 0u)) {
     fn.glGetActiveUniformBlockivFn =
         reinterpret_cast<glGetActiveUniformBlockivProc>(
-            GetGLProcAddress("glGetActiveUniformBlockiv"));
+            get_proc_address("glGetActiveUniformBlockiv"));
   }
 
   if (ext.b_GL_ANGLE_robust_client_memory) {
     fn.glGetActiveUniformBlockivRobustANGLEFn =
         reinterpret_cast<glGetActiveUniformBlockivRobustANGLEProc>(
-            GetGLProcAddress("glGetActiveUniformBlockivRobustANGLE"));
+            get_proc_address("glGetActiveUniformBlockivRobustANGLE"));
   }
 
   if (ver->IsAtLeastGLES(3u, 0u)) {
     fn.glGetActiveUniformBlockNameFn =
         reinterpret_cast<glGetActiveUniformBlockNameProc>(
-            GetGLProcAddress("glGetActiveUniformBlockName"));
+            get_proc_address("glGetActiveUniformBlockName"));
   }
 
   if (ver->IsAtLeastGLES(3u, 0u)) {
     fn.glGetActiveUniformsivFn = reinterpret_cast<glGetActiveUniformsivProc>(
-        GetGLProcAddress("glGetActiveUniformsiv"));
+        get_proc_address("glGetActiveUniformsiv"));
   }
 
   if (ver->IsAtLeastGLES(3u, 1u)) {
     fn.glGetBooleani_vFn = reinterpret_cast<glGetBooleani_vProc>(
-        GetGLProcAddress("glGetBooleani_v"));
+        get_proc_address("glGetBooleani_v"));
   }
 
   if (ext.b_GL_ANGLE_robust_client_memory) {
     fn.glGetBooleani_vRobustANGLEFn =
         reinterpret_cast<glGetBooleani_vRobustANGLEProc>(
-            GetGLProcAddress("glGetBooleani_vRobustANGLE"));
+            get_proc_address("glGetBooleani_vRobustANGLE"));
   }
 
   if (ext.b_GL_ANGLE_robust_client_memory) {
     fn.glGetBooleanvRobustANGLEFn =
         reinterpret_cast<glGetBooleanvRobustANGLEProc>(
-            GetGLProcAddress("glGetBooleanvRobustANGLE"));
+            get_proc_address("glGetBooleanvRobustANGLE"));
   }
 
   if (ext.b_GL_ANGLE_robust_client_memory) {
     fn.glGetBufferParameteri64vRobustANGLEFn =
         reinterpret_cast<glGetBufferParameteri64vRobustANGLEProc>(
-            GetGLProcAddress("glGetBufferParameteri64vRobustANGLE"));
+            get_proc_address("glGetBufferParameteri64vRobustANGLE"));
   }
 
   if (ext.b_GL_ANGLE_robust_client_memory) {
     fn.glGetBufferParameterivRobustANGLEFn =
         reinterpret_cast<glGetBufferParameterivRobustANGLEProc>(
-            GetGLProcAddress("glGetBufferParameterivRobustANGLE"));
+            get_proc_address("glGetBufferParameterivRobustANGLE"));
   }
 
   if (ext.b_GL_ANGLE_robust_client_memory) {
     fn.glGetBufferPointervRobustANGLEFn =
         reinterpret_cast<glGetBufferPointervRobustANGLEProc>(
-            GetGLProcAddress("glGetBufferPointervRobustANGLE"));
+            get_proc_address("glGetBufferPointervRobustANGLE"));
   }
 
   if (ver->IsAtLeastGLES(3u, 2u)) {
     fn.glGetDebugMessageLogFn = reinterpret_cast<glGetDebugMessageLogProc>(
-        GetGLProcAddress("glGetDebugMessageLog"));
+        get_proc_address("glGetDebugMessageLog"));
   } else if (ext.b_GL_KHR_debug) {
     fn.glGetDebugMessageLogFn = reinterpret_cast<glGetDebugMessageLogProc>(
-        GetGLProcAddress("glGetDebugMessageLogKHR"));
+        get_proc_address("glGetDebugMessageLogKHR"));
   }
 
   if (ext.b_GL_NV_fence) {
     fn.glGetFenceivNVFn = reinterpret_cast<glGetFenceivNVProc>(
-        GetGLProcAddress("glGetFenceivNV"));
+        get_proc_address("glGetFenceivNV"));
   }
 
   if (ext.b_GL_ANGLE_robust_client_memory) {
     fn.glGetFloatvRobustANGLEFn = reinterpret_cast<glGetFloatvRobustANGLEProc>(
-        GetGLProcAddress("glGetFloatvRobustANGLE"));
+        get_proc_address("glGetFloatvRobustANGLE"));
   }
 
   if (ext.b_GL_EXT_blend_func_extended) {
     fn.glGetFragDataIndexFn = reinterpret_cast<glGetFragDataIndexProc>(
-        GetGLProcAddress("glGetFragDataIndexEXT"));
+        get_proc_address("glGetFragDataIndexEXT"));
   }
 
   if (ver->IsAtLeastGLES(3u, 0u)) {
     fn.glGetFragDataLocationFn = reinterpret_cast<glGetFragDataLocationProc>(
-        GetGLProcAddress("glGetFragDataLocation"));
+        get_proc_address("glGetFragDataLocation"));
   }
 
   if (ext.b_GL_ANGLE_robust_client_memory) {
     fn.glGetFramebufferAttachmentParameterivRobustANGLEFn =
         reinterpret_cast<glGetFramebufferAttachmentParameterivRobustANGLEProc>(
-            GetGLProcAddress(
+            get_proc_address(
                 "glGetFramebufferAttachmentParameterivRobustANGLE"));
   }
 
   if (ver->IsAtLeastGLES(3u, 1u)) {
     fn.glGetFramebufferParameterivFn =
         reinterpret_cast<glGetFramebufferParameterivProc>(
-            GetGLProcAddress("glGetFramebufferParameteriv"));
+            get_proc_address("glGetFramebufferParameteriv"));
   }
 
   if (ext.b_GL_ANGLE_robust_client_memory) {
     fn.glGetFramebufferParameterivRobustANGLEFn =
         reinterpret_cast<glGetFramebufferParameterivRobustANGLEProc>(
-            GetGLProcAddress("glGetFramebufferParameterivRobustANGLE"));
+            get_proc_address("glGetFramebufferParameterivRobustANGLE"));
   }
 
   if (ext.b_GL_ANGLE_shader_pixel_local_storage) {
     fn.glGetFramebufferPixelLocalStorageParameterfvANGLEFn =
         reinterpret_cast<glGetFramebufferPixelLocalStorageParameterfvANGLEProc>(
-            GetGLProcAddress(
+            get_proc_address(
                 "glGetFramebufferPixelLocalStorageParameterfvANGLE"));
   }
 
@@ -1221,14 +1222,14 @@ void DriverGL::InitializeDynamicBindings(const GLVersionInfo* ver,
     fn.glGetFramebufferPixelLocalStorageParameterfvRobustANGLEFn =
         reinterpret_cast<
             glGetFramebufferPixelLocalStorageParameterfvRobustANGLEProc>(
-            GetGLProcAddress(
+            get_proc_address(
                 "glGetFramebufferPixelLocalStorageParameterfvRobustANGLE"));
   }
 
   if (ext.b_GL_ANGLE_shader_pixel_local_storage) {
     fn.glGetFramebufferPixelLocalStorageParameterivANGLEFn =
         reinterpret_cast<glGetFramebufferPixelLocalStorageParameterivANGLEProc>(
-            GetGLProcAddress(
+            get_proc_address(
                 "glGetFramebufferPixelLocalStorageParameterivANGLE"));
   }
 
@@ -1237,1325 +1238,1325 @@ void DriverGL::InitializeDynamicBindings(const GLVersionInfo* ver,
     fn.glGetFramebufferPixelLocalStorageParameterivRobustANGLEFn =
         reinterpret_cast<
             glGetFramebufferPixelLocalStorageParameterivRobustANGLEProc>(
-            GetGLProcAddress(
+            get_proc_address(
                 "glGetFramebufferPixelLocalStorageParameterivRobustANGLE"));
   }
 
   if (ver->IsAtLeastGLES(3u, 2u)) {
     fn.glGetGraphicsResetStatusARBFn =
         reinterpret_cast<glGetGraphicsResetStatusARBProc>(
-            GetGLProcAddress("glGetGraphicsResetStatus"));
+            get_proc_address("glGetGraphicsResetStatus"));
   } else if (ext.b_GL_KHR_robustness) {
     fn.glGetGraphicsResetStatusARBFn =
         reinterpret_cast<glGetGraphicsResetStatusARBProc>(
-            GetGLProcAddress("glGetGraphicsResetStatusKHR"));
+            get_proc_address("glGetGraphicsResetStatusKHR"));
   } else if (ext.b_GL_EXT_robustness) {
     fn.glGetGraphicsResetStatusARBFn =
         reinterpret_cast<glGetGraphicsResetStatusARBProc>(
-            GetGLProcAddress("glGetGraphicsResetStatusEXT"));
+            get_proc_address("glGetGraphicsResetStatusEXT"));
   }
 
   if (ver->IsAtLeastGLES(3u, 0u)) {
     fn.glGetInteger64i_vFn = reinterpret_cast<glGetInteger64i_vProc>(
-        GetGLProcAddress("glGetInteger64i_v"));
+        get_proc_address("glGetInteger64i_v"));
   }
 
   if (ext.b_GL_ANGLE_robust_client_memory) {
     fn.glGetInteger64i_vRobustANGLEFn =
         reinterpret_cast<glGetInteger64i_vRobustANGLEProc>(
-            GetGLProcAddress("glGetInteger64i_vRobustANGLE"));
+            get_proc_address("glGetInteger64i_vRobustANGLE"));
   }
 
   if (ver->IsAtLeastGLES(3u, 0u)) {
     fn.glGetInteger64vFn = reinterpret_cast<glGetInteger64vProc>(
-        GetGLProcAddress("glGetInteger64v"));
+        get_proc_address("glGetInteger64v"));
   }
 
   if (ext.b_GL_ANGLE_robust_client_memory) {
     fn.glGetInteger64vRobustANGLEFn =
         reinterpret_cast<glGetInteger64vRobustANGLEProc>(
-            GetGLProcAddress("glGetInteger64vRobustANGLE"));
+            get_proc_address("glGetInteger64vRobustANGLE"));
   }
 
   if (ver->IsAtLeastGLES(3u, 0u)) {
     fn.glGetIntegeri_vFn = reinterpret_cast<glGetIntegeri_vProc>(
-        GetGLProcAddress("glGetIntegeri_v"));
+        get_proc_address("glGetIntegeri_v"));
   }
 
   if (ext.b_GL_ANGLE_robust_client_memory) {
     fn.glGetIntegeri_vRobustANGLEFn =
         reinterpret_cast<glGetIntegeri_vRobustANGLEProc>(
-            GetGLProcAddress("glGetIntegeri_vRobustANGLE"));
+            get_proc_address("glGetIntegeri_vRobustANGLE"));
   }
 
   if (ext.b_GL_ANGLE_robust_client_memory) {
     fn.glGetIntegervRobustANGLEFn =
         reinterpret_cast<glGetIntegervRobustANGLEProc>(
-            GetGLProcAddress("glGetIntegervRobustANGLE"));
+            get_proc_address("glGetIntegervRobustANGLE"));
   }
 
   if (ver->IsAtLeastGLES(3u, 0u)) {
     fn.glGetInternalformativFn = reinterpret_cast<glGetInternalformativProc>(
-        GetGLProcAddress("glGetInternalformativ"));
+        get_proc_address("glGetInternalformativ"));
   }
 
   if (ext.b_GL_ANGLE_robust_client_memory) {
     fn.glGetInternalformativRobustANGLEFn =
         reinterpret_cast<glGetInternalformativRobustANGLEProc>(
-            GetGLProcAddress("glGetInternalformativRobustANGLE"));
+            get_proc_address("glGetInternalformativRobustANGLE"));
   }
 
   if (ext.b_GL_NV_internalformat_sample_query) {
     fn.glGetInternalformatSampleivNVFn =
         reinterpret_cast<glGetInternalformatSampleivNVProc>(
-            GetGLProcAddress("glGetInternalformatSampleivNV"));
+            get_proc_address("glGetInternalformatSampleivNV"));
   }
 
   if (ver->IsAtLeastGLES(3u, 1u)) {
     fn.glGetMultisamplefvFn = reinterpret_cast<glGetMultisamplefvProc>(
-        GetGLProcAddress("glGetMultisamplefv"));
+        get_proc_address("glGetMultisamplefv"));
   }
 
   if (ext.b_GL_ANGLE_robust_client_memory) {
     fn.glGetMultisamplefvRobustANGLEFn =
         reinterpret_cast<glGetMultisamplefvRobustANGLEProc>(
-            GetGLProcAddress("glGetMultisamplefvRobustANGLE"));
+            get_proc_address("glGetMultisamplefvRobustANGLE"));
   }
 
   if (ext.b_GL_ANGLE_robust_client_memory) {
     fn.glGetnUniformfvRobustANGLEFn =
         reinterpret_cast<glGetnUniformfvRobustANGLEProc>(
-            GetGLProcAddress("glGetnUniformfvRobustANGLE"));
+            get_proc_address("glGetnUniformfvRobustANGLE"));
   }
 
   if (ext.b_GL_ANGLE_robust_client_memory) {
     fn.glGetnUniformivRobustANGLEFn =
         reinterpret_cast<glGetnUniformivRobustANGLEProc>(
-            GetGLProcAddress("glGetnUniformivRobustANGLE"));
+            get_proc_address("glGetnUniformivRobustANGLE"));
   }
 
   if (ext.b_GL_ANGLE_robust_client_memory) {
     fn.glGetnUniformuivRobustANGLEFn =
         reinterpret_cast<glGetnUniformuivRobustANGLEProc>(
-            GetGLProcAddress("glGetnUniformuivRobustANGLE"));
+            get_proc_address("glGetnUniformuivRobustANGLE"));
   }
 
   if (ver->IsAtLeastGLES(3u, 2u)) {
     fn.glGetObjectLabelFn = reinterpret_cast<glGetObjectLabelProc>(
-        GetGLProcAddress("glGetObjectLabel"));
+        get_proc_address("glGetObjectLabel"));
   } else if (ext.b_GL_KHR_debug) {
     fn.glGetObjectLabelFn = reinterpret_cast<glGetObjectLabelProc>(
-        GetGLProcAddress("glGetObjectLabelKHR"));
+        get_proc_address("glGetObjectLabelKHR"));
   }
 
   if (ver->IsAtLeastGLES(3u, 2u)) {
     fn.glGetObjectPtrLabelFn = reinterpret_cast<glGetObjectPtrLabelProc>(
-        GetGLProcAddress("glGetObjectPtrLabel"));
+        get_proc_address("glGetObjectPtrLabel"));
   } else if (ext.b_GL_KHR_debug) {
     fn.glGetObjectPtrLabelFn = reinterpret_cast<glGetObjectPtrLabelProc>(
-        GetGLProcAddress("glGetObjectPtrLabelKHR"));
+        get_proc_address("glGetObjectPtrLabelKHR"));
   }
 
   if (ver->IsAtLeastGLES(3u, 2u)) {
     fn.glGetPointervFn =
-        reinterpret_cast<glGetPointervProc>(GetGLProcAddress("glGetPointerv"));
+        reinterpret_cast<glGetPointervProc>(get_proc_address("glGetPointerv"));
   } else if (ext.b_GL_KHR_debug) {
     fn.glGetPointervFn = reinterpret_cast<glGetPointervProc>(
-        GetGLProcAddress("glGetPointervKHR"));
+        get_proc_address("glGetPointervKHR"));
   }
 
   if (ext.b_GL_ANGLE_robust_client_memory) {
     fn.glGetPointervRobustANGLERobustANGLEFn =
         reinterpret_cast<glGetPointervRobustANGLERobustANGLEProc>(
-            GetGLProcAddress("glGetPointervRobustANGLERobustANGLE"));
+            get_proc_address("glGetPointervRobustANGLERobustANGLE"));
   }
 
   if (ver->IsAtLeastGLES(3u, 0u)) {
     fn.glGetProgramBinaryFn = reinterpret_cast<glGetProgramBinaryProc>(
-        GetGLProcAddress("glGetProgramBinary"));
+        get_proc_address("glGetProgramBinary"));
   } else if (ext.b_GL_OES_get_program_binary) {
     fn.glGetProgramBinaryFn = reinterpret_cast<glGetProgramBinaryProc>(
-        GetGLProcAddress("glGetProgramBinaryOES"));
+        get_proc_address("glGetProgramBinaryOES"));
   }
 
   if (ver->IsAtLeastGLES(3u, 1u)) {
     fn.glGetProgramInterfaceivFn =
         reinterpret_cast<glGetProgramInterfaceivProc>(
-            GetGLProcAddress("glGetProgramInterfaceiv"));
+            get_proc_address("glGetProgramInterfaceiv"));
   }
 
   if (ext.b_GL_ANGLE_robust_client_memory) {
     fn.glGetProgramInterfaceivRobustANGLEFn =
         reinterpret_cast<glGetProgramInterfaceivRobustANGLEProc>(
-            GetGLProcAddress("glGetProgramInterfaceivRobustANGLE"));
+            get_proc_address("glGetProgramInterfaceivRobustANGLE"));
   }
 
   if (ext.b_GL_ANGLE_robust_client_memory) {
     fn.glGetProgramivRobustANGLEFn =
         reinterpret_cast<glGetProgramivRobustANGLEProc>(
-            GetGLProcAddress("glGetProgramivRobustANGLE"));
+            get_proc_address("glGetProgramivRobustANGLE"));
   }
 
   if (ver->IsAtLeastGLES(3u, 1u)) {
     fn.glGetProgramPipelineInfoLogFn =
         reinterpret_cast<glGetProgramPipelineInfoLogProc>(
-            GetGLProcAddress("glGetProgramPipelineInfoLog"));
+            get_proc_address("glGetProgramPipelineInfoLog"));
   }
 
   if (ver->IsAtLeastGLES(3u, 1u)) {
     fn.glGetProgramPipelineivFn = reinterpret_cast<glGetProgramPipelineivProc>(
-        GetGLProcAddress("glGetProgramPipelineiv"));
+        get_proc_address("glGetProgramPipelineiv"));
   }
 
   if (ver->IsAtLeastGLES(3u, 1u)) {
     fn.glGetProgramResourceIndexFn =
         reinterpret_cast<glGetProgramResourceIndexProc>(
-            GetGLProcAddress("glGetProgramResourceIndex"));
+            get_proc_address("glGetProgramResourceIndex"));
   }
 
   if (ver->IsAtLeastGLES(3u, 1u)) {
     fn.glGetProgramResourceivFn = reinterpret_cast<glGetProgramResourceivProc>(
-        GetGLProcAddress("glGetProgramResourceiv"));
+        get_proc_address("glGetProgramResourceiv"));
   }
 
   if (ver->IsAtLeastGLES(3u, 1u)) {
     fn.glGetProgramResourceLocationFn =
         reinterpret_cast<glGetProgramResourceLocationProc>(
-            GetGLProcAddress("glGetProgramResourceLocation"));
+            get_proc_address("glGetProgramResourceLocation"));
   }
 
   if (ver->IsAtLeastGLES(3u, 1u)) {
     fn.glGetProgramResourceNameFn =
         reinterpret_cast<glGetProgramResourceNameProc>(
-            GetGLProcAddress("glGetProgramResourceName"));
+            get_proc_address("glGetProgramResourceName"));
   }
 
   if (ver->IsAtLeastGLES(3u, 0u)) {
     fn.glGetQueryivFn =
-        reinterpret_cast<glGetQueryivProc>(GetGLProcAddress("glGetQueryiv"));
+        reinterpret_cast<glGetQueryivProc>(get_proc_address("glGetQueryiv"));
   } else if (ext.b_GL_EXT_disjoint_timer_query ||
              ext.b_GL_EXT_occlusion_query_boolean) {
     fn.glGetQueryivFn =
-        reinterpret_cast<glGetQueryivProc>(GetGLProcAddress("glGetQueryivEXT"));
+        reinterpret_cast<glGetQueryivProc>(get_proc_address("glGetQueryivEXT"));
   }
 
   if (ext.b_GL_ANGLE_robust_client_memory) {
     fn.glGetQueryivRobustANGLEFn =
         reinterpret_cast<glGetQueryivRobustANGLEProc>(
-            GetGLProcAddress("glGetQueryivRobustANGLE"));
+            get_proc_address("glGetQueryivRobustANGLE"));
   }
 
   if (ext.b_GL_EXT_disjoint_timer_query) {
     fn.glGetQueryObjecti64vFn = reinterpret_cast<glGetQueryObjecti64vProc>(
-        GetGLProcAddress("glGetQueryObjecti64vEXT"));
+        get_proc_address("glGetQueryObjecti64vEXT"));
   }
 
   if (ext.b_GL_ANGLE_robust_client_memory) {
     fn.glGetQueryObjecti64vRobustANGLEFn =
         reinterpret_cast<glGetQueryObjecti64vRobustANGLEProc>(
-            GetGLProcAddress("glGetQueryObjecti64vRobustANGLE"));
+            get_proc_address("glGetQueryObjecti64vRobustANGLE"));
   }
 
   if (ext.b_GL_EXT_disjoint_timer_query) {
     fn.glGetQueryObjectivFn = reinterpret_cast<glGetQueryObjectivProc>(
-        GetGLProcAddress("glGetQueryObjectivEXT"));
+        get_proc_address("glGetQueryObjectivEXT"));
   }
 
   if (ext.b_GL_ANGLE_robust_client_memory) {
     fn.glGetQueryObjectivRobustANGLEFn =
         reinterpret_cast<glGetQueryObjectivRobustANGLEProc>(
-            GetGLProcAddress("glGetQueryObjectivRobustANGLE"));
+            get_proc_address("glGetQueryObjectivRobustANGLE"));
   }
 
   if (ext.b_GL_EXT_disjoint_timer_query) {
     fn.glGetQueryObjectui64vFn = reinterpret_cast<glGetQueryObjectui64vProc>(
-        GetGLProcAddress("glGetQueryObjectui64vEXT"));
+        get_proc_address("glGetQueryObjectui64vEXT"));
   }
 
   if (ext.b_GL_ANGLE_robust_client_memory) {
     fn.glGetQueryObjectui64vRobustANGLEFn =
         reinterpret_cast<glGetQueryObjectui64vRobustANGLEProc>(
-            GetGLProcAddress("glGetQueryObjectui64vRobustANGLE"));
+            get_proc_address("glGetQueryObjectui64vRobustANGLE"));
   }
 
   if (ver->IsAtLeastGLES(3u, 0u)) {
     fn.glGetQueryObjectuivFn = reinterpret_cast<glGetQueryObjectuivProc>(
-        GetGLProcAddress("glGetQueryObjectuiv"));
+        get_proc_address("glGetQueryObjectuiv"));
   } else if (ext.b_GL_EXT_disjoint_timer_query ||
              ext.b_GL_EXT_occlusion_query_boolean) {
     fn.glGetQueryObjectuivFn = reinterpret_cast<glGetQueryObjectuivProc>(
-        GetGLProcAddress("glGetQueryObjectuivEXT"));
+        get_proc_address("glGetQueryObjectuivEXT"));
   }
 
   if (ext.b_GL_ANGLE_robust_client_memory) {
     fn.glGetQueryObjectuivRobustANGLEFn =
         reinterpret_cast<glGetQueryObjectuivRobustANGLEProc>(
-            GetGLProcAddress("glGetQueryObjectuivRobustANGLE"));
+            get_proc_address("glGetQueryObjectuivRobustANGLE"));
   }
 
   if (ext.b_GL_ANGLE_robust_client_memory) {
     fn.glGetRenderbufferParameterivRobustANGLEFn =
         reinterpret_cast<glGetRenderbufferParameterivRobustANGLEProc>(
-            GetGLProcAddress("glGetRenderbufferParameterivRobustANGLE"));
+            get_proc_address("glGetRenderbufferParameterivRobustANGLE"));
   }
 
   if (ver->IsAtLeastGLES(3u, 0u)) {
     fn.glGetSamplerParameterfvFn =
         reinterpret_cast<glGetSamplerParameterfvProc>(
-            GetGLProcAddress("glGetSamplerParameterfv"));
+            get_proc_address("glGetSamplerParameterfv"));
   }
 
   if (ext.b_GL_ANGLE_robust_client_memory) {
     fn.glGetSamplerParameterfvRobustANGLEFn =
         reinterpret_cast<glGetSamplerParameterfvRobustANGLEProc>(
-            GetGLProcAddress("glGetSamplerParameterfvRobustANGLE"));
+            get_proc_address("glGetSamplerParameterfvRobustANGLE"));
   }
 
   if (ext.b_GL_ANGLE_robust_client_memory) {
     fn.glGetSamplerParameterIivRobustANGLEFn =
         reinterpret_cast<glGetSamplerParameterIivRobustANGLEProc>(
-            GetGLProcAddress("glGetSamplerParameterIivRobustANGLE"));
+            get_proc_address("glGetSamplerParameterIivRobustANGLE"));
   }
 
   if (ext.b_GL_ANGLE_robust_client_memory) {
     fn.glGetSamplerParameterIuivRobustANGLEFn =
         reinterpret_cast<glGetSamplerParameterIuivRobustANGLEProc>(
-            GetGLProcAddress("glGetSamplerParameterIuivRobustANGLE"));
+            get_proc_address("glGetSamplerParameterIuivRobustANGLE"));
   }
 
   if (ver->IsAtLeastGLES(3u, 0u)) {
     fn.glGetSamplerParameterivFn =
         reinterpret_cast<glGetSamplerParameterivProc>(
-            GetGLProcAddress("glGetSamplerParameteriv"));
+            get_proc_address("glGetSamplerParameteriv"));
   }
 
   if (ext.b_GL_ANGLE_robust_client_memory) {
     fn.glGetSamplerParameterivRobustANGLEFn =
         reinterpret_cast<glGetSamplerParameterivRobustANGLEProc>(
-            GetGLProcAddress("glGetSamplerParameterivRobustANGLE"));
+            get_proc_address("glGetSamplerParameterivRobustANGLE"));
   }
 
   if (ext.b_GL_ANGLE_robust_client_memory) {
     fn.glGetShaderivRobustANGLEFn =
         reinterpret_cast<glGetShaderivRobustANGLEProc>(
-            GetGLProcAddress("glGetShaderivRobustANGLE"));
+            get_proc_address("glGetShaderivRobustANGLE"));
   }
 
   if (ver->IsAtLeastGLES(3u, 0u)) {
     fn.glGetSyncivFn =
-        reinterpret_cast<glGetSyncivProc>(GetGLProcAddress("glGetSynciv"));
+        reinterpret_cast<glGetSyncivProc>(get_proc_address("glGetSynciv"));
   }
 
   if (ver->IsAtLeastGLES(3u, 1u)) {
     fn.glGetTexLevelParameterfvFn =
         reinterpret_cast<glGetTexLevelParameterfvProc>(
-            GetGLProcAddress("glGetTexLevelParameterfv"));
+            get_proc_address("glGetTexLevelParameterfv"));
   } else if (ext.b_GL_ANGLE_get_tex_level_parameter) {
     fn.glGetTexLevelParameterfvFn =
         reinterpret_cast<glGetTexLevelParameterfvProc>(
-            GetGLProcAddress("glGetTexLevelParameterfvANGLE"));
+            get_proc_address("glGetTexLevelParameterfvANGLE"));
   }
 
   if (ext.b_GL_ANGLE_robust_client_memory) {
     fn.glGetTexLevelParameterfvRobustANGLEFn =
         reinterpret_cast<glGetTexLevelParameterfvRobustANGLEProc>(
-            GetGLProcAddress("glGetTexLevelParameterfvRobustANGLE"));
+            get_proc_address("glGetTexLevelParameterfvRobustANGLE"));
   }
 
   if (ver->IsAtLeastGLES(3u, 1u)) {
     fn.glGetTexLevelParameterivFn =
         reinterpret_cast<glGetTexLevelParameterivProc>(
-            GetGLProcAddress("glGetTexLevelParameteriv"));
+            get_proc_address("glGetTexLevelParameteriv"));
   } else if (ext.b_GL_ANGLE_get_tex_level_parameter) {
     fn.glGetTexLevelParameterivFn =
         reinterpret_cast<glGetTexLevelParameterivProc>(
-            GetGLProcAddress("glGetTexLevelParameterivANGLE"));
+            get_proc_address("glGetTexLevelParameterivANGLE"));
   }
 
   if (ext.b_GL_ANGLE_robust_client_memory) {
     fn.glGetTexLevelParameterivRobustANGLEFn =
         reinterpret_cast<glGetTexLevelParameterivRobustANGLEProc>(
-            GetGLProcAddress("glGetTexLevelParameterivRobustANGLE"));
+            get_proc_address("glGetTexLevelParameterivRobustANGLE"));
   }
 
   if (ext.b_GL_ANGLE_robust_client_memory) {
     fn.glGetTexParameterfvRobustANGLEFn =
         reinterpret_cast<glGetTexParameterfvRobustANGLEProc>(
-            GetGLProcAddress("glGetTexParameterfvRobustANGLE"));
+            get_proc_address("glGetTexParameterfvRobustANGLE"));
   }
 
   if (ext.b_GL_ANGLE_robust_client_memory) {
     fn.glGetTexParameterIivRobustANGLEFn =
         reinterpret_cast<glGetTexParameterIivRobustANGLEProc>(
-            GetGLProcAddress("glGetTexParameterIivRobustANGLE"));
+            get_proc_address("glGetTexParameterIivRobustANGLE"));
   }
 
   if (ext.b_GL_ANGLE_robust_client_memory) {
     fn.glGetTexParameterIuivRobustANGLEFn =
         reinterpret_cast<glGetTexParameterIuivRobustANGLEProc>(
-            GetGLProcAddress("glGetTexParameterIuivRobustANGLE"));
+            get_proc_address("glGetTexParameterIuivRobustANGLE"));
   }
 
   if (ext.b_GL_ANGLE_robust_client_memory) {
     fn.glGetTexParameterivRobustANGLEFn =
         reinterpret_cast<glGetTexParameterivRobustANGLEProc>(
-            GetGLProcAddress("glGetTexParameterivRobustANGLE"));
+            get_proc_address("glGetTexParameterivRobustANGLE"));
   }
 
   if (ver->IsAtLeastGLES(3u, 0u)) {
     fn.glGetTransformFeedbackVaryingFn =
         reinterpret_cast<glGetTransformFeedbackVaryingProc>(
-            GetGLProcAddress("glGetTransformFeedbackVarying"));
+            get_proc_address("glGetTransformFeedbackVarying"));
   }
 
   if (ext.b_GL_ANGLE_translated_shader_source) {
     fn.glGetTranslatedShaderSourceANGLEFn =
         reinterpret_cast<glGetTranslatedShaderSourceANGLEProc>(
-            GetGLProcAddress("glGetTranslatedShaderSourceANGLE"));
+            get_proc_address("glGetTranslatedShaderSourceANGLE"));
   }
 
   if (ver->IsAtLeastGLES(3u, 0u)) {
     fn.glGetUniformBlockIndexFn = reinterpret_cast<glGetUniformBlockIndexProc>(
-        GetGLProcAddress("glGetUniformBlockIndex"));
+        get_proc_address("glGetUniformBlockIndex"));
   }
 
   if (ext.b_GL_ANGLE_robust_client_memory) {
     fn.glGetUniformfvRobustANGLEFn =
         reinterpret_cast<glGetUniformfvRobustANGLEProc>(
-            GetGLProcAddress("glGetUniformfvRobustANGLE"));
+            get_proc_address("glGetUniformfvRobustANGLE"));
   }
 
   if (ver->IsAtLeastGLES(3u, 0u)) {
     fn.glGetUniformIndicesFn = reinterpret_cast<glGetUniformIndicesProc>(
-        GetGLProcAddress("glGetUniformIndices"));
+        get_proc_address("glGetUniformIndices"));
   }
 
   if (ext.b_GL_ANGLE_robust_client_memory) {
     fn.glGetUniformivRobustANGLEFn =
         reinterpret_cast<glGetUniformivRobustANGLEProc>(
-            GetGLProcAddress("glGetUniformivRobustANGLE"));
+            get_proc_address("glGetUniformivRobustANGLE"));
   }
 
   if (ver->IsAtLeastGLES(3u, 0u)) {
     fn.glGetUniformuivFn = reinterpret_cast<glGetUniformuivProc>(
-        GetGLProcAddress("glGetUniformuiv"));
+        get_proc_address("glGetUniformuiv"));
   }
 
   if (ext.b_GL_ANGLE_robust_client_memory) {
     fn.glGetUniformuivRobustANGLEFn =
         reinterpret_cast<glGetUniformuivRobustANGLEProc>(
-            GetGLProcAddress("glGetUniformuivRobustANGLE"));
+            get_proc_address("glGetUniformuivRobustANGLE"));
   }
 
   if (ext.b_GL_ANGLE_robust_client_memory) {
     fn.glGetVertexAttribfvRobustANGLEFn =
         reinterpret_cast<glGetVertexAttribfvRobustANGLEProc>(
-            GetGLProcAddress("glGetVertexAttribfvRobustANGLE"));
+            get_proc_address("glGetVertexAttribfvRobustANGLE"));
   }
 
   if (ext.b_GL_ANGLE_robust_client_memory) {
     fn.glGetVertexAttribIivRobustANGLEFn =
         reinterpret_cast<glGetVertexAttribIivRobustANGLEProc>(
-            GetGLProcAddress("glGetVertexAttribIivRobustANGLE"));
+            get_proc_address("glGetVertexAttribIivRobustANGLE"));
   }
 
   if (ext.b_GL_ANGLE_robust_client_memory) {
     fn.glGetVertexAttribIuivRobustANGLEFn =
         reinterpret_cast<glGetVertexAttribIuivRobustANGLEProc>(
-            GetGLProcAddress("glGetVertexAttribIuivRobustANGLE"));
+            get_proc_address("glGetVertexAttribIuivRobustANGLE"));
   }
 
   if (ext.b_GL_ANGLE_robust_client_memory) {
     fn.glGetVertexAttribivRobustANGLEFn =
         reinterpret_cast<glGetVertexAttribivRobustANGLEProc>(
-            GetGLProcAddress("glGetVertexAttribivRobustANGLE"));
+            get_proc_address("glGetVertexAttribivRobustANGLE"));
   }
 
   if (ext.b_GL_ANGLE_robust_client_memory) {
     fn.glGetVertexAttribPointervRobustANGLEFn =
         reinterpret_cast<glGetVertexAttribPointervRobustANGLEProc>(
-            GetGLProcAddress("glGetVertexAttribPointervRobustANGLE"));
+            get_proc_address("glGetVertexAttribPointervRobustANGLE"));
   }
 
   if (ext.b_GL_EXT_memory_object_fd) {
     fn.glImportMemoryFdEXTFn = reinterpret_cast<glImportMemoryFdEXTProc>(
-        GetGLProcAddress("glImportMemoryFdEXT"));
+        get_proc_address("glImportMemoryFdEXT"));
   }
 
   if (ext.b_GL_EXT_memory_object_win32) {
     fn.glImportMemoryWin32HandleEXTFn =
         reinterpret_cast<glImportMemoryWin32HandleEXTProc>(
-            GetGLProcAddress("glImportMemoryWin32HandleEXT"));
+            get_proc_address("glImportMemoryWin32HandleEXT"));
   }
 
   if (ext.b_GL_ANGLE_memory_object_fuchsia) {
     fn.glImportMemoryZirconHandleANGLEFn =
         reinterpret_cast<glImportMemoryZirconHandleANGLEProc>(
-            GetGLProcAddress("glImportMemoryZirconHandleANGLE"));
+            get_proc_address("glImportMemoryZirconHandleANGLE"));
   }
 
   if (ext.b_GL_EXT_semaphore_fd) {
     fn.glImportSemaphoreFdEXTFn = reinterpret_cast<glImportSemaphoreFdEXTProc>(
-        GetGLProcAddress("glImportSemaphoreFdEXT"));
+        get_proc_address("glImportSemaphoreFdEXT"));
   }
 
   if (ext.b_GL_EXT_semaphore_win32) {
     fn.glImportSemaphoreWin32HandleEXTFn =
         reinterpret_cast<glImportSemaphoreWin32HandleEXTProc>(
-            GetGLProcAddress("glImportSemaphoreWin32HandleEXT"));
+            get_proc_address("glImportSemaphoreWin32HandleEXT"));
   }
 
   if (ext.b_GL_ANGLE_semaphore_fuchsia) {
     fn.glImportSemaphoreZirconHandleANGLEFn =
         reinterpret_cast<glImportSemaphoreZirconHandleANGLEProc>(
-            GetGLProcAddress("glImportSemaphoreZirconHandleANGLE"));
+            get_proc_address("glImportSemaphoreZirconHandleANGLE"));
   }
 
   if (ext.b_GL_EXT_debug_marker) {
     fn.glInsertEventMarkerEXTFn = reinterpret_cast<glInsertEventMarkerEXTProc>(
-        GetGLProcAddress("glInsertEventMarkerEXT"));
+        get_proc_address("glInsertEventMarkerEXT"));
   }
 
   if (ver->IsAtLeastGLES(3u, 0u)) {
     fn.glInvalidateFramebufferFn =
         reinterpret_cast<glInvalidateFramebufferProc>(
-            GetGLProcAddress("glInvalidateFramebuffer"));
+            get_proc_address("glInvalidateFramebuffer"));
   }
 
   if (ver->IsAtLeastGLES(3u, 0u)) {
     fn.glInvalidateSubFramebufferFn =
         reinterpret_cast<glInvalidateSubFramebufferProc>(
-            GetGLProcAddress("glInvalidateSubFramebuffer"));
+            get_proc_address("glInvalidateSubFramebuffer"));
   }
 
   if (ext.b_GL_ANGLE_texture_external_update) {
     fn.glInvalidateTextureANGLEFn =
         reinterpret_cast<glInvalidateTextureANGLEProc>(
-            GetGLProcAddress("glInvalidateTextureANGLE"));
+            get_proc_address("glInvalidateTextureANGLE"));
   }
 
   if (ver->IsAtLeastGLES(3u, 2u)) {
     fn.glIsEnablediOESFn =
-        reinterpret_cast<glIsEnablediOESProc>(GetGLProcAddress("glIsEnabledi"));
+        reinterpret_cast<glIsEnablediOESProc>(get_proc_address("glIsEnabledi"));
   } else if (ext.b_GL_OES_draw_buffers_indexed) {
     fn.glIsEnablediOESFn = reinterpret_cast<glIsEnablediOESProc>(
-        GetGLProcAddress("glIsEnablediOES"));
+        get_proc_address("glIsEnablediOES"));
   }
 
   if (ext.b_GL_NV_fence) {
     fn.glIsFenceNVFn =
-        reinterpret_cast<glIsFenceNVProc>(GetGLProcAddress("glIsFenceNV"));
+        reinterpret_cast<glIsFenceNVProc>(get_proc_address("glIsFenceNV"));
   }
 
   if (ver->IsAtLeastGLES(3u, 1u)) {
     fn.glIsProgramPipelineFn = reinterpret_cast<glIsProgramPipelineProc>(
-        GetGLProcAddress("glIsProgramPipeline"));
+        get_proc_address("glIsProgramPipeline"));
   }
 
   if (ver->IsAtLeastGLES(3u, 0u)) {
     fn.glIsQueryFn =
-        reinterpret_cast<glIsQueryProc>(GetGLProcAddress("glIsQuery"));
+        reinterpret_cast<glIsQueryProc>(get_proc_address("glIsQuery"));
   } else if (ext.b_GL_EXT_disjoint_timer_query ||
              ext.b_GL_EXT_occlusion_query_boolean) {
     fn.glIsQueryFn =
-        reinterpret_cast<glIsQueryProc>(GetGLProcAddress("glIsQueryEXT"));
+        reinterpret_cast<glIsQueryProc>(get_proc_address("glIsQueryEXT"));
   }
 
   if (ver->IsAtLeastGLES(3u, 0u)) {
     fn.glIsSamplerFn =
-        reinterpret_cast<glIsSamplerProc>(GetGLProcAddress("glIsSampler"));
+        reinterpret_cast<glIsSamplerProc>(get_proc_address("glIsSampler"));
   }
 
   if (ver->IsAtLeastGLES(3u, 0u)) {
     fn.glIsSyncFn =
-        reinterpret_cast<glIsSyncProc>(GetGLProcAddress("glIsSync"));
+        reinterpret_cast<glIsSyncProc>(get_proc_address("glIsSync"));
   }
 
   if (ver->IsAtLeastGLES(3u, 0u)) {
     fn.glIsTransformFeedbackFn = reinterpret_cast<glIsTransformFeedbackProc>(
-        GetGLProcAddress("glIsTransformFeedback"));
+        get_proc_address("glIsTransformFeedback"));
   }
 
   if (ver->IsAtLeastGLES(3u, 0u)) {
     fn.glIsVertexArrayOESFn = reinterpret_cast<glIsVertexArrayOESProc>(
-        GetGLProcAddress("glIsVertexArray"));
+        get_proc_address("glIsVertexArray"));
   } else if (ext.b_GL_OES_vertex_array_object) {
     fn.glIsVertexArrayOESFn = reinterpret_cast<glIsVertexArrayOESProc>(
-        GetGLProcAddress("glIsVertexArrayOES"));
+        get_proc_address("glIsVertexArrayOES"));
   }
 
   if (ext.b_GL_OES_mapbuffer) {
     fn.glMapBufferFn =
-        reinterpret_cast<glMapBufferProc>(GetGLProcAddress("glMapBufferOES"));
+        reinterpret_cast<glMapBufferProc>(get_proc_address("glMapBufferOES"));
   }
 
   if (ver->IsAtLeastGLES(3u, 0u)) {
     fn.glMapBufferRangeFn = reinterpret_cast<glMapBufferRangeProc>(
-        GetGLProcAddress("glMapBufferRange"));
+        get_proc_address("glMapBufferRange"));
   } else if (ext.b_GL_EXT_map_buffer_range) {
     fn.glMapBufferRangeFn = reinterpret_cast<glMapBufferRangeProc>(
-        GetGLProcAddress("glMapBufferRangeEXT"));
+        get_proc_address("glMapBufferRangeEXT"));
   }
 
   if (ext.b_GL_KHR_parallel_shader_compile) {
     fn.glMaxShaderCompilerThreadsKHRFn =
         reinterpret_cast<glMaxShaderCompilerThreadsKHRProc>(
-            GetGLProcAddress("glMaxShaderCompilerThreadsKHR"));
+            get_proc_address("glMaxShaderCompilerThreadsKHR"));
   }
 
   if (ver->IsAtLeastGLES(3u, 1u)) {
     fn.glMemoryBarrierByRegionFn =
         reinterpret_cast<glMemoryBarrierByRegionProc>(
-            GetGLProcAddress("glMemoryBarrierByRegion"));
+            get_proc_address("glMemoryBarrierByRegion"));
   }
 
   if (ver->IsAtLeastGLES(3u, 1u)) {
     fn.glMemoryBarrierEXTFn = reinterpret_cast<glMemoryBarrierEXTProc>(
-        GetGLProcAddress("glMemoryBarrier"));
+        get_proc_address("glMemoryBarrier"));
   } else if (ext.b_GL_EXT_shader_image_load_store) {
     fn.glMemoryBarrierEXTFn = reinterpret_cast<glMemoryBarrierEXTProc>(
-        GetGLProcAddress("glMemoryBarrierEXT"));
+        get_proc_address("glMemoryBarrierEXT"));
   }
 
   if (ext.b_GL_EXT_memory_object) {
     fn.glMemoryObjectParameterivEXTFn =
         reinterpret_cast<glMemoryObjectParameterivEXTProc>(
-            GetGLProcAddress("glMemoryObjectParameterivEXT"));
+            get_proc_address("glMemoryObjectParameterivEXT"));
   }
 
   if (ver->IsAtLeastGLES(3u, 2u)) {
     fn.glMinSampleShadingFn = reinterpret_cast<glMinSampleShadingProc>(
-        GetGLProcAddress("glMinSampleShading"));
+        get_proc_address("glMinSampleShading"));
   }
 
   if (ext.b_GL_ANGLE_multi_draw) {
     fn.glMultiDrawArraysANGLEFn = reinterpret_cast<glMultiDrawArraysANGLEProc>(
-        GetGLProcAddress("glMultiDrawArraysANGLE"));
+        get_proc_address("glMultiDrawArraysANGLE"));
   }
 
   if (ext.b_GL_ANGLE_multi_draw) {
     fn.glMultiDrawArraysInstancedANGLEFn =
         reinterpret_cast<glMultiDrawArraysInstancedANGLEProc>(
-            GetGLProcAddress("glMultiDrawArraysInstancedANGLE"));
+            get_proc_address("glMultiDrawArraysInstancedANGLE"));
   }
 
   if (ext.b_GL_ANGLE_base_vertex_base_instance) {
     fn.glMultiDrawArraysInstancedBaseInstanceANGLEFn =
         reinterpret_cast<glMultiDrawArraysInstancedBaseInstanceANGLEProc>(
-            GetGLProcAddress("glMultiDrawArraysInstancedBaseInstanceANGLE"));
+            get_proc_address("glMultiDrawArraysInstancedBaseInstanceANGLE"));
   }
 
   if (ext.b_GL_ANGLE_multi_draw) {
     fn.glMultiDrawElementsANGLEFn =
         reinterpret_cast<glMultiDrawElementsANGLEProc>(
-            GetGLProcAddress("glMultiDrawElementsANGLE"));
+            get_proc_address("glMultiDrawElementsANGLE"));
   }
 
   if (ext.b_GL_ANGLE_multi_draw) {
     fn.glMultiDrawElementsInstancedANGLEFn =
         reinterpret_cast<glMultiDrawElementsInstancedANGLEProc>(
-            GetGLProcAddress("glMultiDrawElementsInstancedANGLE"));
+            get_proc_address("glMultiDrawElementsInstancedANGLE"));
   }
 
   if (ext.b_GL_ANGLE_base_vertex_base_instance) {
     fn.glMultiDrawElementsInstancedBaseVertexBaseInstanceANGLEFn =
         reinterpret_cast<
             glMultiDrawElementsInstancedBaseVertexBaseInstanceANGLEProc>(
-            GetGLProcAddress(
+            get_proc_address(
                 "glMultiDrawElementsInstancedBaseVertexBaseInstanceANGLE"));
   }
 
   if (ver->IsAtLeastGLES(3u, 2u)) {
     fn.glObjectLabelFn =
-        reinterpret_cast<glObjectLabelProc>(GetGLProcAddress("glObjectLabel"));
+        reinterpret_cast<glObjectLabelProc>(get_proc_address("glObjectLabel"));
   } else if (ext.b_GL_KHR_debug) {
     fn.glObjectLabelFn = reinterpret_cast<glObjectLabelProc>(
-        GetGLProcAddress("glObjectLabelKHR"));
+        get_proc_address("glObjectLabelKHR"));
   }
 
   if (ver->IsAtLeastGLES(3u, 2u)) {
     fn.glObjectPtrLabelFn = reinterpret_cast<glObjectPtrLabelProc>(
-        GetGLProcAddress("glObjectPtrLabel"));
+        get_proc_address("glObjectPtrLabel"));
   } else if (ext.b_GL_KHR_debug) {
     fn.glObjectPtrLabelFn = reinterpret_cast<glObjectPtrLabelProc>(
-        GetGLProcAddress("glObjectPtrLabelKHR"));
+        get_proc_address("glObjectPtrLabelKHR"));
   }
 
   if (ver->IsAtLeastGLES(3u, 2u)) {
     fn.glPatchParameteriFn = reinterpret_cast<glPatchParameteriProc>(
-        GetGLProcAddress("glPatchParameteri"));
+        get_proc_address("glPatchParameteri"));
   } else if (ext.b_GL_OES_tessellation_shader) {
     fn.glPatchParameteriFn = reinterpret_cast<glPatchParameteriProc>(
-        GetGLProcAddress("glPatchParameteriOES"));
+        get_proc_address("glPatchParameteriOES"));
   }
 
   if (ver->IsAtLeastGLES(3u, 0u)) {
     fn.glPauseTransformFeedbackFn =
         reinterpret_cast<glPauseTransformFeedbackProc>(
-            GetGLProcAddress("glPauseTransformFeedback"));
+            get_proc_address("glPauseTransformFeedback"));
   }
 
   if (ext.b_GL_ANGLE_shader_pixel_local_storage) {
     fn.glPixelLocalStorageBarrierANGLEFn =
         reinterpret_cast<glPixelLocalStorageBarrierANGLEProc>(
-            GetGLProcAddress("glPixelLocalStorageBarrierANGLE"));
+            get_proc_address("glPixelLocalStorageBarrierANGLE"));
   }
 
   if (ext.b_GL_ANGLE_polygon_mode) {
     fn.glPolygonModeANGLEFn = reinterpret_cast<glPolygonModeANGLEProc>(
-        GetGLProcAddress("glPolygonModeANGLE"));
+        get_proc_address("glPolygonModeANGLE"));
   }
 
   if (ext.b_GL_EXT_polygon_offset_clamp) {
     fn.glPolygonOffsetClampEXTFn =
         reinterpret_cast<glPolygonOffsetClampEXTProc>(
-            GetGLProcAddress("glPolygonOffsetClampEXT"));
+            get_proc_address("glPolygonOffsetClampEXT"));
   }
 
   if (ver->IsAtLeastGLES(3u, 2u)) {
     fn.glPopDebugGroupFn = reinterpret_cast<glPopDebugGroupProc>(
-        GetGLProcAddress("glPopDebugGroup"));
+        get_proc_address("glPopDebugGroup"));
   } else if (ext.b_GL_KHR_debug) {
     fn.glPopDebugGroupFn = reinterpret_cast<glPopDebugGroupProc>(
-        GetGLProcAddress("glPopDebugGroupKHR"));
+        get_proc_address("glPopDebugGroupKHR"));
   }
 
   if (ext.b_GL_EXT_debug_marker) {
     fn.glPopGroupMarkerEXTFn = reinterpret_cast<glPopGroupMarkerEXTProc>(
-        GetGLProcAddress("glPopGroupMarkerEXT"));
+        get_proc_address("glPopGroupMarkerEXT"));
   }
 
   if (ver->IsAtLeastGLES(3u, 0u)) {
     fn.glProgramBinaryFn = reinterpret_cast<glProgramBinaryProc>(
-        GetGLProcAddress("glProgramBinary"));
+        get_proc_address("glProgramBinary"));
   } else if (ext.b_GL_OES_get_program_binary) {
     fn.glProgramBinaryFn = reinterpret_cast<glProgramBinaryProc>(
-        GetGLProcAddress("glProgramBinaryOES"));
+        get_proc_address("glProgramBinaryOES"));
   }
 
   if (ver->IsAtLeastGLES(3u, 0u)) {
     fn.glProgramParameteriFn = reinterpret_cast<glProgramParameteriProc>(
-        GetGLProcAddress("glProgramParameteri"));
+        get_proc_address("glProgramParameteri"));
   }
 
   if (ver->IsAtLeastGLES(3u, 1u)) {
     fn.glProgramUniform1fFn = reinterpret_cast<glProgramUniform1fProc>(
-        GetGLProcAddress("glProgramUniform1f"));
+        get_proc_address("glProgramUniform1f"));
   }
 
   if (ver->IsAtLeastGLES(3u, 1u)) {
     fn.glProgramUniform1fvFn = reinterpret_cast<glProgramUniform1fvProc>(
-        GetGLProcAddress("glProgramUniform1fv"));
+        get_proc_address("glProgramUniform1fv"));
   }
 
   if (ver->IsAtLeastGLES(3u, 1u)) {
     fn.glProgramUniform1iFn = reinterpret_cast<glProgramUniform1iProc>(
-        GetGLProcAddress("glProgramUniform1i"));
+        get_proc_address("glProgramUniform1i"));
   }
 
   if (ver->IsAtLeastGLES(3u, 1u)) {
     fn.glProgramUniform1ivFn = reinterpret_cast<glProgramUniform1ivProc>(
-        GetGLProcAddress("glProgramUniform1iv"));
+        get_proc_address("glProgramUniform1iv"));
   }
 
   if (ver->IsAtLeastGLES(3u, 1u)) {
     fn.glProgramUniform1uiFn = reinterpret_cast<glProgramUniform1uiProc>(
-        GetGLProcAddress("glProgramUniform1ui"));
+        get_proc_address("glProgramUniform1ui"));
   }
 
   if (ver->IsAtLeastGLES(3u, 1u)) {
     fn.glProgramUniform1uivFn = reinterpret_cast<glProgramUniform1uivProc>(
-        GetGLProcAddress("glProgramUniform1uiv"));
+        get_proc_address("glProgramUniform1uiv"));
   }
 
   if (ver->IsAtLeastGLES(3u, 1u)) {
     fn.glProgramUniform2fFn = reinterpret_cast<glProgramUniform2fProc>(
-        GetGLProcAddress("glProgramUniform2f"));
+        get_proc_address("glProgramUniform2f"));
   }
 
   if (ver->IsAtLeastGLES(3u, 1u)) {
     fn.glProgramUniform2fvFn = reinterpret_cast<glProgramUniform2fvProc>(
-        GetGLProcAddress("glProgramUniform2fv"));
+        get_proc_address("glProgramUniform2fv"));
   }
 
   if (ver->IsAtLeastGLES(3u, 1u)) {
     fn.glProgramUniform2iFn = reinterpret_cast<glProgramUniform2iProc>(
-        GetGLProcAddress("glProgramUniform2i"));
+        get_proc_address("glProgramUniform2i"));
   }
 
   if (ver->IsAtLeastGLES(3u, 1u)) {
     fn.glProgramUniform2ivFn = reinterpret_cast<glProgramUniform2ivProc>(
-        GetGLProcAddress("glProgramUniform2iv"));
+        get_proc_address("glProgramUniform2iv"));
   }
 
   if (ver->IsAtLeastGLES(3u, 1u)) {
     fn.glProgramUniform2uiFn = reinterpret_cast<glProgramUniform2uiProc>(
-        GetGLProcAddress("glProgramUniform2ui"));
+        get_proc_address("glProgramUniform2ui"));
   }
 
   if (ver->IsAtLeastGLES(3u, 1u)) {
     fn.glProgramUniform2uivFn = reinterpret_cast<glProgramUniform2uivProc>(
-        GetGLProcAddress("glProgramUniform2uiv"));
+        get_proc_address("glProgramUniform2uiv"));
   }
 
   if (ver->IsAtLeastGLES(3u, 1u)) {
     fn.glProgramUniform3fFn = reinterpret_cast<glProgramUniform3fProc>(
-        GetGLProcAddress("glProgramUniform3f"));
+        get_proc_address("glProgramUniform3f"));
   }
 
   if (ver->IsAtLeastGLES(3u, 1u)) {
     fn.glProgramUniform3fvFn = reinterpret_cast<glProgramUniform3fvProc>(
-        GetGLProcAddress("glProgramUniform3fv"));
+        get_proc_address("glProgramUniform3fv"));
   }
 
   if (ver->IsAtLeastGLES(3u, 1u)) {
     fn.glProgramUniform3iFn = reinterpret_cast<glProgramUniform3iProc>(
-        GetGLProcAddress("glProgramUniform3i"));
+        get_proc_address("glProgramUniform3i"));
   }
 
   if (ver->IsAtLeastGLES(3u, 1u)) {
     fn.glProgramUniform3ivFn = reinterpret_cast<glProgramUniform3ivProc>(
-        GetGLProcAddress("glProgramUniform3iv"));
+        get_proc_address("glProgramUniform3iv"));
   }
 
   if (ver->IsAtLeastGLES(3u, 1u)) {
     fn.glProgramUniform3uiFn = reinterpret_cast<glProgramUniform3uiProc>(
-        GetGLProcAddress("glProgramUniform3ui"));
+        get_proc_address("glProgramUniform3ui"));
   }
 
   if (ver->IsAtLeastGLES(3u, 1u)) {
     fn.glProgramUniform3uivFn = reinterpret_cast<glProgramUniform3uivProc>(
-        GetGLProcAddress("glProgramUniform3uiv"));
+        get_proc_address("glProgramUniform3uiv"));
   }
 
   if (ver->IsAtLeastGLES(3u, 1u)) {
     fn.glProgramUniform4fFn = reinterpret_cast<glProgramUniform4fProc>(
-        GetGLProcAddress("glProgramUniform4f"));
+        get_proc_address("glProgramUniform4f"));
   }
 
   if (ver->IsAtLeastGLES(3u, 1u)) {
     fn.glProgramUniform4fvFn = reinterpret_cast<glProgramUniform4fvProc>(
-        GetGLProcAddress("glProgramUniform4fv"));
+        get_proc_address("glProgramUniform4fv"));
   }
 
   if (ver->IsAtLeastGLES(3u, 1u)) {
     fn.glProgramUniform4iFn = reinterpret_cast<glProgramUniform4iProc>(
-        GetGLProcAddress("glProgramUniform4i"));
+        get_proc_address("glProgramUniform4i"));
   }
 
   if (ver->IsAtLeastGLES(3u, 1u)) {
     fn.glProgramUniform4ivFn = reinterpret_cast<glProgramUniform4ivProc>(
-        GetGLProcAddress("glProgramUniform4iv"));
+        get_proc_address("glProgramUniform4iv"));
   }
 
   if (ver->IsAtLeastGLES(3u, 1u)) {
     fn.glProgramUniform4uiFn = reinterpret_cast<glProgramUniform4uiProc>(
-        GetGLProcAddress("glProgramUniform4ui"));
+        get_proc_address("glProgramUniform4ui"));
   }
 
   if (ver->IsAtLeastGLES(3u, 1u)) {
     fn.glProgramUniform4uivFn = reinterpret_cast<glProgramUniform4uivProc>(
-        GetGLProcAddress("glProgramUniform4uiv"));
+        get_proc_address("glProgramUniform4uiv"));
   }
 
   if (ver->IsAtLeastGLES(3u, 1u)) {
     fn.glProgramUniformMatrix2fvFn =
         reinterpret_cast<glProgramUniformMatrix2fvProc>(
-            GetGLProcAddress("glProgramUniformMatrix2fv"));
+            get_proc_address("glProgramUniformMatrix2fv"));
   }
 
   if (ver->IsAtLeastGLES(3u, 1u)) {
     fn.glProgramUniformMatrix2x3fvFn =
         reinterpret_cast<glProgramUniformMatrix2x3fvProc>(
-            GetGLProcAddress("glProgramUniformMatrix2x3fv"));
+            get_proc_address("glProgramUniformMatrix2x3fv"));
   }
 
   if (ver->IsAtLeastGLES(3u, 1u)) {
     fn.glProgramUniformMatrix2x4fvFn =
         reinterpret_cast<glProgramUniformMatrix2x4fvProc>(
-            GetGLProcAddress("glProgramUniformMatrix2x4fv"));
+            get_proc_address("glProgramUniformMatrix2x4fv"));
   }
 
   if (ver->IsAtLeastGLES(3u, 1u)) {
     fn.glProgramUniformMatrix3fvFn =
         reinterpret_cast<glProgramUniformMatrix3fvProc>(
-            GetGLProcAddress("glProgramUniformMatrix3fv"));
+            get_proc_address("glProgramUniformMatrix3fv"));
   }
 
   if (ver->IsAtLeastGLES(3u, 1u)) {
     fn.glProgramUniformMatrix3x2fvFn =
         reinterpret_cast<glProgramUniformMatrix3x2fvProc>(
-            GetGLProcAddress("glProgramUniformMatrix3x2fv"));
+            get_proc_address("glProgramUniformMatrix3x2fv"));
   }
 
   if (ver->IsAtLeastGLES(3u, 1u)) {
     fn.glProgramUniformMatrix3x4fvFn =
         reinterpret_cast<glProgramUniformMatrix3x4fvProc>(
-            GetGLProcAddress("glProgramUniformMatrix3x4fv"));
+            get_proc_address("glProgramUniformMatrix3x4fv"));
   }
 
   if (ver->IsAtLeastGLES(3u, 1u)) {
     fn.glProgramUniformMatrix4fvFn =
         reinterpret_cast<glProgramUniformMatrix4fvProc>(
-            GetGLProcAddress("glProgramUniformMatrix4fv"));
+            get_proc_address("glProgramUniformMatrix4fv"));
   }
 
   if (ver->IsAtLeastGLES(3u, 1u)) {
     fn.glProgramUniformMatrix4x2fvFn =
         reinterpret_cast<glProgramUniformMatrix4x2fvProc>(
-            GetGLProcAddress("glProgramUniformMatrix4x2fv"));
+            get_proc_address("glProgramUniformMatrix4x2fv"));
   }
 
   if (ver->IsAtLeastGLES(3u, 1u)) {
     fn.glProgramUniformMatrix4x3fvFn =
         reinterpret_cast<glProgramUniformMatrix4x3fvProc>(
-            GetGLProcAddress("glProgramUniformMatrix4x3fv"));
+            get_proc_address("glProgramUniformMatrix4x3fv"));
   }
 
   if (ext.b_GL_ANGLE_provoking_vertex) {
     fn.glProvokingVertexANGLEFn = reinterpret_cast<glProvokingVertexANGLEProc>(
-        GetGLProcAddress("glProvokingVertexANGLE"));
+        get_proc_address("glProvokingVertexANGLE"));
   }
 
   if (ver->IsAtLeastGLES(3u, 2u)) {
     fn.glPushDebugGroupFn = reinterpret_cast<glPushDebugGroupProc>(
-        GetGLProcAddress("glPushDebugGroup"));
+        get_proc_address("glPushDebugGroup"));
   } else if (ext.b_GL_KHR_debug) {
     fn.glPushDebugGroupFn = reinterpret_cast<glPushDebugGroupProc>(
-        GetGLProcAddress("glPushDebugGroupKHR"));
+        get_proc_address("glPushDebugGroupKHR"));
   }
 
   if (ext.b_GL_EXT_debug_marker) {
     fn.glPushGroupMarkerEXTFn = reinterpret_cast<glPushGroupMarkerEXTProc>(
-        GetGLProcAddress("glPushGroupMarkerEXT"));
+        get_proc_address("glPushGroupMarkerEXT"));
   }
 
   if (ext.b_GL_EXT_disjoint_timer_query) {
     fn.glQueryCounterFn = reinterpret_cast<glQueryCounterProc>(
-        GetGLProcAddress("glQueryCounterEXT"));
+        get_proc_address("glQueryCounterEXT"));
   }
 
   if (ver->IsAtLeastGLES(3u, 0u)) {
     fn.glReadBufferFn =
-        reinterpret_cast<glReadBufferProc>(GetGLProcAddress("glReadBuffer"));
+        reinterpret_cast<glReadBufferProc>(get_proc_address("glReadBuffer"));
   }
 
   if (ext.b_GL_ANGLE_robust_client_memory) {
     fn.glReadnPixelsRobustANGLEFn =
         reinterpret_cast<glReadnPixelsRobustANGLEProc>(
-            GetGLProcAddress("glReadnPixelsRobustANGLE"));
+            get_proc_address("glReadnPixelsRobustANGLE"));
   }
 
   if (ext.b_GL_ANGLE_robust_client_memory) {
     fn.glReadPixelsRobustANGLEFn =
         reinterpret_cast<glReadPixelsRobustANGLEProc>(
-            GetGLProcAddress("glReadPixelsRobustANGLE"));
+            get_proc_address("glReadPixelsRobustANGLE"));
   }
 
   if (ext.b_GL_ANGLE_vulkan_image) {
     fn.glReleaseTexturesANGLEFn = reinterpret_cast<glReleaseTexturesANGLEProc>(
-        GetGLProcAddress("glReleaseTexturesANGLE"));
+        get_proc_address("glReleaseTexturesANGLE"));
   }
 
   if (ver->IsAtLeastGLES(3u, 0u)) {
     fn.glRenderbufferStorageMultisampleFn =
         reinterpret_cast<glRenderbufferStorageMultisampleProc>(
-            GetGLProcAddress("glRenderbufferStorageMultisample"));
+            get_proc_address("glRenderbufferStorageMultisample"));
   } else if (ext.b_GL_ANGLE_framebuffer_multisample) {
     fn.glRenderbufferStorageMultisampleFn =
         reinterpret_cast<glRenderbufferStorageMultisampleProc>(
-            GetGLProcAddress("glRenderbufferStorageMultisampleANGLE"));
+            get_proc_address("glRenderbufferStorageMultisampleANGLE"));
   } else if (ext.b_GL_EXT_framebuffer_multisample) {
     fn.glRenderbufferStorageMultisampleFn =
         reinterpret_cast<glRenderbufferStorageMultisampleProc>(
-            GetGLProcAddress("glRenderbufferStorageMultisampleEXT"));
+            get_proc_address("glRenderbufferStorageMultisampleEXT"));
   }
 
   if (ext.b_GL_AMD_framebuffer_multisample_advanced) {
     fn.glRenderbufferStorageMultisampleAdvancedAMDFn =
         reinterpret_cast<glRenderbufferStorageMultisampleAdvancedAMDProc>(
-            GetGLProcAddress("glRenderbufferStorageMultisampleAdvancedAMD"));
+            get_proc_address("glRenderbufferStorageMultisampleAdvancedAMD"));
   }
 
   if (ext.b_GL_EXT_multisampled_render_to_texture) {
     fn.glRenderbufferStorageMultisampleEXTFn =
         reinterpret_cast<glRenderbufferStorageMultisampleEXTProc>(
-            GetGLProcAddress("glRenderbufferStorageMultisampleEXT"));
+            get_proc_address("glRenderbufferStorageMultisampleEXT"));
   } else if (ext.b_GL_IMG_multisampled_render_to_texture) {
     fn.glRenderbufferStorageMultisampleEXTFn =
         reinterpret_cast<glRenderbufferStorageMultisampleEXTProc>(
-            GetGLProcAddress("glRenderbufferStorageMultisampleIMG"));
+            get_proc_address("glRenderbufferStorageMultisampleIMG"));
   }
 
   if (ext.b_GL_ANGLE_request_extension) {
     fn.glRequestExtensionANGLEFn =
         reinterpret_cast<glRequestExtensionANGLEProc>(
-            GetGLProcAddress("glRequestExtensionANGLE"));
+            get_proc_address("glRequestExtensionANGLE"));
   }
 
   if (ver->IsAtLeastGLES(3u, 0u)) {
     fn.glResumeTransformFeedbackFn =
         reinterpret_cast<glResumeTransformFeedbackProc>(
-            GetGLProcAddress("glResumeTransformFeedback"));
+            get_proc_address("glResumeTransformFeedback"));
   }
 
   if (ver->IsAtLeastGLES(3u, 1u)) {
     fn.glSampleMaskiFn =
-        reinterpret_cast<glSampleMaskiProc>(GetGLProcAddress("glSampleMaski"));
+        reinterpret_cast<glSampleMaskiProc>(get_proc_address("glSampleMaski"));
   }
 
   if (ver->IsAtLeastGLES(3u, 0u)) {
     fn.glSamplerParameterfFn = reinterpret_cast<glSamplerParameterfProc>(
-        GetGLProcAddress("glSamplerParameterf"));
+        get_proc_address("glSamplerParameterf"));
   }
 
   if (ver->IsAtLeastGLES(3u, 0u)) {
     fn.glSamplerParameterfvFn = reinterpret_cast<glSamplerParameterfvProc>(
-        GetGLProcAddress("glSamplerParameterfv"));
+        get_proc_address("glSamplerParameterfv"));
   }
 
   if (ext.b_GL_ANGLE_robust_client_memory) {
     fn.glSamplerParameterfvRobustANGLEFn =
         reinterpret_cast<glSamplerParameterfvRobustANGLEProc>(
-            GetGLProcAddress("glSamplerParameterfvRobustANGLE"));
+            get_proc_address("glSamplerParameterfvRobustANGLE"));
   }
 
   if (ver->IsAtLeastGLES(3u, 0u)) {
     fn.glSamplerParameteriFn = reinterpret_cast<glSamplerParameteriProc>(
-        GetGLProcAddress("glSamplerParameteri"));
+        get_proc_address("glSamplerParameteri"));
   }
 
   if (ext.b_GL_ANGLE_robust_client_memory) {
     fn.glSamplerParameterIivRobustANGLEFn =
         reinterpret_cast<glSamplerParameterIivRobustANGLEProc>(
-            GetGLProcAddress("glSamplerParameterIivRobustANGLE"));
+            get_proc_address("glSamplerParameterIivRobustANGLE"));
   }
 
   if (ext.b_GL_ANGLE_robust_client_memory) {
     fn.glSamplerParameterIuivRobustANGLEFn =
         reinterpret_cast<glSamplerParameterIuivRobustANGLEProc>(
-            GetGLProcAddress("glSamplerParameterIuivRobustANGLE"));
+            get_proc_address("glSamplerParameterIuivRobustANGLE"));
   }
 
   if (ver->IsAtLeastGLES(3u, 0u)) {
     fn.glSamplerParameterivFn = reinterpret_cast<glSamplerParameterivProc>(
-        GetGLProcAddress("glSamplerParameteriv"));
+        get_proc_address("glSamplerParameteriv"));
   }
 
   if (ext.b_GL_ANGLE_robust_client_memory) {
     fn.glSamplerParameterivRobustANGLEFn =
         reinterpret_cast<glSamplerParameterivRobustANGLEProc>(
-            GetGLProcAddress("glSamplerParameterivRobustANGLE"));
+            get_proc_address("glSamplerParameterivRobustANGLE"));
   }
 
   if (ext.b_GL_NV_fence) {
     fn.glSetFenceNVFn =
-        reinterpret_cast<glSetFenceNVProc>(GetGLProcAddress("glSetFenceNV"));
+        reinterpret_cast<glSetFenceNVProc>(get_proc_address("glSetFenceNV"));
   }
 
   if (ext.b_GL_EXT_semaphore) {
     fn.glSignalSemaphoreEXTFn = reinterpret_cast<glSignalSemaphoreEXTProc>(
-        GetGLProcAddress("glSignalSemaphoreEXT"));
+        get_proc_address("glSignalSemaphoreEXT"));
   }
 
   if (ext.b_GL_QCOM_tiled_rendering) {
     fn.glStartTilingQCOMFn = reinterpret_cast<glStartTilingQCOMProc>(
-        GetGLProcAddress("glStartTilingQCOM"));
+        get_proc_address("glStartTilingQCOM"));
   }
 
   if (ext.b_GL_NV_fence) {
     fn.glTestFenceNVFn =
-        reinterpret_cast<glTestFenceNVProc>(GetGLProcAddress("glTestFenceNV"));
+        reinterpret_cast<glTestFenceNVProc>(get_proc_address("glTestFenceNV"));
   }
 
   if (ver->IsAtLeastGLES(3u, 2u)) {
     fn.glTexBufferFn =
-        reinterpret_cast<glTexBufferProc>(GetGLProcAddress("glTexBuffer"));
+        reinterpret_cast<glTexBufferProc>(get_proc_address("glTexBuffer"));
   } else if (ext.b_GL_OES_texture_buffer) {
     fn.glTexBufferFn =
-        reinterpret_cast<glTexBufferProc>(GetGLProcAddress("glTexBufferOES"));
+        reinterpret_cast<glTexBufferProc>(get_proc_address("glTexBufferOES"));
   } else if (ext.b_GL_EXT_texture_buffer) {
     fn.glTexBufferFn =
-        reinterpret_cast<glTexBufferProc>(GetGLProcAddress("glTexBufferEXT"));
+        reinterpret_cast<glTexBufferProc>(get_proc_address("glTexBufferEXT"));
   }
 
   if (ver->IsAtLeastGLES(3u, 2u)) {
     fn.glTexBufferRangeFn = reinterpret_cast<glTexBufferRangeProc>(
-        GetGLProcAddress("glTexBufferRange"));
+        get_proc_address("glTexBufferRange"));
   } else if (ext.b_GL_OES_texture_buffer) {
     fn.glTexBufferRangeFn = reinterpret_cast<glTexBufferRangeProc>(
-        GetGLProcAddress("glTexBufferRangeOES"));
+        get_proc_address("glTexBufferRangeOES"));
   } else if (ext.b_GL_EXT_texture_buffer) {
     fn.glTexBufferRangeFn = reinterpret_cast<glTexBufferRangeProc>(
-        GetGLProcAddress("glTexBufferRangeEXT"));
+        get_proc_address("glTexBufferRangeEXT"));
   }
 
   if (ext.b_GL_ANGLE_texture_external_update) {
     fn.glTexImage2DExternalANGLEFn =
         reinterpret_cast<glTexImage2DExternalANGLEProc>(
-            GetGLProcAddress("glTexImage2DExternalANGLE"));
+            get_proc_address("glTexImage2DExternalANGLE"));
   }
 
   if (ext.b_GL_ANGLE_robust_client_memory) {
     fn.glTexImage2DRobustANGLEFn =
         reinterpret_cast<glTexImage2DRobustANGLEProc>(
-            GetGLProcAddress("glTexImage2DRobustANGLE"));
+            get_proc_address("glTexImage2DRobustANGLE"));
   }
 
   if (ver->IsAtLeastGLES(3u, 0u)) {
     fn.glTexImage3DFn =
-        reinterpret_cast<glTexImage3DProc>(GetGLProcAddress("glTexImage3D"));
+        reinterpret_cast<glTexImage3DProc>(get_proc_address("glTexImage3D"));
   }
 
   if (ext.b_GL_ANGLE_robust_client_memory) {
     fn.glTexImage3DRobustANGLEFn =
         reinterpret_cast<glTexImage3DRobustANGLEProc>(
-            GetGLProcAddress("glTexImage3DRobustANGLE"));
+            get_proc_address("glTexImage3DRobustANGLE"));
   }
 
   if (ext.b_GL_ANGLE_robust_client_memory) {
     fn.glTexParameterfvRobustANGLEFn =
         reinterpret_cast<glTexParameterfvRobustANGLEProc>(
-            GetGLProcAddress("glTexParameterfvRobustANGLE"));
+            get_proc_address("glTexParameterfvRobustANGLE"));
   }
 
   if (ext.b_GL_ANGLE_robust_client_memory) {
     fn.glTexParameterIivRobustANGLEFn =
         reinterpret_cast<glTexParameterIivRobustANGLEProc>(
-            GetGLProcAddress("glTexParameterIivRobustANGLE"));
+            get_proc_address("glTexParameterIivRobustANGLE"));
   }
 
   if (ext.b_GL_ANGLE_robust_client_memory) {
     fn.glTexParameterIuivRobustANGLEFn =
         reinterpret_cast<glTexParameterIuivRobustANGLEProc>(
-            GetGLProcAddress("glTexParameterIuivRobustANGLE"));
+            get_proc_address("glTexParameterIuivRobustANGLE"));
   }
 
   if (ext.b_GL_ANGLE_robust_client_memory) {
     fn.glTexParameterivRobustANGLEFn =
         reinterpret_cast<glTexParameterivRobustANGLEProc>(
-            GetGLProcAddress("glTexParameterivRobustANGLE"));
+            get_proc_address("glTexParameterivRobustANGLE"));
   }
 
   if (ver->IsAtLeastGLES(3u, 0u)) {
     fn.glTexStorage2DEXTFn = reinterpret_cast<glTexStorage2DEXTProc>(
-        GetGLProcAddress("glTexStorage2D"));
+        get_proc_address("glTexStorage2D"));
   } else if (ext.b_GL_EXT_texture_storage) {
     fn.glTexStorage2DEXTFn = reinterpret_cast<glTexStorage2DEXTProc>(
-        GetGLProcAddress("glTexStorage2DEXT"));
+        get_proc_address("glTexStorage2DEXT"));
   }
 
   if (ver->IsAtLeastGLES(3u, 1u)) {
     fn.glTexStorage2DMultisampleFn =
         reinterpret_cast<glTexStorage2DMultisampleProc>(
-            GetGLProcAddress("glTexStorage2DMultisample"));
+            get_proc_address("glTexStorage2DMultisample"));
   }
 
   if (ver->IsAtLeastGLES(3u, 0u)) {
     fn.glTexStorage3DFn = reinterpret_cast<glTexStorage3DProc>(
-        GetGLProcAddress("glTexStorage3D"));
+        get_proc_address("glTexStorage3D"));
   }
 
   if (ext.b_GL_EXT_memory_object) {
     fn.glTexStorageMem2DEXTFn = reinterpret_cast<glTexStorageMem2DEXTProc>(
-        GetGLProcAddress("glTexStorageMem2DEXT"));
+        get_proc_address("glTexStorageMem2DEXT"));
   }
 
   if (ext.b_GL_ANGLE_memory_object_flags) {
     fn.glTexStorageMemFlags2DANGLEFn =
         reinterpret_cast<glTexStorageMemFlags2DANGLEProc>(
-            GetGLProcAddress("glTexStorageMemFlags2DANGLE"));
+            get_proc_address("glTexStorageMemFlags2DANGLE"));
   }
 
   if (ext.b_GL_ANGLE_robust_client_memory) {
     fn.glTexSubImage2DRobustANGLEFn =
         reinterpret_cast<glTexSubImage2DRobustANGLEProc>(
-            GetGLProcAddress("glTexSubImage2DRobustANGLE"));
+            get_proc_address("glTexSubImage2DRobustANGLE"));
   }
 
   if (ver->IsAtLeastGLES(3u, 0u)) {
     fn.glTexSubImage3DFn = reinterpret_cast<glTexSubImage3DProc>(
-        GetGLProcAddress("glTexSubImage3D"));
+        get_proc_address("glTexSubImage3D"));
   }
 
   if (ext.b_GL_ANGLE_robust_client_memory) {
     fn.glTexSubImage3DRobustANGLEFn =
         reinterpret_cast<glTexSubImage3DRobustANGLEProc>(
-            GetGLProcAddress("glTexSubImage3DRobustANGLE"));
+            get_proc_address("glTexSubImage3DRobustANGLE"));
   }
 
   if (ver->IsAtLeastGLES(3u, 0u)) {
     fn.glTransformFeedbackVaryingsFn =
         reinterpret_cast<glTransformFeedbackVaryingsProc>(
-            GetGLProcAddress("glTransformFeedbackVaryings"));
+            get_proc_address("glTransformFeedbackVaryings"));
   }
 
   if (ver->IsAtLeastGLES(3u, 0u)) {
     fn.glUniform1uiFn =
-        reinterpret_cast<glUniform1uiProc>(GetGLProcAddress("glUniform1ui"));
+        reinterpret_cast<glUniform1uiProc>(get_proc_address("glUniform1ui"));
   }
 
   if (ver->IsAtLeastGLES(3u, 0u)) {
     fn.glUniform1uivFn =
-        reinterpret_cast<glUniform1uivProc>(GetGLProcAddress("glUniform1uiv"));
+        reinterpret_cast<glUniform1uivProc>(get_proc_address("glUniform1uiv"));
   }
 
   if (ver->IsAtLeastGLES(3u, 0u)) {
     fn.glUniform2uiFn =
-        reinterpret_cast<glUniform2uiProc>(GetGLProcAddress("glUniform2ui"));
+        reinterpret_cast<glUniform2uiProc>(get_proc_address("glUniform2ui"));
   }
 
   if (ver->IsAtLeastGLES(3u, 0u)) {
     fn.glUniform2uivFn =
-        reinterpret_cast<glUniform2uivProc>(GetGLProcAddress("glUniform2uiv"));
+        reinterpret_cast<glUniform2uivProc>(get_proc_address("glUniform2uiv"));
   }
 
   if (ver->IsAtLeastGLES(3u, 0u)) {
     fn.glUniform3uiFn =
-        reinterpret_cast<glUniform3uiProc>(GetGLProcAddress("glUniform3ui"));
+        reinterpret_cast<glUniform3uiProc>(get_proc_address("glUniform3ui"));
   }
 
   if (ver->IsAtLeastGLES(3u, 0u)) {
     fn.glUniform3uivFn =
-        reinterpret_cast<glUniform3uivProc>(GetGLProcAddress("glUniform3uiv"));
+        reinterpret_cast<glUniform3uivProc>(get_proc_address("glUniform3uiv"));
   }
 
   if (ver->IsAtLeastGLES(3u, 0u)) {
     fn.glUniform4uiFn =
-        reinterpret_cast<glUniform4uiProc>(GetGLProcAddress("glUniform4ui"));
+        reinterpret_cast<glUniform4uiProc>(get_proc_address("glUniform4ui"));
   }
 
   if (ver->IsAtLeastGLES(3u, 0u)) {
     fn.glUniform4uivFn =
-        reinterpret_cast<glUniform4uivProc>(GetGLProcAddress("glUniform4uiv"));
+        reinterpret_cast<glUniform4uivProc>(get_proc_address("glUniform4uiv"));
   }
 
   if (ver->IsAtLeastGLES(3u, 0u)) {
     fn.glUniformBlockBindingFn = reinterpret_cast<glUniformBlockBindingProc>(
-        GetGLProcAddress("glUniformBlockBinding"));
+        get_proc_address("glUniformBlockBinding"));
   }
 
   if (ver->IsAtLeastGLES(3u, 0u)) {
     fn.glUniformMatrix2x3fvFn = reinterpret_cast<glUniformMatrix2x3fvProc>(
-        GetGLProcAddress("glUniformMatrix2x3fv"));
+        get_proc_address("glUniformMatrix2x3fv"));
   }
 
   if (ver->IsAtLeastGLES(3u, 0u)) {
     fn.glUniformMatrix2x4fvFn = reinterpret_cast<glUniformMatrix2x4fvProc>(
-        GetGLProcAddress("glUniformMatrix2x4fv"));
+        get_proc_address("glUniformMatrix2x4fv"));
   }
 
   if (ver->IsAtLeastGLES(3u, 0u)) {
     fn.glUniformMatrix3x2fvFn = reinterpret_cast<glUniformMatrix3x2fvProc>(
-        GetGLProcAddress("glUniformMatrix3x2fv"));
+        get_proc_address("glUniformMatrix3x2fv"));
   }
 
   if (ver->IsAtLeastGLES(3u, 0u)) {
     fn.glUniformMatrix3x4fvFn = reinterpret_cast<glUniformMatrix3x4fvProc>(
-        GetGLProcAddress("glUniformMatrix3x4fv"));
+        get_proc_address("glUniformMatrix3x4fv"));
   }
 
   if (ver->IsAtLeastGLES(3u, 0u)) {
     fn.glUniformMatrix4x2fvFn = reinterpret_cast<glUniformMatrix4x2fvProc>(
-        GetGLProcAddress("glUniformMatrix4x2fv"));
+        get_proc_address("glUniformMatrix4x2fv"));
   }
 
   if (ver->IsAtLeastGLES(3u, 0u)) {
     fn.glUniformMatrix4x3fvFn = reinterpret_cast<glUniformMatrix4x3fvProc>(
-        GetGLProcAddress("glUniformMatrix4x3fv"));
+        get_proc_address("glUniformMatrix4x3fv"));
   }
 
   if (ver->IsAtLeastGLES(3u, 0u)) {
     fn.glUnmapBufferFn =
-        reinterpret_cast<glUnmapBufferProc>(GetGLProcAddress("glUnmapBuffer"));
+        reinterpret_cast<glUnmapBufferProc>(get_proc_address("glUnmapBuffer"));
   } else if (ext.b_GL_OES_mapbuffer) {
     fn.glUnmapBufferFn = reinterpret_cast<glUnmapBufferProc>(
-        GetGLProcAddress("glUnmapBufferOES"));
+        get_proc_address("glUnmapBufferOES"));
   }
 
   if (ver->IsAtLeastGLES(3u, 1u)) {
     fn.glUseProgramStagesFn = reinterpret_cast<glUseProgramStagesProc>(
-        GetGLProcAddress("glUseProgramStages"));
+        get_proc_address("glUseProgramStages"));
   }
 
   if (ver->IsAtLeastGLES(3u, 1u)) {
     fn.glValidateProgramPipelineFn =
         reinterpret_cast<glValidateProgramPipelineProc>(
-            GetGLProcAddress("glValidateProgramPipeline"));
+            get_proc_address("glValidateProgramPipeline"));
   }
 
   if (ver->IsAtLeastGLES(3u, 1u)) {
     fn.glVertexAttribBindingFn = reinterpret_cast<glVertexAttribBindingProc>(
-        GetGLProcAddress("glVertexAttribBinding"));
+        get_proc_address("glVertexAttribBinding"));
   }
 
   if (ver->IsAtLeastGLES(3u, 0u)) {
     fn.glVertexAttribDivisorANGLEFn =
         reinterpret_cast<glVertexAttribDivisorANGLEProc>(
-            GetGLProcAddress("glVertexAttribDivisor"));
+            get_proc_address("glVertexAttribDivisor"));
   } else if (ext.b_GL_ANGLE_instanced_arrays) {
     fn.glVertexAttribDivisorANGLEFn =
         reinterpret_cast<glVertexAttribDivisorANGLEProc>(
-            GetGLProcAddress("glVertexAttribDivisorANGLE"));
+            get_proc_address("glVertexAttribDivisorANGLE"));
   } else if (ext.b_GL_EXT_instanced_arrays) {
     fn.glVertexAttribDivisorANGLEFn =
         reinterpret_cast<glVertexAttribDivisorANGLEProc>(
-            GetGLProcAddress("glVertexAttribDivisorEXT"));
+            get_proc_address("glVertexAttribDivisorEXT"));
   }
 
   if (ver->IsAtLeastGLES(3u, 1u)) {
     fn.glVertexAttribFormatFn = reinterpret_cast<glVertexAttribFormatProc>(
-        GetGLProcAddress("glVertexAttribFormat"));
+        get_proc_address("glVertexAttribFormat"));
   }
 
   if (ver->IsAtLeastGLES(3u, 0u)) {
     fn.glVertexAttribI4iFn = reinterpret_cast<glVertexAttribI4iProc>(
-        GetGLProcAddress("glVertexAttribI4i"));
+        get_proc_address("glVertexAttribI4i"));
   }
 
   if (ver->IsAtLeastGLES(3u, 0u)) {
     fn.glVertexAttribI4ivFn = reinterpret_cast<glVertexAttribI4ivProc>(
-        GetGLProcAddress("glVertexAttribI4iv"));
+        get_proc_address("glVertexAttribI4iv"));
   }
 
   if (ver->IsAtLeastGLES(3u, 0u)) {
     fn.glVertexAttribI4uiFn = reinterpret_cast<glVertexAttribI4uiProc>(
-        GetGLProcAddress("glVertexAttribI4ui"));
+        get_proc_address("glVertexAttribI4ui"));
   }
 
   if (ver->IsAtLeastGLES(3u, 0u)) {
     fn.glVertexAttribI4uivFn = reinterpret_cast<glVertexAttribI4uivProc>(
-        GetGLProcAddress("glVertexAttribI4uiv"));
+        get_proc_address("glVertexAttribI4uiv"));
   }
 
   if (ver->IsAtLeastGLES(3u, 1u)) {
     fn.glVertexAttribIFormatFn = reinterpret_cast<glVertexAttribIFormatProc>(
-        GetGLProcAddress("glVertexAttribIFormat"));
+        get_proc_address("glVertexAttribIFormat"));
   }
 
   if (ver->IsAtLeastGLES(3u, 0u)) {
     fn.glVertexAttribIPointerFn = reinterpret_cast<glVertexAttribIPointerProc>(
-        GetGLProcAddress("glVertexAttribIPointer"));
+        get_proc_address("glVertexAttribIPointer"));
   }
 
   if (ver->IsAtLeastGLES(3u, 1u)) {
     fn.glVertexBindingDivisorFn = reinterpret_cast<glVertexBindingDivisorProc>(
-        GetGLProcAddress("glVertexBindingDivisor"));
+        get_proc_address("glVertexBindingDivisor"));
   }
 
   if (ext.b_GL_EXT_semaphore) {
     fn.glWaitSemaphoreEXTFn = reinterpret_cast<glWaitSemaphoreEXTProc>(
-        GetGLProcAddress("glWaitSemaphoreEXT"));
+        get_proc_address("glWaitSemaphoreEXT"));
   }
 
   if (ver->IsAtLeastGLES(3u, 0u)) {
     fn.glWaitSyncFn =
-        reinterpret_cast<glWaitSyncProc>(GetGLProcAddress("glWaitSync"));
+        reinterpret_cast<glWaitSyncProc>(get_proc_address("glWaitSync"));
   }
 
   if (ext.b_GL_EXT_window_rectangles) {
     fn.glWindowRectanglesEXTFn = reinterpret_cast<glWindowRectanglesEXTProc>(
-        GetGLProcAddress("glWindowRectanglesEXT"));
+        get_proc_address("glWindowRectanglesEXT"));
   }
 }
 

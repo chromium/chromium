@@ -868,6 +868,7 @@ class GL_EXPORT EGLApi {
 
 }  // namespace gl
 
+#if BINDINGS_EGL_PROTOTYPES
 #define eglAcquireExternalContextANGLE \
   ::gl::g_current_egl_context->eglAcquireExternalContextANGLEFn
 #define eglBindAPI ::gl::g_current_egl_context->eglBindAPIFn
@@ -1013,5 +1014,6 @@ class GL_EXPORT EGLApi {
 #define eglWaitSyncKHR ::gl::g_current_egl_context->eglWaitSyncKHRFn
 #define eglWaitUntilWorkScheduledANGLE \
   ::gl::g_current_egl_context->eglWaitUntilWorkScheduledANGLEFn
+#endif  // BINDINGS_EGL_PROTOTYPES
 
 #endif  // UI_GL_GL_BINDINGS_AUTOGEN_EGL_H_

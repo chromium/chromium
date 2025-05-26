@@ -2844,10 +2844,12 @@ struct GL_EXPORT DisplayExtensionsEGL {
   # Write macros to invoke function pointers. Always use the GL name for the
   # macro.
   file.write('\n')
+  file.write('#if BINDINGS_%s_PROTOTYPES\n' % set_name.upper())
   for func in functions:
     file.write('#define %s ::gl::g_current_%s_context->%sFn\n' %
         (func['known_as'], set_name.lower(), func['known_as']))
 
+  file.write('#endif // BINDINGS_%s_PROTOTYPES\n' % set_name.upper())
   file.write('\n')
   file.write('#endif  // UI_GL_GL_BINDINGS_AUTOGEN_%s_H_\n' %
       set_name.upper())
@@ -3016,8 +3018,9 @@ namespace gl {
   # and to initialize bindings where choice of the function depends on the
   # extension string or the GL version to point to stub functions.
   file.write('\n')
-  file.write('void Driver%s::InitializeStaticBindings() {\n' %
-             set_name.upper())
+  file.write("""\
+void Driver%s::InitializeStaticBindings(GLGetProcAddressProc get_proc_address) {
+""" % set_name.upper())
 
   file.write('  GPU_STARTUP_TRACE_EVENT("Driver%s::InitializeStaticBindings");'
              '\n' % (set_name.upper()))
@@ -3027,7 +3030,7 @@ namespace gl {
 
   def WriteFuncBinding(file, known_as, version_name):
     file.write(
-        '  fn.%sFn = reinterpret_cast<%sProc>(GetGLProcAddress("%s"));\n' %
+        '  fn.%sFn = reinterpret_cast<%sProc>(get_proc_address("%s"));\n' %
         (known_as, known_as, version_name))
 
   for func in functions:
@@ -3104,7 +3107,8 @@ namespace gl {
 
   if set_name == 'gl':
     file.write("""\
-void DriverGL::InitializeDynamicBindings(const GLVersionInfo* ver,
+void DriverGL::InitializeDynamicBindings(GLGetProcAddressProc get_proc_address,
+                                         const GLVersionInfo* ver,
                                          const gfx::ExtensionSet& extensions) {
 """)
   elif set_name == 'egl':

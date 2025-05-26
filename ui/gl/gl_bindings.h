@@ -117,16 +117,33 @@ typedef double GLclampd;
 // Forward declare EGL types.
 typedef uint64_t EGLuint64CHROMIUM;
 
+#if !defined(BINDINGS_GL_PROTOTYPES)
+#define BINDINGS_GL_PROTOTYPES 1
+#endif
 #include "gl_bindings_autogen_gl.h"
+
+#if !defined(BINDINGS_EGL_PROTOTYPES)
+#define BINDINGS_EGL_PROTOTYPES 1
+#endif
 #include "gl_bindings_autogen_egl.h"
+
+using GLFunctionPointerType = void (*)();
+#if BUILDFLAG(IS_WIN)
+typedef GLFunctionPointerType(WINAPI* GLGetProcAddressProc)(const char* name);
+#define STDCALL __stdcall
+#else
+typedef GLFunctionPointerType (*GLGetProcAddressProc)(const char* name);
+#define STDCALL
+#endif
 
 namespace gl {
 
 struct GLVersionInfo;
 
 struct GL_EXPORT DriverGL {
-  void InitializeStaticBindings();
-  void InitializeDynamicBindings(const GLVersionInfo* ver,
+  void InitializeStaticBindings(GLGetProcAddressProc get_proc_address);
+  void InitializeDynamicBindings(GLGetProcAddressProc get_proc_address,
+                                 const GLVersionInfo* ver,
                                  const gfx::ExtensionSet& extensions);
   void ClearBindings();
 
@@ -141,7 +158,7 @@ struct GL_EXPORT CurrentGL {
 };
 
 struct GL_EXPORT DriverEGL {
-  void InitializeStaticBindings();
+  void InitializeStaticBindings(GLGetProcAddressProc get_proc_address);
   void ClearBindings();
 
   ProcsEGL fn;
