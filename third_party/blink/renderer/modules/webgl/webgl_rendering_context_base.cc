@@ -842,7 +842,12 @@ void WebGLRenderingContextBase::commit() {
   int width = GetDrawingBuffer()->Size().width();
   int height = GetDrawingBuffer()->Size().height();
 
-  if (PaintRenderingResultsToCanvas(kBackBuffer)) {
+  // Note: we commit only if (a) the paint operation succeeded and (b) it
+  // actually updated the returned resource provider.
+  bool resource_provider_was_updated = false;
+  if (PaintRenderingResultsToCanvasInternal(kBackBuffer,
+                                            resource_provider_was_updated) &&
+      resource_provider_was_updated) {
     if (Host()->GetOrCreateCanvasResourceProvider()) {
       Host()->Commit(
           Host()->ResourceProvider()->ProduceCanvasResource(FlushReason::kNone),
@@ -1692,7 +1697,13 @@ bool WebGLRenderingContextBase::PushFrameNoCopy() {
 
 bool WebGLRenderingContextBase::PushFrameWithCopy() {
   bool submitted_frame = false;
-  if (PaintRenderingResultsToCanvas(kBackBuffer)) {
+
+  // Note: we push a frame only if (a) the paint operation succeeded and (b) it
+  // actually updated the resource provider.
+  bool resource_provider_was_updated = false;
+  if (PaintRenderingResultsToCanvasInternal(kBackBuffer,
+                                            resource_provider_was_updated) &&
+      resource_provider_was_updated) {
     if (Host()->GetOrCreateCanvasResourceProvider()) {
       const int width = GetDrawingBuffer()->Size().width();
       const int height = GetDrawingBuffer()->Size().height();
@@ -1880,10 +1891,21 @@ void WebGLRenderingContextBase::PageVisibilityChanged() {
 CanvasResourceProvider*
 WebGLRenderingContextBase::PaintRenderingResultsToCanvas(
     SourceDrawingBuffer source_buffer) {
+  bool dont_care = false;
+  return PaintRenderingResultsToCanvasInternal(source_buffer, dont_care);
+}
+
+CanvasResourceProvider*
+WebGLRenderingContextBase::PaintRenderingResultsToCanvasInternal(
+    SourceDrawingBuffer source_buffer,
+    bool& resource_provider_was_updated) {
   TRACE_EVENT0("blink",
                "WebGLRenderingContextBase::PaintRenderingResultsToCanvas");
-  if (isContextLost() || !GetDrawingBuffer())
-    return nullptr;
+  resource_provider_was_updated = false;
+
+  if (isContextLost() || !GetDrawingBuffer()) {
+    return Host()->ResourceProvider();
+  }
 
   bool must_clear_now = ClearIfComposited(kClearCallerOther) != kSkipped;
 
@@ -1895,8 +1917,9 @@ WebGLRenderingContextBase::PaintRenderingResultsToCanvas(
   // The host's ResourceProvider is purged to save memory when the tab
   // is backgrounded.
 
-  if (!must_paint_to_canvas_ && !must_clear_now && Host()->ResourceProvider())
-    return nullptr;
+  if (!must_paint_to_canvas_ && !must_clear_now && Host()->ResourceProvider()) {
+    return Host()->ResourceProvider();
+  }
 
   must_paint_to_canvas_ = false;
 
@@ -1916,6 +1939,7 @@ WebGLRenderingContextBase::PaintRenderingResultsToCanvas(
     resource_provider->ImportResource(
         GetDrawingBuffer()->ExportLowLatencyCanvasResource(
             resource_provider->CreateWeakPtr()));
+    resource_provider_was_updated = true;
     return resource_provider;
   }
 
@@ -1928,14 +1952,10 @@ WebGLRenderingContextBase::PaintRenderingResultsToCanvas(
   // during the resolve process, specifically during automatic
   // graphics switching. Guard against this.
   if (!GetDrawingBuffer()->ResolveAndBindForReadAndDraw())
-    return nullptr;
-  if (!CopyRenderingResultsFromDrawingBuffer(Host()->ResourceProvider(),
-                                             source_buffer)) {
-    // CopyRenderingResultsFromDrawingBuffer handles both the
-    // hardware-accelerated and software cases, so there is no
-    // possible additional fallback for failures seen at this point.
-    return nullptr;
-  }
+    return resource_provider;
+
+  resource_provider_was_updated = CopyRenderingResultsFromDrawingBuffer(
+      Host()->ResourceProvider(), source_buffer);
   return resource_provider;
 }
 

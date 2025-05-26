@@ -191,7 +191,7 @@ scoped_refptr<StaticBitmapImage> GPUCanvasContext::GetImage(FlushReason) {
 CanvasResourceProvider* GPUCanvasContext::PaintRenderingResultsToCanvas(
     SourceDrawingBuffer source_buffer) {
   if (!swap_buffers_) {
-    return nullptr;
+    return Host()->ResourceProvider();
   }
 
   if (Host()->ResourceProvider() &&
@@ -211,7 +211,7 @@ CanvasResourceProvider* GPUCanvasContext::PaintRenderingResultsToCanvas(
                           : SkColors::kTransparent;
     resource_provider->Canvas().clear(color);
     resource_provider->FlushCanvas(FlushReason::kClear);
-    return nullptr;
+    return resource_provider;
   }
 
   wgpu::Texture texture;
@@ -228,21 +228,20 @@ CanvasResourceProvider* GPUCanvasContext::PaintRenderingResultsToCanvas(
     // Create a WebGPU texture backed by the front buffer's SharedImage.
     front_buffer_texture = GetFrontBufferMailboxTexture();
     if (!front_buffer_texture) {
-      return nullptr;
+      return resource_provider;
     }
 
     texture = front_buffer_texture->GetTexture();
 #endif
   } else {
     if (!texture_) {
-      return nullptr;
+      return resource_provider;
     }
     texture = texture_->GetHandle();
   }
 
-  return CopyTextureToResourceProvider(texture, resource_provider)
-             ? resource_provider
-             : nullptr;
+  CopyTextureToResourceProvider(texture, resource_provider);
+  return resource_provider;
 }
 
 bool GPUCanvasContext::CopyRenderingResultsToVideoFrame(

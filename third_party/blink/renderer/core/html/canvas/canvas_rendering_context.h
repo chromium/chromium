@@ -207,8 +207,9 @@ class CORE_EXPORT CanvasRenderingContext
   }
   void DidDraw(const SkIRect& dirty_rect, CanvasPerformanceMonitor::DrawType);
 
-  // Returns a CanvasResourceProvider containing the updated content, or nullptr
-  // if there is no updated content.
+  // For contexts that do not write content directly into the host's
+  // CanvasResourceProvider: Returns a CanvasResourceProvider containing the
+  // current content, or nullptr if it was not possible to obtain that content.
   virtual CanvasResourceProvider* PaintRenderingResultsToCanvas(
       SourceDrawingBuffer) {
     return nullptr;

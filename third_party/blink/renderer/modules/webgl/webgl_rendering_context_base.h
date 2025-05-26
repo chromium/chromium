@@ -1947,6 +1947,9 @@ class MODULES_EXPORT WebGLRenderingContextBase
                                 Platform::ContextType context_type,
                                 Platform::GraphicsInfo* graphics_info);
 
+  CanvasResourceProvider* PaintRenderingResultsToCanvasInternal(
+      SourceDrawingBuffer source_buffer,
+      bool& resource_provider_was_updated);
   void TexImageHelperMediaVideoFrame(
       TexImageParams,
       WebGLTexture*,
