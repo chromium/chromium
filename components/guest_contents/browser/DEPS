@@ -1,0 +1,10 @@
+include_rules = [
+  "+content/public/browser",
+  "+content/public/common",
+]
+
+specific_include_rules = {
+  "^(test_|.*_(unit|pixel|perf)?test).*\.(cc|h)": [
+    "+content/public/test",
+  ],
+}

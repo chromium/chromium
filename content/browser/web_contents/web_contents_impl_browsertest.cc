@@ -69,6 +69,7 @@
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/site_isolation_policy.h"
+#include "content/public/browser/unowned_inner_web_contents_client.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -4492,7 +4493,9 @@ IN_PROC_BROWSER_TEST_F(UnownedInnerWebContentsBrowserTest,
     run_loop.Quit();
     return false;
   }));
-  outer_wc->AttachUnownedInnerWebContents(inner_wc.get(), iframe_rfh);
+  outer_wc->AttachUnownedInnerWebContents(
+      UnownedInnerWebContentsClient::GetPassKeyForTesting(),
+      inner_wc.get(), iframe_rfh);
 
   // The outer RFH was unloaded while attaching the inner WC. The RFH was marked
   // as offline by the asynchronous UnloadACK().
@@ -4551,11 +4554,15 @@ IN_PROC_BROWSER_TEST_F(UnownedInnerWebContentsBrowserTest,
   WebContentsImpl* inner_wc_impl =
       static_cast<WebContentsImpl*>(inner_wc.get());
   ASSERT_TRUE(NavigateToURL(inner_wc.get(), inner_url));
-  outer_wc->AttachUnownedInnerWebContents(inner_wc.get(), iframe_rfh);
+  outer_wc->AttachUnownedInnerWebContents(
+      UnownedInnerWebContentsClient::GetPassKeyForTesting(),
+      inner_wc.get(), iframe_rfh);
   ASSERT_EQ(outer_wc, inner_wc->GetOuterWebContents());
 
   // Detach the inner WebContents
-  outer_wc->DetachUnownedInnerWebContents(inner_wc.get());
+  outer_wc->DetachUnownedInnerWebContents(
+      UnownedInnerWebContentsClient::GetPassKeyForTesting(),
+      inner_wc.get());
 
   // Verify that the connection is broken.
   EXPECT_EQ(nullptr, inner_wc->GetOuterWebContents());
@@ -4603,13 +4610,19 @@ IN_PROC_BROWSER_TEST_F(UnownedInnerWebContentsBrowserTest,
 
   // Attach the inner WebContents
   ASSERT_TRUE(NavigateToURL(inner_wc.get(), inner_url));
-  outer_wc->AttachUnownedInnerWebContents(inner_wc.get(), iframe_rfh);
+  outer_wc->AttachUnownedInnerWebContents(
+      UnownedInnerWebContentsClient::GetPassKeyForTesting(),
+      inner_wc.get(), iframe_rfh);
   ASSERT_EQ(outer_wc, inner_wc->GetOuterWebContents());
 
   // Detach and then reattach the inner WebContents
-  outer_wc->DetachUnownedInnerWebContents(inner_wc.get());
+  outer_wc->DetachUnownedInnerWebContents(
+      UnownedInnerWebContentsClient::GetPassKeyForTesting(),
+      inner_wc.get());
   ASSERT_EQ(nullptr, inner_wc->GetOuterWebContents());
-  outer_wc->AttachUnownedInnerWebContents(inner_wc.get(), iframe_rfh);
+  outer_wc->AttachUnownedInnerWebContents(
+      UnownedInnerWebContentsClient::GetPassKeyForTesting(),
+      inner_wc.get(), iframe_rfh);
   ASSERT_EQ(outer_wc, inner_wc->GetOuterWebContents());
 }
 
@@ -4637,7 +4650,9 @@ IN_PROC_BROWSER_TEST_F(UnownedInnerWebContentsBrowserTest,
   ASSERT_TRUE(NavigateToURL(inner_wc.get(), inner_url));
 
   // Attach the inner WebContents
-  outer_wc->AttachUnownedInnerWebContents(inner_wc.get(), iframe_rfh);
+  outer_wc->AttachUnownedInnerWebContents(
+      UnownedInnerWebContentsClient::GetPassKeyForTesting(),
+      inner_wc.get(), iframe_rfh);
   ASSERT_EQ(outer_wc, inner_wc->GetOuterWebContents());
 
   // Verify RenderFrameHost is created for the inner WebContents
@@ -4674,7 +4689,9 @@ IN_PROC_BROWSER_TEST_F(UnownedInnerWebContentsBrowserTest,
             rfh_b2->GetView());
 
   // Detach the inner WebContents
-  outer_wc->DetachUnownedInnerWebContents(inner_wc.get());
+  outer_wc->DetachUnownedInnerWebContents(
+      UnownedInnerWebContentsClient::GetPassKeyForTesting(),
+      inner_wc.get());
   ASSERT_EQ(nullptr, inner_wc->GetOuterWebContents());
 
   // Verify that the inner WebContents's RFHs are still alive.
@@ -4705,7 +4722,6 @@ IN_PROC_BROWSER_TEST_F(UnownedInnerWebContentsBrowserTest,
   EXPECT_TRUE(static_cast<RenderViewHostImpl*>(
       rfh_b2->GetRenderViewHost())->IsRenderViewLive());
 }
-
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,

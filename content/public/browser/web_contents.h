@@ -124,6 +124,7 @@ class RenderViewHost;
 class RenderWidgetHostView;
 class ScreenOrientationDelegate;
 class SiteInstance;
+class UnownedInnerWebContentsClient;
 class WebContentsDelegate;
 class WebUI;
 struct DropData;
@@ -955,6 +956,7 @@ class WebContents : public PageNavigator, public base::SupportsUserData {
   // TODO(crbug.com/416609971): Remove this method once we find a way to attach
   // inner WebContents without using WebContents trees.
   virtual void AttachUnownedInnerWebContents(
+      base::PassKey<UnownedInnerWebContentsClient>,
       WebContents* inner_web_contents,
       RenderFrameHost* render_frame_host) = 0;
 
@@ -964,6 +966,7 @@ class WebContents : public PageNavigator, public base::SupportsUserData {
   // TODO(crbug.com/416609971): Remove this method once we find a way to attach
   // inner WebContents without using WebContents trees.
   virtual void DetachUnownedInnerWebContents(
+      base::PassKey<UnownedInnerWebContentsClient>,
       WebContents* inner_web_contents) = 0;
 
   // Attaches `guest_page` to the container frame `outer_render_frame_host`,
