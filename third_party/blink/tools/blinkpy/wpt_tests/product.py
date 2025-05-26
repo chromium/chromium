@@ -125,6 +125,7 @@ class DesktopProduct(Product):
     def additional_binary_args(self) -> List[str]:
         # Base args applicable to all embedders.
         args = [
+            '--enable-blink-test-features',
             # Expose the non-standard `window.gc()` for `wpt_internal/` tests.
             '--js-flags=--expose-gc',
             # Disable overlay scrollbar fadeout for consistent screenshots.
