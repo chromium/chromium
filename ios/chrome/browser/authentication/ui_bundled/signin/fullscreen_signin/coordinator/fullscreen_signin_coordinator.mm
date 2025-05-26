@@ -20,6 +20,7 @@
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
+#import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 
 @interface FullscreenSigninCoordinator () <FirstRunScreenDelegate>
 
@@ -60,6 +61,10 @@
 
 - (void)start {
   [super start];
+  signin::IdentityManager* identityManager =
+      IdentityManagerFactory::GetForProfile(self.profile);
+  CHECK(!identityManager->HasPrimaryAccount(signin::ConsentLevel::kSignin),
+        base::NotFatalUntil::M142);
   self.navigationController =
       [[UINavigationController alloc] initWithNavigationBarClass:nil
                                                     toolbarClass:nil];

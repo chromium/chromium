@@ -103,6 +103,19 @@ using signin_metrics::PromoAction;
   [super start];
   ProfileIOS* profile = self.profile->GetOriginalProfile();
   _authenticationService = AuthenticationServiceFactory::GetForProfile(profile);
+  switch (_signinIntent) {
+    case AddAccountSigninIntent::kAddAccount:
+      // It is possible to have a primary identity when adding a secondary
+      // identity. It is possible to have no primary identity when doing a first
+      // sign-in.
+      break;
+    case AddAccountSigninIntent::kPrimaryAccountReauth:
+    case AddAccountSigninIntent::kResignin:
+      CHECK(!_authenticationService->HasPrimaryIdentity(
+                signin::ConsentLevel::kSignin),
+            base::NotFatalUntil::M142);
+      break;
+  }
   _syncService = SyncServiceFactory::GetForProfile(profile);
   _accountManagerService =
       ChromeAccountManagerServiceFactory::GetForProfile(profile);

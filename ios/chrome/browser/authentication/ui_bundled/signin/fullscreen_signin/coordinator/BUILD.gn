@@ -19,6 +19,7 @@ source_set("coordinator") {
     "//ios/chrome/browser/screen/ui_bundled:screen_provider",
     "//ios/chrome/browser/screen/ui_bundled:screen_type",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator:animated_coordinator",
+    "//ios/chrome/browser/signin/model",
     "//ios/chrome/browser/signin/model:authentication_service",
     "//ios/chrome/browser/signin/model:authentication_service_factory",
   ]

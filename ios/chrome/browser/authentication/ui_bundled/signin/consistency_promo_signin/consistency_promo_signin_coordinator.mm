@@ -144,7 +144,7 @@
   signin::IdentityManager* identityManager =
       IdentityManagerFactory::GetForProfile(profile);
   // The sign-in bottom sheet should not be opened if the user is already signed
-  // in. This is related to crbug.com/407430698.
+  // in.
   CHECK(!identityManager->HasPrimaryAccount(signin::ConsentLevel::kSignin),
         base::NotFatalUntil::M142);
   AccountReconcilor* accountReconcilor =
