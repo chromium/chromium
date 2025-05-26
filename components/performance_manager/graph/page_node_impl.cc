@@ -10,7 +10,6 @@
 #include "base/check_op.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
-#include "base/not_fatal_until.h"
 #include "base/strings/strcat.h"
 #include "base/time/default_tick_clock.h"
 #include "base/trace_event/typed_macros.h"
@@ -76,7 +75,7 @@ PageNodeImpl::PageNodeImpl(base::WeakPtr<content::WebContents> web_contents,
   // committed url can be set, so the initial main frame URL is always empty.
   // TODO(crbug.com/40121561): Remove `visible_url` from the constructor in M132
   // if no issues are found with this CHECK.
-  CHECK(main_frame_url_.value().is_empty(), base::NotFatalUntil::M132);
+  CHECK(main_frame_url_.value().is_empty());
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (is_audible_.value()) {
     audible_change_time_ = base::TimeTicks::Now();

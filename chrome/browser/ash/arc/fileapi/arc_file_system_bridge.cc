@@ -15,7 +15,6 @@
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/singleton.h"
-#include "base/not_fatal_until.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/strings/escape.h"
 #include "base/system/sys_info.h"
@@ -447,7 +446,7 @@ void ArcFileSystemBridge::OnMediaStoreUriAdded(
 void ArcFileSystemBridge::CreateMoniker(const GURL& content_uri,
                                         bool read_only,
                                         CreateMonikerCallback callback) {
-  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M132);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   const GURL url_decoded = DecodeFromChromeContentProviderUrl(content_uri);
   if (url_decoded.is_empty() || !IsUrlAllowed(url_decoded)) {
@@ -526,7 +525,7 @@ void ArcFileSystemBridge::OnShareMonikerPath(
 
 void ArcFileSystemBridge::DestroyMoniker(const fusebox::Moniker& moniker,
                                          DestroyMonikerCallback callback) {
-  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M132);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   const auto iter = shared_monikers_.find(moniker);
   if (iter == shared_monikers_.end()) {
