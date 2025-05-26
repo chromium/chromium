@@ -24,11 +24,19 @@ interface SafetyHubMagicStackViewProperties {
             new PropertyModel.WritableObjectPropertyKey<>();
     PropertyModel.WritableObjectPropertyKey<String> BUTTON_TEXT =
             new PropertyModel.WritableObjectPropertyKey<>();
+    PropertyModel.WritableObjectPropertyKey<String> BUTTON_CONTENT_DESCRIPTION =
+            new PropertyModel.WritableObjectPropertyKey<>();
     PropertyModel.WritableObjectPropertyKey<OnClickListener> BUTTON_ON_CLICK_LISTENER =
             new PropertyModel.WritableObjectPropertyKey<>();
 
     PropertyKey[] ALL_KEYS =
             new PropertyKey[] {
-                HEADER, TITLE, SUMMARY, ICON_DRAWABLE, BUTTON_TEXT, BUTTON_ON_CLICK_LISTENER,
+                HEADER,
+                TITLE,
+                SUMMARY,
+                ICON_DRAWABLE,
+                BUTTON_TEXT,
+                BUTTON_CONTENT_DESCRIPTION,
+                BUTTON_ON_CLICK_LISTENER,
             };
 }

@@ -25,6 +25,9 @@ class SafetyHubMagicStackViewBinder {
             moduleView.setIconDrawable(model.get(SafetyHubMagicStackViewProperties.ICON_DRAWABLE));
         } else if (SafetyHubMagicStackViewProperties.BUTTON_TEXT == propertyKey) {
             moduleView.setButtonText(model.get(SafetyHubMagicStackViewProperties.BUTTON_TEXT));
+        } else if (SafetyHubMagicStackViewProperties.BUTTON_CONTENT_DESCRIPTION == propertyKey) {
+            moduleView.setButtonContentDescription(
+                    model.get(SafetyHubMagicStackViewProperties.BUTTON_CONTENT_DESCRIPTION));
         } else if (SafetyHubMagicStackViewProperties.BUTTON_ON_CLICK_LISTENER == propertyKey) {
             moduleView.setButtonOnClickListener(
                     model.get(SafetyHubMagicStackViewProperties.BUTTON_ON_CLICK_LISTENER));

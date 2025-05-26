@@ -62,6 +62,10 @@ class SafetyHubMagicStackView extends LinearLayout {
         mButtonView.setText(text);
     }
 
+    void setButtonContentDescription(String text) {
+        mButtonView.setContentDescription(text);
+    }
+
     void setButtonOnClickListener(OnClickListener onClickListener) {
         mButtonView.setOnClickListener(onClickListener);
     }

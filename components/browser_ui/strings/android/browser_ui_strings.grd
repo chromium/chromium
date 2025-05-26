@@ -1270,8 +1270,11 @@
       <message name="IDS_SAFETY_HUB_MAGIC_STACK_NOTIFICATIONS_TITLE" desc="Title for the notification review Safety Check module on the Magic Stack. Shown when Safety Check has identified several sites that sent lots of notifications.">
         Stop lots of notifications
       </message>
-      <message name="IDS_SAFETY_HUB_MAGIC_STACK_SAFE_STATE_BUTTON_TEXT" desc="Action button for the safe state modules of Safety Check in the Magic Stack. Shown in the notification or permissison review modules. Opens Safety Check when clicked.">
+      <message name="IDS_SAFETY_HUB_MAGIC_STACK_SAFE_STATE_BUTTON_TEXT" desc="Action button for the safe state modules of Safety Check in the Magic Stack. Shown in the notification or permissions review modules. Opens Safety Check when clicked.">
         Review
+      </message>
+      <message name="IDS_SAFETY_HUB_MAGIC_STACK_SAFE_STATE_BUTTON_CONTENT_DESCRIPTION" desc="Accessibility text for the button for the safe state modules of Safety Check in the Magic Stack. Shown in the notification or permissions review modules. Opens Safety Check when clicked.">
+        Review Safety Check
       </message>
       <message name="IDS_SAFETY_HUB_MAGIC_STACK_SAFE_BROWSING_TITLE" desc="Title for the Safe Browsing module of Safety Check in the Magic Stack. Shown when Safe Browsing is turned off by the user.">
         Turn on Safe Browsing

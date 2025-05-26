@@ -1969,6 +1969,9 @@ Your Google account may have other forms of browsing history like searches and a
       <message name="IDS_SAFETY_HUB_UNSUBSCRIBED_NOTIFICATIONS_NOTIFICATION_REVIEW" desc="Button to review revoked notifications on the notification sent from Safety Hub for telling the user that some notifications have been unsubscribed.">
         Review
       </message>
+      <message name="IDS_SAFETY_HUB_REVOKED_PERMISSION_REVIEW_ENTRY_UNDO_CONTENT_DESCRIPTION" desc="Accessibility text for the undo button displayed in Safety Hub for undoing permission revocation for a website.">
+        Undo <ph name="SITE">%1$s<ex>https://example.com</ex></ph>
+      </message>
 
        <!-- Safe Browsing preferences -->
       <message name="IDS_PREFS_SAFE_BROWSING_TITLE" desc="Title for the Safe Browsing preferences. [CHAR_LIMIT=32]">

@@ -47,6 +47,12 @@ class SafetyHubPermissionsPreference extends ChromeBasePreference implements Vie
 
         ButtonCompat button = (ButtonCompat) holder.findViewById(R.id.button);
         button.setText(R.string.undo);
+        button.setContentDescription(
+                getContext()
+                        .getString(
+                                R.string
+                                        .safety_hub_revoked_permission_review_entry_undo_content_description,
+                                mPermissionsData.getOrigin()));
         button.setOnClickListener(this);
 
         ImageView icon = (ImageView) holder.findViewById(android.R.id.icon);
