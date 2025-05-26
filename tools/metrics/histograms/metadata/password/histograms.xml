@@ -76,6 +76,14 @@ chromium-metrics-reviews@google.com.
   <variant name="RunPasswordCheckup" summary="run password checkup"/>
 </variants>
 
+<variants name="PasswordDropdownRequestTypeSuffix">
+  <variant name="NonWebAuthnRequest."
+      summary="The password dropdown was shown for a regular password form."/>
+  <variant name="WebAuthnRequest."
+      summary="The password dropdown was shown for a WebAuthn conditional UI
+               request (e.g. passkey autofill)."/>
+</variants>
+
 <variants name="PasswordManagerSetting">
   <variant name="AutoSignIn" summary="auto sign in preference"/>
   <variant name="OfferToSavePasswords"
@@ -2916,6 +2924,40 @@ useful for Chirp alerts (go/crca-alerts). -->
                  dropdown. This is the sum of PasskeyCount and PasswordCount
                  for WebAuthn requests."/>
   </token>
+</histogram>
+
+<histogram
+    name="PasswordManager.PasswordDropdownShown{PasswordDropdownRequestTypeSuffix}.DuplicateCredentialsTypesWhenExists"
+    enum="PasswordDropdownDuplicateCredentialsType" expires_after="2025-10-31">
+  <owner>derinel@google.com</owner>
+  <owner>chrome-webauthn@google.com</owner>
+  <summary>
+    Records the specific types of duplicate credentials present in the password
+    autofill dropdown, if any duplicates were found (i.e., if
+    PasswordManager.PasswordDropdownShown.[Suffix].HasAnyDuplicateCredentials is
+    true). This histogram is logged for each distinct type of duplication found
+    in a single dropdown appearance (e.g., if one user has duplicate passwords
+    and another has a password and passkey, two entries are logged).
+    {PasswordDropdownRequestTypeSuffix}
+  </summary>
+  <token key="PasswordDropdownRequestTypeSuffix"
+      variants="PasswordDropdownRequestTypeSuffix"/>
+</histogram>
+
+<histogram
+    name="PasswordManager.PasswordDropdownShown{PasswordDropdownRequestTypeSuffix}.HasAnyDuplicateCredentials"
+    enum="Boolean" expires_after="2025-10-31">
+  <owner>derinel@google.com</owner>
+  <owner>chrome-webauthn@google.com</owner>
+  <summary>
+    Records whether any duplicate credentials were present in the password
+    autofill dropdown when it was shown. A duplicate is defined as multiple
+    passwords for the same username, multiple passkeys for the same username, or
+    both a password and a passkey for the same username. Logged each time the
+    password dropdown is shown. {PasswordDropdownRequestTypeSuffix}
+  </summary>
+  <token key="PasswordDropdownRequestTypeSuffix"
+      variants="PasswordDropdownRequestTypeSuffix"/>
 </histogram>
 
 <histogram name="PasswordManager.PasswordFilling.ReauthPromo"
