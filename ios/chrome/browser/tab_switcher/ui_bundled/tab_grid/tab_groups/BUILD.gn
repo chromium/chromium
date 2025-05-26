@@ -372,6 +372,7 @@ source_set("eg2_tests") {
     "//components/collaboration/public:features",
     "//components/data_sharing:test_support",
     "//components/data_sharing/public",
+    "//components/strings",
     "//components/sync/base",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/authentication/ui_bundled:eg_test_support+eg2",

@@ -102,7 +102,16 @@ NSString* IdentifierForStripGroupCellAtIndex(unsigned int index) {
                                     index];
 }
 
-// Identifier for the tab groups panel cell at given `index` in the tab groups
+// Identifier for the notification cell at the given `index` in the tab groups
+// panel.
+NSString* IdentifierForTabGroupsPanelNotificationCellAtIndex(
+    unsigned int index) {
+  return [NSString
+      stringWithFormat:@"%@%u", kTabGroupsPanelNotificationCellIdentifierPrefix,
+                       index];
+}
+
+// Identifier for the tab group cell at the given `index` in the tab groups
 // panel.
 NSString* IdentifierForTabGroupsPanelCellAtIndex(unsigned int index) {
   return [NSString
@@ -1191,6 +1200,13 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
           TabStripGroupItemConstants.notificationDotAccessibilityIdentifier),
       grey_ancestor(
           grey_accessibilityID(IdentifierForStripGroupCellAtIndex(index))),
+      grey_sufficientlyVisible(), nil);
+}
+
++ (id<GREYMatcher>)tabGroupsPanelNotificationCellAtIndex:(unsigned int)index {
+  return grey_allOf(
+      grey_accessibilityID(
+          IdentifierForTabGroupsPanelNotificationCellAtIndex(index)),
       grey_sufficientlyVisible(), nil);
 }
 

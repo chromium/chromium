@@ -1586,6 +1586,12 @@ void WaitForFakeJoinFlowView() {
                 error);
 }
 
+- (void)tearDownHelper {
+  [super tearDownHelper];
+  // Delete all groups.
+  [TabGroupAppInterface cleanup];
+}
+
 // Checks that the user with JoinOnly rights can't start the Share flow from
 // Tab Grid.
 - (void)testCantShareGroup {

@@ -534,10 +534,14 @@
 + (id<GREYMatcher>)notificationDotOnTabStripGroupCellAtIndex:
     (unsigned int)index;
 
+// Returns a matcher for the notification cell at `index` in the tab groups
+// panel.
++ (id<GREYMatcher>)tabGroupsPanelNotificationCellAtIndex:(unsigned int)index;
+
 // Returns a matcher for the group cell at `index` in the tab groups panel.
 + (id<GREYMatcher>)tabGroupsPanelCellAtIndex:(unsigned int)index;
 
-// Returns a matcher for the group cell created just now in the tab groups panel
+// Returns a matcher for the group cell created just now in the Tab Groups panel
 // for the given `group_name` and `tab_count`.
 + (id<GREYMatcher>)tabGroupsPanelCellWithName:(NSString*)groupName
                                         count:(NSInteger)count;

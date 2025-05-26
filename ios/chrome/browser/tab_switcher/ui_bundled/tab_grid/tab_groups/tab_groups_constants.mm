@@ -37,8 +37,13 @@ NSString* const kTabGroupRecentActivityIdentifier =
 
 NSString* const kTabGroupsPanelIdentifier = @"kTabGroupsPanelIdentifier";
 
+NSString* const kTabGroupsPanelNotificationCellIdentifierPrefix =
+    @"kTabGroupsPanelNotificationCellIdentifier";
 NSString* const kTabGroupsPanelCellIdentifierPrefix =
     @"kTabGroupsPanelCellIdentifier";
+
+NSString* const kTabGroupsPanelCloseNotificationIdentifier =
+    @"kTabGroupsPanelCloseNotificationIdentifier";
 
 NSString* const kSharedTabGroupUserEducationAccessibilityIdentifier =
     @"SharedTabGroupUserEducationAccessibilityIdentifier";

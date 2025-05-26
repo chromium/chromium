@@ -692,6 +692,11 @@ id<GREYMatcher> NotificationDotOnTabStripGroupCellAtIndex(unsigned int index) {
       notificationDotOnTabStripGroupCellAtIndex:index];
 }
 
+id<GREYMatcher> TabGroupsPanelNotificationCellAtIndex(unsigned int index) {
+  return
+      [ChromeMatchersAppInterface tabGroupsPanelNotificationCellAtIndex:index];
+}
+
 id<GREYMatcher> TabGroupsPanelCellAtIndex(unsigned int index) {
   return [ChromeMatchersAppInterface tabGroupsPanelCellAtIndex:index];
 }
