@@ -48,6 +48,7 @@ public class NewTabAnimationUtils {
      * <p>These numbers match with the "version" feature param for ShowNewTabAnimations.
      */
     @IntDef({
+        NewTabAnim.M137,
         NewTabAnim.BOUNCE,
         NewTabAnim.DECELERATE,
         NewTabAnim.BOUNCE_DECELERATE,
@@ -56,6 +57,7 @@ public class NewTabAnimationUtils {
     @Target(ElementType.TYPE_USE)
     @Retention(RetentionPolicy.SOURCE)
     public @interface NewTabAnim {
+        int M137 = 0;
         int BOUNCE = 1;
         int DECELERATE = 2;
         int BOUNCE_DECELERATE = 3;

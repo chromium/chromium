@@ -3768,35 +3768,24 @@ const FeatureEntry::FeatureVariation
         {" - all windowing modes", kAuxiliaryNavigationStaysInBrowserOn,
          std::size(kAuxiliaryNavigationStaysInBrowserOn), nullptr}};
 
-const FeatureEntry::FeatureParam kShowNewTabAnimationsNewDurationOnly[] = {
-    {"version", "0"},
-    {"new-duration", "true"}};
 const FeatureEntry::FeatureParam kShowNewTabAnimationsBounce[] = {
-    {"version", "1"},
-    {"new-duration", "true"}};
+    {"version", "1"}};
 const FeatureEntry::FeatureParam kShowNewTabAnimationsDecelerate[] = {
-    {"version", "2"},
-    {"new-duration", "true"}};
+    {"version", "2"}};
 const FeatureEntry::FeatureParam kShowNewTabAnimationsBounceDecelerate[] = {
-    {"version", "3"},
-    {"new-duration", "true"}};
-const FeatureEntry::FeatureParam
-    kShowNewTabAnimationsBounceDecelerateWithDelay[] = {
-        {"version", "4"},
-        {"new-duration", "true"}};
+    {"version", "3"}};
+const FeatureEntry::FeatureParam kShowNewTabAnimationsM137[] = {
+    {"version", "0"}};
 const FeatureEntry::FeatureVariation kShowNewTabAnimationsVariations[] = {
-    {"- Use new duration only", kShowNewTabAnimationsNewDurationOnly,
-     std::size(kShowNewTabAnimationsNewDurationOnly), nullptr},
     {"- Bouncy GTS icon with delay", kShowNewTabAnimationsBounce,
      std::size(kShowNewTabAnimationsBounce), nullptr},
     {"- Bouncy GTS icon with decelerate arc",
      kShowNewTabAnimationsBounceDecelerate,
      std::size(kShowNewTabAnimationsBounceDecelerate), nullptr},
-    {"- Bouncy GTS icon with decelerate arc and delay",
-     kShowNewTabAnimationsBounceDecelerateWithDelay,
-     std::size(kShowNewTabAnimationsBounceDecelerateWithDelay), nullptr},
     {"- Decelerate arc", kShowNewTabAnimationsDecelerate,
      std::size(kShowNewTabAnimationsDecelerate), nullptr},
+    {"- M137 with new duration", kShowNewTabAnimationsM137,
+     std::size(kShowNewTabAnimationsM137), nullptr},
 };
 
 #endif  // BUILDFLAG(IS_ANDROID)
