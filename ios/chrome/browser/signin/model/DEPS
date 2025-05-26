@@ -19,6 +19,10 @@ include_rules = [
 ]
 
 specific_include_rules = {
+  "^account_consistency_browser_agent.mm": [
+    "+ios/chrome/browser/authentication/ui_bundled/continuation.h",
+    "+ios/chrome/browser/authentication/ui_bundled/signin/signin_coordinator.h",
+  ],
   # TODO(crbug.com/331781927): remove when kIdentityDiscAccountMenu launches.
   "^authentication_service_delegate_impl.cc": [
     "+ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h",

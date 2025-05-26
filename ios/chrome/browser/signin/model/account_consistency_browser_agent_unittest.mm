@@ -146,28 +146,22 @@ TEST_P(AccountConsistencyBrowserAgentTest, OnAddAccountWithPresentedView) {
   // is a strict mock.
 }
 
-// Tests OnAddAccount() to send ShowSigninCommand if there is no view presented
-// on top of the base view controller.
-// See http://crbug.com/1399464.
+// Tests OnAddAccount() to show present a view controller if there is no view
+// presented on top of the base view controller. See http://crbug.com/1399464.
 TEST_P(AccountConsistencyBrowserAgentTest, OnAddAccountWithoutPresentedView) {
   OCMStub([base_view_controller_mock_ presentedViewController])
       .andReturn((id)nil);
-  __block ShowSigninCommand* received_command = nil;
-  OCMExpect([application_commands_mock_
-              showSignin:[OCMArg
-                             checkWithBlock:^BOOL(ShowSigninCommand* command) {
-                               received_command = command;
-                               return YES;
-                             }]
-      baseViewController:base_view_controller_mock_]);
+  __block void (^completion)() = nil;
+  OCMExpect([base_view_controller_mock_
+      presentViewController:[OCMArg any]
+                   animated:YES
+                 completion:[OCMArg checkWithBlock:^BOOL(id value) {
+                   completion = value;
+                   return YES;
+                 }]]);
   agent_->OnAddAccount(GURL());
-  EXPECT_NE(received_command, nil);
-  EXPECT_EQ(received_command.operation, AuthenticationOperation::kAddAccount);
-  EXPECT_EQ(received_command.identity, nil);
-  EXPECT_EQ(received_command.accessPoint,
-            signin_metrics::AccessPoint::kAccountConsistencyService);
-  EXPECT_EQ(received_command.promoAction,
-            signin_metrics::PromoAction::PROMO_ACTION_NO_SIGNIN_PROMO);
+  CHECK(completion);
+  completion();
 }
 
 TEST_F(AccountConsistencyBrowserAgentWithSeparateProfilesTest,
