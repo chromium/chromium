@@ -236,7 +236,7 @@ CanvasResourceSharedImage::CanvasResourceSharedImage(
 
   owning_thread_data().client_shared_image =
       shared_image_interface->CreateSharedImageForSoftwareCompositor(
-          {viz::SinglePlaneFormat::kBGRA_8888, size, gfx::ColorSpace(),
+          {viz::SinglePlaneFormat::kBGRA_8888, size, color_space,
            gpu::SHARED_IMAGE_USAGE_CPU_WRITE_ONLY,
            "CanvasResourceSharedImage"});
 
