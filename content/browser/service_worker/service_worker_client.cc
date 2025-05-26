@@ -640,15 +640,18 @@ blink::StorageKey ServiceWorkerClient::CalculateStorageKeyForUpdateUrls(
   const std::optional<blink::StorageKey> storage_key = std::visit(
       base::Overloaded(
           [&](GlobalRenderFrameHostId render_frame_host_id) {
+            if (is_initiated_by_prefetch_) {
+              // Falls back to the `CreateFromOriginAndIsolationInfo()` case
+              // below.
+              // Navigation isn't served by prefetch if the key for prefetch
+              // calculated here is wrong/mismatching, checked at
+              // `PrefetchURLLoaderInterceptor::OnGetPrefetchComplete()`.
+              // https://crbug.com/413207408.
+              return std::optional<blink::StorageKey>(std::nullopt);
+            }
             // We use `ongoing_navigation_frame_tree_node_id_` instead of
             // `render_frame_host_id` because this method is called before
             // response commit.
-            //
-            // TODO(https://crbug.com/40947546): For clients for prefetch where
-            // `ongoing_navigation_frame_tree_node_id` is null, this returns
-            // `nullptr` and thus falls back to the
-            // `CreateFromOriginAndIsolationInfo()` case below. Check if this is
-            // correct or fix this.
             return GetStorageKeyFromRenderFrameHost(
                 ongoing_navigation_frame_tree_node_id_, origin,
                 base::OptionalToPtr(isolation_info_from_handle.nonce()));
@@ -1184,28 +1187,6 @@ void ServiceWorkerClient::InheritControllerFrom(
                               false /* notify_controllerchange */);
   }
   creator_host.SetInherited();
-}
-
-void ServiceWorkerClient::InheritControllerFromPrefetch(
-    ServiceWorkerClient& client_for_prefetch,
-    const GURL& navigation_url) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  CHECK(base::FeatureList::IsEnabled(features::kPrefetchServiceWorker));
-  CHECK(IsContainerForWindowClient());
-  CHECK(client_for_prefetch.IsContainerForWindowClient());
-
-  UpdateUrls(navigation_url, client_for_prefetch.top_frame_origin(),
-             client_for_prefetch.key());
-
-  // Inherit the controller used for prefetching from `client_for_prefetch`.
-  if (client_for_prefetch.controller_registration()) {
-    AddMatchingRegistration(client_for_prefetch.controller_registration());
-    // `client_for_prefetch` shouldn't be in back forward cache because it's for
-    // prefetch.
-    CHECK(!client_for_prefetch.is_in_back_forward_cache());
-    SetControllerRegistration(client_for_prefetch.controller_registration(),
-                              false /* notify_controllerchange */);
-  }
 }
 
 mojo::PendingReceiver<blink::mojom::ServiceWorkerRunningStatusCallback>

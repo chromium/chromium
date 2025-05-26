@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/debug/dump_without_crashing.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "content/browser/browser_context_impl.h"
@@ -112,7 +113,7 @@ void PrefetchURLLoaderInterceptor::MaybeCreateLoader(
           frame_tree_node_id_, tentative_resource_request.url,
           base::BindOnce(&PrefetchURLLoaderInterceptor::OnGetPrefetchComplete,
                          weak_factory_.GetWeakPtr(),
-                         tentative_resource_request.url),
+                         tentative_resource_request),
           std::move(redirect_reader_));
       return;
     }
@@ -138,10 +139,10 @@ void PrefetchURLLoaderInterceptor::MaybeCreateLoader(
     return;
   }
 
-  GetPrefetch(tentative_resource_request,
-              base::BindOnce(
-                  &PrefetchURLLoaderInterceptor::OnGetPrefetchComplete,
-                  weak_factory_.GetWeakPtr(), tentative_resource_request.url));
+  GetPrefetch(
+      tentative_resource_request,
+      base::BindOnce(&PrefetchURLLoaderInterceptor::OnGetPrefetchComplete,
+                     weak_factory_.GetWeakPtr(), tentative_resource_request));
 }
 
 void PrefetchURLLoaderInterceptor::GetPrefetch(
@@ -192,7 +193,7 @@ void PrefetchURLLoaderInterceptor::GetPrefetch(
 }
 
 void PrefetchURLLoaderInterceptor::OnGetPrefetchComplete(
-    GURL navigation_url,
+    const network::ResourceRequest& tentative_resource_request,
     PrefetchContainer::Reader reader) {
   TRACE_EVENT0("loading",
                "PrefetchURLLoaderInterceptor::OnGetPrefetchComplete");
@@ -209,10 +210,21 @@ void PrefetchURLLoaderInterceptor::OnGetPrefetchComplete(
     // ServiceWorker-controlled prefetch should be always non-redirecting.
     CHECK(reader.IsEnd());
 
-    if (service_worker_handle_for_navigation_ && client_for_prefetch) {
-      service_worker_handle_for_navigation_->service_worker_client()
-          ->InheritControllerFromPrefetch(*client_for_prefetch, navigation_url);
-    } else {
+    if (!service_worker_handle_for_navigation_ || !client_for_prefetch) {
+      // Do not intercept the request.
+      request_handler = PrefetchRequestHandler();
+    } else if (!service_worker_handle_for_navigation_->InitializeForRequest(
+                   tentative_resource_request, client_for_prefetch.get())) {
+      // Make tests fail and report in production builds when
+      // `InitializeForRequest()` should fail, i.e. when top frame origin or
+      // storage key used for `client_for_prefetch` is wrong/mismatching.
+      // TODO(https://crbug.com/413207408): Monitor the reports and fix
+      // `ServiceWorkerClient::CalculateStorageKeyForUpdateUrls()` if there
+      // are actual mismatches.
+      DCHECK(false);
+      base::debug::DumpWithoutCrashing();
+
+      // We anyway gracefully fallback to non-prefetch path.
       // Do not intercept the request.
       request_handler = PrefetchRequestHandler();
     }
