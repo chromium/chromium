@@ -314,9 +314,11 @@ bool TaskGraph::Sequence::IsFrontTaskUnblocked() const {
 
 void TaskGraph::Sequence::Destroy() {
   std::vector<scoped_refptr<SyncPointClientState>> sync_point_states;
+  base::circular_deque<Task> tasks;
   {
     base::AutoLock auto_lock(task_graph_->lock());
     sync_point_states_.swap(sync_point_states);
+    tasks_.swap(tasks);
   }
 
   if (validation_timer_) {
