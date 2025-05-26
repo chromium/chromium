@@ -30,6 +30,7 @@ import org.robolectric.ParameterizedRobolectricTestRunner.Parameters;
 import org.chromium.base.Callback;
 import org.chromium.base.FeatureOverrides;
 import org.chromium.base.test.BaseRobolectricTestRule;
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Features;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.password_manager.FakePasswordCheckupClientHelper;
@@ -47,6 +48,7 @@ import java.util.concurrent.TimeUnit;
 
 /** Unit tests for SafetyHubFetchService. */
 @RunWith(ParameterizedRobolectricTestRunner.class)
+@Batch(Batch.UNIT_TESTS)
 public class SafetyHubFetchServiceTest {
     private static final int ONE_DAY_IN_MILLISECONDS = (int) TimeUnit.DAYS.toMillis(1);
 
