@@ -233,8 +233,14 @@ ui::ImageModel OmniboxView::GetIcon(int dip_size,
             controller_->client()->GetSizedIcon(bitmap));
       }
     }
-    favicon = controller_->client()->GetFaviconForKeywordSearchProvider(
-        turl, std::move(on_icon_fetched));
+
+    if (!match.keyword.empty()) {
+      favicon = controller_->client()->GetFaviconForKeywordSearchProvider(
+          turl, std::move(on_icon_fetched));
+    } else {
+      favicon = controller_->client()->GetFaviconForDefaultSearchProvider(
+          std::move(on_icon_fetched));
+    }
   } else if (match.type != AutocompleteMatchType::HISTORY_CLUSTER) {
     // The starter pack suggestions are a unique case. These suggestions
     // normally use a favicon image that cannot be styled further by client
