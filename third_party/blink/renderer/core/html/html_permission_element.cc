@@ -526,10 +526,15 @@ void HTMLPermissionElement::RemovedFrom(ContainerNode& insertion_point) {
 }
 
 void HTMLPermissionElement::Focus(const FocusParams& params) {
+  // In fallback mode the permission element behaves like a regular element.
+  if (fallback_mode_) {
+    return HTMLElement::Focus(params);
+  }
   // This will only apply to `focus` and `blur` JS API. Other focus types (like
   // accessibility focusing and manual user focus), will still be permitted as
   // usual.
-  if (params.type == mojom::blink::FocusType::kScript) {
+  if (params.type == mojom::blink::FocusType::kScript &&
+      !LocalFrame::HasTransientUserActivation(GetDocument().GetFrame())) {
     return;
   }
 
@@ -538,7 +543,6 @@ void HTMLPermissionElement::Focus(const FocusParams& params) {
 
 FocusableState HTMLPermissionElement::SupportsFocus(
     UpdateBehavior update_behavior) const {
-  // The permission element is only focusable if it has a valid type.
   if (fallback_mode_) {
     return HTMLElement::SupportsFocus(update_behavior);
   }
