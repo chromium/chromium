@@ -305,12 +305,7 @@ void AddFeatureTag(std::string_view feature_tag) {
 class KioskMultiChromeAppTest : public MixinBasedInProcessBrowserTest,
                                 public testing::WithParamInterface<TestParam> {
  public:
-  KioskMultiChromeAppTest() {
-    // Force allow Chrome Apps in Kiosk, since they are default disabled since
-    // M138.
-    scoped_feature_list_.InitFromCommandLine("AllowChromeAppsInKioskSessions",
-                                             "");
-  }
+  KioskMultiChromeAppTest() = default;
   KioskMultiChromeAppTest(const KioskMultiChromeAppTest&) = delete;
   KioskMultiChromeAppTest& operator=(const KioskMultiChromeAppTest&) = delete;
   ~KioskMultiChromeAppTest() override = default;
@@ -354,7 +349,6 @@ class KioskMultiChromeAppTest : public MixinBasedInProcessBrowserTest,
       /*cached_configuration=*/KioskMixin::Config{/*name=*/{},
                                                   {},
                                                   {CurrentPrimaryApp()}}};
-  base::test::ScopedFeatureList scoped_feature_list_;
 
  private:
   // TODO(https://crbug.com/40804030): Remove this when updated to use MV3.
