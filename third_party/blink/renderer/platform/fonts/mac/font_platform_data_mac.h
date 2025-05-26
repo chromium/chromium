@@ -42,7 +42,7 @@ typedef uint32_t SkFourByteTag;
 
 namespace blink {
 
-enum class FontOrientation;
+enum class FontOrientation : uint8_t;
 class FontPlatformData;
 class FontVariationSettings;
 

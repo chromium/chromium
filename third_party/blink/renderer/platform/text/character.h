@@ -99,6 +99,10 @@ class PLATFORM_EXPORT Character {
            !(U_GET_GC_MASK(c) & (U_GC_M_MASK | U_GC_LM_MASK | U_GC_SK_MASK));
   }
 
+  static bool IsIdeographic(UChar32 c) {
+    return u_hasBinaryProperty(c, UCHAR_IDEOGRAPHIC);
+  }
+
   static bool IsHangul(UChar32 c) {
     // Below U+1100 is likely a common case.
     return c < 0x1100 ? false : IsHangulSlow(c);

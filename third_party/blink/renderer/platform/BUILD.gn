@@ -1688,6 +1688,8 @@ component("platform") {
       "audio/mac/vector_math_mac.h",
       "fonts/mac/attributed_string_type_converter.h",
       "fonts/mac/attributed_string_type_converter.mm",
+      "fonts/mac/character_fallback_cache.h",
+      "fonts/mac/character_fallback_cache.mm",
       "fonts/mac/font_cache_mac.mm",
       "fonts/mac/font_matcher_mac.h",
       "fonts/mac/font_matcher_mac.mm",
@@ -2414,6 +2416,7 @@ source_set("blink_platform_unittests_sources") {
     sources += [ "text/locale_win_test.cc" ]
   } else if (is_mac) {
     sources += [
+      "fonts/mac/character_fallback_cache_test.mm",
       "fonts/mac/font_cache_mac_test.mm",
       "fonts/mac/font_matcher_mac_test.mm",
       "fonts/mac/font_platform_data_mac_test.mm",

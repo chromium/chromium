@@ -2972,6 +2972,10 @@
       status: "test",
     },
     {
+      name: "MacCharacterFallbackCache",
+      status: "stable",
+    },
+    {
       name: "MachineLearningNeuralNetwork",
       // Enabled by webnn::mojom::features::kWebMachineLearningNeuralNetwork.
       base_feature: "none",
