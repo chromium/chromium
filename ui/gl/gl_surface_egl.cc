@@ -37,41 +37,6 @@
 #include "ui/gl/scoped_make_current.h"
 #include "ui/gl/sync_control_vsync_provider.h"
 
-#if !defined(EGL_FIXED_SIZE_ANGLE)
-#define EGL_FIXED_SIZE_ANGLE 0x3201
-#endif
-
-#if !defined(EGL_OPENGL_ES3_BIT)
-#define EGL_OPENGL_ES3_BIT 0x00000040
-#endif
-
-// Not present egl/eglext.h yet.
-
-#ifndef EGL_EXT_gl_colorspace_display_p3
-#define EGL_EXT_gl_colorspace_display_p3 1
-#define EGL_GL_COLORSPACE_DISPLAY_P3_EXT 0x3363
-#endif /* EGL_EXT_gl_colorspace_display_p3 */
-
-#ifndef EGL_EXT_gl_colorspace_display_p3_passthrough
-#define EGL_EXT_gl_colorspace_display_p3_passthrough 1
-#define EGL_GL_COLORSPACE_DISPLAY_P3_PASSTHROUGH_EXT 0x3490
-#endif /* EGL_EXT_gl_colorspace_display_p3_passthrough */
-
-// From ANGLE's egl/eglext.h.
-
-#ifndef EGL_ANGLE_robust_resource_initialization
-#define EGL_ANGLE_robust_resource_initialization 1
-#define EGL_ROBUST_RESOURCE_INITIALIZATION_ANGLE 0x3453
-#endif /* EGL_ANGLE_display_robust_resource_initialization */
-
-#ifndef EGL_ANGLE_surface_orientation
-#define EGL_ANGLE_surface_orientation
-#define EGL_OPTIMAL_SURFACE_ORIENTATION_ANGLE 0x33A7
-#define EGL_SURFACE_ORIENTATION_ANGLE 0x33A8
-#define EGL_SURFACE_ORIENTATION_INVERT_X_ANGLE 0x0001
-#define EGL_SURFACE_ORIENTATION_INVERT_Y_ANGLE 0x0002
-#endif /* EGL_ANGLE_surface_orientation */
-
 using ui::GetLastEGLErrorString;
 
 namespace gl {

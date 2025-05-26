@@ -1036,9 +1036,9 @@ void FeatureInfo::InitializeFeatures() {
     }
     if (ext_has_multisample) {
       feature_flags_.chromium_framebuffer_multisample = true;
-      validators_.framebuffer_target.AddValue(GL_READ_FRAMEBUFFER_EXT);
-      validators_.framebuffer_target.AddValue(GL_DRAW_FRAMEBUFFER_EXT);
-      validators_.g_l_state.AddValue(GL_READ_FRAMEBUFFER_BINDING_EXT);
+      validators_.framebuffer_target.AddValue(GL_READ_FRAMEBUFFER);
+      validators_.framebuffer_target.AddValue(GL_DRAW_FRAMEBUFFER);
+      validators_.g_l_state.AddValue(GL_READ_FRAMEBUFFER_BINDING);
       validators_.g_l_state.AddValue(GL_MAX_SAMPLES_EXT);
       validators_.render_buffer_parameter.AddValue(GL_RENDERBUFFER_SAMPLES_EXT);
       AddExtensionString("GL_CHROMIUM_framebuffer_multisample");
@@ -1177,11 +1177,11 @@ void FeatureInfo::InitializeFeatures() {
     // Rectangle textures are used as samplers via glBindTexture, framebuffer
     // textures via glFramebufferTexture2D, and copy destinations via
     // glCopyPixels.
-    validators_.texture_bind_target.AddValue(GL_TEXTURE_RECTANGLE_ARB);
-    validators_.texture_fbo_target.AddValue(GL_TEXTURE_RECTANGLE_ARB);
-    validators_.texture_target.AddValue(GL_TEXTURE_RECTANGLE_ARB);
-    validators_.get_tex_param_target.AddValue(GL_TEXTURE_RECTANGLE_ARB);
-    validators_.g_l_state.AddValue(GL_TEXTURE_BINDING_RECTANGLE_ARB);
+    validators_.texture_bind_target.AddValue(GL_TEXTURE_RECTANGLE_ANGLE);
+    validators_.texture_fbo_target.AddValue(GL_TEXTURE_RECTANGLE_ANGLE);
+    validators_.texture_target.AddValue(GL_TEXTURE_RECTANGLE_ANGLE);
+    validators_.get_tex_param_target.AddValue(GL_TEXTURE_RECTANGLE_ANGLE);
+    validators_.g_l_state.AddValue(GL_TEXTURE_BINDING_RECTANGLE_ANGLE);
   }
 
   if (feature_flags_.chromium_image_ycbcr_420v) {
@@ -1297,11 +1297,11 @@ void FeatureInfo::InitializeFeatures() {
                   "GL_COLOR_ATTACHMENT0_EXT should equal GL_COLOR_ATTACHMENT0");
 
     validators_.g_l_state.AddValue(GL_MAX_COLOR_ATTACHMENTS_EXT);
-    validators_.g_l_state.AddValue(GL_MAX_DRAW_BUFFERS_ARB);
+    validators_.g_l_state.AddValue(GL_MAX_DRAW_BUFFERS);
     GLint max_draw_buffers = 0;
-    glGetIntegerv(GL_MAX_DRAW_BUFFERS_ARB, &max_draw_buffers);
-    for (GLenum i = GL_DRAW_BUFFER0_ARB;
-         i < static_cast<GLenum>(GL_DRAW_BUFFER0_ARB + max_draw_buffers); ++i) {
+    glGetIntegerv(GL_MAX_DRAW_BUFFERS, &max_draw_buffers);
+    for (GLenum i = GL_DRAW_BUFFER0;
+         i < static_cast<GLenum>(GL_DRAW_BUFFER0 + max_draw_buffers); ++i) {
       validators_.g_l_state.AddValue(i);
     }
   }
@@ -1855,10 +1855,8 @@ void FeatureInfo::InitializeFloatAndHalfFloatFeatures(
           EnableCHROMIUMColorBufferFloatRGB();
       }
     } else {
-      static_assert(
-          GL_RGBA32F_ARB == GL_RGBA32F && GL_RGBA32F_EXT == GL_RGBA32F &&
-              GL_RGB32F_ARB == GL_RGB32F && GL_RGB32F_EXT == GL_RGB32F,
-          "sized float internal format variations must match");
+      static_assert(GL_RGBA32F_EXT == GL_RGBA32F && GL_RGB32F_EXT == GL_RGB32F,
+                    "sized float internal format variations must match");
       // We don't check extension support beyond ARB_texture_float on desktop
       // GL, and format support varies between GL configurations. For example,
       // spec prior to OpenGL 3.0 mandates framebuffer support only for one

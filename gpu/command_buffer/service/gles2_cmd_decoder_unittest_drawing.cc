@@ -716,7 +716,7 @@ TEST_P(GLES2DecoderWithShaderTest, DrawArraysWithInvalidModeFails) {
   cmd.Init(GL_QUADS, 0, 1);
   EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
   EXPECT_EQ(GL_INVALID_ENUM, GetGLError());
-  cmd.Init(GL_POLYGON, 0, 1);
+  cmd.Init(0x0009 /* GL_POLYGON */, 0, 1);
   EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
   EXPECT_EQ(GL_INVALID_ENUM, GetGLError());
 }
@@ -850,7 +850,7 @@ TEST_P(GLES2DecoderGeometryInstancingTest,
   cmd.Init(GL_QUADS, 0, 1, 1);
   EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
   EXPECT_EQ(GL_INVALID_ENUM, GetGLError());
-  cmd.Init(GL_POLYGON, 0, 1, 1);
+  cmd.Init(0x0009 /* GL_POLYGON */, 0, 1, 1);
   EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
   EXPECT_EQ(GL_INVALID_ENUM, GetGLError());
 }
@@ -1156,9 +1156,7 @@ TEST_P(GLES2DecoderWithShaderTest, DrawElementsWithInvalidModeFails) {
            kValidIndexRangeStart * 2);
   EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
   EXPECT_EQ(GL_INVALID_ENUM, GetGLError());
-  cmd.Init(GL_POLYGON,
-           kValidIndexRangeCount,
-           GL_UNSIGNED_SHORT,
+  cmd.Init(0x0009 /* GL_POLYGON */, kValidIndexRangeCount, GL_UNSIGNED_SHORT,
            kValidIndexRangeStart);
   EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
   EXPECT_EQ(GL_INVALID_ENUM, GetGLError());
@@ -2010,8 +2008,8 @@ TEST_P(GLES2DecoderManualInitTest, DrawClearsDepthTexture) {
   constexpr GLenum attachment = GL_DEPTH_ATTACHMENT;
   constexpr GLenum target = GL_TEXTURE_2D;
   constexpr GLint level = 0;
-  // Note that the target framebuffer will be GL_FRAMEBUFFER_EXT for ES2.
-  constexpr GLenum fb_target = GL_FRAMEBUFFER_EXT;
+  // Note that the target framebuffer will be GL_FRAMEBUFFER for ES2.
+  constexpr GLenum fb_target = GL_FRAMEBUFFER;
   DoBindTexture(target, client_texture_id_, kServiceTextureId);
 
   // Create a depth texture.
@@ -2092,8 +2090,8 @@ TEST_P(GLES2DecoderManualInitTest, DrawClearsLargeTexture) {
   constexpr GLenum attachment = GL_COLOR_ATTACHMENT0;
   constexpr GLenum target = GL_TEXTURE_2D;
   constexpr GLint level = 0;
-  // Note that the target framebuffer will be GL_DRAW_FRAMEBUFFER_EXT for ES3.
-  constexpr GLenum fb_target = GL_DRAW_FRAMEBUFFER_EXT;
+  // Note that the target framebuffer will be GL_DRAW_FRAMEBUFFER for ES3.
+  constexpr GLenum fb_target = GL_DRAW_FRAMEBUFFER;
   DoBindTexture(target, client_texture_id_, kServiceTextureId);
 
   // Create an RGBA texture.

@@ -58,8 +58,8 @@ GLenum GetterForTextureTarget(GLenum target) {
       return GL_TEXTURE_BINDING_2D;
     case GL_TEXTURE_EXTERNAL_OES:
       return GL_TEXTURE_BINDING_EXTERNAL_OES;
-    case GL_TEXTURE_RECTANGLE_ARB:
-      return GL_TEXTURE_BINDING_RECTANGLE_ARB;
+    case GL_TEXTURE_RECTANGLE_ANGLE:
+      return GL_TEXTURE_BINDING_RECTANGLE_ANGLE;
     default:
       // Other targets not currently used.
       NOTIMPLEMENTED();
@@ -102,7 +102,7 @@ class ScopedFramebufferBindingReset {
 class ScopedTextureBindingReset {
  public:
   // |texture_target| only supports GL_TEXTURE_2D, GL_TEXTURE_EXTERNAL_OES, and
-  // GL_TEXTURE_RECTANGLE_ARB.
+  // GL_TEXTURE_RECTANGLE_ANGLE.
   ScopedTextureBindingReset(gl::GLApi* api, GLenum texture_target)
       : api_(api), texture_target_(texture_target), texture_(0) {
     api_->glGetIntegervFn(GetterForTextureTarget(texture_target_), &texture_);
@@ -211,13 +211,13 @@ void RequestExtensions(gl::GLApi* api,
   }
 }
 
-void APIENTRY PassthroughGLDebugMessageCallback(GLenum source,
-                                                GLenum type,
-                                                GLuint id,
-                                                GLenum severity,
-                                                GLsizei length,
-                                                const GLchar* message,
-                                                const GLvoid* user_param) {
+void GL_APIENTRY PassthroughGLDebugMessageCallback(GLenum source,
+                                                   GLenum type,
+                                                   GLuint id,
+                                                   GLenum severity,
+                                                   GLsizei length,
+                                                   const GLchar* message,
+                                                   const GLvoid* user_param) {
   DCHECK(user_param != nullptr);
   GLES2DecoderPassthroughImpl* command_decoder =
       static_cast<GLES2DecoderPassthroughImpl*>(const_cast<void*>(user_param));
@@ -226,22 +226,23 @@ void APIENTRY PassthroughGLDebugMessageCallback(GLenum source,
                     command_decoder->GetLogger());
 }
 
-GLsizeiptr APIENTRY PassthroughGLBlobCacheGetCallback(const void* key,
-                                                      GLsizeiptr key_size,
-                                                      void* value,
-                                                      GLsizeiptr value_size,
-                                                      const void* user_param) {
+GLsizeiptr GL_APIENTRY
+PassthroughGLBlobCacheGetCallback(const void* key,
+                                  GLsizeiptr key_size,
+                                  void* value,
+                                  GLsizeiptr value_size,
+                                  const void* user_param) {
   DCHECK(user_param != nullptr);
   GLES2DecoderPassthroughImpl* command_decoder =
       static_cast<GLES2DecoderPassthroughImpl*>(const_cast<void*>(user_param));
   return command_decoder->BlobCacheGet(key, key_size, value, value_size);
 }
 
-void APIENTRY PassthroughGLBlobCacheSetCallback(const void* key,
-                                                GLsizeiptr key_size,
-                                                const void* value,
-                                                GLsizeiptr value_size,
-                                                const void* user_param) {
+void GL_APIENTRY PassthroughGLBlobCacheSetCallback(const void* key,
+                                                   GLsizeiptr key_size,
+                                                   const void* value,
+                                                   GLsizeiptr value_size,
+                                                   const void* user_param) {
   DCHECK(user_param != nullptr);
   GLES2DecoderPassthroughImpl* command_decoder =
       static_cast<GLES2DecoderPassthroughImpl*>(const_cast<void*>(user_param));
@@ -2194,13 +2195,13 @@ bool GLES2DecoderPassthroughImpl::CheckResetStatus() {
   }
 
   switch (driver_status) {
-    case GL_GUILTY_CONTEXT_RESET_ARB:
+    case GL_GUILTY_CONTEXT_RESET:
       MarkContextLost(error::kGuilty);
       break;
-    case GL_INNOCENT_CONTEXT_RESET_ARB:
+    case GL_INNOCENT_CONTEXT_RESET:
       MarkContextLost(error::kInnocent);
       break;
-    case GL_UNKNOWN_CONTEXT_RESET_ARB:
+    case GL_UNKNOWN_CONTEXT_RESET:
       MarkContextLost(error::kUnknown);
       break;
     default:
@@ -2516,15 +2517,15 @@ error::Error GLES2DecoderPassthroughImpl::ProcessReadPixels(bool did_finish) {
         break;
       }
 
-      api()->glBindBufferFn(GL_PIXEL_PACK_BUFFER_ARB,
+      api()->glBindBufferFn(GL_PIXEL_PACK_BUFFER,
                             pending_read_pixels.buffer_service_id);
       void* data = nullptr;
       if (feature_info_->feature_flags().map_buffer_range) {
-        data = api()->glMapBufferRangeFn(GL_PIXEL_PACK_BUFFER_ARB, 0,
+        data = api()->glMapBufferRangeFn(GL_PIXEL_PACK_BUFFER, 0,
                                          pending_read_pixels.pixels_size,
                                          GL_MAP_READ_BIT);
       } else {
-        data = api()->glMapBufferFn(GL_PIXEL_PACK_BUFFER_ARB, GL_READ_ONLY);
+        data = api()->glMapBufferFn(GL_PIXEL_PACK_BUFFER, GL_READ_ONLY);
       }
       if (!data) {
         InsertError(GL_OUT_OF_MEMORY, "Failed to map pixel pack buffer.");
@@ -2533,10 +2534,10 @@ error::Error GLES2DecoderPassthroughImpl::ProcessReadPixels(bool did_finish) {
       }
 
       memcpy(pixels, data, pending_read_pixels.pixels_size);
-      api()->glUnmapBufferFn(GL_PIXEL_PACK_BUFFER_ARB);
-      api()->glBindBufferFn(GL_PIXEL_PACK_BUFFER_ARB,
+      api()->glUnmapBufferFn(GL_PIXEL_PACK_BUFFER);
+      api()->glBindBufferFn(GL_PIXEL_PACK_BUFFER,
                             resources_->buffer_id_map.GetServiceIDOrInvalid(
-                                bound_buffers_[GL_PIXEL_PACK_BUFFER_ARB]));
+                                bound_buffers_[GL_PIXEL_PACK_BUFFER]));
       api()->glDeleteBuffersARBFn(1, &pending_read_pixels.buffer_service_id);
 
       if (result != nullptr) {
@@ -2743,7 +2744,7 @@ bool GLES2DecoderPassthroughImpl::IsEmulatedFramebufferBound(
     return false;
   }
 
-  if ((target == GL_FRAMEBUFFER_EXT || target == GL_DRAW_FRAMEBUFFER) &&
+  if ((target == GL_FRAMEBUFFER || target == GL_DRAW_FRAMEBUFFER) &&
       bound_draw_framebuffer_ == 0) {
     return true;
   }
@@ -2771,7 +2772,7 @@ GLES2DecoderPassthroughImpl::GLenumToTextureTarget(GLenum target) {
       return TextureTarget::k2DMultisample;
     case GL_TEXTURE_EXTERNAL_OES:
       return TextureTarget::kExternal;
-    case GL_TEXTURE_RECTANGLE_ARB:
+    case GL_TEXTURE_RECTANGLE_ANGLE:
       return TextureTarget::kRectangle;
     case GL_TEXTURE_BUFFER:
       return TextureTarget::kBuffer;

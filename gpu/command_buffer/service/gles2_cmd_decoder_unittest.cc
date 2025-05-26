@@ -559,13 +559,13 @@ TEST_P(GLES2DecoderManualInitTest, BeginEndQueryEXT) {
 
   // QueryCounter should fail if using a different target
   cmds::QueryCounterEXT query_counter_cmd;
-  query_counter_cmd.Init(kNewClientId, GL_TIMESTAMP, shared_memory_id_,
+  query_counter_cmd.Init(kNewClientId, GL_TIMESTAMP_EXT, shared_memory_id_,
                          kSharedMemoryOffset, 1);
   EXPECT_EQ(error::kNoError, ExecuteCmd(query_counter_cmd));
   EXPECT_EQ(GL_INVALID_OPERATION, GetGLError());
 
   // QueryCounter should fail if using a different sync
-  query_counter_cmd.Init(kNewClientId, GL_TIMESTAMP, shared_memory_id_,
+  query_counter_cmd.Init(kNewClientId, GL_TIMESTAMP_EXT, shared_memory_id_,
                          kSharedMemoryOffset + sizeof(QuerySync), 1);
   EXPECT_EQ(error::kNoError, ExecuteCmd(query_counter_cmd));
   EXPECT_EQ(GL_INVALID_OPERATION, GetGLError());
@@ -585,8 +585,8 @@ const QueryType kQueryTypes[] = {
     {GL_GET_ERROR_QUERY_CHROMIUM, false},
     {GL_COMMANDS_COMPLETED_CHROMIUM, false},
     {GL_ANY_SAMPLES_PASSED_EXT, false},
-    {GL_TIME_ELAPSED, false},
-    {GL_TIMESTAMP, true},
+    {GL_TIME_ELAPSED_EXT, false},
+    {GL_TIMESTAMP_EXT, true},
 };
 const GLsync kGlSync = reinterpret_cast<GLsync>(0xdeadbeef);
 
@@ -615,7 +615,7 @@ static error::Error ExecuteBeginQueryCmd(GLES2DecoderTestBase* test,
     EXPECT_CALL(*gl, BeginQuery(target, service_id))
         .Times(1)
         .RetiresOnSaturation();
-  } else if (GL_TIME_ELAPSED == target) {
+  } else if (GL_TIME_ELAPSED_EXT == target) {
     timing_queries->ExpectGPUTimerQuery(*gl, true);
   }
 
@@ -661,7 +661,7 @@ static error::Error ExecuteQueryCounterCmd(GLES2DecoderTestBase* test,
                                            int32_t shm_id,
                                            uint32_t shm_offset,
                                            uint32_t submit_count) {
-  if (GL_TIMESTAMP == target) {
+  if (GL_TIMESTAMP_EXT == target) {
     timing_queries->ExpectGPUTimeStampQuery(*gl, false);
   }
 
@@ -769,7 +769,8 @@ TEST_P(GLES2DecoderManualInitTest, QueryReuseTest) {
     InitDecoder(init);
     ::testing::StrictMock<::gl::MockGLInterface>* gl = GetGLMock();
     ::gl::GPUTimingFake gpu_timing_queries;
-    if (query_type.type == GL_TIME_ELAPSED || query_type.type == GL_TIMESTAMP) {
+    if (query_type.type == GL_TIME_ELAPSED_EXT ||
+        query_type.type == GL_TIMESTAMP_EXT) {
       gpu_timing_queries.ExpectDisjointCalls(*gl);
     }
 
@@ -1019,7 +1020,7 @@ TEST_P(GLES2DecoderManualInitTest, BeginInvalidTargetQueryFails) {
   EXPECT_EQ(error::kNoError, ExecuteCmd(begin_cmd));
   EXPECT_EQ(GL_INVALID_OPERATION, GetGLError());
 
-  begin_cmd.Init(GL_TIME_ELAPSED, kNewClientId, shared_memory_id_,
+  begin_cmd.Init(GL_TIME_ELAPSED_EXT, kNewClientId, shared_memory_id_,
                  kSharedMemoryOffset);
   EXPECT_EQ(error::kNoError, ExecuteCmd(begin_cmd));
   EXPECT_EQ(GL_INVALID_OPERATION, GetGLError());
@@ -1044,17 +1045,17 @@ TEST_P(GLES2DecoderManualInitTest, QueryCounterEXTTimeStamp) {
   EXPECT_CALL(*gl_, GenQueries(1, _))
       .WillOnce(SetArgPointee<1>(kNewServiceId))
       .RetiresOnSaturation();
-  EXPECT_CALL(*gl_, GetQueryiv(GL_TIMESTAMP, GL_QUERY_COUNTER_BITS, _))
+  EXPECT_CALL(*gl_, GetQueryiv(GL_TIMESTAMP_EXT, GL_QUERY_COUNTER_BITS_EXT, _))
       .WillOnce(SetArgPointee<2>(64))
       .RetiresOnSaturation();
-  EXPECT_CALL(*gl_, QueryCounter(kNewServiceId, GL_TIMESTAMP))
+  EXPECT_CALL(*gl_, QueryCounter(kNewServiceId, GL_TIMESTAMP_EXT))
       .Times(1)
       .RetiresOnSaturation();
   EXPECT_CALL(*gl_, GetIntegerv(GL_GPU_DISJOINT_EXT, _))
       .WillOnce(SetArgPointee<1>(0))
       .RetiresOnSaturation();
   cmds::QueryCounterEXT query_counter_cmd;
-  query_counter_cmd.Init(kNewClientId, GL_TIMESTAMP, shared_memory_id_,
+  query_counter_cmd.Init(kNewClientId, GL_TIMESTAMP_EXT, shared_memory_id_,
                          kSharedMemoryOffset, 1);
   EXPECT_EQ(error::kNoError, ExecuteCmd(query_counter_cmd));
   EXPECT_EQ(GL_NO_ERROR, GetGLError());
@@ -1079,7 +1080,7 @@ TEST_P(GLES2DecoderManualInitTest, InvalidTargetQueryCounterFails) {
   GenHelper<cmds::GenQueriesEXTImmediate>(kNewClientId);
 
   cmds::QueryCounterEXT query_counter_cmd;
-  query_counter_cmd.Init(kNewClientId, GL_TIMESTAMP, shared_memory_id_,
+  query_counter_cmd.Init(kNewClientId, GL_TIMESTAMP_EXT, shared_memory_id_,
                          kSharedMemoryOffset, 1);
   EXPECT_EQ(error::kNoError, ExecuteCmd(query_counter_cmd));
   EXPECT_EQ(GL_INVALID_OPERATION, GetGLError());
@@ -1336,7 +1337,7 @@ TEST_P(GLES2DecoderTest, LoseContextCHROMIUMGuilty) {
   EXPECT_CALL(*mock_decoder_, MarkContextLost(error::kInnocent))
       .Times(1);
   cmds::LoseContextCHROMIUM cmd;
-  cmd.Init(GL_GUILTY_CONTEXT_RESET_ARB, GL_INNOCENT_CONTEXT_RESET_ARB);
+  cmd.Init(GL_GUILTY_CONTEXT_RESET, GL_INNOCENT_CONTEXT_RESET);
   EXPECT_EQ(error::kLostContext, ExecuteCmd(cmd));
   EXPECT_EQ(GL_NO_ERROR, GetGLError());
   EXPECT_TRUE(decoder_->WasContextLost());
@@ -1347,7 +1348,7 @@ TEST_P(GLES2DecoderTest, LoseContextCHROMIUMUnkown) {
   EXPECT_CALL(*mock_decoder_, MarkContextLost(error::kUnknown))
       .Times(1);
   cmds::LoseContextCHROMIUM cmd;
-  cmd.Init(GL_UNKNOWN_CONTEXT_RESET_ARB, GL_UNKNOWN_CONTEXT_RESET_ARB);
+  cmd.Init(GL_UNKNOWN_CONTEXT_RESET, GL_UNKNOWN_CONTEXT_RESET);
   EXPECT_EQ(error::kLostContext, ExecuteCmd(cmd));
   EXPECT_EQ(GL_NO_ERROR, GetGLError());
   EXPECT_TRUE(decoder_->WasContextLost());
@@ -1358,7 +1359,7 @@ TEST_P(GLES2DecoderTest, LoseContextCHROMIUMInvalidArgs0_0) {
   EXPECT_CALL(*mock_decoder_, MarkContextLost(_))
       .Times(0);
   cmds::LoseContextCHROMIUM cmd;
-  cmd.Init(GL_NONE, GL_GUILTY_CONTEXT_RESET_ARB);
+  cmd.Init(GL_NONE, GL_GUILTY_CONTEXT_RESET);
   EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
   EXPECT_EQ(GL_INVALID_ENUM, GetGLError());
 }
@@ -1367,7 +1368,7 @@ TEST_P(GLES2DecoderTest, LoseContextCHROMIUMInvalidArgs1_0) {
   EXPECT_CALL(*mock_decoder_, MarkContextLost(_))
       .Times(0);
   cmds::LoseContextCHROMIUM cmd;
-  cmd.Init(GL_GUILTY_CONTEXT_RESET_ARB, GL_NONE);
+  cmd.Init(GL_GUILTY_CONTEXT_RESET, GL_NONE);
   EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
   EXPECT_EQ(GL_INVALID_ENUM, GetGLError());
 }

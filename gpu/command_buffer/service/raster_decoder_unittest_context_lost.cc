@@ -77,7 +77,7 @@ TEST_P(RasterDecoderOOMTest, ContextLostReasonWhenStatusIsGuilty) {
   // If there was a reset, it should override kOutOfMemory.
   const error::ContextLostReason expected_reason_for_other_contexts =
       error::kUnknown;
-  OOM(GL_GUILTY_CONTEXT_RESET_ARB, expected_reason_for_other_contexts);
+  OOM(GL_GUILTY_CONTEXT_RESET, expected_reason_for_other_contexts);
   EXPECT_TRUE(decoder_->WasContextLost());
   EXPECT_EQ(error::kGuilty, GetContextLostReason());
 }
@@ -87,7 +87,7 @@ TEST_P(RasterDecoderOOMTest, ContextLostReasonWhenStatusIsUnknown) {
   // If there was a reset, it should override kOutOfMemory.
   const error::ContextLostReason expected_reason_for_other_contexts =
       error::kUnknown;
-  OOM(GL_UNKNOWN_CONTEXT_RESET_ARB, expected_reason_for_other_contexts);
+  OOM(GL_UNKNOWN_CONTEXT_RESET, expected_reason_for_other_contexts);
   EXPECT_TRUE(decoder_->WasContextLost());
   EXPECT_EQ(error::kUnknown, GetContextLostReason());
 }

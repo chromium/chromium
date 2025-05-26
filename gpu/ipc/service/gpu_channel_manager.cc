@@ -117,13 +117,13 @@ void TrimD3DResources(const scoped_refptr<SharedContextState>& context_state) {
 }
 #endif
 
-void APIENTRY CrashReportOnGLErrorDebugCallback(GLenum source,
-                                                GLenum type,
-                                                GLuint id,
-                                                GLenum severity,
-                                                GLsizei length,
-                                                const GLchar* message,
-                                                const GLvoid* user_param) {
+void GL_APIENTRY CrashReportOnGLErrorDebugCallback(GLenum source,
+                                                   GLenum type,
+                                                   GLuint id,
+                                                   GLenum severity,
+                                                   GLsizei length,
+                                                   const GLchar* message,
+                                                   const GLvoid* user_param) {
   if (type == GL_DEBUG_TYPE_ERROR && source == GL_DEBUG_SOURCE_API &&
       user_param) {
     // Note: log_message cannot contain any user data. The error strings

@@ -235,7 +235,7 @@ GLuint GetGrGLBackendTextureFormat(
   if (feature_info->gl_version_info().NeedsLuminanceAlphaEmulation()) {
     switch (internal_format) {
       case GL_ALPHA8_EXT:
-      case GL_LUMINANCE8:
+      case GL_LUMINANCE8_EXT:
         internal_format = GL_R8_EXT;
         break;
       case GL_ALPHA16F_EXT:
@@ -267,7 +267,7 @@ bool GetGrBackendTexture(const gles2::FeatureInfo* feature_info,
                          GLenum gl_storage_format,
                          sk_sp<GrContextThreadSafeProxy> gr_context_thread_safe,
                          GrBackendTexture* gr_texture) {
-  if (target != GL_TEXTURE_2D && target != GL_TEXTURE_RECTANGLE_ARB &&
+  if (target != GL_TEXTURE_2D && target != GL_TEXTURE_RECTANGLE_ANGLE &&
       target != GL_TEXTURE_EXTERNAL_OES) {
     LOG(ERROR) << "GetGrBackendTexture: invalid texture target.";
     return false;

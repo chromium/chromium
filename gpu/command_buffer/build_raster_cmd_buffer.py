@@ -96,9 +96,9 @@ _NAMED_TYPE_INFO = {
     'type': 'GLenum',
     'is_complete': True,
     'valid': [
-      'GL_GUILTY_CONTEXT_RESET_ARB',
-      'GL_INNOCENT_CONTEXT_RESET_ARB',
-      'GL_UNKNOWN_CONTEXT_RESET_ARB',
+      'GL_GUILTY_CONTEXT_RESET',
+      'GL_INNOCENT_CONTEXT_RESET',
+      'GL_UNKNOWN_CONTEXT_RESET',
     ],
   },
   'gfx::BufferUsage': {

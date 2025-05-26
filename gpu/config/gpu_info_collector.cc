@@ -660,7 +660,7 @@ bool CollectGraphicsInfoGL(GPUInfo* gpu_info, gl::GLDisplay* display) {
       gfx::HasExtension(extension_set, "GL_ARB_robustness");
   if (supports_robustness) {
     glGetIntegerv(
-        GL_RESET_NOTIFICATION_STRATEGY_ARB,
+        GL_RESET_NOTIFICATION_STRATEGY,
         reinterpret_cast<GLint*>(&gpu_info->gl_reset_notification_strategy));
   }
 

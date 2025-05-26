@@ -92,7 +92,7 @@ unsigned int GLContextVirtual::CheckStickyGraphicsResetStatusImpl() {
   if (reset_status == GL_NO_ERROR)
     return GL_NO_ERROR;
   // Don't pretend we know which one of the virtual contexts was responsible.
-  return GL_UNKNOWN_CONTEXT_RESET_ARB;
+  return GL_UNKNOWN_CONTEXT_RESET_EXT;
 }
 
 void GLContextVirtual::SetUnbindFboOnMakeCurrent() {

@@ -254,7 +254,7 @@ class FormatTypeValidator {
 
         // Exposed by GL_EXT_sRGB
         {GL_SRGB, GL_SRGB, GL_UNSIGNED_BYTE},
-        {GL_SRGB_ALPHA, GL_SRGB_ALPHA, GL_UNSIGNED_BYTE},
+        {GL_SRGB_ALPHA_EXT, GL_SRGB_ALPHA_EXT, GL_UNSIGNED_BYTE},
 
         // Exposed by GL_EXT_texture_rg
         {GL_RED, GL_RED, GL_UNSIGNED_BYTE},
@@ -731,10 +731,11 @@ bool Texture::CanRenderWithSampler(const FeatureInfo* feature_info,
         sampler_state.wrap_t == GL_CLAMP_TO_EDGE;
 
     if (!is_npot_compatible) {
-      if (target_ == GL_TEXTURE_RECTANGLE_ARB)
+      if (target_ == GL_TEXTURE_RECTANGLE_ANGLE) {
         return false;
-      else if (npot())
+      } else if (npot()) {
         return feature_info->feature_flags().npot_ok;
+      }
     }
   }
 
@@ -799,7 +800,8 @@ void Texture::SetTarget(GLenum target, GLint max_levels) {
     face_infos_[ii].level_infos.resize(max_levels);
   }
 
-  if (target == GL_TEXTURE_EXTERNAL_OES || target == GL_TEXTURE_RECTANGLE_ARB) {
+  if (target == GL_TEXTURE_EXTERNAL_OES ||
+      target == GL_TEXTURE_RECTANGLE_ANGLE) {
     sampler_state_.min_filter = GL_LINEAR;
     sampler_state_.wrap_s = sampler_state_.wrap_t = GL_CLAMP_TO_EDGE;
   }
@@ -813,9 +815,8 @@ void Texture::SetTarget(GLenum target, GLint max_levels) {
 
 bool Texture::CanGenerateMipmaps(const FeatureInfo* feature_info) const {
   if ((npot() && !feature_info->feature_flags().npot_ok) ||
-      face_infos_.empty() ||
-      target_ == GL_TEXTURE_EXTERNAL_OES ||
-      target_ == GL_TEXTURE_RECTANGLE_ARB) {
+      face_infos_.empty() || target_ == GL_TEXTURE_EXTERNAL_OES ||
+      target_ == GL_TEXTURE_RECTANGLE_ANGLE) {
     return false;
   }
 
@@ -1307,7 +1308,7 @@ GLenum Texture::SetParameteri(
   DCHECK(feature_info);
 
   if (target_ == GL_TEXTURE_EXTERNAL_OES ||
-      target_ == GL_TEXTURE_RECTANGLE_ARB) {
+      target_ == GL_TEXTURE_RECTANGLE_ANGLE) {
     if (pname == GL_TEXTURE_MIN_FILTER &&
         (param != GL_NEAREST && param != GL_LINEAR))
       return GL_INVALID_ENUM;
@@ -1718,7 +1719,7 @@ void Texture::BindToServiceId(GLuint service_id) {
 const Texture::LevelInfo* Texture::GetLevelInfo(GLint target,
                                                 GLint level) const {
   if (target != GL_TEXTURE_2D && target != GL_TEXTURE_EXTERNAL_OES &&
-      target != GL_TEXTURE_RECTANGLE_ARB) {
+      target != GL_TEXTURE_RECTANGLE_ANGLE) {
     return nullptr;
   }
 
@@ -1965,7 +1966,7 @@ void TextureManager::Initialize() {
 
   if (feature_info_->feature_flags().arb_texture_rectangle) {
     default_textures_[kRectangleARB] = CreateDefaultAndBlackTextures(
-        GL_TEXTURE_RECTANGLE_ARB, &black_texture_ids_[kRectangleARB]);
+        GL_TEXTURE_RECTANGLE_ANGLE, &black_texture_ids_[kRectangleARB]);
   }
 
   // When created from InProcessCommandBuffer, we won't have a |memory_tracker_|
@@ -2341,7 +2342,7 @@ GLsizei TextureManager::ComputeMipMapCount(GLenum target,
                                            GLsizei depth) {
   switch (target) {
     case GL_TEXTURE_EXTERNAL_OES:
-    case GL_TEXTURE_RECTANGLE_ARB:
+    case GL_TEXTURE_RECTANGLE_ANGLE:
       return 1;
     case GL_TEXTURE_3D:
       return std::bit_width<uint32_t>(std::max({width, height, depth}));
@@ -2447,7 +2448,7 @@ TextureRef* TextureManager::GetTextureInfoForTarget(
     case GL_TEXTURE_EXTERNAL_OES:
       texture = unit.bound_texture_external_oes.get();
       break;
-    case GL_TEXTURE_RECTANGLE_ARB:
+    case GL_TEXTURE_RECTANGLE_ANGLE:
       texture = unit.bound_texture_rectangle_arb.get();
       break;
     case GL_TEXTURE_3D:
@@ -2489,7 +2490,7 @@ bool TextureManager::ValidateTexImage(ContextState* state,
   // TODO(ccameron): Add a separate texture from |texture_target| for
   // [Compressed]Tex[Sub]Image2D and related functions.
   // http://crbug.com/536854
-  if (args.target == GL_TEXTURE_RECTANGLE_ARB) {
+  if (args.target == GL_TEXTURE_RECTANGLE_ANGLE) {
     ERRORSTATE_SET_GL_ERROR_INVALID_ENUM(
         error_state, function_name, args.target, "target");
     return false;
@@ -3487,8 +3488,8 @@ GLenum TextureManager::ExtractFormatFromStorageFormat(GLenum internalformat) {
     case GL_RG:
     case GL_RG8:
     case GL_RG8_SNORM:
-    case GL_RG16:
-    case GL_RG16_SNORM:
+    case GL_RG16_EXT:
+    case GL_RG16_SNORM_EXT:
     case GL_RG16F:
     case GL_RG32F:
       return GL_RG;
@@ -3513,11 +3514,11 @@ GLenum TextureManager::ExtractFormatFromStorageFormat(GLenum internalformat) {
     case GL_RGB8:
     case GL_RGBX8_ANGLE:
     case GL_SRGB8:
-    case GL_RGB16:
+    case GL_RGB16_EXT:
     case GL_R11F_G11F_B10F:
     case GL_RGB565:
     case GL_RGB8_SNORM:
-    case GL_RGB16_SNORM:
+    case GL_RGB16_SNORM_EXT:
     case GL_RGB9_E5:
     case GL_RGB16F:
     case GL_RGB32F:
@@ -3577,18 +3578,18 @@ GLenum TextureManager::ExtractFormatFromStorageFormat(GLenum internalformat) {
     case GL_COMPRESSED_SRGB8_ALPHA8_ASTC_12x12_KHR:
     case GL_RGBA:
     case GL_RGBA8:
-    case GL_RGBA16:
+    case GL_RGBA16_EXT:
     case GL_SRGB8_ALPHA8:
     case GL_RGBA8_SNORM:
-    case GL_RGBA16_SNORM:
+    case GL_RGBA16_SNORM_EXT:
     case GL_RGBA4:
     case GL_RGB5_A1:
     case GL_RGB10_A2:
     case GL_RGBA16F:
     case GL_RGBA32F:
       return GL_RGBA;
-    case GL_SRGB_ALPHA:
-      return GL_SRGB_ALPHA;
+    case GL_SRGB_ALPHA_EXT:
+      return GL_SRGB_ALPHA_EXT;
     case GL_RGBA8UI:
     case GL_RGBA8I:
     case GL_RGB10_A2UI:
@@ -3641,7 +3642,7 @@ GLenum TextureManager::ExtractTypeFromStorageFormat(GLenum internalformat) {
     case GL_SRGB:
     case GL_RGBA:
     case GL_BGRA_EXT:
-    case GL_SRGB_ALPHA:
+    case GL_SRGB_ALPHA_EXT:
     case GL_LUMINANCE_ALPHA:
     case GL_LUMINANCE:
     case GL_ALPHA:
@@ -3908,7 +3909,7 @@ bool Texture::CompatibleWithSamplerUniformType(
 
   switch (type) {
     case GL_SAMPLER_2D:
-    case GL_SAMPLER_2D_RECT_ARB:
+    case GL_SAMPLER_2D_RECT_ANGLE:
     case GL_SAMPLER_CUBE:
     case GL_SAMPLER_EXTERNAL_OES:
     case GL_SAMPLER_3D:
@@ -3930,7 +3931,6 @@ bool Texture::CompatibleWithSamplerUniformType(
     case GL_SAMPLER_2D_SHADOW:
     case GL_SAMPLER_2D_ARRAY_SHADOW:
     case GL_SAMPLER_CUBE_SHADOW:
-    case GL_SAMPLER_2D_RECT_SHADOW_ARB:
       category = SAMPLER_SHADOW;
       break;
     default:

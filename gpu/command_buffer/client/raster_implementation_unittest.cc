@@ -13,6 +13,7 @@
 
 #include <GLES2/gl2.h>
 #include <GLES2/gl2extchromium.h>
+#include <GLES3/gl32.h>
 #include <stddef.h>
 #include <stdint.h>
 

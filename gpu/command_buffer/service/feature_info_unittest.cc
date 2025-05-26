@@ -259,12 +259,12 @@ TEST_P(FeatureInfoTest, InitializeNoExtensions) {
       GL_TEXTURE_MAX_ANISOTROPY_EXT));
   EXPECT_FALSE(info_->validators()->g_l_state.IsValid(
       GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT));
-  EXPECT_FALSE(info_->validators()->framebuffer_target.IsValid(
-      GL_READ_FRAMEBUFFER_EXT));
-  EXPECT_FALSE(info_->validators()->framebuffer_target.IsValid(
-      GL_DRAW_FRAMEBUFFER_EXT));
-  EXPECT_FALSE(info_->validators()->g_l_state.IsValid(
-      GL_READ_FRAMEBUFFER_BINDING_EXT));
+  EXPECT_FALSE(
+      info_->validators()->framebuffer_target.IsValid(GL_READ_FRAMEBUFFER));
+  EXPECT_FALSE(
+      info_->validators()->framebuffer_target.IsValid(GL_DRAW_FRAMEBUFFER));
+  EXPECT_FALSE(
+      info_->validators()->g_l_state.IsValid(GL_READ_FRAMEBUFFER_BINDING));
   EXPECT_FALSE(info_->validators()->render_buffer_parameter.IsValid(
       GL_MAX_SAMPLES_EXT));
   EXPECT_FALSE(info_->validators()->texture_internal_format.IsValid(
@@ -855,11 +855,11 @@ TEST_P(FeatureInfoTest, InitializeEXT_framebuffer_multisample) {
   EXPECT_TRUE(gfx::HasExtension(info_->extensions(),
                                 "GL_CHROMIUM_framebuffer_multisample"));
   EXPECT_TRUE(
-      info_->validators()->framebuffer_target.IsValid(GL_READ_FRAMEBUFFER_EXT));
+      info_->validators()->framebuffer_target.IsValid(GL_READ_FRAMEBUFFER));
   EXPECT_TRUE(
-      info_->validators()->framebuffer_target.IsValid(GL_DRAW_FRAMEBUFFER_EXT));
+      info_->validators()->framebuffer_target.IsValid(GL_DRAW_FRAMEBUFFER));
   EXPECT_TRUE(
-      info_->validators()->g_l_state.IsValid(GL_READ_FRAMEBUFFER_BINDING_EXT));
+      info_->validators()->g_l_state.IsValid(GL_READ_FRAMEBUFFER_BINDING));
   EXPECT_TRUE(info_->validators()->g_l_state.IsValid(GL_MAX_SAMPLES_EXT));
   EXPECT_TRUE(info_->validators()->render_buffer_parameter.IsValid(
       GL_RENDERBUFFER_SAMPLES_EXT));
@@ -871,12 +871,12 @@ TEST_P(FeatureInfoTest, InitializeANGLE_framebuffer_multisample) {
   EXPECT_TRUE(info_->feature_flags().chromium_framebuffer_multisample);
   EXPECT_TRUE(gfx::HasExtension(info_->extensions(),
                                 "GL_CHROMIUM_framebuffer_multisample"));
-  EXPECT_TRUE(info_->validators()->framebuffer_target.IsValid(
-      GL_READ_FRAMEBUFFER_EXT));
-  EXPECT_TRUE(info_->validators()->framebuffer_target.IsValid(
-      GL_DRAW_FRAMEBUFFER_EXT));
-  EXPECT_TRUE(info_->validators()->g_l_state.IsValid(
-      GL_READ_FRAMEBUFFER_BINDING_EXT));
+  EXPECT_TRUE(
+      info_->validators()->framebuffer_target.IsValid(GL_READ_FRAMEBUFFER));
+  EXPECT_TRUE(
+      info_->validators()->framebuffer_target.IsValid(GL_DRAW_FRAMEBUFFER));
+  EXPECT_TRUE(
+      info_->validators()->g_l_state.IsValid(GL_READ_FRAMEBUFFER_BINDING));
   EXPECT_TRUE(info_->validators()->g_l_state.IsValid(
       GL_MAX_SAMPLES_EXT));
   EXPECT_TRUE(info_->validators()->render_buffer_parameter.IsValid(
@@ -892,12 +892,12 @@ TEST_P(FeatureInfoTest, InitializeANGLE_framebuffer_multisampleWithoutANGLE) {
   EXPECT_FALSE(info_->feature_flags().chromium_framebuffer_multisample);
   EXPECT_FALSE(gfx::HasExtension(info_->extensions(),
                                  "GL_CHROMIUM_framebuffer_multisample"));
-  EXPECT_FALSE(info_->validators()->framebuffer_target.IsValid(
-      GL_READ_FRAMEBUFFER_EXT));
-  EXPECT_FALSE(info_->validators()->framebuffer_target.IsValid(
-      GL_DRAW_FRAMEBUFFER_EXT));
-  EXPECT_FALSE(info_->validators()->g_l_state.IsValid(
-      GL_READ_FRAMEBUFFER_BINDING_EXT));
+  EXPECT_FALSE(
+      info_->validators()->framebuffer_target.IsValid(GL_READ_FRAMEBUFFER));
+  EXPECT_FALSE(
+      info_->validators()->framebuffer_target.IsValid(GL_DRAW_FRAMEBUFFER));
+  EXPECT_FALSE(
+      info_->validators()->g_l_state.IsValid(GL_READ_FRAMEBUFFER_BINDING));
   EXPECT_FALSE(info_->validators()->g_l_state.IsValid(
       GL_MAX_SAMPLES_EXT));
   EXPECT_FALSE(info_->validators()->render_buffer_parameter.IsValid(

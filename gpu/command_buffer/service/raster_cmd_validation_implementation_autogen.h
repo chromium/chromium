@@ -38,9 +38,9 @@ bool Validators::QueryTargetValidator::IsValid(const GLenum value) const {
 
 bool Validators::ResetStatusValidator::IsValid(const GLenum value) const {
   switch (value) {
-    case GL_GUILTY_CONTEXT_RESET_ARB:
-    case GL_INNOCENT_CONTEXT_RESET_ARB:
-    case GL_UNKNOWN_CONTEXT_RESET_ARB:
+    case GL_GUILTY_CONTEXT_RESET:
+    case GL_INNOCENT_CONTEXT_RESET:
+    case GL_UNKNOWN_CONTEXT_RESET:
       return true;
   }
   return false;

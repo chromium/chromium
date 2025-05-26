@@ -57,7 +57,7 @@ struct GPU_GLES2_EXPORT TextureUnit {
   // glBindTexture
   scoped_refptr<TextureRef> bound_texture_external_oes;
 
-  // texture currently bound to this unit's GL_TEXTURE_RECTANGLE_ARB with
+  // texture currently bound to this unit's GL_TEXTURE_RECTANGLE_ANGLE with
   // glBindTexture
   scoped_refptr<TextureRef> bound_texture_rectangle_arb;
 
@@ -88,7 +88,7 @@ struct GPU_GLES2_EXPORT TextureUnit {
         return bound_texture_cube_map.get();
       case GL_SAMPLER_EXTERNAL_OES:
         return bound_texture_external_oes.get();
-      case GL_SAMPLER_2D_RECT_ARB:
+      case GL_SAMPLER_2D_RECT_ANGLE:
         return bound_texture_rectangle_arb.get();
       case GL_SAMPLER_3D:
       case GL_INT_SAMPLER_3D:
@@ -112,7 +112,7 @@ struct GPU_GLES2_EXPORT TextureUnit {
         return bound_texture_cube_map.get();
       case GL_TEXTURE_EXTERNAL_OES:
         return bound_texture_external_oes.get();
-      case GL_TEXTURE_RECTANGLE_ARB:
+      case GL_TEXTURE_RECTANGLE_ANGLE:
         return bound_texture_rectangle_arb.get();
       case GL_TEXTURE_3D:
         return bound_texture_3d.get();
@@ -134,7 +134,7 @@ struct GPU_GLES2_EXPORT TextureUnit {
       case GL_TEXTURE_EXTERNAL_OES:
         bound_texture_external_oes = texture_ref;
         break;
-      case GL_TEXTURE_RECTANGLE_ARB:
+      case GL_TEXTURE_RECTANGLE_ANGLE:
         bound_texture_rectangle_arb = texture_ref;
         break;
       case GL_TEXTURE_3D:

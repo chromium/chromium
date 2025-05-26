@@ -97,7 +97,7 @@ TEST_F(SharedContextStateTest, InitFailsIfLostContext) {
                                             gfx::Size(1, 1));
 
     EXPECT_CALL(gl_interface, GetGraphicsResetStatusARB())
-        .WillOnce(Return(GL_GUILTY_CONTEXT_RESET_ARB));
+        .WillOnce(Return(GL_GUILTY_CONTEXT_RESET));
 
     auto shared_context_state = base::MakeRefCounted<SharedContextState>(
         new gl::GLShareGroup(), surface, context,

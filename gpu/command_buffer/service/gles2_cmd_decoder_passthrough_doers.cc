@@ -494,7 +494,7 @@ error::Error GLES2DecoderPassthroughImpl::DoBindFramebuffer(
 
   // Update tracking of the bound framebuffer
   switch (target) {
-    case GL_FRAMEBUFFER_EXT:
+    case GL_FRAMEBUFFER:
       bound_draw_framebuffer_ = framebuffer;
       bound_read_framebuffer_ = framebuffer;
       break;
@@ -2883,7 +2883,7 @@ error::Error GLES2DecoderPassthroughImpl::DoReadPixelsAsync(
   pending_read_pixels.result_shm_offset = result_shm_offset;
 
   api()->glGenBuffersARBFn(1, &pending_read_pixels.buffer_service_id);
-  api()->glBindBufferFn(GL_PIXEL_PACK_BUFFER_ARB,
+  api()->glBindBufferFn(GL_PIXEL_PACK_BUFFER,
                         pending_read_pixels.buffer_service_id);
 
   // GL_STREAM_READ is not available until ES3.
@@ -2908,15 +2908,15 @@ error::Error GLES2DecoderPassthroughImpl::DoReadPixelsAsync(
     return error::kOutOfBounds;
   }
 
-  api()->glBufferDataFn(GL_PIXEL_PACK_BUFFER_ARB,
-                        pending_read_pixels.pixels_size, nullptr, usage_hint);
+  api()->glBufferDataFn(GL_PIXEL_PACK_BUFFER, pending_read_pixels.pixels_size,
+                        nullptr, usage_hint);
 
   // No need to worry about ES3 pixel pack parameters, because no
   // PIXEL_PACK_BUFFER is bound, and all these settings haven't been
   // sent to GL.
   api()->glReadPixelsFn(x, y, width, height, format, type, nullptr);
 
-  api()->glBindBufferFn(GL_PIXEL_PACK_BUFFER_ARB, 0);
+  api()->glBindBufferFn(GL_PIXEL_PACK_BUFFER, 0);
 
   // Test for errors now before creating a fence
   if (CheckErrorCallbackState()) {
@@ -5153,7 +5153,7 @@ error::Error GLES2DecoderPassthroughImpl::DoCopySharedImageToTextureINTERNAL(
   ui::ScopedMakeCurrent smc(lazy_context_->shared_context_state()->context(),
                             lazy_context_->shared_context_state()->surface());
 
-  if (target != GL_TEXTURE_2D && target != GL_TEXTURE_RECTANGLE) {
+  if (target != GL_TEXTURE_2D && target != GL_TEXTURE_RECTANGLE_ANGLE) {
     InsertError(GL_INVALID_VALUE, "Invalid texture target");
     return error::kNoError;
   }

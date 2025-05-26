@@ -79,7 +79,7 @@ void GLStubApi::glGetIntegervFn(GLenum pname, GLint* params) {
     case GL_MAX_COLOR_ATTACHMENTS_EXT:
       *params = 4;
       break;
-    case GL_MAX_DRAW_BUFFERS_ARB:
+    case GL_MAX_DRAW_BUFFERS:
       *params = 4;
       break;
     case GL_MAX_TRANSFORM_FEEDBACK_SEPARATE_ATTRIBS:
@@ -101,7 +101,7 @@ void GLStubApi::glGetIntegervFn(GLenum pname, GLint* params) {
       *params = 8;
       break;
     case GL_MAX_TEXTURE_SIZE:
-    case GL_MAX_RECTANGLE_TEXTURE_SIZE_ARB:
+    case GL_MAX_RECTANGLE_TEXTURE_SIZE_ANGLE:
       *params = 2048;
       break;
     case GL_MAX_CUBE_MAP_TEXTURE_SIZE:
@@ -115,9 +115,6 @@ void GLStubApi::glGetIntegervFn(GLenum pname, GLint* params) {
       break;
     case GL_MAX_VARYING_VECTORS:
       *params = 8;
-      break;
-    case GL_MAX_VARYING_FLOATS:
-      *params = 32;
       break;
     case GL_MAX_VERTEX_UNIFORM_VECTORS:
       *params = 128;

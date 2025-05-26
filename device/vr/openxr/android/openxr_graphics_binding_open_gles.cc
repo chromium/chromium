@@ -350,7 +350,7 @@ bool OpenXrGraphicsBindingOpenGLES::Render(
 
   // TODO(https://crbug.com/324596270): This shouldn't be necessary, but we
   // can't seem to get the image set up to be treated as linear any other way.
-  glDisable(GL_FRAMEBUFFER_SRGB);
+  glDisable(GL_FRAMEBUFFER_SRGB_EXT);
   glViewport(0, 0, swapchain_image_size.width(), swapchain_image_size.height());
 
   gfx::Transform transform;
@@ -362,7 +362,7 @@ bool OpenXrGraphicsBindingOpenGLES::Render(
   }
 
   if (overlay_visible_) {
-    glEnable(GL_FRAMEBUFFER_SRGB);
+    glEnable(GL_FRAMEBUFFER_SRGB_EXT);
     if (webxr_visible_) {
       glEnable(GL_BLEND);
       glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);

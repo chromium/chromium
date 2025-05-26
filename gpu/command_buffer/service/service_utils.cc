@@ -371,7 +371,7 @@ uint32_t GetTextureTargetForIOSurfaces() {
        gl::GetANGLEImplementation() == gl::ANGLEImplementation::kMetal)) {
     return GL_TEXTURE_2D;
   }
-  return GL_TEXTURE_RECTANGLE_ARB;
+  return GL_TEXTURE_RECTANGLE_ANGLE;
 }
 #endif  // BUILDFLAG(IS_MAC)
 

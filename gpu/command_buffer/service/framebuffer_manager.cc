@@ -730,7 +730,7 @@ GLenum Framebuffer::IsPossiblyComplete(const FeatureInfo* feature_info) const {
       // even though ES3 allows it, it is still forbidden to ensure consistent
       // behaviors across platforms.
       // Note: Framebuffer::GetFramebufferValidSize relies on this behavior.
-      return GL_FRAMEBUFFER_INCOMPLETE_DIMENSIONS_EXT;
+      return GL_FRAMEBUFFER_INCOMPLETE_DIMENSIONS;
     }
 
     if (samples < 0) {
@@ -868,8 +868,7 @@ bool Framebuffer::IsCleared() const {
 }
 
 GLenum Framebuffer::GetDrawBuffer(GLenum draw_buffer) const {
-  GLsizei index = static_cast<GLsizei>(
-      draw_buffer - GL_DRAW_BUFFER0_ARB);
+  GLsizei index = static_cast<GLsizei>(draw_buffer - GL_DRAW_BUFFER0);
   CHECK(index >= 0 &&
         index < static_cast<GLsizei>(manager_->max_draw_buffers_));
   return draw_buffers_[index];

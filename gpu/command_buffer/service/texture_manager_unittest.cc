@@ -238,7 +238,7 @@ TEST_F(TextureManagerTest, UseDefaultTexturesTrue) {
   EXPECT_TRUE(manager.GetDefaultTextureInfo(GL_TEXTURE_2D) != nullptr);
   EXPECT_TRUE(manager.GetDefaultTextureInfo(GL_TEXTURE_CUBE_MAP) != nullptr);
 
-  // TODO(vmiura): Test GL_TEXTURE_EXTERNAL_OES & GL_TEXTURE_RECTANGLE_ARB.
+  // TODO(vmiura): Test GL_TEXTURE_EXTERNAL_OES & GL_TEXTURE_RECTANGLE_ANGLE.
 
   manager.MarkContextLost();
   manager.Destroy();
@@ -258,7 +258,7 @@ TEST_F(TextureManagerTest, UseDefaultTexturesFalse) {
   EXPECT_TRUE(manager.GetDefaultTextureInfo(GL_TEXTURE_2D) == nullptr);
   EXPECT_TRUE(manager.GetDefaultTextureInfo(GL_TEXTURE_CUBE_MAP) == nullptr);
 
-  // TODO(vmiura): Test GL_TEXTURE_EXTERNAL_OES & GL_TEXTURE_RECTANGLE_ARB.
+  // TODO(vmiura): Test GL_TEXTURE_EXTERNAL_OES & GL_TEXTURE_RECTANGLE_ANGLE.
 
   manager.MarkContextLost();
   manager.Destroy();
@@ -385,7 +385,7 @@ TEST_F(TextureManagerTest, MaxValues) {
   EXPECT_EQ(kMaxCubeMapTextureSize,
             manager_->MaxSizeForTarget(GL_TEXTURE_CUBE_MAP_NEGATIVE_Z));
   EXPECT_EQ(kMaxRectangleTextureSize,
-            manager_->MaxSizeForTarget(GL_TEXTURE_RECTANGLE_ARB));
+            manager_->MaxSizeForTarget(GL_TEXTURE_RECTANGLE_ANGLE));
   EXPECT_EQ(kMaxExternalTextureSize,
             manager_->MaxSizeForTarget(GL_TEXTURE_EXTERNAL_OES));
   EXPECT_EQ(kMaxTextureSize, manager_->MaxSizeForTarget(GL_TEXTURE_2D_ARRAY));
@@ -1860,16 +1860,16 @@ TEST_F(ProduceConsumeTextureTest, ProduceConsume2D) {
 }
 
 TEST_F(ProduceConsumeTextureTest, ProduceConsumeClearRectangle) {
-  manager_->SetTarget(texture_ref_.get(), GL_TEXTURE_RECTANGLE_ARB);
+  manager_->SetTarget(texture_ref_.get(), GL_TEXTURE_RECTANGLE_ANGLE);
   Texture* texture = texture_ref_->texture();
-  EXPECT_EQ(static_cast<GLenum>(GL_TEXTURE_RECTANGLE_ARB), texture->target());
-  LevelInfo level0(GL_TEXTURE_RECTANGLE_ARB, GL_RGBA, 1, 1, 1, 0,
+  EXPECT_EQ(static_cast<GLenum>(GL_TEXTURE_RECTANGLE_ANGLE), texture->target());
+  LevelInfo level0(GL_TEXTURE_RECTANGLE_ANGLE, GL_RGBA, 1, 1, 1, 0,
                    GL_UNSIGNED_BYTE, gfx::Rect());
   SetLevelInfo(texture_ref_.get(), 0, level0);
   EXPECT_TRUE(TextureTestHelper::IsTextureComplete(texture));
   Texture* produced_texture = Produce(texture_ref_.get());
   EXPECT_EQ(produced_texture, texture);
-  EXPECT_EQ(static_cast<GLenum>(GL_TEXTURE_RECTANGLE_ARB),
+  EXPECT_EQ(static_cast<GLenum>(GL_TEXTURE_RECTANGLE_ANGLE),
             produced_texture->target());
 
   GLuint client_id = texture2_->client_id();
@@ -1879,8 +1879,8 @@ TEST_F(ProduceConsumeTextureTest, ProduceConsumeClearRectangle) {
   EXPECT_EQ(produced_texture, restored_texture->texture());
 
   // See if we can clear the previously uncleared level now.
-  EXPECT_EQ(level0,
-            GetLevelInfo(restored_texture.get(), GL_TEXTURE_RECTANGLE_ARB, 0));
+  EXPECT_EQ(level0, GetLevelInfo(restored_texture.get(),
+                                 GL_TEXTURE_RECTANGLE_ANGLE, 0));
   EXPECT_CALL(*decoder_, ClearLevel(_, _, _, _, _, _, _, _, _))
       .WillRepeatedly(Return(true));
   // The code path taken when IsCompressedTextureFormat returns true
@@ -1890,7 +1890,7 @@ TEST_F(ProduceConsumeTextureTest, ProduceConsumeClearRectangle) {
   EXPECT_CALL(*decoder_.get(), GetFeatureInfo())
      .WillRepeatedly(Return(feature_info_.get()));
   EXPECT_TRUE(manager_->ClearTextureLevel(
-      decoder_.get(), restored_texture.get(), GL_TEXTURE_RECTANGLE_ARB, 0));
+      decoder_.get(), restored_texture.get(), GL_TEXTURE_RECTANGLE_ANGLE, 0));
 }
 
 TEST_F(ProduceConsumeTextureTest, ProduceConsumeExternal) {
@@ -1931,8 +1931,11 @@ TEST_P(ProduceConsumeTextureTest, ProduceConsumeTextureWithImage) {
   EXPECT_EQ(service_id, restored_texture->service_id());
 }
 
-static const GLenum kTextureTargets[] = {GL_TEXTURE_2D, GL_TEXTURE_EXTERNAL_OES,
-                                         GL_TEXTURE_RECTANGLE_ARB, };
+static const GLenum kTextureTargets[] = {
+    GL_TEXTURE_2D,
+    GL_TEXTURE_EXTERNAL_OES,
+    GL_TEXTURE_RECTANGLE_ANGLE,
+};
 
 INSTANTIATE_TEST_SUITE_P(Target,
                          ProduceConsumeTextureTest,

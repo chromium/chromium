@@ -212,7 +212,7 @@ gpu::ContextResult ContextGroup::Initialize(
       max_color_attachments_ = 1;
     if (max_color_attachments_ > 16)
       max_color_attachments_ = 16;
-    GetIntegerv(GL_MAX_DRAW_BUFFERS_ARB, &max_draw_buffers_);
+    GetIntegerv(GL_MAX_DRAW_BUFFERS, &max_draw_buffers_);
     if (max_draw_buffers_ < 1)
       max_draw_buffers_ = 1;
     if (max_draw_buffers_ > 16)
@@ -355,7 +355,7 @@ gpu::ContextResult ContextGroup::Initialize(
                     : gpu::ContextResult::kFatalFailure;
   }
   if (feature_info_->feature_flags().arb_texture_rectangle &&
-      !QueryGLFeature(GL_MAX_RECTANGLE_TEXTURE_SIZE_ARB,
+      !QueryGLFeature(GL_MAX_RECTANGLE_TEXTURE_SIZE_ANGLE,
                       kMinRectangleTextureSize, &max_rectangle_texture_size)) {
     bool was_lost = decoder->CheckResetStatus();
     LOG(ERROR) << (was_lost ? "ContextResult::kTransientFailure: "

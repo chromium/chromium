@@ -176,7 +176,6 @@ component("gl") {
   public_deps = [
     ":gl_enums",
     "//base",
-    "//third_party/mesa_headers",
     "//ui/events/platform",
     "//ui/gfx",
     "//ui/gfx/geometry",

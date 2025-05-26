@@ -164,11 +164,11 @@ std::unique_ptr<skgpu::graphite::Recorder> MakeGraphiteRecorder(
   return context->makeRecorder(options);
 }
 
-GLsizeiptr APIENTRY GLBlobCacheGetCallback(const void* key,
-                                           GLsizeiptr key_size,
-                                           void* value,
-                                           GLsizeiptr value_size,
-                                           const void* user_param) {
+GLsizeiptr GL_APIENTRY GLBlobCacheGetCallback(const void* key,
+                                              GLsizeiptr key_size,
+                                              void* value,
+                                              GLsizeiptr value_size,
+                                              const void* user_param) {
   DCHECK(user_param != nullptr);
   raster::GrShaderCache* cache =
       static_cast<raster::GrShaderCache*>(const_cast<void*>(user_param));
@@ -190,11 +190,11 @@ GLsizeiptr APIENTRY GLBlobCacheGetCallback(const void* key,
   return sk_data->size();
 }
 
-void APIENTRY GLBlobCacheSetCallback(const void* key,
-                                     GLsizeiptr key_size,
-                                     const void* value,
-                                     GLsizeiptr value_size,
-                                     const void* user_param) {
+void GL_APIENTRY GLBlobCacheSetCallback(const void* key,
+                                        GLsizeiptr key_size,
+                                        const void* value,
+                                        GLsizeiptr value_size,
+                                        const void* user_param) {
   DCHECK(user_param != nullptr);
   raster::GrShaderCache* cache =
       static_cast<raster::GrShaderCache*>(const_cast<void*>(user_param));
@@ -1369,16 +1369,16 @@ std::optional<error::ContextLostReason> SharedContextState::GetResetStatus(
   GLenum driver_status = context()->CheckStickyGraphicsResetStatus();
   if (driver_status == GL_NO_ERROR)
     return std::nullopt;
-  LOG(ERROR) << "SharedContextState context lost via ARB/EXT_robustness. Reset "
+  LOG(ERROR) << "SharedContextState context lost via EXT_robustness. Reset "
                 "status = "
              << gles2::GLES2Util::GetStringEnum(driver_status);
 
   switch (driver_status) {
-    case GL_GUILTY_CONTEXT_RESET_ARB:
+    case GL_GUILTY_CONTEXT_RESET:
       return error::kGuilty;
-    case GL_INNOCENT_CONTEXT_RESET_ARB:
+    case GL_INNOCENT_CONTEXT_RESET:
       return error::kInnocent;
-    case GL_UNKNOWN_CONTEXT_RESET_ARB:
+    case GL_UNKNOWN_CONTEXT_RESET:
       return error::kUnknown;
     default:
       NOTREACHED();

@@ -131,7 +131,7 @@ bool ScopedEGLSurfaceIOSurface::ValidateTarget(unsigned target) const {
         return false;
       }
       break;
-    case GL_TEXTURE_RECTANGLE_ARB:
+    case GL_TEXTURE_RECTANGLE_ANGLE:
       if (texture_target_ != EGL_TEXTURE_RECTANGLE_ANGLE) {
         LOG(ERROR) << "eglBindTexImage requires RECTANGLE, got: " << target;
         return false;

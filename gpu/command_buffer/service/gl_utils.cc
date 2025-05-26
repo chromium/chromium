@@ -474,9 +474,9 @@ void InitializeGLDebugLogging(bool log_non_errors,
 bool ValidContextLostReason(GLenum reason) {
   switch (reason) {
     case GL_NO_ERROR:
-    case GL_GUILTY_CONTEXT_RESET_ARB:
-    case GL_INNOCENT_CONTEXT_RESET_ARB:
-    case GL_UNKNOWN_CONTEXT_RESET_ARB:
+    case GL_GUILTY_CONTEXT_RESET:
+    case GL_INNOCENT_CONTEXT_RESET:
+    case GL_UNKNOWN_CONTEXT_RESET:
       return true;
     default:
       return false;
@@ -490,11 +490,11 @@ error::ContextLostReason GetContextLostReasonFromResetStatus(
       // TODO(kbr): improve the precision of the error code in this case.
       // Consider delegating to context for error code if MakeCurrent fails.
       return error::kUnknown;
-    case GL_GUILTY_CONTEXT_RESET_ARB:
+    case GL_GUILTY_CONTEXT_RESET:
       return error::kGuilty;
-    case GL_INNOCENT_CONTEXT_RESET_ARB:
+    case GL_INNOCENT_CONTEXT_RESET:
       return error::kInnocent;
-    case GL_UNKNOWN_CONTEXT_RESET_ARB:
+    case GL_UNKNOWN_CONTEXT_RESET:
       return error::kUnknown;
   }
 
@@ -1285,8 +1285,8 @@ GLenum GetTextureBindingQuery(GLenum texture_type) {
       return GL_TEXTURE_BINDING_3D;
     case GL_TEXTURE_EXTERNAL_OES:
       return GL_TEXTURE_BINDING_EXTERNAL_OES;
-    case GL_TEXTURE_RECTANGLE:
-      return GL_TEXTURE_BINDING_RECTANGLE;
+    case GL_TEXTURE_RECTANGLE_ANGLE:
+      return GL_TEXTURE_BINDING_RECTANGLE_ANGLE;
     case GL_TEXTURE_CUBE_MAP:
       return GL_TEXTURE_BINDING_CUBE_MAP;
     default:

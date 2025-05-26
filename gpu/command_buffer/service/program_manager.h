@@ -103,7 +103,7 @@ class GPU_GLES2_EXPORT Program : public base::RefCounted<Program> {
     bool IsSampler() const {
       switch (type) {
         case GL_SAMPLER_2D:
-        case GL_SAMPLER_2D_RECT_ARB:
+        case GL_SAMPLER_2D_RECT_ANGLE:
         case GL_SAMPLER_CUBE:
         case GL_SAMPLER_EXTERNAL_OES:
         case GL_SAMPLER_3D:

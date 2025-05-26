@@ -16,22 +16,6 @@
 #include "ui/gl/gl_surface_stub.h"
 #include "ui/gl/init/gl_factory.h"
 
-// We can't include khronos headers because of conflict with gl_bindings.h, but
-// we need this constant for restoring state.
-#ifndef GL_ARM_shader_framebuffer_fetch
-#define GL_ARM_shader_framebuffer_fetch 1
-#define GL_FETCH_PER_SAMPLE_ARM 0x8F65
-#define GL_FRAGMENT_SHADER_FRAMEBUFFER_FETCH_MRT_ARM 0x8F66
-#endif /* GL_ARM_shader_framebuffer_fetch */
-
-#ifndef GL_NV_conservative_raster
-#define GL_NV_conservative_raster 1
-#define GL_CONSERVATIVE_RASTERIZATION_NV 0x9346
-#define GL_SUBPIXEL_PRECISION_BIAS_X_BITS_NV 0x9347
-#define GL_SUBPIXEL_PRECISION_BIAS_Y_BITS_NV 0x9348
-#define GL_MAX_SUBPIXEL_PRECISION_BIAS_BITS_NV 0x9349
-#endif /* GL_NV_conservative_raster */
-
 namespace android_webview {
 
 namespace {
@@ -142,7 +126,7 @@ ScopedAppGLStateRestoreImpl::ScopedAppGLStateRestoreImpl(
   glGetIntegerv(GL_STENCIL_BACK_PASS_DEPTH_PASS,
                 &stencil_state_.stencil_back_z_pass_op);
 
-  glGetIntegerv(GL_FRAMEBUFFER_BINDING_EXT, &framebuffer_binding_ext_);
+  glGetIntegerv(GL_FRAMEBUFFER_BINDING, &framebuffer_binding_ext_);
 
   if (!g_globals_initialized) {
     g_globals_initialized = true;
@@ -185,7 +169,7 @@ void ScopedAppGLStateRestoreImpl::SaveHWUIState(bool save_restore) {
     glGetBooleanv(GL_FETCH_PER_SAMPLE_ARM, &fetch_per_sample_arm_enabled_);
 
   if (g_supports_disable_multisample)
-    glGetBooleanv(GL_MULTISAMPLE, &multisample_enabled_);
+    glGetBooleanv(GL_MULTISAMPLE_EXT, &multisample_enabled_);
 
   vertex_attrib_.resize(g_gl_max_vertex_attribs);
   for (GLint i = 0; i < g_gl_max_vertex_attribs; ++i) {
@@ -304,7 +288,7 @@ void ScopedAppGLStateRestoreImpl::RestoreHWUIState(bool save_restore) {
     GLEnableDisable(GL_FETCH_PER_SAMPLE_ARM, fetch_per_sample_arm_enabled_);
 
   if (g_supports_disable_multisample)
-    GLEnableDisable(GL_MULTISAMPLE, multisample_enabled_);
+    GLEnableDisable(GL_MULTISAMPLE_EXT, multisample_enabled_);
 
   // We do restore it even with Skia on the other side because it's new
   // extension that skia on Android P and Q didn't use.
