@@ -194,6 +194,28 @@ TEST_P(AutofillFieldWithAutofillAiTest, SetAutofillAiPredictions) {
   }
 }
 
+// Tests that server prediction with SOURCE_AUTOFILL_AI_CROWDSOURCING are only
+// added if `features::kAutofillAiWithDataSchema` is enabled.
+TEST_P(AutofillFieldWithAutofillAiTest,
+       SetAutofillAiPredictionsFromCrowdsourcing) {
+  AutofillField field;
+
+  const FieldPrediction crowdsourcing_prediction = CreateFieldPrediction(
+      NAME_FIRST, FieldPrediction::SOURCE_AUTOFILL_DEFAULT);
+  const FieldPrediction ai_prediction = CreateFieldPrediction(
+      NAME_FIRST, FieldPrediction::SOURCE_AUTOFILL_AI_CROWDSOURCING);
+  field.set_server_predictions({crowdsourcing_prediction, ai_prediction});
+
+  if (IsParamFeatureEnabled()) {
+    EXPECT_THAT(field.server_predictions(),
+                ElementsAre(EqualsPrediction(crowdsourcing_prediction),
+                            EqualsPrediction(ai_prediction)));
+  } else {
+    EXPECT_THAT(field.server_predictions(),
+                ElementsAre(EqualsPrediction(crowdsourcing_prediction)));
+  }
+}
+
 INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(AutofillFieldWithAutofillAiTest);
 
 // Parameters for `PrecedenceOverAutocompleteTest`

@@ -70,6 +70,7 @@ FieldPrediction::Source ToSafeFieldPredictionSource(
     case FieldPrediction::SOURCE_MANUAL_OVERRIDE:
     case FieldPrediction::SOURCE_AUTOFILL_COMBINED_TYPES:
     case FieldPrediction::SOURCE_AUTOFILL_AI:
+    case FieldPrediction::SOURCE_AUTOFILL_AI_CROWDSOURCING:
       result = source;
       break;
   }
@@ -574,6 +575,7 @@ std::optional<FieldSuggestion> GetFieldSuggestion(
         switch (ToSafeFieldPredictionSource(
             suggestion->predictions().begin()->source())) {
           case FieldPrediction::SOURCE_AUTOFILL_AI:
+          case FieldPrediction::SOURCE_AUTOFILL_AI_CROWDSOURCING:
             return base::FeatureList::IsEnabled(
                        features::kAutofillAiWithDataSchema)
                        ? 2
