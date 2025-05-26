@@ -360,9 +360,7 @@ void DataRace() {
 
 #if defined(THREAD_SANITIZER)
 // A data race detector should report an error in this test.
-// TODO(crbug.com/416191043): Re-enable when symbol_level on sanitizer bots
-// can safely be raised again.
-TEST(ToolsSanityTest, DISABLED_DataRace) {
+TEST(ToolsSanityTest, DataRace) {
   // The suppression regexp must match that in base/debug/tsan_suppressions.cc.
   EXPECT_DEATH(DataRace(), "1 race:base/tools_sanity_unittest.cc");
 }
