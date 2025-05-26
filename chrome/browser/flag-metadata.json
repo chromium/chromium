@@ -7423,6 +7423,11 @@
     "expiry_milestone": 150
   },
   {
+    "name": "page-actions-migration",
+    "owners": [ "alsan@google.com", "chrome-desktop-ui-waterloo@google.com" ],
+    "expiry_milestone": 150
+  },
+  {
     "name": "page-content-annotations",
     "owners": [ "sophiechang@chromium.org", "mcrouse@chromium.org", "chrome-intelligence-core@google.com"],
     "expiry_milestone": 150

@@ -1242,6 +1242,17 @@ const FeatureEntry::FeatureVariation kTextSafetyClassifierVariations[] = {
      std::size(kTextSafetyClassifierNoRetractParams), nullptr},
 };
 
+const FeatureEntry::FeatureParam kPageActionsMigrationParams[] = {
+    {"lens_overlay", "true"},       {"translate", "true"},
+    {"memory_saver", "true"},       {"price_insights", "true"},
+    {"offer_notification", "true"}, {"intent_picker", "true"},
+    {"file_system_access", "true"},
+};
+const FeatureEntry::FeatureVariation kPageActionsMigrationVariations[] = {
+    {"with all migrated page actions enabled", kPageActionsMigrationParams,
+     std::size(kPageActionsMigrationParams), nullptr},
+};
+
 const FeatureEntry::FeatureParam kPageContentAnnotationsContentParams[] = {
     {"annotate_title_instead_of_page_content", "false"},
     {"extract_related_searches", "true"},
@@ -12604,6 +12615,11 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(chrome::android::kMvcUpdateViewWhenModelChanged)},
 #endif  // BUILDFLAG(IS_ANDROID)
 
+    {"page-actions-migration", flag_descriptions::kPageActionsMigrationName,
+     flag_descriptions::kPageActionsMigrationDescription, kOsDesktop,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(features::kPageActionsMigration,
+                                    kPageActionsMigrationVariations,
+                                    "PageActionsMigration")},
     // Add new entries above this line.
 
     // NOTE: Adding a new flag requires adding a corresponding entry to enum

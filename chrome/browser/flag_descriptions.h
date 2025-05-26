@@ -1817,6 +1817,9 @@ extern const char kOverlayStrategiesOccludedAndUnoccluded[];
 extern const char kOverscrollHistoryNavigationName[];
 extern const char kOverscrollHistoryNavigationDescription[];
 
+extern const char kPageActionsMigrationName[];
+extern const char kPageActionsMigrationDescription[];
+
 extern const char kPageContentAnnotationsName[];
 extern const char kPageContentAnnotationsDescription[];
 

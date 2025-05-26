@@ -3143,6 +3143,10 @@ const char kOverscrollHistoryNavigationName[] = "Overscroll history navigation";
 const char kOverscrollHistoryNavigationDescription[] =
     "History navigation in response to horizontal overscroll.";
 
+const char kPageActionsMigrationName[] = "Page actions migration";
+const char kPageActionsMigrationDescription[] =
+    "Enables a new internal framework for driving page actions behavior.";
+
 const char kPageContentAnnotationsName[] = "Page content annotations";
 const char kPageContentAnnotationsDescription[] =
     "Enables page content to be annotated on-device.";
