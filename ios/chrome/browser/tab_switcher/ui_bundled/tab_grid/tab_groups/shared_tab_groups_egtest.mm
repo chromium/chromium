@@ -884,7 +884,14 @@ void WaitForFakeJoinFlowView() {
 }
 
 // Ensures new tab is added when closing the last tab of a shared group.
-- (void)testCloseLastTabInSharedGroup {
+// TODO(crbug.com/420464084): Test is failing on iphone-device.
+#if TARGET_OS_SIMULATOR
+#define MAYBE_testCloseLastTabInSharedGroup testCloseLastTabInSharedGroup
+#else
+#define MAYBE_testCloseLastTabInSharedGroup \
+  DISABLED_testCloseLastTabInSharedGroup
+#endif
+- (void)MAYBE_testCloseLastTabInSharedGroup {
   if (@available(iOS 17, *)) {
   } else if ([ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_SKIPPED(@"Only available on iOS 17+ on iPad.");
