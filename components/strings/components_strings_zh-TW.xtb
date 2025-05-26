@@ -1607,7 +1607,7 @@
 <translation id="3754210790023674521">離開子母畫面</translation>
 <translation id="3759461132968374835">最近沒有收到當機資訊。當機回報功能停用時發生的當機不會列在這裡。</translation>
 <translation id="3760561303380396507">要使用 Windows Hello 取代信用卡驗證碼嗎？</translation>
-<translation id="3761171036307311438">信用卡持有人姓名：</translation>
+<translation id="3761171036307311438">持有人姓名：</translation>
 <translation id="3761718714832595332">隱藏狀態</translation>
 <translation id="3763752038825281594">你先前不允許這個網站使用<ph name="PERMISSION" /></translation>
 <translation id="3765588406864124894">出紙槽 9</translation>
@@ -3222,7 +3222,7 @@
 <translation id="6579858392010591435">假日與節慶</translation>
 <translation id="6579990219486187401">淺粉紅色</translation>
 <translation id="6581831440014388355">身體與臉部除毛</translation>
-<translation id="658230438113661756">你嘗試前往的網站可能有攻擊者，會安裝有害軟體，竊取或刪除密碼、相片、訊息或信用卡號碼等資料。Chrome 強烈建議你不要造訪這個網站。<ph name="BEGIN_LEARN_MORE_LINK" />進一步瞭解這項警告<ph name="END_LEARN_MORE_LINK" /></translation>
+<translation id="658230438113661756">攻擊者可能在你嘗試前往的網站安裝有害軟體，藉此竊取或刪除密碼、相片、訊息或信用卡號碼等資料。Chrome 強烈建議你不要造訪這個網站。<ph name="BEGIN_LEARN_MORE_LINK" />進一步瞭解這項警告<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="6587893660316489419">Envelope B5</translation>
 <translation id="6587923378399804057">你複製的連結</translation>
 <translation id="6591833882275308647">你的 <ph name="DEVICE_TYPE" /> 未受管理</translation>
