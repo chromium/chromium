@@ -69,6 +69,11 @@ class CodePointIterator {
     // different from `operator+`, which advances by the number of code points.
     void AdvanceByCodeUnits(wtf_size_t by);
 
+    // Similar to `std::distance`, but in the code units, not code points.
+    wtf_size_t DistanceByCodeUnits(const Utf16& other) const {
+      return data_ - other.data_;
+    }
+
    private:
     friend class CodePointIterator;
 
