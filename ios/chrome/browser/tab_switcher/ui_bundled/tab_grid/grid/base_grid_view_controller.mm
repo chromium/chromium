@@ -44,7 +44,9 @@
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/transitions/legacy_grid_transition_layout.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/transitions/tab_grid_transition_item.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_group_item.h"
+#import "ios/chrome/browser/tab_switcher/ui_bundled/tab_snapshot_and_favicon.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_switcher_item.h"
+#import "ios/chrome/browser/tab_switcher/ui_bundled/tab_switcher_item_snapshot_and_favicon_data_source.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_utils.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
@@ -1723,19 +1725,18 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
     cell.layoutGuideCenter = self.layoutGuideCenter;
     [cell registerAsSelectedCellGuide];
   }
-  [item fetchFavicon:^(TabSwitcherItem* innerItem, UIImage* icon) {
-    // Only update the icon if the cell is not already reused for another item.
-    if ([cell.itemIdentifier.tabSwitcherItem isEqual:innerItem]) {
-      cell.icon = icon;
-    }
-  }];
 
-  [item fetchSnapshot:^(TabSwitcherItem* innerItem, UIImage* snapshot) {
-    // Only update the icon if the cell is not already reused for another item.
+  auto completion = ^(TabSwitcherItem* innerItem,
+                      TabSnapshotAndFavicon* tabSnapshotAndFavicon) {
+    // Only apply changes if the cell is not already reused for another
+    // item.
     if ([cell.itemIdentifier.tabSwitcherItem isEqual:innerItem]) {
-      cell.snapshot = snapshot;
+      cell.icon = tabSnapshotAndFavicon.favicon;
+      cell.snapshot = tabSnapshotAndFavicon.snapshot;
     }
-  }];
+  };
+  [self.snapshotAndfaviconDataSource fetchTabSnapshotAndFavicon:item
+                                                     completion:completion];
 
   web::WebStateID itemID = item.identifier;
   [self.priceCardDataSource

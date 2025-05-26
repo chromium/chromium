@@ -9,6 +9,7 @@
 
 #import <memory>
 
+#import "base/apple/foundation_util.h"
 #import "base/debug/dump_without_crashing.h"
 #import "base/functional/bind.h"
 #import "base/metrics/histogram_functions.h"
@@ -2031,6 +2032,19 @@ void LogPriceDropMetrics(web::WebState* web_state) {
   }
   _tabImagesConfigurator->FetchSnapshotAndFaviconForTabGroupItem(
       tabGroupItem, webStateList, completion);
+}
+
+#pragma mark - TabSwitcherItemSnapShotAndFaviconDataSource
+
+// Fetches the `item` info and executes the given `completion` block.
+- (void)fetchTabSnapshotAndFavicon:(TabSwitcherItem*)item
+                        completion:
+                            (TabSnapshotAndFaviconFetchingCompletionBlock)
+                                completion {
+  WebStateTabSwitcherItem* tabSwitcherItem =
+      base::apple::ObjCCastStrict<WebStateTabSwitcherItem>(item);
+  _tabImagesConfigurator->FetchSnapshotAndFaviconForTabSwitcherItem(
+      tabSwitcherItem, completion);
 }
 
 @end

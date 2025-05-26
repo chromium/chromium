@@ -14,6 +14,7 @@
 @protocol TabCollectionDragDropHandler;
 @protocol TabContextMenuProvider;
 @class TabGridTransitionItem;
+@protocol TabSwitcherItemSnapShotAndFaviconDataSource;
 
 namespace web {
 class WebStateID;
@@ -76,6 +77,10 @@ class WebStateID;
 
 // Handles drag and drop interactions that involved the model layer.
 @property(nonatomic, weak) id<TabCollectionDragDropHandler> dragDropHandler;
+
+// Handles snapshots and favicons fetches.
+@property(nonatomic, weak) id<TabSwitcherItemSnapShotAndFaviconDataSource>
+    snapshotAndfaviconDataSource;
 
 // Tracks if a drop animation is in progress.
 @property(nonatomic, assign) BOOL dropAnimationInProgress;

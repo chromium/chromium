@@ -25,9 +25,10 @@
 @protocol TabContextMenuProvider;
 @protocol TabCollectionDragDropHandler;
 @protocol TabGridCommands;
-@protocol TabGroupConfirmationCommands;
 @class TabGridTransitionItem;
 class TabGroup;
+@protocol TabGroupConfirmationCommands;
+@protocol TabSwitcherItemSnapShotAndFaviconDataSource;
 
 namespace web {
 class WebStateID;
@@ -162,6 +163,9 @@ class WebStateID;
     tabGroupConfirmationHandler;
 // The layout guide center to use to refer to the selected cell.
 @property(nonatomic, strong) LayoutGuideCenter* layoutGuideCenter;
+// Handles snapshots and favicons fetches.
+@property(nonatomic, weak) id<TabSwitcherItemSnapShotAndFaviconDataSource>
+    snapshotAndfaviconDataSource;
 
 // Returns the layout of the grid for use in an animated transition.
 - (LegacyGridTransitionLayout*)transitionLayout;

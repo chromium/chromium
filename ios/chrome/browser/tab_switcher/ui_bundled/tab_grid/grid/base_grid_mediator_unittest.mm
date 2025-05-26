@@ -14,6 +14,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #import "base/test/metrics/histogram_tester.h"
+#import "base/test/test_timeouts.h"
 #import "base/time/time.h"
 #import "components/commerce/core/commerce_feature_list.h"
 #import "components/saved_tab_groups/public/saved_tab_group.h"
@@ -36,6 +37,7 @@
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_browser_agent.h"
+#import "ios/chrome/browser/snapshots/model/snapshot_tab_helper.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_collection_drag_drop_metrics.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid/grid_item_identifier.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid/grid_mediator_test.h"
@@ -1285,6 +1287,27 @@ TEST_P(BaseGridMediatorTest, DropExternalURL) {
   EXPECT_EQ(GURL(kDraggedUrl),
             web_state->GetNavigationManager()->GetPendingItem()->GetURL());
   ExpectThatDragItemOriginMetricLogged(DragItemOrigin::kOther);
+}
+
+// Tests that `fetchTabSnapshotAndFavicon:completion:` is calling `completion`
+// twice.
+TEST_P(BaseGridMediatorTest, FetchTabSnapshotAndFavicon) {
+  auto fake_web_state = std::make_unique<web::FakeWebState>();
+  web::FakeWebState* web_state = fake_web_state.get();
+  SnapshotTabHelper::CreateForWebState(web_state);
+  WebStateTabSwitcherItem* item =
+      [[WebStateTabSwitcherItem alloc] initWithWebState:web_state];
+  __block int completion_block_called = 0;
+  auto completion_block = ^(TabSwitcherItem* inner_item,
+                            TabSnapshotAndFavicon* tab_snapshot_and_favicon) {
+    completion_block_called++;
+    ASSERT_LE(completion_block_called, 2);
+  };
+  [mediator_ fetchTabSnapshotAndFavicon:item completion:completion_block];
+  EXPECT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
+      TestTimeouts::action_timeout(), ^bool() {
+        return completion_block_called == 2;
+      }));
 }
 
 INSTANTIATE_TEST_SUITE_P(

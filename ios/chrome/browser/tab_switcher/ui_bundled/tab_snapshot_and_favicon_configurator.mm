@@ -16,6 +16,7 @@
 #import "ios/chrome/browser/tab_switcher/ui_bundled/item_utils.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_group_item.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_snapshot_and_favicon.h"
+#import "ios/chrome/browser/tab_switcher/ui_bundled/web_state_tab_switcher_item.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/favicon/favicon_attributes.h"
 #import "ios/chrome/common/ui/util/image_util.h"
@@ -94,6 +95,23 @@ void TabSnapshotAndFaviconConfigurator::
       /*tab_group_infos=*/[[NSMutableDictionary alloc] init],
       /*request_index=*/0, /*number_of_requests=*/1, /*request_id=*/nil,
       inner_completion);
+}
+
+void TabSnapshotAndFaviconConfigurator::
+    FetchSnapshotAndFaviconForTabSwitcherItem(
+        WebStateTabSwitcherItem* tab_item,
+        void (^completion)(WebStateTabSwitcherItem* item,
+                           TabSnapshotAndFavicon* tab_snapshot_and_favicon)) {
+  FetchSnapshotAndFaviconForTabSwitcherItem(tab_item, /*fetch_snapshot=*/true,
+                                            completion);
+}
+
+void TabSnapshotAndFaviconConfigurator::FetchFaviconForTabSwitcherItem(
+    WebStateTabSwitcherItem* tab_item,
+    void (^completion)(WebStateTabSwitcherItem* item,
+                       TabSnapshotAndFavicon* tab_snapshot)) {
+  FetchSnapshotAndFaviconForTabSwitcherItem(tab_item, /*fetch_snapshot=*/false,
+                                            completion);
 }
 
 #pragma mark - Private
@@ -232,4 +250,83 @@ void TabSnapshotAndFaviconConfigurator::OnSnapshotAndFaviconFromWebStateFetched(
         removeObjectForKey:TabGroupIdentifierKeyforTabGroupItem(group_item)];
   }
   completion(group_item, infos);
+}
+
+void TabSnapshotAndFaviconConfigurator::
+    FetchSnapshotAndFaviconForTabSwitcherItem(
+        WebStateTabSwitcherItem* tab_item,
+        bool fetch_snapshot,
+        void (^completion)(WebStateTabSwitcherItem* item,
+                           TabSnapshotAndFavicon* tab_snapshot_and_favicon)) {
+  if (!tab_item.webState) {
+    completion(tab_item, nil);
+    return;
+  }
+
+  TabSnapshotAndFavicon* tab_snapshot_and_favicon =
+      [[TabSnapshotAndFavicon alloc] init];
+
+  // Fetch the snapshot.
+  if (fetch_snapshot) {
+    SnapshotTabHelper::FromWebState(tab_item.webState)
+        ->RetrieveColorSnapshot(^(UIImage* snapshot) {
+          // If there is no available snapshot, configure the snapshot to be an
+          // empty image in order to pass
+          // `OnSnapshotAndFaviconForTabSwitcherItemFetched` checks.
+          tab_snapshot_and_favicon.snapshot = snapshot;
+          completion(tab_item, tab_snapshot_and_favicon);
+        });
+  }
+
+  UIImageConfiguration* configuration = [UIImageSymbolConfiguration
+      configurationWithPointSize:kFaviconSize
+                          weight:UIImageSymbolWeightBold
+                           scale:UIImageSymbolScaleMedium];
+  const GURL& url = tab_item.webState->GetVisibleURL();
+
+  // Set the NTP favicon.
+  if (IsUrlNtp(url)) {
+    // Each WebStateTabSwitcherItem subclass provides its own NTPFavicon.
+    tab_snapshot_and_favicon.favicon = tab_item.NTPFavicon;
+    completion(tab_item, tab_snapshot_and_favicon);
+    return;
+  }
+
+  // Use the favicon driver.
+  favicon::FaviconDriver* favicon_driver =
+      favicon::WebFaviconDriver::FromWebState(tab_item.webState);
+  if (favicon_driver) {
+    gfx::Image favicon = favicon_driver->GetFavicon();
+    if (!favicon.IsEmpty()) {
+      tab_snapshot_and_favicon.favicon = favicon.ToUIImage();
+      completion(tab_item, tab_snapshot_and_favicon);
+      return;
+    }
+  }
+
+  // Set the default favicon.
+  UIImage* default_favicon =
+      DefaultSymbolWithConfiguration(kGlobeAmericasSymbol, configuration);
+  if (!favicon_loader_) {
+    tab_snapshot_and_favicon.favicon = default_favicon;
+    completion(tab_item, tab_snapshot_and_favicon);
+    return;
+  }
+
+  // Fetch the favicon.
+  favicon_loader_->FaviconForPageUrl(
+      url, kFaviconSize, kFaviconMinimumSize,
+      /*fallback_to_google_server=*/true, ^(FaviconAttributes* attributes) {
+        // Synchronously returned default favicon.
+        if (attributes.usesDefaultImage) {
+          return;
+        }
+        // Asynchronously returned favicon.
+        if (attributes.faviconImage) {
+          tab_snapshot_and_favicon.favicon = attributes.faviconImage;
+        } else {
+          tab_snapshot_and_favicon.favicon = default_favicon;
+        }
+        completion(tab_item, tab_snapshot_and_favicon);
+      });
 }

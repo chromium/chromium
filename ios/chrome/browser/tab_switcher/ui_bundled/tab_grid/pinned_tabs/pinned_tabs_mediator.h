@@ -8,12 +8,15 @@
 #import <Foundation/Foundation.h>
 
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_collection_drag_drop_handler.h"
+#import "ios/chrome/browser/tab_switcher/ui_bundled/tab_switcher_item_snapshot_and_favicon_data_source.h"
 
 class Browser;
 @protocol PinnedTabCollectionConsumer;
 
 // Mediates between model layer and pinned tabs collection UI layer.
-@interface PinnedTabsMediator : NSObject <TabCollectionDragDropHandler>
+@interface PinnedTabsMediator
+    : NSObject <TabCollectionDragDropHandler,
+                TabSwitcherItemSnapShotAndFaviconDataSource>
 
 // The source browser.
 @property(nonatomic, assign) Browser* browser;

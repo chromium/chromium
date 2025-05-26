@@ -153,6 +153,7 @@ constexpr CGFloat kTabGroupBackgroundElementDurationFactor = 0.75;
   _viewController.gridViewController.gridProvider = _mediator;
   _viewController.gridViewController.menuProvider = _tabContextMenuHelper;
   _viewController.gridViewController.dragDropHandler = _mediator;
+  _viewController.gridViewController.snapshotAndfaviconDataSource = _mediator;
 
   [self displayViewControllerAnimated:self.animatedPresentation];
 }

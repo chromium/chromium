@@ -228,6 +228,7 @@
   gridViewController.mutator = _mediator;
   gridViewController.gridProvider = _mediator;
   gridViewController.gridHandler = _mediator;
+  gridViewController.snapshotAndfaviconDataSource = _mediator;
   gridViewController.incognitoGridHandler = self;
   // TODO(crbug.com/40273478): Move the following lines to the grid itself when
   // specific grid file will be created.

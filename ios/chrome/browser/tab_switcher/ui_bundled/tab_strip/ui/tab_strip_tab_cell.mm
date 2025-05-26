@@ -68,11 +68,6 @@ constexpr CGFloat kBlueDotStrokeWidth = 2;
 constexpr CGFloat kBlueDotSize = 6 + kBlueDotStrokeWidth * 2;
 constexpr CGFloat kBlueDotInset = 1;
 
-// Returns the default favicon image.
-UIImage* DefaultFavicon() {
-  return DefaultSymbolWithPointSize(kGlobeAmericasSymbol, 14);
-}
-
 }  // namespace
 
 @implementation TabStripTabCell {
@@ -256,11 +251,7 @@ UIImage* DefaultFavicon() {
 }
 
 - (void)setFaviconImage:(UIImage*)image {
-  if (!image) {
-    _faviconView.image = DefaultFavicon();
-  } else {
-    _faviconView.image = image;
-  }
+  _faviconView.image = image;
 }
 
 #pragma mark - TabStripCell
@@ -311,7 +302,7 @@ UIImage* DefaultFavicon() {
     _activityIndicator.hidden = NO;
     [_activityIndicator startAnimating];
     _faviconView.hidden = YES;
-    _faviconView.image = DefaultFavicon();
+    _faviconView.image = nil;
   } else {
     _activityIndicator.hidden = YES;
     [_activityIndicator stopAnimating];
@@ -1038,8 +1029,7 @@ UIImage* DefaultFavicon() {
 
 // Returns a new favicon view.
 - (UIImageView*)createFaviconView {
-  UIImageView* faviconView =
-      [[UIImageView alloc] initWithImage:DefaultFavicon()];
+  UIImageView* faviconView = [[UIImageView alloc] init];
   faviconView.translatesAutoresizingMaskIntoConstraints = NO;
   faviconView.contentMode = UIViewContentModeScaleAspectFit;
   return faviconView;
