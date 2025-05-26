@@ -333,6 +333,8 @@ CanvasRenderingContextHost::CreateCanvasResourceProvider2D() {
           : !!dispatcher;
 
   if (!provider && use_software_shared_image_provider) {
+    CHECK(format == viz::SharedImageFormat::N32Format() ||
+          format == viz::SinglePlaneFormat::kRGBA_F16);
     // In this case, we are using CPU raster and CPU compositing. Create a
     // CanvasResourceProvider that uses a SharedImage backed by a shared-memory
     // buffer that can be written by canvas raster and read by the compositor.
