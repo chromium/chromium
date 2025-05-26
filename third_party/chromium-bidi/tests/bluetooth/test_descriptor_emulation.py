@@ -15,7 +15,8 @@
 
 import pytest
 import pytest_asyncio
-from test_helpers import execute_command
+from test_helpers import (execute_command, send_JSON_command, subscribe,
+                          wait_for_event)
 
 from . import (BATTERY_SERVICE_UUID,
                CHARACTERISTIC_USER_DESCRIPTION_DESCRIPTOR_UUID,
@@ -24,6 +25,25 @@ from . import (BATTERY_SERVICE_UUID,
                MEASUREMENT_INTERVAL_CHARACTERISTIC_UUID, add_characteristic,
                create_gatt_connection, disable_simulation, setup_device,
                setup_granted_device, simulate_descriptor, simulate_service)
+
+DESCRIPTOR_EVENT_GENERATED = 'bluetooth.descriptorEventGenerated'
+
+
+async def setup_descriptor(websocket, context_id: str, html, service_uuid: str,
+                           characteristic_uuid: str, characteristic_properties,
+                           descriptor_uuid: str):
+    device_address = await setup_granted_device(websocket, context_id, html,
+                                                [service_uuid])
+    await create_gatt_connection(websocket, context_id)
+    await simulate_service(websocket, context_id, device_address, service_uuid,
+                           'add')
+    await add_characteristic(websocket, context_id, device_address,
+                             service_uuid, characteristic_uuid,
+                             characteristic_properties)
+    await simulate_descriptor(websocket, context_id, device_address,
+                              service_uuid, characteristic_uuid,
+                              descriptor_uuid, 'add')
+    return device_address
 
 
 async def get_descriptors(websocket, context_id: str, service_uuid: str,
@@ -265,3 +285,137 @@ async def test_bluetooth_add_descriptor_to_unknown_characteristic(
             websocket, context_id, device_address, HEART_RATE_SERVICE_UUID,
             MEASUREMENT_INTERVAL_CHARACTERISTIC_UUID,
             CHARACTERISTIC_USER_DESCRIPTION_DESCRIPTOR_UUID, 'add')
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize('capabilities', [{
+    'goog:chromeOptions': {
+        'args': ['--enable-features=WebBluetooth']
+    }
+}],
+                         indirect=True)
+async def test_bluetooth_descriptor_write_event(websocket, context_id, html):
+    await setup_descriptor(websocket, context_id, html,
+                           HEART_RATE_SERVICE_UUID,
+                           MEASUREMENT_INTERVAL_CHARACTERISTIC_UUID,
+                           {'write': True},
+                           CHARACTERISTIC_USER_DESCRIPTION_DESCRIPTOR_UUID)
+    await subscribe(websocket, [DESCRIPTOR_EVENT_GENERATED])
+    expected_data = [42, 27]
+    await send_JSON_command(
+        websocket, {
+            'method': 'script.evaluate',
+            'params': {
+                'expression': f'''
+                    (async () => {{
+                        const service = await device.gatt.getPrimaryService('{HEART_RATE_SERVICE_UUID}');
+                        const characteristic = await service.getCharacteristic('{MEASUREMENT_INTERVAL_CHARACTERISTIC_UUID}');
+                        const descriptor = await characteristic.getDescriptor('{CHARACTERISTIC_USER_DESCRIPTION_DESCRIPTOR_UUID}');
+                        await descriptor.writeValue(new Uint8Array({expected_data}));
+                    }})();
+                ''',
+                'awaitPromise': False,
+                'target': {
+                    'context': context_id,
+                },
+                'userActivation': True
+            }
+        })
+    event = await wait_for_event(websocket, DESCRIPTOR_EVENT_GENERATED)
+    assert event['params'] == {
+        'context': context_id,
+        'address': FAKE_DEVICE_ADDRESS,
+        'serviceUuid': HEART_RATE_SERVICE_UUID,
+        'characteristicUuid': MEASUREMENT_INTERVAL_CHARACTERISTIC_UUID,
+        'descriptorUuid': CHARACTERISTIC_USER_DESCRIPTION_DESCRIPTOR_UUID,
+        'type': 'write',
+        'data': expected_data,
+    }
+
+    await execute_command(
+        websocket, {
+            'method': 'bluetooth.simulateDescriptorResponse',
+            'params': {
+                'context': context_id,
+                'address': FAKE_DEVICE_ADDRESS,
+                'serviceUuid': HEART_RATE_SERVICE_UUID,
+                'characteristicUuid': MEASUREMENT_INTERVAL_CHARACTERISTIC_UUID,
+                'descriptorUuid': CHARACTERISTIC_USER_DESCRIPTION_DESCRIPTOR_UUID,
+                'type': 'write',
+                'code': 0x0
+            }
+        })
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize('capabilities', [{
+    'goog:chromeOptions': {
+        'args': ['--enable-features=WebBluetooth']
+    }
+}],
+                         indirect=True)
+async def test_bluetooth_descriptor_read_event(websocket, context_id, html):
+    await setup_descriptor(websocket, context_id, html,
+                           HEART_RATE_SERVICE_UUID,
+                           MEASUREMENT_INTERVAL_CHARACTERISTIC_UUID,
+                           {'read': True},
+                           CHARACTERISTIC_USER_DESCRIPTION_DESCRIPTOR_UUID)
+    await subscribe(websocket, [DESCRIPTOR_EVENT_GENERATED])
+    await send_JSON_command(
+        websocket, {
+            'method': 'script.evaluate',
+            'params': {
+                'expression': f'''
+                    let readResult;
+                    (async () => {{
+                        const service = await device.gatt.getPrimaryService('{HEART_RATE_SERVICE_UUID}');
+                        const characteristic = await service.getCharacteristic('{MEASUREMENT_INTERVAL_CHARACTERISTIC_UUID}');
+                        const descriptor = await characteristic.getDescriptor('{CHARACTERISTIC_USER_DESCRIPTION_DESCRIPTOR_UUID}');
+                        readResult = await descriptor.readValue();
+                    }})();
+                ''',
+                'awaitPromise': False,
+                'target': {
+                    'context': context_id,
+                },
+                'userActivation': True
+            }
+        })
+    event = await wait_for_event(websocket, DESCRIPTOR_EVENT_GENERATED)
+    assert event['params'] == {
+        'context': context_id,
+        'address': FAKE_DEVICE_ADDRESS,
+        'serviceUuid': HEART_RATE_SERVICE_UUID,
+        'characteristicUuid': MEASUREMENT_INTERVAL_CHARACTERISTIC_UUID,
+        'descriptorUuid': CHARACTERISTIC_USER_DESCRIPTION_DESCRIPTOR_UUID,
+        'type': 'read',
+    }
+
+    expected_data = [1, 2]
+    await execute_command(
+        websocket, {
+            'method': 'bluetooth.simulateDescriptorResponse',
+            'params': {
+                'context': context_id,
+                'address': FAKE_DEVICE_ADDRESS,
+                'serviceUuid': HEART_RATE_SERVICE_UUID,
+                'characteristicUuid': MEASUREMENT_INTERVAL_CHARACTERISTIC_UUID,
+                'descriptorUuid': CHARACTERISTIC_USER_DESCRIPTION_DESCRIPTOR_UUID,
+                'type': 'read',
+                'code': 0x0,
+                'data': expected_data
+            }
+        })
+    response = await execute_command(
+        websocket, {
+            'method': 'script.evaluate',
+            'params': {
+                'expression': 'String.fromCharCode(...new Uint8Array(readResult.buffer))',
+                'awaitPromise': False,
+                'target': {
+                    'context': context_id,
+                },
+                'userActivation': True
+            }
+        })
+    assert [ord(c) for c in response['result']['value']] == expected_data

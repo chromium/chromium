@@ -84,9 +84,11 @@ class BluetoothDevice {
 export class BluetoothProcessor {
   #eventManager: EventManager;
   #browsingContextStorage: BrowsingContextStorage;
-  #bluetoothDevices: Map<string, BluetoothDevice>;
+  #bluetoothDevices = new Map<string, BluetoothDevice>();
   // A map from a characteristic id from CDP to its BluetoothCharacteristic object.
-  #bluetoothCharacteristics: Map<string, BluetoothCharacteristic>;
+  #bluetoothCharacteristics = new Map<string, BluetoothCharacteristic>();
+  // A map from a descriptor id from CDP to its BluetoothDescriptor object.
+  #bluetoothDescriptors = new Map<string, BluetoothDescriptor>();
 
   constructor(
     eventManager: EventManager,
@@ -94,8 +96,6 @@ export class BluetoothProcessor {
   ) {
     this.#eventManager = eventManager;
     this.#browsingContextStorage = browsingContextStorage;
-    this.#bluetoothDevices = new Map();
-    this.#bluetoothCharacteristics = new Map();
   }
 
   #getDevice(address: string): BluetoothDevice {
@@ -163,6 +163,7 @@ export class BluetoothProcessor {
     );
     this.#bluetoothDevices.clear();
     this.#bluetoothCharacteristics.clear();
+    this.#bluetoothDescriptors.clear();
     await context.cdpTarget.browserCdpClient.sendCommand(
       'BluetoothEmulation.enable',
       {
@@ -182,6 +183,7 @@ export class BluetoothProcessor {
     );
     this.#bluetoothDevices.clear();
     this.#bluetoothCharacteristics.clear();
+    this.#bluetoothDescriptors.clear();
     return {};
   }
 
@@ -334,14 +336,13 @@ export class BluetoothProcessor {
             descriptorUuid: params.descriptorUuid,
           },
         );
-        characteristic.descriptors.set(
+        const descriptor = new BluetoothDescriptor(
+          response.descriptorId,
           params.descriptorUuid,
-          new BluetoothDescriptor(
-            response.descriptorId,
-            params.descriptorUuid,
-            characteristic,
-          ),
+          characteristic,
         );
+        characteristic.descriptors.set(params.descriptorUuid, descriptor);
+        this.#bluetoothDescriptors.set(descriptor.id, descriptor);
         return {};
       }
       case 'remove': {
@@ -356,6 +357,7 @@ export class BluetoothProcessor {
           },
         );
         characteristic.descriptors.delete(params.descriptorUuid);
+        this.#bluetoothDescriptors.delete(descriptor.id);
         return {};
       }
       default:
@@ -363,6 +365,34 @@ export class BluetoothProcessor {
           `Parameter "type" of ${params.type} is not supported`,
         );
     }
+  }
+
+  async simulateDescriptorResponse(
+    params: Bluetooth.SimulateDescriptorResponseParameters,
+  ): Promise<EmptyResult> {
+    const context = this.#browsingContextStorage.getContext(params.context);
+    const device = this.#getDevice(params.address);
+    const service = this.#getService(device, params.serviceUuid);
+    const characteristic = this.#getCharacteristic(
+      service,
+      params.characteristicUuid,
+    );
+    const descriptor = this.#getDescriptor(
+      characteristic,
+      params.descriptorUuid,
+    );
+    await context.cdpTarget.browserCdpClient.sendCommand(
+      'BluetoothEmulation.simulateDescriptorOperationResponse',
+      {
+        descriptorId: descriptor.id,
+        type: params.type,
+        code: params.code,
+        ...(params.data && {
+          data: btoa(String.fromCharCode(...params.data)),
+        }),
+      },
+    );
+    return {};
   }
 
   async simulateGattConnectionResponse(
@@ -520,6 +550,33 @@ export class BluetoothProcessor {
               serviceUuid: characteristic.service.uuid,
               characteristicUuid: characteristic.uuid,
               type,
+              ...(event.data && {
+                data: Array.from(atob(event.data), (c) => c.charCodeAt(0)),
+              }),
+            },
+          },
+          cdpTarget.id,
+        );
+      },
+    );
+    cdpTarget.browserCdpClient.on(
+      'BluetoothEmulation.descriptorOperationReceived',
+      (event) => {
+        if (!this.#bluetoothDescriptors.has(event.descriptorId)) {
+          return;
+        }
+        const descriptor = this.#bluetoothDescriptors.get(event.descriptorId)!;
+        this.#eventManager.registerEvent(
+          {
+            type: 'event',
+            method: 'bluetooth.descriptorEventGenerated',
+            params: {
+              context: cdpTarget.id,
+              address: descriptor.characteristic.service.device.address,
+              serviceUuid: descriptor.characteristic.service.uuid,
+              characteristicUuid: descriptor.characteristic.uuid,
+              descriptorUuid: descriptor.uuid,
+              type: event.type,
               ...(event.data && {
                 data: Array.from(atob(event.data), (c) => c.charCodeAt(0)),
               }),

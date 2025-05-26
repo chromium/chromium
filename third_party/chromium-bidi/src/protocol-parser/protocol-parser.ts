@@ -496,6 +496,15 @@ export namespace Bluetooth {
       WebDriverBidiBluetooth.Bluetooth.SimulateDescriptorParametersSchema,
     ) as Protocol.Bluetooth.SimulateDescriptorParameters;
   }
+  export function parseSimulateDescriptorResponseParams(
+    params: unknown,
+  ): Protocol.Bluetooth.SimulateDescriptorResponseParameters {
+    return parseObject(
+      params,
+      WebDriverBidiBluetooth.Bluetooth
+        .SimulateDescriptorResponseParametersSchema,
+    ) as Protocol.Bluetooth.SimulateDescriptorResponseParameters;
+  }
   export function parseSimulateGattConnectionResponseParams(
     params: unknown,
   ): Protocol.Bluetooth.SimulateGattConnectionResponseParameters {
