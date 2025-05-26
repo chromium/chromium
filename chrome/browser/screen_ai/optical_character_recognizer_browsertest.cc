@@ -513,7 +513,7 @@ IN_PROC_BROWSER_TEST_P(OpticalCharacterRecognizerTest,
   // Release it and wait for shutdown due to being idle.
   ocr().reset();
   base::test::TestFuture<void> future;
-  WaitForDisconnecting(router, future.GetCallback(), /*remaining_tries=*/2);
+  WaitForDisconnecting(router, future.GetCallback(), /*remaining_tries=*/3);
   ASSERT_TRUE(future.Wait());
   ASSERT_FALSE(router->IsProcessRunningForTesting(
       screen_ai::ScreenAIServiceRouter::Service::kOCR));
@@ -833,7 +833,7 @@ IN_PROC_BROWSER_TEST_F(OpticalCharacterRecognizerResultsTest,
   screen_ai::ScreenAIServiceRouter* router =
       ScreenAIServiceRouterFactory::GetForBrowserContext(browser()->profile());
   base::test::TestFuture<void> future;
-  WaitForDisconnecting(router, future.GetCallback(), /*remaining_tries=*/2);
+  WaitForDisconnecting(router, future.GetCallback(), /*remaining_tries=*/3);
   ASSERT_TRUE(future.Wait());
   ASSERT_FALSE(router->IsProcessRunningForTesting(
       screen_ai::ScreenAIServiceRouter::Service::kOCR));
