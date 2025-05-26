@@ -1634,6 +1634,10 @@ domain Browser
         inProgress
         completed
         canceled
+      # If download is "completed", provides the path of the downloaded file.
+      # Depending on the platform, it is not guaranteed to be set, nor the file
+      # is guaranteed to exist.
+      experimental optional string filePath
 
   # Close browser gracefully.
   command close

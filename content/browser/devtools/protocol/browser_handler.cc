@@ -661,12 +661,24 @@ void BrowserHandler::AddPrivacySandboxCoordinatorKeyConfig(
 
 void BrowserHandler::OnDownloadUpdated(download::DownloadItem* item) {
   std::string state;
+  std::optional<std::string> maybe_file_path;
   switch (item->GetState()) {
     case download::DownloadItem::IN_PROGRESS:
       state = Browser::DownloadProgress::StateEnum::InProgress;
       break;
     case download::DownloadItem::COMPLETE:
       state = Browser::DownloadProgress::StateEnum::Completed;
+      {
+        base::FilePath target_file_path = item->GetTargetFilePath();
+        if (!target_file_path.empty()) {
+#if BUILDFLAG(IS_WIN)
+          // On Windows, the target file path is a wide string.
+          maybe_file_path = base::WideToUTF8(target_file_path.value());
+#else
+          maybe_file_path = target_file_path.value();
+#endif
+        }
+      }
       break;
     case download::DownloadItem::CANCELLED:
     case download::DownloadItem::INTERRUPTED:
@@ -676,7 +688,7 @@ void BrowserHandler::OnDownloadUpdated(download::DownloadItem* item) {
       NOTREACHED();
   }
   frontend_->DownloadProgress(item->GetGuid(), item->GetTotalBytes(),
-                              item->GetReceivedBytes(), state);
+                              item->GetReceivedBytes(), state, maybe_file_path);
   if (state != Browser::DownloadProgress::StateEnum::InProgress) {
     item->RemoveObserver(this);
     pending_downloads_.erase(item);
