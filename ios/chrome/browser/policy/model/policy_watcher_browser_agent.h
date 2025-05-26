@@ -67,9 +67,6 @@ class PolicyWatcherBrowserAgent
   // AuthenticationServiceObserver implementation.
   void OnPrimaryAccountRestricted() override;
 
-  // The owning Browser.
-  raw_ptr<Browser> browser_ = nullptr;
-
   // The AuthenticationService.
   raw_ptr<AuthenticationService> auth_service_ = nullptr;
 
