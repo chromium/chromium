@@ -63,11 +63,9 @@ search_engines::SearchEngineChoiceScreenConditions ComputeProfileEligibility(
       is_regular_or_guest_profile, *template_url_service);
 }
 
-bool IsProfileEligibleForChoiceScreen(Profile& profile) {
-  auto eligibility_conditions = ComputeProfileEligibility(profile);
-  // TODO(b/312755450): Move metrics recording outside of this function or
-  // rename it to not appear like a simple getter.
-  RecordChoiceScreenProfileInitCondition(eligibility_conditions);
+bool IsProfileEligibleForChoiceScreen(
+    Profile& profile,
+    search_engines::SearchEngineChoiceScreenConditions eligibility_conditions) {
   DVLOG(1) << "Choice screen eligibility condition for profile "
            << profile.GetBaseName() << ": "
            << static_cast<int>(eligibility_conditions);
@@ -117,7 +115,8 @@ SearchEngineChoiceDialogServiceFactory::ScopedChromeBuildOverrideForTesting(
 bool SearchEngineChoiceDialogServiceFactory::
     IsProfileEligibleForChoiceScreenForTesting(Profile& profile) {
   CHECK_IS_TEST();
-  return IsProfileEligibleForChoiceScreen(profile);
+  return IsProfileEligibleForChoiceScreen(profile,
+                                          ComputeProfileEligibility(profile));
 }
 
 std::unique_ptr<KeyedService>
@@ -146,7 +145,11 @@ SearchEngineChoiceDialogServiceFactory::BuildServiceInstanceForBrowserContext(
           search_engines::SearchEngineChoiceServiceFactory::GetForProfile(
               &profile));
 
-  if (!IsProfileEligibleForChoiceScreen(profile)) {
+  search_engines::SearchEngineChoiceScreenConditions eligibility_conditions =
+      ComputeProfileEligibility(profile);
+  RecordChoiceScreenProfileInitCondition(eligibility_conditions);
+
+  if (!IsProfileEligibleForChoiceScreen(profile, eligibility_conditions)) {
     return nullptr;
   }
 
