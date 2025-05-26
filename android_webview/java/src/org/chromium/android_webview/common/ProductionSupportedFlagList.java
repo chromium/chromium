@@ -1074,6 +1074,9 @@ public final class ProductionSupportedFlagList {
                 NetworkServiceFeatures.CACHE_SHARING_FOR_PERVASIVE_SCRIPTS,
                 "When enabled, enables a singled-keyed HTTP cache for well-known privacy-safe"
                         + " resources."),
+        Flag.baseFeature(
+                "PrefetchServiceWorker",
+                "Enables SpeculationRules prefetch to ServiceWorker-controlled URLs."),
         // Add new commandline switches and features above. The final entry should have a
         // trailing comma for cleaner diffs.
     };
