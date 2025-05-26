@@ -13,8 +13,11 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import android.app.Activity;
+import android.app.ActivityManager;
+import android.content.Context;
 
 import org.junit.After;
 import org.junit.Assert;
@@ -124,6 +127,7 @@ public class ActivityTabWebContentsDelegateAndroidUnitTest {
     @Mock TabCreatorManager mTabCreatorManager;
     @Mock TabCreator mTabCreator;
     @Mock TabGroupModelFilter mTabGroupModelFilter;
+    @Mock ActivityManager mActivityManager;
 
     GURL mUrl1 = new GURL("https://url1.com");
     GURL mUrl2 = new GURL("https://url2.com");
@@ -140,6 +144,7 @@ public class ActivityTabWebContentsDelegateAndroidUnitTest {
         doReturn(mProfile).when(mTab).getProfile();
         doReturn(mUrl1).when(mWebContents).getVisibleUrl();
         doReturn(mTabCreator).when(mTabCreatorManager).getTabCreator(anyBoolean());
+        when(mActivity.getSystemService(Context.ACTIVITY_SERVICE)).thenReturn(mActivityManager);
     }
 
     @After
@@ -287,6 +292,18 @@ public class ActivityTabWebContentsDelegateAndroidUnitTest {
         verify(mTab).addObserver(any());
         mTabWebContentsDelegateAndroid.destroy();
         verify(mTab).removeObserver(any());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.USE_ACTIVITY_MANAGER_FOR_TAB_ACTIVATION)
+    public void testBringActivityToForeground() {
+        final int taskId = 123;
+        when(mActivity.getTaskId()).thenReturn(taskId);
+
+        mTabWebContentsDelegateAndroid.bringActivityToForeground();
+
+        verify(mActivity).getSystemService(Context.ACTIVITY_SERVICE);
+        verify(mActivityManager).moveTaskToFront(taskId, 0);
     }
 
     private void assertForceDarkEnabledForWebContents(boolean isEnabled) {

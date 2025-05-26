@@ -613,6 +613,8 @@ public abstract class ChromeFeatureList {
     public static final String USE_ALTERNATE_HISTORY_SYNC_ILLUSTRATION =
             "UseAlternateHistorySyncIllustration";
     public static final String USE_CHIME_ANDROID_SDK = "UseChimeAndroidSdk";
+    public static final String USE_ACTIVITY_MANAGER_FOR_TAB_ACTIVATION =
+            "UseActivityManagerForTabActivation";
     public static final String USE_LIBUNWINDSTACK_NATIVE_UNWINDER_ANDROID =
             "UseLibunwindstackNativeUnwinderAndroid";
     public static final String VISITED_URL_RANKING_SERVICE = "VisitedURLRankingService";
@@ -902,6 +904,8 @@ public abstract class ChromeFeatureList {
     public static final CachedFlag sTraceBinderIpc = newCachedFlag(TRACE_BINDER_IPC, false);
     public static final CachedFlag sUseChimeAndroidSdk =
             newCachedFlag(USE_CHIME_ANDROID_SDK, false);
+    public static final CachedFlag sUseActivityManagerForTabActivation =
+            newCachedFlag(USE_ACTIVITY_MANAGER_FOR_TAB_ACTIVATION, false);
     public static final CachedFlag sUseLibunwindstackNativeUnwinderAndroid =
             newCachedFlag(USE_LIBUNWINDSTACK_NATIVE_UNWINDER_ANDROID, true);
     public static final CachedFlag sWebApkMinShellApkVersion =
@@ -1025,6 +1029,7 @@ public abstract class ChromeFeatureList {
                     sTopControlsRefactor,
                     sTraceBinderIpc,
                     sUseChimeAndroidSdk,
+                    sUseActivityManagerForTabActivation,
                     sUseLibunwindstackNativeUnwinderAndroid,
                     sWebApkMinShellApkVersion);
 
