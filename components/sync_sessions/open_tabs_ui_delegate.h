@@ -14,7 +14,6 @@
 #include "components/sessions/core/session_id.h"
 #include "components/sessions/core/session_types.h"
 #include "components/sync_sessions/synced_session.h"
-#include "url/gurl.h"
 
 namespace sync_sessions {
 

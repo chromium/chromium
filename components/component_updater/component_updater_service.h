@@ -18,7 +18,6 @@
 #include "base/version.h"
 #include "build/build_config.h"
 #include "components/update_client/update_client.h"
-#include "url/gurl.h"
 
 class ComponentsHandler;
 class PluginObserver;

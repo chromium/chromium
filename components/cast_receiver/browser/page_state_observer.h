@@ -7,7 +7,6 @@
 
 #include "content/public/browser/web_contents_observer.h"
 #include "net/base/net_errors.h"
-#include "url/gurl.h"
 
 namespace content {
 class WebContents;

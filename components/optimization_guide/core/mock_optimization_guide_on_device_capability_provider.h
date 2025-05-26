@@ -13,7 +13,6 @@
 #include "components/optimization_guide/proto/common_types.pb.h"
 #include "components/optimization_guide/proto/hints.pb.h"
 #include "testing/gmock/include/gmock/gmock.h"
-#include "url/gurl.h"
 
 namespace optimization_guide {
 

@@ -15,7 +15,6 @@
 #include "base/memory/ref_counted.h"
 #include "components/update_client/component.h"
 #include "components/update_client/protocol_parser.h"
-#include "url/gurl.h"
 
 namespace update_client {
 

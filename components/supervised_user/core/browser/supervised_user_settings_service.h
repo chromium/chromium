@@ -19,7 +19,6 @@
 #include "components/prefs/pref_store.h"
 #include "components/supervised_user/core/common/supervised_users.h"
 #include "components/sync/model/syncable_service.h"
-#include "url/gurl.h"
 
 class PersistentPrefStore;
 

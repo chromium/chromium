@@ -14,7 +14,6 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "net/http/http_status_code.h"
-#include "url/gurl.h"
 
 namespace net {
 namespace test_server {

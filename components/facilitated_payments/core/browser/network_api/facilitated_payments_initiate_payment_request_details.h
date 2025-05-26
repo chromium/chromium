@@ -10,8 +10,6 @@
 #include <string>
 #include <vector>
 
-#include "url/gurl.h"
-
 namespace payments::facilitated {
 
 // Contains information to make a `FacilitatedPaymentsInitiatePaymentRequest`.

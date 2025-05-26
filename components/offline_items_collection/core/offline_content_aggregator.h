@@ -16,7 +16,6 @@
 #include "base/supports_user_data.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/offline_items_collection/core/offline_content_provider.h"
-#include "url/gurl.h"
 
 namespace offline_items_collection {
 

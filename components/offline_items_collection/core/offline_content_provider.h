@@ -15,7 +15,6 @@
 #include "components/offline_items_collection/core/open_params.h"
 #include "components/offline_items_collection/core/rename_result.h"
 #include "components/offline_items_collection/core/update_delta.h"
-#include "url/gurl.h"
 
 namespace offline_items_collection {
 

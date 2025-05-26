@@ -26,7 +26,6 @@
 #include "ui/base/ui_base_types.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/geometry/rect.h"
-#include "url/gurl.h"
 
 namespace sessions {
 

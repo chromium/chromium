@@ -10,7 +10,6 @@
 #include "components/omnibox/browser/suggestion_answer.h"
 #include "third_party/omnibox_proto/answer_type.pb.h"
 #include "third_party/omnibox_proto/rich_answer_template.pb.h"
-#include "url/gurl.h"
 
 // OmniboxAnswerAction is an action associated with a match for answer
 // verticals.
