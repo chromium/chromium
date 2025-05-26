@@ -76,9 +76,9 @@ const char kDisplayDispositionMetric[] = "PasswordBubble.DisplayDisposition";
 
 bool IsBubbleShowing() {
   return PasswordBubbleViewBase::manage_password_bubble() &&
-         PasswordBubbleViewBase::manage_password_bubble()
-             ->GetWidget()
-             ->IsVisible();
+         !PasswordBubbleViewBase::manage_password_bubble()
+              ->GetWidget()
+              ->IsClosed();
 }
 
 views::EditableCombobox* GetUsernameDropdown(
@@ -345,14 +345,8 @@ IN_PROC_BROWSER_TEST_F(PasswordBubbleInteractiveUiTest, DontCloseOnLostFocus) {
   EXPECT_TRUE(IsBubbleShowing());
 }
 
-// TODO(https://crbug.com/410751413): Test is flake on Mac.
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_TwoTabsWithBubbleSwitch DISABLED_TwoTabsWithBubbleSwitch
-#else
-#define MAYBE_TwoTabsWithBubbleSwitch TwoTabsWithBubbleSwitch
-#endif
 IN_PROC_BROWSER_TEST_F(PasswordBubbleInteractiveUiTest,
-                       MAYBE_TwoTabsWithBubbleSwitch) {
+                       TwoTabsWithBubbleSwitch) {
   // Set up the first tab with the bubble.
   SetupPendingPassword();
   EXPECT_TRUE(IsBubbleShowing());
