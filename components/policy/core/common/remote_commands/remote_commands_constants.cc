@@ -16,13 +16,21 @@ namespace policy {
 
 BASE_FEATURE(kDeviceRemoteCommandsInvalidationWithDirectMessagesEnabled,
              "DeviceRemoteCommandsInvalidationWithDirectMessagesEnabled",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kUserRemoteCommandsInvalidationWithDirectMessagesEnabled,
              "UserRemoteCommandsInvalidationWithDirectMessagesEnabled",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+#if BUILDFLAG(IS_CHROMEOS)
+             base::FEATURE_ENABLED_BY_DEFAULT
+#else
+             // TODO(crbug.com/407807110): Change to enabled once rollout is
+             // complete.
+             base::FEATURE_DISABLED_BY_DEFAULT
+#endif  // BUILDFLAG(IS_CHROMEOS)
+);
+
 BASE_FEATURE(kCbcmRemoteCommandsInvalidationWithDirectMessagesEnabled,
              "CbcmRemoteCommandsInvalidationWithDirectMessagesEnabled",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 namespace {
 
