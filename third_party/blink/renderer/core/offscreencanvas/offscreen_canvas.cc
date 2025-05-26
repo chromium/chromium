@@ -598,6 +598,8 @@ CanvasResourceProvider* OffscreenCanvas::GetOrCreateResourceProvider() {
         can_use_gpu ? RasterMode::kGPU : RasterMode::kCPU,
         shared_image_usage_flags, this);
   } else if (HasPlaceholderCanvas()) {
+    CHECK(format == viz::SharedImageFormat::N32Format() ||
+          format == viz::SinglePlaneFormat::kRGBA_F16);
     // using the software compositor
     base::WeakPtr<CanvasResourceDispatcher> dispatcher_weakptr =
         GetOrCreateResourceDispatcher()->GetWeakPtr();
