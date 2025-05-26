@@ -115,7 +115,7 @@ ScriptedIdleTaskController::ScriptedIdleTaskController(
 }
 
 ScriptedIdleTaskController::~ScriptedIdleTaskController() {
-  CHECK(idle_tasks_.empty(), base::NotFatalUntil::M135);
+  CHECK(idle_tasks_.empty());
 }
 
 void ScriptedIdleTaskController::Trace(Visitor* visitor) const {

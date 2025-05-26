@@ -81,7 +81,7 @@ bool IsPageTransitionValidForNavigationCapturing(
     case ui::PAGE_TRANSITION_FORM_SUBMIT:
       break;
     default:
-      NOTREACHED(base::NotFatalUntil::M135);
+      NOTREACHED();
   }
   if (base::to_underlying(ui::PageTransitionGetQualifier(transition)) != 0) {
     // Qualifiers indicate that this navigation was the result of a click on a

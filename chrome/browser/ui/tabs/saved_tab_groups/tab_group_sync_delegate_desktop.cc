@@ -9,7 +9,6 @@
 
 #include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
-#include "base/not_fatal_until.h"
 #include "base/uuid.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
@@ -250,8 +249,7 @@ void TabGroupSyncDelegateDesktop::UpdateLocalTabGroup(
   }
 
   const LocalTabGroupID& group_id = group.local_group_id().value();
-  CHECK(listener_->IsTrackingLocalTabGroup(group_id),
-        base::NotFatalUntil::M135);
+  CHECK(listener_->IsTrackingLocalTabGroup(group_id));
 
   // Update the local group with the new data. This will open new tabs, close
   // tabs, and navigate tabs to match the saved group.

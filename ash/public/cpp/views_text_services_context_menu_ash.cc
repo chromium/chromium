@@ -6,7 +6,6 @@
 
 #include "ash/public/cpp/clipboard_history_controller.h"
 #include "base/functional/bind.h"
-#include "base/not_fatal_until.h"
 #include "base/notreached.h"
 #include "chromeos/crosapi/mojom/clipboard_history.mojom.h"
 #include "chromeos/ui/clipboard_history/clipboard_history_submenu_model.h"
@@ -60,10 +59,7 @@ bool ViewsTextServicesContextMenuAsh::GetAcceleratorForCommandId(
   if (command_id == IDS_APP_SHOW_CLIPBOARD_HISTORY) {
     // `IDS_APP_SHOW_CLIPBOARD_HISTORY` is in the clipboard history submenu.
     // Therefore, the code below should not be executed.
-    NOTREACHED(base::NotFatalUntil::M135);
-
-    *accelerator = ui::Accelerator(ui::VKEY_V, ui::EF_COMMAND_DOWN);
-    return true;
+    NOTREACHED();
   }
 
   return ViewsTextServicesContextMenuBase::GetAcceleratorForCommandId(
@@ -91,10 +87,7 @@ void ViewsTextServicesContextMenuAsh::ExecuteCommand(int command_id,
   if (command_id == IDS_APP_SHOW_CLIPBOARD_HISTORY) {
     // `IDS_APP_SHOW_CLIPBOARD_HISTORY` is in the clipboard history submenu.
     // Therefore, the code below should not be executed.
-    NOTREACHED(base::NotFatalUntil::M135);
-
-    ShowClipboardHistoryMenu(event_flags);
-    return;
+    NOTREACHED();
   }
 
   ViewsTextServicesContextMenuBase::ExecuteCommand(command_id, event_flags);

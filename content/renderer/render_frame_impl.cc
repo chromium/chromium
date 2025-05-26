@@ -2309,7 +2309,7 @@ void RenderFrameImpl::Delete(mojom::FrameDeleteIntention intent) {
 #else
       // Previously this CHECK() was disabled on Android because it was much
       // easier to hit the race there.
-      CHECK(!in_frame_tree_, base::NotFatalUntil::M135);
+      CHECK(!in_frame_tree_);
 #endif  // !BUILDFLAG(IS_ANDROID)
       break;
   }

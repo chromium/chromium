@@ -373,7 +373,7 @@ constexpr CGFloat kNonProfileBackgroundImageCompactHeightWidth = 54.0;
 
 // Configures primary button with a standard font.
 - (void)configurePrimaryButtonWithTitle:(NSString*)title {
-  CHECK_GT(title.length, 0ul, base::NotFatalUntil::M135);
+  CHECK_GT(title.length, 0ul);
   // Declaring variables that are used throughout different switch cases.
   UIFont* font;
   NSAttributedString* attributedTitle;
@@ -582,7 +582,7 @@ constexpr CGFloat kNonProfileBackgroundImageCompactHeightWidth = 54.0;
 - (NSString*)primaryButtonTitle {
   NSString* buttonTitle = self.primaryButton.configuration.title;
   // The primary button should always be set.
-  CHECK_GT(buttonTitle.length, 0ul, base::NotFatalUntil::M135);
+  CHECK_GT(buttonTitle.length, 0ul);
   return buttonTitle;
 }
 

@@ -566,7 +566,7 @@ const char kUmaSelectDefaultSearchEngine[] =
     // section. The settings should either contains a selected custom search
     // engine (which cannot be removed as long as it is selected),
     // or prepopulated search engine.
-    CHECK_EQ(path.section, secondSectionIdentifier, base::NotFatalUntil::M135);
+    CHECK_EQ(path.section, secondSectionIdentifier);
     std::erase(_secondList, engineItem.templateURL);
     _templateURLService->Remove(engineItem.templateURL);
   }

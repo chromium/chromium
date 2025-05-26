@@ -319,7 +319,7 @@ using PasswordSuggestionBottomSheetExitReason::kUsePasswordSuggestion;
 - (void)dismissSoftKeyboard {
   web::WebState* activeWebState =
       self.browser->GetWebStateList()->GetActiveWebState();
-  CHECK(activeWebState, base::NotFatalUntil::M135);
+  CHECK(activeWebState);
   if (activeWebState) {
     [activeWebState->GetView() endEditing:NO];
   }

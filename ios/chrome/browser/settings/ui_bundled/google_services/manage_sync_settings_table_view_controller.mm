@@ -209,8 +209,8 @@ CGFloat kDefaultSectionFooterHeightPointSize = 10.;
                                        name:(NSString*)name
                                       email:(NSString*)email
                       managementDescription:(NSString*)managementDescription {
-  CHECK(email, base::NotFatalUntil::M135);
-  CHECK(avatarImage, base::NotFatalUntil::M135);
+  CHECK(email);
+  CHECK(avatarImage);
   // Put a small non-empty frame to avoid layout constraint error during
   // initialization. The actual frame size is changed by the CentralAccountView.
   CentralAccountView* identityAccountItem =

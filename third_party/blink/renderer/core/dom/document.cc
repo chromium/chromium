@@ -40,7 +40,6 @@
 #include "base/debug/dump_without_crashing.h"
 #include "base/i18n/time_formatting.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/not_fatal_until.h"
 #include "base/notreached.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
@@ -8949,7 +8948,7 @@ DocumentResourceCoordinator* Document::GetResourceCoordinator() {
   // afterwards, when the Document is no longer active. If `is_for_discard_` do
   // not instantiate a resource coordinator.
   if (!resource_coordinator_ && IsActive() && !is_for_discard_) {
-    CHECK(GetFrame(), base::NotFatalUntil::M135);
+    CHECK(GetFrame());
     if (auto* frame = GetFrame()) {
       resource_coordinator_ = DocumentResourceCoordinator::MaybeCreate(
           frame->GetBrowserInterfaceBroker());

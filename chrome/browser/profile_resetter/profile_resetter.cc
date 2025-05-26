@@ -113,7 +113,7 @@ ProfileResetter::ProfileResetter(Profile* profile)
 }
 
 void ProfileResetter::OnDefaultSettingsFetched() {
-  CHECK(config_fetcher_, base::NotFatalUntil::M135);
+  CHECK(config_fetcher_);
   DCHECK(!config_fetcher_->IsActive());
 }
 

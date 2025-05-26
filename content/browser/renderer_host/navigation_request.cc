@@ -11486,8 +11486,7 @@ void NavigationRequest::MaybeRecordNavigationStartAdjustments() {
   // early if that happens, after reporting a DumpWithoutCrashing. Upgrade this
   // to a CHECK failure if no reports are received by M135.
   if (original_start_to_finish.is_negative()) {
-    NOTREACHED(base::NotFatalUntil::M135) << original_start_to_finish;
-    return;
+    NOTREACHED() << original_start_to_finish;
   }
 
   base::UmaHistogramTimes(histogram_name, adjustment);

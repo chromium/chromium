@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/metrics/histogram_functions.h"
-#include "base/not_fatal_until.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "base/uuid.h"
@@ -493,7 +492,7 @@ void SavedTabGroup::RemoveTabImpl(const base::Uuid& saved_tab_guid,
   base::UmaHistogramBoolean(
       "TabGroups.SavedTabGroups.TabRemovedFromGroupWasLastTab",
       saved_tabs_.empty());
-  CHECK(allow_empty_groups || !saved_tabs_.empty(), base::NotFatalUntil::M135);
+  CHECK(allow_empty_groups || !saved_tabs_.empty());
 }
 
 SavedTabGroup SavedTabGroup::CopyBaseFieldsWithTabs() const {
