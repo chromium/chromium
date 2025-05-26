@@ -262,10 +262,7 @@ void NavigationThrottleRunner::RegisterNavigationThrottles() {
   // Prevent navigations to/from Isolated Web Apps.
   MaybeAddThrottle(IsolatedWebAppThrottle::MaybeCreateThrottleFor(request));
 
-  for (auto& throttle :
-       devtools_instrumentation::CreateNavigationThrottles(request)) {
-    AddThrottle(std::move(throttle));
-  }
+  devtools_instrumentation::CreateAndAddNavigationThrottles(*this);
 
   // Make main frame navigations with error HTTP status code and an empty body
   // commit an error page instead. Note that this should take lower priority

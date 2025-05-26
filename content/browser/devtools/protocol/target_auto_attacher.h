@@ -16,9 +16,9 @@ namespace content {
 class DevToolsAgentHost;
 class DevToolsAgentHostImpl;
 class DevToolsRendererChannel;
-class NavigationHandle;
 class NavigationRequest;
 class NavigationThrottle;
+class NavigationThrottleRegistry;
 class RenderFrameDevToolsAgentHost;
 
 namespace protocol {
@@ -39,7 +39,7 @@ class TargetAutoAttacher {
     virtual void AutoAttacherDestroyed(TargetAutoAttacher* auto_attacher) = 0;
     virtual std::unique_ptr<NavigationThrottle> CreateThrottleForNavigation(
         TargetAutoAttacher* auto_attacher,
-        NavigationHandle* navigation_handle) = 0;
+        NavigationThrottleRegistry& registry) = 0;
     virtual void TargetInfoChanged(DevToolsAgentHost* host) = 0;
 
    protected:
@@ -60,9 +60,7 @@ class TargetAutoAttacher {
                                     bool wait_for_debugger_on_start,
                                     base::OnceClosure callback);
 
-  void AppendNavigationThrottles(
-      NavigationHandle* navigation_handle,
-      std::vector<std::unique_ptr<NavigationThrottle>>* throttles);
+  void CreateAndAddNavigationThrottles(NavigationThrottleRegistry& registry);
 
   scoped_refptr<RenderFrameDevToolsAgentHost> HandleNavigation(
       NavigationRequest* navigation_request,

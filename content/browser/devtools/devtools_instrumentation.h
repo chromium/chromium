@@ -67,9 +67,7 @@ class BrowserContext;
 class DevToolsAgentHostImpl;
 class FencedFrame;
 class FrameTreeNode;
-class NavigationHandle;
 class NavigationRequest;
-class NavigationThrottle;
 class RenderFrameHostImpl;
 class RenderProcessHost;
 class SharedWorkerHost;
@@ -221,13 +219,13 @@ bool NeedInterestGroupAuctionEvents(FrameTreeNodeId frame_tree_node_id);
 void OnInterestGroupAuctionEventOccurred(
     FrameTreeNodeId frame_tree_node_id,
     base::Time event_time,
-    content::InterestGroupAuctionEventType type,
+    InterestGroupAuctionEventType type,
     const std::string& unique_auction_id,
     base::optional_ref<const std::string> parent_auction_id,
     const base::Value::Dict& auction_config);
 void OnInterestGroupAuctionNetworkRequestCreated(
     FrameTreeNodeId frame_tree_node_id,
-    content::InterestGroupAuctionFetchType type,
+    InterestGroupAuctionFetchType type,
     const std::string& request_id,
     const std::vector<std::string>& devtools_auction_ids);
 
@@ -329,8 +327,7 @@ void OnSignedExchangeCertificateRequestCompleted(
     const base::UnguessableToken& request_id,
     const network::URLLoaderCompletionStatus& status);
 
-std::vector<std::unique_ptr<NavigationThrottle>> CreateNavigationThrottles(
-    NavigationHandle* navigation_handle);
+void CreateAndAddNavigationThrottles(NavigationThrottleRegistry& registry);
 
 // When registering a new ServiceWorker with PlzServiceWorker, the main script
 // fetch happens before starting the worker. This means that we need to give
@@ -361,7 +358,7 @@ void ThrottleWorkerMainScriptFetch(
 bool ShouldWaitForDebuggerInWindowOpen();
 
 void WillStartDragging(FrameTreeNode* main_frame_tree_node,
-                       const content::DropData& drop_data,
+                       const DropData& drop_data,
                        const blink::mojom::DragDataPtr drag_data,
                        blink::DragOperationsMask drag_operations_mask,
                        bool* intercepted);
@@ -371,7 +368,7 @@ void DragEnded(FrameTreeNode& node);
 // Asks any interested agents to handle the given certificate error. Returns
 // |true| if the error was handled, |false| otherwise.
 using CertErrorCallback =
-    base::RepeatingCallback<void(content::CertificateRequestResultType)>;
+    base::RepeatingCallback<void(CertificateRequestResultType)>;
 bool HandleCertificateError(WebContents* web_contents,
                             int cert_error,
                             const GURL& request_url,
