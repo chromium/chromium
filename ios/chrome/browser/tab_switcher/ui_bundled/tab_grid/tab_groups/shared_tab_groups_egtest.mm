@@ -823,11 +823,11 @@ AppLaunchConfiguration SharedTabGroupAppLaunchConfiguration(
   } else if ([ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_SKIPPED(@"Only available on iOS 17+ on iPad.");
   }
-  // Loads regular tab 1 on the first window.
+  // Load regular tab 1 on the first window.
   AddSharedGroup(/*owner=*/NO);
   [ChromeEarlGrey waitForMainTabCount:1 inWindowWithNumber:0];
 
-  // Opens a second window.
+  // Open a second window.
   [ChromeEarlGrey openNewWindow];
   [EarlGrey setRootMatcherForSubsequentInteractions:WindowWithNumber(1)];
   [ChromeEarlGrey waitUntilReadyWindowWithNumber:1];
@@ -1529,6 +1529,11 @@ AppLaunchConfiguration SharedTabGroupAppLaunchConfiguration(
   [super setUp];
   [SigninEarlGreyUI signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]
                          enableHistorySync:YES];
+
+  // Make sure that the MessagingBackendService is fully initialized.
+  NSError* error = [ChromeEarlGrey waitForMessagingBackendServiceInitialized];
+  GREYAssertNil(error, @"Failed to initialize MessagingBackendService: %@",
+                error);
 }
 
 // Checks that the user with JoinOnly rights can't start the Share flow from
