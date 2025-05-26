@@ -17,12 +17,21 @@ module sysroot_bits [system] [extern_c] {
   header "../debian_bullseye_amd64-sysroot/usr/include/x86_64-linux-gnu/bits/pthreadtypes.h"
   header "../debian_bullseye_amd64-sysroot/usr/include/x86_64-linux-gnu/bits/pthreadtypes-arch.h"
   header "../debian_bullseye_amd64-sysroot/usr/include/x86_64-linux-gnu/bits/thread-shared-types.h"
+  header "../debian_bullseye_amd64-sysroot/usr/include/pthread.h"
+}
+
+module sysroot_time [system] [extern_c] {
+  header "../debian_bullseye_amd64-sysroot/usr/include/time.h"
+  header "../debian_bullseye_amd64-sysroot/usr/include/x86_64-linux-gnu/bits/types/struct_timespec.h"
+  header "../debian_bullseye_amd64-sysroot/usr/include/x86_64-linux-gnu/bits/types/struct_timeval.h"
 }
 
 module sysroot_types [system] [extern_c] {
-  header "../debian_bullseye_amd64-sysroot/usr/include/x86_64-linux-gnu/sys/types.h"
   header "../debian_bullseye_amd64-sysroot/usr/include/x86_64-linux-gnu/bits/types/__fpos64_t.h"
   header "../debian_bullseye_amd64-sysroot/usr/include/x86_64-linux-gnu/bits/types/__mbstate_t.h"
+  header "../debian_bullseye_amd64-sysroot/usr/include/x86_64-linux-gnu/bits/types/__sigset_t.h"
+  header "../debian_bullseye_amd64-sysroot/usr/include/x86_64-linux-gnu/sys/select.h"
+  header "../debian_bullseye_amd64-sysroot/usr/include/x86_64-linux-gnu/sys/types.h"
   // sys/types.h imports types with a #include that are designed to make be made available to users.
   // Eg. if you include sys/types.h, it should give you size_t, but size_t is defined by a transitive dependency.
   export *

@@ -1813,10 +1813,14 @@ config("libcxx_module") {
     modulemap = rebase_path(
             "${root_gen_dir}/third_party/libc++/src/include/module.modulemap",
             root_build_dir)
+    sysroot_modulemap =
+        rebase_path("//build/linux/amd64/module.modulemap", root_build_dir)
+
     cflags_cc = [
       "-fmodules",
       "-fmodule-map-file=" + modulemap,
       "-fbuiltin-module-map",
+      "-fmodule-map-file=" + sysroot_modulemap,
       "-fno-implicit-module-maps",
 
       "-Xclang",
