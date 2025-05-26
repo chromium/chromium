@@ -162,15 +162,15 @@ void SecurePaymentConfirmationService::MakePaymentCredential(
           options->payment_browser_bound_key_parameters.value_or(
               options->public_key_parameters));
     }
+    auto payment_options = ::blink::mojom::PaymentOptions::New();
+    payment_options->total = mojom::PaymentCurrencyAmount::New();
+    payment_options->instrument =
+        ::blink::mojom::PaymentCredentialInstrument::New();
     if (browser_bound_key) {
-      auto payment_options = ::blink::mojom::PaymentOptions::New();
-      payment_options->total = mojom::PaymentCurrencyAmount::New();
-      payment_options->instrument =
-          ::blink::mojom::PaymentCredentialInstrument::New();
       payment_options->browser_bound_public_key =
           browser_bound_key->Get().GetPublicKeyAsCoseKey();
-      authenticator_->SetPaymentOptions(std::move(payment_options));
     }
+    authenticator_->SetPaymentOptions(std::move(payment_options));
   }
 #endif  // BUILDFLAG(IS_ANDROID)
   authenticator_->MakeCredential(
