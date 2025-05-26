@@ -20,6 +20,11 @@ declare_args() {
   # for their tests.
   # And, some build configs may simply turn off generation altogether.
   tests_have_location_tags = generate_location_tags
+
+  # Build individual_fuzztest_wrapper if use_fuzztest_wrapper is set.
+  # Some projects doesn't have //base and cannot build
+  # individual_fuzztest_wrapper.
+  use_fuzztest_wrapper = true
 }
 
 # On Fuchsia, the test executable has a suffix and is a dependency of the
@@ -266,51 +271,54 @@ template("mixed_test") {
     }
 
     # Make a wrapper executable for each individual fuzz test
-    foreach(fuzztest_unit, invoker.fuzztests) {
-      _fuzzer_name = target_name + "_" +
-                     string_replace(fuzztest_unit, ".", "_") + "_fuzzer"
+    if (use_fuzztest_wrapper) {
+      foreach(fuzztest_unit, invoker.fuzztests) {
+        _fuzzer_name = target_name + "_" +
+                       string_replace(fuzztest_unit, ".", "_") + "_fuzzer"
 
-      # We generate an actual executable because currently our fuzz
-      # builder recipes use `gn refs --type=executable` to find things
-      # to build. Otherwise we could use generate_wrapper or equivalent
-      # to make a python script. We could alter the recipe, or rearrange
-      # deps arragenements so that some other executable depends on these
-      # scripts, but that seems worse. The executable might be more cross-
-      # platform too.
-      _fuzztest_generate_fuzzer = _fuzzer_name + "__generate"
+        # We generate an actual executable because currently our fuzz
+        # builder recipes use `gn refs --type=executable` to find things
+        # to build. Otherwise we could use generate_wrapper or equivalent
+        # to make a python script. We could alter the recipe, or rearrange
+        # deps arragenements so that some other executable depends on these
+        # scripts, but that seems worse. The executable might be more cross-
+        # platform too.
+        _fuzztest_generate_fuzzer = _fuzzer_name + "__generate"
 
-      generated_file(_fuzztest_generate_fuzzer + "_constants") {
-        outputs = [ "$target_gen_dir/$target_name/constants.cpp" ]
+        generated_file(_fuzztest_generate_fuzzer + "_constants") {
+          outputs = [ "$target_gen_dir/$target_name/constants.cpp" ]
 
-        _fuzzer_args = _common_fuzzer_args + [ "--fuzz=${fuzztest_unit}" ]
+          _fuzzer_args = _common_fuzzer_args + [ "--fuzz=${fuzztest_unit}" ]
 
-        fuzzer_args_joined = string_join(" ", _fuzzer_args)
+          fuzzer_args_joined = string_join(" ", _fuzzer_args)
 
-        NEWLINE = "$0x0A"
+          NEWLINE = "$0x0A"
 
-        contents =
-            "const char* kFuzzerArgs = \"${fuzzer_args_joined}\";" + NEWLINE +
-            "const char* kFuzzerBinary = \"${_fuzzer_binary_name}\";" + NEWLINE
-      }
-
-      _fuzzer_target_name = target_name
-      executable(_fuzztest_generate_fuzzer) {
-        testonly = true
-        data_deps = [
-          ":" + _fuzztest_target_name,
-          ":" + _fuzzer_target_name,
-        ]
-        deps = [
-          "//testing/libfuzzer:individual_fuzztest_wrapper",
-          ":" + _fuzztest_generate_fuzzer + "_constants",
-        ]
-        if (confirm_fuzztest_contents) {
-          deps += [ ":" + _fuzztest_check_action ]
+          contents =
+              "const char* kFuzzerArgs = \"${fuzzer_args_joined}\";" + NEWLINE +
+              "const char* kFuzzerBinary = \"${_fuzzer_binary_name}\";" +
+              NEWLINE
         }
-        output_name = _fuzzer_name
-        sources =
-            get_target_outputs(":" + _fuzztest_generate_fuzzer + "_constants")
-        write_runtime_deps = "$root_build_dir/${_fuzzer_name}.runtime_deps"
+
+        _fuzzer_target_name = target_name
+        executable(_fuzztest_generate_fuzzer) {
+          testonly = true
+          data_deps = [
+            ":" + _fuzztest_target_name,
+            ":" + _fuzzer_target_name,
+          ]
+          deps = [
+            "//testing/libfuzzer:individual_fuzztest_wrapper",
+            ":" + _fuzztest_generate_fuzzer + "_constants",
+          ]
+          if (confirm_fuzztest_contents) {
+            deps += [ ":" + _fuzztest_check_action ]
+          }
+          output_name = _fuzzer_name
+          sources =
+              get_target_outputs(":" + _fuzztest_generate_fuzzer + "_constants")
+          write_runtime_deps = "$root_build_dir/${_fuzzer_name}.runtime_deps"
+        }
       }
     }
   }
