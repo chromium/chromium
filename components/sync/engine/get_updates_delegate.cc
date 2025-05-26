@@ -26,9 +26,6 @@ void NormalGetUpdatesDelegate::HelpPopulateGuMessage(
     sync_pb::GetUpdatesMessage* get_updates) const {
   // Set the origin.
   get_updates->set_get_updates_origin(sync_pb::SyncEnums::GU_TRIGGER);
-  // TODO(crbug.com/40252048): Retry GU is no longer supported, clean up this
-  // field / enum value from the proto.
-  CHECK_NE(nudge_tracker_->GetOrigin(), sync_pb::SyncEnums::RETRY);
 
   // Fill in the notification hints.
   for (int i = 0; i < get_updates->from_progress_marker_size(); ++i) {

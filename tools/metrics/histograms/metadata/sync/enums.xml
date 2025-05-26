@@ -1075,7 +1075,7 @@ chromium-metrics-reviews@google.com.
   <int value="9" label="NEW_CLIENT"/>
   <int value="10" label="RECONFIGURATION"/>
   <int value="12" label="GU_TRIGGER"/>
-  <int value="13" label="RETRY"/>
+  <int value="13" label="(deprecated) RETRY"/>
   <int value="14" label="PROGRAMMATIC"/>
 </enum>
 

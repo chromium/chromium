@@ -35,9 +35,6 @@ message ClientCommand {
   // This has been deprecated since M109.
   optional int32 client_invalidation_hint_buffer_size = 6 [deprecated = true];
 
-  // Time to wait before issuing a retry GU.
-  optional int32 gu_retry_delay_seconds = 7;
-
   // A dictionary of custom nudge delays.
   repeated CustomNudgeDelay custom_nudge_delays = 8;
 
@@ -52,4 +49,7 @@ message ClientCommand {
 
   reserved 4;
   reserved "sessions_commit_delay_seconds";
+
+  reserved 7;
+  reserved "gu_retry_delay_seconds";
 }

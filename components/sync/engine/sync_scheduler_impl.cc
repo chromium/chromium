@@ -42,7 +42,6 @@ bool IsConfigRelatedUpdateOriginValue(
     case sync_pb::SyncEnums::UNKNOWN_ORIGIN:
     case sync_pb::SyncEnums::PERIODIC:
     case sync_pb::SyncEnums::GU_TRIGGER:
-    case sync_pb::SyncEnums::RETRY:
       return false;
   }
   NOTREACHED();

@@ -220,8 +220,7 @@ message SyncEnums {
     GU_TRIGGER = 12;  // The client is in 'normal' mode.  It may have several
                       // reasons for requesting an update.  See the per-type
                       // GetUpdateTriggers message for more details.
-    RETRY = 13;       // A retry GU to pick up updates missed by last GU due to
-                      // replication delay, missing hints, etc.
+    // DEPRECATED_RETRY = 13;
     PROGRAMMATIC = 14;  // A GU to programmatically enable/disable a
                         // datatype, often due to error handling.
   }
