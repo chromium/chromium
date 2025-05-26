@@ -845,14 +845,11 @@ void WebGLRenderingContextBase::commit() {
   // Note: we commit only if (a) the paint operation succeeded and (b) it
   // actually updated the returned resource provider.
   bool resource_provider_was_updated = false;
-  if (PaintRenderingResultsToCanvasInternal(kBackBuffer,
-                                            resource_provider_was_updated) &&
-      resource_provider_was_updated) {
-    if (Host()->GetOrCreateCanvasResourceProvider()) {
-      Host()->Commit(
-          Host()->ResourceProvider()->ProduceCanvasResource(FlushReason::kNone),
-          SkIRect::MakeWH(width, height));
-    }
+  auto* resource_provider = PaintRenderingResultsToCanvasInternal(
+      kBackBuffer, resource_provider_was_updated);
+  if (resource_provider && resource_provider_was_updated) {
+    Host()->Commit(resource_provider->ProduceCanvasResource(FlushReason::kNone),
+                   SkIRect::MakeWH(width, height));
   }
   MarkLayerComposited();
 }
@@ -1701,17 +1698,14 @@ bool WebGLRenderingContextBase::PushFrameWithCopy() {
   // Note: we push a frame only if (a) the paint operation succeeded and (b) it
   // actually updated the resource provider.
   bool resource_provider_was_updated = false;
-  if (PaintRenderingResultsToCanvasInternal(kBackBuffer,
-                                            resource_provider_was_updated) &&
-      resource_provider_was_updated) {
-    if (Host()->GetOrCreateCanvasResourceProvider()) {
-      const int width = GetDrawingBuffer()->Size().width();
-      const int height = GetDrawingBuffer()->Size().height();
-      submitted_frame =
-          Host()->PushFrame(Host()->ResourceProvider()->ProduceCanvasResource(
-                                FlushReason::kNon2DCanvas),
-                            SkIRect::MakeWH(width, height));
-    }
+  auto* resource_provider = PaintRenderingResultsToCanvasInternal(
+      kBackBuffer, resource_provider_was_updated);
+  if (resource_provider && resource_provider_was_updated) {
+    const int width = GetDrawingBuffer()->Size().width();
+    const int height = GetDrawingBuffer()->Size().height();
+    submitted_frame = Host()->PushFrame(
+        resource_provider->ProduceCanvasResource(FlushReason::kNon2DCanvas),
+        SkIRect::MakeWH(width, height));
   }
   MarkLayerComposited();
   return submitted_frame;
