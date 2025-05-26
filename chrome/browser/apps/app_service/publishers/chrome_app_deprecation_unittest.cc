@@ -237,12 +237,6 @@ class ChromeAppDeprecationUserInstalledAllowlistTest
 
     AddAppToAllowlistForTesting(app_->id());
   }
-
-  void TearDown() override {
-    ResetAllowlistForTesting();
-
-    ChromeAppDeprecationTest::TearDown();
-  }
 };
 
 TEST_F(ChromeAppDeprecationUserInstalledAllowlistTest, DefaultFeatureFlag) {
@@ -291,12 +285,6 @@ class ChromeAppDeprecationKioskAllowlistTest
     ChromeAppDeprecationKioskTest::SetUp();
 
     AddAppToAllowlistForTesting(app_->id());
-  }
-
-  void TearDown() override {
-    ResetAllowlistForTesting();
-
-    ChromeAppDeprecationKioskTest::TearDown();
   }
 };
 

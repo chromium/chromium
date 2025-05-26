@@ -324,10 +324,6 @@ void AddAppToAllowlistForTesting(std::string_view app_id) {
   testAllowlistedApps->emplace(app_id.data());
 }
 
-void ResetAllowlistForTesting() {
-  testAllowlistedApps->clear();
-}
-
 void SetKioskSessionForTesting(bool value) {
   fakeKioskSessionForTesting = value;
 }
