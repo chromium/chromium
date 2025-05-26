@@ -35,6 +35,7 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <variants name="AuxiliarySearchQueryType">
+  <variant name="CustomTabs" summary="CustomTabs"/>
   <variant name="Favicons" summary="Favicons"/>
   <variant name="History" summary="Tabs and CCTs"/>
   <variant name="Tabs" summary="Tabs"/>
