@@ -392,7 +392,8 @@ public class PersonalDataManagerTest {
                                 capitalOneIconUrl,
                                 widthPixels,
                                 heightPixels,
-                                /* circleCrop= */ false))
+                                /* circleCrop= */ false,
+                                /* requestPng= */ false))
                 .isEqualTo(
                         new GURL(
                                 capitalOneIconUrl.getSpec()
@@ -400,13 +401,14 @@ public class PersonalDataManagerTest {
                                         + widthPixels
                                         + "-h"
                                         + heightPixels));
-        // The URL should be updated as `cardArtUrl=w{width}-h{height}-cc`.
+        // The URL should be updated as `cardArtUrl=w{width}-h{height}-cc-rp`.
         assertThat(
                         AutofillUiUtils.getFifeIconUrlWithParams(
                                 capitalOneIconUrl,
                                 widthPixels,
                                 heightPixels,
-                                /* circleCrop= */ true))
+                                /* circleCrop= */ true,
+                                /* requestPng= */ true))
                 .isEqualTo(
                         new GURL(
                                 capitalOneIconUrl.getSpec()
@@ -414,12 +416,23 @@ public class PersonalDataManagerTest {
                                         + widthPixels
                                         + "-h"
                                         + heightPixels
-                                        + "-cc"));
+                                        + "-cc"
+                                        + "-rp"));
         assertThat(
                         AutofillUiUtils.getFifeIconUrlWithParams(
-                                cardArtUrl, widthPixels, heightPixels, /* circleCrop= */ false))
+                                cardArtUrl,
+                                widthPixels,
+                                heightPixels,
+                                /* circleCrop= */ false,
+                                /* requestPng= */ true))
                 .isEqualTo(
-                        new GURL(cardArtUrl.getSpec() + "=w" + widthPixels + "-h" + heightPixels));
+                        new GURL(
+                                cardArtUrl.getSpec()
+                                        + "=w"
+                                        + widthPixels
+                                        + "-h"
+                                        + heightPixels
+                                        + "-rp"));
     }
 
     @Test
