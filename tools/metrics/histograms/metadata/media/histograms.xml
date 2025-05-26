@@ -857,6 +857,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Media.Audio.Capture.Win.GetAudioClientTimedOut" enum="Boolean"
+    expires_after="2026-05-30">
+  <owner>henrika@chromium.org</owner>
+  <owner>olka@chromium.org</owner>
+  <owner>webrtc-audio-uma@google.com</owner>
+  <summary>
+    Logs whether the attempt to acquire an input audio client asynchronously
+    timed out or not. A timeout corresponds to a waiting time which exceeds 10
+    seconds. Logged once when an input audio stream is opened and the specified
+    device ID is a process loopback device. Only supported on Windows.
+  </summary>
+</histogram>
+
 <histogram name="Media.Audio.Capture.Win.Glitches2" units="glitches"
     expires_after="2026-05-11">
   <owner>olka@chromium.org</owner>
@@ -906,6 +919,21 @@ chromium-metrics-reviews@google.com.
   <owner>webrtc-audio-uma@google.com</owner>
   <summary>
     Success/error cases for opening an audio input stream on Windows.
+  </summary>
+</histogram>
+
+<histogram name="Media.Audio.Capture.Win.TimeToGetAudioClient" units="ms"
+    expires_after="2026-05-30">
+  <owner>henrika@chromium.org</owner>
+  <owner>olka@chromium.org</owner>
+  <owner>webrtc-audio-uma@google.com</owner>
+  <summary>
+    This histogram records the time it takes to activate an audio client
+    asynchronously, which occurs on the audio.CrUtilityMain thread in the
+    AudioService process. Logged once when an input audio stream is successfully
+    opened and the specified device ID is a process loopback device. Only
+    supported on Windows and when Media.Audio.Capture.Win.GetAudioClientTimedOut
+    is false.
   </summary>
 </histogram>
 

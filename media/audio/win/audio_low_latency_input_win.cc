@@ -32,6 +32,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/waitable_event.h"
+#include "base/timer/elapsed_timer.h"
 #include "base/trace_event/common/trace_event_common.h"
 #include "base/trace_event/trace_event.h"
 #include "base/win/core_winrt_util.h"
@@ -76,6 +77,10 @@ constexpr base::TimeDelta kMaxAbsTimeDiffBeforeSwithingToFakeTimestamps =
 // but this one we can capture all audio (not tied to any particular audio
 // device) being played out.
 constexpr uint32_t kWindowsSystemProcessId = 4;
+
+// HRESULT_FROM_WIN32(WAIT_TIMEOUT) yields 0x80070102, which is a well-known COM
+// error for timeouts.
+constexpr HRESULT kActivationTimeoutHr = HRESULT_FROM_WIN32(WAIT_TIMEOUT);
 
 // Converts a COM error into a human-readable string.
 std::string ErrorToString(HRESULT hresult) {
@@ -522,7 +527,7 @@ class WASAPIAudioInputStream::AudioClientActivationHandler
                                 base::TimeDelta async_activation_timeout_ms) {
     // Wait for a maximum of 10 seconds for the activation to complete.
     if (!wait_event_.TimedWait(async_activation_timeout_ms)) {
-      return E_FAIL;
+      return kActivationTimeoutHr;
     }
 
     // If the activation was successful, move the audio client to the output
@@ -1526,6 +1531,8 @@ HRESULT WASAPIAudioInputStream::ActivateAudioClientInterface() {
           },
   };
 
+  TRACE_EVENT("audio", "AudioClientActivation");
+  base::ElapsedTimer timer;
   ComPtr<AudioClientActivationHandler> completion_handler =
       Microsoft::WRL::Make<AudioClientActivationHandler>();
   ComPtr<IActivateAudioInterfaceAsyncOperation> async_op;
@@ -1533,11 +1540,25 @@ HRESULT WASAPIAudioInputStream::ActivateAudioClientInterface() {
       VIRTUAL_AUDIO_DEVICE_PROCESS_LOOPBACK, __uuidof(IAudioClient),
       &propvariant, completion_handler.Get(), &async_op);
   if (FAILED(hr)) {
+    TRACE_EVENT_INSTANT0("audio", "ActivateAudioInterfaceAsync failed",
+                         TRACE_EVENT_SCOPE_THREAD);
     return hr;
   }
 
-  return completion_handler->WaitAndGetAudioClient(
-      &audio_client_, async_activation_timeout_ms_);
+  hr = completion_handler->WaitAndGetAudioClient(&audio_client_,
+                                                 async_activation_timeout_ms_);
+  const bool timed_out = (hr == kActivationTimeoutHr);
+  base::UmaHistogramBoolean("Media.Audio.Capture.Win.GetAudioClientTimedOut",
+                            timed_out);
+  if (!timed_out) {
+    base::UmaHistogramTimes("Media.Audio.Capture.Win.TimeToGetAudioClient",
+                            timer.Elapsed());
+  } else {
+    TRACE_EVENT_INSTANT0("audio", "GetAudioClient timed out",
+                         TRACE_EVENT_SCOPE_THREAD);
+  }
+
+  return hr;
 }
 
 bool WASAPIAudioInputStream::RawProcessingSupported() {
