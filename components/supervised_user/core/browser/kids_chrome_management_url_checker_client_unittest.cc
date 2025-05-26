@@ -12,15 +12,16 @@
 #include "base/notreached.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "base/version_info/channel.h"
-#include "build/build_config.h"
 #include "components/safe_search_api/url_checker_client.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/supervised_user/core/browser/proto/kidsmanagement_messages.pb.h"
+#include "components/supervised_user/core/common/features.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "net/http/http_status_code.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
@@ -44,6 +45,9 @@ class KidsChromeManagementURLCheckerClientTest
     : public ::testing::TestWithParam<bool> {
  public:
   void SetUp() override {
+    feature_list_.InitWithFeatureState(
+        supervised_user::kUncredentialedFilteringFallbackForSupervisedUsers,
+        UncredentialedFilteringFallbackEnabled());
     url_classifier_ = std::make_unique<KidsChromeManagementURLCheckerClient>(
         identity_test_env_.identity_manager(),
         test_url_loader_factory_.GetSafeWeakWrapper(), "us",
@@ -51,6 +55,8 @@ class KidsChromeManagementURLCheckerClientTest
   }
 
  protected:
+  bool UncredentialedFilteringFallbackEnabled() { return GetParam(); }
+
   void MakePrimaryAccountAvailable() {
     identity_test_env_.MakePrimaryAccountAvailable(
         "homer@gmail.com", signin::ConsentLevel::kSignin);
@@ -126,9 +132,10 @@ class KidsChromeManagementURLCheckerClientTest
  private:
   signin::IdentityTestEnvironment identity_test_env_;
   std::unique_ptr<KidsChromeManagementURLCheckerClient> url_classifier_;
+  base::test::ScopedFeatureList feature_list_;
 };
 
-TEST_F(KidsChromeManagementURLCheckerClientTest, UrlAllowed) {
+TEST_P(KidsChromeManagementURLCheckerClientTest, UrlAllowed) {
   MakePrimaryAccountAvailable();
 
   EXPECT_CALL(*this,
@@ -139,7 +146,7 @@ TEST_F(KidsChromeManagementURLCheckerClientTest, UrlAllowed) {
   SimulateKidsApiResponse(kidsmanagement::ClassifyUrlResponse::ALLOWED);
 }
 
-TEST_F(KidsChromeManagementURLCheckerClientTest, HistogramsAreEmitted) {
+TEST_P(KidsChromeManagementURLCheckerClientTest, HistogramsAreEmitted) {
   base::HistogramTester histogram_tester;
   MakePrimaryAccountAvailable();
 
@@ -155,7 +162,7 @@ TEST_F(KidsChromeManagementURLCheckerClientTest, HistogramsAreEmitted) {
                                     /*expected_count(grew by)*/ 1);
 }
 
-TEST_F(KidsChromeManagementURLCheckerClientTest, UrlRestricted) {
+TEST_P(KidsChromeManagementURLCheckerClientTest, UrlRestricted) {
   MakePrimaryAccountAvailable();
 
   EXPECT_CALL(*this,
@@ -166,59 +173,59 @@ TEST_F(KidsChromeManagementURLCheckerClientTest, UrlRestricted) {
   SimulateKidsApiResponse(kidsmanagement::ClassifyUrlResponse::RESTRICTED);
 }
 
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-TEST_F(KidsChromeManagementURLCheckerClientTest, NoPrimaryAccount) {
-  // On desktop platforms, uncredentialed access is allowed.
-  EXPECT_CALL(*this,
-              OnCheckDone(GURL("http://example.com"),
-                          safe_search_api::ClientClassification::kAllowed));
+TEST_P(KidsChromeManagementURLCheckerClientTest, NoPrimaryAccount) {
+  // This test does not add a primary account, and therefore no access token is
+  // available. On platforms with kWaitUntilAccessTokenAvailableForClassifyUrl
+  // enabled this means that the ClassifyUrl call will not be made.
+  if (!base::FeatureList::IsEnabled(
+          kWaitUntilAccessTokenAvailableForClassifyUrl)) {
+    if (UncredentialedFilteringFallbackEnabled()) {
+      // We fallback to making an uncredentialed request to ClassifyUrl, which
+      // succeeds.
+      EXPECT_CALL(*this,
+                  OnCheckDone(GURL("http://example.com"),
+                              safe_search_api::ClientClassification::kAllowed));
+    } else {
+      EXPECT_CALL(*this,
+                  OnCheckDone(GURL("http://example.com"),
+                              safe_search_api::ClientClassification::kUnknown));
+    }
+  }
   CheckUrl("http://example.com");
-  SimulateKidsApiResponse(kidsmanagement::ClassifyUrlResponse::ALLOWED);
-}
-#elif BUILDFLAG(IS_ANDROID)
-TEST_F(KidsChromeManagementURLCheckerClientTest, NoPrimaryAccount) {
-  // On Android, uncredentialed access will hang on access token wait.
-  EXPECT_CALL(*this, OnCheckDone(GURL("http://example.com"), _)).Times(0);
-  CheckUrl("http://example.com");
-}
-#else
-TEST_F(KidsChromeManagementURLCheckerClientTest, NoPrimaryAccount) {
-  // On other platforms platforms, uncredentialed classification is not
-  // available.
-  EXPECT_CALL(*this,
-              OnCheckDone(GURL("http://example.com"),
-                          safe_search_api::ClientClassification::kUnknown));
-  CheckUrl("http://example.com");
-}
-#endif
 
-TEST_F(KidsChromeManagementURLCheckerClientTest, AccessTokenError) {
+  if (UncredentialedFilteringFallbackEnabled()) {
+    SimulateKidsApiResponse(kidsmanagement::ClassifyUrlResponse::ALLOWED);
+  }
+}
+
+TEST_P(KidsChromeManagementURLCheckerClientTest, AccessTokenError) {
   MakePrimaryAccountAvailable();
   StopAutomaticIssueOfAccessTokens();
 
   // This outcome depents on the feature flag values.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-  // We fallback to making an uncredentialed request to ClassifyUrl, which
-  // succeeds.
-  EXPECT_CALL(*this,
-              OnCheckDone(GURL("http://example.com"),
-                          safe_search_api::ClientClassification::kAllowed));
-#else  // We fail the request when we fail the access token fetch (returning
-  // unknown) to the client.
-  EXPECT_CALL(*this,
-              OnCheckDone(GURL("http://example.com"),
-                          safe_search_api::ClientClassification::kUnknown));
-#endif
+  if (UncredentialedFilteringFallbackEnabled()) {
+    // We fallback to making an uncredentialed request to ClassifyUrl, which
+    // succeeds.
+    EXPECT_CALL(*this,
+                OnCheckDone(GURL("http://example.com"),
+                            safe_search_api::ClientClassification::kAllowed));
+  } else {
+    // We fail the request when we fail the access token fetch (returning
+    // unknown) to the client.
+    EXPECT_CALL(*this,
+                OnCheckDone(GURL("http://example.com"),
+                            safe_search_api::ClientClassification::kUnknown));
+  }
 
   CheckUrl("http://example.com");
 
   SimulateAccessTokenError();
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-  SimulateKidsApiResponse(kidsmanagement::ClassifyUrlResponse::ALLOWED);
-#endif
+  if (UncredentialedFilteringFallbackEnabled()) {
+    SimulateKidsApiResponse(kidsmanagement::ClassifyUrlResponse::ALLOWED);
+  }
 }
 
-TEST_F(KidsChromeManagementURLCheckerClientTest, NetworkError) {
+TEST_P(KidsChromeManagementURLCheckerClientTest, NetworkError) {
   MakePrimaryAccountAvailable();
 
   EXPECT_CALL(*this,
@@ -229,7 +236,7 @@ TEST_F(KidsChromeManagementURLCheckerClientTest, NetworkError) {
   SimulateNetworkError(net::ERR_UNEXPECTED);
 }
 
-TEST_F(KidsChromeManagementURLCheckerClientTest, HttpError) {
+TEST_P(KidsChromeManagementURLCheckerClientTest, HttpError) {
   MakePrimaryAccountAvailable();
 
   EXPECT_CALL(*this,
@@ -240,7 +247,7 @@ TEST_F(KidsChromeManagementURLCheckerClientTest, HttpError) {
   SimulateHttpError(net::HTTP_BAD_GATEWAY);
 }
 
-TEST_F(KidsChromeManagementURLCheckerClientTest, ServiceError) {
+TEST_P(KidsChromeManagementURLCheckerClientTest, ServiceError) {
   MakePrimaryAccountAvailable();
 
   EXPECT_CALL(*this,
@@ -251,7 +258,7 @@ TEST_F(KidsChromeManagementURLCheckerClientTest, ServiceError) {
   SimulateMalformedResponse();
 }
 
-TEST_F(KidsChromeManagementURLCheckerClientTest,
+TEST_P(KidsChromeManagementURLCheckerClientTest,
        PendingRequestsAreCanceledWhenClientIsDestroyed) {
   EXPECT_CALL(*this, OnCheckDone(_, _)).Times(0);
 
@@ -261,5 +268,14 @@ TEST_F(KidsChromeManagementURLCheckerClientTest,
   // Now run the callback.
   task_environment_.RunUntilIdle();
 }
+
+INSTANTIATE_TEST_SUITE_P(
+    KidsChromeManagementURLCheckerClientTest,
+    KidsChromeManagementURLCheckerClientTest,
+    ::testing::Bool(),
+    [](const testing::TestParamInfo<bool>& info) {
+      return info.param ? "UncredentialedFilteringFallbackEnabled"
+                        : "UncredentialedFilteringFallbackDisabled";
+    });
 }  // namespace
 }  // namespace supervised_user
