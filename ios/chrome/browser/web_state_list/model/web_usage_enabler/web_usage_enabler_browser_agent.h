@@ -71,9 +71,6 @@ class WebUsageEnablerBrowserAgent
   void WebStateRealized(web::WebState* web_state) override;
   void WebStateDestroyed(web::WebState* web_state) override;
 
-  // The browser whose WebStates' web usage is being managed.
-  raw_ptr<Browser> browser_ = nullptr;
-
   // Whether web usage is enabled for the WebState in `web_state_list_`.
   bool web_usage_enabled_ = false;
 
