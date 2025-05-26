@@ -138,7 +138,7 @@ class WPTAdapterTest(unittest.TestCase):
 
     def test_basic_passthrough(self):
         mock_datetime = self._mocks.enter_context(
-            mock.patch('blinkpy.wpt_tests.wpt_adapter.datetime'))
+            mock.patch('blinkpy.wpt_tests.logging.datetime'))
         mock_datetime.now.side_effect = lambda: datetime(
             2023, 1, 1, 12, 0, mock_datetime.now.call_count)
 
