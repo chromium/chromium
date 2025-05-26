@@ -95,12 +95,16 @@ TEST(ReportingUtilsTest, GetLoginEvent) {
   auto event = GetLoginEvent(/*url=*/GURL("https://google.com/"),
                              /*is_federated=*/federated_origin.IsValid(),
                              /*federated_origin=*/federated_origin,
-                             /*username=*/u"username");
+                             /*username=*/u"username",
+                             /*profile_identifier=*/"identifier",
+                             /*profile_username=*/"profile_username");
 
   ASSERT_EQ(event.url(), "https://google.com/");
   ASSERT_FALSE(event.is_federated());
   ASSERT_EQ(event.federated_origin(), "");
   ASSERT_EQ(event.login_user_name(), "*****");
+  ASSERT_EQ(event.profile_identifier(), "identifier");
+  ASSERT_EQ(event.profile_user_name(), "profile_username");
 }
 
 TEST(ReportingUtilsTest, GetInterstitialEvent) {

@@ -72,6 +72,10 @@ class RealtimeReportingClientBase : public KeyedService,
   // Return the user name associated with the profile.
   virtual std::string GetProfileUserName() = 0;
 
+  // Sub-methods called by ReportEventWithTimestamp() to provide profile related
+  // information.
+  virtual std::string GetProfileIdentifier() = 0;
+
  protected:
   // Sub-method called by InitRealtimeReportingClient() to make appropriate
   // verifications and initialize the profile reporting client. Returns a policy
@@ -85,10 +89,6 @@ class RealtimeReportingClientBase : public KeyedService,
   // Returns the browser client id required for initializing browser reporting
   // client.
   virtual std::string GetBrowserClientId() = 0;
-
-  // Sub-methods called by ReportEventWithTimestamp() to provide profile related
-  // information.
-  virtual std::string GetProfileIdentifier() = 0;
 
   // Sub-method called by ReportEventWithTimestamp() to collect device signals
   // on Windows/Mac/Linux platforms. Regardless of collecting device signals or

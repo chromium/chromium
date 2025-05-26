@@ -227,7 +227,9 @@ proto::SafeBrowsingPasswordChangedEvent GetPasswordChangedEvent(
 proto::LoginEvent GetLoginEvent(const GURL& url,
                                 bool is_federated,
                                 const url::SchemeHostPort& federated_origin,
-                                const std::u16string& username) {
+                                const std::u16string& username,
+                                const std::string& profile_identifier,
+                                const std::string& profile_username) {
   proto::LoginEvent event;
   event.set_url(url.spec());
   event.set_is_federated(is_federated);
@@ -235,6 +237,8 @@ proto::LoginEvent GetLoginEvent(const GURL& url,
     event.set_federated_origin(federated_origin.Serialize());
   }
   event.set_login_user_name(MaskUsername(username));
+  event.set_profile_identifier(profile_identifier);
+  event.set_profile_user_name(profile_username);
 
   return event;
 }

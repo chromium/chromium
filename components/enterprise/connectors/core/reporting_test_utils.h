@@ -40,14 +40,17 @@ class EventReportValidatorBase {
   void ExpectURLFilteringInterstitialEventWithReferrers(
       chrome::cros::reporting::proto::UrlFilteringInterstitialEvent event);
 
-  // TODO(crbug.com/396438091): Use login event proto instead of raw json string
-  // for validation.
+  // TODO(crbug.com/396438091): Delete this method once proto migration is
+  // complete.
   void ExpectLoginEvent(const std::string& expected_url,
                         const bool expected_is_federated,
                         const std::string& expected_federated_origin,
                         const std::string& expected_profile_username,
                         const std::string& expected_profile_identifier,
                         const std::u16string& expected_login_username);
+
+  void ExpectLoginEvent(
+      chrome::cros::reporting::proto::LoginEvent expected_login_event);
 
   // TODO(crbug.com/396436374): Use password breach event proto instead of raw
   // json string for validation.
