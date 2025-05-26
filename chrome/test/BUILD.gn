@@ -4590,10 +4590,6 @@ if (!is_android) {
         ]
       }
 
-      if (enterprise_client_certificates) {
-        sources += [ "../browser/enterprise/client_certificates/client_certificates_browsertest.cc" ]
-      }
-
       if (is_win || is_linux || is_mac) {
         deps += [
           "//chrome/browser/enterprise/connectors/device_trust/key_management/browser/commands:test_support",

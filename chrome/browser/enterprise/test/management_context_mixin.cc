@@ -94,8 +94,6 @@ ManagementContextMixin::GetBaseUserPolicyData() const {
   user_policy_data->add_user_affiliation_ids(user_customer_id);
   user_policy_data->set_username(kTestUserEmail);
   user_policy_data->set_gaia_id(kTestUserId);
-  user_policy_data->set_device_id(kProfileClientId);
-  user_policy_data->set_request_token(kProfileDmToken);
   return user_policy_data;
 }
 

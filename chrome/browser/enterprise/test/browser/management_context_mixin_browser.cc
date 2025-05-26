@@ -10,6 +10,7 @@
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "components/enterprise/browser/controller/fake_browser_dm_token_storage.h"
 #include "components/enterprise/browser/enterprise_switches.h"
 #include "components/policy/core/common/cloud/machine_level_user_cloud_policy_manager.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_client.h"
@@ -43,10 +44,7 @@ ManagementContextMixinBrowser::ManagementContextMixinBrowser(
     InProcessBrowserTestMixinHost* host,
     InProcessBrowserTest* test_base,
     ManagementContext management_context)
-    : ManagementContextMixin(host, test_base, std::move(management_context)) {
-  // Fake the OS' device ID.
-  browser_dm_token_storage_.SetClientId(kBrowserClientId);
-}
+    : ManagementContextMixin(host, test_base, std::move(management_context)) {}
 
 ManagementContextMixinBrowser::~ManagementContextMixinBrowser() = default;
 
@@ -81,6 +79,14 @@ void ManagementContextMixinBrowser::SetUpOnMainThread() {
   }
 }
 
+void ManagementContextMixinBrowser::SetUpInProcessBrowserTestFixture() {
+  browser_dm_token_storage_ =
+      std::make_unique<policy::FakeBrowserDMTokenStorage>();
+
+  policy::BrowserDMTokenStorage::SetForTesting(browser_dm_token_storage_.get());
+  ManagementContextMixin::SetUpInProcessBrowserTestFixture();
+}
+
 #if !BUILDFLAG(GOOGLE_CHROME_BRANDING)
 void ManagementContextMixinBrowser::SetUpDefaultCommandLine(
     base::CommandLine* command_line) {
@@ -91,8 +97,11 @@ void ManagementContextMixinBrowser::SetUpDefaultCommandLine(
 
 void ManagementContextMixinBrowser::ManageCloudMachine() {
   ManagementContextMixin::ManageCloudMachine();
-  browser_dm_token_storage_.SetEnrollmentToken(kEnrollmentToken);
-  browser_dm_token_storage_.SetDMToken(kBrowserDmToken);
+  CHECK(browser_dm_token_storage_);
+  browser_dm_token_storage_->SetEnrollmentToken(kEnrollmentToken);
+  browser_dm_token_storage_->SetClientId(kBrowserClientId);
+  browser_dm_token_storage_->EnableStorage(true);
+  browser_dm_token_storage_->SetDMToken(kBrowserDmToken);
 }
 
 void ManagementContextMixinBrowser::SetCloudMachinePolicies(
