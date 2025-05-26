@@ -11660,21 +11660,6 @@
             ]
         }
     ],
-    "IOSDeleteAllSavedCredentials": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "IOSEnableDeleteAllSavedCredentials"
-                    ]
-                }
-            ]
-        }
-    ],
     "IOSDeprecateFeedHeader": [
         {
             "platforms": [
