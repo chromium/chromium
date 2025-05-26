@@ -307,15 +307,14 @@ void CloseAppWindow(const KioskApp& app) {
       chrome_app_window.GetBaseWindow()->Close();
       break;
     }
-    case KioskAppType::kWebApp: {
+    case KioskAppType::kWebApp:
+    case KioskAppType::kIsolatedWebApp: {
       EXPECT_GE(BrowserList::GetInstance()->size(), 1u);
       auto& web_app_browser = CHECK_DEREF(BrowserList::GetInstance()->get(0));
       web_app_browser.window()->Close();
       break;
     }
-    case KioskAppType::kIsolatedWebApp:
     case KioskAppType::kArcvmApp:
-      // TODO(crbug.com/379633748): Support IWA in KioskMixin.
       NOTIMPLEMENTED();
       break;
   }
