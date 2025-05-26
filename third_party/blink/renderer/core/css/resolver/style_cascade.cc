@@ -243,6 +243,18 @@ bool EvaluateContainerQuery(Element& element,
   return evaluator.EvalAndAdd(query, change, match_result);
 }
 
+bool IsVariableNameOnly(StringView str) {
+  if (!CSSVariableParser::IsValidVariableName(str)) {
+    return false;
+  }
+  CSSParserTokenStream stream(str);
+  if (stream.Peek().GetType() != kIdentToken) {
+    return false;
+  }
+  stream.ConsumeIncludingWhitespace();
+  return stream.AtEnd();
+}
+
 }  // namespace
 
 MatchResult& StyleCascade::MutableMatchResult() {
@@ -2319,6 +2331,88 @@ bool StyleCascade::EvalIfKeyword(const CSSValue& keyword_value,
   return false;
 }
 
+const CSSValue* StyleCascade::CoerceIntoNumericValue(
+    const CSSUnparsedDeclarationValue& unparsed_value,
+    const TreeScope* tree_scope,
+    CascadeResolver& resolver,
+    const CSSParserContext& context,
+    FunctionContext* function_context) {
+  StringView unparsed_value_str(
+      unparsed_value.VariableDataValue()->OriginalText());
+  CSSVariableData* data = nullptr;
+  if (IsVariableNameOnly(unparsed_value_str)) {
+    data = ResolveLikeVar(AtomicString(unparsed_value_str), resolver, context,
+                          function_context);
+  } else {
+    CSSParserTokenStream decl_value_stream(unparsed_value_str);
+    TokenSequence substituted_token_sequence;
+    if (ResolveTokensInto(
+            decl_value_stream, tree_scope, resolver, context, function_context,
+            /* stop_type */ kEOFToken, substituted_token_sequence)) {
+      data = substituted_token_sequence.BuildVariableData();
+    }
+  }
+
+  if (!data) {
+    return nullptr;
+  }
+
+  CSSSyntaxDefinition syntax_definition =
+      CSSSyntaxDefinition::CreateNumericSyntax();
+  const CSSValue* parsed_value = syntax_definition.Parse(
+      data->OriginalText(), context,
+      /* is_animation_tainted= */ data->IsAnimationTainted(),
+      /* is_attr_tainted= */ data->IsAttrTainted());
+
+  if (!parsed_value) {
+    return nullptr;
+  }
+
+  const auto* primitive_value = DynamicTo<CSSPrimitiveValue>(parsed_value);
+
+  if (!primitive_value) {
+    return nullptr;
+  }
+
+  if (!primitive_value->IsCalculated() &&
+      (primitive_value->IsPx() || primitive_value->IsPercentage())) {
+    return parsed_value;
+  }
+
+  if (primitive_value->IsLength() || primitive_value->IsPercentage() ||
+      !primitive_value->IsResolvableBeforeLayout()) {
+    Length length = primitive_value->ConvertToLength(
+        state_.CssToLengthConversionData().Unzoomed());
+    return CSSPrimitiveValue::CreateFromLength(length, 1);
+  }
+
+  if (primitive_value->IsNumber()) {
+    return CSSNumericLiteralValue::Create(
+        primitive_value->ComputeNumber(state_.CssToLengthConversionData()),
+        CSSPrimitiveValue::UnitType::kNumber);
+  }
+
+  if (primitive_value->IsAngle()) {
+    return CSSNumericLiteralValue::Create(
+        primitive_value->ComputeDegrees(state_.CssToLengthConversionData()),
+        CSSPrimitiveValue::UnitType::kDegrees);
+  }
+
+  if (primitive_value->IsTime()) {
+    return CSSNumericLiteralValue::Create(
+        primitive_value->ComputeSeconds(state_.CssToLengthConversionData()),
+        CSSPrimitiveValue::UnitType::kSeconds);
+  }
+
+  if (primitive_value->IsResolution()) {
+    return CSSNumericLiteralValue::Create(
+        primitive_value->ComputeDotsPerPixel(
+            state_.CssToLengthConversionData()),
+        CSSPrimitiveValue::UnitType::kDotsPerPixel);
+  }
+  return nullptr;
+}
+
 KleeneValue StyleCascade::EvalIfStyleFeature(
     const MediaQueryFeatureExpNode& feature,
     const TreeScope* tree_scope,
@@ -2328,10 +2422,41 @@ KleeneValue StyleCascade::EvalIfStyleFeature(
     bool& is_attr_tainted) {
   const MediaQueryExpBounds& bounds = feature.Bounds();
 
-  if (feature.HasStyleRange() || bounds.IsRange()) {
-    // TODO(crbug.com/408011559): Add support for container style queries
-    // ranges.
-    return KleeneValue::kFalse;
+  if (bounds.IsRange()) {
+    DCHECK(RuntimeEnabledFeatures::CSSContainerStyleQueriesRangeEnabled());
+    DCHECK(feature.HasStyleRange());
+    KleeneValue result = KleeneValue::kTrue;
+    const CSSValue* reference =
+        CoerceIntoNumericValue(feature.ReferenceValue(), tree_scope, resolver,
+                               context, function_context);
+    if (!reference) {
+      return KleeneValue::kFalse;
+    }
+    if (bounds.left.IsValid()) {
+      const auto& left =
+          To<CSSUnparsedDeclarationValue>(bounds.left.value.GetCSSValue());
+      const CSSValue* left_resolved = CoerceIntoNumericValue(
+          left, tree_scope, resolver, context, function_context);
+      if (!left_resolved) {
+        return KleeneValue::kFalse;
+      }
+      result = KleeneAnd(
+          result, MediaQueryEvaluator::EvalIfRange(*reference, *left_resolved,
+                                                   bounds.left.op, true));
+    }
+    if (bounds.right.IsValid()) {
+      const auto& right =
+          To<CSSUnparsedDeclarationValue>(bounds.right.value.GetCSSValue());
+      const CSSValue* right_resolved = CoerceIntoNumericValue(
+          right, tree_scope, resolver, context, function_context);
+      if (!right_resolved) {
+        return KleeneValue::kFalse;
+      }
+      result = KleeneAnd(
+          result, MediaQueryEvaluator::EvalIfRange(*reference, *right_resolved,
+                                                   bounds.right.op, false));
+    }
+    return result;
   }
 
   DCHECK(bounds.right.op == MediaQueryOperator::kNone);

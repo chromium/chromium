@@ -1726,13 +1726,8 @@ KleeneValue MediaQueryEvaluator::EvalFeature(
     return KleeneValue::kUnknown;
   }
 
-  if (feature.HasStyleRange()) {
-    // TODO(crbug.com/408011559): Add support for container style queries
-    // ranges.
-    return KleeneValue::kFalse;
-  }
-
-  if (CSSVariableParser::IsValidVariableName(feature.Name())) {
+  if (feature.HasStyleRange() ||
+      CSSVariableParser::IsValidVariableName(feature.Name())) {
     return EvalStyleFeature(feature, result_flags);
   }
 
@@ -1819,6 +1814,8 @@ KleeneValue MediaQueryEvaluator::EvalStyleFeature(
   const MediaQueryExpBounds& bounds = feature.Bounds();
 
   if (bounds.IsRange()) {
+    DCHECK(feature.HasStyleRange());
+    DCHECK(RuntimeEnabledFeatures::CSSContainerStyleQueriesRangeEnabled());
     // TODO(crbug.com/408011559): Add support for container style queries
     // ranges.
     return KleeneValue::kFalse;
@@ -1872,6 +1869,30 @@ KleeneValue MediaQueryEvaluator::EvalStyleFeature(
     return KleeneValue::kTrue;
   }
   return KleeneValue::kFalse;
+}
+
+KleeneValue MediaQueryEvaluator::EvalIfRange(const CSSValue& reference_value,
+                                             const CSSValue& query_value,
+                                             MediaQueryOperator op,
+                                             bool reverse_op) {
+  const CSSNumericLiteralValue* reference_numeric =
+      DynamicTo<CSSNumericLiteralValue>(reference_value);
+  const CSSNumericLiteralValue* query_numeric =
+      DynamicTo<CSSNumericLiteralValue>(query_value);
+
+  if (!reference_numeric || !query_numeric ||
+      reference_numeric->GetType() != query_numeric->GetType()) {
+    return KleeneValue::kFalse;
+  }
+
+  if (reverse_op) {
+    op = ReverseOperator(op);
+  }
+
+  return CompareDoubleValue(reference_numeric->DoubleValue(),
+                            query_numeric->DoubleValue(), op)
+             ? KleeneValue::kTrue
+             : KleeneValue::kFalse;
 }
 
 }  // namespace blink

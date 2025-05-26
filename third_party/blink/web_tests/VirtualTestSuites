@@ -4416,7 +4416,8 @@
     "owners": ["moonira@google.com"],
     "platforms": ["Linux"],
     "bases": [
-      "external/wpt/css/css-conditional/container-queries/"
+      "external/wpt/css/css-conditional/container-queries/",
+      "external/wpt/css/css-values/if-conditionals.html"
     ],
     "args": [
       "--disable-features=CSSContainerStyleQueriesRange"

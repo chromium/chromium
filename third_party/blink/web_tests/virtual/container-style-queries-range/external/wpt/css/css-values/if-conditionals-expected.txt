@@ -1,0 +1,62 @@
+This is a testharness.js-based test.
+Found 29 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] CSS Values and Units Test: CSS inline if() function 112
+  assert_equals: "if(style(10em > 3px): true_value; else: false_value)" should be substituted to "true_value". expected "true_value" but got "false_value"
+[FAIL] CSS Values and Units Test: CSS inline if() function 113
+  assert_equals: "if(style(1em > 1px): true_value; else: false_value)" should be substituted to "true_value". expected "true_value" but got "false_value"
+[FAIL] CSS Values and Units Test: CSS inline if() function 114
+  assert_equals: "if(style(7px > 3px): true_value; else: false_value)" should be substituted to "true_value". expected "true_value" but got "false_value"
+[FAIL] CSS Values and Units Test: CSS inline if() function 116
+  assert_equals: "if(style(3turn > 3deg): true_value; else: false_value)" should be substituted to "true_value". expected "true_value" but got "false_value"
+[FAIL] CSS Values and Units Test: CSS inline if() function 118
+  assert_equals: "if(style(3% >= 3%): true_value; else: false_value)" should be substituted to "true_value". expected "true_value" but got "false_value"
+[FAIL] CSS Values and Units Test: CSS inline if() function 119
+  assert_equals: "if(style(3s > 3ms): true_value; else: false_value)" should be substituted to "true_value". expected "true_value" but got "false_value"
+[FAIL] CSS Values and Units Test: CSS inline if() function 120
+  assert_equals: "if(style(3dppx > 96dpi): true_value; else: false_value)" should be substituted to "true_value". expected "true_value" but got "false_value"
+[FAIL] CSS Values and Units Test: CSS inline if() function 121
+  assert_equals: "if(style(--x <= 3): true_value; else: false_value)" should be substituted to "true_value". expected "true_value" but got "false_value"
+[FAIL] CSS Values and Units Test: CSS inline if() function 122
+  assert_equals: "if(style(--x >= --y): true_value; else: false_value)" should be substituted to "true_value". expected "true_value" but got "false_value"
+[FAIL] CSS Values and Units Test: CSS inline if() function 123
+  assert_equals: "if(style(--length > 3px): true_value; else: false_value)" should be substituted to "true_value". expected "true_value" but got "false_value"
+[FAIL] CSS Values and Units Test: CSS inline if() function 124
+  assert_equals: "if(style(--x > 3px): true_value; else: false_value)" should be substituted to "true_value". expected "true_value" but got "false_value"
+[FAIL] CSS Values and Units Test: CSS inline if() function 125
+  assert_equals: "if(style(--number >= 3): true_value; else: false_value)" should be substituted to "true_value". expected "true_value" but got "false_value"
+[FAIL] CSS Values and Units Test: CSS inline if() function 126
+  assert_equals: "if(style(--x >= 3): true_value; else: false_value)" should be substituted to "true_value". expected "true_value" but got "false_value"
+[FAIL] CSS Values and Units Test: CSS inline if() function 127
+  assert_equals: "if(style(--percentage > 3%): true_value; else: false_value)" should be substituted to "true_value". expected "true_value" but got "false_value"
+[FAIL] CSS Values and Units Test: CSS inline if() function 128
+  assert_equals: "if(style(--x > 3%): true_value; else: false_value)" should be substituted to "true_value". expected "true_value" but got "false_value"
+[FAIL] CSS Values and Units Test: CSS inline if() function 129
+  assert_equals: "if(style(--angle < 1turn): true_value; else: false_value)" should be substituted to "true_value". expected "true_value" but got "false_value"
+[FAIL] CSS Values and Units Test: CSS inline if() function 130
+  assert_equals: "if(style(--x < 1turn): true_value; else: false_value)" should be substituted to "true_value". expected "true_value" but got "false_value"
+[FAIL] CSS Values and Units Test: CSS inline if() function 131
+  assert_equals: "if(style(--time <= 1000ms): true_value; else: false_value)" should be substituted to "true_value". expected "true_value" but got "false_value"
+[FAIL] CSS Values and Units Test: CSS inline if() function 132
+  assert_equals: "if(style(--x <= 1000ms): true_value; else: false_value)" should be substituted to "true_value". expected "true_value" but got "false_value"
+[FAIL] CSS Values and Units Test: CSS inline if() function 133
+  assert_equals: "if(style(3dppx > --resolution): true_value; else: false_value)" should be substituted to "true_value". expected "true_value" but got "false_value"
+[FAIL] CSS Values and Units Test: CSS inline if() function 134
+  assert_equals: "if(style(3dppx > --x): true_value; else: false_value)" should be substituted to "true_value". expected "true_value" but got "false_value"
+[FAIL] CSS Values and Units Test: CSS inline if() function 137
+  assert_equals: "if(style(calc(--x + 1) >= --y): true_value; else: false_value)" should be substituted to "false_value". expected "false_value" but got ""
+[FAIL] CSS Values and Units Test: CSS inline if() function 139
+  assert_equals: "if(style(--x >= calc(3px + 3px)): true_value; else: false_value)" should be substituted to "true_value". expected "true_value" but got "false_value"
+[FAIL] CSS Values and Units Test: CSS inline if() function 140
+  assert_equals: "if(style(calc(var(--x) + 1) >= var(--y)): true_value; else: false_value)" should be substituted to "true_value". expected "true_value" but got ""
+[FAIL] CSS Values and Units Test: CSS inline if() function 141
+  assert_equals: "if(style(var(--x) >= --x): true_value; else: false_value)" should be substituted to "true_value". expected "true_value" but got ""
+[FAIL] CSS Values and Units Test: CSS inline if() function 148
+  assert_equals: "if(style(--length >= 30px): true_value;\n                                    else: false_value)" should be substituted to "true_value". expected "true_value" but got "false_value"
+[FAIL] CSS Values and Units Test: CSS inline if() function 149
+  assert_equals: "if(style(10px <= 10px < 11px): true_value; else: false_value)" should be substituted to "true_value". expected "true_value" but got "false_value"
+[FAIL] CSS Values and Units Test: CSS inline if() function 150
+  assert_equals: "if(style(3 < --x <= 5): true_value; else: false_value)" should be substituted to "true_value". expected "true_value" but got "false_value"
+[FAIL] CSS Values and Units Test: CSS inline if() function 152
+  assert_equals: "if(style(--x >= --y > --z): true_value; else: false_value)" should be substituted to "true_value". expected "true_value" but got "false_value"
+Harness: the test ran to completion.
+

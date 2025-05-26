@@ -362,4 +362,13 @@ String CSSSyntaxDefinition::ToString() const {
   return builder.ToString();
 }
 
+CSSSyntaxDefinition CSSSyntaxDefinition::CreateNumericSyntax() {
+  CSSParserTokenStream stream(
+      "<number> | <length> | <percentage> | <angle> | <time> | <resolution>");
+  std::optional<CSSSyntaxDefinition> syntax_definition =
+      CSSSyntaxDefinition::Consume(stream);
+  DCHECK(syntax_definition.has_value());
+  return *syntax_definition;
+}
+
 }  // namespace blink

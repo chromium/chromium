@@ -410,6 +410,11 @@ class CORE_EXPORT MediaQueryFeatureExpNode : public MediaQueryExpNode {
     return exp_.MediaFeature();
   }
 
+  const CSSUnparsedDeclarationValue& ReferenceValue() const {
+    DCHECK(HasStyleRange());
+    return exp_.ReferenceValue();
+  }
+
   bool HasMediaFeature() const { return exp_.HasMediaFeature(); }
   bool HasStyleRange() const { return exp_.HasStyleRange(); }
 

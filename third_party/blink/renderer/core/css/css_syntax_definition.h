@@ -57,6 +57,12 @@ class CORE_EXPORT CSSSyntaxDefinition {
   // https://drafts.css-houdini.org/css-properties-values-api-1/#universal-syntax-descriptor
   static CSSSyntaxDefinition CreateUniversal();
 
+  // Returns syntax: <number> | <length> | <percentage> | <angle> | <time> |
+  // <resolution>.
+  // Used for container style range queries,
+  // https://github.com/w3c/csswg-drafts/issues/8376#issuecomment-2751161553.
+  static CSSSyntaxDefinition CreateNumericSyntax();
+
  private:
   friend class CSSSyntaxStringParser;
   friend class CSSSyntaxStringParserTest;
