@@ -312,10 +312,6 @@ if (is_android) {
       android_ndk_api_level >= min_supported_sdk_version,
       "android_ndk_api_level ($android_ndk_api_level) must be >= min_supported_sdk_version ($min_supported_sdk_version)")
 
-  # These only exist until subrepos have removed usages of these.
-  android32_ndk_api_level = android_ndk_api_level
-  android64_ndk_api_level = android_ndk_api_level
-
   # We need a second declare_args block to make sure we are using the overridden
   # value of the arguments set above.
   declare_args() {
