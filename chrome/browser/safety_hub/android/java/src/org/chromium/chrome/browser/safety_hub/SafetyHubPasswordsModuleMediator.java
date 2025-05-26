@@ -106,7 +106,11 @@ public class SafetyHubPasswordsModuleMediator
                                 .UNAVAILABLE_COMPROMISED_NO_WEAK_REUSED_PASSWORDS
                 || localModuleType
                         == SafetyHubLocalPasswordsDataSource.ModuleType.UNAVAILABLE_PASSWORDS) {
-            return new SafetyHubUnavailablePasswordsModuleHelper(context, mModuleDelegate);
+            return new SafetyHubUnavailablePasswordsModuleHelper(
+                    context,
+                    mModuleDelegate,
+                    /* unavailableAccountPasswords= */ true,
+                    /* unavailableLocalPasswords= */ true);
         }
 
         if (accountModuleType == SafetyHubAccountPasswordsDataSource.ModuleType.HAS_REUSED_PASSWORDS

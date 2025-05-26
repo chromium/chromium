@@ -15,16 +15,16 @@ import org.chromium.chrome.browser.safety_hub.SafetyHubMetricUtils.DashboardInte
 import org.chromium.chrome.browser.safety_hub.SafetyHubModuleMediator.ModuleState;
 
 /**
- * Helper for the {@link SafetyHubAccountPasswordsModule} for the all passwords counts are
- * unavailable module.
+ * Helper for the {@link SafetyHubAccountPasswordsModule} for the unavailable compromised passwords
+ * count state.
  */
 @NullMarked
-public class SafetyHubAccountPasswordsUnavailableAllPasswordsModuleHelper
+public class SafetyHubUnavailableAccountCompromisedPasswordsModuleHelper
         implements SafetyHubModuleHelper {
     private final Context mContext;
     private final SafetyHubModuleDelegate mModuleDelegate;
 
-    SafetyHubAccountPasswordsUnavailableAllPasswordsModuleHelper(
+    SafetyHubUnavailableAccountCompromisedPasswordsModuleHelper(
             Context context, SafetyHubModuleDelegate moduleDelegate) {
         mContext = context;
         mModuleDelegate = moduleDelegate;
@@ -32,12 +32,13 @@ public class SafetyHubAccountPasswordsUnavailableAllPasswordsModuleHelper
 
     @Override
     public String getTitle() {
-        return mContext.getString(R.string.safety_hub_account_password_check_unavailable_title);
+        return mContext.getString(R.string.safety_hub_no_reused_weak_passwords_title);
     }
 
     @Override
     public String getSummary() {
-        return mContext.getString(R.string.safety_hub_unavailable_summary);
+        return mContext.getString(
+                R.string.safety_hub_unavailable_compromised_no_reused_weak_passwords_summary);
     }
 
     @Override

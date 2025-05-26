@@ -173,8 +173,11 @@ public class SafetyHubLocalPasswordsModuleMediator
 
         switch (moduleType) {
             case ModuleType.UNAVAILABLE_PASSWORDS:
-                return new SafetyHubLocalPasswordsUnavailableAllPasswordsModuleHelper(
-                        context, mModuleDelegate);
+                return new SafetyHubUnavailablePasswordsModuleHelper(
+                        context,
+                        mModuleDelegate,
+                        /* unavailableAccountPasswords= */ false,
+                        /* unavailableLocalPasswords= */ true);
             case ModuleType.NO_SAVED_PASSWORDS:
                 return new SafetyHubNoSavedPasswordsModuleHelper(
                         context,
