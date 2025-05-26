@@ -32,6 +32,7 @@
 #include "skia/ext/image_operations.h"
 #include "third_party/blink/public/mojom/webid/federated_auth_request.mojom.h"
 #include "third_party/skia/include/core/SkPath.h"
+#include "ui/accessibility/platform/ax_platform.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
@@ -265,8 +266,16 @@ void AccountSelectionBubbleView::ShowSingleAccountConfirmDialog(
 
   RemoveNonHeaderChildViews();
   AddChildView(std::make_unique<views::Separator>());
-  AddChildView(CreateSingleAccountChooser(account));
+  std::pair<std::unique_ptr<views::View>, views::MdTextButton*>
+      chooser_and_button = CreateSingleAccountChooser(account);
+  AddChildView(std::move(chooser_and_button.first));
 
+  // If the screen reader is active, request focus so that the creation of
+  // this button is announced to the user. Do not do this when screen reader
+  // is not active because it looks bad.
+  if (ui::AXPlatform::GetInstance().IsScreenReaderActive()) {
+    chooser_and_button.second->RequestFocus();
+  }
   PreferredSizeChanged();
 }
 
@@ -529,7 +538,7 @@ std::unique_ptr<views::View> AccountSelectionBubbleView::CreateHeaderView() {
   return header;
 }
 
-std::unique_ptr<views::View>
+std::pair<std::unique_ptr<views::View>, views::MdTextButton*>
 AccountSelectionBubbleView::CreateSingleAccountChooser(
     const IdentityRequestAccountPtr& account) {
   auto row = std::make_unique<views::View>();
@@ -557,18 +566,19 @@ AccountSelectionBubbleView::CreateSingleAccountChooser(
                           base::Unretained(owner_), account),
       button_title, this, idp_metadata,
       base::UTF8ToUTF16(account->display_identifier));
+  views::MdTextButton* button_ptr = button.get();
   row->AddChildView(std::move(button));
 
   // Do not add disclosure text if this is a sign in or if we were requested
   // to skip it.
   if (account->login_state == Account::LoginState::kSignIn ||
       idp_data.disclosure_fields.empty()) {
-    return row;
+    return std::make_pair(std::move(row), button_ptr);
   }
 
   // Add disclosure text.
   row->AddChildView(CreateDisclosureLabel(idp_data));
-  return row;
+  return std::make_pair(std::move(row), button_ptr);
 }
 
 void AccountSelectionBubbleView::AddSeparatorAndMultipleAccountChooser(

@@ -77,11 +77,12 @@ class AccountSelectionBubbleView : public views::BubbleDialogDelegateView,
   // Returns a View containing the logo of the identity provider.
   std::unique_ptr<views::View> CreateHeaderView();
 
-  // Returns a View for single account chooser. It contains the account
-  // information, disclosure text and a button for the user to confirm the
-  // selection.
-  std::unique_ptr<views::View> CreateSingleAccountChooser(
-      const IdentityRequestAccountPtr& account);
+  // Returns a pair <View, Button> where the first element is the View for
+  // single account chooser. This View contains the account information,
+  // disclosure text and a button for the user to confirm the selection. The
+  // second element is the button for the user to confirm the selection.
+  std::pair<std::unique_ptr<views::View>, views::MdTextButton*>
+  CreateSingleAccountChooser(const IdentityRequestAccountPtr& account);
 
   // Adds a separator as well as a multiple account chooser. The chooser
   // contains the info for each account in a button, so the user can pick an
@@ -113,7 +114,7 @@ class AccountSelectionBubbleView : public views::BubbleDialogDelegateView,
       int icon_margin);
 
   // Updates the header title, the header icon visibility and the header back
-  // button visibiltiy. `idp_image` is not empty when we need to set a header
+  // button visibility. `idp_image` is not empty when we need to set a header
   // image based on the IDP. `should_circle_crop_header_icon` determines whether
   // the icon passed should be cropped or not. Some icons like the RP icon are
   // not meant to be cropped, and some icons like the badged account icon are
