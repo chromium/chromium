@@ -691,33 +691,6 @@ TEST_F(NoLowResPictureLayerImplTest, CreateTilingsEvenIfTwinHasNone) {
   ASSERT_EQ(0u, active_layer()->tilings()->num_tilings());
 }
 
-TEST_F(LegacySWPictureLayerImplTest, LowResTilingStaysOnActiveTree) {
-  gfx::Size layer_bounds(1300, 1900);
-
-  scoped_refptr<FakeRasterSource> valid_raster_source =
-      FakeRasterSource::CreateFilled(layer_bounds);
-  scoped_refptr<FakeRasterSource> other_valid_raster_source =
-      FakeRasterSource::CreateFilled(layer_bounds);
-
-  SetupPendingTree(valid_raster_source);
-  ASSERT_EQ(1u, pending_layer()->tilings()->num_tilings());
-
-  ActivateTree();
-  SetupPendingTree(other_valid_raster_source);
-  ASSERT_EQ(2u, active_layer()->tilings()->num_tilings());
-  ASSERT_EQ(1u, pending_layer()->tilings()->num_tilings());
-  auto* low_res_tiling =
-      active_layer()->tilings()->FindTilingWithResolution(LOW_RESOLUTION);
-  EXPECT_TRUE(low_res_tiling);
-
-  ActivateTree();
-  ASSERT_EQ(2u, active_layer()->tilings()->num_tilings());
-  auto* other_low_res_tiling =
-      active_layer()->tilings()->FindTilingWithResolution(LOW_RESOLUTION);
-  EXPECT_TRUE(other_low_res_tiling);
-  EXPECT_EQ(low_res_tiling, other_low_res_tiling);
-}
-
 TEST_F(LegacySWPictureLayerImplTest, ZoomOutCrash) {
   gfx::Size layer_bounds(1300, 1900);
 
@@ -2767,20 +2740,6 @@ TEST_F(LegacySWPictureLayerImplTest,
   high_res = active_layer()->tilings()->FindTilingWithScaleKey(1.0f);
   ASSERT_TRUE(high_res);
   EXPECT_EQ(HIGH_RESOLUTION, high_res->resolution());
-}
-
-TEST_F(LegacySWPictureLayerImplTest, LowResTilingWithoutGpuRasterization) {
-  gfx::Size default_tile_size(host_impl()->settings().default_tile_size);
-  gfx::Size layer_bounds(default_tile_size.width() * 4,
-                         default_tile_size.height() * 4);
-
-  SetupDefaultTrees(layer_bounds);
-  EXPECT_FALSE(host_impl()->use_gpu_rasterization());
-  // Should have only a high-res tiling.
-  EXPECT_EQ(1u, pending_layer()->tilings()->num_tilings());
-  ActivateTree();
-  // Should add a high and a low res for active tree.
-  EXPECT_EQ(2u, active_layer()->tilings()->num_tilings());
 }
 
 TEST_F(PictureLayerImplTest, NoLowResTilingWithGpuRasterization) {
