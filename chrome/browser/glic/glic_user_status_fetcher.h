@@ -69,7 +69,7 @@ class GlicUserStatusFetcher {
   void InvalidateCachedStatus();
   void UpdateUserStatus();
   void UpdateUserStatusIfNeeded();
-  void ScheduleUserStatusUpdate(base::Time next_update_time);
+  void ScheduleUserStatusUpdate(base::TimeDelta time_to_next_update);
   void CancelUserStatusUpdateIfNeeded();
 
   void SetGlicUserStatusUrlForTest(GURL test_url) { endpoint_ = test_url; }

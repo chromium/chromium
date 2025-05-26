@@ -105,7 +105,7 @@ GlicUserStatusFetcher::GlicUserStatusFetcher(Profile* profile,
   if (next_update_time <= base::Time::Now()) {
     UpdateUserStatus();
   } else {
-    ScheduleUserStatusUpdate(next_update_time);
+    ScheduleUserStatusUpdate(next_update_time - base::Time::Now());
   }
 }
 
@@ -219,9 +219,19 @@ void GlicUserStatusFetcher::UpdateUserStatus() {
 }
 
 void GlicUserStatusFetcher::ScheduleUserStatusUpdate(
-    base::Time next_update_time) {
+    base::TimeDelta time_to_next_update) {
+  // Calculate a random offset for the delay. The range of the offset will be
+  // from [1- jitter*random_multiplier, 1 + jitter*random_multiplier).
+  // random_multiplier is in the range [-1,1) by (base::RandDouble() - 0.5)* 2.
+  const double jitter_factor =
+      1 + features::kGlicUserStatusRequestDelayJitter.Get() *
+              (base::RandDouble() - 0.5) * 2;
+
+  base::Time scheduled_time =
+      base::Time::Now() + jitter_factor * time_to_next_update;
+
   refresh_status_timer_.Start(
-      FROM_HERE, next_update_time,
+      FROM_HERE, scheduled_time,
       base::BindOnce(&GlicUserStatusFetcher::UpdateUserStatus,
                      base::Unretained(this)));
 }
@@ -250,8 +260,7 @@ void GlicUserStatusFetcher::FetchNow() {
   CancelUserStatusUpdateIfNeeded();
 
   // schedule next run regardless.
-  ScheduleUserStatusUpdate(base::Time::Now() +
-                           features::kGlicUserStatusRequestDelay.Get());
+  ScheduleUserStatusUpdate(features::kGlicUserStatusRequestDelay.Get());
 
   auto account_info = GetGaiaIdHashForPrimaryAccount(profile_);
 

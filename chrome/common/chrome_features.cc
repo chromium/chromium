@@ -423,6 +423,11 @@ BASE_FEATURE_PARAM(std::string,
                    "glic-user-status-oauth2-scope",
                    "https://www.googleapis.com/auth/gemini");
 
+BASE_FEATURE_PARAM(double,
+                   kGlicUserStatusRequestDelayJitter,
+                   &kGlicUserStatusCheck,
+                   "glic-user-status-request-delay-jitter",
+                   0.005);
 BASE_FEATURE(kGlicFreURLConfig,
              "GlicFreURLConfig",
              base::FEATURE_DISABLED_BY_DEFAULT);

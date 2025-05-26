@@ -72,7 +72,8 @@ class GlicUserStatusBrowserTest : public InProcessBrowserTest {
          {features::kTabstripComboButton, {}},
          {features::kGlicRollout, {}},
          {features::kGlicUserStatusCheck,
-          {{features::kGlicUserStatusRequestDelay.name, "200ms"}}}},
+          {{features::kGlicUserStatusRequestDelay.name, "200ms"},
+           {features::kGlicUserStatusRequestDelayJitter.name, "0"}}}},
         {/* disabled_features */});
 
     RegisterGeminiSettingsPrefs(pref_service_.registry());
