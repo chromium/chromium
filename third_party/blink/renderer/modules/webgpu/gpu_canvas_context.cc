@@ -318,15 +318,14 @@ ImageBitmap* GPUCanvasContext::TransferToImageBitmap(
   DCHECK(release_callback);
 
   auto format = client_si->format();
+  auto size = client_si->size();
 
   return MakeGarbageCollected<ImageBitmap>(
       AcceleratedStaticBitmapImage::CreateFromCanvasSharedImage(
           std::move(client_si), sk_image_sync_token,
-          /* shared_image_texture_id = */ 0,
-          gfx::Size(texture_descriptor_.size.width,
-                    texture_descriptor_.size.height),
-          format, kPremul_SkAlphaType, gfx::ColorSpace::CreateSRGB(),
-          GetContextProviderWeakPtr(), base::PlatformThread::CurrentRef(),
+          /* shared_image_texture_id = */ 0, size, format, kPremul_SkAlphaType,
+          gfx::ColorSpace::CreateSRGB(), GetContextProviderWeakPtr(),
+          base::PlatformThread::CurrentRef(),
           ThreadScheduler::Current()->CleanupTaskRunner(),
           std::move(release_callback)));
 }
