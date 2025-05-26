@@ -1436,6 +1436,53 @@ void WaitForFakeJoinFlowView() {
       waitForUIElementToDisappearWithMatcher:BlueDotOnShowTabsButton()];
 }
 
+// Tests that the activity indicators (blue dot and notification dot) on the
+// toolbar are updated when a shared group is updated.
+- (void)testActivityIndicatorsOnToolbar {
+  AddSharedGroup(/*owner=*/YES);
+  [ChromeEarlGrey waitForMainTabCount:1];
+
+  // Open the group view.
+  [[EarlGrey selectElementWithMatcher:TabGridGroupCellAtIndex(0)]
+      performAction:grey_tap()];
+
+  // Open a first tab and wait until loading is completed.
+  [[EarlGrey selectElementWithMatcher:TabGridCellAtIndex(0)]
+      performAction:grey_tap()];
+  [ChromeEarlGrey waitForPageToFinishLoading];
+
+  // Add a tab to the shared group by a member in the shared group.
+  [TabGroupAppInterface addSharedTabToGroupAtIndex:0];
+  [ChromeEarlGreyUI waitForAppToIdle];
+
+  // Verify that the second tab is added.
+  [ChromeEarlGrey waitForMainTabCount:2];
+
+  // Verify that the badge on the show tabs button is visible.
+  [[EarlGrey selectElementWithMatcher:BlueDotOnShowTabsButton()]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Open a new tab outside of the group and check the dot is still visible.
+  [ChromeEarlGreyUI openTabGrid];
+  [[EarlGrey selectElementWithMatcher:CloseTabGroupButton()]
+      performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:TabGridNewTabButton()]
+      performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:BlueDotOnShowTabsButton()]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Open the tab grid and create a group out of this tab.
+  [ChromeEarlGreyUI openTabGrid];
+  CreateTabGroupAtIndex(1, kGroup2Name, /*first_group=*/false);
+
+  // Open the tab from the group and verify that the badge on the show tabs
+  // button also disappears.
+  [[EarlGrey selectElementWithMatcher:TabGridDoneButton()]
+      performAction:grey_tap()];
+  [ChromeEarlGrey
+      waitForUIElementToDisappearWithMatcher:BlueDotOnShowTabsButton()];
+}
+
 // Tests that the activity indicators (blue dot and notification dot) on the tab
 // strip are updated when a shared group is updated.
 - (void)testActivityIndicatorsOnTabStrip {

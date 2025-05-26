@@ -216,7 +216,7 @@ std::optional<tab_groups::LocalTabGroupID> LocalTabGroupID(
     return;
   }
 
-  [self.consumer updateTabGroupState:[self tabGroupStateToDisplay]];
+  [self updateConsumerTabGroupState];
 
   const int tabCount = [self tabCountToDisplay];
   switch (change.type()) {
@@ -253,7 +253,7 @@ std::optional<tab_groups::LocalTabGroupID> LocalTabGroupID(
 
 - (void)webStateListBatchOperationEnded:(WebStateList*)webStateList {
   DCHECK_EQ(_webStateList, webStateList);
-  [self.consumer updateTabGroupState:[self tabGroupStateToDisplay]];
+  [self updateConsumerTabGroupState];
   [self.consumer setTabCount:[self tabCountToDisplay] addedInBackground:NO];
 }
 
@@ -343,6 +343,8 @@ std::optional<tab_groups::LocalTabGroupID> LocalTabGroupID(
     if (self.consumer) {
       [self updateConsumer];
     }
+
+    [self updateTabGridButtonBlueDot];
   }
 }
 
@@ -404,6 +406,12 @@ std::optional<tab_groups::LocalTabGroupID> LocalTabGroupID(
 }
 
 #pragma mark - Update helper methods
+
+/// Updates the consumer Tab Group state.
+- (void)updateConsumerTabGroupState {
+  [self.consumer updateTabGroupState:[self tabGroupStateToDisplay]];
+  [self updateTabGridButtonBlueDot];
+}
 
 /// Updates the consumer to match the current WebState.
 - (void)updateConsumer {
@@ -657,6 +665,7 @@ std::optional<tab_groups::LocalTabGroupID> LocalTabGroupID(
   if (activeTabGroup == nullptr) {
     return ToolbarTabGroupState::kNormal;
   }
+
   return IsTabGroupIndicatorEnabled() && HasTabGroupIndicatorButtonsUpdated()
              ? ToolbarTabGroupState::kTabGroup
              : ToolbarTabGroupState::kNormal;

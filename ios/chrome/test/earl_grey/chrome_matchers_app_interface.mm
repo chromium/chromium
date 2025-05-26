@@ -1739,9 +1739,8 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
 
 + (id<GREYMatcher>)closeTabGroupButton {
   if (IsContainedTabGroupEnabled()) {
-    return grey_allOf(
-        grey_accessibilityLabel(l10n_util::GetNSString(IDS_CLOSE)),
-        grey_sufficientlyVisible(), nil);
+    return grey_allOf(grey_accessibilityID(kTabGroupCloseButtonIdentifier),
+                      grey_sufficientlyVisible(), nil);
   } else {
     return grey_allOf(
         [ChromeMatchersAppInterface

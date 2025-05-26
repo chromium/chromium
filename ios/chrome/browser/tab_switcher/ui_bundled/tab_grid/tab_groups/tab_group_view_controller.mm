@@ -667,6 +667,7 @@ UIButton* TopToolbarButton(NSString* symbol_name,
   UIButton* closeButton =
       TopToolbarButton(kXMarkSymbol, closeAction, kCloseImageSize);
   closeButton.accessibilityLabel = l10n_util::GetNSString(IDS_CLOSE);
+  closeButton.accessibilityIdentifier = kTabGroupCloseButtonIdentifier;
 
   [stackView addArrangedSubview:closeButton];
 
