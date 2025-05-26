@@ -1148,6 +1148,18 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   </token>
 </histogram>
 
+<histogram name="Autofill.Ai.ModelExecutionStatus"
+    enum="AutofillAiModelExecutionStatus" expires_after="2026-04-30">
+  <owner>jkeitel@google.com</owner>
+  <owner>fleimgruber@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    Describes the outcome of an AutofillAI (server-side) model run. Recorded
+    whenever the client receives the result of a model execution or the model
+    execution times out.
+  </summary>
+</histogram>
+
 <histogram name="Autofill.Ai.OptInFunnel" enum="AutofillAiOptInFunnelEvents"
     expires_after="2025-12-12">
   <owner>brunobraga@google.com</owner>

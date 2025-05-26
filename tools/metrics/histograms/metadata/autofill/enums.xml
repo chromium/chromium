@@ -143,6 +143,17 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Import with section union"/>
 </enum>
 
+<enum name="AutofillAiModelExecutionStatus">
+  <int value="0"
+      label="One or more field indices returned by the model are out of
+             bounds or duplicates."/>
+  <int value="1" label="The server returned an error or timed out."/>
+  <int value="2"
+      label="The server replied with the wrong response proto type."/>
+  <int value="3" label="The model returned a result, but it was empty"/>
+  <int value="4" label="The model returned a valid, non-empty result."/>
+</enum>
+
 <enum name="AutofillAiOptInFunnelEvents">
   <int value="0" label="IPH was shown"/>
   <int value="1" label="FFR was shown"/>
