@@ -314,7 +314,7 @@ void ClipboardWriter::WriteToSystem(V8UnionBlobOrString* clipboard_item_data) {
   } else if (clipboard_item_data->IsString()) {
     DCHECK(RuntimeEnabledFeatures::ClipboardItemWithDOMStringSupportEnabled());
     std::string utf8_string = clipboard_item_data->GetAsString().Utf8();
-    StartWrite(DOMArrayBuffer::Create(utf8_string.data(), utf8_string.length()),
+    StartWrite(DOMArrayBuffer::Create(base::as_byte_span(utf8_string)),
                clipboard_task_runner_);
   } else {
     NOTREACHED();
