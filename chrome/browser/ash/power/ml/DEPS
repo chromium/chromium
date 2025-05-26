@@ -15,17 +15,25 @@ include_rules = [
   # individually. Other dependencies within //chrome are listed on a per-
   # directory basis. See //tools/chromeos/gen_deps.sh for details.
   "+chrome/browser/ash/accessibility",
-  "+chrome/browser/ash/crosapi",
+  "+chrome/browser/ash/browser_delegate/browser_controller.h",
+  "+chrome/browser/ash/browser_delegate/browser_delegate.h",
   "+chrome/browser/ash/login/users",
   "+chrome/browser/browser_process.h",
   "+chrome/browser/component_updater",
   "+chrome/browser/profiles",
   "+chrome/browser/tab_contents",
-  "+chrome/browser/ui/browser.h",
-  "+chrome/browser/ui/browser_list.h",
-  "+chrome/browser/ui/browser_window.h",
-  "+chrome/browser/ui/tabs",
   "+chrome/common/chrome_features.h",
   "+chrome/grit",
-  "+chrome/test/base",
 ]
+
+specific_include_rules = {
+  ".*test\\.cc": [
+    "+chrome/browser/ash/browser_delegate/browser_controller_impl.h",
+    "+chrome/browser/browser_process.h",
+    "+chrome/browser/ui/browser.h",
+    "+chrome/browser/ui/browser_list.h",
+    "+chrome/browser/ui/browser_window.h",
+    "+chrome/browser/ui/tabs",
+    "+chrome/test/base",
+  ],
+}

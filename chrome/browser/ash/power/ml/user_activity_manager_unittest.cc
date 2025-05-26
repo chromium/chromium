@@ -18,6 +18,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/timer/timer.h"
+#include "chrome/browser/ash/browser_delegate/browser_controller_impl.h"
 #include "chrome/browser/ash/power/ml/idle_event_notifier.h"
 #include "chrome/browser/ash/power/ml/smart_dim/ml_agent.h"
 #include "chrome/browser/ash/power/ml/user_activity_event.pb.h"
@@ -130,12 +131,15 @@ class UserActivityManagerTest : public ChromeRenderViewHostTestHarness {
         chromeos::PowerManagerClient::Get(), &session_manager_,
         observer.InitWithNewPipeAndPassReceiver());
 
+    browser_controller_ = std::make_unique<ash::BrowserControllerImpl>();
+
     chromeos::machine_learning::ServiceConnection::
         UseFakeServiceConnectionForTesting(&fake_service_connection_);
     chromeos::machine_learning::ServiceConnection::GetInstance()->Initialize();
   }
 
   void TearDown() override {
+    browser_controller_.reset();
     activity_logger_.reset();
     chromeos::PowerManagerClient::Shutdown();
     ChromeRenderViewHostTestHarness::TearDown();
@@ -282,6 +286,7 @@ class UserActivityManagerTest : public ChromeRenderViewHostTestHarness {
   std::unique_ptr<IdleEventNotifier> idle_event_notifier_;
   session_manager::SessionManager session_manager_;
   std::unique_ptr<UserActivityManager> activity_logger_;
+  std::unique_ptr<BrowserControllerImpl> browser_controller_;
 };
 
 // After an idle event, we have a ui::Event, we should expect one

@@ -28,6 +28,8 @@ class BrowserControllerImpl : public BrowserController,
 
   // BrowserController:
   BrowserDelegate* GetDelegate(Browser* browser) override;
+  BrowserDelegate* GetLastUsedVisibleBrowser() override;
+  BrowserDelegate* GetLastUsedVisibleOnTheRecordBrowser() override;
   BrowserDelegate* FindWebApp(const user_manager::User& user,
                               webapps::AppId app_id,
                               BrowserType browser_type,

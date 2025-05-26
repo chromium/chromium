@@ -39,6 +39,14 @@ class BrowserController {
   // BrowserDelegate::GetBrowser.
   virtual BrowserDelegate* GetDelegate(Browser* browser) = 0;
 
+  // Returns (the delegate for) the most recently used browser that is
+  // currently visible. Returns nullptr if there's none.
+  virtual BrowserDelegate* GetLastUsedVisibleBrowser() = 0;
+
+  // Returns (the delegate for) the most recently used browser that is
+  // currently visible and on-the-record. Returns nullptr if there's none.
+  virtual BrowserDelegate* GetLastUsedVisibleOnTheRecordBrowser() = 0;
+
   // Returns (the delegate for) the most recently activated web app browser
   // that matches the given parameters. Returns nullptr if there's none.
   // Url matching is done ignoring any references, and only if `url` is not

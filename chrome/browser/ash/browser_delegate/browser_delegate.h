@@ -38,6 +38,10 @@ class BrowserDelegate {
   // Returns the browser's unique ID for the current session.
   virtual SessionID GetSessionID() const = 0;
 
+  // Returns whether the browser is off the record, i.e. incognito or in a guest
+  // session.
+  virtual bool IsOffTheRecord() const = 0;
+
   // Returns the browser window's current bounds.
   virtual gfx::Rect GetBounds() const = 0;
 
