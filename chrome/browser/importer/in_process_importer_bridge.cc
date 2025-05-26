@@ -14,7 +14,6 @@
 #include "build/build_config.h"
 #include "chrome/browser/importer/external_process_importer_host.h"
 #include "chrome/browser/search_engines/ui_thread_search_terms_data.h"
-#include "chrome/common/importer/imported_bookmark_entry.h"
 #include "chrome/common/importer/importer_autofill_form_data_entry.h"
 #include "components/autofill/core/browser/webdata/autocomplete/autocomplete_entry.h"
 #include "components/favicon_base/favicon_usage_data.h"
@@ -22,6 +21,7 @@
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_parser.h"
 #include "components/search_engines/template_url_prepopulate_data.h"
+#include "components/user_data_importer/common/imported_bookmark_entry.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace {
@@ -109,7 +109,7 @@ InProcessImporterBridge::InProcessImporterBridge(
 }
 
 void InProcessImporterBridge::AddBookmarks(
-    const std::vector<ImportedBookmarkEntry>& bookmarks,
+    const std::vector<user_data_importer::ImportedBookmarkEntry>& bookmarks,
     const std::u16string& first_folder_name) {
   writer_->AddBookmarks(bookmarks, first_folder_name);
 }

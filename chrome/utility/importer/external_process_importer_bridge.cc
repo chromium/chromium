@@ -14,8 +14,8 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/task_runner.h"
 #include "build/build_config.h"
-#include "chrome/common/importer/imported_bookmark_entry.h"
 #include "chrome/common/importer/importer_autofill_form_data_entry.h"
+#include "components/user_data_importer/common/imported_bookmark_entry.h"
 #include "components/user_data_importer/common/importer_data_types.h"
 
 namespace {
@@ -37,7 +37,7 @@ ExternalProcessImporterBridge::ExternalProcessImporterBridge(
       observer_(std::move(observer)) {}
 
 void ExternalProcessImporterBridge::AddBookmarks(
-    const std::vector<ImportedBookmarkEntry>& bookmarks,
+    const std::vector<user_data_importer::ImportedBookmarkEntry>& bookmarks,
     const std::u16string& first_folder_name) {
   observer_->OnBookmarksImportStart(first_folder_name, bookmarks.size());
 
@@ -46,7 +46,7 @@ void ExternalProcessImporterBridge::AddBookmarks(
   // (i.e., |it + 2 < s.end()| crashes in debug mode if |i + 1 == s.end()|).
   int bookmarks_left = bookmarks.end() - bookmarks.begin();
   for (auto it = bookmarks.begin(); it < bookmarks.end();) {
-    std::vector<ImportedBookmarkEntry> bookmark_group;
+    std::vector<user_data_importer::ImportedBookmarkEntry> bookmark_group;
     auto end_group = it + std::min(bookmarks_left, kNumBookmarksToSend);
     bookmark_group.assign(it, end_group);
 

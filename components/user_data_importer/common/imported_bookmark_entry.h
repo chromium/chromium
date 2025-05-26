@@ -2,14 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_COMMON_IMPORTER_IMPORTED_BOOKMARK_ENTRY_H_
-#define CHROME_COMMON_IMPORTER_IMPORTED_BOOKMARK_ENTRY_H_
+#ifndef COMPONENTS_USER_DATA_IMPORTER_COMMON_IMPORTED_BOOKMARK_ENTRY_H_
+#define COMPONENTS_USER_DATA_IMPORTER_COMMON_IMPORTED_BOOKMARK_ENTRY_H_
 
 #include <string>
 #include <vector>
 
 #include "base/time/time.h"
 #include "url/gurl.h"
+
+namespace user_data_importer {
 
 struct ImportedBookmarkEntry {
   ImportedBookmarkEntry();
@@ -26,4 +28,6 @@ struct ImportedBookmarkEntry {
   base::Time creation_time;
 };
 
-#endif  // CHROME_COMMON_IMPORTER_IMPORTED_BOOKMARK_ENTRY_H_
+}  // namespace user_data_importer
+
+#endif  // COMPONENTS_USER_DATA_IMPORTER_COMMON_IMPORTED_BOOKMARK_ENTRY_H_

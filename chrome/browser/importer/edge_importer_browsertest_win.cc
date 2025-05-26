@@ -21,12 +21,12 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/importer/edge_importer_utils_win.h"
-#include "chrome/common/importer/imported_bookmark_entry.h"
 #include "chrome/common/importer/importer_bridge.h"
 #include "chrome/common/importer/importer_test_registry_overrider_win.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/favicon_base/favicon_usage_data.h"
+#include "components/user_data_importer/common/imported_bookmark_entry.h"
 #include "components/user_data_importer/common/importer_data_types.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -71,8 +71,9 @@ class TestObserver : public ProfileWriter,
 
   bool TemplateURLServiceIsLoaded() const override { return true; }
 
-  void AddBookmarks(const std::vector<ImportedBookmarkEntry>& bookmarks,
-                    const std::u16string& top_level_folder_name) override {
+  void AddBookmarks(
+      const std::vector<user_data_importer::ImportedBookmarkEntry>& bookmarks,
+      const std::u16string& top_level_folder_name) override {
     ASSERT_EQ(expected_bookmark_entries_.size(), bookmarks.size());
     for (size_t i = 0; i < bookmarks.size(); ++i) {
       EXPECT_NO_FATAL_FAILURE(

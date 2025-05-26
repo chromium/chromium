@@ -78,6 +78,7 @@ source_set("browser_tests") {
   deps = [
     "//base",
     "//chrome/common/importer",
+    "//components/user_data_importer/common",
     "//testing/gtest",
   ]
 
@@ -125,6 +126,7 @@ source_set("unit_tests") {
     "//components/password_manager/core/common",
     "//components/prefs",
     "//components/query_parser",
+    "//components/user_data_importer/common",
     "//content/test:test_support",
     "//testing/gtest",
   ]

@@ -15,7 +15,9 @@
 #include "components/favicon_base/favicon_usage_data.h"
 #include "components/user_data_importer/common/importer_url_row.h"
 
+namespace user_data_importer {
 struct ImportedBookmarkEntry;
+}  // namespace user_data_importer
 
 // Importer for Safari on macOS.
 class SafariImporter : public Importer {
@@ -43,8 +45,9 @@ class SafariImporter : public Importer {
   void ImportBookmarks();
 
   // Parse Safari's stored bookmarks.
-  void ParseBookmarks(const std::u16string& toolbar_name,
-                      std::vector<ImportedBookmarkEntry>* bookmarks);
+  void ParseBookmarks(
+      const std::u16string& toolbar_name,
+      std::vector<user_data_importer::ImportedBookmarkEntry>* bookmarks);
 
   base::FilePath library_dir_;
 };

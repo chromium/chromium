@@ -24,14 +24,11 @@
 #include "mojo/public/cpp/bindings/remote.h"
 
 class ExternalProcessImporterHost;
-struct ImporterAutofillFormDataEntry;
-struct ImportedBookmarkEntry;
 class InProcessImporterBridge;
 
-namespace importer {
-struct ImportedPasswordForm;
-struct SearchEngineInfo;
-}
+namespace user_data_importer {
+struct ImportedBookmarkEntry;
+}  // namespace user_data_importer
 
 // This class is the client for the out of process profile importing.  It
 // collects notifications from this process host and feeds data back to the
@@ -69,7 +66,8 @@ class ExternalProcessImporterClient
   void OnBookmarksImportStart(const std::u16string& first_folder_name,
                               uint32_t total_bookmarks_count) override;
   void OnBookmarksImportGroup(
-      const std::vector<ImportedBookmarkEntry>& bookmarks_group) override;
+      const std::vector<user_data_importer::ImportedBookmarkEntry>&
+          bookmarks_group) override;
   void OnFaviconsImportStart(uint32_t total_favicons_count) override;
   void OnFaviconsImportGroup(
       const favicon_base::FaviconUsageDataList& favicons_group) override;
@@ -104,7 +102,7 @@ class ExternalProcessImporterClient
   // These variables store data being collected from the importer until the
   // entire group has been collected and is ready to be written to the profile.
   std::vector<user_data_importer::ImporterURLRow> history_rows_;
-  std::vector<ImportedBookmarkEntry> bookmarks_;
+  std::vector<user_data_importer::ImportedBookmarkEntry> bookmarks_;
   favicon_base::FaviconUsageDataList favicons_;
   std::vector<ImporterAutofillFormDataEntry> autofill_form_data_;
 

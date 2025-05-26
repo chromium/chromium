@@ -15,7 +15,9 @@
 #include "chrome/utility/importer/importer.h"
 #include "components/favicon_base/favicon_usage_data.h"
 
+namespace user_data_importer {
 struct ImportedBookmarkEntry;
+}  // namespace user_data_importer
 
 class IEImporter : public Importer {
  public:
@@ -30,7 +32,7 @@ class IEImporter : public Importer {
                    ImporterBridge* bridge) override;
 
  private:
-  typedef std::vector<ImportedBookmarkEntry> BookmarkVector;
+  typedef std::vector<user_data_importer::ImportedBookmarkEntry> BookmarkVector;
 
   // A struct that hosts the information of IE Favorite folder.
   struct FavoritesInfo {

@@ -8,18 +8,19 @@
 #include <string>
 #include <vector>
 
-#include "chrome/common/importer/imported_bookmark_entry.h"
 #include "chrome/common/importer/importer_autofill_form_data_entry.h"
 #include "chrome/common/importer/importer_bridge.h"
+#include "components/user_data_importer/common/imported_bookmark_entry.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 class MockImporterBridge : public ImporterBridge {
  public:
   MockImporterBridge();
 
-  MOCK_METHOD2(AddBookmarks,
-               void(const std::vector<ImportedBookmarkEntry>&,
-                    const std::u16string&));
+  MOCK_METHOD2(
+      AddBookmarks,
+      void(const std::vector<user_data_importer::ImportedBookmarkEntry>&,
+           const std::u16string&));
   MOCK_METHOD1(AddHomePage, void(const GURL&));
   MOCK_METHOD1(SetFavicons, void(const favicon_base::FaviconUsageDataList&));
   MOCK_METHOD2(SetHistoryItems,

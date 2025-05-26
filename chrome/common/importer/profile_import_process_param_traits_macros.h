@@ -9,9 +9,9 @@
 #define CHROME_COMMON_IMPORTER_PROFILE_IMPORT_PROCESS_PARAM_TRAITS_MACROS_H_
 
 #include "build/build_config.h"
-#include "chrome/common/importer/imported_bookmark_entry.h"
 #include "chrome/common/importer/importer_autofill_form_data_entry.h"
 #include "components/favicon_base/favicon_usage_data.h"
+#include "components/user_data_importer/common/imported_bookmark_entry.h"
 #include "components/user_data_importer/common/importer_data_types.h"
 #include "components/user_data_importer/common/importer_url_row.h"
 #include "content/public/common/common_param_traits.h"
@@ -49,7 +49,7 @@ IPC_STRUCT_TRAITS_BEGIN(user_data_importer::ImporterURLRow)
   IPC_STRUCT_TRAITS_MEMBER(hidden)
 IPC_STRUCT_TRAITS_END()
 
-IPC_STRUCT_TRAITS_BEGIN(ImportedBookmarkEntry)
+IPC_STRUCT_TRAITS_BEGIN(user_data_importer::ImportedBookmarkEntry)
   IPC_STRUCT_TRAITS_MEMBER(in_toolbar)
   IPC_STRUCT_TRAITS_MEMBER(is_folder)
   IPC_STRUCT_TRAITS_MEMBER(url)
