@@ -207,12 +207,14 @@ class CORE_EXPORT CanvasRenderingContext
   }
   void DidDraw(const SkIRect& dirty_rect, CanvasPerformanceMonitor::DrawType);
 
-  // For contexts that do not write content directly into the host's
-  // CanvasResourceProvider: Returns a CanvasResourceProvider containing the
-  // current content, or nullptr if it was not possible to obtain that content.
+  // Returns a CanvasResourceProvider containing the current content, or nullptr
+  // if it was not possible to obtain that content. Default implementation
+  // returns the host's CanvasResourceProvider, which is suitable for contexts
+  // that write directly to that resource provider. Other contexts will need to
+  // override this method as suitable.
   virtual CanvasResourceProvider* PaintRenderingResultsToCanvas(
       SourceDrawingBuffer) {
-    return nullptr;
+    return Host()->ResourceProvider();
   }
 
   // Copy the contents of the rendering context to a media::VideoFrame created
