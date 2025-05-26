@@ -65,6 +65,7 @@
 #include "third_party/blink/renderer/platform/weborigin/referrer.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/weborigin/security_policy.h"
+#include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 
 namespace blink {
 
@@ -1252,7 +1253,7 @@ mojom::blink::FetchAPIRequestPtr Request::CreateFetchAPIRequest() const {
     HTTPHeaderMap::AddResult result = headers.Add(key, value);
     if (!result.is_new_entry) {
       result.stored_value->value =
-          result.stored_value->value + ", " + String(value);
+          AtomicString(WTF::StrCat({result.stored_value->value, ", ", value}));
     }
   }
   for (const auto& pair : headers)

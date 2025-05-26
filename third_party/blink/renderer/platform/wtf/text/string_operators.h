@@ -37,7 +37,6 @@ class StringAppend final {
   StringAppend(StringType1 string1, StringType2 string2);
 
   operator String() const;
-  operator AtomicString() const;
 
   size_t length() const;
   bool Is8Bit() const;
@@ -70,11 +69,6 @@ StringAppend<StringType1, StringType2>::operator String() const {
       StringImpl::CreateUninitialized(computed_length, buffer);
   WriteTo(buffer);
   return result;
-}
-
-template <typename StringType1, typename StringType2>
-StringAppend<StringType1, StringType2>::operator AtomicString() const {
-  return AtomicString(static_cast<String>(*this));
 }
 
 template <typename StringType1, typename StringType2>

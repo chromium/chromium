@@ -46,6 +46,7 @@
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/wtf/text/character_names.h"
+#include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 
 namespace blink {
 
@@ -587,7 +588,8 @@ AtomicString MarkupAccumulator::GeneratePrefix(
   do {
     // 1. Let generated prefix be the concatenation of the string "ns" and the
     // current numerical value of prefix index.
-    generated_prefix = "ns" + String::Number(prefix_index_);
+    generated_prefix =
+        AtomicString(WTF::StrCat({"ns", String::Number(prefix_index_)}));
     // 2. Let the value of prefix index be incremented by one.
     ++prefix_index_;
   } while (LookupNamespaceURI(generated_prefix));

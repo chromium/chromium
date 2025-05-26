@@ -84,6 +84,7 @@
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
+#include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 #include "third_party/blink/renderer/platform/wtf/text/utf8.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "third_party/blink/renderer/platform/wtf/wtf.h"
@@ -938,7 +939,8 @@ static inline bool HandleNamespaceAttributes(
     AtomicString namespace_q_name = g_xmlns_atom;
     AtomicString namespace_uri = ToAtomicString(ns.uri);
     if (ns.prefix) {
-      namespace_q_name = WTF::g_xmlns_with_colon + ToAtomicString(ns.prefix);
+      namespace_q_name = AtomicString(
+          WTF::StrCat({WTF::g_xmlns_with_colon, ToAtomicString(ns.prefix)}));
     }
     std::optional<QualifiedName> parsed_name = Element::ParseAttributeName(
         xmlns_names::kNamespaceURI, namespace_q_name, exception_state);
@@ -982,8 +984,10 @@ static inline bool HandleElementAttributes(
       }
     }
     AtomicString attr_q_name =
-        attr_prefix.empty() ? ToAtomicString(attr.localname)
-                            : attr_prefix + ":" + ToString(attr.localname);
+        attr_prefix.empty()
+            ? ToAtomicString(attr.localname)
+            : AtomicString(
+                  WTF::StrCat({attr_prefix, ":", ToString(attr.localname)}));
 
     std::optional<QualifiedName> parsed_name =
         Element::ParseAttributeName(attr_uri, attr_q_name, exception_state);
@@ -1062,8 +1066,11 @@ void XMLDocumentParser::StartElementNs(
   }
 
   QualifiedName q_name(prefix, local_name, adjusted_uri);
-  if (!prefix.empty() && adjusted_uri.empty())
-    q_name = QualifiedName(g_null_atom, prefix + ":" + local_name, g_null_atom);
+  if (!prefix.empty() && adjusted_uri.empty()) {
+    q_name = QualifiedName(g_null_atom,
+                           AtomicString(WTF::StrCat({prefix, ":", local_name})),
+                           g_null_atom);
+  }
 
   // If we are constructing a custom element, then we must run extra steps as
   // described in the HTML spec below. This is similar to the steps in

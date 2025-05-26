@@ -105,6 +105,7 @@
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
+#include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
 namespace blink {
@@ -894,9 +895,9 @@ void XMLHttpRequest::send(FormData* body, ExceptionState& exception_state) {
     // TODO (sof): override any author-provided charset= in the
     // content type value to UTF-8 ?
     if (!HasContentTypeRequestHeader()) {
-      AtomicString content_type =
-          AtomicString("multipart/form-data; boundary=") +
-          FetchUtils::NormalizeHeaderValue(http_body->Boundary().data());
+      AtomicString content_type = AtomicString(WTF::StrCat(
+          {"multipart/form-data; boundary=",
+           FetchUtils::NormalizeHeaderValue(http_body->Boundary().data())}));
       SetRequestHeaderInternal(http_names::kContentType, content_type);
     }
   }
@@ -1419,8 +1420,8 @@ void XMLHttpRequest::SetRequestHeaderInternal(const AtomicString& name,
       << "Header values must be normalized";
   HTTPHeaderMap::AddResult result = request_headers_.Add(name, value);
   if (!result.is_new_entry) {
-    AtomicString new_value = result.stored_value->value + ", " + value;
-    result.stored_value->value = new_value;
+    result.stored_value->value =
+        AtomicString(WTF::StrCat({result.stored_value->value, ", ", value}));
   }
 }
 
