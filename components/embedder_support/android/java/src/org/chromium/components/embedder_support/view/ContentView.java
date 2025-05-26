@@ -13,6 +13,7 @@ import android.view.DragEvent;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.PointerIcon;
+import android.view.Surface;
 import android.view.View;
 import android.view.View.OnDragListener;
 import android.view.View.OnSystemUiVisibilityChangeListener;
@@ -41,6 +42,7 @@ import org.chromium.ui.accessibility.AccessibilityState;
 import org.chromium.ui.base.EventForwarder;
 import org.chromium.ui.base.EventOffsetHandler;
 import org.chromium.ui.base.ViewAndroidDelegate;
+import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.dragdrop.DragEventDispatchHelper.DragEventDispatchDestination;
 
 import java.util.function.Supplier;
@@ -421,7 +423,19 @@ public class ContentView extends FrameLayout
     @Override
     public boolean onCapturedPointerEvent(MotionEvent event) {
         EventForwarder forwarder = getEventForwarder();
-        return forwarder != null ? forwarder.onCapturedPointerEvent(event) : false;
+        if (forwarder != null) {
+            // Device rotation is needed to update the raw touchpad events based on the device
+            // orientation
+            int deviceRotation = Surface.ROTATION_0;
+            WindowAndroid window = mWebContents.getTopLevelNativeWindow();
+            if (window != null) {
+                deviceRotation = window.getDisplay().getRotation();
+            }
+
+            return forwarder.onCapturedPointerEvent(event, deviceRotation);
+        }
+
+        return false;
     }
 
     @Override
