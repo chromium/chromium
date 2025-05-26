@@ -233,13 +233,17 @@ CollaborationGroupInfoBarDelegate::GetAvatarPrimitive() {
   }
 
   const auto& attribution = attributions.front();
-  const auto& opt_triggering_user = attribution.triggering_user;
-  if (!opt_triggering_user) {
-    // No avatar primitive if no triggering user.
+  const auto& opt_user = instant_message_.collaboration_event ==
+                                 CollaborationEvent::COLLABORATION_MEMBER_ADDED
+                             ? attribution.affected_user
+                             : attribution.triggering_user;
+
+  if (!opt_user) {
+    // No avatar primitive if no user.
     return nil;
   }
 
-  data_sharing::GroupMember user = opt_triggering_user.value();
+  data_sharing::GroupMember user = opt_user.value();
   ShareKitService* share_kit_service =
       ShareKitServiceFactory::GetForProfile(profile_);
 
