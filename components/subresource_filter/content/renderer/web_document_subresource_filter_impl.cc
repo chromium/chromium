@@ -11,7 +11,6 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/not_fatal_until.h"
 #include "base/task/single_thread_task_runner.h"
 #include "components/subresource_filter/content/shared/renderer/filter_utils.h"
 #include "components/subresource_filter/core/common/constants.h"
@@ -78,8 +77,7 @@ WebLoadPolicy WebDocumentSubresourceFilterImpl::GetLoadPolicy(
 WebLoadPolicy
 WebDocumentSubresourceFilterImpl::GetLoadPolicyForWebSocketConnect(
     const blink::WebURL& url) {
-  CHECK(url.ProtocolIs("ws") || url.ProtocolIs("wss"),
-        base::NotFatalUntil::M129);
+  CHECK(url.ProtocolIs("ws") || url.ProtocolIs("wss"));
   return getLoadPolicyImpl(url, proto::ELEMENT_TYPE_WEBSOCKET);
 }
 
@@ -128,7 +126,7 @@ WebDocumentSubresourceFilterImpl::BuilderImpl::~BuilderImpl() = default;
 
 std::unique_ptr<blink::WebDocumentSubresourceFilter>
 WebDocumentSubresourceFilterImpl::BuilderImpl::Build() {
-  CHECK(ruleset_file_.IsValid(), base::NotFatalUntil::M129);
+  CHECK(ruleset_file_.IsValid());
   scoped_refptr<MemoryMappedRuleset> ruleset =
       MemoryMappedRuleset::CreateAndInitialize(std::move(ruleset_file_));
   if (!ruleset) {

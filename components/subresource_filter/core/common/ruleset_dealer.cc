@@ -5,7 +5,6 @@
 #include "components/subresource_filter/core/common/ruleset_dealer.h"
 
 #include "base/check.h"
-#include "base/not_fatal_until.h"
 #include "components/subresource_filter/core/common/memory_mapped_ruleset.h"
 
 namespace subresource_filter {
@@ -18,7 +17,7 @@ RulesetDealer::~RulesetDealer() = default;
 
 void RulesetDealer::SetRulesetFile(base::File ruleset_file) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  CHECK(ruleset_file.IsValid(), base::NotFatalUntil::M129);
+  CHECK(ruleset_file.IsValid());
   ruleset_file_ = std::move(ruleset_file);
   weak_cached_ruleset_.reset();
 }

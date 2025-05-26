@@ -12,7 +12,6 @@
 #include "base/android/jni_string.h"
 #include "base/check.h"
 #include "base/memory/ptr_util.h"
-#include "base/not_fatal_until.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/android/window_android.h"
 
@@ -27,7 +26,7 @@ std::unique_ptr<AdsBlockedDialogBase> AdsBlockedDialog::Create(
     base::OnceClosure allow_ads_clicked_callback,
     base::OnceClosure learn_more_clicked_callback,
     base::OnceClosure dialog_dismissed_callback) {
-  CHECK(web_contents, base::NotFatalUntil::M129);
+  CHECK(web_contents);
 
   ui::WindowAndroid* window_android = web_contents->GetTopLevelNativeWindow();
   if (!window_android) {

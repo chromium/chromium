@@ -12,7 +12,6 @@
 #include "base/check.h"
 #include "base/check_is_test.h"
 #include "base/containers/flat_tree.h"
-#include "base/not_fatal_until.h"
 #include "base/strings/to_string.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/trace_event/trace_event.h"
@@ -379,12 +378,11 @@ base::expected<WebAppInstallInfo, std::string> WebAppInstallInfo::Create(
 namespace {
 void CheckValidManifestIdAndStartUrl(const webapps::ManifestId& manifest_id,
                                      const GURL& start_url) {
-  CHECK(manifest_id.is_valid(), base::NotFatalUntil::M129);
-  CHECK(!manifest_id.has_ref(), base::NotFatalUntil::M129);
-  CHECK(start_url.is_valid(), base::NotFatalUntil::M129);
+  CHECK(manifest_id.is_valid());
+  CHECK(!manifest_id.has_ref());
+  CHECK(start_url.is_valid());
   CHECK(url::Origin::Create(start_url).IsSameOriginWith(
-            url::Origin::Create(manifest_id)),
-        base::NotFatalUntil::M129);
+      url::Origin::Create(manifest_id)));
 }
 }  // namespace
 

@@ -7,7 +7,6 @@
 #include "base/check.h"
 #include "base/hash/hash.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/not_fatal_until.h"
 #include "base/strings/strcat.h"
 #include "base/trace_event/trace_event.h"
 #include "components/subresource_filter/core/common/first_party_origin.h"
@@ -82,7 +81,7 @@ bool RulesetIndexer::AddUrlRule(const proto::UrlRule& rule) {
     blocklist_.IndexUrlRule(offset);
   } else {
     const auto* flat_rule = flatbuffers::GetTemporaryPointer(builder_, offset);
-    CHECK(flat_rule, base::NotFatalUntil::M129);
+    CHECK(flat_rule);
     if (flat_rule->element_types()) {
       allowlist_.IndexUrlRule(offset);
     }

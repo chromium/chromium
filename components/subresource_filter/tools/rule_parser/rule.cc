@@ -11,7 +11,6 @@
 
 #include "base/check_op.h"
 #include "base/logging.h"
-#include "base/not_fatal_until.h"
 #include "base/strings/string_util.h"
 
 namespace subresource_filter {
@@ -277,8 +276,7 @@ std::string ToString(const url_pattern_index::proto::UrlRule& rule) {
     if (rule.element_types() &
         type_mask_for(url_pattern_index::proto::ELEMENT_TYPE_POPUP)) {
       const auto& popup_type = kElementTypes[11];
-      CHECK_EQ(url_pattern_index::proto::ELEMENT_TYPE_POPUP, popup_type.type,
-               base::NotFatalUntil::M129);
+      CHECK_EQ(url_pattern_index::proto::ELEMENT_TYPE_POPUP, popup_type.type);
       options.push_back(popup_type.name);
     }
   }
@@ -294,8 +292,7 @@ std::string ToString(const url_pattern_index::proto::UrlRule& rule) {
   // element_types == kDefaultElementTypes instead of 0.
   if (!rule.element_types() && !rule.activation_types()) {
     const auto& image_type = kElementTypes[2];
-    CHECK_EQ(url_pattern_index::proto::ELEMENT_TYPE_IMAGE, image_type.type,
-             base::NotFatalUntil::M129);
+    CHECK_EQ(url_pattern_index::proto::ELEMENT_TYPE_IMAGE, image_type.type);
     options.push_back(image_type.name);
     options.push_back(std::string("~") + image_type.name);
   }

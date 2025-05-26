@@ -3099,8 +3099,7 @@ int TabStripModel::InsertTabAtImpl(
     int add_types,
     std::optional<tab_groups::TabGroupId> group) {
   if (group_model_ && group.has_value()) {
-    CHECK(group_model_->ContainsTabGroup(group.value()),
-          base::NotFatalUntil::M129);
+    CHECK(group_model_->ContainsTabGroup(group.value()));
   }
 
   delegate()->WillAddWebContents(tab->GetContents());
@@ -4460,8 +4459,8 @@ void TabStripModel::FixOpeners(int index) {
 std::optional<tab_groups::TabGroupId> TabStripModel::GetGroupToAssign(
     int index,
     int to_position) {
-  CHECK(ContainsIndex(index), base::NotFatalUntil::M129);
-  CHECK(ContainsIndex(to_position), base::NotFatalUntil::M129);
+  CHECK(ContainsIndex(index));
+  CHECK(ContainsIndex(to_position));
 
   tabs::TabInterface* tab_to_move = GetTabAtIndex(index);
 

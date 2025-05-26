@@ -191,7 +191,7 @@ using DismissViewCallback = SystemIdentityManager::DismissViewCallback;
 
   self.mediator.consumer = viewController;
 
-  CHECK(_baseNavigationController, base::NotFatalUntil::M129);
+  CHECK(_baseNavigationController);
   [self.baseNavigationController pushViewController:viewController
                                            animated:YES];
   _syncObserver = std::make_unique<SyncObserverBridge>(self, self.syncService);
@@ -321,8 +321,7 @@ using DismissViewCallback = SystemIdentityManager::DismissViewCallback;
         // `baseNavigationController`, `baseNavigationController` needs to be
         // closed.
         CHECK([self.baseNavigationController
-                  isKindOfClass:[SettingsNavigationController class]],
-              base::NotFatalUntil::M129);
+            isKindOfClass:[SettingsNavigationController class]]);
         [self.baseNavigationController
             performSelector:@selector(closeSettings)];
       } else {

@@ -12,7 +12,6 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/location.h"
-#include "base/not_fatal_until.h"
 #include "components/subresource_filter/core/browser/verified_ruleset_dealer.h"
 #include "components/subresource_filter/core/common/constants.h"
 #include "components/subresource_filter/core/common/document_subresource_filter.h"
@@ -30,7 +29,7 @@ mojom::ActivationState ComputeActivationState(
     const url::Origin& parent_document_origin,
     const mojom::ActivationState& parent_activation_state,
     const MemoryMappedRuleset* ruleset) {
-  CHECK(ruleset, base::NotFatalUntil::M129);
+  CHECK(ruleset);
 
   IndexedRulesetMatcher matcher(ruleset->data());
   mojom::ActivationState activation_state = parent_activation_state;
@@ -67,8 +66,7 @@ InitializationParams::InitializationParams(
     mojom::ActivationLevel activation_level,
     bool measure_performance)
     : document_url(std::move(document_url)) {
-  CHECK_NE(mojom::ActivationLevel::kDisabled, activation_level,
-           base::NotFatalUntil::M129);
+  CHECK_NE(mojom::ActivationLevel::kDisabled, activation_level);
   parent_activation_state.activation_level = activation_level;
   parent_activation_state.measure_performance = measure_performance;
 }
@@ -81,7 +79,7 @@ InitializationParams::InitializationParams(
       parent_document_origin(std::move(parent_document_origin)),
       parent_activation_state(parent_activation_state) {
   CHECK_NE(mojom::ActivationLevel::kDisabled,
-           parent_activation_state.activation_level, base::NotFatalUntil::M129);
+           parent_activation_state.activation_level);
 }
 
 InitializationParams::~InitializationParams() = default;
@@ -99,8 +97,7 @@ AsyncDocumentSubresourceFilter::AsyncDocumentSubresourceFilter(
     : task_runner_(ruleset_handle->task_runner()),
       core_(new Core(), base::OnTaskRunnerDeleter(task_runner_.get())) {
   CHECK_NE(mojom::ActivationLevel::kDisabled,
-           params.parent_activation_state.activation_level,
-           base::NotFatalUntil::M129);
+           params.parent_activation_state.activation_level);
 
   // Note: It is safe to post |ruleset_handle|'s VerifiedRuleset pointer,
   // because a task to delete it can only be posted to (and, therefore,
@@ -123,11 +120,11 @@ AsyncDocumentSubresourceFilter::AsyncDocumentSubresourceFilter(
     std::string_view uma_tag)
     : task_runner_(ruleset_handle->task_runner()),
       core_(new Core(), base::OnTaskRunnerDeleter(task_runner_.get())) {
-  CHECK_NE(mojom::ActivationLevel::kDisabled, activation_state.activation_level,
-           base::NotFatalUntil::M129);
+  CHECK_NE(mojom::ActivationLevel::kDisabled,
+           activation_state.activation_level);
 
   VerifiedRuleset* verified_ruleset = ruleset_handle->ruleset_.get();
-  CHECK(verified_ruleset, base::NotFatalUntil::M129);
+  CHECK(verified_ruleset);
 
   // See previous constructor for the safety of posting |ruleset_handle|'s
   // VerifiedRuleset pointer.
@@ -162,7 +159,7 @@ void AsyncDocumentSubresourceFilter::GetLoadPolicyForSubdocument(
       base::BindOnce(
           [](AsyncDocumentSubresourceFilter::Core* core,
              const GURL& subdocument_url) {
-            CHECK(core, base::NotFatalUntil::M129);
+            CHECK(core);
             DocumentSubresourceFilter* filter = core->filter();
             return filter
                        ? filter->GetLoadPolicy(
@@ -198,7 +195,7 @@ void AsyncDocumentSubresourceFilter::UpdateWithMoreAccurateState(
     const mojom::ActivationState& updated_page_state) {
   // DISABLED activation level implies that the ruleset is somehow invalid. Make
   // sure that we don't update the state in that case.
-  CHECK(has_activation_state(), base::NotFatalUntil::M129);
+  CHECK(has_activation_state());
   if (activation_state_->activation_level ==
       mojom::ActivationLevel::kDisabled) {
     return;
@@ -250,7 +247,7 @@ std::vector<LoadPolicy> AsyncDocumentSubresourceFilter::Core::GetLoadPolicies(
 
 void AsyncDocumentSubresourceFilter::Core::SetActivationState(
     const mojom::ActivationState& state) {
-  CHECK(filter_, base::NotFatalUntil::M129);
+  CHECK(filter_);
   filter_->set_activation_state(state);
 }
 
@@ -259,7 +256,7 @@ mojom::ActivationState AsyncDocumentSubresourceFilter::Core::Initialize(
     VerifiedRuleset* verified_ruleset,
     std::string_view uma_tag) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  CHECK(verified_ruleset, base::NotFatalUntil::M129);
+  CHECK(verified_ruleset);
 
   if (!verified_ruleset->Get()) {
     return mojom::ActivationState();
@@ -269,8 +266,8 @@ mojom::ActivationState AsyncDocumentSubresourceFilter::Core::Initialize(
       params.document_url, params.parent_document_origin,
       params.parent_activation_state, verified_ruleset->Get());
 
-  CHECK_NE(mojom::ActivationLevel::kDisabled, activation_state.activation_level,
-           base::NotFatalUntil::M129);
+  CHECK_NE(mojom::ActivationLevel::kDisabled,
+           activation_state.activation_level);
   filter_.emplace(url::Origin::Create(params.document_url), activation_state,
                   verified_ruleset->Get(), uma_tag);
 
@@ -283,7 +280,7 @@ void AsyncDocumentSubresourceFilter::Core::InitializeWithActivation(
     VerifiedRuleset* verified_ruleset,
     std::string_view uma_tag) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  CHECK(verified_ruleset, base::NotFatalUntil::M129);
+  CHECK(verified_ruleset);
 
   // Avoids a crash in the rare case that the ruleset's status has changed to
   // unavailable/corrupt since the caller checked.
@@ -292,8 +289,8 @@ void AsyncDocumentSubresourceFilter::Core::InitializeWithActivation(
     return;
   }
 
-  CHECK_NE(mojom::ActivationLevel::kDisabled, activation_state.activation_level,
-           base::NotFatalUntil::M129);
+  CHECK_NE(mojom::ActivationLevel::kDisabled,
+           activation_state.activation_level);
   filter_.emplace(inherited_document_origin, activation_state,
                   verified_ruleset->Get(), uma_tag);
 }
