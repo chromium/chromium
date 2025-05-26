@@ -43,7 +43,6 @@
 <translation id="2536366509642644298">'<ph name="TAB_GROUP_NAME_1" />' and '<ph name="TAB_GROUP_NAME_2" />' tab groups no longer available</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{Collapse <ph name="TABS_COUNT_ONE" /> tab.}other{Collapse tab group with <ph name="TABS_COUNT_MANY" /> tabs.}}</translation>
 <translation id="2569352796411618312">Suggestion: <ph name="NUMBER_OF_TABS" /> of your tabs haven't been used lately. Close them?</translation>
-<translation id="2656693375914502139">Move to group</translation>
 <translation id="2662028055331606429"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> rating</translation>
 <translation id="266935134738038806">Visit site</translation>
 <translation id="2671423594960767771">Share group</translation>
@@ -121,7 +120,6 @@
 <translation id="6054741997831917303">The price of this item recently dropped from <ph name="PREVIOUS_PRICE" /> to <ph name="NEW_PRICE" /></translation>
 <translation id="6109251075362363230">All duplicate tabs will now also be archived, with the exception of the most recently used copy.</translation>
 <translation id="6193448654517602979">Select tabs</translation>
-<translation id="6212567362666004597">Add tab to group</translation>
 <translation id="6220820548421939212">Yes. I'm in</translation>
 <translation id="6228793724645064692">(store rating)</translation>
 <translation id="6271513594716432922">Close all inactive tabs</translation>

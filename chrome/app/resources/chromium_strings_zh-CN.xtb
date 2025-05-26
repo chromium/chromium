@@ -118,7 +118,6 @@
 <translation id="2572494885440352020">Chromium 帮助程序</translation>
 <translation id="2575822587468774919">选择任何内容即可使用图片搜索功能进行搜索</translation>
 <translation id="2576118232315942160">如需获取您所有设备上的密码等信息，请登录 Chromium</translation>
-<translation id="2583187216237139145">在使用此工作资料（例如创建书签、历史记录、密码和其他设置）时生成的任何 Chromium 数据都可由工作资料管理员移除。<ph name="LEARN_MORE" /></translation>
 <translation id="2592940277904433508">继续使用 Chromium</translation>
 <translation id="259935314519650377">未能缓存所下载的安装程序。错误：<ph name="UNPACK_CACHING_ERROR_CODE" />。</translation>
 <translation id="2620436844016719705">系统</translation>
@@ -363,7 +362,6 @@
 <translation id="6069027071882229820">复制为图片</translation>
 <translation id="6072279588547424923">“<ph name="EXTENSION_NAME" />”已添加到 Chromium</translation>
 <translation id="6072463441809498330">提高 Chromium 的运行速度</translation>
-<translation id="608006075545470555">向此浏览器添加工作资料</translation>
 <translation id="6096348254544841612">有可用的更新。欢迎自定义和控制 Chromium。</translation>
 <translation id="6107893135096467929">已开启 • Chromium 无法验证此扩展程序的来源</translation>
 <translation id="6119438414301547735">允许扩展程序在 Chromium 工具栏中显示访问请求</translation>
@@ -559,7 +557,6 @@ Chromium 无法恢复您的设置。</translation>
 <translation id="8471947159125090285">如要使用 Chromium 数据并将其保存在您的 Google 账号中，请验证是您本人在操作</translation>
 <translation id="8493179195440786826">Chromium版本太旧</translation>
 <translation id="8522801943730206384">您需要先保存密码，然后才能使用 Chromium 的密码检查功能</translation>
-<translation id="8550334526674375523">此工作资料与您的个人资料是完全分开的。</translation>
 <translation id="8555465886620020932">发生了服务错误：<ph name="SERVICE_ERROR" />。</translation>
 <translation id="8556420416730706394">您可以固定图片搜索功能以方便访问，点击侧边栏顶部的“固定”按钮即可</translation>
 <translation id="856656450041460113">搜索语言列表</translation>
@@ -588,7 +585,6 @@ Chromium 无法恢复您的设置。</translation>
 <translation id="8931379085695076764">Chromium 可以根据您在过去几周的浏览记录推测出您的兴趣。这些信息会保留在您的设备上。</translation>
 <translation id="8941642502866065432">无法更新 Chromium</translation>
 <translation id="897581876605952338">Chromium 企业版徽标</translation>
-<translation id="8986207147630327271">您将要向此浏览器添加工作资料并允许您的管理员仅控制此工作资料。</translation>
 <translation id="8988036198400390003">管理 Chromium 个人资料</translation>
 <translation id="9019929317751753759">为了提高 Chromium 的安全性，我们停用了以下扩展程序（该扩展程序未列在<ph name="IDS_EXTENSION_WEB_STORE_TITLE" />中，并且可能是在您不知情的情况下添加的）。</translation>
 <translation id="9022552996538154597">登录 Chromium</translation>

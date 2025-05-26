@@ -1839,6 +1839,7 @@
 <translation id="4140905366050378834">ペットフード、ペットケア用品</translation>
 <translation id="4140905530744469899">プロファイル ID:</translation>
 <translation id="4142935452406587478">トレイ 10</translation>
+<translation id="4147897805161313378">Google フォト</translation>
 <translation id="4148925816941278100">American Express</translation>
 <translation id="4150099059797363385">中国 #4 封筒</translation>
 <translation id="4151403195736952345">全体の既定値を使用（検出）</translation>
@@ -1999,6 +2000,7 @@
 <translation id="437620492464254965">ドア、窓</translation>
 <translation id="4377125064752653719"><ph name="DOMAIN" /> にアクセスしようとしましたが、サーバーから提示された証明書は発行元により取り消されています。これは、サーバーから提示されたセキュリティ認証情報が信頼できないことを示しており、悪意のあるユーザーと通信しようとしている可能性があります。</translation>
 <translation id="4378154925671717803">電話</translation>
+<translation id="4382484599443659549">PDF</translation>
 <translation id="4382833368532556056">今後は、クラウド ストレージにファイルを保存してください</translation>
 <translation id="4384395682990721132">A4x3</translation>
 <translation id="4387692837058041921">Microsoft OneDrive へのファイルのアップロードを一時停止しました</translation>
@@ -4318,7 +4320,6 @@
 詳細:
 <ph name="DEBUG_INFO" /></translation>
 <translation id="8416874502399604126">一時的にマイクを許可しました</translation>
-<translation id="8421158157346464398">仕事用プロファイルの情報（仕事用プロファイルのユーザー名など）</translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" /> <ph name="SECOND_LABEL" /> <ph name="THIRD_LABEL" /></translation>
 <translation id="8425213833346101688">変更</translation>
 <translation id="8426945547715537628">キーボードのオーバーライドを許可しますか？</translation>

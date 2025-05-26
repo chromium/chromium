@@ -121,7 +121,6 @@ Baadhi ya vipengele huenda visipatikane na mabadiliko katika mapendeleo hayatahi
 <translation id="2572494885440352020">Kisaidizi cha Chromium</translation>
 <translation id="2575822587468774919">Chagua hoja yoyote ya kutafuta ukitumia kipengele cha Kutafuta kwa Picha</translation>
 <translation id="2576118232315942160">Ili upate manenosiri yako na zaidi kwenye vifaa vyako vyote, ingia katika akaunti kwenye Chromium</translation>
-<translation id="2583187216237139145">Data yoyote ya Chromium inayozalishwa unapotumia wasifu huu (kama vile alamisho ulizoweka, historia, manenosiri na mipangilio mingine) inaweza kuondolewa na msimamizi wa wasifu huu wa kazini. <ph name="LEARN_MORE" /></translation>
 <translation id="2592940277904433508">Endelea kutumia Chromium</translation>
 <translation id="259935314519650377">Imeshindwa kuweka akiba ya kisakinishaji kilichopakuliwa. Hitilafu: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
 <translation id="2620436844016719705">Mfumo</translation>
@@ -366,7 +365,6 @@ Baadhi ya vipengele huenda visipatikane na mabadiliko katika mapendeleo hayatahi
 <translation id="6069027071882229820">Nakili ikiwa picha</translation>
 <translation id="6072279588547424923"><ph name="EXTENSION_NAME" /> imeongezwa kwenye Chromium</translation>
 <translation id="6072463441809498330">Ifanye Chromium Iwe na Kasi Zaidi</translation>
-<translation id="608006075545470555">Ongeza Wasifu wa Kazini kwenye kivinjari hiki</translation>
 <translation id="6096348254544841612">Weka mapendeleo na udhibiti Chromium. Sasisho linapatikana.</translation>
 <translation id="6107893135096467929">Kimewashwa • Chromium haiwezi kuthibitisha sehemu kinapotoka kiendelezi hiki</translation>
 <translation id="6119438414301547735">Ruhusu kiendelezi kionyeshe maombi ya ufikiaji katika upau wa vidhibiti wa Chromium</translation>
@@ -562,7 +560,6 @@ Chromium haiwezi kufufua mipangilio yako.</translation>
 <translation id="8471947159125090285">Ili utumie na uhifadhi data ya Chromium katika Akaunti yako ya Google, thibitisha kuwa ni wewe</translation>
 <translation id="8493179195440786826">Chromium Imepitwa na Wakati</translation>
 <translation id="8522801943730206384">Chromium inaweza kukagua manenosiri yako unapoyahifadhi</translation>
-<translation id="8550334526674375523">Wasifu huu wa kazini ni tofauti kabisa na wasifu wako wa binafsi.</translation>
 <translation id="8555465886620020932">Hitilafu ya huduma: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="8556420416730706394">Unaweza kubandika kipengele cha Kutafuta kwa Picha ili uweze kukifikia kwa urahisi; bofya kitufe cha Bandika katika sehemu ya juu ya kidirisha cha pembeni</translation>
 <translation id="856656450041460113">Tafuta orodha ya lugha</translation>
@@ -591,7 +588,6 @@ Chromium haiwezi kufufua mipangilio yako.</translation>
 <translation id="8931379085695076764">Chromium inaweza kukadiria mambo yanayokuvutia kulingana na historia ya kuvinjari katika wiki chache zilizopita. Taarifa hizi zinahifadhiwa kwenye kifaa chako.</translation>
 <translation id="8941642502866065432">Imeshindwa kusasisha Chromium</translation>
 <translation id="897581876605952338">Nembo ya Chromium Enterprise</translation>
-<translation id="8986207147630327271">Unaongeza wasifu wa kazini kwenye kivinjari hiki na unampa msimamizi wako uwezo wa kudhibiti wasifu huo wa kazini pekee.</translation>
 <translation id="8988036198400390003">Dhibiti wasifu wa Chromium</translation>
 <translation id="9019929317751753759">Ili kufanya Chromium salama zaidi, tumezima kiendelezi kinachofuata ambacho hakijaorodheshwa katika <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> na huenda kimeongezwa bila ridhaa yako.</translation>
 <translation id="9022552996538154597">Ingia kwenye Chromium</translation>

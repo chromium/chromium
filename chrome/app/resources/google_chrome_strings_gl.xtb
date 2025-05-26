@@ -106,7 +106,6 @@
 <translation id="2345992953227471816">Chrome detectou que estas extensións conteñen software malicioso:</translation>
 <translation id="2348335408836342058">Chrome necesita permiso de acceso á cámara e ao micrófono neste sitio</translation>
 <translation id="234869673307233423">Chrome non puido comprobar os teus contrasinais. Téntao de novo máis tarde.</translation>
-<translation id="235650106824528204">O administrador do perfil de traballo pode quitar os datos de Chrome que se xeren durante o uso deste perfil (por exemplo, os marcadores, o historial, os contrasinais e outras opcións de configuración). <ph name="LEARN_MORE" /></translation>
 <translation id="2359808026110333948">Continuar</translation>
 <translation id="2403703063067034158">Produciuse un erro de inicio do sistema: Estase executando outra instancia de configuración. Téntao de novo máis tarde.</translation>
 <translation id="2409816192575564775">{NUM_DEVICES,plural, =0{Unha ou varias extensións de Chrome estaban accedendo a 1 dispositivo de interface humana}=1{Unha ou varias extensións de Chrome estaban accedendo a 1 dispositivo de interface humana}other{Unha ou varias extensións de Chrome estaban accedendo a # dispositivos de interface humana}}</translation>
@@ -396,7 +395,6 @@ Google Chrome non pode recuperar a túa configuración.</translation>
 <translation id="6069027071882229820">Copiar como imaxe</translation>
 <translation id="6070348360322141662">Para obter unha maior seguranza, Google Chrome encriptará os teus datos</translation>
 <translation id="6075300983329039771">A túa organización, <ph name="MANAGER" />, esixe que inicies sesión en Chrome</translation>
-<translation id="608006075545470555">Engadir un perfil de traballo a este navegador</translation>
 <translation id="6113794647360055231">Chrome introduciu melloras</translation>
 <translation id="6116252277240876590">Este é o idioma no que se mostran os menús, as opcións de configuración, as alertas e outros textos en Chrome</translation>
 <translation id="6134085236017727171">Para usar o micrófono, concédelle acceso a Chrome na <ph name="BEGIN_LINK" />configuración do sistema<ph name="END_LINK" /></translation>
@@ -592,7 +590,6 @@ Google Chrome non pode recuperar a túa configuración.</translation>
 <translation id="8521348052903287641">Regra de entrada para que Google Chrome Dev permita tráfico mDNS.</translation>
 <translation id="852529348814672339">Mostrar Chrome neste idioma</translation>
 <translation id="8533056045953418157">Define Google Chrome como o visor de PDF predeterminado</translation>
-<translation id="8550334526674375523">Este perfil de traballo é totalmente independente do teu perfil persoal.</translation>
 <translation id="8555465886620020932">Produciuse un erro no servizo: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="856656450041460113">Buscar na lista de idiomas</translation>
 <translation id="8601359445272098721">Novidade! Podes traducir texto e imaxes na túa pantalla co botón Traducir pantalla</translation>
@@ -625,7 +622,6 @@ Google Chrome non pode recuperar a túa configuración.</translation>
 <translation id="8914504000324227558">Reiniciar Chrome</translation>
 <translation id="8922193594870374009">Para enviar un número desde <ph name="ORIGIN" /> ao teu teléfono Android, inicia sesión en Chrome nos dous dispositivos.</translation>
 <translation id="8948460679427074738">Esta extensión non ten publicada ningunha práctica de privacidade (como, por exemplo, o modo en que recompila e usa os datos). Chrome recomenda que a quites.</translation>
-<translation id="8986207147630327271">Estás a piques de engadir un perfil de traballo a este navegador e de permitir que o teu administrador controle só o perfil de traballo.</translation>
 <translation id="8989968390305463310">O teu historial de navegación aféctalles aos anuncios que se che mostran e aos intereses estimados que se indican abaixo. Para protexer a túa privacidade, Chrome elimina automaticamente os teus intereses cada mes. A menos que os quites, os intereses poden actualizarse.</translation>
 <translation id="8992769679401294069">Os teus datos están encriptados cunha frase de acceso. Escríbea para usar e gardar os datos de Chrome na túa Conta de Google.</translation>
 <translation id="8999117580775242387">Cando o protocolo HTTPS non estea dispoñible, Chrome usará unha conexión pouco segura sen avisarte</translation>

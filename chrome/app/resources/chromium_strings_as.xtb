@@ -121,7 +121,6 @@
 <translation id="2572494885440352020">Chromium সহায়ক</translation>
 <translation id="2575822587468774919">প্ৰতিচ্ছবিৰ সন্ধান সুবিধাটোৰ জৰিয়তে সন্ধান কৰিবলৈ যিকোনো বস্তু বাছনি কৰক</translation>
 <translation id="2576118232315942160">আপোনাৰ আটাইবোৰ ডিভাইচত নিজৰ পাছৱৰ্ড আৰু অধিক পাবলৈ, Chromiumত ছাইন ইন কৰক</translation>
-<translation id="2583187216237139145">কৰ্মস্থানৰ প্ৰ’ফাইলৰ প্ৰশাসকে এই প্ৰ’ফাইলৰ ব্যৱহাৰৰ সময়ত সৃষ্টি হোৱা যিকোনো Chromium ডেটা (যেনে, বুকমাৰ্কৰ সৃষ্টি, ইতিহাস, পাছৱৰ্ড আৰু অন্য ছেটিং) আঁতৰাব পাৰে। <ph name="LEARN_MORE" /></translation>
 <translation id="2592940277904433508">Chromium ব্যৱহাৰ কৰাটো অব্যাহত ৰাখক</translation>
 <translation id="259935314519650377">ডাউনল’ড কৰা ইনষ্টলাৰটো কেশ্ব কৰাত বিফল হৈছে। আসোঁৱাহ: <ph name="UNPACK_CACHING_ERROR_CODE" />।</translation>
 <translation id="2620436844016719705">ছিষ্টেম</translation>
@@ -366,7 +365,6 @@
 <translation id="6069027071882229820">প্ৰতিচ্ছবি হিচাপে প্ৰতিলিপি কৰক</translation>
 <translation id="6072279588547424923"><ph name="EXTENSION_NAME" /> Chromiumত যোগ কৰা হ’ল</translation>
 <translation id="6072463441809498330">Chromiumক দ্ৰুত কৰি তোলক</translation>
-<translation id="608006075545470555">এই ব্ৰাউজাৰত কৰ্মস্থানৰ প্ৰ’ফাইল যোগ দিয়ক</translation>
 <translation id="6096348254544841612">Chromium কাষ্টমাইজ আৰু নিয়ন্ত্ৰণ কৰক। আপডে'ট আছে।</translation>
 <translation id="6107893135096467929">অন আছে • এই এক্সটেনশ্বনটো ক’ৰ পৰা আহিছে সেয়া Chromiumএ সত্যাপন কৰিব নোৱাৰে</translation>
 <translation id="6119438414301547735">Chromium টুলবাৰত এক্সেছৰ অনুৰোধসমূহ দেখুৱাবলৈ এক্সটেনশ্বনক অনুমতি দিয়ক</translation>
@@ -562,7 +560,6 @@ Chromiumএ আপোনাৰ ছেটিংসমূহ পুনৰুদ্
 <translation id="8471947159125090285">আপোনাৰ Google একাউণ্টত Chromiumৰ ডেটাৰ ব্যৱহাৰ আৰু ছেভ কৰিবলৈ এয়া আপুনিয়েই বুলি সত্যাপন কৰক</translation>
 <translation id="8493179195440786826">Chromiumটো অতি পুৰণি</translation>
 <translation id="8522801943730206384">আপুনি নিজৰ পাছৱৰ্ডসমূহ ছেভ কৰিলে Chromiumএ সেইবোৰ পৰীক্ষা কৰিব পাৰে</translation>
-<translation id="8550334526674375523">এই কৰ্মস্থানৰ প্ৰ’ফাইলটো আপোনাৰ ব্যক্তিগত প্ৰ’ফাইলৰ পৰা সম্পূৰ্ণৰূপে পৃথক।</translation>
 <translation id="8555465886620020932">ছাৰ্ভাৰ সম্পৰ্কীয় আসোঁৱাহ: <ph name="SERVICE_ERROR" />।</translation>
 <translation id="8556420416730706394">সহজে এক্সেছ কৰিবলৈ আপুনি প্ৰতিচ্ছবিৰ সন্ধান সুবিধাটো পিন কৰিব পাৰে; ছাইডৰ পেনেলৰ একেবাৰে ওপৰত থকা পিন কৰক শীৰ্ষক বুটামটোত ক্লিক কৰক</translation>
 <translation id="856656450041460113">ভাষাৰ সূচী সন্ধান কৰক</translation>
@@ -591,7 +588,6 @@ Chromiumএ আপোনাৰ ছেটিংসমূহ পুনৰুদ্
 <translation id="8931379085695076764">Chromiumএ যোৱা কেইসপ্তাহমানৰ আপোনাৰ ব্ৰাউজিঙৰ ইতিহাসৰ ভিত্তিত আপোনাৰ আগ্ৰহসমূহ অনুমান কৰিব পাৰে। আপোনাৰ ডিভাইচটোত এই তথ্য থাকে।</translation>
 <translation id="8941642502866065432">Chromium আপডে’ট কৰিব নোৱাৰি</translation>
 <translation id="897581876605952338">Chromium Enterpriseৰ ল’গ’</translation>
-<translation id="8986207147630327271">আপুনি এই ব্ৰাউজাৰত এটা কৰ্মস্থানৰ প্ৰ’ফাইল যোগ দিছে আৰু নিজৰ প্ৰশাসকক কেৱল কৰ্মস্থানৰ প্ৰ’ফাইলটোৰ ওপৰত নিয়ন্ত্ৰণ দিছে।</translation>
 <translation id="8988036198400390003">Chromium প্ৰ’ফাইল পৰিচালনা কৰক</translation>
 <translation id="9019929317751753759">Chromiumক অধিক সুৰক্ষিত কৰিবলৈ, আমি <ph name="IDS_EXTENSION_WEB_STORE_TITLE" />ত সূচীবদ্ধ নোহোৱা আৰু হয়তো আপোনাৰ অজ্ঞাতে যোগ কৰা তলত উল্লেখ কৰা এক্সটেনশ্বনটো অক্ষম কৰিছোঁ।</translation>
 <translation id="9022552996538154597">Chromiumত ছাইন ইন কৰক</translation>

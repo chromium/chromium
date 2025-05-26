@@ -5201,7 +5201,6 @@ Comportamiento anterior y heredado: en “beforeunload”, la llamada a “event
 <translation id="4661889655253181651">La configuración del contenido permite especificar de qué manera se manipulará el contenido de un tipo específico (por ejemplo, cookies, imágenes o JavaScript).</translation>
 <translation id="4663509616441994711">Inhabilitar la combinación de políticas de nube destinadas a los usuarios</translation>
 <translation id="4663588423815449593">Forzar a <ph name="PEPPER_NAME" /> a usar el decodificador de video heredado</translation>
-<translation id="4665632569240493493">Habilitar la atribución del tema de la extensión en el pie de página de la página Nueva pestaña</translation>
 <translation id="4665897631924472251">Configuración de la administración de extensiones</translation>
 <translation id="4666930704271463612">Especifica el subconjunto de servidores de impresión que se consultará para las impresoras de servidor.
 
@@ -6277,7 +6276,6 @@ A partir de la versión 92 de <ph name="PRODUCT_NAME" />, esta política tambié
 <translation id="5373552304217872025">Si estableces esta política como verdadera o no la configuras, <ph name="PRODUCT_NAME" /> y <ph name="LACROS_NAME" /> permitirán que se agregue una nueva persona desde el Administrador de usuarios.
 
       Si la estableces como falsa, <ph name="PRODUCT_NAME" /> y <ph name="LACROS_NAME" /> no permitirán que se agregue una nueva persona desde el Administrador de usuarios.</translation>
-<translation id="5374300764724537955">Inhabilitar la atribución del tema de la extensión en el pie de página de la página Nueva pestaña</translation>
 <translation id="5376712696238639532">Si estableces la política, se especificará si los profesores pueden usar la función de subtítulos.
 
 Si el valor se establece como verdadero o no se establece, los profesores seleccionados pueden subtitular su voz y enviar la transcripción a los estudiantes.

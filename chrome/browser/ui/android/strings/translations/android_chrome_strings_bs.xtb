@@ -11,7 +11,6 @@
 <translation id="103269572468856066">Obrisati i podatke ovih web lokacija i aplikacija?</translation>
 <translation id="1034259925032978114">Prozor je otvoren</translation>
 <translation id="1036348656032585052">Isključi</translation>
-<translation id="1045448422538531528">Dodajte u grupu</translation>
 <translation id="1045899828449635435">Obrisati i podatke ovih web lokacija?</translation>
 <translation id="1049743911850919806">Anonimno</translation>
 <translation id="1052842760770519282">Neke od vaših lozinki nisu dostupne</translation>
@@ -547,7 +546,6 @@ Vaše šifrirane podatke može čitati samo osoba koja ima vaš pristupni izraz.
 <translation id="351672147489633468">{NUM_REVOKED_PERMISSIONS,plural, =1{Odobrenja za obavještenja su uklonjena s jedne web lokacije koju niste nedavno posjetili}one{Odobrenja za obavještenja su uklonjena s # web lokacije koju niste nedavno posjetili}few{Odobrenja za obavještenja su uklonjena s # web lokacije koje niste nedavno posjetili}other{Odobrenja za obavještenja su uklonjena s # web lokacija koje niste nedavno posjetili}}</translation>
 <translation id="3518985090088779359">Prihvati i nastavi</translation>
 <translation id="3519014757432845220">Pomozite nam da poboljšamo zaštitu od neželjenog sadržaja dijeljenjem sadržaja obavještenja i URL-a web lokacije s Googleom. Sadržaj će možda pregledati osobe koje vrše pregled.</translation>
-<translation id="351952459507671940">Dodaj u novu grupu</translation>
 <translation id="3521388823983121502">Nije moguće nastaviti s pružaocem usluga <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="3522247891732774234">Dostupno je ažuriranje. Više opcija</translation>
 <translation id="3523789730715594198">Sinhronizaciju možete zaustaviti bilo kada u postavkama. Google može personalizirati Pretraživanje i druge usluge na osnovu vaše historije.</translation>

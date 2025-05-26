@@ -11,7 +11,6 @@
 <translation id="103269572468856066">Wyczyścić też dane z tych stron i aplikacji?</translation>
 <translation id="1034259925032978114">Okno jest otwarte</translation>
 <translation id="1036348656032585052">Wyłącz</translation>
-<translation id="1045448422538531528">Dodaj do grupy</translation>
 <translation id="1045899828449635435">Wyczyścić też dane z tych stron?</translation>
 <translation id="1049743911850919806">Incognito</translation>
 <translation id="1052842760770519282">Niektóre hasła są niedostępne</translation>
@@ -376,6 +375,7 @@ Twoje zaszyfrowane dane może odczytać tylko osoba znająca hasło. Nie jest on
 <translation id="2718352093833049315">Tylko przez Wi-Fi</translation>
 <translation id="2718846868787000099">Odwiedzane witryny będą miały dostęp do Twoich ustawień, by mogły pokazywać zawartość w wybranym przez Ciebie języku</translation>
 <translation id="2723001399770238859">dźwięk</translation>
+<translation id="2734335652257251631">Pokaż Tryb czytania</translation>
 <translation id="2739887572830526131">Zachowaj tę grupę, aby później dodać karty, lub usuń ją, jeśli nie będzie Ci już potrzebna.</translation>
 <translation id="2742373789128106053">Konto <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> nie jest teraz dostępne.</translation>
 <translation id="2760805590727089264">MM/RR</translation>
@@ -547,7 +547,6 @@ Twoje zaszyfrowane dane może odczytać tylko osoba znająca hasło. Nie jest on
 <translation id="351672147489633468">{NUM_REVOKED_PERMISSIONS,plural, =1{Usunięto uprawnienia do wyświetlania powiadomień z 1 witryny, której ostatnio nie odwiedzasz}few{Usunięto uprawnienia do wyświetlania powiadomień z # witryn, których ostatnio nie odwiedzasz}many{Usunięto uprawnienia do wyświetlania powiadomień z # witryn, których ostatnio nie odwiedzasz}other{Usunięto uprawnienia do wyświetlania powiadomień z # witryny, których ostatnio nie odwiedzasz}}</translation>
 <translation id="3518985090088779359">Akceptuj i kontynuuj</translation>
 <translation id="3519014757432845220">Pomóż nam poprawić ochronę przed spamem, udostępniając Google treść powiadomień i adres URL witryny. Treści mogą sprawdzić weryfikatorzy.</translation>
-<translation id="351952459507671940">Dodaj do nowej grupy</translation>
 <translation id="3521388823983121502">Nie można kontynuować na koncie <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="3522247891732774234">Dostępna jest aktualizacja. Więcej opcji</translation>
 <translation id="3523789730715594198">Synchronizację możesz wyłączyć w każdej chwili w ustawieniach. Google może korzystać z Twojej historii, aby dostosowywać działanie wyszukiwarki i innych usług.</translation>
@@ -1746,6 +1745,7 @@ Aby zmienić to ustawienie, <ph name="BEGIN_LINK" />wyczyść dane Chrome na swo
 <translation id="8676789164135894283">Weryfikacje logowania</translation>
 <translation id="8683039184091909753">obraz</translation>
 <translation id="8688183792442786085"><ph name="TAB_TITLE" />, wybrana karta</translation>
+<translation id="8693232767599693749">Wyświetlić Tryb czytania?</translation>
 <translation id="8697753151306746444">Zamiast tego udostępnij okno lub ekran</translation>
 <translation id="869891660844655955">Data wygaśnięcia</translation>
 <translation id="8699120352855309748">Nie proponuj tłumaczenia tych języków</translation>

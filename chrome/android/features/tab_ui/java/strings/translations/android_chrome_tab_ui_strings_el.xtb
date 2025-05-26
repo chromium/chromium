@@ -43,7 +43,6 @@
 <translation id="2536366509642644298">Οι ομάδες καρτελών <ph name="TAB_GROUP_NAME_1" /> και <ph name="TAB_GROUP_NAME_2" /> δεν διατίθενται πλέον</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{Συμπτύξτε <ph name="TABS_COUNT_ONE" /> καρτέλα.}other{Συμπτύξτε την ομάδα καρτελών με τις <ph name="TABS_COUNT_MANY" /> καρτέλες.}}</translation>
 <translation id="2569352796411618312">Πρόταση: <ph name="NUMBER_OF_TABS" /> από τις καρτέλες σας δεν έχουν χρησιμοποιηθεί πρόσφατα. Κλείσιμο αυτών των καρτελών;</translation>
-<translation id="2656693375914502139">Μετακίνηση σε ομάδα</translation>
 <translation id="2662028055331606429">Αξιολόγηση <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="266935134738038806">Μετάβαση στον ιστότοπο</translation>
 <translation id="2671423594960767771">Κοινοποίηση ομάδας</translation>
@@ -120,8 +119,8 @@
 <translation id="6051432659151380973">Οι ομάδες καρτελών σας αποθηκεύονται αυτόματα</translation>
 <translation id="6054741997831917303">Η τιμή αυτού του στοιχείου μειώθηκε πρόσφατα από <ph name="PREVIOUS_PRICE" /> σε <ph name="NEW_PRICE" /></translation>
 <translation id="6109251075362363230">Από εδώ και στο εξής, όλες οι διπλότυπες καρτέλες θα αρχειοθετούνται, με εξαίρεση το αντίγραφο που χρησιμοποιήθηκε πιο πρόσφατα.</translation>
+<translation id="61924696525243173">{WINDOW_COUNT,plural, =1{Μετακίνηση ομάδας σε νέο παράθυρο}other{Μετακίνηση ομάδας σε άλλα παράθυρα}}</translation>
 <translation id="6193448654517602979">Επιλογή καρτελών</translation>
-<translation id="6212567362666004597">Προσθήκη καρτέλας σε ομάδα</translation>
 <translation id="6220820548421939212">Ναι. Συμφωνώ</translation>
 <translation id="6228793724645064692">(αξιολόγηση καταστήματος)</translation>
 <translation id="6271513594716432922">Κλείσιμο όλων των ανενεργών καρτελών</translation>

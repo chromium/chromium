@@ -106,7 +106,6 @@ Es posible que algunas funciones no estén disponibles y que no se guarden los c
 <translation id="2345992953227471816">Chrome ha detectado que estas extensiones contienen malware:</translation>
 <translation id="2348335408836342058">Chrome necesita permiso para acceder a la cámara y al micrófono en este sitio web</translation>
 <translation id="234869673307233423">Chrome no puede comprobar tus contraseñas. Vuelve a intentarlo más tarde.</translation>
-<translation id="235650106824528204">El administrador del perfil de trabajo puede quitar cualquier dato de Chrome generado durante el uso de este perfil, como los marcadores, el historial, las contraseñas y otros ajustes. <ph name="LEARN_MORE" /></translation>
 <translation id="2359808026110333948">Continuar</translation>
 <translation id="2403703063067034158">Error de arranque: se está ejecutando otra instancia de la configuración. Inténtalo de nuevo más tarde.</translation>
 <translation id="2409816192575564775">{NUM_DEVICES,plural, =0{Una o varias extensiones de Chrome estaban accediendo a 1 dispositivo HID}=1{Una o varias extensiones de Chrome están accediendo a 1 dispositivo HID}other{Una o varias extensiones de Chrome están accediendo a # dispositivos HID}}</translation>
@@ -396,7 +395,6 @@ Google Chrome no puede recuperar tu configuración.</translation>
 <translation id="6069027071882229820">Copiar como imagen</translation>
 <translation id="6070348360322141662">Para mayor seguridad, Google Chrome cifrará tus datos</translation>
 <translation id="6075300983329039771">Tu organización, <ph name="MANAGER" />, requiere que inicies sesión en Chrome</translation>
-<translation id="608006075545470555">Añadir perfil de trabajo a este navegador</translation>
 <translation id="6113794647360055231">Chrome mejor que nunca</translation>
 <translation id="6116252277240876590">Los menús, ajustes, alertas y otros textos de Chrome se muestran en este idioma</translation>
 <translation id="6134085236017727171">Para usar el micrófono, da acceso a Chrome en la <ph name="BEGIN_LINK" />configuración del sistema<ph name="END_LINK" /></translation>
@@ -592,7 +590,6 @@ Google Chrome no puede recuperar tu configuración.</translation>
 <translation id="8521348052903287641">Regla entrante para que Google Chrome Dev permita tráfico mDNS.</translation>
 <translation id="852529348814672339">Mostrar Chrome en este idioma</translation>
 <translation id="8533056045953418157">Establece Google Chrome como visor de PDFs predeterminado</translation>
-<translation id="8550334526674375523">Este perfil de trabajo es completamente independiente de tu perfil personal.</translation>
 <translation id="8555465886620020932">Error del servicio: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="856656450041460113">Buscar en la lista de idiomas</translation>
 <translation id="8601359445272098721">¡Novedad! Puedes traducir tanto texto como imágenes en tu pantalla seleccionando el botón Traducir pantalla.</translation>
@@ -625,7 +622,6 @@ Google Chrome no puede recuperar tu configuración.</translation>
 <translation id="8914504000324227558">Volver a iniciar Chrome</translation>
 <translation id="8922193594870374009">Para enviar un número desde <ph name="ORIGIN" /> a tu teléfono Android, inicia sesión en Chrome con ambos dispositivos.</translation>
 <translation id="8948460679427074738">Esta extensión no ha publicado sus prácticas de privacidad, como la forma en la que recoge y usa los datos. Chrome te recomienda que la elimines.</translation>
-<translation id="8986207147630327271">Vas a añadir un perfil de trabajo a este navegador y le vas a dar a tu administrador el control únicamente sobre este perfil.</translation>
 <translation id="8989968390305463310">Tu historial de navegación influye en los anuncios que ves y en los intereses que se estiman abajo. Para proteger tu privacidad, Chrome elimina automáticamente tus intereses cada mes. Los intereses se actualizan a menos que los elimines.</translation>
 <translation id="8992769679401294069">Tus datos se han cifrado con tu frase de contraseña. Introdúcela para usar y guardar datos de Chrome en tu cuenta de Google.</translation>
 <translation id="8999117580775242387">Si HTTPS no está disponible, Chrome usará una conexión no segura sin avisarte</translation>

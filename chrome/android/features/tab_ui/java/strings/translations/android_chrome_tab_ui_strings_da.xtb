@@ -43,7 +43,6 @@
 <translation id="2536366509642644298">Fanegrupperne "<ph name="TAB_GROUP_NAME_1" />" og "<ph name="TAB_GROUP_NAME_2" />" er ikke længere tilgængelige</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{Skjul <ph name="TABS_COUNT_ONE" /> fane.}one{Skjul fanegruppe med <ph name="TABS_COUNT_MANY" /> fane.}other{Skjul fanegruppe med <ph name="TABS_COUNT_MANY" /> faner.}}</translation>
 <translation id="2569352796411618312">Forslag: <ph name="NUMBER_OF_TABS" /> af dine faner er ikke blevet brugt for nylig. Vil du lukke dem?</translation>
-<translation id="2656693375914502139">Flyt til gruppe</translation>
 <translation id="2662028055331606429">Bedømmelse: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="266935134738038806">Besøg website</translation>
 <translation id="2671423594960767771">Del gruppe</translation>
@@ -121,7 +120,6 @@
 <translation id="6054741997831917303">Prisen på denne vare er for nylig faldet fra <ph name="PREVIOUS_PRICE" /> til <ph name="NEW_PRICE" /></translation>
 <translation id="6109251075362363230">Alle dubletter af faner arkiveres nu også med undtagelse af den senest anvendte kopi.</translation>
 <translation id="6193448654517602979">Vælg faner</translation>
-<translation id="6212567362666004597">Føj fane til gruppe</translation>
 <translation id="6220820548421939212">Ja tak</translation>
 <translation id="6228793724645064692">(butiksanmeldelse)</translation>
 <translation id="6271513594716432922">Luk alle inaktive faner</translation>

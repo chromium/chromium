@@ -11,7 +11,6 @@
 <translation id="103269572468856066">Hapus data dari situs dan aplikasi ini juga?</translation>
 <translation id="1034259925032978114">Jendela terbuka</translation>
 <translation id="1036348656032585052">Nonaktifkan</translation>
-<translation id="1045448422538531528">Tambahkan ke grup</translation>
 <translation id="1045899828449635435">Hapus data dari situs ini juga?</translation>
 <translation id="1049743911850919806">Samaran</translation>
 <translation id="1052842760770519282">Beberapa sandi Anda tidak dapat diakses</translation>
@@ -547,7 +546,6 @@ Hanya orang yang memiliki frasa sandi Anda yang dapat membaca data terenkripsi A
 <translation id="351672147489633468">{NUM_REVOKED_PERMISSIONS,plural, =1{Menghapus izin notifikasi dari satu situs yang tidak Anda buka baru-baru ini}other{Menghapus izin notifikasi dari # situs yang tidak Anda buka baru-baru ini}}</translation>
 <translation id="3518985090088779359">Terima &amp; lanjutkan</translation>
 <translation id="3519014757432845220">Bantu tingkatkan kualitas perlindungan dari spam dengan membagikan konten notifikasi dan URL situs dengan Google. Konten mungkin akan ditinjau secara manual.</translation>
-<translation id="351952459507671940">Tambahkan ke grup baru</translation>
 <translation id="3521388823983121502">Tidak dapat melanjutkan dengan <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="3522247891732774234">Pembaruan tersedia. Opsi lainnya</translation>
 <translation id="3523789730715594198">Anda dapat berhenti menyinkronkan kapan saja di setelan. Google dapat mempersonalisasi Penelusuran dan layanan lainnya berdasarkan histori Anda.</translation>

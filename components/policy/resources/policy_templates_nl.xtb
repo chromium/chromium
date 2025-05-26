@@ -4979,7 +4979,6 @@ Het instellen van <ph name="CHROME_OS_RELEASE_CHANNEL_POLICY_NAME" /> heeft alle
 <translation id="4661889655253181651">Met instellingen voor content kun je opgeven hoe content van een bepaald type (zoals cookies, afbeeldingen of JavaScript) wordt verwerkt.</translation>
 <translation id="4663509616441994711">Samenvoegen van cloudbeleidsregels op gebruikersniveau uitzetten.</translation>
 <translation id="4663588423815449593">Afdwingen dat <ph name="PEPPER_NAME" /> de verouderde videodecoder gebruikt.</translation>
-<translation id="4665632569240493493">Toeschrijving van thema voor extensie in NTP-voettekst aanzetten</translation>
 <translation id="4665897631924472251">Instellingen voor extensiebeheer</translation>
 <translation id="4666930704271463612">Specificeert de subset van printerservers die worden aangeroepen voor serverprinters.
 
@@ -5998,7 +5997,6 @@ Vanaf <ph name="PRODUCT_NAME" /> versie 92 wordt dit beleid ook ondersteund in d
 <translation id="5373552304217872025">Als je dit beleid instelt op waar of niet instelt, staan <ph name="PRODUCT_NAME" /> en <ph name="LACROS_NAME" /> toe dat er een nieuwe persoon wordt toegevoegd via gebruikersbeheer.
 
       Als je dit beleid instelt op onwaar, staan <ph name="PRODUCT_NAME" /> en <ph name="LACROS_NAME" /> niet toe dat er een nieuwe persoon wordt toegevoegd via gebruikersbeheer.</translation>
-<translation id="5374300764724537955">Toeschrijving van thema voor extensie op NTP-voettekst uitzetten</translation>
 <translation id="5376712696238639532">Als je het beleid instelt, bepaal je daarmee of docenten de functie voor ondertiteling kunnen gebruiken.
 
 Als de waarde is ingesteld op Waar of niet is ingesteld, kunnen geselecteerde docenten ondertiteling voor doven en slechthorenden voor hun stem toevoegen en de transcriptie naar leerlingen sturen.

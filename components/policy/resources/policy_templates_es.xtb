@@ -5004,7 +5004,6 @@ Establecer <ph name="CHROME_OS_RELEASE_CHANNEL_POLICY_NAME" /> solo tendrá efec
 <translation id="4661889655253181651">La configuración de contenido permite especificar la gestión de un tipo específico de contenido (por ejemplo, cookies, imágenes o JavaScript).</translation>
 <translation id="4663509616441994711">Inhabilita la fusión de políticas basadas en la nube a nivel de usuario.</translation>
 <translation id="4663588423815449593">Forzar a <ph name="PEPPER_NAME" /> a usar el decodificador de vídeo antiguo.</translation>
-<translation id="4665632569240493493">Habilitar la atribución del tema de la extensión en el pie de página de la NTP</translation>
 <translation id="4665897631924472251">Configuración de administración de extensiones</translation>
 <translation id="4666930704271463612">Permite especificar el subconjunto de servidores de impresión a los que se solicitará información sobre impresoras del servidor.
 
@@ -5757,6 +5756,7 @@ NOTA: Solo los procesos de renderizado que se hayan iniciado recientemente refle
 <translation id="5194683382395300627">Permitir el uso de <ph name="ASSISTANT_PRODUCT_NAME" /> en la Web (por ejemplo, para habilitar el cambio automático de contraseñas)</translation>
 <translation id="5196630732055960309">Permitir la API File Handling en estas aplicaciones web</translation>
 <translation id="5205352023880027050">No habilitar la función EphemeralNetworkPolicy.</translation>
+<translation id="5205385499831960279">Aplicar restricciones a solicitudes a endpoints de la red local</translation>
 <translation id="5206454085187851382">Si se utiliza <ph name="PRINTERS_ALLOWLIST" /> para la política <ph name="PRINTERS_BULK_ACCESS_MODE_POLICY_NAME" />, al establecer la política <ph name="PRINTERS_BULK_ALLOWLIST_POLICY_NAME" />, esta especifica qué impresoras pueden utilizar los usuarios. Solo las impresoras cuyos ID coincidan con los valores incluidos en la política estarán disponibles para el usuario. Los ID deben coincidir con los campos <ph name="ID_FIELD" /> o <ph name="GUID_FIELD" /> del archivo definido en la política <ph name="PRINTERS_BULK_CONFIGURATION_POLICY_NAME" />.</translation>
 <translation id="5207543664699568887">Configura si <ph name="PRODUCT_NAME" /> en Linux usará notificaciones del sistema.
 
@@ -6050,7 +6050,6 @@ A partir de la versión 92 de <ph name="PRODUCT_NAME" />, también se admite est
 <translation id="5373552304217872025">Si se le asigna el valor true a esta política o no se configura, <ph name="PRODUCT_NAME" /> y <ph name="LACROS_NAME" /> permitirán añadir una nueva persona del Administrador de usuarios.
 
       Si se le asigna el valor false, <ph name="PRODUCT_NAME" /> y <ph name="LACROS_NAME" /> no permitirán añadir una nueva persona del Administrador de usuarios.</translation>
-<translation id="5374300764724537955">Inhabilitar la atribución del tema de la extensión en el pie de página de la NTP</translation>
 <translation id="5376712696238639532">Si se define esta política, se especificará si los profesores pueden usar la función de subtítulos.
 
 Si se asigna el valor true a esta política o no se le asigna ningún valor, los profesores seleccionados podrán subtitular su voz y enviar la transcripción a los alumnos.
@@ -6667,6 +6666,7 @@ En <ph name="MS_WIN_NAME" />, esta política solo está disponible en instancias
 
       Nota: El factor de escala debe ser igual o superior a 100 %.</translation>
 <translation id="5740636973289452345">Habilitar informes de datos sobre extensiones y complementos</translation>
+<translation id="5740716956489996914">Usar el comportamiento predeterminado para definir si los sitios web pueden enviar solicitudes a endpoints de la red local</translation>
 <translation id="5741110260062082926">Inhabilitar Orca</translation>
 <translation id="5746149754419996562">Habilita la presencia de widgets Glanceables en <ph name="PRODUCT_OS_NAME" />. Concretamente, esto afecta a los widgets a los que se puede acceder mediante el chip de fecha de la estantería.
 Si se habilita esta política, se habilitarán los widgets Glanceables en <ph name="PRODUCT_OS_NAME" />.
@@ -7615,6 +7615,7 @@ Consulta una lista de variables que puedes utilizar en esta página: https://www
 
 Si la política no se define, <ph name="PRODUCT_OS_NAME" /> usará el directorio predeterminado Descargas para almacenar capturas de pantalla, y los usuarios podrán cambiarlo.</translation>
 <translation id="6377031865393559909">Permitir que los usuarios usen plantillas de escritorio</translation>
+<translation id="6377570995433636383">Especificar si se deben aplicar restricciones a solicitudes a endpoints de la red local</translation>
 <translation id="6378076389057087301">Especificar si la actividad de audio afecta a la administración de energía</translation>
 <translation id="6378393933102834628">Si se asigna el valor "Verdadero" a esta política, se mostrarán los accesos directos a aplicaciones. Si se le asigna el valor "Falso", no se mostrarán nunca estos accesos directos.
 
@@ -11294,6 +11295,11 @@ Si se inhabilita esta política, se inhabilitarán todas las integraciones.</tra
       Si se incluye el mismo patrón de URL en esta política y en la política <ph name="SENSORS_BLOCKED_FOR_URLS_POLICY_NAME" />, tendrá preferencia esta última y se bloqueará el acceso a los sensores de luz o de movimiento.
 
       Para obtener información detallada sobre los patrones de <ph name="URL_LABEL" /> válidos, consulta https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. Se permite el uso de caracteres comodín (<ph name="WILDCARD_VALUE" />).</translation>
+<translation id="9002299469625801504">Si se habilita esta política, cuando deba mostrarse una advertencia en <ph name="DEV_TOOLS_NAME" /> debido a un fallo en las comprobaciones de <ph name="LOCAL_NETWORK_ACCCESS" />, se bloqueará la solicitud principal.
+
+Si se inhabilita esta política o no se define, las solicitudes de <ph name="LOCAL_NETWORK_ACCESS" /> usarán el tratamiento predeterminado de estas solicitudes.
+
+Consulta https://github.com/explainers-by-googlers/local-network-access para conocer las restricciones de <ph name="LOCAL_NETWORK_ACCESS" />.</translation>
 <translation id="9003823644527627017">Configurar las VMs de Bruschetta en <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="9004469022085379212">Si se habilita esta política, el dispositivo podrá ejecutar máquinas virtuales en <ph name="PRODUCT_OS_NAME" />. Para poder usar <ph name="PRODUCT_CROSTINI_NAME" />, las políticas <ph name="VIRTUAL_MACHINES_ALLOWED_POLICY_NAME" /> y <ph name="CROSTINI_ALLOWED_POLICY_NAME" /> deben estar habilitadas. Si se inhabilita la política, el dispositivo no podrá ejecutar máquinas virtuales. En caso de inhabilitar la política, esto se aplicará a las nuevas máquinas virtuales que se empiecen a usar, pero no a las que ya estén ejecutándose.
 

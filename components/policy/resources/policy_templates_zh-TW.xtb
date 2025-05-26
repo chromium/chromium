@@ -4890,7 +4890,6 @@ ClearCrossSiteCrossBrowsingContextGroupWindowName 變化版本會控制是否要
 <translation id="4661889655253181651">內容設定可讓你指定特定內容類型 (例如 Cookie、圖片或 JavaScript) 的處理方式。</translation>
 <translation id="4663509616441994711">禁止合併使用者層級的雲端政策。</translation>
 <translation id="4663588423815449593">強制 <ph name="PEPPER_NAME" /> 使用舊版影片解碼器。</translation>
-<translation id="4665632569240493493">在 NTP 頁尾顯示擴充主題來源資訊</translation>
 <translation id="4665897631924472251">擴充功能管理設定</translation>
 <translation id="4666930704271463612">指定系統尋找伺服器印表機時，要查詢符合何種條件的印表機伺服器。
 
@@ -5899,7 +5898,6 @@ ClearCrossSiteCrossBrowsingContextGroupWindowName 變化版本會控制是否要
 <translation id="5373552304217872025">如果將這項政策設為 True 或不設定，<ph name="PRODUCT_NAME" /> 和 <ph name="LACROS_NAME" /> 將允許從使用者管理工具新增使用者。
 
       如果將這項政策設為 False，<ph name="PRODUCT_NAME" /> 和 <ph name="LACROS_NAME" /> 將不允許從使用者管理工具新增使用者。</translation>
-<translation id="5374300764724537955">不在 NTP 頁尾顯示擴充功能主題來源資訊</translation>
 <translation id="5376712696238639532">你可以透過這項政策，指定老師能否使用字幕功能。
 
 如果將值設為 True 或未設定，所選老師可以為講課內容加上字幕，並傳送語音轉錄稿給學生。

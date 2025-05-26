@@ -43,7 +43,6 @@
 <translation id="2536366509642644298">A(z) „<ph name="TAB_GROUP_NAME_1" />” és a(z) „<ph name="TAB_GROUP_NAME_2" />” lapcsoportok már nem állnak rendelkezésre</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> lap összecsukása.}other{<ph name="TABS_COUNT_MANY" /> lapot tartalmazó lapcsoport összecsukása.}}</translation>
 <translation id="2569352796411618312">Javaslat: <ph name="NUMBER_OF_TABS" /> lapot nem használt mostanában. Szeretné bezárni őket?</translation>
-<translation id="2656693375914502139">Áthelyezés egy csoportba</translation>
 <translation id="2662028055331606429">Értékelés: <ph name="RATING_BASELINE" />/<ph name="CURRENT_RATING" /></translation>
 <translation id="266935134738038806">Webhely felkeresése</translation>
 <translation id="2671423594960767771">Csoport megosztása</translation>
@@ -122,7 +121,6 @@
 <translation id="6109251075362363230">Mostantól az összes ismétlődő lap is archiválva lesz a legutóbb használt példány kivételével.</translation>
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{Csoport áthelyezése egy új ablakba}other{Csoport áthelyezése egy másik ablakba}}</translation>
 <translation id="6193448654517602979">Lapok kiválasztása</translation>
-<translation id="6212567362666004597">Lap hozzáadása csoporthoz</translation>
 <translation id="6220820548421939212">Igen, benne vagyok</translation>
 <translation id="6228793724645064692">(az üzlet értékelése)</translation>
 <translation id="6271513594716432922">Az összes inaktív lap bezárása</translation>

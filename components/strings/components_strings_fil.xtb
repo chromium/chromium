@@ -771,6 +771,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="2296331629987861142">Magbayad sa madadaling installment (napapailalim sa pagiging kwalipikado, may mga bayarin)</translation>
 <translation id="2300306941146563769">Hindi na-upload</translation>
 <translation id="2301098101308036335">Aling mga website ang binisita at kailan.</translation>
+<translation id="2302571905116831849">I-autofill ang loyalty card</translation>
 <translation id="230286397113210245">Button na Magbukas ng Incognito Window, i-activate para makapagbukas ng bagong Incognito window para makapag-browse nang pribado</translation>
 <translation id="2305294852062272447">I-save ang lisensya sa pagmamaneho?</translation>
 <translation id="2306124309679506798">Payagan ang immersive na experience?</translation>
@@ -1838,6 +1839,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="4140905366050378834">Pagkain para sa Alagang Hayop at Mga Supply sa Pag-aalaga ng Hayop</translation>
 <translation id="4140905530744469899">Profile ID:</translation>
 <translation id="4142935452406587478">Tray 10</translation>
+<translation id="4147897805161313378">Google Photos</translation>
 <translation id="4148925816941278100">American Express</translation>
 <translation id="4150099059797363385">Envelope Chinese #4</translation>
 <translation id="4151403195736952345">Gamitin ang pangkalahatang default (Tukuyin)</translation>
@@ -1998,6 +2000,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="437620492464254965">Mga Pintuan at Bintana</translation>
 <translation id="4377125064752653719">Tinangka mong maabot ang <ph name="DOMAIN" />, subalit ang certificate na ipinakita ng server ay binawi ng nagbigay nito. Nangangahulugan ito na ang mga kredensyal sa seguridad na ipinakita ng server ay talagang hindi dapat pagkatiwalaan. Maaaring nakikipag-ugnay ka sa isang nang-aatake.</translation>
 <translation id="4378154925671717803">Telepono</translation>
+<translation id="4382484599443659549">PDF</translation>
 <translation id="4382833368532556056">Mula ngayon, i-save ang iyong mga file sa cloud storage</translation>
 <translation id="4384395682990721132">A4x3</translation>
 <translation id="4387692837058041921">Na-pause ang pag-upload ng file sa Microsoft OneDrive</translation>
@@ -4316,7 +4319,6 @@ Mga karagdagang detalye:
 Mga karagdagang detalye:
 <ph name="DEBUG_INFO" /></translation>
 <translation id="8416874502399604126">Pinapayagan ang mikropono sa ngayon</translation>
-<translation id="8421158157346464398">Impormasyon ng profile sa trabaho (tulad ng iyong username sa profile sa trabaho)</translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" /> <ph name="SECOND_LABEL" /> <ph name="THIRD_LABEL" /></translation>
 <translation id="8425213833346101688">Baguhin</translation>
 <translation id="8426945547715537628">Payagan ang pag-override ng keyboard?</translation>

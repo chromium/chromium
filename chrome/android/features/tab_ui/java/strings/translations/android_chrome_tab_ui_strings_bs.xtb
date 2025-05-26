@@ -43,7 +43,6 @@
 <translation id="2536366509642644298">Grupe kartica "<ph name="TAB_GROUP_NAME_1" />" i "<ph name="TAB_GROUP_NAME_2" />" više nisu dostupne</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{Sužavanje <ph name="TABS_COUNT_ONE" /> kartice.}one{Sužavanje grupe kartica s <ph name="TABS_COUNT_MANY" /> karticom.}few{Sužavanje grupe kartica s <ph name="TABS_COUNT_MANY" /> kartice.}other{Sužavanje grupe kartica s <ph name="TABS_COUNT_MANY" /> kartica.}}</translation>
 <translation id="2569352796411618312">Prijedlog: U zadnje vrijeme niste koristili sljedeći broj kartica: <ph name="NUMBER_OF_TABS" />. Zatvoriti ih?</translation>
-<translation id="2656693375914502139">Premještanje u grupu</translation>
 <translation id="2662028055331606429">Ocjena <ph name="CURRENT_RATING" /> od <ph name="RATING_BASELINE" /></translation>
 <translation id="266935134738038806">Posjetite web lokaciju</translation>
 <translation id="2671423594960767771">Dijeli grupu</translation>
@@ -122,7 +121,6 @@
 <translation id="6109251075362363230">Svi duplikati kartica će se sada arhivirati s izuzetkom posljednje korištene kopije.</translation>
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{Premjesti grupu u novi prozor}one{Premjesti grupu u drugi prozor}few{Premjesti grupu u drugi prozor}other{Premjesti grupu u drugi prozor}}</translation>
 <translation id="6193448654517602979">Odaberite kartice</translation>
-<translation id="6212567362666004597">Dodaj karticu u grupu</translation>
 <translation id="6220820548421939212">Da. Pristajem</translation>
 <translation id="6228793724645064692">(ocjena trgovine)</translation>
 <translation id="6271513594716432922">Zatvori sve neaktivne kartice</translation>

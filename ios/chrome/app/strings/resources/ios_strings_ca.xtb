@@ -243,6 +243,7 @@
 <translation id="1972325230031091483">Navegaràs més de pressa perquè el contingut es carrega de forma proactiva en funció de la pàgina web que estiguis visitant</translation>
 <translation id="1974060860693918893">Configuració avançada</translation>
 <translation id="1977621687170192347">Activa l'opció Sol·licita obrir els enllaços d'altres aplicacions en mode d'incògnit.</translation>
+<translation id="1979055159547313322"><ph name="HOSTED_DOMAIN" /> gestiona el compte <ph name="USER_EMAIL" />, així que és possible que vegi algunes dades, com ara</translation>
 <translation id="1979188886349613713">Inclou extensions de fitxer que el lloc web no ha especificat</translation>
 <translation id="1980417445547898121">{count,plural, =1{Obtén {count} pestanya activa recentment de l'altre dispositiu a aquest iPhone}other{Obtén les {count} pestanyes actives recentment de l'altre dispositiu a aquest iPhone}}</translation>
 <translation id="1981118202195772574">Mòbil</translation>
@@ -278,6 +279,7 @@
 <translation id="2103075008456228677">Obre history.google.com</translation>
 <translation id="2104436223719117661">Cerques del moment</translation>
 <translation id="21133533946938348">Fixa la pestanya</translation>
+<translation id="2117650889962717098">Mantén la navegació privada canviant al mode d'incògnit</translation>
 <translation id="2119636449201577317">Obre a…</translation>
 <translation id="2120553909046681540">La teva organització ha desactivat la navegació privada.</translation>
 <translation id="2122754583996902531">El navegador està gestionat. <ph name="BEGIN_LINK" />Més informació<ph name="END_LINK" /></translation>
@@ -562,6 +564,7 @@ Consulta les instruccions del teu motor de cerca per suprimir l'historial de cer
 <translation id="3348387552617855658">Aquesta targeta t'ajuda a fer un seguiment dels teus paquets i t'ofereix novetats importants sobre les entregues.</translation>
 <translation id="3349031117032695619">Bloqueja finestres emergents</translation>
 <translation id="3349676726073650389">Els llocs web i les cerques que segueixes es desen al teu Compte de Google. Pots gestionar el contingut que segueixes en qualsevol moment a la configuració.</translation>
+<translation id="3353037916374303415"><ph name="EMAIL" />. Aquest compte està gestionat.</translation>
 <translation id="3365529507898144230">Desa a Fotos</translation>
 <translation id="3371831930909698441">El Traductor està disponible. Tens opcions a la part inferior de la pantalla</translation>
 <translation id="3377063233124932127">Ara, les adreces d'interès, les contrasenyes i altres dades desades es troben a la part superior.</translation>
@@ -670,6 +673,7 @@ Consulta les instruccions del teu motor de cerca per suprimir l'historial de cer
 <translation id="3875783148670536197">Mostra'm com</translation>
 <translation id="3878657761594430423">Ansa del full</translation>
 <translation id="3885587018298784481">Uneix-te a un grup familiar</translation>
+<translation id="3888230626190453136">Navegar en mode d'incògnit</translation>
 <translation id="3888863481921783344">S'utilitzarà per mostrar-te els possibles convidats al teu esdeveniment.</translation>
 <translation id="3891414008432200754">Preu</translation>
 <translation id="3892144330757387737">Trobaràs l'historial aquí</translation>

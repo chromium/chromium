@@ -243,6 +243,7 @@
 <translation id="1972325230031091483">您的浏览速度会更快，因为系统会根据您当前访问的网页主动加载内容</translation>
 <translation id="1974060860693918893">高级</translation>
 <translation id="1977621687170192347">开启“请求以无痕模式打开来自其他应用的链接”。</translation>
+<translation id="1979055159547313322">账号 <ph name="USER_EMAIL" /> 由 <ph name="HOSTED_DOMAIN" /> 管理，后者或许可以查看某些信息，包括</translation>
 <translation id="1979188886349613713">包括网站未指定的文件扩展名</translation>
 <translation id="1980417445547898121">{count,plural, =1{在这部 iPhone 上打开最近在其他设备上使用的 {count} 个标签页}other{在这部 iPhone 上打开最近在其他设备上使用的 {count} 个标签页}}</translation>
 <translation id="1981118202195772574">移动版</translation>
@@ -278,6 +279,7 @@
 <translation id="2103075008456228677">打开 history.google.com</translation>
 <translation id="2104436223719117661">热搜</translation>
 <translation id="21133533946938348">固定标签页</translation>
+<translation id="2117650889962717098">切换到无痕模式，保持浏览数据的私密性</translation>
 <translation id="2119636449201577317">打开方式…</translation>
 <translation id="2120553909046681540">您的组织关闭了无痕浏览。</translation>
 <translation id="2122754583996902531">您的浏览器处于受管理状态。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
@@ -562,6 +564,7 @@
 <translation id="3348387552617855658">此卡片可协助您跟踪包裹，并为您提供重要的递送动态。</translation>
 <translation id="3349031117032695619">阻止弹出式窗口</translation>
 <translation id="3349676726073650389">您关注的网站和搜索内容会保存在您的 Google 账号中。您可随时在设置中管理您关注的内容。</translation>
+<translation id="3353037916374303415"><ph name="EMAIL" />。此账号处于受管理状态。</translation>
 <translation id="3365529507898144230">保存在相册中</translation>
 <translation id="3371831930909698441">可以翻译。选项位于屏幕底部附近。</translation>
 <translation id="3377063233124932127">现在，您已保存的书签、密码等信息会显示在顶部。</translation>
@@ -670,6 +673,7 @@
 <translation id="3875783148670536197">操作步骤</translation>
 <translation id="3878657761594430423">动作条抓取器</translation>
 <translation id="3885587018298784481">加入家人群组</translation>
+<translation id="3888230626190453136">以无痕模式浏览</translation>
 <translation id="3888863481921783344">这是为了向您显示有望邀请哪些人来参加您的活动。</translation>
 <translation id="3891414008432200754">价格</translation>
 <translation id="3892144330757387737">您的历史记录会显示在此处</translation>

@@ -11,7 +11,6 @@
 <translation id="103269572468856066">Veriler bu siteler ve uygulamalardan da silinsin mi?</translation>
 <translation id="1034259925032978114">Pencere açık</translation>
 <translation id="1036348656032585052">Kapat</translation>
-<translation id="1045448422538531528">Gruba ekle</translation>
 <translation id="1045899828449635435">Ayrıca veriler bu sitelerden de silinsin mi?</translation>
 <translation id="1049743911850919806">Gizli mod</translation>
 <translation id="1052842760770519282">Bazı şifrelerinize erişilemiyor</translation>
@@ -547,7 +546,6 @@ Sadece parolanıza sahip olan kişiler şifrelenmiş verilerinizi okuyabilir. Pa
 <translation id="351672147489633468">{NUM_REVOKED_PERMISSIONS,plural, =1{Son zamanlarda ziyaret etmediğiniz bir sitenin bildirim izinleri kaldırıldı}other{Son zamanlarda ziyaret etmediğiniz # sitenin bildirim izinleri kaldırıldı}}</translation>
 <translation id="3518985090088779359">Kabul et ve devam et</translation>
 <translation id="3519014757432845220">Bildirim içeriğini ve sitenin URL'sini Google ile paylaşarak spam korumasını iyileştirmeye yardımcı olun. İçerik, gerçek kişiler tarafından incelenebilir.</translation>
-<translation id="351952459507671940">Yeni gruba ekle</translation>
 <translation id="3521388823983121502"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ile devam edilemiyor</translation>
 <translation id="3522247891732774234">Güncelleme mevcut. Diğer seçenekler</translation>
 <translation id="3523789730715594198">Senkronizasyonu istediğiniz zaman ayarlardan durdurabilirsiniz. Google, geçmişinize dayalı olarak Arama'yı ve diğer hizmetleri kişiselleştirebilir.</translation>

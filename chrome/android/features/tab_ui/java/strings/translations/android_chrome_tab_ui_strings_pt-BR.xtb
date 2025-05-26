@@ -43,7 +43,6 @@
 <translation id="2536366509642644298">Os grupos de guias "<ph name="TAB_GROUP_NAME_1" />" e "<ph name="TAB_GROUP_NAME_2" />" não estão mais disponíveis</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{Recolher <ph name="TABS_COUNT_ONE" /> guia.}one{Recolher grupo de guias com <ph name="TABS_COUNT_MANY" /> guia.}other{Recolher grupo de guias com <ph name="TABS_COUNT_MANY" /> guias.}}</translation>
 <translation id="2569352796411618312">Sugestão: <ph name="NUMBER_OF_TABS" /> das suas guias não foram usadas recentemente. Fechar todas elas?</translation>
-<translation id="2656693375914502139">Mover para grupo</translation>
 <translation id="2662028055331606429">Nota: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="266935134738038806">Visitar o site</translation>
 <translation id="2671423594960767771">Compartilhar grupo</translation>
@@ -121,7 +120,6 @@
 <translation id="6054741997831917303">O preço deste item caiu de <ph name="PREVIOUS_PRICE" /> para <ph name="NEW_PRICE" /></translation>
 <translation id="6109251075362363230">Agora, todas as guias duplicadas também serão arquivadas, com exceção da cópia usada mais recentemente.</translation>
 <translation id="6193448654517602979">Selecionar guias</translation>
-<translation id="6212567362666004597">Adicionar guia ao grupo</translation>
 <translation id="6220820548421939212">Sim, aceito</translation>
 <translation id="6228793724645064692">(nota da loja)</translation>
 <translation id="6271513594716432922">Fechar todas as guias inativas</translation>

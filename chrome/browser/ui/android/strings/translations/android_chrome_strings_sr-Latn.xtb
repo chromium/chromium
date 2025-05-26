@@ -11,7 +11,6 @@
 <translation id="103269572468856066">Želite da obrišete podatke i za njih?</translation>
 <translation id="1034259925032978114">Prozor je otvoren</translation>
 <translation id="1036348656032585052">Isključi</translation>
-<translation id="1045448422538531528">Dodajte u grupu</translation>
 <translation id="1045899828449635435">Želite da obrišete podatke i za njih?</translation>
 <translation id="1049743911850919806">Bez arhiviranja</translation>
 <translation id="1052842760770519282">Nekim lozinkama ne možete da pristupite</translation>
@@ -547,7 +546,6 @@ Samo neko ko ima pristupnu frazu može da čita šifrovane podatke. Pristupna fr
 <translation id="351672147489633468">{NUM_REVOKED_PERMISSIONS,plural, =1{Uklonjene su dozvole za obaveštenja sa jednog sajta koji niste nedavno posećivali}one{Uklonjene su dozvole za obaveštenja sa # sajta koji niste nedavno posećivali}few{Uklonjene su dozvole za obaveštenja sa # sajta koje niste nedavno posećivali}other{Uklonjene su dozvole za obaveštenja sa # sajtova koje niste nedavno posećivali}}</translation>
 <translation id="3518985090088779359">Prihvati i nastavi</translation>
 <translation id="3519014757432845220">Pomozite nam da poboljšamo zaštitu od nepoželjnog sadržaja tako što ćete sa Google-om deliti sadržaj obaveštenja i URL sajta. Sadržaj mogu da pregledaju ljudi.</translation>
-<translation id="351952459507671940">Dodaj u novu grupu</translation>
 <translation id="3521388823983121502">Ne možete da nastavite sa: <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="3522247891732774234">Ažuriranje je dostupno. Još opcija</translation>
 <translation id="3523789730715594198">Uvek možete da zaustavite sinhronizaciju u podešavanjima. Google može da personalizuje Pretragu i druge usluge na osnovu istorije.</translation>

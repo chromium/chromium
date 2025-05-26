@@ -43,7 +43,6 @@
 <translation id="2536366509642644298">"<ph name="TAB_GROUP_NAME_1" />" અને "<ph name="TAB_GROUP_NAME_2" />" ટૅબના ગ્રૂપ હવે ઉપલબ્ધ નથી</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ટૅબ નાની કરો.}one{<ph name="TABS_COUNT_MANY" /> ટૅબ ધરાવતા ટૅબ ગ્રૂપને નાનું કરો.}other{<ph name="TABS_COUNT_MANY" /> ટૅબ ધરાવતા ટૅબ ગ્રૂપને નાનું કરો.}}</translation>
 <translation id="2569352796411618312">સૂચન: હજુ સુધી તમારા ટૅબમાંથી <ph name="NUMBER_OF_TABS" /> ટૅબનો ઉપયોગ કરવામાં આવ્યો નથી. તેને બંધ કરીએ?</translation>
-<translation id="2656693375914502139">ગ્રૂપમાં ખસેડો</translation>
 <translation id="2662028055331606429"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> રેટિંગ</translation>
 <translation id="266935134738038806">સાઇટની મુલાકાત લો</translation>
 <translation id="2671423594960767771">જૂથ શેર કરો</translation>
@@ -122,7 +121,6 @@
 <translation id="6109251075362363230">તાજેતરમાં ઉપયોગમાં લેવાયેલી કૉપિના અપવાદ સાથે તમામ ડુપ્લિકેટ ટૅબ પણ હવે આર્કાઇવ કરવામાં આવશે.</translation>
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{ગ્રૂપને નવી વિન્ડોમાં ખસેડો}one{ગ્રૂપને અન્ય વિન્ડોમાં ખસેડો}other{ગ્રૂપને અન્ય વિન્ડોમાં ખસેડો}}</translation>
 <translation id="6193448654517602979">ટૅબ પસંદ કરો</translation>
-<translation id="6212567362666004597">ગ્રૂપમાં ટૅબ ઉમેરો</translation>
 <translation id="6220820548421939212">હા. હું સંમત છું</translation>
 <translation id="6228793724645064692">(સ્ટોરનું રેટિંગ)</translation>
 <translation id="6271513594716432922">તમામ નિષ્ક્રિય ટૅબ બંધ કરો</translation>

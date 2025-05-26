@@ -5087,7 +5087,6 @@ Eski davranış: "beforeunload" komutunda "event.preventDefault()" çağrısı y
 <translation id="4661889655253181651">İçerik ayarları belirli türdeki içeriklerin (ör. Çerezler, Resimler veya JavaScript) nasıl işleneceğini belirlemenize izin verir.</translation>
 <translation id="4663509616441994711">Kullanıcı düzeyinde bulut politikalarını birleştirmeyi devre dışı bırakın.</translation>
 <translation id="4663588423815449593"><ph name="PEPPER_NAME" /> eklentisini, eski video kod çözücüyü kullanmaya zorla.</translation>
-<translation id="4665632569240493493">Yeni sekme sayfası altbilgisinde uzantı temasıyla ilgili bilgiyi etkinleştir</translation>
 <translation id="4665897631924472251">Uzantı yönetim ayarları</translation>
 <translation id="4666930704271463612">Sunucu yazıcıları için sorgulanacak yazdırma sunucuları alt grubunu belirtir.
 
@@ -6128,7 +6127,6 @@ Bu politika, <ph name="PRODUCT_NAME" /> 92 sürümünden itibaren gözetimsiz mo
 <translation id="5373552304217872025">Bu politika, Doğru değerine ayarlanırsa veya yapılandırılmazsa <ph name="PRODUCT_NAME" /> ve <ph name="LACROS_NAME" />, kullanıcı yöneticisinden yeni bir kişi eklemeye izin verir.
 
       Bu politika, Yanlış değerine ayarlanırsa <ph name="PRODUCT_NAME" /> ve <ph name="LACROS_NAME" />, kullanıcı yöneticisinden yeni bir kişi eklemeye izin vermez.</translation>
-<translation id="5374300764724537955">Yeni sekme sayfası altbilgisinde uzantı temasıyla ilgili bilgiyi devre dışı bırak</translation>
 <translation id="5376712696238639532">Politikanın ayarlanması öğretmenlerin altyazı özelliğini kullanıp kullanamayacağını belirler.
 
 Politika, Doğru değerine ayarlanır veya ayarlanmadan bırakılırsa seçilen öğretmenler seslerini altyazıya dönüştürüp transkripti öğrencilere gönderebilir.

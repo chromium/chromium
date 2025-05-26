@@ -11,7 +11,6 @@
 <translation id="103269572468856066">Kosongkan data?</translation>
 <translation id="1034259925032978114">Tetingkap dibuka</translation>
 <translation id="1036348656032585052">Matikan</translation>
-<translation id="1045448422538531528">Tambahkan pada kumpulan</translation>
 <translation id="1045899828449635435">Kosongkan data?</translation>
 <translation id="1049743911850919806">Inkognito</translation>
 <translation id="1052842760770519282">Sesetengah kata laluan anda tidak dapat diakses</translation>
@@ -548,7 +547,6 @@ Orang yang mengetahui ungkapan laluan anda sahaja yang dapat membaca data anda y
 <translation id="351672147489633468">{NUM_REVOKED_PERMISSIONS,plural, =1{Kebenaran pemberitahuan dialih keluar daripada satu laman yang tidak anda lawati baru-baru ini}other{Kebenaran pemberitahuan dialih keluar daripada # laman yang tidak anda lawati baru-baru ini}}</translation>
 <translation id="3518985090088779359">Terima &amp; teruskan</translation>
 <translation id="3519014757432845220">Tingkatkan perlindungan spam dengan berkongsi kandungan pemberitahuan dan URL laman dengan Google. Kandungan mungkin akan disemak oleh jurusemak.</translation>
-<translation id="351952459507671940">Tambahkan pada kumpulan baharu</translation>
 <translation id="3521388823983121502">Tidak boleh meneruskan dengan <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="3522247891732774234">Kemas kini tersedia. Lagi pilihan</translation>
 <translation id="3523789730715594198">Anda boleh menghentikan penyegerakan pada bila-bila masa dalam tetapan ini. Google mungkin memeribadikan Search dan perkhidmatan lain berdasarkan sejarah anda.</translation>

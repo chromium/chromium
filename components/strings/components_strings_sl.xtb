@@ -636,6 +636,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="2088913896151127116">Dodaj besedilo</translation>
 <translation id="2090451897496479509">Če želite več informacij, se obrnite na ponudnika</translation>
 <translation id="2091887806945687916">Zvok</translation>
+<translation id="2093184051799735948">Iščite v iskalniku <ph name="ENGINE_NAME" /> ali vnesite URL</translation>
 <translation id="2093982008204312032">Google Chrome poskuša izklopiti Windows Hello za izpolnjevanje gesel.</translation>
 <translation id="2094505752054353250">Neujemanje domen</translation>
 <translation id="2094704029599359040">Informacije o različici</translation>
@@ -770,6 +771,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="2296331629987861142">Plačujte v preprostih obrokih (odvisno od primernosti, zaračunajo se stroški)</translation>
 <translation id="2300306941146563769">Ni naloženo</translation>
 <translation id="2301098101308036335">Katera spletna mesta so obiskana in kdaj.</translation>
+<translation id="2302571905116831849">Samodejno izpolnjevanje kartice zvestobe</translation>
 <translation id="230286397113210245">Gumb za odpiranje anonimnega okna, aktivirajte, če želite odpreti novo anonimno okno za zasebno brskanje</translation>
 <translation id="2305294852062272447">Želite shraniti vozniško dovoljenje?</translation>
 <translation id="2306124309679506798">Želite dovoliti prostorsko izkušnjo?</translation>
@@ -1837,6 +1839,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="4140905366050378834">Hrana za hišne ljubljenčke in pribor za nego hišnih ljubljenčkov</translation>
 <translation id="4140905530744469899">ID profila:</translation>
 <translation id="4142935452406587478">Pladenj 10</translation>
+<translation id="4147897805161313378">Google Foto</translation>
 <translation id="4148925816941278100">American Express</translation>
 <translation id="4150099059797363385">Kitajska kuverta št. 4</translation>
 <translation id="4151403195736952345">Globalno uporabi privzete nastavitve (zaznavanje)</translation>
@@ -1997,6 +2000,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="437620492464254965">Vrata in okna</translation>
 <translation id="4377125064752653719">Poskusili ste dostopati do domene <ph name="DOMAIN" />, vendar je izdajatelj preklical potrdilo, ki ga je poslal strežnik. To pomeni, da varnostnim poverilnicam, ki jih je poslal strežnik, nikakor ne smete zaupati. Morda komunicirate z napadalcem.</translation>
 <translation id="4378154925671717803">Telefon</translation>
+<translation id="4382484599443659549">PDF</translation>
 <translation id="4382833368532556056">Odslej datoteke shranjujte v shrambo v oblaku</translation>
 <translation id="4384395682990721132">A4x3</translation>
 <translation id="4387692837058041921">Nalaganje datotek v Microsoft OneDrive je bilo začasno zaustavljeno</translation>
@@ -4315,7 +4319,6 @@ Dodatne podrobnosti:
 Dodatne podrobnosti:
 <ph name="DEBUG_INFO" /></translation>
 <translation id="8416874502399604126">Mikrofon je tokrat dovoljen</translation>
-<translation id="8421158157346464398">Podatki o delovnem profilu (na primer uporabniško ime delovnega profila)</translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" />, <ph name="SECOND_LABEL" />, <ph name="THIRD_LABEL" /></translation>
 <translation id="8425213833346101688">Spremeni</translation>
 <translation id="8426945547715537628">Želite dovoliti preglasitev tipkovnice?</translation>

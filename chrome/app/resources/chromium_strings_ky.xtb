@@ -121,7 +121,6 @@ Bluetooth түзмөктөрүн изилдөө үчүн Bluetooth'ду пайд
 <translation id="2572494885440352020">Chromium Жардамчы</translation>
 <translation id="2575822587468774919">Сүрөт издөө функциясы менен издөө үчүн каалаган нерсени тандаңыз</translation>
 <translation id="2576118232315942160">Бардык түзмөктөрүңүздө сырсөздөрдү жана башка нерселерди алуу үчүн Chromium'га кириңиз</translation>
-<translation id="2583187216237139145">Бул профилди колдонуп жатканда Chromium'да топтолгон бардык маалыматты (түзүлгөн кыстармалар, таржымал, сырсөздөр жана башка жөндөөлөр) жумуш профилинин администратору өчүрө алат. <ph name="LEARN_MORE" /></translation>
 <translation id="2592940277904433508">Chromium'ду колдоно берүү</translation>
 <translation id="259935314519650377">Жүктөлүп алынган орноткучтун кеши түзүлбөй калды. Ката: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
 <translation id="2620436844016719705">Система</translation>
@@ -366,7 +365,6 @@ Bluetooth түзмөктөрүн изилдөө үчүн Bluetooth'ду пайд
 <translation id="6069027071882229820">Сүрөт катары көчүрүү</translation>
 <translation id="6072279588547424923"><ph name="EXTENSION_NAME" /> Chromium'га кошулду</translation>
 <translation id="6072463441809498330">Chromium'ду ылдамдатуу</translation>
-<translation id="608006075545470555">Ушул серепчиге жумуш профилин кошуу</translation>
 <translation id="6096348254544841612">Chromium'ду ыңгайлаштырып алып, көзөмөлдөңүз. Жаңыртуу бар.</translation>
 <translation id="6107893135096467929">Күйүк • Chromium бул кеңейтүү кайдан алынганын текшере албайт</translation>
 <translation id="6119438414301547735">Кеңейтүүгө Chromium'дун куралдар тилкесинде мүмкүнчүлүк алуу сурамдарын көрсөтүүгө уруксат берүү</translation>
@@ -562,7 +560,6 @@ Chromium параметрлериңизди калыбына келтире ал
 <translation id="8471947159125090285">Chromium'дагы маалыматты Google аккаунтуңузга сактап жана колдонуу үчүн өзүңүздү ырастаңыз</translation>
 <translation id="8493179195440786826">Chromium эскирип калган.</translation>
 <translation id="8522801943730206384">Сырсөздөрүңүздү сактаганда Chromium аларды текшере алат</translation>
-<translation id="8550334526674375523">Бул жумуш профили жеке профилиңизден толугу менен ажыратылган.</translation>
 <translation id="8555465886620020932">Тейлөө катасы: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="8556420416730706394">Оңой колдонуу үчүн Сүрөт издөө функциясын кадап койсоңуз болот; капталдагы тилкенин жогору жагындагы Кадап коюу баскычын басыңыз</translation>
 <translation id="856656450041460113">Тил тизмесин издөө</translation>
@@ -591,7 +588,6 @@ Chromium параметрлериңизди калыбына келтире ал
 <translation id="8931379085695076764">Chromium кызыккан нерселериңизди акыркы бир нече аптадагы көрүлгөн вебсайттарыңыздын негизинде божомолдойт. Бул маалымат түзмөгүңүздө калат.</translation>
 <translation id="8941642502866065432">Chromium жаңырбай жатат</translation>
 <translation id="897581876605952338">Chromium Enterprise логотиби</translation>
-<translation id="8986207147630327271">Жумуш профилин ушул серепчиге кошуп, администраторго жумуш профилин гана көзөмөлдөөгө уруксат берип жатасыз.</translation>
 <translation id="8988036198400390003">Chromium профилдерин тескөө</translation>
 <translation id="9019929317751753759">Жеке маалыматыңызды коргоо үчүн, айрым Chromium кеңейтүүлөрүн өчүрүп койдук, себеби <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> ичинде аларга байланыштуу маалымат жок. Демек, бул курамдык бөлүктөр тымызын орнотулган.</translation>
 <translation id="9022552996538154597">Chromium'га кирүү</translation>

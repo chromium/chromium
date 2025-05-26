@@ -277,7 +277,7 @@
 <translation id="1458059624921545588">ಜನರು ಮತ್ತು ಸಮಾಜ</translation>
 <translation id="1458140305240870199">ಒಳಉಡುಪುಗಳು</translation>
 <translation id="1459693405370120464">ಹವಾಮಾನ</translation>
-<translation id="1461041542809785877">ಕಾರ್ಯಕ್ಷಮತೆ</translation>
+<translation id="1461041542809785877">ಪರ್ಫಾರ್ಮೆನ್ಸ್</translation>
 <translation id="1462245070427461050">JIS B9</translation>
 <translation id="1462951478840426066">ನಿಮ್ಮ ಕಂಪ್ಯೂಟರ್‌ನಲ್ಲಿರುವ ಫಾಂಟ್‌ಗಳನ್ನು ಬಳಸಿ, ಇದರಿಂದ ನೀವು ಹೈ ಫಿಡೆಲಿಟಿ ವಿಷಯವನ್ನು ರಚಿಸಬಹುದು</translation>
 <translation id="1463793142714244641">ಟೈಮ್‌ಶೇರ್‌ಗಳು ಮತ್ತು ವೆಕೇಶನ್ ಪ್ರಾಪರ್ಟಿಗಳು</translation>
@@ -635,6 +635,7 @@
 <translation id="2088913896151127116">ಪಠ್ಯವನ್ನು ಸೇರಿಸಿ</translation>
 <translation id="2090451897496479509">ಹೆಚ್ಚಿನ ಮಾಹಿತಿಗಾಗಿ ಪೂರೈಕೆದಾರರನ್ನು ಸಂಪರ್ಕಿಸಿ</translation>
 <translation id="2091887806945687916">ಶಬ್ಧ</translation>
+<translation id="2093184051799735948"><ph name="ENGINE_NAME" /> ಅನ್ನು ಹುಡುಕಿ ಅಥವಾ URL ಅನ್ನು ಟೈಪ್‌ ಮಾಡಿ</translation>
 <translation id="2093982008204312032">Google Chrome, ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಭರ್ತಿ ಮಾಡುವುದಕ್ಕಾಗಿ Windows Hello ಅನ್ನು ಆಫ್ ಮಾಡಲು ಪ್ರಯತ್ನಿಸುತ್ತಿದೆ.</translation>
 <translation id="2094505752054353250">ಡೊಮೇನ್ ಹೊಂದುತ್ತಿಲ್ಲ</translation>
 <translation id="2094704029599359040">ಆವೃತ್ತಿಯ ಮಾಹಿತಿ</translation>
@@ -1835,6 +1836,7 @@
 <translation id="4140905366050378834">ಪೆಟ್ ಫುಡ್ ಮತ್ತು ಪೆಟ್ ಕೇರ್ ಸರಬರಾಜುಗಳು</translation>
 <translation id="4140905530744469899">ಪ್ರೊಫೈಲ್ ಐಡಿ:</translation>
 <translation id="4142935452406587478">ಟ್ರೇ 10</translation>
+<translation id="4147897805161313378">Google Photos</translation>
 <translation id="4148925816941278100">American Express</translation>
 <translation id="4150099059797363385">ಎನ್ವಲಪ್ ಚೈನೀಸ್ #4</translation>
 <translation id="4151403195736952345">ಜಾಗತಿಕ ಡಿಫಾಲ್ಟ್ ಬಳಸಿ (ಪತ್ತೆ ಮಾಡಿ)</translation>
@@ -1995,6 +1997,7 @@
 <translation id="437620492464254965">ಬಾಗಿಲುಗಳು ಮತ್ತು ಕಿಟಕಿಗಳು</translation>
 <translation id="4377125064752653719">ನೀವು <ph name="DOMAIN" /> ಅನ್ನು ತಲುಪಲು ಪ್ರಯತ್ನಿಸಿದಿರಿ, ಆದರೆ ಸರ್ವರ್ ನೀಡಿದ ಪ್ರಮಾಣಪತ್ರವನ್ನು ಅದರ ನೀಡುವವರು ಹಿಂತೆಗೆದುಕೊಂಡಿದ್ದಾರೆ. ಇದರರ್ಥ ಸರ್ವರ್ ನೀಡಿದ ಸುರಕ್ಷತೆ ರುಜುವಾತುಗಳನ್ನು ಖಂಡಿತವಾಗಿ ನಂಬಲಾಗುವುದಿಲ್ಲ. ನೀವು ಆಕ್ರಮಣಕಾರರೊಂದಿಗೆ ಸಂವಹಿಸುತ್ತಿರಬಹುದು.</translation>
 <translation id="4378154925671717803">ಫೋನ್</translation>
+<translation id="4382484599443659549">PDF</translation>
 <translation id="4382833368532556056">ಇಂದಿನಿಂದ, ನಿಮ್ಮ ಫೈಲ್‌ಗಳನ್ನು ಕ್ಲೌಡ್ ಸಂಗ್ರಹಣೆಯಲ್ಲಿ ಸೇವ್ ಮಾಡಿ</translation>
 <translation id="4384395682990721132">A4x3</translation>
 <translation id="4387692837058041921">Microsoft OneDrive ಗೆ ಫೈಲ್ ಅಪ್‌ಲೋಡ್ ಅನ್ನು ವಿರಾಮಗೊಳಿಸಲಾಗಿದೆ</translation>
@@ -4315,7 +4318,6 @@
 ಹೆಚ್ಚುವರಿ ವಿವರಗಳು:
 <ph name="DEBUG_INFO" /></translation>
 <translation id="8416874502399604126">ಈ ಸಮಯದಲ್ಲಿ ಮೈಕ್ರೋಫೋನ್ ಅನುಮತಿಸಲಾಗಿದೆ</translation>
-<translation id="8421158157346464398">ಉದ್ಯೋಗ ಪ್ರೊಫೈಲ್‌ ಮಾಹಿತಿ (ಉದಾಹರಣೆಗೆ ನಿಮ್ಮ ಉದ್ಯೋಗ ಪ್ರೊಫೈಲ್‌ ಬಳಕೆದಾರರ ಹೆಸರು)</translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" /> <ph name="SECOND_LABEL" /> <ph name="THIRD_LABEL" /></translation>
 <translation id="8425213833346101688">ಬದಲಿಸಿ</translation>
 <translation id="8426945547715537628">ಕೀಬೋರ್ಡ್ ಓವರ್‌ರೈಡ್ ಅನ್ನು ಅನುಮತಿಸಬೇಕೆ?</translation>

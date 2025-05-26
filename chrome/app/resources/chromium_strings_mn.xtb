@@ -121,7 +121,6 @@
 <translation id="2572494885440352020">Chromium-ийн туслагч</translation>
 <translation id="2575822587468774919">Зурган хайлтаар хайхыг хүссэн зүйлээ сонгоно уу</translation>
 <translation id="2576118232315942160">Нууц үг болон бусад зүйлээ бүх төхөөрөмж дээрээ авахын тулд Chromium-д нэвтэрнэ үү</translation>
-<translation id="2583187216237139145">Энэ профайлыг ашиглах үед үүссэн Chromium-н аливаа өгөгдлийг (хавчуурга, түүх, нууц үг болон бусад тохиргоог үүсгэх зэрэг) ажлын профайлын админ хасах боломжтой. <ph name="LEARN_MORE" /></translation>
 <translation id="2592940277904433508">Chromium-г үргэлжлүүлэн ашиглах</translation>
 <translation id="259935314519650377">Татсан суулгагчийг завсрын санах ойд хадгалж чадсангүй. Алдаа: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
 <translation id="2620436844016719705">Систем</translation>
@@ -364,7 +363,6 @@
 <translation id="6069027071882229820">Зургаар хуулах</translation>
 <translation id="6072279588547424923"><ph name="EXTENSION_NAME" />-г Chromium-д нэмсэн</translation>
 <translation id="6072463441809498330">Chromium-г илүү хурдан болгоорой</translation>
-<translation id="608006075545470555">Энэ хөтчид ажлын профайл нэмэх</translation>
 <translation id="6096348254544841612">Chromium-г тохируулж, хянана уу. Шинэчлэх боломжтой.</translation>
 <translation id="6107893135096467929">Асаалттай • Chromium энэ өргөтгөлийг хаанаас гаралтай болохыг баталгаажуулах боломжгүй</translation>
 <translation id="6119438414301547735">Өргөтгөлд Chromium-н самбарт хандах хүсэлт харуулахыг зөвшөөрнө үү</translation>
@@ -558,7 +556,6 @@
 <translation id="8471947159125090285">Google Бүртгэлдээ Chromium-н өгөгдлийг ашиглах, хадгалахын тулд өөрийгөө мөн болохыг баталгаажуулна уу</translation>
 <translation id="8493179195440786826">Chromium нь хуучирсан байна</translation>
 <translation id="8522801943730206384">Таныг нууц үгнүүдээ хадгалах үед Chromium тэдгээрийг шалгах боломжтой</translation>
-<translation id="8550334526674375523">Энэ ажлын профайл нь таны хувийн профайлаас бүрэн тусдаа байна.</translation>
 <translation id="8555465886620020932">Үйлчилгээний алдаа: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="8556420416730706394">Та хялбар хандахын тулд Зурган хайлтыг бэхлэх боломжтой. Хажуугийн самбарын дээд талд байх Бэхлэх товчийг товшино уу</translation>
 <translation id="856656450041460113">Хэлний жагсаалтаас хайх</translation>
@@ -587,7 +584,6 @@
 <translation id="8931379085695076764">Chromium таны сүүлийн хэдэн долоо хоногийн хөтчийн түүхэд тулгуурлан сонирхлыг тань тооцоолох боломжтой. Энэ мэдээлэл таны төхөөрөмж дээр үлдэнэ.</translation>
 <translation id="8941642502866065432">Chromium-г шинэчилж чадсангүй</translation>
 <translation id="897581876605952338">Chromium Enterprise-н лого</translation>
-<translation id="8986207147630327271">Та энэ хөтчид ажлын профайл нэмж байгаа бөгөөд администратордоо зөвхөн ажлын профайлын хяналтыг өгч байна.</translation>
 <translation id="8988036198400390003">Chromium-н профайлуудыг удирдах</translation>
 <translation id="9019929317751753759">Chromium-г илүү аюулгүй болгохын тулд <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> жагсаалтанд байхгүй, танд мэдэгдэлгүйгээр нэмэгдсэн байж болох дараах өргөтгөлийг идэвхгүй болголоо.</translation>
 <translation id="9022552996538154597">Chromium дансандаа нэвтрэх</translation>

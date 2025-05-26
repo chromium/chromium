@@ -43,7 +43,6 @@
 <translation id="2536366509642644298">Los grupos de pestañas "<ph name="TAB_GROUP_NAME_1" />" y "<ph name="TAB_GROUP_NAME_2" />" ya no están disponibles</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{Contraer <ph name="TABS_COUNT_ONE" /> pestaña}other{Contraer el grupo de pestañas, el cual tiene <ph name="TABS_COUNT_MANY" /> pestañas}}</translation>
 <translation id="2569352796411618312">Sugerencia: Últimamente no usaste <ph name="NUMBER_OF_TABS" /> de tus pestañas. ¿Quieres cerrarlas?</translation>
-<translation id="2656693375914502139">Mover a grupo</translation>
 <translation id="2662028055331606429">Calificación: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="266935134738038806">Visitar sitio</translation>
 <translation id="2671423594960767771">Compartir grupo</translation>
@@ -121,7 +120,6 @@
 <translation id="6054741997831917303">El precio de este artículo recientemente bajó de <ph name="PREVIOUS_PRICE" /> a <ph name="NEW_PRICE" /></translation>
 <translation id="6109251075362363230">Ahora también se archivarán todas las pestañas duplicadas, excepto la copia más reciente.</translation>
 <translation id="6193448654517602979">Seleccionar pestañas</translation>
-<translation id="6212567362666004597">Agregar pestaña al grupo</translation>
 <translation id="6220820548421939212">Sí. Acepto</translation>
 <translation id="6228793724645064692">(calificación de la tienda)</translation>
 <translation id="6271513594716432922">Cerrar todas las pestañas inactivas</translation>

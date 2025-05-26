@@ -1840,6 +1840,7 @@
 <translation id="4140905366050378834">طعام حيوانات أليفة ومستلزمات رعايتها</translation>
 <translation id="4140905530744469899">رقم تعريف الملف الشخصي:</translation>
 <translation id="4142935452406587478">الدُرج 10</translation>
+<translation id="4147897805161313378">‏صور Google‏‏</translation>
 <translation id="4148925816941278100">American Express</translation>
 <translation id="4150099059797363385">ظرف صيني رقم 4</translation>
 <translation id="4151403195736952345">استخدام الإعدادات العمومية التلقائية (كشف)</translation>
@@ -2000,6 +2001,7 @@
 <translation id="437620492464254965">أبواب ونوافذ</translation>
 <translation id="4377125064752653719">لقد حاولت الوصول إلى <ph name="DOMAIN" />، ولكن جهة إصدار الشهادة التي قدمها الخادم قد أبطلت الشهادة. وهذا يعني أن بيانات اعتماد الأمان التي قدمها الخادم يجب عدم الوثوق بها مطلقًا. فقد تكون على اتصال بأحد المهاجمين.</translation>
 <translation id="4378154925671717803">هاتف</translation>
+<translation id="4382484599443659549">PDF</translation>
 <translation id="4382833368532556056">من الآن فصاعدًا، يمكنك حفظ ملفاتك في مساحة التخزين في السحابة الإلكترونية</translation>
 <translation id="4384395682990721132">A4x3</translation>
 <translation id="4387692837058041921">‏تم مؤقتًا إيقاف عملية تحميل الملفات إلى Microsoft OneDrive</translation>
@@ -2448,6 +2450,7 @@
 <translation id="519422657042045905">التعليق التوضيحي غير متوفِّر</translation>
 <translation id="5200063972779787617">حفظ العنوان في الحساب</translation>
 <translation id="5201306358585911203">تعرض صفحة مضمّنة في هذه الصفحة</translation>
+<translation id="5203716867500274632">‏يسمح المشرف بمزامنة ما يلي بين جلساتك السابقة والحالية على أجهزة ChromeOS:</translation>
 <translation id="5205114269877707377">‏‫"<ph name="OMNIBOX_ACTION_FOCUSED_FRIENDLY_MATCH_TEXT" />"، يُرجى الضغط على مفتاح Tab لتصفُّح الإجراءات المتاحة، ثم الضغط على مفتاح Enter لتنفيذ الإجراء المحدَّد.</translation>
 <translation id="5205222826937269299">الاسم مطلوب</translation>
 <translation id="5206392433295093945">غرفة نوم</translation>
@@ -2607,6 +2610,7 @@
 <translation id="5472588168895083535">تمّ حظر ميزة "تتبُّع اليد"</translation>
 <translation id="547963486735802022">حاوِل نقل ملفاتك مرة أخرى.</translation>
 <translation id="5481076368049295676">قد يحاول هذا المحتوى تثبيت برامج خطيرة على جهازك تسرق معلوماتك أو تحذفها. <ph name="BEGIN_LINK" />عرض على أي حال<ph name="END_LINK" /></translation>
+<translation id="5481604577800516617">ترتيب النوافذ وعلامات التبويب</translation>
 <translation id="5481682542063333508">عرض مساعدة في الكتابة</translation>
 <translation id="54817484435770891">إضافة عنوان صالح</translation>
 <translation id="5483838506518938965">اكتملت المهمة</translation>
@@ -4282,6 +4286,7 @@
 <translation id="8352849934814541340">ثبَّت مشرف هذا الجهاز تطبيقات للوظائف الإضافية. ويمكن لهذه التطبيقات الوصول إلى بعض بياناتك.</translation>
 <translation id="8355270400102541638">سياق التعطّل على جهاز المستخدِم:</translation>
 <translation id="8363502534493474904">إيقاف "وضع الطيران"</translation>
+<translation id="8363929499301563123">ملفات تعريف الارتباط الخاصة بالمواقع الإلكترونية (سيتم الاحتفاظ بحالة تسجيل الدخول على المواقع الإلكترونية التي تمت زيارتها مؤخرًا)</translation>
 <translation id="8364627913115013041">لم يتم ضبطها.
 </translation>
 <translation id="8366057325711477500">أخبار عالمية</translation>
@@ -4321,7 +4326,6 @@
 التفاصيل الإضافية:
 <ph name="DEBUG_INFO" /></translation>
 <translation id="8416874502399604126">تم السماح باستخدام الميكروفون هذه المرّة.</translation>
-<translation id="8421158157346464398">معلومات ملف العمل (مثل اسم المستخدم في ملف العمل)</translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" /> <ph name="SECOND_LABEL" /> <ph name="THIRD_LABEL" /></translation>
 <translation id="8425213833346101688">تغيير</translation>
 <translation id="8426945547715537628">هل المطلوب السماح بتجاوز لوحة المفاتيح؟</translation>

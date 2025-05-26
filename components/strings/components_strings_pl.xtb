@@ -1839,6 +1839,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="4140905366050378834">Karma i artykuły dla zwierząt domowych</translation>
 <translation id="4140905530744469899">Identyfikator profilu:</translation>
 <translation id="4142935452406587478">Taca 10</translation>
+<translation id="4147897805161313378">Zdjęcia Google</translation>
 <translation id="4148925816941278100">American Express</translation>
 <translation id="4150099059797363385">Koperta chińska nr 4</translation>
 <translation id="4151403195736952345">Użyj globalnego ustawienia domyślnego (Wykrywaj)</translation>
@@ -1999,6 +2000,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="437620492464254965">Drzwi i okna</translation>
 <translation id="4377125064752653719">Próbujesz wejść na <ph name="DOMAIN" />, ale serwer przedstawił certyfikat unieważniony przez wystawcę. Oznacza to, że dane uwierzytelniające podane przez serwer są zupełnie niewiarygodne. Możliwe, że komunikujesz się z intruzem.</translation>
 <translation id="4378154925671717803">Telefon</translation>
+<translation id="4382484599443659549">PDF</translation>
 <translation id="4382833368532556056">Od teraz zapisuj pliki w miejscu w chmurze</translation>
 <translation id="4384395682990721132">A4x3</translation>
 <translation id="4387692837058041921">Przesyłanie pliku do Microsoft OneDrive zostało wstrzymane</translation>
@@ -2446,6 +2448,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="519422657042045905">Adnotacja niedostępna</translation>
 <translation id="5200063972779787617">Zapisz adres na koncie</translation>
 <translation id="5201306358585911203">Komunikat z elementu umieszczonego na bieżącej stronie</translation>
+<translation id="5203716867500274632">Administrator włączył synchronizację tych danych między sesjami poprzednią i bieżącą na urządzeniach z ChromeOS:</translation>
 <translation id="5205114269877707377"><ph name="OMNIBOX_ACTION_FOCUSED_FRIENDLY_MATCH_TEXT" />; naciśnij Tab, aby przejrzeć dostępne działania, a potem Enter, aby wykonać wybraną czynność.</translation>
 <translation id="5205222826937269299">Nazwa jest wymagana</translation>
 <translation id="5206392433295093945">Sypialnia</translation>
@@ -2605,6 +2608,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="5472588168895083535">Śledzenie rąk zablokowane</translation>
 <translation id="547963486735802022">Spróbuj przesłać pliki ponownie</translation>
 <translation id="5481076368049295676">Te treści mogą próbować instalować na Twoim urządzeniu niebezpieczne oprogramowanie, które wykrada lub usuwa dane. <ph name="BEGIN_LINK" />Wyświetl mimo to<ph name="END_LINK" /></translation>
+<translation id="5481604577800516617">Układ okien i kart</translation>
 <translation id="5481682542063333508">Pomoc w tworzeniu ofert</translation>
 <translation id="54817484435770891">Dodaj poprawny adres</translation>
 <translation id="5483838506518938965">Wszystko gotowe</translation>
@@ -4279,6 +4283,7 @@ Dodatkowe informacje:
 <translation id="8352849934814541340">Administrator urządzenia zainstalował aplikacje obsługujące dodatkowe funkcje. Aplikacje mają dostęp do niektórych Twoich danych.</translation>
 <translation id="8355270400102541638">Lokalny kontekst awarii:</translation>
 <translation id="8363502534493474904">Wyłącz tryb samolotowy</translation>
+<translation id="8363929499301563123">Pliki cookie witryn (stan zalogowania na ostatnio odwiedzanych stronach zostanie zachowany)</translation>
 <translation id="8364627913115013041">Nie ustawiono.</translation>
 <translation id="8366057325711477500">Wiadomości ze świata</translation>
 <translation id="836616551641291797">Dowiedz się więcej o sposobie zarządzania przeglądarką</translation>
@@ -4317,7 +4322,6 @@ Dodatkowe informacje:
 Dodatkowe informacje:
 <ph name="DEBUG_INFO" /></translation>
 <translation id="8416874502399604126">Przyznano jednorazowy dostęp do mikrofonu</translation>
-<translation id="8421158157346464398">informacje o profilu służbowym (np. nazwa użytkownika),</translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" /> <ph name="SECOND_LABEL" /> <ph name="THIRD_LABEL" /></translation>
 <translation id="8425213833346101688">Zmień</translation>
 <translation id="8426945547715537628">Zezwolić na zastępowanie funkcji klawiatury?</translation>

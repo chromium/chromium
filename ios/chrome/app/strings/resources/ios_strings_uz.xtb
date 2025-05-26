@@ -383,6 +383,7 @@ Saytlar reklamalarni sizga moslashtirish uchun brauzerdagi faoliyatingizni kuzat
 <translation id="2513103768503127042">Varaqlar guruhini shu yerdan topasiz</translation>
 <translation id="251837347827266434">Hisobingizdan chiqasiz, varaqlar yopiladi va brauzer maʼlumotlari tozalanadi</translation>
 <translation id="2520787026086861736"><ph name="BEGIN_LINK" />Avtomatik kiritish va parollar<ph name="END_LINK" /> orqali faolsizlantirish mumkin.</translation>
+<translation id="2523295204312809179">Varaqlar guruhi yopilganda avtomatik shu yerda saqlanadi</translation>
 <translation id="2529021024822217800">Hammasini ochish</translation>
 <translation id="2536991091671391962">Saqlangan parollardan istalgan qurilmada foydalanishingiz mumkin. Ular Google Parollar menejerida <ph name="EMAIL" /> hisobiga saqlangan.</translation>
 <translation id="2538103551183528357">Yashirin, parol</translation>
@@ -1035,6 +1036,7 @@ Imkon boʻlsa, qidiruv tarixini qanday tozalash haqidagi qidiruv tizimi koʻrsat
 <translation id="5275912569557792098"><ph name="USER_NAME" /> (<ph name="USER_EMAIL" />) sizni varaqlar guruhiga taklif qildi. Havolaga ega har kim barcha varaqlarni tahrirlashi mumkin, diqqat bilan qoʻshiling. Havola muddati: 48 soat.</translation>
 <translation id="5279600392753459966">Barchasini bloklash</translation>
 <translation id="5282340693022193851">Narx kuzatuvi bildirishnomalarini olish uchun iOS sozlamalari orqali bildirishnomalarni yoqing.</translation>
+<translation id="528857768909044842">Varaqlar guruhi shu yerda saqlanadi</translation>
 <translation id="5294624619177114121">Mobil bildirishnomalar</translation>
 <translation id="5295239312320826323"><ph name="USER_EMAIL" /> hisobi olib tashlansinmi?</translation>
 <translation id="5300589172476337783">Ko‘rsatish</translation>
@@ -1230,6 +1232,7 @@ Handoff funksiyasini faqatgina Chrome sozlamalarida emas, balki qurilma sozlamal
 <translation id="6100617279104942061">Siz <ph name="USER_EMAIL" /> nomidan kirdingiz. Sozlamalarni ochadi.</translation>
 <translation id="6103540626693881831">Qurilmada shifrlash</translation>
 <translation id="611361228753138223">Bu qurilmada yaqinda ochilgan saytlar</translation>
+<translation id="611705554202268369">Varaqlar guruhgia kiritish uchun bosib turing</translation>
 <translation id="6122191549521593678">Onlayn</translation>
 <translation id="6122831415929794347">Saytlarni xavfsiz kezish faolsizlantirilsinmi?</translation>
 <translation id="6123514585040403489">Varaqlar yopiladi</translation>
@@ -1855,6 +1858,7 @@ Saytlar reklamalarni sizga moslashtirish uchun brauzerdagi faoliyatingizni kuzat
 <translation id="8535368836838588657">Parolni ochiqlash</translation>
 <translation id="8545276357312221485">Birlamchi brauzer sozlamalarini tekshiring</translation>
 <translation id="854938212724803178">1 ta parolingiz oshkor qilingan. Xavfsiz qolish uchun uni tuzating.</translation>
+<translation id="8551311254462607218">Manzil qatorida Google Lens kamera belgisini bosing</translation>
 <translation id="8556590991644167667">{count,plural, =1{{count} ta ogohlantirishni yopdingiz}other{{count} ta ogohlantirishni yopdingiz}}</translation>
 <translation id="8558046478684552694">Guruhni yoping.</translation>
 <translation id="8560253818350321773">Avval tez-tez ishlatilgan elementlarni chiqarish.</translation>
@@ -1998,6 +2002,7 @@ Saytlar reklamalarni sizga moslashtirish uchun brauzerdagi faoliyatingizni kuzat
 <translation id="9032405509996909363">Brauzer maʼlumotlarini oʻchirishni tasdiqlash</translation>
 <translation id="9039373489628511875">Trafik nazorati</translation>
 <translation id="9042893549633094279">Maxfiylik va xavfsizlik</translation>
+<translation id="9055291197094969722">Ochilgan sahifalarni tartiblash va samarali ishlash uchun varaqlar guruhini yarating</translation>
 <translation id="9055580485132823283">Quyidagilar oʻchiriladi: {password_count} ta parol, {passkey_count} ta kalit va hisob maʼlumotlari hech qachon saqlanmasligi tanlangan sayt va ilovalar roʻyxati. Sayt va ilovalarda yaratilgan hisoblar oʻchirilmaydi.</translation>
 <translation id="9057030985451135243">Umumiy varaqlar guruhi haqida batafsil</translation>
 <translation id="9057972802061533987">Obuna qilinmadi. Xatolik yuz berdi.</translation>

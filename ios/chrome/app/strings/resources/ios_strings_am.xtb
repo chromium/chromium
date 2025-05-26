@@ -243,6 +243,7 @@
 <translation id="1972325230031091483">አሁን ባለው የድረ-ገፅ ጉብኝትዎ ላይ በመመስረት ይዘቱ በንቃት ስለተጫነ በፍጥነት ያስሱታል</translation>
 <translation id="1974060860693918893">የላቀ</translation>
 <translation id="1977621687170192347">«ከሌሎች መተግበሪያዎች የሚመጡ አገናኞችን ማንነት የማያሳውቅ ውስጥ ለመክፈት ጠይቅ» የሚለውን ያብሩ።</translation>
+<translation id="1979055159547313322"><ph name="USER_EMAIL" /> የሚለው መለያ በ<ph name="HOSTED_DOMAIN" /> የሚተዳደር ነው፣ ይህም የተወሰነ መረጃን ሊመለከት ይችላል፣ የሚከተሉትን ጨምሮ</translation>
 <translation id="1979188886349613713">በድር ጣቢያው ያልተገለጹ የፋይል ቅጥያዎችን ያካትቱ</translation>
 <translation id="1980417445547898121">{count,plural, =1{የእርስዎን {count} በቅርብ ጊዜ ገቢር የነበረ ትር ከሌላ መሣሪያዎ በዚህ iPhone ላይ ያግኙ}one{የእርስዎን {count} በቅርብ ጊዜ ገቢር የነበረ ትር ከሌላ መሣሪያዎ በዚህ iPhone ላይ ያግኙ}other{የእርስዎን {count} በቅርብ ጊዜ ገቢር የነበሩ ትሮች ከሌላ መሣሪያዎ በዚህ iPhone ላይ ያግኙ}}</translation>
 <translation id="1981118202195772574">ሞባይል</translation>
@@ -278,6 +279,7 @@
 <translation id="2103075008456228677">history.google.comን ክፈት</translation>
 <translation id="2104436223719117661">በመታየት ላይ ያሉ ፍለጋዎች</translation>
 <translation id="21133533946938348">ትር አጣብቅ</translation>
+<translation id="2117650889962717098">ወደ ማንነት የማያሳውቅ ሁነታ በመቀየር አሳሽዎን የግል አድርገው ያቆዩ</translation>
 <translation id="2119636449201577317">ክፈት በ…</translation>
 <translation id="2120553909046681540">የእርስዎ ድርጅት የግል አሰሳን አጥፍቷል።</translation>
 <translation id="2122754583996902531">የእርስዎ አሳሽ ይተዳደራል። <ph name="BEGIN_LINK" />የበለጠ ለመረዳት<ph name="END_LINK" /></translation>
@@ -562,6 +564,7 @@
 <translation id="3348387552617855658">ይህ ካርድ ጥቅሎችዎን እንዲከታተሉ ያግዝዎታል እና አስፈላጊ የማድረስ ዝማኔዎችን ይሰጥዎታል።</translation>
 <translation id="3349031117032695619">ብቅ-ባዮችን አግድ</translation>
 <translation id="3349676726073650389">እርስዎ የሚከተሏቸው ጣቢያዎች እና ፍለጋዎች በእርስዎ Google መለያ ውስጥ ተቀምጠዋል። በማንኛውም ጊዜ የእርስዎን መከተሎች በቅንብሮች ውስጥ ማስተዳደር ይችላሉ።</translation>
+<translation id="3353037916374303415"><ph name="EMAIL" />። ይህ መለያ የሚተዳደር ነው።</translation>
 <translation id="3365529507898144230">ፎቶዎች ውስጥ አስቀምጥ</translation>
 <translation id="3371831930909698441">ትርጉም ይገኛል። አማራጮች ከማያው ግርጌ አጠገብ ይገኛሉ።</translation>
 <translation id="3377063233124932127">አሁን የእርስዎ የተቀመጡ እልባቶች፣ የይለፍ ቃላት እና ሌሎችም ከላይ ናቸው።</translation>
@@ -670,6 +673,7 @@
 <translation id="3875783148670536197">እንዴት እንደሆነ አሳየኝ</translation>
 <translation id="3878657761594430423">ሉህ ያዢ</translation>
 <translation id="3885587018298784481">የቤተሰብ ቡድን ይቀላቀሉ</translation>
+<translation id="3888230626190453136">ማንነት የማያሳውቅ ውስጥ ያስሱ</translation>
 <translation id="3888863481921783344">ይህ በእርስዎ ክስተት ላይ ተጋባዦች ሊሆኑ የሚችሉን ለእርስዎ ለማሳየት ሥራ ላይ ይውላል።</translation>
 <translation id="3891414008432200754">ዋጋ</translation>
 <translation id="3892144330757387737">ታሪክዎን እዚህ ያገኛሉ</translation>

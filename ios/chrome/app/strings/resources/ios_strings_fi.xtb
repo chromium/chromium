@@ -243,6 +243,7 @@
 <translation id="1972325230031091483">Selaaminen sujuu nopeammin, koska sisältö ladataan proaktiivisesti tällä hetkellä auki olevan verkkosivun perusteella</translation>
 <translation id="1974060860693918893">Lisäasetukset</translation>
 <translation id="1977621687170192347">Laita päälle "Pyydä lupaa avata muiden sovellusten linkkejä incognito-tilassa".</translation>
+<translation id="1979055159547313322"><ph name="HOSTED_DOMAIN" /> ylläpitää tiliä <ph name="USER_EMAIL" /> ja voi nähdä joitakin tietoja, esimerkiksi näitä:</translation>
 <translation id="1979188886349613713">Sisällytä tiedostotunnisteet, joita ei ilmoiteta verkkosivustolla</translation>
 <translation id="1980417445547898121">{count,plural, =1{Avaa {count} toisella laitteella äskettäin aktiivisena ollut välilehti tällä iPhonella}other{Avaa {count} toisella laitteella äskettäin aktiivisena ollutta välilehteä tällä iPhonella}}</translation>
 <translation id="1981118202195772574">Mobiili</translation>

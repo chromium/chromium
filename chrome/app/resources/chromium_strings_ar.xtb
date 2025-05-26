@@ -119,7 +119,6 @@
 <translation id="2572494885440352020">‏أداة مساعدة Chromium</translation>
 <translation id="2575822587468774919">انقر أي محتوى للبحث عنه باستخدام ميزة "البحث بالصور"</translation>
 <translation id="2576118232315942160">‏سجِّل الدخول إلى Chromium للوصول إلى كلمات المرور وغيرها على جميع أجهزتك</translation>
-<translation id="2583187216237139145">‏يمكن لمشرف ملف العمل إزالة أي بيانات مرتبطة بمتصفِّح Chromium والتي يتم إنشاؤها أثناء استخدام هذا الملف الشخصي (مثل إنشاء الإشارات المرجعية والسجلّ وكلمات المرور والإعدادات الأخرى).<ph name="LEARN_MORE" /></translation>
 <translation id="2592940277904433508">‏مواصلة استخدام Chromium</translation>
 <translation id="259935314519650377">تعذَّر إجراء تخزين مؤقت للمثبّت الذي تم تنزيله. الخطأ: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
 <translation id="2620436844016719705">النظام</translation>
@@ -364,7 +363,6 @@
 <translation id="6069027071882229820">نسخ كصورة</translation>
 <translation id="6072279588547424923">‏تمت إضافة <ph name="EXTENSION_NAME" /> إلى Chromium</translation>
 <translation id="6072463441809498330">‏زيادة سرعة أداء Chromium</translation>
-<translation id="608006075545470555">إضافة ملف للعمل على هذا المتصفِّح</translation>
 <translation id="6096348254544841612">‏تخصيص Chromium والتحكُّم فيه. هناك تحديث متوفر.</translation>
 <translation id="6107893135096467929">‏مفعَّلة • لا يمكن لمتصفّح Chromium التحقُّق من مصدر هذه الإضافة</translation>
 <translation id="6119438414301547735">‏السماح للإضافة بعرض طلبات الوصول في شريط أدوات Chromium</translation>
@@ -560,7 +558,6 @@
 <translation id="8471947159125090285">‏يجب إثبات هويتك لاستخدام بيانات Chromium وحفظها في حسابك على Google</translation>
 <translation id="8493179195440786826">‏إصدار Chromium قديم</translation>
 <translation id="8522801943730206384">‏لا يستطيع Chromium التحقُّق من كلمات المرور إلا عند حفظها.</translation>
-<translation id="8550334526674375523">هذا ملف العمل منفصِل تمامًا عن ملفك الشخصي.</translation>
 <translation id="8555465886620020932">حدث خطأ في الخدمة: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="8556420416730706394">يمكنك تثبيت ميزة "البحث بالصور" للوصول إليها بسهولة من خلال النقر على الزر "تثبيت" في أعلى اللوحة الجانبية</translation>
 <translation id="856656450041460113">البحث في قائمة اللغات</translation>
@@ -589,7 +586,6 @@
 <translation id="8931379085695076764">‏يمكن أيضًا أن يقدّر Chromium اهتماماتك استنادًا إلى سجلّ تصفحّك على مدار الأسابيع القليلة الماضية. ويتم الاحتفاظ بهذه المعلومات على جهازك.</translation>
 <translation id="8941642502866065432">‏تعذّرت إعادة التحميل Chromium</translation>
 <translation id="897581876605952338">‏شعار Chromium Enterprise</translation>
-<translation id="8986207147630327271">أنت على وشك إضافة ملف للعمل إلى هذا المتصفِّح ومنح المشرف إمكانية التحكُّم في هذا ملف العمل فقط.</translation>
 <translation id="8988036198400390003">‏إدارة الملفات الشخصية على Chromium</translation>
 <translation id="9019929317751753759">‏لجعل Chromium أكثر أمنًا، أوقفنا الإضافة التالية التي لم تُدرج في <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> وربما تكون قد أضيفت بدون علمك.</translation>
 <translation id="9022552996538154597">‏تسجيل الدخول إلى Chromium</translation>

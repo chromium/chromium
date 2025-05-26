@@ -1839,6 +1839,7 @@
 <translation id="4140905366050378834">ສິນຄ້າອາຫານ ແລະ ອຸປະກອນເບິ່ງແຍງສັດລ້ຽງ</translation>
 <translation id="4140905530744469899">ID ໂປຣໄຟລ໌:</translation>
 <translation id="4142935452406587478">ຖາດ 10</translation>
+<translation id="4147897805161313378">Google ຮູບພາບ</translation>
 <translation id="4148925816941278100">ບັດ American Express</translation>
 <translation id="4150099059797363385">Envelope Chinese #4</translation>
 <translation id="4151403195736952345">ໃຊ້​ຄ່າ​ມາດ​ຕະ​ຖານ​ທົ່ວ​ໄປ (ກ​ວດ​ຫາ)</translation>
@@ -1999,6 +2000,7 @@
 <translation id="437620492464254965">ປະຕູ ແລະ ປ່ອງຢ້ຽມ</translation>
 <translation id="4377125064752653719">ທ່ານພະຍາຍາມເຂົ້າຫາ <ph name="DOMAIN" />, ແຕ່ໃບຢັ້ງຢືນທີ່ເຊີບເວີນໍາສະເໜີນັ້ນຖືກຜູ້ອອກໃຫ້ຖອນຄືນແລ້ວ. ນີ້ໝາຍຄວາມວ່າ ໃບຢັ້ງຢືນຄວາມປອດໄພທີ່ເຊີບເວີນໍາສະເໜີນັ້ນບໍ່ເຊື່ອຖືໄດ້ທັງໝົດ. ທ່ານອາດຈະກໍາລັງສື່ສານກັບຕົວໂຈມຕີຢູ່.</translation>
 <translation id="4378154925671717803">ໂທລະ​ສັບ</translation>
+<translation id="4382484599443659549">PDF</translation>
 <translation id="4382833368532556056">ຈາກນີ້ໄປ, ໃຫ້ບັນທຶກໄຟລ໌ຂອງທ່ານໃສ່ບ່ອນຈັດເກັບຂໍ້ມູນຄລາວ</translation>
 <translation id="4384395682990721132">A4x3</translation>
 <translation id="4387692837058041921">ລະບົບຢຸດການອັບໂຫຼດໄຟລ໌ໃສ່ Microsoft OneDrive ໄວ້ຊົ່ວຄາວ</translation>
@@ -4316,7 +4318,6 @@
 ລາຍລະອຽດເພີ່ມເຕີມ:
 <ph name="DEBUG_INFO" /></translation>
 <translation id="8416874502399604126">ຂະນະນີ້ອະນຸຍາດໄມໂຄຣໂຟນແລ້ວ</translation>
-<translation id="8421158157346464398">ຂໍ້ມູນໂປຣໄຟລ໌ບ່ອນເຮັດວຽກ (ເຊັ່ນ: ຊື່ຜູ້ໃຊ້ໃນໂປຣໄຟລ໌ບ່ອນເຮັດວຽກຂອງທ່ານ)</translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" /> <ph name="SECOND_LABEL" /> <ph name="THIRD_LABEL" /></translation>
 <translation id="8425213833346101688">ປ່ຽນ​ແປງ</translation>
 <translation id="8426945547715537628">ອະນຸຍາດການຍົກເລີກແປ້ນພິມບໍ?</translation>

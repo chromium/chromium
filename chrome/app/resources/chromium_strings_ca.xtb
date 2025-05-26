@@ -119,7 +119,6 @@
 <translation id="2572494885440352020">Aplicació d'ajuda de Chromium</translation>
 <translation id="2575822587468774919">Selecciona el que vulguis per cercar-ho amb la cerca d'imatges</translation>
 <translation id="2576118232315942160">Per obtenir les teves contrasenyes i altres dades en tots els dispositius, inicia la sessió a Chromium</translation>
-<translation id="2583187216237139145">L'administrador del perfil de treball pot suprimir qualsevol dada de Chromium que es generi durant l'ús d'aquest perfil, com ara les adreces d'interès, l'historial, les contrasenyes i altres opcions de configuració. <ph name="LEARN_MORE" /></translation>
 <translation id="2592940277904433508">Continua utilitzant Chromium</translation>
 <translation id="259935314519650377">No s'ha pogut desar l'instal·lador baixat a la memòria cau. Error: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
 <translation id="2620436844016719705">Sistema</translation>
@@ -364,7 +363,6 @@
 <translation id="6069027071882229820">Copia com a imatge</translation>
 <translation id="6072279588547424923"><ph name="EXTENSION_NAME" /> s'ha afegit a Chromium</translation>
 <translation id="6072463441809498330">Fes que Chromium sigui més ràpid</translation>
-<translation id="608006075545470555">Afegeix un perfil de treball a aquest navegador</translation>
 <translation id="6096348254544841612">Personalitza i controla Chromium. Hi ha una actualització disponible.</translation>
 <translation id="6107893135096467929">Activat • Chromium no pot verificar d'on prové aquesta extensió</translation>
 <translation id="6119438414301547735">Permet que l'extensió mostri sol·licituds d'accés a la barra d'eines de Chromium</translation>
@@ -560,7 +558,6 @@ Chromium no pot recuperar la configuració.</translation>
 <translation id="8471947159125090285">Per utilitzar i desar les dades de Chromium al teu Compte de Google, verifica la teva identitat</translation>
 <translation id="8493179195440786826">Chromium no està actualitzat</translation>
 <translation id="8522801943730206384">Chromium pot comprovar les teves contrasenyes quan les deses</translation>
-<translation id="8550334526674375523">Aquest perfil de treball és completament independent del teu perfil personal.</translation>
 <translation id="8555465886620020932">Error de servei: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="8556420416730706394">Pots fixar la cerca d'imatges per accedir-hi fàcilment. Fes clic al botó per fixar que hi ha a la part superior del tauler lateral.</translation>
 <translation id="856656450041460113">Cerca a la llista d'idiomes</translation>
@@ -589,7 +586,6 @@ Chromium no pot recuperar la configuració.</translation>
 <translation id="8931379085695076764">Chromium pot estimar els teus interessos basant-se en l'historial de navegació de les darreres setmanes. Aquesta informació es queda al teu telèfon.</translation>
 <translation id="8941642502866065432">Chromium no es pot actualitzar</translation>
 <translation id="897581876605952338">Logotip de Chromium Enterprise</translation>
-<translation id="8986207147630327271">Estàs afegint un perfil de treball a aquest navegador i donant control al teu administrador únicament sobre el perfil de treball.</translation>
 <translation id="8988036198400390003">Gestiona els perfils de Chromium</translation>
 <translation id="9019929317751753759">Per tal que Chromium sigui més segur, hem desactivat algunes de les extensions que no figuren a <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> i que és possible que s'hagin afegit sense que ho sapigueu.</translation>
 <translation id="9022552996538154597">Inicia la sessió a Chromium</translation>

@@ -636,6 +636,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="2088913896151127116">Pridať text</translation>
 <translation id="2090451897496479509">Ak sa chcete dozvedieť viac, kontaktujte poskytovateľa</translation>
 <translation id="2091887806945687916">Zvuk</translation>
+<translation id="2093184051799735948">Použite vyhľadávač <ph name="ENGINE_NAME" /> alebo zadajte webovú adresu</translation>
 <translation id="2093982008204312032">Google Chrome sa pokúša vypnúť Windows Hello na vypĺňanie hesiel.</translation>
 <translation id="2094505752054353250">Domény sa nezhodujú</translation>
 <translation id="2094704029599359040">Informácie o verzii</translation>
@@ -1833,6 +1834,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="4140905366050378834">Potrava a doplnky pre domáce zvieratá</translation>
 <translation id="4140905530744469899">Identifikátor profilu:</translation>
 <translation id="4142935452406587478">Priehradka č. 10</translation>
+<translation id="4147897805161313378">Fotky Google</translation>
 <translation id="4148925816941278100">American Express</translation>
 <translation id="4150099059797363385">Čínska obálka č. 4</translation>
 <translation id="4151403195736952345">Použiť globálne predvolené nastavenie (zistiť)</translation>
@@ -1993,6 +1995,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="437620492464254965">Dvere a okná</translation>
 <translation id="4377125064752653719">Pokúsili ste sa o prístup na stránky <ph name="DOMAIN" />, avšak certifikát poskytnutý serverom bol vydavateľom zrušený. Znamená to, že povereniam zabezpečenia, ktoré predložil server, sa celkom nedá dôverovať. Je možné, že komunikujete s útočníkom.</translation>
 <translation id="4378154925671717803">Telefón</translation>
+<translation id="4382484599443659549">PDF</translation>
 <translation id="4382833368532556056">Odteraz ukladajte súbory do cloudového priestoru</translation>
 <translation id="4384395682990721132">A4×3</translation>
 <translation id="4387692837058041921">Nahrávanie súborov do služby Microsoft OneDrive bolo pozastavené</translation>
@@ -4310,7 +4313,6 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 Ďalšie podrobnosti:
 <ph name="DEBUG_INFO" /></translation>
 <translation id="8416874502399604126">Mikrofón je momentálne povolený</translation>
-<translation id="8421158157346464398">informácie v pracovnom profile (napríklad vaše používateľské meno v ňom),</translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" /> <ph name="SECOND_LABEL" /> <ph name="THIRD_LABEL" /></translation>
 <translation id="8425213833346101688">Zmeniť</translation>
 <translation id="8426945547715537628">Chcete povoliť prepísanie klávesnice?</translation>

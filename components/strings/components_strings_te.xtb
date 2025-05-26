@@ -362,6 +362,7 @@
 <translation id="1612199629998703524">టాపిక్‌లను మేనేజ్ చేయండి</translation>
 <translation id="1615178538289490617"><ph name="PORT_NAME" /> కోసం యాక్సెస్‌ను ఉపసంహరించుకోండి</translation>
 <translation id="1615402009686901181">గోప్యమైన కంటెంట్ కనిపించినప్పుడు, అడ్మినిస్ట్రేటర్ పాలసీ స్క్రీన్ క్యాప్చర్‌ను డిజేబుల్ చేస్తుంది</translation>
+<translation id="161612500287664753">ఆ పేజీ గురించి Google Searchను అడగండి</translation>
 <translation id="1617276713587758852">క్రాస్ఓవర్‌లు</translation>
 <translation id="1619007254056372606">పరికరంలో సైట్ డేటాను మేనేజ్ చేయండి</translation>
 <translation id="1619648179761984213"><ph name="USER_DISPLAY_NAME" /> ఈ ట్యాబ్‌ను తీసివేశారు</translation>
@@ -1503,6 +1504,7 @@
 <translation id="3586931643579894722">వివరాలను దాచిపెట్టు</translation>
 <translation id="3587725436724465984">మీ సంస్థ <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" />ను పాలసీని ఉల్లంఘించే అవకాశం వున్న సైట్‌గా గుర్తించింది. <ph name="BEGIN_LEARN_MORE_LINK" />ఈ హెచ్చరిక గురించి మరింత తెలుసుకోండి<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3587738293690942763">మధ్యలో</translation>
+<translation id="3589519427766620380">ఈ పేజీ గురించి Google Lensను అడగండి</translation>
 <translation id="3596918995172292499">ప్లేట్ స్టేట్</translation>
 <translation id="3600106876108433070">టేబుల్స్‌ను కంపార్ చేయడం గురించి తెలుసుకోండి</translation>
 <translation id="3600246354004376029"><ph name="TITLE" />, <ph name="DOMAIN" />, <ph name="TIME" /></translation>
@@ -1834,6 +1836,7 @@
 <translation id="4140905366050378834">పెంపుడు జంతువుల ఆహారం &amp; పెంపుడు జంతువుల సంరక్షణ సరఫరాలు</translation>
 <translation id="4140905530744469899">ప్రొఫైల్ ID:</translation>
 <translation id="4142935452406587478">ట్రే 10</translation>
+<translation id="4147897805161313378">Google Photos</translation>
 <translation id="4148925816941278100">అమెరికన్ ఎక్స్‌ప్రెస్</translation>
 <translation id="4150099059797363385">ఎన్వలప్ చైనీస్ #4</translation>
 <translation id="4151403195736952345">భౌగోళిక డిఫాల్ట్‌ను ఉపయోగించండి (గుర్తించు)</translation>
@@ -1994,6 +1997,7 @@
 <translation id="437620492464254965">డోర్‌లు &amp; కిటికీలు</translation>
 <translation id="4377125064752653719"><ph name="DOMAIN" />ను చేరుకోవడానికి మీరు ప్రయత్నించారు, కానీ సర్వర్ అందించిన ప్రమాణపత్రాన్ని దాన్ని జారీ చేసినవారు రద్దు చేశారు. సర్వర్ అందించిన భద్రత ఆధారాలు ఖచ్చితంగా విశ్వసించబడలేదని దీని అర్థం. మీరు దాడి చేసే వారితో కమ్యూనికేట్ చేస్తూ ఉండవచ్చు.</translation>
 <translation id="4378154925671717803">ఫోన్</translation>
+<translation id="4382484599443659549">PDF</translation>
 <translation id="4382833368532556056">ఇప్పటి నుండి, మీ ఫైళ్లను ‌క్లౌడ్ స్టోరేజ్‌లో సేవ్ చేయండి</translation>
 <translation id="4384395682990721132">A4x3</translation>
 <translation id="4387692837058041921">Microsoft OneDriveకు అప్‌లోడ్ చేసిన ఫైల్ పాజ్ అయింది</translation>
@@ -3435,6 +3439,7 @@
 <translation id="6925267999184670015">ఉత్తర అమెరికా B+</translation>
 <translation id="6926216138694948720">టాట్టూలు</translation>
 <translation id="692638818576287323">వాణిజ్యపరమైన వాహనాలు</translation>
+<translation id="6930607614725241390">సైడ్ ప్యానెల్‌లో సెర్చ్ చేయండి</translation>
 <translation id="6934236486840930310"><ph name="BEGIN_BOLD" />మీ ఆటోమేటిక్ సెర్చ్ ఇంజిన్ వెబ్‌లో సెర్చ్ చేయడానికి మిమ్మల్ని అనుమతిస్తుంది, అదే విధంగా Chrome ఫీచర్‌లను శక్తిమంతం చేస్తుంది<ph name="END_BOLD" /> అంటే అడ్రస్ బార్ నుండి, వెబ్ పేజీలలోని ఇమేజ్‌ల నుండి సెర్చ్ చేయడం వంటివి సులభంగా చేయగలుగుతారు. మీ సెర్చ్ ఇంజిన్ సపోర్ట్ చేయకపోతే, ఏదైనా ఫీచర్ అందుబాటులో లేకపోయే అవకాశం ఉంది.</translation>
 <translation id="6934672428414710184">ఇది మీ Google ఖాతాలో ఉన్న పేరు</translation>
 <translation id="6935077351544118151">ఇప్పుడు మీరు Google Wallet నుండి లాయల్టీ కార్డ్‌లను ఆటోఫిల్ చేయవచ్చు</translation>
@@ -4312,7 +4317,6 @@
 అదనపు వివరాలు:
 <ph name="DEBUG_INFO" /></translation>
 <translation id="8416874502399604126">ఈసారి మైక్రోఫోన్‌కు అనుమతి ఉంది</translation>
-<translation id="8421158157346464398">వర్క్ ప్రొఫైల్ సమాచారం (మీ వర్క్ ప్రొఫైల్ యూజర్‌నేమ్ వంటివి)</translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" /> <ph name="SECOND_LABEL" /> <ph name="THIRD_LABEL" /></translation>
 <translation id="8425213833346101688">మార్చండి</translation>
 <translation id="8426945547715537628">కీబోర్డ్ ఓవర్‌రైడ్‌ను అనుమతించాలా?</translation>

@@ -43,7 +43,6 @@
 <translation id="2536366509642644298">Leli qembu lethebhu "<ph name="TAB_GROUP_NAME_1" />" naleli "<ph name="TAB_GROUP_NAME_2" />" awasatholakali</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{Goqa ithebhu engu-<ph name="TABS_COUNT_ONE" />.}one{Goqa iqembu lethebhu enamathebhu angu-<ph name="TABS_COUNT_MANY" />.}other{Goqa iqembu lethebhu enamathebhu angu-<ph name="TABS_COUNT_MANY" />.}}</translation>
 <translation id="2569352796411618312">Isiphakamiso: <ph name="NUMBER_OF_TABS" /> yamathebhu akho awakasetshenziswa kamuva nje. Wavale?</translation>
-<translation id="2656693375914502139">Hambisa eqenjini</translation>
 <translation id="2662028055331606429"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> isilinganiso</translation>
 <translation id="266935134738038806">Vakashela isayithi</translation>
 <translation id="2671423594960767771">Yabelana ngeqembu</translation>
@@ -121,7 +120,6 @@
 <translation id="6054741997831917303">Intengo yale nto isanda kwehla kusuka ku-<ph name="PREVIOUS_PRICE" /> ukuya ku-<ph name="NEW_PRICE" /></translation>
 <translation id="6109251075362363230">Wonke amathebhu ayimpinda nawo azofakwa kungobo yomlando, kuyokwenzeka okuhlukile ngamakhophi asanda kusetshenziswa.</translation>
 <translation id="6193448654517602979">Khetha amathebhu</translation>
-<translation id="6212567362666004597">Faka ithebhu eqenjini</translation>
 <translation id="6220820548421939212">Yebo. Ngingenile</translation>
 <translation id="6228793724645064692">(isilinganiso sesitolo)</translation>
 <translation id="6271513594716432922">Vala wonke amathebhu angasebenzi</translation>

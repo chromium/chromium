@@ -102,7 +102,6 @@
 <translation id="2345992953227471816">Chrome 发现这些扩展程序包含恶意软件：</translation>
 <translation id="2348335408836342058">Chrome 需要获得相应权限，才能允许此网站使用您的摄像头和麦克风</translation>
 <translation id="234869673307233423">Chrome 无法检查您的密码。请稍后重试。</translation>
-<translation id="235650106824528204">在使用此工作资料（例如创建书签、历史记录、密码和其他设置）时生成的任何 Chrome 数据都可由工作资料管理员移除。<ph name="LEARN_MORE" /></translation>
 <translation id="2359808026110333948">继续</translation>
 <translation id="2403703063067034158">启动错误：另一个设置实例目前正在运行，请稍后重试。</translation>
 <translation id="2409816192575564775">{NUM_DEVICES,plural, =0{一个或多个 Chrome 扩展程序访问过 1 部 HID 设备}=1{一个或多个 Chrome 扩展程序正在访问 1 部 HID 设备}other{一个或多个 Chrome 扩展程序正在访问 # 部 HID 设备}}</translation>
@@ -240,6 +239,7 @@
 <translation id="4050175100176540509">最新版本不仅在安全性方面做出了重要改进，还提供了多项新功能。</translation>
 <translation id="4053720452172726777">自定义及控制 Google Chrome</translation>
 <translation id="408393047846373801">如需获取您所有设备上的密码等信息，请登录 Chrome。登录后，该密码将保存到您的 Google 账号。</translation>
+<translation id="409936259433005390">即将升级到 Windows 11？将 Chrome 安装程序下载到 OneDrive，预先准备即可随时开始。</translation>
 <translation id="4110895483821904099">设置您的新 Chrome 个人资料</translation>
 <translation id="4111566860456076004">Chrome 无法验证此扩展程序的来源，它可能不安全。请将其从 Chrome 中移除，这样它便无法再查看和更改您在所访问的网站上的数据，包括个人信息。</translation>
 <translation id="4128488089242627000">提高 Chrome 运行速度，让使用 JavaScript 的功能按预期运行（建议）</translation>
@@ -387,7 +387,6 @@
 <translation id="6069027071882229820">复制为图片</translation>
 <translation id="6070348360322141662">为了提高安全性，Google Chrome 将对您的数据进行加密</translation>
 <translation id="6075300983329039771">贵组织 (<ph name="MANAGER" />) 要求您登录 Chrome</translation>
-<translation id="608006075545470555">向此浏览器添加工作资料</translation>
 <translation id="6113794647360055231">Chrome现在更好用了</translation>
 <translation id="6116252277240876590">使用此语言显示 Chrome 中的菜单、设置、提醒和其他文字</translation>
 <translation id="6134085236017727171">如需使用麦克风，请在<ph name="BEGIN_LINK" />系统设置<ph name="END_LINK" />中授予 Chrome 访问权限</translation>
@@ -583,7 +582,6 @@
 <translation id="8521348052903287641">Google Chrome 开发者版的入站规则，允许 mDNS 流量。</translation>
 <translation id="852529348814672339">以此语言显示 Chrome 界面内容</translation>
 <translation id="8533056045953418157">将 Google Chrome 设为默认 PDF 查看器</translation>
-<translation id="8550334526674375523">此工作资料与您的个人资料是完全分开的。</translation>
 <translation id="8555465886620020932">发生了服务错误：<ph name="SERVICE_ERROR" />。</translation>
 <translation id="856656450041460113">搜索语言列表</translation>
 <translation id="8601359445272098721">新功能！您可以选择“翻译屏幕”按钮，翻译屏幕上的文字和图片</translation>
@@ -616,7 +614,6 @@
 <translation id="8914504000324227558">重启 Chrome</translation>
 <translation id="8922193594870374009">若要从 <ph name="ORIGIN" /> 向您的 Android 手机发送电话号码，请在这两部设备上分别登录 Chrome。</translation>
 <translation id="8948460679427074738">此扩展程序尚未发布隐私权规范，例如如何收集和使用数据。Chrome 建议您移除它。</translation>
-<translation id="8986207147630327271">您将要向此浏览器添加工作资料并允许您的管理员仅控制此工作资料。</translation>
 <translation id="8989968390305463310">您的浏览记录会影响您看到的广告以及系统推测出的兴趣（如下所示）。为了保护您的隐私，Chrome 每个月都会按保留时间先后顺序自动删除您的部分兴趣。兴趣能够刷新，除非您将其移除。</translation>
 <translation id="8992769679401294069">系统将使用您的口令加密您的数据。请输入该口令，以便将 Chrome 数据保存在您的 Google 账号中并使用这些数据。</translation>
 <translation id="8999117580775242387">如果 HTTPS 不可用，Chrome 会在不向您发出警告的情况下使用不安全的连接</translation>

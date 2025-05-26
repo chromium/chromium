@@ -1836,6 +1836,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="4140905366050378834">Hrana i dodaci za njegu za kućne ljubimce</translation>
 <translation id="4140905530744469899">ID profila:</translation>
 <translation id="4142935452406587478">Ladica 10</translation>
+<translation id="4147897805161313378">Google fotografije</translation>
 <translation id="4148925816941278100">American Express</translation>
 <translation id="4150099059797363385">Kineska omotnica br. 4</translation>
 <translation id="4151403195736952345">Upotrijebi globalnu zadanu postavku (Otkrij)</translation>
@@ -1996,6 +1997,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="437620492464254965">Vrata i prozori</translation>
 <translation id="4377125064752653719">Pokušali ste doseći domenu <ph name="DOMAIN" />, ali certifikat koji je poslužitelj predstavio povučen je od strane izdavača. Prema tome nikako ne biste trebali vjerovati sigurnosnim certifikatima koje predstavlja poslužitelj. Možda komunicirate s napadačem.</translation>
 <translation id="4378154925671717803">Telefon</translation>
+<translation id="4382484599443659549">PDF</translation>
 <translation id="4382833368532556056">Odsad spremajte datoteke u pohranu u oblaku</translation>
 <translation id="4384395682990721132">A4x3</translation>
 <translation id="4387692837058041921">Pauziran je prijenos datoteke na Microsoft OneDrive</translation>
@@ -4314,7 +4316,6 @@ Dodatne pojedinosti:
 Dodatne pojedinosti:
 <ph name="DEBUG_INFO" /></translation>
 <translation id="8416874502399604126">Mikrofon je dopušten ovaj put</translation>
-<translation id="8421158157346464398">Podaci o poslovnom profilu (na primjer korisničko ime poslovnog profila)</translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" /> <ph name="SECOND_LABEL" /> <ph name="THIRD_LABEL" /></translation>
 <translation id="8425213833346101688">Promijeni</translation>
 <translation id="8426945547715537628">Dopustiti nadjačavanje tipkovnice?</translation>

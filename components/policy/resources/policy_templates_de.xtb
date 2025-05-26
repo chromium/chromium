@@ -4980,7 +4980,6 @@ Die Einstellung <ph name="CHROME_OS_RELEASE_CHANNEL_POLICY_NAME" /> ist nur wirk
 <translation id="4661889655253181651">Unter "Inhaltseinstellungen" kannst du angeben, wie Inhalte bestimmter Typen (z. B. Cookies, Bilder oder JavaScript) verarbeitet werden.</translation>
 <translation id="4663509616441994711">Zusammenführung von Cloud-Richtlinien auf Nutzerebene deaktivieren.</translation>
 <translation id="4663588423815449593">Erzwingen, dass <ph name="PEPPER_NAME" /> den alten Videodecoder verwendet.</translation>
-<translation id="4665632569240493493">Namensnennung für Erweiterungsdesigns in der Fußzeile auf der Seite „Neuer Tab“ aktivieren</translation>
 <translation id="4665897631924472251">Verwaltungseinstellungen für Erweiterungen</translation>
 <translation id="4666930704271463612">Gibt die Untergruppe der Druckserver an, von denen Serverdrucker abgefragt werden.
 
@@ -6023,7 +6022,6 @@ Ab Version 92 von <ph name="PRODUCT_NAME" /> wird diese Richtlinie auch im moni
 <translation id="5373552304217872025">Wenn diese Richtlinie auf „true“ gesetzt oder nicht konfiguriert ist, können neue Nutzer in <ph name="PRODUCT_NAME" /> und <ph name="LACROS_NAME" /> über die Nutzerverwaltung hinzugefügt werden.
 
       Ist sie auf „false“ gesetzt, können keine neuen Nutzer in <ph name="PRODUCT_NAME" /> und <ph name="LACROS_NAME" /> über die Nutzerverwaltung hinzugefügt werden.</translation>
-<translation id="5374300764724537955">Namensnennung für Erweiterungsdesigns in der Fußzeile auf der Seite „Neuer Tab“ deaktivieren</translation>
 <translation id="5376712696238639532">Mit dieser Richtlinie wird festgelegt, ob Lehrkräfte die Untertitelfunktion verwenden können.
 
 Wenn der Wert auf „true“ gesetzt oder nicht konfiguriert ist, können ausgewählte Lehrkräfte ihre Stimme untertiteln lassen und die Transkripte an Schüler/Studenten senden.

@@ -43,7 +43,6 @@
 <translation id="2536366509642644298">"<ph name="TAB_GROUP_NAME_1" />" और "<ph name="TAB_GROUP_NAME_2" />" टैब ग्रुप अब मौजूद नहीं हैं</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> टैब छोटा करें.}one{<ph name="TABS_COUNT_MANY" /> टैब वाले टैब ग्रुप को छोटा करें.}other{<ph name="TABS_COUNT_MANY" /> टैब वाले टैब ग्रुप को छोटा करें.}}</translation>
 <translation id="2569352796411618312">सुझाव: आपके <ph name="NUMBER_OF_TABS" /> टैब का हाल ही में इस्तेमाल नहीं हुआ है. क्या आप उन्हें बंद करना चाहते हैं?</translation>
-<translation id="2656693375914502139">ग्रुप में ले जाएं</translation>
 <translation id="2662028055331606429"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> रेटिंग</translation>
 <translation id="266935134738038806">साइट पर जाएं</translation>
 <translation id="2671423594960767771">ग्रुप शेयर करें</translation>
@@ -122,7 +121,6 @@
 <translation id="6109251075362363230">अब सभी डुप्लीकेट टैब भी संग्रहित किए जाएंगे. हालांकि, सबसे हाल ही में इस्तेमाल किए गए डुप्लीकेट टैब को संग्रहित नहीं किया जाएगा.</translation>
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{ग्रुप को दूसरी विंडो पर ले जाएं}one{ग्रुप को दूसरी विंडो पर ले जाएं}other{ग्रुप को दूसरी विंडो पर ले जाएं}}</translation>
 <translation id="6193448654517602979">टैब चुनें</translation>
-<translation id="6212567362666004597">टैब को ग्रुप में जोड़ें</translation>
 <translation id="6220820548421939212">हां. मैं सहमत हूं</translation>
 <translation id="6228793724645064692">(स्टोर की रेटिंग)</translation>
 <translation id="6271513594716432922">सभी इनऐक्टिव टैब बंद करें</translation>

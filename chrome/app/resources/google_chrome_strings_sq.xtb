@@ -106,7 +106,6 @@ Disa funksione mund të mos ofrohen dhe ndryshimet në preferenca nuk do të ruh
 <translation id="2345992953227471816">Chrome vuri re se këto shtesa përmbajnë softuer keqdashës:</translation>
 <translation id="2348335408836342058">Chrome ka nevojë për leje për t'u qasur te kamera dhe mikrofoni yt për këtë sajt</translation>
 <translation id="234869673307233423">Chrome nuk mund t'i kontrollojë fjalëkalimet e tua. Provo përsëri më vonë.</translation>
-<translation id="235650106824528204">Çdo e dhënë e Chrome që krijohet gjatë përdorimit të këtij profili (si p.sh. krijimi i faqeshënuesve, historikut, fjalëkalimeve dhe cilësimeve të tjera) mund të hiqet nga administratori i profilit të punës. <ph name="LEARN_MORE" /></translation>
 <translation id="2359808026110333948">Vazhdo</translation>
 <translation id="2403703063067034158">Gabim në nisje: aktualisht po ekzekutohet një shembull tjetër i konfigurimit; provo përsëri më vonë.</translation>
 <translation id="2409816192575564775">{NUM_DEVICES,plural, =0{Një ose disa shtesa të Chrome kanë pasur qasje në 1 pajisje HID}=1{Një ose disa shtesa të Chrome kanë qasje në 1 pajisje HID}other{Një ose disa shtesa të Chrome kanë qasje në # pajisje HID}}</translation>
@@ -395,7 +394,6 @@ Google Chrome nuk është në gjendje të rikuperojë cilësimet e tua.</transla
 <translation id="6069027071882229820">Kopjo si imazh</translation>
 <translation id="6070348360322141662">Për më shumë siguri, Google Chrome do t'i enkriptojë të dhënat e tua</translation>
 <translation id="6075300983329039771">Organizata jote, <ph name="MANAGER" />, kërkon që të identifikohesh në Chrome</translation>
-<translation id="608006075545470555">Shto profilin e punës në këtë shfletues</translation>
 <translation id="6113794647360055231">Chrome sapo është përmirësuar</translation>
 <translation id="6116252277240876590">Kjo gjuhë përdoret për të shfaqur menytë, cilësimet, sinjalizimet dhe tekste të tjera në Chrome</translation>
 <translation id="6134085236017727171">Për të përdorur mikrofonin, jepi Chrome qasje te <ph name="BEGIN_LINK" />cilësimet e sistemit<ph name="END_LINK" /></translation>
@@ -591,7 +589,6 @@ Google Chrome nuk është në gjendje të rikuperojë cilësimet e tua.</transla
 <translation id="8521348052903287641">Rregulli hyrës për Google Chrome Dev për të lejuar trafikun mDNS.</translation>
 <translation id="852529348814672339">Shfaqe Chrome në këtë gjuhë</translation>
 <translation id="8533056045953418157">Cakto Google Chrome si shikuesin e parazgjedhur të skedarëve PDF</translation>
-<translation id="8550334526674375523">Ky profil pune është plotësisht i veçuar nga profili yt personal.</translation>
 <translation id="8555465886620020932">Gabim shërbimi: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="856656450041460113">Kërko në listën e gjuhëve</translation>
 <translation id="8601359445272098721">E re! Mund të përkthesh tekstet dhe imazhet në ekranin tënd duke zgjedhur butonin "përkthe ekranin"</translation>
@@ -624,7 +621,6 @@ Google Chrome nuk është në gjendje të rikuperojë cilësimet e tua.</transla
 <translation id="8914504000324227558">Rinis Chrome</translation>
 <translation id="8922193594870374009">Për të dërguar një numër nga <ph name="ORIGIN" /> te telefoni yt Android, identifikohu në Chrome në të dyja pajisjet.</translation>
 <translation id="8948460679427074738">Kjo shtesë nuk i ka publikuar praktikat e privatësisë, si p.sh. se si i mbledh dhe i përdor të dhënat. Chrome rekomandon që ta heqësh atë.</translation>
-<translation id="8986207147630327271">Po shton një profil pune në këtë shfletues dhe po i jep administratorit tënd kontrollin vetëm mbi profilin e punës.</translation>
 <translation id="8989968390305463310">Historiku yt i shfletimit ndikon te reklamat që shikon dhe tek interesat sipas përllogaritjes më poshtë. Për të mbrojtur privatësinë tënde, Chrome fshin automatikisht interesat e tua në vazhdimësi çdo muaj. Interesat mund të rifreskohen, përveçse nëse ti i heq ato.</translation>
 <translation id="8992769679401294069">Të dhënat e tua janë të enkriptuara me frazën tënde të kalimit. Fute atë për të përdorur dhe ruajtur të dhënat e Chrome në "Llogarinë tënde të Google".</translation>
 <translation id="8999117580775242387">Kur HTTPS nuk ofrohet, Chrome do të përdorë një lidhje të pasigurt pa të të paralajmëruar</translation>

@@ -102,7 +102,6 @@
 <translation id="2345992953227471816">A Chrome kártékony programokat talált a következő bővítményekben:</translation>
 <translation id="2348335408836342058">A Chrome-nak engedélyre van szüksége ahhoz, hogy hozzáférjen a kamerához és a mikrofonhoz ennél a webhelynél</translation>
 <translation id="234869673307233423">A Chrome nem tudja ellenőrizni a jelszavait. Próbálkozzon később.</translation>
-<translation id="235650106824528204">A profil használata során generált összes Chrome-adatot (pl. könyvjelzőket, előzményeket, jelszavakat és egyéb beállításokat) eltávolíthatja a munkaprofil rendszergazdája. <ph name="LEARN_MORE" /></translation>
 <translation id="2359808026110333948">Tovább</translation>
 <translation id="2403703063067034158">Indítási hiba: jelenleg a beállítás egy másik példánya fut; próbálkozzon újra később.</translation>
 <translation id="2409816192575564775">{NUM_DEVICES,plural, =0{Valamelyik (akár több is) Chrome-bővítmény hozzáfért 1 HID-eszközhöz}=1{Valamelyik (akár több is) Chrome-bővítmény éppen hozzáfér 1 HID-eszközhöz}other{Valamelyik (akár több is) Chrome-bővítmény éppen hozzáfér # HID-eszközhöz}}</translation>
@@ -389,7 +388,6 @@
 <translation id="6069027071882229820">Másolás képként</translation>
 <translation id="6070348360322141662">A nagyobb biztonság érdekében a Google Chrome titkosítja az Ön adatait</translation>
 <translation id="6075300983329039771">Szervezete (<ph name="MANAGER" />) megköveteli a Chrome-ba történő bejelentkezést</translation>
-<translation id="608006075545470555">Munkaprofil hozzáadása a böngészőhöz</translation>
 <translation id="6113794647360055231">A Chrome még jobb lett</translation>
 <translation id="6116252277240876590">A Chrome ezt a nyelvet használja a menük, beállítások, figyelmeztetések és egyéb szövegek megjelenítésére</translation>
 <translation id="6134085236017727171">A mikrofon használatához adjon hozzáférést a Chrome-nak a <ph name="BEGIN_LINK" />rendszerbeállításokban<ph name="END_LINK" /></translation>
@@ -585,7 +583,6 @@
 <translation id="8521348052903287641">Bejövő szabály a Google Chrome Devhez az mDNS forgalom engedélyezése céljából.</translation>
 <translation id="852529348814672339">A Chrome megjelenítése ezen a nyelven</translation>
 <translation id="8533056045953418157">A Google Chrome beállítása alapértelmezett PDF-megtekintőként</translation>
-<translation id="8550334526674375523">Ez a munkaprofil teljesen el van választva a személyes profiljától.</translation>
 <translation id="8555465886620020932">Szolgáltatáshiba: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="856656450041460113">Keresés a nyelvek listájában</translation>
 <translation id="8601359445272098721">Új! A „Képernyő fordítása” gombbal a képernyőn megjelenő szöveget és képeket is lefordíthatja</translation>
@@ -618,7 +615,6 @@
 <translation id="8914504000324227558">A Chrome újraindítása</translation>
 <translation id="8922193594870374009">Ha innen: <ph name="ORIGIN" /> szeretne számot küldeni Android-telefonjára, jelentkezzen be a Chrome-ba mindkét eszközén.</translation>
 <translation id="8948460679427074738">Ez a bővítmény nem tett közzé adatvédelmi gyakorlatokat például arra vonatkozóan, hogy hogyan gyűjti és használja fel az adatokat. A Chrome az eltávolítását javasolja.</translation>
-<translation id="8986207147630327271">Munkaprofilt ad hozzá ehhez a böngészőhöz, és csak a munkaprofil felett adja át az irányítást a rendszergazdának.</translation>
 <translation id="8989968390305463310">Böngészési előzményei határozzák meg az Ön számára megjelenő hirdetéseket és az alább látható módon felmért érdeklődési köröket. Adatai védelme érdekében a Chrome havi rendszerességgel automatikusan törli az Ön érdeklődési köreit. Az érdeklődési körök frissülhetnek, kivéve, ha eltávolítja őket.</translation>
 <translation id="8992769679401294069">Adatai az összetett jelszavával vannak titkosítva. Adja meg, ha Google-fiókjában Chrome-adatokat szeretne használni és menteni.</translation>
 <translation id="8999117580775242387">Ha a HTTPS nem áll rendelkezésre, a Chrome nem biztonságos kapcsolatot fog használni anélkül, hogy figyelmeztetné Önt</translation>

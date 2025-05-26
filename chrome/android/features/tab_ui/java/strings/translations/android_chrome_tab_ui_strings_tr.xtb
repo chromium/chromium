@@ -43,7 +43,6 @@
 <translation id="2536366509642644298">"<ph name="TAB_GROUP_NAME_1" />" ve "<ph name="TAB_GROUP_NAME_2" />" sekme grupları artık kullanılamıyor</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> sekmeyi daralt.}other{<ph name="TABS_COUNT_MANY" /> sekmeli sekme grubunu daralt.}}</translation>
 <translation id="2569352796411618312">Öneri: <ph name="NUMBER_OF_TABS" /> sekmeyi son zamanlarda hiç kullanmadınız. Bunlar kapatılsın mı?</translation>
-<translation id="2656693375914502139">Gruba taşı</translation>
 <translation id="2662028055331606429"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> puan</translation>
 <translation id="266935134738038806">Siteye git</translation>
 <translation id="2671423594960767771">Grubu paylaş</translation>
@@ -121,7 +120,6 @@
 <translation id="6054741997831917303">Yakın zamanda bu ürünün <ph name="PREVIOUS_PRICE" /> olan fiyatı düştü ve <ph name="NEW_PRICE" /> oldu</translation>
 <translation id="6109251075362363230">En son kullanılan kopya hariç tüm kopya sekmeler artık arşivlenecek.</translation>
 <translation id="6193448654517602979">Sekmeleri seç</translation>
-<translation id="6212567362666004597">Sekmeyi gruba ekle</translation>
 <translation id="6220820548421939212">Evet. İstiyorum</translation>
 <translation id="6228793724645064692">(mağaza puanı)</translation>
 <translation id="6271513594716432922">Etkin olmayan tüm sekmeleri kapat</translation>

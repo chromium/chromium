@@ -243,6 +243,7 @@
 <translation id="1972325230031091483">Saate kiiremini sirvida, kuna sisu laaditakse ennetavalt teie praeguse veebilehekülastuse põhjal</translation>
 <translation id="1974060860693918893">Täpsemad</translation>
 <translation id="1977621687170192347">Lülitage valik „Küsi, kas avada teiste rakenduste lingid inkognito režiimis“ sisse.</translation>
+<translation id="1979055159547313322">Kontot <ph name="USER_EMAIL" /> haldab <ph name="HOSTED_DOMAIN" />, millel võib olla võimalik vaadata teatud teavet, sh järgmist:</translation>
 <translation id="1979188886349613713">Kaasa failinimelaiendid, mida veebisait pole märkinud</translation>
 <translation id="1980417445547898121">{count,plural, =1{Hankige selle iPhone'i teisest seadmest {count} hiljuti aktiivne vaheleht}other{Hankige selle iPhone'i teisest seadmest {count} hiljuti aktiivsed vahelehed}}</translation>
 <translation id="1981118202195772574">Mobiilseade</translation>

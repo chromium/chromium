@@ -119,7 +119,6 @@ peranti Bluetooth. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK"
 <translation id="2572494885440352020">Pembantu Chromium</translation>
 <translation id="2575822587468774919">Pilih apa-apa sahaja untuk dicari dengan Carian Imej</translation>
 <translation id="2576118232315942160">Untuk mendapatkan kata laluan anda dan pelbagai lagi pada semua peranti anda, log masuk ke Chromium</translation>
-<translation id="2583187216237139145">Sebarang data Chromium yang dijana semasa penggunaan profil ini (seperti pembuatan penanda halaman, sejarah, kata laluan dan tetapan lain) boleh dialih keluar oleh pentadbir profil kerja. <ph name="LEARN_MORE" /></translation>
 <translation id="2592940277904433508">Terus menggunakan Chromium</translation>
 <translation id="259935314519650377">Gagal mengcache pemasang yang dimuat turun. Ralat: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
 <translation id="2620436844016719705">Sistem</translation>
@@ -364,7 +363,6 @@ peranti Bluetooth. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK"
 <translation id="6069027071882229820">Salin sebagai imej</translation>
 <translation id="6072279588547424923"><ph name="EXTENSION_NAME" /> telah ditambahkan pada Chromium</translation>
 <translation id="6072463441809498330">Jadikan Chromium Lebih Pantas</translation>
-<translation id="608006075545470555">Tambahkan Profil Kerja pada penyemak imbas ini</translation>
 <translation id="6096348254544841612">Sesuaikan dan kawal Chromium. Kemas kini tersedia.</translation>
 <translation id="6107893135096467929">Hidupkan • Chromium tidak dapat mengesahkan tempat asal sambungan ini</translation>
 <translation id="6119438414301547735">Benarkan sambungan menunjukkan permintaan akses pada bar alat Chromium</translation>
@@ -560,7 +558,6 @@ Chromium tidak dapat mengembalikan tetapan anda.</translation>
 <translation id="8471947159125090285">Untuk menggunakan dan menyimpan data Chromium dalam Google Account anda, sahkan identiti anda</translation>
 <translation id="8493179195440786826">Chromium sudah usang</translation>
 <translation id="8522801943730206384">Chromium boleh menyemak kata laluan anda yang disimpan</translation>
-<translation id="8550334526674375523">Profil kerja ini terpisah sepenuhnya daripada profil peribadi anda.</translation>
 <translation id="8555465886620020932">Ralat perkhidmatan: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="8556420416730706394">Anda boleh menyematkan Carian Imej untuk akses mudah; klik butang Semat pada bahagian atas panel sisi</translation>
 <translation id="856656450041460113">Cari senarai bahasa</translation>
@@ -589,7 +586,6 @@ Chromium tidak dapat mengembalikan tetapan anda.</translation>
 <translation id="8931379085695076764">Chromium dapat menganggarkan minat anda berdasarkan sejarah penyemakan imbas anda dari beberapa minggu yang lalu. Maklumat ini kekal pada peranti anda.</translation>
 <translation id="8941642502866065432">Tidak dapat mengemas kini Chromium</translation>
 <translation id="897581876605952338">Logo Chromium Enterprise</translation>
-<translation id="8986207147630327271">Anda menambahkan profil kerja pada penyemak imbas ini dan memberi pentadbir anda kawalan terhadap profil kerja sahaja.</translation>
 <translation id="8988036198400390003">Urus profil Chromium</translation>
 <translation id="9019929317751753759">Untuk menjadikan Chromium lebih selamat, kami melumpuhkan sambungan berikut yang tidak disenaraikan dalam  <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> dan mungkin telah ditambahkan tanpa pengetahuan anda.</translation>
 <translation id="9022552996538154597">Log masuk ke Chromium</translation>
@@ -602,6 +598,7 @@ Chromium tidak dapat mengembalikan tetapan anda.</translation>
 <translation id="9106612006984859720">Untuk mendapatkan kemaskinian Chromium yang akan datang, anda memerlukan Windows 10 atau yang lebih baharu. Komputer ini menggunakan Windows 8.1.</translation>
 <translation id="91086099826398415">Buka Pautan dalam &amp;tab Chromium Baharu</translation>
 <translation id="911206726377975832">Padamkan juga data menyemak imbas anda?</translation>
+<translation id="9134482777260927479">Bantuan kerja rumah</translation>
 <translation id="9148058034647219655">Keluar</translation>
 <translation id="9158494823179993217">Pentadbir sistem anda telah mengkonfigurasikan Chromium agar membuka penyemak imbas alternatif untuk mengakses <ph name="TARGET_URL_HOSTNAME" />.</translation>
 <translation id="9185526690718004400">Lancarkan semula untuk mengemas kini &amp;Chromium</translation>

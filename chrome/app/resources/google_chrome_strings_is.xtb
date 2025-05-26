@@ -106,7 +106,6 @@ Sumir eiginleikar kunna að vera óaðgengilegir og breytingar á kjörstillingu
 <translation id="2345992953227471816">Chrome komst að því að eftirfarandi viðbætur innihalda spilliforrit:</translation>
 <translation id="2348335408836342058">Chrome þarf leyfi til að nota myndavélina og hljóðnemann á þessu vefsvæði</translation>
 <translation id="234869673307233423">Chrome getur ekki athugað aðgangsorðin þín. Reyndu aftur síðar.</translation>
-<translation id="235650106824528204">Stjórnandi vinnuprófíla getur fjarlægt öll Chrome gögn sem verða til við notkun þessa prófíls (þ.m.t. bókamerki, feril, aðgangsorð og aðrar stillingar). <ph name="LEARN_MORE" /></translation>
 <translation id="2359808026110333948">Halda áfram</translation>
 <translation id="2403703063067034158">Villa í ræsingu: annað tilvik af uppsetningu er í keyrslu, reyndu aftur síðar.</translation>
 <translation id="2409816192575564775">{NUM_DEVICES,plural, =0{Ein eða fleiri Chrome-viðbætur fengu aðgang að 1 HID-tæki}=1{Ein eða fleiri Chrome-viðbætur hafa aðgang að 1 HID-tæki}one{Ein eða fleiri Chrome-viðbætur hafa aðgang að # HID-tæki}other{Ein eða fleiri Chrome-viðbætur hafa aðgang að # HID-tækjum}}</translation>
@@ -396,7 +395,6 @@ Google Chrome getur ekki endurheimt stillingarnar þínar.</translation>
 <translation id="6069027071882229820">Afrita sem mynd</translation>
 <translation id="6070348360322141662">Google Chrome dulkóðar gögnin þín til að auka öryggið</translation>
 <translation id="6075300983329039771">Fyrirtækið þitt, <ph name="MANAGER" />, krefst þess að þú skráir þig inn í Chrome</translation>
-<translation id="608006075545470555">Bæta vinnusniði við þennan vafra</translation>
 <translation id="6113794647360055231">Chrome er nú enn betra</translation>
 <translation id="6116252277240876590">Þetta tungumál er notað til að birta valmyndir, stillingar, viðvaranir og annan texta í Chrome</translation>
 <translation id="6134085236017727171">Veittu Chrome aðgang að hljóðnemanum þínum í <ph name="BEGIN_LINK" />kerfisstillingum<ph name="END_LINK" /> til að geta notað hann</translation>
@@ -592,7 +590,6 @@ Google Chrome getur ekki endurheimt stillingarnar þínar.</translation>
 <translation id="8521348052903287641">Innleiðarregla til að láta Google Chrome Dev leyfa mDNS-umferð.</translation>
 <translation id="852529348814672339">Birta Chrome á þessu tungumáli</translation>
 <translation id="8533056045953418157">Stilltu Google Chrome sem sjálfgefinn PDF-lesara</translation>
-<translation id="8550334526674375523">Þessi vinnuprófíll er algjörlega aðskilinn þínum eigin prófíl.</translation>
 <translation id="8555465886620020932">Þjónustuvilla: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="856656450041460113">Leita í lista tungumála</translation>
 <translation id="8601359445272098721">Nýtt! Þú getur þýtt bæði texta og myndir á skjánum þínum með því að velja hnappinn „þýða skjá“</translation>
@@ -625,7 +622,6 @@ Google Chrome getur ekki endurheimt stillingarnar þínar.</translation>
 <translation id="8914504000324227558">Endurræsa Chrome</translation>
 <translation id="8922193594870374009">Til að senda númer úr <ph name="ORIGIN" /> í Android símann þinn skaltu skrá þig inn á Chrome í báðum tækjunum.</translation>
 <translation id="8948460679427074738">Þessi viðbót hefur ekki gefið út vinnureglur um persónuvernd, svo sem hvernig hún safnar og notar gögn. Chrome mælir með að þú fjarlægir hana.</translation>
-<translation id="8986207147630327271">Þú ert að bæta vinnusniði við þennan vafra og veita stjórnanda þínum leyfi til að stjórna vinnusniðinu eingöngu.</translation>
 <translation id="8989968390305463310">Vafraferillinn þinn hefur áhrif á auglýsingarnar sem þú sérð og áhugasviðin sem eru áætluð hér fyrir neðan. Til að gæta persónuverndar þinnar eyðir Chrome áhugamálunum þínum sjálfkrafa mánaðarlega. Áhugasvið verða hugsanlega endurnýjuð nema þú fjarlægir þau.</translation>
 <translation id="8992769679401294069">Gögnin þín eru dulkóðuð með aðgangsorði. Sláðu það inn til að nota og vista Chrome-gögn á Google-reikningnum þínum.</translation>
 <translation id="8999117580775242387">Ef HTTPS er ekki í boði mun Chrome notast við ótrygga tengingu án þess að vara þig við</translation>

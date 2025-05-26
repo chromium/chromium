@@ -43,7 +43,6 @@
 <translation id="2536366509642644298">Grupet e skedave "<ph name="TAB_GROUP_NAME_1" />" dhe "<ph name="TAB_GROUP_NAME_2" />" nuk ofrohen më</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{Palos <ph name="TABS_COUNT_ONE" /> skedë.}other{Palos grupin e skedave me <ph name="TABS_COUNT_MANY" /> skeda.}}</translation>
 <translation id="2569352796411618312">Sugjerim: <ph name="NUMBER_OF_TABS" /> nga skedat e tua nuk janë përdorur së fundi. Do t'i mbyllësh ato?</translation>
-<translation id="2656693375914502139">Zhvendos te grupi</translation>
 <translation id="2662028055331606429">Vlerësimi <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="266935134738038806">Vizito sajtin</translation>
 <translation id="2671423594960767771">Ndaj grupin</translation>
@@ -121,7 +120,6 @@
 <translation id="6054741997831917303">Çmimi i artikullit ra së fundi nga <ph name="PREVIOUS_PRICE" /> në <ph name="NEW_PRICE" /></translation>
 <translation id="6109251075362363230">Të gjitha skedat dublikata tani do të arkivohen gjithashtu, me përjashtim të kopjes së përdorur më së fundi.</translation>
 <translation id="6193448654517602979">Zgjidh skedat</translation>
-<translation id="6212567362666004597">Shto skedën te grupi</translation>
 <translation id="6220820548421939212">Po. Jam dakord</translation>
 <translation id="6228793724645064692">(vlerësimi i dyqanit)</translation>
 <translation id="6271513594716432922">Mbyll të gjitha skedat joaktive</translation>

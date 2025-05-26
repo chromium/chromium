@@ -43,7 +43,6 @@
 <translation id="2536366509642644298">Hindi na available ang mga grupo ng tab na "<ph name="TAB_GROUP_NAME_1" />" at "<ph name="TAB_GROUP_NAME_2" />"</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{I-collapse ang <ph name="TABS_COUNT_ONE" /> tab.}one{I-collapse ang grupo ng tab na may <ph name="TABS_COUNT_MANY" /> tab.}other{I-collapse ang grupo ng tab na may <ph name="TABS_COUNT_MANY" /> na tab.}}</translation>
 <translation id="2569352796411618312">Suhestyon: <ph name="NUMBER_OF_TABS" /> sa iyong mga tab ang hindi nagamit nitong nakaraan. Isara ang mga ito?</translation>
-<translation id="2656693375914502139">Ilipat sa grupo</translation>
 <translation id="2662028055331606429"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> rating</translation>
 <translation id="266935134738038806">Bisitahin ang site</translation>
 <translation id="2671423594960767771">Ibahagi ang pangkat</translation>
@@ -122,7 +121,6 @@
 <translation id="6109251075362363230">Ia-archive na rin ngayon ang lahat ng duplicate na tab, maliban sa pinakakamakailang ginamit na duplicate.</translation>
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{Ilipat ang grupo sa bagong window}one{Ilipat ang grupo sa ibang window}other{Ilipat ang grupo sa ibang window}}</translation>
 <translation id="6193448654517602979">Pumili ng mga tab</translation>
-<translation id="6212567362666004597">Magdagdag ng tab sa grupo</translation>
 <translation id="6220820548421939212">Oo. Sige</translation>
 <translation id="6228793724645064692">(rating ng store)</translation>
 <translation id="6271513594716432922">Isara ang lahat ng hindi aktibong tab</translation>

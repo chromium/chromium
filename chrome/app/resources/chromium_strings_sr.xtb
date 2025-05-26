@@ -121,7 +121,6 @@
 <translation id="2572494885440352020">Chromium помагач</translation>
 <translation id="2575822587468774919">Изаберите било шта за претрагу помоћу претраге слика</translation>
 <translation id="2576118232315942160">Да би вам лозинке и други садржај били доступни на свим уређајима, пријавите се у Chromium</translation>
-<translation id="2583187216237139145">Администратор пословног профила може да уклони све податке Chromium-а који се генеришу током коришћења овог профила (попут прављења обележивача, историје, лозинки и других подешавања). <ph name="LEARN_MORE" /></translation>
 <translation id="2592940277904433508">Настави са коришћењем Chromium-а</translation>
 <translation id="259935314519650377">Кеширање преузетог инсталационог програма није успело. Грешка: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
 <translation id="2620436844016719705">Систем</translation>
@@ -366,7 +365,6 @@
 <translation id="6069027071882229820">Копирај као слику</translation>
 <translation id="6072279588547424923">Додатак <ph name="EXTENSION_NAME" /> је додат у Chromium</translation>
 <translation id="6072463441809498330">Убрзајте Chromium</translation>
-<translation id="608006075545470555">Додајте пословни профил у овај прегледач</translation>
 <translation id="6096348254544841612">Прилагодите и контролишите Chromium. Доступно је ажурирање.</translation>
 <translation id="6107893135096467929">Укључено • Chromium не може да провери одакле потиче овај додатак</translation>
 <translation id="6119438414301547735">Дозволи додатку да приказује захтеве за приступ на Chromium траци с алаткама</translation>
@@ -562,7 +560,6 @@ Chromium не може да врати подешавања.</translation>
 <translation id="8471947159125090285">Да бисте користили и чували Chromium податке на Google налогу, потврдите свој идентитет</translation>
 <translation id="8493179195440786826">Chromium је застарео</translation>
 <translation id="8522801943730206384">Chromium може да проверава лозинке када их сачувате</translation>
-<translation id="8550334526674375523">Овај пословни профил је потпуно одвојен од личног профила.</translation>
 <translation id="8555465886620020932">Грешка у услузи: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="8556420416730706394">Можете да закачите претрагу слика ради једноставног приступа; кликните на дугме Закачи у врху бочне табле</translation>
 <translation id="856656450041460113">Претражите листу језика</translation>
@@ -591,7 +588,6 @@ Chromium не може да врати подешавања.</translation>
 <translation id="8931379085695076764">Chromium може да процени интересовања на основу историје прегледања из последњих неколико недеља. Те информације остају на уређају.</translation>
 <translation id="8941642502866065432">Не можете да ажурирате Chromium</translation>
 <translation id="897581876605952338">Логотип Chromium-а за предузећа</translation>
-<translation id="8986207147630327271">Додајете пословни профил у овај прегледач и дајете администратору контролу само над овим пословним профилом.</translation>
 <translation id="8988036198400390003">Управљај Chromium профилима</translation>
 <translation id="9019929317751753759">Да бисмо учинили Chromium безбеднијим, онемогућили смо следећи додатак који <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> не наводи и који је можда додат без вашег знања.</translation>
 <translation id="9022552996538154597">Пријављивање на Chromium</translation>

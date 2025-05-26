@@ -11,7 +11,6 @@
 <translation id="103269572468856066">Törli e webhelyek és alkalmazások adatait is?</translation>
 <translation id="1034259925032978114">Megnyitott ablak</translation>
 <translation id="1036348656032585052">Kikapcsolás</translation>
-<translation id="1045448422538531528">Hozzáadás csoporthoz</translation>
 <translation id="1045899828449635435">Törli az e webhelyekről származó adatokat is?</translation>
 <translation id="1049743911850919806">Inkognitó mód</translation>
 <translation id="1052842760770519282">Bizonyos jelszavai nem állnak rendelkezésre</translation>
@@ -547,7 +546,6 @@ Csak az Ön összetett jelszava ismeretében tudja bárki is megtekinteni a titk
 <translation id="351672147489633468">{NUM_REVOKED_PERMISSIONS,plural, =1{Az értesítési engedélyek megvonva 1 olyan webhelytől, amelyet nem keresett fel mostanában}other{Az értesítési engedélyek megvonva # olyan webhelytől, amelyet nem keresett fel mostanában}}</translation>
 <translation id="3518985090088779359">Elfogadás és tovább</translation>
 <translation id="3519014757432845220">Segítsen a spam elleni védelem továbbfejlesztésében azzal, hogy megosztja az értesítés tartalmát és a webhely URL-jét a Google-lal. A tartalmat emberek is felülvizsgálhatják.</translation>
-<translation id="351952459507671940">Hozzáadás új csoporthoz</translation>
 <translation id="3521388823983121502">Nem lehet folytatni a bejelentkezést itt: <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="3522247891732774234">Frissítés áll rendelkezésre. További lehetőségek</translation>
 <translation id="3523789730715594198">A beállítások között bármikor leállíthatja a szinkronizálást. A Google az Ön előzményei alapján személyre szabhatja a Keresőt és más szolgáltatásokat.</translation>

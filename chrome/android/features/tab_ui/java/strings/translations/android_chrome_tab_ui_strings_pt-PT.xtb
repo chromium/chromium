@@ -43,7 +43,6 @@
 <translation id="2536366509642644298">Os grupos de separadores "<ph name="TAB_GROUP_NAME_1" />" e "<ph name="TAB_GROUP_NAME_2" />" já não estão disponíveis</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{Reduza <ph name="TABS_COUNT_ONE" /> separador.}other{Reduza o grupo de separadores com <ph name="TABS_COUNT_MANY" /> separadores.}}</translation>
 <translation id="2569352796411618312">Sugestão: <ph name="NUMBER_OF_TABS" /> dos seus separadores não foram utilizados recentemente. Quer fechá-los?</translation>
-<translation id="2656693375914502139">Mover para grupo</translation>
 <translation id="2662028055331606429">Classificação de <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="266935134738038806">Visitar site</translation>
 <translation id="2671423594960767771">Partilhar grupo</translation>
@@ -122,7 +121,6 @@
 <translation id="6109251075362363230">Agora, todos os separadores duplicados também vão ser arquivados, com exceção da cópia usada mais recentemente.</translation>
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{Mover grupo para nova janela}other{Mover grupo para outra janela}}</translation>
 <translation id="6193448654517602979">Selecione separadores</translation>
-<translation id="6212567362666004597">Adicionar separador a grupo</translation>
 <translation id="6220820548421939212">Sim. Aceito</translation>
 <translation id="6228793724645064692">(classificação da loja)</translation>
 <translation id="6271513594716432922">Fechar todos os separadores inativos</translation>

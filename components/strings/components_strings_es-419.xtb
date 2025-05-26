@@ -1839,6 +1839,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="4140905366050378834">Alimento y suministros para el cuidado de mascotas</translation>
 <translation id="4140905530744469899">ID del perfil:</translation>
 <translation id="4142935452406587478">Bandeja 10</translation>
+<translation id="4147897805161313378">Google Fotos</translation>
 <translation id="4148925816941278100">American Express</translation>
 <translation id="4150099059797363385">Sobre chino n.º 4</translation>
 <translation id="4151403195736952345">Utilizar opción predeterminada global (detectar)</translation>
@@ -1999,6 +2000,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="437620492464254965">Puertas y ventanas</translation>
 <translation id="4377125064752653719">Intentaste acceder a <ph name="DOMAIN" />, pero el emisor anuló el certificado que presentó el servidor. Esto significa que no se debe confiar en absoluto en las credenciales de seguridad que presentó el servidor. Te puedes estar comunicando con un atacante.</translation>
 <translation id="4378154925671717803">Teléfono</translation>
+<translation id="4382484599443659549">PDF</translation>
 <translation id="4382833368532556056">A partir de ahora, guarda tus archivos en el almacenamiento en la nube</translation>
 <translation id="4384395682990721132">A4x3</translation>
 <translation id="4387692837058041921">Se pausó la carga de archivos a Microsoft OneDrive</translation>
@@ -4317,7 +4319,6 @@ Detalles adicionales:
 Detalles adicionales:
 <ph name="DEBUG_INFO" /></translation>
 <translation id="8416874502399604126">Se permite el micrófono esta vez</translation>
-<translation id="8421158157346464398">Información del perfil de trabajo (como el nombre de usuario del perfil de trabajo)</translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" /> <ph name="SECOND_LABEL" /> <ph name="THIRD_LABEL" /></translation>
 <translation id="8425213833346101688">Cambiar</translation>
 <translation id="8426945547715537628">¿Quieres permitir la anulación del teclado?</translation>

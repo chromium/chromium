@@ -106,7 +106,6 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="2345992953227471816">Chrome found that these extensions contain malware:</translation>
 <translation id="2348335408836342058">Chrome needs permission to access your camera and microphone for this site</translation>
 <translation id="234869673307233423">Chrome can't check your passwords. Try again later.</translation>
-<translation id="235650106824528204">Any Chrome data that is generated during the use of this profile (such as the creation of bookmarks, history, passwords and other settings) can be removed by the work profile administrator. <ph name="LEARN_MORE" /></translation>
 <translation id="2359808026110333948">Continue</translation>
 <translation id="2403703063067034158">Startup error: Another instance of setup is currently running, please try again later.</translation>
 <translation id="2409816192575564775">{NUM_DEVICES,plural, =0{1 HID device was being accessed by one or more Chrome extensions}=1{1 HID device is being accessed by one or more Chrome extensions}other{# HID devices are being accessed by one or more Chrome extensions}}</translation>
@@ -396,7 +395,6 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="6069027071882229820">Copy as image</translation>
 <translation id="6070348360322141662">For added security, Google Chrome will encrypt your data</translation>
 <translation id="6075300983329039771">Your organisation, <ph name="MANAGER" />, requires you to sign in to Chrome</translation>
-<translation id="608006075545470555">Add work profile to this browser</translation>
 <translation id="6113794647360055231">Chrome just got better</translation>
 <translation id="6116252277240876590">This language is used to display menus, settings, alerts and other text in Chrome</translation>
 <translation id="6134085236017727171">To use your microphone, give Chrome access in <ph name="BEGIN_LINK" />system settings<ph name="END_LINK" /></translation>
@@ -592,7 +590,6 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="8521348052903287641">Inbound rule for Google Chrome Dev to allow mDNS traffic.</translation>
 <translation id="852529348814672339">Display Chrome in this language</translation>
 <translation id="8533056045953418157">Set Google Chrome as your default PDF viewer</translation>
-<translation id="8550334526674375523">This work profile is completely separate from your personal profile.</translation>
 <translation id="8555465886620020932">Service error: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="856656450041460113">Search language list</translation>
 <translation id="8601359445272098721">New! You can translate both text and images on your screen by selecting the 'translate screen' button</translation>
@@ -625,7 +622,6 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="8914504000324227558">Relaunch Chrome</translation>
 <translation id="8922193594870374009">To send a number from <ph name="ORIGIN" /> to your Android phone, sign in to Chrome on both devices.</translation>
 <translation id="8948460679427074738">This extension hasn't published privacy practices, such as how it collects and uses data. Chrome recommends that you remove it.</translation>
-<translation id="8986207147630327271">You are adding a work profile to this browser and giving your administrator control over just the work profile.</translation>
 <translation id="8989968390305463310">Your browsing history affects the ads that you see and the interests as estimated below. To protect your privacy, Chrome auto-deletes your interests on a rolling basis each month. Interests can refresh unless you remove them.</translation>
 <translation id="8992769679401294069">Your data is encrypted with your passphrase. Enter it to use and save Chrome data in your Google Account.</translation>
 <translation id="8999117580775242387">When HTTPS isn't available, Chrome will use an insecure connection without warning you</translation>

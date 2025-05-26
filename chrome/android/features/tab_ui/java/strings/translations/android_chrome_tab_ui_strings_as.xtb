@@ -43,7 +43,6 @@
 <translation id="2536366509642644298">"<ph name="TAB_GROUP_NAME_1" />" আৰু "<ph name="TAB_GROUP_NAME_2" />" টেবৰ গোট আৰু উপলব্ধ নহয়</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> টা টেব সংকোচন কৰক।}one{<ph name="TABS_COUNT_MANY" /> টা টেবযুক্ত টেবৰ গোটটো সংকোচন কৰক।}other{<ph name="TABS_COUNT_MANY" /> টা টেবযুক্ত টেবৰ গোটটো সংকোচন কৰক।}}</translation>
 <translation id="2569352796411618312">পৰামৰ্শ: শেহতীয়াকৈ আপোনাৰ <ph name="NUMBER_OF_TABS" /> টা টেব ব্যৱহাৰ কৰা হোৱা নাই। সেইকেইটা বন্ধ কৰিবনে?</translation>
-<translation id="2656693375914502139">গোটলৈ স্থানান্তৰ কৰক</translation>
 <translation id="2662028055331606429"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> মূল্যাংকন</translation>
 <translation id="266935134738038806">ছাইটটোলৈ যাওক</translation>
 <translation id="2671423594960767771">গোট শ্বেয়াৰ কৰক</translation>
@@ -122,7 +121,6 @@
 <translation id="6109251075362363230">আটাইবোৰ ডুপ্লিকেট টেবো এতিয়া আৰ্কাইভ কৰা হ’ব, য’ত একেবাৰে শেহতীয়াকৈ ব্যৱহাৰ কৰা প্ৰতিলিপিটোৰ ক্ষেত্ৰত ব্যতিক্ৰম থাকিব।</translation>
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{গোটটোক নতুন ৱিণ্ড’লৈ স্থানান্তৰ কৰক}one{গোটটোক আন এখন নতুন ৱিণ্ড’লৈ স্থানান্তৰ কৰক}other{গোটটোক আন এখন নতুন ৱিণ্ড’লৈ স্থানান্তৰ কৰক}}</translation>
 <translation id="6193448654517602979">টেবসমূহ বাছনি কৰক</translation>
-<translation id="6212567362666004597">গোটত টেব যোগ দিয়ক</translation>
 <translation id="6220820548421939212">হয়। মই সন্মত</translation>
 <translation id="6228793724645064692">(ষ্ট’ৰৰ মূল্যাংকন)</translation>
 <translation id="6271513594716432922">আটাইবোৰ নিষ্ক্ৰিয় টেব বন্ধ কৰক</translation>

@@ -121,7 +121,6 @@ Maaaring hindi available ang ilang tampok at hindi mase-save ang mga pagbabago s
 <translation id="2572494885440352020">Helper ng Chromium</translation>
 <translation id="2575822587468774919">Pumili ng kahit anong bagay na hahanapin gamit ang Paghahanap ng Larawan</translation>
 <translation id="2576118232315942160">Para makuha ang iyong mga password at higit pa sa lahat ng device mo, mag-sign in sa Chromium</translation>
-<translation id="2583187216237139145">Puwedeng alisin ng administrator ng profile sa trabaho ang anumang data ng Chromium na nabuo sa panahon ng paggamit ng profile na ito (gaya ng paggawa ng mga bookmark, history, mga password, at iba pang setting). <ph name="LEARN_MORE" /></translation>
 <translation id="2592940277904433508">Ipagpatuloy ang paggamit ng Chromium</translation>
 <translation id="259935314519650377">Hindi na-cache ang na-download na installer. Error: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
 <translation id="2620436844016719705">System</translation>
@@ -366,7 +365,6 @@ Maaaring hindi available ang ilang tampok at hindi mase-save ang mga pagbabago s
 <translation id="6069027071882229820">Kopyahin bilang larawan</translation>
 <translation id="6072279588547424923">Naidagdag na ang <ph name="EXTENSION_NAME" /> sa Chromium</translation>
 <translation id="6072463441809498330">Pabilisin ang Chromium</translation>
-<translation id="608006075545470555">Magdagdag ng Profile sa Trabaho sa browser na ito</translation>
 <translation id="6096348254544841612">I-customize at kontrolin ang Chromium. May available na update.</translation>
 <translation id="6107893135096467929">Naka-on • Hindi ma-verify ng Chromium kung saan galing ang extension na ito</translation>
 <translation id="6119438414301547735">Payagan ang extension na ipakita ang mga kahilingan sa access sa toolbar ng Chromium</translation>
@@ -562,7 +560,6 @@ Hindi mabawi ng Chromium ang iyong mga setting.</translation>
 <translation id="8471947159125090285">Para magamit at ma-save ang data ng Chromium sa iyong Google Account, i-verify na ikaw ito</translation>
 <translation id="8493179195440786826">Luma na ang Chromium</translation>
 <translation id="8522801943730206384">Masusuri ng Chromium ang iyong mga password kapag na-save mo ang mga ito</translation>
-<translation id="8550334526674375523">Ang profile sa trabaho na ito ay ganap na hiwalay sa iyong personal na profile.</translation>
 <translation id="8555465886620020932">Error sa serbisyo: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="8556420416730706394">Puwede mong i-pin ang Paghahanap ng Larawan para madali itong ma-access; i-click ang button na I-pin sa itaas ng panel sa gilid</translation>
 <translation id="856656450041460113">Maghanap sa listahan ng wika</translation>
@@ -591,7 +588,6 @@ Hindi mabawi ng Chromium ang iyong mga setting.</translation>
 <translation id="8931379085695076764">Puwedeng tantyahin ng Chromium ang iyong mga interes batay sa history ng pag-browse mo mula sa mga nakalipas na ilang linggo. Mananatili ang impormasyong ito sa iyong device.</translation>
 <translation id="8941642502866065432">Hindi ma-update ang Chromium</translation>
 <translation id="897581876605952338">Logo ng Chromium Enterprise</translation>
-<translation id="8986207147630327271">Nagdaragdag ka ng profile sa trabaho sa browser na ito at binibigyan mo ang iyong administrator ng kontrol sa profile sa trabaho lang.</translation>
 <translation id="8988036198400390003">Pamahalaan ang mga profile sa Chromium</translation>
 <translation id="9019929317751753759">Upang mas gawing ligtas ang Chromium, na-disable namin ang sumusunod na extension na hindi nakalista sa <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> na maaaring naidagdag nang hindi mo nalalalaman.</translation>
 <translation id="9022552996538154597">Mag-sign in sa Chromium</translation>

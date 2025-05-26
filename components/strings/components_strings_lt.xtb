@@ -636,6 +636,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="2088913896151127116">Pridėti teksto</translation>
 <translation id="2090451897496479509">Jei reikia daugiau informacijos, susisiekite su teikėju</translation>
 <translation id="2091887806945687916">Garsas</translation>
+<translation id="2093184051799735948">Ieškokite „<ph name="ENGINE_NAME" />“ arba įveskite URL</translation>
 <translation id="2093982008204312032">„Google Chrome“ bando išjungti „Windows Hello“ slaptažodžiams užpildyti.</translation>
 <translation id="2094505752054353250">Domeno neatitikimas</translation>
 <translation id="2094704029599359040">Versijos informacija</translation>
@@ -770,6 +771,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="2296331629987861142">Mokėkite nedidelėmis dalimis (taikomi tinkamumo kriterijai ir mokesčiai)</translation>
 <translation id="2300306941146563769">Neįkelta</translation>
 <translation id="2301098101308036335">Kokiose svetainėse lankomasi ir kada.</translation>
+<translation id="2302571905116831849">Automatinis lojalumo kortelės pildymas</translation>
 <translation id="230286397113210245">Mygtukas „Atidaryti inkognito langą“; suaktyvinkite, kad būtų atidarytas naujas privataus naršymo inkognito langas</translation>
 <translation id="2305294852062272447">Išsaugoti vairuotojo pažymėjimą?</translation>
 <translation id="2306124309679506798">Leisti įtraukiančią patirtį?</translation>
@@ -1838,6 +1840,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="4140905366050378834">Maistas naminiams gyvūnams ir priežiūros reikmenys</translation>
 <translation id="4140905530744469899">Profilio ID:</translation>
 <translation id="4142935452406587478">10 dėklas</translation>
+<translation id="4147897805161313378">„Google“ nuotraukos</translation>
 <translation id="4148925816941278100">American Express</translation>
 <translation id="4150099059797363385">Nr. 4 kinietiškas vokas</translation>
 <translation id="4151403195736952345">Naudoti visuotinį numatytąjį nustatymą (nustatyti)</translation>
@@ -1998,6 +2001,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="437620492464254965">Durys ir langai</translation>
 <translation id="4377125064752653719">Bandėte pasiekti svetainę „<ph name="DOMAIN" />“, bet sertifikatą, kurį pateikė serveris, anuliavo jo išdavėjas. Tai reiškia, kad saugos kredencialais, kuriuos pateikė serveris, visiškai negalima pasitikėti. Galbūt bendraujate su užpuoliku.</translation>
 <translation id="4378154925671717803">Telefonas</translation>
+<translation id="4382484599443659549">PDF</translation>
 <translation id="4382833368532556056">Nuo dabar saugokite failus saugykloje debesyje</translation>
 <translation id="4384395682990721132">A4x3</translation>
 <translation id="4387692837058041921">Failo įkėlimas į „Microsoft OneDrive“ pristabdytas</translation>
@@ -4319,7 +4323,6 @@ Papildoma išsami informacija:
 Papildoma išsami informacija:
 <ph name="DEBUG_INFO" /></translation>
 <translation id="8416874502399604126">Mikrofonas leidžiamas šį kartą</translation>
-<translation id="8421158157346464398">Darbo profilio informacija (pvz., darbo profilio naudotojo vardas)</translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" /> <ph name="SECOND_LABEL" /> <ph name="THIRD_LABEL" /></translation>
 <translation id="8425213833346101688">Keisti</translation>
 <translation id="8426945547715537628">Leisti klaviatūros nepaisymą?</translation>

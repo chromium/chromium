@@ -770,6 +770,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="2296331629987861142">In Raten zahlen (es gelten bestimmte Voraussetzungen, Gebühren fallen an)</translation>
 <translation id="2300306941146563769">Nicht hochgeladen</translation>
 <translation id="2301098101308036335">Welche Websites zu welchem Zeitpunkt besucht werden.</translation>
+<translation id="2302571905116831849">Kundenkarte automatisch ausfüllen</translation>
 <translation id="230286397113210245">Schaltfläche „Inkognitofenster öffnen“ – aktivieren, um ein neues Inkognitofenster zu öffnen und privat zu surfen</translation>
 <translation id="2305294852062272447">Führerschein speichern?</translation>
 <translation id="2306124309679506798">Immersive Nutzung zulassen?</translation>
@@ -1835,6 +1836,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="4140905366050378834">Haustiernahrung und -pflegemittel</translation>
 <translation id="4140905530744469899">Profil-ID:</translation>
 <translation id="4142935452406587478">Fach 10</translation>
+<translation id="4147897805161313378">Google Fotos</translation>
 <translation id="4148925816941278100">American Express</translation>
 <translation id="4150099059797363385">Umschlag Chinesisch Nr. 4</translation>
 <translation id="4151403195736952345">Globalen Standard verwenden (Erkennen)</translation>
@@ -1995,6 +1997,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="437620492464254965">Türen und Fenster</translation>
 <translation id="4377125064752653719">Du hast versucht, auf <ph name="DOMAIN" /> zuzugreifen, das vom Server übermittelte Zertifikat wurde jedoch vom entsprechenden Aussteller widerrufen. Das bedeutet, dass die vom Server übermittelten Sicherheitsinformationen nicht vertrauenswürdig sind. Möglicherweise kommunizierst du mit einem Hacker.</translation>
 <translation id="4378154925671717803">Telefon</translation>
+<translation id="4382484599443659549">PDF</translation>
 <translation id="4382833368532556056">Speichere deine Dateien in Zukunft im Cloud-Speicher</translation>
 <translation id="4384395682990721132">A4x3</translation>
 <translation id="4387692837058041921">Datei-Upload in Microsoft OneDrive wurde pausiert</translation>
@@ -4313,7 +4316,6 @@ Weitere Details:
 Weitere Details:
 <ph name="DEBUG_INFO" /></translation>
 <translation id="8416874502399604126">Mikrofonberechtigung einmal gewährt</translation>
-<translation id="8421158157346464398">Informationen aus dem Arbeitsprofil, z. B. dein Nutzername im Arbeitsprofil</translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" />, <ph name="SECOND_LABEL" />, <ph name="THIRD_LABEL" /></translation>
 <translation id="8425213833346101688">Ändern</translation>
 <translation id="8426945547715537628">Tastaturüberschreibung zulassen?</translation>

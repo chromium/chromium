@@ -43,7 +43,6 @@
 <translation id="2536366509642644298">Skupiny kariet <ph name="TAB_GROUP_NAME_1" /> a <ph name="TAB_GROUP_NAME_2" /> už nie sú k dispozícii</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{Zbaliť <ph name="TABS_COUNT_ONE" /> kartu}few{Zbaliť skupinu s <ph name="TABS_COUNT_MANY" /> kartami}many{Collapse tab group with <ph name="TABS_COUNT_MANY" /> tabs.}other{Zbaliť skupinu s <ph name="TABS_COUNT_MANY" /> kartami}}</translation>
 <translation id="2569352796411618312">Návrh: V poslednom čase ste nepoužili viacero kariet (<ph name="NUMBER_OF_TABS" />). Chcete ich zavrieť?</translation>
-<translation id="2656693375914502139">Presunúť do skupiny</translation>
 <translation id="2662028055331606429">Hodnotenie: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="266935134738038806">Navštíviť web</translation>
 <translation id="2671423594960767771">Zdieľať skupinu</translation>
@@ -120,8 +119,8 @@
 <translation id="6051432659151380973">Skupiny kariet sa ukladajú automaticky</translation>
 <translation id="6054741997831917303">Cena tejto položky nedávno klesla z <ph name="PREVIOUS_PRICE" /> na <ph name="NEW_PRICE" /></translation>
 <translation id="6109251075362363230">Všetky duplicitné karty s výnimkou naposledy použitej kópie budú odteraz archivované.</translation>
+<translation id="61924696525243173">{WINDOW_COUNT,plural, =1{Presunúť skupinu do nového okna}few{Presunúť skupinu do iného okna}many{Presunúť skupinu do iného okna}other{Presunúť skupinu do iného okna}}</translation>
 <translation id="6193448654517602979">Vyberte karty</translation>
-<translation id="6212567362666004597">Pridať kartu do skupiny</translation>
 <translation id="6220820548421939212">Áno. Mám záujem.</translation>
 <translation id="6228793724645064692">(hodnotenie obchodu)</translation>
 <translation id="6271513594716432922">Zavrieť všetky neaktívne karty</translation>

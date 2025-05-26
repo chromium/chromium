@@ -102,7 +102,6 @@
 <translation id="2345992953227471816">Chrome aşağıdaki uzantılarda kötü amaçlı yazılım tespit etti:</translation>
 <translation id="2348335408836342058">Chrome'un bu sitede kameranıza ve mikrofonunuza erişmesi için izin gerekiyor</translation>
 <translation id="234869673307233423">Chrome, şifrelerinizi kontrol edemiyor. Daha sonra tekrar deneyin.</translation>
-<translation id="235650106824528204">Bu profil kullanılırken oluşturulan tüm Chrome verileri (yer işaretlerinin oluşturulması, geçmiş, şifreler ve diğer ayarlar gibi) iş profili yöneticisi tarafından kaldırılabilir. <ph name="LEARN_MORE" /></translation>
 <translation id="2359808026110333948">Devam</translation>
 <translation id="2403703063067034158">Başlatma hatası: Şu anda başka bir kurulum işlemi devam ediyor. Lütfen daha sonra tekrar deneyin.</translation>
 <translation id="2409816192575564775">{NUM_DEVICES,plural, =0{Bir veya daha fazla Chrome uzantısı, 1 insan arabirim cihazına erişiyordu}=1{Bir veya daha fazla Chrome uzantısı, 1 insan arabirim cihazına erişiyor}other{Bir veya daha fazla Chrome uzantısı, # insan arabirim cihazına erişiyor}}</translation>
@@ -389,7 +388,6 @@ Bazı özellikler kullanılamayabilir. Lütfen farklı bir profil dizini belirti
 <translation id="6069027071882229820">Resim olarak kopyala</translation>
 <translation id="6070348360322141662">Google Chrome ek güvenlik sağlamak için verilerinizi şifreler</translation>
 <translation id="6075300983329039771">Kuruluşunuz (<ph name="MANAGER" />), Chrome'da oturum açmanızı zorunlu kılıyor</translation>
-<translation id="608006075545470555">Bu tarayıcıya İş Profili ekle</translation>
 <translation id="6113794647360055231">Chrome daha da iyi bir hale geldi</translation>
 <translation id="6116252277240876590">Bu dil, Chrome'da menüleri, ayarları, uyarıları ve diğer metinleri görüntülemek için kullanılır</translation>
 <translation id="6134085236017727171">Mikrofonunuzu kullanması için <ph name="BEGIN_LINK" />sistem ayarlarında<ph name="END_LINK" /> Chrome'a erişim izni verin</translation>
@@ -585,7 +583,6 @@ Bazı özellikler kullanılamayabilir. Lütfen farklı bir profil dizini belirti
 <translation id="8521348052903287641">Google Chrome Dev'in mDNS trafiğine izin vermeyi sağlayan gelen trafik kuralı.</translation>
 <translation id="852529348814672339">Chrome'u bu dilde görüntüle</translation>
 <translation id="8533056045953418157">Google Chrome'u varsayılan PDF görüntüleyiciniz olarak ayarlayın</translation>
-<translation id="8550334526674375523">Bu iş profili, kişisel profilinizden tamamen ayrıdır.</translation>
 <translation id="8555465886620020932">Hizmet hatası: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="856656450041460113">Arama dili listesi</translation>
 <translation id="8601359445272098721">Yeni! "Ekrandaki yazıları çevir" düğmesini seçerek ekranınızdaki metinleri ve resimleri çevirebilirsiniz</translation>
@@ -618,7 +615,6 @@ Bazı özellikler kullanılamayabilir. Lütfen farklı bir profil dizini belirti
 <translation id="8914504000324227558">Chrome'u Yeniden Başlat</translation>
 <translation id="8922193594870374009"><ph name="ORIGIN" /> sitesinden Android telefonunuza numara göndermek için iki cihazdan da Chrome'da oturum açın.</translation>
 <translation id="8948460679427074738">Bu uzantı, verileri nasıl topladığı ve kullandığı gibi gizlilik uygulamalarını yayınlamadı. Chrome, bu dosyayı kaldırmanızı önerir.</translation>
-<translation id="8986207147630327271">Bu tarayıcıya bir iş profili ekliyor ve yöneticinize yalnızca iş profilini kontrol etme yetkisi veriyorsunuz.</translation>
 <translation id="8989968390305463310">Tarama geçmişiniz gördüğünüz reklamları ve aşağıdaki şekilde tahmin edilen ilgi alanlarınızı etkiler. Chrome, gizliliğinizi korumak için ilgi alanlarınızı her ay sürekli olarak siler. Silme işlemi otomatik olarak gerçekleştirilir. Kaldırmadığınız sürece ilgi alanlarınız yenilenmeye devam edebilir.</translation>
 <translation id="8992769679401294069">Verileriniz parolanızla şifrelenir. Chrome verilerini kullanmak ve Google Hesabınıza kaydetmek için bu kodu girin.</translation>
 <translation id="8999117580775242387">Chrome, HTTPS kullanılamadığında size uyarı göndermeden güvenli olmayan bir bağlantı kullanır</translation>

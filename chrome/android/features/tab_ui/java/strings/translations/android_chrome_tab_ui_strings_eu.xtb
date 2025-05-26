@@ -43,7 +43,6 @@
 <translation id="2536366509642644298">"<ph name="TAB_GROUP_NAME_1" />" eta "<ph name="TAB_GROUP_NAME_2" />" fitxa taldeak jadanik ez daude erabilgarri</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{Tolestu <ph name="TABS_COUNT_ONE" /> fitxa.}other{Tolestu <ph name="TABS_COUNT_MANY" /> fitxa dituen fitxa taldea.}}</translation>
 <translation id="2569352796411618312">Iradokizuna: fitxetako <ph name="NUMBER_OF_TABS" /> ez dira erabili azkenaldian. Itxi nahi dituzu?</translation>
-<translation id="2656693375914502139">Eraman taldera</translation>
 <translation id="2662028055331606429">Balorazioa: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="266935134738038806">Joan webgunera</translation>
 <translation id="2671423594960767771">Partekatu taldea</translation>
@@ -121,7 +120,6 @@
 <translation id="6054741997831917303">Produktu honen prezioa jaitsi egin da, eta <ph name="PREVIOUS_PRICE" /> izatetik <ph name="NEW_PRICE" /> izatera pasatu</translation>
 <translation id="6109251075362363230">Orain, fitxa bikoiztu guztiak ere artxibatuko dira, erabilitako azken kopia izan ezik.</translation>
 <translation id="6193448654517602979">Hautatu fitxak</translation>
-<translation id="6212567362666004597">Gehitu fitxa taldean</translation>
 <translation id="6220820548421939212">Bai. Ados</translation>
 <translation id="6228793724645064692">(dendaren balorazioa)</translation>
 <translation id="6271513594716432922">Itxi fitxa inaktibo guztiak</translation>

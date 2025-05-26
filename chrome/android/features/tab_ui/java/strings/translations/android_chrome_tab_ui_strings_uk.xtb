@@ -43,7 +43,6 @@
 <translation id="2536366509642644298">Групи вкладок "<ph name="TAB_GROUP_NAME_1" />" і "<ph name="TAB_GROUP_NAME_2" />" більше не доступні</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{Згорнути <ph name="TABS_COUNT_ONE" /> вкладку}one{Згорнути групу з <ph name="TABS_COUNT_MANY" /> вкладкою}few{Згорнути групу з <ph name="TABS_COUNT_MANY" /> вкладками}many{Згорнути групу з <ph name="TABS_COUNT_MANY" /> вкладками}other{Згорнути групу з <ph name="TABS_COUNT_MANY" /> вкладки}}</translation>
 <translation id="2569352796411618312">Пропозиція: ви давно не переходили на кілька вкладок (<ph name="NUMBER_OF_TABS" />). Закрити їх?</translation>
-<translation id="2656693375914502139">Перемістити в групу</translation>
 <translation id="2662028055331606429">Оцінка – <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="266935134738038806">Відвідати сайт</translation>
 <translation id="2671423594960767771">Поділитися групою</translation>
@@ -122,7 +121,6 @@
 <translation id="6109251075362363230">Тепер також архівуватимуться всі повторювані вкладки, за винятком тієї, що використовувалась останньою.</translation>
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{Перемістити групу в нове вікно}one{Перемістити групи в інше вікно}few{Перемістити групи в інше вікно}many{Перемістити групи в інше вікно}other{Перемістити групи в інше вікно}}</translation>
 <translation id="6193448654517602979">Виберіть вкладки</translation>
-<translation id="6212567362666004597">Додати вкладку в групу</translation>
 <translation id="6220820548421939212">Так, видаляти</translation>
 <translation id="6228793724645064692">(оцінка магазину)</translation>
 <translation id="6271513594716432922">Закрити всі неактивні вкладки</translation>

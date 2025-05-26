@@ -206,6 +206,7 @@
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1758459542619182298"><ph name="CONTROL_TYPE" /> <ph name="KEY_LIST" /></translation>
 <translation id="1759842336958782510">Chrome</translation>
+<translation id="1762353673362288306">يمكنك استخدام تطبيق "أدوات الدراسة" فقط في الوقت الحالي</translation>
 <translation id="1762483337755424125">نص التسجيل</translation>
 <translation id="1765169783255151332">تبديل المفاتيح بسرعة</translation>
 <translation id="1768959921651994223">نوع المصادقة</translation>
@@ -1613,6 +1614,7 @@
 <translation id="8088963492174775412">اضغط لبدء التسجيل</translation>
 <translation id="8094062939584182041">‏السماح بتلقّي رسائل إلكترونية من Google حول هذه المشكلة</translation>
 <translation id="8104083085214006426">أنت تستخدم شبكةً مفتوحة وغير آمنة.</translation>
+<translation id="8108879170356113798">بعد عدد <ph name="NUM_SECONDS" /> من الثواني، لن يكون استخدام أي تطبيق ممكنًا سوى "أدوات الدراسة"</translation>
 <translation id="811820734797650957">‏(نظام التشغيل Android) اختبار إمكانية فحص اتصال البوابة</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° مئوية</translation>
 <translation id="8131740175452115882">تأكيد</translation>

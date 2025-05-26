@@ -106,7 +106,6 @@ Neke funkcije su možda nedostupne i promene podešavanja neće biti sačuvane.
 <translation id="2345992953227471816">Chrome je otkrio malver u ovim dodacima:</translation>
 <translation id="2348335408836342058">Chrome traži dozvolu da pristupi kameri i mikrofonu za ovaj sajt</translation>
 <translation id="234869673307233423">Chrome ne može da vam proverava lozinke. Probajte ponovo kasnije.</translation>
-<translation id="235650106824528204">Administrator poslovnog profila može da ukloni sve podatke Chrome-a koji se generišu tokom korišćenja ovog profila (poput pravljenja obeleživača, istorije, lozinki i drugih podešavanja). <ph name="LEARN_MORE" /></translation>
 <translation id="2359808026110333948">Nastavi</translation>
 <translation id="2403703063067034158">Greška pri pokretanju: Trenutno je pokrenuta druga instanca podešavanja. Probajte ponovo kasnije.</translation>
 <translation id="2409816192575564775">{NUM_DEVICES,plural, =0{Jedan ili više dodataka za Chrome su pristupali 1 HID uređaju}=1{Jedan ili više dodataka za Chrome pristupaju 1 HID uređaju}one{Jedan ili više dodataka za Chrome pristupaju # HID uređaju}few{Jedan ili više dodataka za Chrome pristupaju HID uređajima (#)}other{Jedan ili više dodataka za Chrome pristupaju HID uređajima (#)}}</translation>
@@ -397,7 +396,6 @@ Google Chrome ne može da vrati podešavanja.</translation>
 <translation id="6069027071882229820">Kopiraj kao sliku</translation>
 <translation id="6070348360322141662">Google Chrome će šifrovati podatke radi dodatne sigurnosti</translation>
 <translation id="6075300983329039771">Vaša organizacija, <ph name="MANAGER" />, zahteva da se prijavite u Chrome</translation>
-<translation id="608006075545470555">Dodajte poslovni profil u ovaj pregledač</translation>
 <translation id="6113794647360055231">Upravo smo poboljšali Chrome</translation>
 <translation id="6116252277240876590">Ovaj jezik se koristi za prikazivanje menija, podešavanja, upozorenja i drugog teksta u Chrome-u</translation>
 <translation id="6134085236017727171">Da biste koristili mikrofon, odobrite Chrome-u pristup u <ph name="BEGIN_LINK" />podešavanjima sistema<ph name="END_LINK" /></translation>
@@ -593,7 +591,6 @@ Google Chrome ne može da vrati podešavanja.</translation>
 <translation id="8521348052903287641">Pravilo za dolazni saobraćaj za programersku verziju Google Chrome-a da biste omogućili mDNS saobraćaj.</translation>
 <translation id="852529348814672339">Prikazuj Chrome na ovom jeziku</translation>
 <translation id="8533056045953418157">Podesite Google Chrome kao podrazumevani PDF pregledač</translation>
-<translation id="8550334526674375523">Ovaj poslovni profil je potpuno odvojen od ličnog profila.</translation>
 <translation id="8555465886620020932">Greška u usluzi: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="856656450041460113">Pretražite listu jezika</translation>
 <translation id="8601359445272098721">Novo. Možete da prevodite i tekst i slike na ekranu tako što ćete izabrati dugme „Prevedi ekran“</translation>
@@ -626,7 +623,6 @@ Google Chrome ne može da vrati podešavanja.</translation>
 <translation id="8914504000324227558">Ponovo pokreni Chrome</translation>
 <translation id="8922193594870374009">Da biste poslali broj sa <ph name="ORIGIN" /> na Android telefon, prijavite se u Chrome na oba uređaja.</translation>
 <translation id="8948460679427074738">Ovaj dodatak nije objavio prakse privatnosti, na primer, kako prikuplja i koristi podatke. Chrome preporučuje da ga uklonite.</translation>
-<translation id="8986207147630327271">Dodajete poslovni profil u ovaj pregledač i dajete administratoru kontrolu samo nad ovim poslovnim profilom.</translation>
 <translation id="8989968390305463310">Istorija pregledanja utiče na oglase koji vam se prikazuju i interesovanja procenjena u nastavku. Radi zaštite privatnosti Chrome automatski briše interesovanja svakog meseca čim postanu dostupna. Interesovanja mogu da se osvežavaju ako ih ne uklonite.</translation>
 <translation id="8992769679401294069">Podaci se šifruju pomoću pristupne fraze. Unesite je da biste koristili i sačuvali Chrome podatke na Google nalogu.</translation>
 <translation id="8999117580775242387">Kada HTTPS nije dostupan, Chrome će koristiti nebezbednu vezu bez upozorenja</translation>

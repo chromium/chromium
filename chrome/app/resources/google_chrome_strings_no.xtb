@@ -102,7 +102,6 @@
 <translation id="2345992953227471816">Chrome har oppdaget at disse utvidelsene inneholder skadelig programvare:</translation>
 <translation id="2348335408836342058">Chrome trenger tilgang til kameraet ditt og mikrofonen din for dette nettstedet</translation>
 <translation id="234869673307233423">Chrome kan ikke sjekke passordene dine. Prøv på nytt senere.</translation>
-<translation id="235650106824528204">Alle Chrome-data som genereres mens denne profilen brukes (f.eks. oppretting av bokmerker, logg, passord og andre innstillinger), kan fjernes av administratoren for jobbprofilen. <ph name="LEARN_MORE" /></translation>
 <translation id="2359808026110333948">Fortsett</translation>
 <translation id="2403703063067034158">Oppstartsfeil: En annen forekomst av konfigureringen kjører for øyeblikket. Prøv på nytt senere.</translation>
 <translation id="2409816192575564775">{NUM_DEVICES,plural, =0{1 HID-enhet ble brukt av en eller flere Chrome-utvidelser}=1{1 HID-enhet brukes av en eller flere Chrome-utvidelser}other{# HID-enheter brukes av en eller flere Chrome-utvidelser}}</translation>
@@ -389,7 +388,6 @@
 <translation id="6069027071882229820">Kopier som bilde</translation>
 <translation id="6070348360322141662">Google Chrome krypterer dataene dine for å øke sikkerheten</translation>
 <translation id="6075300983329039771">Organisasjonen din, <ph name="MANAGER" />, krever at du logger på Chrome</translation>
-<translation id="608006075545470555">Legg til en jobbprofil i denne nettleseren</translation>
 <translation id="6113794647360055231">Nå er Chrome blitt enda bedre</translation>
 <translation id="6116252277240876590">Dette språket brukes når menyer, innstillinger, varsler og annen tekst vises i Chrome</translation>
 <translation id="6134085236017727171">For å la Chrome bruke mikrofonen må du gi tilgang i <ph name="BEGIN_LINK" />systeminnstillingene<ph name="END_LINK" /></translation>
@@ -585,7 +583,6 @@
 <translation id="8521348052903287641">Regel for å tillate innkommende mDNS-trafikk i Google Chrome Dev.</translation>
 <translation id="852529348814672339">Vis Chrome på dette språket</translation>
 <translation id="8533056045953418157">Angi Google Chrome som standard PDF-visningsprogram</translation>
-<translation id="8550334526674375523">Denne jobbprofilen er helt separat fra den personlige profilen din.</translation>
 <translation id="8555465886620020932">Tjenestefeil: ‏<ph name="SERVICE_ERROR" />.</translation>
 <translation id="856656450041460113">Søk på språklisten</translation>
 <translation id="8601359445272098721">Nyhet! Du kan oversette både tekst og bilder på skjermen ved å velge «Oversett skjermen»-knappen</translation>
@@ -618,7 +615,6 @@
 <translation id="8914504000324227558">Start Chrome på nytt</translation>
 <translation id="8922193594870374009">For å sende numre fra <ph name="ORIGIN" /> til Android-telefonen din, logg på Chrome på begge enhetene.</translation>
 <translation id="8948460679427074738">Denne utvidelsen har ikke publisert retningslinjer for personvern, for eksempel hvordan den samler inn og bruker data. Chrome anbefaler at du fjerner den.</translation>
-<translation id="8986207147630327271">Du er i ferd med å legge til en jobbprofil i denne nettleseren og gi administratoren din kontroll over kun jobbprofilen.</translation>
 <translation id="8989968390305463310">Nettleserloggen din påvirker hvilke annonser du ser, og interessene som er anslått nedenfor. For å beskytte personvernet ditt sletter Chrome interessene dine automatisk på rullerende basis hver måned. Interessene kan fornyes med mindre du fjerner dem.</translation>
 <translation id="8992769679401294069">Dataene dine er kryptert med passordfrasen din. Skriv den inn for å bruke og lagre Chrome-data i Google-kontoen din.</translation>
 <translation id="8999117580775242387">Når HTTPS ikke er tilgjengelig, bruker Chrome usikre tilkoblinger uten å advare deg</translation>

@@ -367,6 +367,7 @@
 <translation id="1612199629998703524">موضوعات کا نظم کریں</translation>
 <translation id="1615178538289490617"><ph name="PORT_NAME" /> تک رسائی منسوخ کریں</translation>
 <translation id="1615402009686901181">منتظم کی پالیسی کے تحت، رازدارانہ مواد کے مرئی ہونے پر اسکرین کیپچر کرنے کی سہولت غیر فعال ہو جاتی ہے</translation>
+<translation id="161612500287664753">‏اس صفحہ کے بارے میں Google تلاش سے پوچھیں</translation>
 <translation id="1617276713587758852">کراس اوورز</translation>
 <translation id="1619007254056372606">'آلے پر' سائٹ ڈیٹا کا نظم کریں</translation>
 <translation id="1619648179761984213"><ph name="USER_DISPLAY_NAME" /> نے ایک ٹیب کو ہٹا دیا</translation>
@@ -1509,6 +1510,7 @@
 <translation id="3586931643579894722">تفصیلات چھپائیں</translation>
 <translation id="3587725436724465984">آپ کی تنظیم نے  <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> کو ایک ایسی سائٹ کے طور پر شناخت کی ہے جو پالیسی کی خلاف ورزی کر سکتی ہے۔ <ph name="BEGIN_LEARN_MORE_LINK" />اس وارننگ کے بارے میں مزید جانیں<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3587738293690942763">وسطی</translation>
+<translation id="3589519427766620380">‏اس صفحہ کے بارے میں Google لینز سے پوچھیں</translation>
 <translation id="3596918995172292499">پلیٹ جاری کرنے والی ریاست</translation>
 <translation id="3600106876108433070">موازنہ ٹیبلز کے بارے میں جانیں</translation>
 <translation id="3600246354004376029"><ph name="TITLE" />، <ph name="DOMAIN" />، <ph name="TIME" /></translation>
@@ -1840,6 +1842,7 @@
 <translation id="4140905366050378834">پالتو جانوروں کی خوراک اور پالتو جانوروں کی دیکھ بھال کا سامان</translation>
 <translation id="4140905530744469899">‏پروفائل کی ID:</translation>
 <translation id="4142935452406587478">ٹرے 10</translation>
+<translation id="4147897805161313378">‏Google تصاویر</translation>
 <translation id="4148925816941278100">American Express</translation>
 <translation id="4150099059797363385">‏Chinese #4 لفافہ</translation>
 <translation id="4151403195736952345">عالمی ڈیفالٹ استعمال کریں (پتا لگائیں)</translation>
@@ -2000,6 +2003,7 @@
 <translation id="437620492464254965">دروازے اور کھڑکیاں</translation>
 <translation id="4377125064752653719">آپ نے <ph name="DOMAIN" /> تک رسائی کی کوشش کی، لیکن سرور کے ذریعے پیش کردہ سرٹیفیکیٹ کو اس کے جاری کنندہ نے منسوخ کر دیا ہے۔ اس کا مطلب ہے کہ سرور کے ذریعے پیش کردہ سیکیورٹی اسنادات پر مطلق طور پر بھروسہ نہیں کیا جانا چاہیے۔ ممکن ہے کہ آپ کی مواصلت ایک حملہ آور کے ساتھ ہو رہی ہو۔</translation>
 <translation id="4378154925671717803">فون</translation>
+<translation id="4382484599443659549">PDF</translation>
 <translation id="4382833368532556056">آئندہ سے، اپنی فائلز کو کلاؤڈ اسٹوریج میں محفوظ کریں</translation>
 <translation id="4384395682990721132">A4x3</translation>
 <translation id="4387692837058041921">‏‫Microsoft OneDrive پر فائل اپ لوڈ کو موقوف کر دیا گیا ہے</translation>
@@ -3442,6 +3446,7 @@
 <translation id="6925267999184670015">‏شمالی امریکی B+</translation>
 <translation id="6926216138694948720">باڈی آرٹ</translation>
 <translation id="692638818576287323">تجارتی گاڑیاں</translation>
+<translation id="6930607614725241390">سائیڈ پینل میں تلاش کریں</translation>
 <translation id="6934236486840930310">‏<ph name="BEGIN_BOLD" />آپ کا ڈیفالٹ سرچ انجن آپ کو ویب پر تلاش کرنے دیتا ہے اور Chrome کی خصوصیات کو طاقت دیتا ہے<ph name="END_BOLD" /> جیسے ایڈریس بار اور ویب صفحات پر موجود تصاویر سے تلاش کرنا۔ اگر آپ کا سرچ انجن کسی خصوصیت کو سپورٹ نہیں کرتا ہے تو ممکن ہے کہ یہ خصوصیت دستیاب نہ ہو۔</translation>
 <translation id="6934672428414710184">‏یہ نام آپ کے Google اکاؤنٹ سے ہے</translation>
 <translation id="6935077351544118151">‏اب آپ Google والٹ سے لائلٹی کارڈز کو آٹو فل کر سکتے ہیں</translation>
@@ -4318,7 +4323,6 @@
 اضافی معلومات:
 <ph name="DEBUG_INFO" /></translation>
 <translation id="8416874502399604126">اس بار مائیکروفون کی اجازت ہے</translation>
-<translation id="8421158157346464398">دفتری پروفائل کی معلومات (جیسے آپ کی دفتری پروفائل کا صارف نام)</translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" /> <ph name="SECOND_LABEL" /> <ph name="THIRD_LABEL" /></translation>
 <translation id="8425213833346101688">تبدیل کریں</translation>
 <translation id="8426945547715537628">کی بورڈ اوور رائیڈ کی اجازت دیں؟</translation>

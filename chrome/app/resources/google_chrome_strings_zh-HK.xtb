@@ -106,7 +106,6 @@
 <translation id="2345992953227471816">Chrome 發現以下擴充程式含有惡意軟件：</translation>
 <translation id="2348335408836342058">Chrome 需要取得權限，才能讓這個網站存取您的相機和麥克風</translation>
 <translation id="234869673307233423">Chrome 無法檢查密碼，請稍後再試。</translation>
-<translation id="235650106824528204">工作設定檔管理員可移除任何在使用此設定檔時產生的 Chrome 資料 (例如建立的書籤、記錄、密碼和其他設定)。<ph name="LEARN_MORE" /></translation>
 <translation id="2359808026110333948">繼續</translation>
 <translation id="2403703063067034158">啟動錯誤：目前正在執行其他設定操作，請稍後再試。</translation>
 <translation id="2409816192575564775">{NUM_DEVICES,plural, =0{當時至少有一個 Chrome 擴充功能正在存取 1 部 HID 裝置}=1{至少有一個 Chrome 擴充功能正在存取 1 部 HID 裝置}other{至少有一個 Chrome 擴充功能正在存取 # 部 HID 裝置}}</translation>
@@ -396,7 +395,6 @@ Google Chrome 無法復原您的設定。</translation>
 <translation id="6069027071882229820">複製為圖像</translation>
 <translation id="6070348360322141662">為提高安全性，Google Chrome 會將您的資料加密</translation>
 <translation id="6075300983329039771">你的機構 <ph name="MANAGER" /> 要求你登入 Chrome</translation>
-<translation id="608006075545470555">將工作設定檔新增至此瀏覽器</translation>
 <translation id="6113794647360055231">Chrome 變得更好用了</translation>
 <translation id="6116252277240876590">此語言用於顯示 Chrome 中的選單、設定、快訊和其他文字</translation>
 <translation id="6134085236017727171">如要使用麥克風，請在<ph name="BEGIN_LINK" />系統設定<ph name="END_LINK" />中向 Chrome 授予存取權</translation>
@@ -592,7 +590,6 @@ Google Chrome 無法復原您的設定。</translation>
 <translation id="8521348052903287641">允許 mDNS 流量的 Google Chrome 開發人員版輸入規則。</translation>
 <translation id="852529348814672339">使用此語言顯示 Chrome 的使用者介面</translation>
 <translation id="8533056045953418157">將 Google Chrome 設定為預設 PDF 檢視器</translation>
-<translation id="8550334526674375523">此工作設定檔與個人設定檔是完全分開。</translation>
 <translation id="8555465886620020932">服務錯誤：<ph name="SERVICE_ERROR" />。</translation>
 <translation id="856656450041460113">搜尋語言清單</translation>
 <translation id="8601359445272098721">新功能！你可選取「翻譯畫面」按鈕，翻譯畫面上的文字和圖片</translation>
@@ -625,7 +622,6 @@ Google Chrome 無法復原您的設定。</translation>
 <translation id="8914504000324227558">重新啟動 Chrome</translation>
 <translation id="8922193594870374009">如要將號碼從 <ph name="ORIGIN" /> 傳送至 Android 手機，請在這兩部裝置上登入 Chrome。</translation>
 <translation id="8948460679427074738">此擴充程式尚未發佈私隱守則，例如擴充程式如何收集和使用資料。Chrome 建議你移除此擴充程式。</translation>
-<translation id="8986207147630327271">您即將在此瀏覽器中新增工作設定檔，並只將工作設定檔的控制權授予管理員。</translation>
 <translation id="8989968390305463310">您的瀏覽記錄會影響系統顯示的廣告，以及下列由系統推測的興趣。為保障您的私隱，Chrome 每個月都會自動刪除您的興趣。除非您移除興趣，否則系統會重新整理興趣。</translation>
 <translation id="8992769679401294069">你已使用密碼短語加密資料。如要在 Google 帳戶中使用及儲存 Chrome 資料，請輸入密碼短語。</translation>
 <translation id="8999117580775242387">無法使用 HTTPS 時，Chrome 會在不顯示警告的情況下使用不安全的連線</translation>

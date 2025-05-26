@@ -11,7 +11,6 @@
 <translation id="103269572468856066">Želite izbrisati tudi podatke s teh mest in iz aplikacij?</translation>
 <translation id="1034259925032978114">Okno je odprto.</translation>
 <translation id="1036348656032585052">Izklop</translation>
-<translation id="1045448422538531528">Dodajanje v skupino</translation>
 <translation id="1045899828449635435">Želite tudi izbrisati podatke s teh mest?</translation>
 <translation id="1049743911850919806">Anonimni način</translation>
 <translation id="1052842760770519282">Nekatera gesla niso dostopna</translation>
@@ -547,7 +546,6 @@ Vaše šifrirane podatke lahko bere samo oseba, ki ima vaše geslo. Geslo ni pos
 <translation id="351672147489633468">{NUM_REVOKED_PERMISSIONS,plural, =1{Odstranjena so bila dovoljenja za obvestila z enega spletnega mesta, ki ga nedavno niste obiskali}one{Odstranjena so bila dovoljenja za obvestila z # spletnega mesta, ki ga nedavno niste obiskali}two{Odstranjena so bila dovoljenja za obvestila s/z # spletnih mest, ki ju nedavno niste obiskali}few{Odstranjena so bila dovoljenja za obvestila s/z # spletnih mest, ki jih nedavno niste obiskali}other{Odstranjena so bila dovoljenja za obvestila s/z # spletnih mest, ki jih nedavno niste obiskali}}</translation>
 <translation id="3518985090088779359">Sprejmi in nadaljuj</translation>
 <translation id="3519014757432845220">S pošiljanjem vsebine obvestil in URL-ja spletnega mesta Googlu lahko pomagate izboljšati zaščito pred neželeno vsebino. Vsebino bodo morda pregledali ljudje.</translation>
-<translation id="351952459507671940">Dodaj novi skupini</translation>
 <translation id="3521388823983121502">Z računom ponudnika identitete <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ni mogoče nadaljevati</translation>
 <translation id="3522247891732774234">Posodobitev je na voljo. Več možnosti.</translation>
 <translation id="3523789730715594198">Sinhronizacijo lahko kadar koli ustavite v nastavitvah. Google lahko prilagodi Iskanje Google in druge storitve glede na vašo zgodovino.</translation>

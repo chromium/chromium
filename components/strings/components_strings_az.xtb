@@ -636,6 +636,7 @@
 <translation id="2088913896151127116">Mətn əlavə edin</translation>
 <translation id="2090451897496479509">Ətraflı məlumat üçün provayder ilə əlaqə saxlayın</translation>
 <translation id="2091887806945687916">Səs</translation>
+<translation id="2093184051799735948"><ph name="ENGINE_NAME" /> ilə axtarış edin və ya URL daxil edin</translation>
 <translation id="2093982008204312032">Google Chrome parolları doldurmaq üçün Windows Hello'nu deaktiv etməyə çalışır.</translation>
 <translation id="2094505752054353250">Domen uyğunsuzluğu</translation>
 <translation id="2094704029599359040">Versiya Məlumatı</translation>
@@ -770,6 +771,7 @@
 <translation id="2296331629987861142">Asanlıqla hissə-hissə ödəyin (uyğunluqdan asılıdır, ödənişlər tətbiq olunur)</translation>
 <translation id="2300306941146563769">Yüklənməyib</translation>
 <translation id="2301098101308036335">Hansı veb-saytlara nə zaman daxil olunur.</translation>
+<translation id="2302571905116831849">Loyallıq kartını avtomatik doldurun</translation>
 <translation id="230286397113210245">"Anonim pəncərə açın" düyməsi, aktivləşdirərək yeni anonim pəncərə açıb, gizli baxın</translation>
 <translation id="2305294852062272447">Sürücülük vəsiqəsi yadda saxlanılsın?</translation>
 <translation id="2306124309679506798">İmmersiv təcrübəyə icazə verirsiniz?</translation>
@@ -1833,6 +1835,7 @@
 <translation id="4140905366050378834">Heyvan Yeməkləri və Heyvanlara Qulluq Vasitələri</translation>
 <translation id="4140905530744469899">Profil ID-si:</translation>
 <translation id="4142935452406587478">Qab 10</translation>
+<translation id="4147897805161313378">Google Foto</translation>
 <translation id="4148925816941278100">American Express</translation>
 <translation id="4150099059797363385">Zərf Çin #4</translation>
 <translation id="4151403195736952345">Qlobal defolt istifadə edin (Defekt)</translation>
@@ -1993,6 +1996,7 @@
 <translation id="437620492464254965">Qapı və pəncərələr</translation>
 <translation id="4377125064752653719"><ph name="DOMAIN" /> domeninə daxil olmağa çalışdınız, onun sertifikatı geri alınıb. Bu o deməkdir ki, güvənlik kredensiallarına kəsinliklə inanmaq olmaz. Ola bilər ki, hücumçu ilə əlaqəyə girirsiniz.</translation>
 <translation id="4378154925671717803">Telefon</translation>
+<translation id="4382484599443659549">PDF</translation>
 <translation id="4382833368532556056">İndidən etibarən fayllarınızı bulud yaddaşında saxlayın</translation>
 <translation id="4384395682990721132">A4x3</translation>
 <translation id="4387692837058041921">Microsoft OneDrive-a fayl yükləməsi durduruldu</translation>
@@ -4310,7 +4314,6 @@
 Əlavə məlumat:
 <ph name="DEBUG_INFO" /></translation>
 <translation id="8416874502399604126">Bu dəfə üçün mikrofona icazə verilib</translation>
-<translation id="8421158157346464398">İş profili məlumatları (məsələn, iş profilinin istifadəçi adı)</translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" /> <ph name="SECOND_LABEL" /> <ph name="THIRD_LABEL" /></translation>
 <translation id="8425213833346101688">Dəyişin</translation>
 <translation id="8426945547715537628">Klaviatura əvəzlənməsinə icazə verilsin?</translation>

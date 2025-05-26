@@ -106,7 +106,6 @@ Sommige functies zijn wellicht niet beschikbaar en wijzigingen in voorkeuren wor
 <translation id="2345992953227471816">Chrome heeft vastgesteld dat deze extensies malware bevatten:</translation>
 <translation id="2348335408836342058">Chrome heeft toegangsrechten voor je camera en microfoon nodig voor deze site</translation>
 <translation id="234869673307233423">Chrome kan je wachtwoorden niet checken. Probeer het later opnieuw.</translation>
-<translation id="235650106824528204">Alle Chrome-gegevens die worden gegenereerd bij het gebruik van dit profiel (zoals bookmarks, geschiedenis, wachtwoorden en andere instellingen) kunnen worden verwijderd door de beheerder van het werkprofiel. <ph name="LEARN_MORE" /></translation>
 <translation id="2359808026110333948">Doorgaan</translation>
 <translation id="2403703063067034158">Opstartfout: Er wordt op dit moment een andere instantie van het instelproces uitgevoerd. Probeer het later opnieuw.</translation>
 <translation id="2409816192575564775">{NUM_DEVICES,plural, =0{Een of meer Chrome-extensies hebben toegang gekregen tot 1 HID-apparaat}=1{Een of meer Chrome-extensies hebben toegang tot 1 HID-apparaat}other{Een of meer Chrome-extensies hebben toegang tot # HID-apparaten}}</translation>
@@ -394,7 +393,6 @@ Sommige functies zijn wellicht niet beschikbaar. Geef een andere profieldirector
 <translation id="6069027071882229820">Kopiëren als afbeelding</translation>
 <translation id="6070348360322141662">Je gegevens worden voor extra beveiliging door Google Chrome versleuteld</translation>
 <translation id="6075300983329039771">Je organisatie, <ph name="MANAGER" />, vereist dat je inlogt bij Chrome</translation>
-<translation id="608006075545470555">Werkprofiel toevoegen aan deze browser</translation>
 <translation id="6113794647360055231">Chrome is nu nog beter</translation>
 <translation id="6116252277240876590">Deze taal wordt gebruikt om menu's, instellingen, meldingen en andere tekst in Chrome weer te geven</translation>
 <translation id="6134085236017727171">Geef Chrome toegang via de <ph name="BEGIN_LINK" />systeeminstellingen<ph name="END_LINK" /> om je microfoon te gebruiken</translation>
@@ -590,7 +588,6 @@ Sommige functies zijn wellicht niet beschikbaar. Geef een andere profieldirector
 <translation id="8521348052903287641">Inkomende regel zodat Google Chrome Dev mDNS-verkeer toestaat.</translation>
 <translation id="852529348814672339">Chrome in deze taal weergeven</translation>
 <translation id="8533056045953418157">Google Chrome instellen als standaard pdf-viewer</translation>
-<translation id="8550334526674375523">Dit werkprofiel is volledig gescheiden van je persoonlijke profiel.</translation>
 <translation id="8555465886620020932">Servicefout: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="856656450041460113">Zoeken in lijst met talen</translation>
 <translation id="8601359445272098721">Nieuw! Je kunt zowel tekst als afbeeldingen op je scherm vertalen door de knop Scherm vertalen te selecteren</translation>
@@ -623,7 +620,6 @@ Sommige functies zijn wellicht niet beschikbaar. Geef een andere profieldirector
 <translation id="8914504000324227558">Chrome opnieuw starten</translation>
 <translation id="8922193594870374009">Als je een nummer vanaf <ph name="ORIGIN" /> naar je Android-telefoon wilt sturen, log je in bij Chrome op beide apparaten.</translation>
 <translation id="8948460679427074738">Deze extensie heeft geen privacyprocedures gepubliceerd, zoals de manier waarop gegevens worden verzameld en gebruikt. Chrome raadt je aan deze te verwijderen.</translation>
-<translation id="8986207147630327271">Je voegt een werkprofiel toe aan deze browser en geeft je beheerder alleen de controle over het werkprofiel.</translation>
 <translation id="8989968390305463310">Je browsegeschiedenis heeft invloed op de advertenties die je ziet en je interesses. Hieronder staat een schatting. Ter bescherming van je privacy verwijdert Chrome je interesses automatisch elke maand op voortschrijdende basis. Interesses kunnen worden vernieuwd, tenzij je ze verwijdert.</translation>
 <translation id="8992769679401294069">Je gegevens zijn versleuteld met je wachtwoordzin. Voer deze in om Chrome-gegevens te gebruiken en op te slaan in je Google-account.</translation>
 <translation id="8999117580775242387">Als HTTPS niet beschikbaar is, gebruikt Chrome een niet-beveiligde verbinding zonder je te waarschuwen</translation>

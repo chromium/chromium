@@ -770,6 +770,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="2296331629987861142">Maksate hõlpsalt järelmaksetega (oleneb sobilikkusest, rakenduvad tasud)</translation>
 <translation id="2300306941146563769">Üles laadimata</translation>
 <translation id="2301098101308036335">Milliseid veebisaite ja millal külastatakse.</translation>
+<translation id="2302571905116831849">Kliendikaardi automaattäide</translation>
 <translation id="230286397113210245">Nupp Ava inkognito aken, aktiveerige nupp, et avada uus inkognito aken ja sirvida privaatselt</translation>
 <translation id="2305294852062272447">Kas salvestada juhiluba?</translation>
 <translation id="2306124309679506798">Kas lubada kaasahaarav kasutuskogemus?</translation>
@@ -1837,6 +1838,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="4140905366050378834">Lemmikloomade toit ja hooldustarbed</translation>
 <translation id="4140905530744469899">Profiili ID:</translation>
 <translation id="4142935452406587478">Salv 10</translation>
+<translation id="4147897805161313378">Google Photos</translation>
 <translation id="4148925816941278100">American Express</translation>
 <translation id="4150099059797363385">Ümbrik Hiina nr 4</translation>
 <translation id="4151403195736952345">Kasuta üldist vaikevalikut (tuvasta)</translation>
@@ -1997,6 +1999,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="437620492464254965">Uksed ja aknad</translation>
 <translation id="4377125064752653719">Püüdsite jõuda saidile <ph name="DOMAIN" />, kuid sertifikaadi väljaandja on serveri esitatud sertifikaadi tagasi võtnud. See tähendab, et serveri esitatud turvamandaate ei tohiks mingil juhul usaldada. Võimalik, et suhtlete ründajaga.</translation>
 <translation id="4378154925671717803">Telefon</translation>
+<translation id="4382484599443659549">PDF</translation>
 <translation id="4382833368532556056">Nüüdsest salvestage oma failid pilvepõhisesse salvestusruumi.</translation>
 <translation id="4384395682990721132">A4 × 3</translation>
 <translation id="4387692837058041921">Faili üleslaadimine Microsoft OneDrive'i peatati</translation>
@@ -4315,7 +4318,6 @@ Lisateave:
 Lisateave:
 <ph name="DEBUG_INFO" /></translation>
 <translation id="8416874502399604126">Mikrofon seekord lubatud</translation>
-<translation id="8421158157346464398">tööprofiili teave (näiteks teie tööprofiili kasutajanimi);</translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" /> <ph name="SECOND_LABEL" /> <ph name="THIRD_LABEL" /></translation>
 <translation id="8425213833346101688">Muuda</translation>
 <translation id="8426945547715537628">Kas lubada klaviatuuri alistamine?</translation>

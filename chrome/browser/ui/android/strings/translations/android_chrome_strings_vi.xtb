@@ -11,7 +11,6 @@
 <translation id="103269572468856066">Đồng thời xóa dữ liệu khỏi các trang web và ứng dụng này?</translation>
 <translation id="1034259925032978114">Cửa sổ đang mở</translation>
 <translation id="1036348656032585052">Tắt</translation>
-<translation id="1045448422538531528">Thêm vào nhóm</translation>
 <translation id="1045899828449635435">Đồng thời xóa dữ liệu khỏi các trang web này?</translation>
 <translation id="1049743911850919806">Ẩn danh</translation>
 <translation id="1052842760770519282">Không sử dụng được một số mật khẩu của bạn</translation>
@@ -548,7 +547,6 @@ Chỉ những người có cụm mật khẩu mới đọc được dữ liệu 
 <translation id="351672147489633468">{NUM_REVOKED_PERMISSIONS,plural, =1{Đã loại bỏ quyền gửi thông báo của một trang web mà gần đây bạn không truy cập}other{Đã loại bỏ quyền gửi thông báo của # trang web mà gần đây bạn không truy cập}}</translation>
 <translation id="3518985090088779359">Chấp nhận và tiếp tục</translation>
 <translation id="3519014757432845220">Giúp cải thiện tính năng chống nội dung rác bằng cách chia sẻ với Google nội dung thông báo và URL của trang web. Nội dung có thể sẽ được nhân viên xem xét.</translation>
-<translation id="351952459507671940">Thêm vào nhóm mới</translation>
 <translation id="3521388823983121502">Không thể tiếp tục với <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="3522247891732774234">Bản cập nhật có sẵn. Tùy chọn khác</translation>
 <translation id="3523789730715594198">Bạn có thể dừng đồng bộ hoá bất cứ lúc nào trong phần cài đặt. Google có thể cá nhân hoá dịch vụ Tìm kiếm và các dịch vụ khác dựa trên nhật ký của bạn.</translation>

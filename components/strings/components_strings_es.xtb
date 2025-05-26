@@ -770,6 +770,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="2296331629987861142">Paga en módicas cuotas (se aplican requisitos y tarifas)</translation>
 <translation id="2300306941146563769">No subido</translation>
 <translation id="2301098101308036335">Qué sitios web se visitan y cuándo.</translation>
+<translation id="2302571905116831849">Tarjeta de fidelización autocompletable</translation>
 <translation id="230286397113210245">Botón Abrir ventana de Incógnito: actívalo para abrir una nueva ventana de Incógnito y navegar de forma privada</translation>
 <translation id="2305294852062272447">¿Guardar carné de conducir?</translation>
 <translation id="2306124309679506798">¿Permitir una experiencia inmersiva?</translation>
@@ -1837,6 +1838,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="4140905366050378834">Alimentos y productos para mascotas</translation>
 <translation id="4140905530744469899">ID de perfil:</translation>
 <translation id="4142935452406587478">Bandeja 10</translation>
+<translation id="4147897805161313378">Google Fotos</translation>
 <translation id="4148925816941278100">American Express</translation>
 <translation id="4150099059797363385">Sobre chino n.º 4</translation>
 <translation id="4151403195736952345">Utilizar valor predeterminado global (por defecto)</translation>
@@ -1997,6 +1999,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="437620492464254965">Puertas y ventanas</translation>
 <translation id="4377125064752653719">Has intentado acceder a <ph name="DOMAIN" />, pero el emisor ha revocado el certificado mostrado por el servidor, lo que significa que las credenciales de seguridad presentadas por el servidor no son de confianza. Es posible que hayas accedido a la página de un atacante.</translation>
 <translation id="4378154925671717803">Teléfono</translation>
+<translation id="4382484599443659549">PDF</translation>
 <translation id="4382833368532556056">A partir de ahora, guarda tus archivos en el almacenamiento en la nube</translation>
 <translation id="4384395682990721132">A4x3</translation>
 <translation id="4387692837058041921">Se ha pausado la subida de archivos a Microsoft OneDrive</translation>
@@ -2444,6 +2447,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="519422657042045905">No están disponibles las anotaciones</translation>
 <translation id="5200063972779787617">Guardar dirección en la cuenta</translation>
 <translation id="5201306358585911203">Una página insertada en esta dice</translation>
+<translation id="5203716867500274632">Tu administrador ha habilitado la sincronización de los siguientes elementos entre tus sesiones anteriores y actuales en tus dispositivos ChromeOS:</translation>
 <translation id="5205114269877707377"><ph name="OMNIBOX_ACTION_FOCUSED_FRIENDLY_MATCH_TEXT" />, pulsa Tabulador para consultar las acciones disponibles y, después, Intro para ejecutar la acción seleccionada.</translation>
 <translation id="5205222826937269299">Nombre obligatorio</translation>
 <translation id="5206392433295093945">Dormitorio</translation>
@@ -2603,6 +2607,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="5472588168895083535">Seguimiento de manos bloqueado</translation>
 <translation id="547963486735802022">Prueba a transferir tus archivos de nuevo</translation>
 <translation id="5481076368049295676">Es posible que este contenido intente instalar software peligroso que robe o elimine tu información en el dispositivo. <ph name="BEGIN_LINK" />Mostrar de todos modos<ph name="END_LINK" /></translation>
+<translation id="5481604577800516617">Disposición de ventanas y pestañas</translation>
 <translation id="5481682542063333508">Ofrecer ayuda para escribir</translation>
 <translation id="54817484435770891">Añadir dirección válida</translation>
 <translation id="5483838506518938965">Ya has terminado</translation>
@@ -4277,6 +4282,7 @@ Más información:
 <translation id="8352849934814541340">El administrador de este dispositivo ha instalado aplicaciones que aportan funciones adicionales. Las aplicaciones tienen acceso a algunos de tus datos.</translation>
 <translation id="8355270400102541638">Contexto del fallo local:</translation>
 <translation id="8363502534493474904">Desactivar el modo Avión</translation>
+<translation id="8363929499301563123">Cookies de sitios web (se conservará el estado de sesión iniciada en los sitios web visitados recientemente)</translation>
 <translation id="8364627913115013041">No establecida</translation>
 <translation id="8366057325711477500">Noticias internacionales</translation>
 <translation id="836616551641291797">Más información sobre cómo se gestiona tu navegador</translation>
@@ -4315,7 +4321,6 @@ Más información:
 Más información:
 <ph name="DEBUG_INFO" /></translation>
 <translation id="8416874502399604126">Micrófono permitido esta vez</translation>
-<translation id="8421158157346464398">Información del perfil de trabajo (como el nombre de usuario de tu perfil de trabajo)</translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" /> <ph name="SECOND_LABEL" /> <ph name="THIRD_LABEL" /></translation>
 <translation id="8425213833346101688">Cambiar</translation>
 <translation id="8426945547715537628">¿Permitir la anulación del teclado?</translation>

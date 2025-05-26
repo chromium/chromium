@@ -243,6 +243,7 @@
 <translation id="1972325230031091483">Makakapag-browse ka nang mas mabilis dahil aktibong naglo-load ng content batay sa kasalukuyan mong pagbisita sa webpage</translation>
 <translation id="1974060860693918893">Advanced</translation>
 <translation id="1977621687170192347">I-on ang "Hilinging magbukas ng mga link mula sa iba pang app sa Incognito."</translation>
+<translation id="1979055159547313322">Ang account na <ph name="USER_EMAIL" /> ay pinapamahalaan ng <ph name="HOSTED_DOMAIN" />, na posibleng makakita ng ilang impormasyon, kasama ang</translation>
 <translation id="1979188886349613713">Kasama ang mga file extension na hindi tinukoy ng website</translation>
 <translation id="1980417445547898121">{count,plural, =1{Kunin ang iyong {count} kamakailang aktibong tab mula sa iba mo pang device sa iPhone na ito}one{Kunin ang iyong {count} kamakailang aktibong tab mula sa iba mo pang device sa iPhone na ito}other{Kunin ang iyong {count} na kamakailang aktibong tab mula sa iba mo pang device sa iPhone na ito}}</translation>
 <translation id="1981118202195772574">Mobile</translation>

@@ -43,7 +43,6 @@
 <translation id="2536366509642644298">「<ph name="TAB_GROUP_NAME_1" />」和「<ph name="TAB_GROUP_NAME_2" />」分頁群組已無法使用</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{收合 <ph name="TABS_COUNT_ONE" /> 個分頁。}other{收合包含 <ph name="TABS_COUNT_MANY" /> 個分頁的分頁群組。}}</translation>
 <translation id="2569352796411618312">建議：你有 <ph name="NUMBER_OF_TABS" /> 個分頁最近沒有使用過。要關閉這些分頁嗎？</translation>
-<translation id="2656693375914502139">移至群組</translation>
 <translation id="2662028055331606429"><ph name="CURRENT_RATING" /> 分 (滿分 <ph name="RATING_BASELINE" /> 分)</translation>
 <translation id="266935134738038806">造訪網站</translation>
 <translation id="2671423594960767771">分享群組項目</translation>
@@ -121,7 +120,6 @@
 <translation id="6054741997831917303">這個商品的價格最近從 <ph name="PREVIOUS_PRICE" />降為 <ph name="NEW_PRICE" /></translation>
 <translation id="6109251075362363230">現在也會封存所有重複的分頁 (最近使用的重複分頁除外)。</translation>
 <translation id="6193448654517602979">選取分頁</translation>
-<translation id="6212567362666004597">將分頁加入群組</translation>
 <translation id="6220820548421939212">是，我同意</translation>
 <translation id="6228793724645064692">(商店評分)</translation>
 <translation id="6271513594716432922">關閉所有閒置分頁</translation>

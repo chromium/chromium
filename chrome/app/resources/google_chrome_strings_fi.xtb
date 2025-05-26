@@ -102,7 +102,6 @@
 <translation id="2345992953227471816">Chrome havaitsi, että näissä laajennuksissa on haittaohjelmia:</translation>
 <translation id="2348335408836342058">Chrome tarvitsee oikeuden käyttää kameraasi ja mikrofoniasi tällä sivustolla.</translation>
 <translation id="234869673307233423">Chrome ei voi tarkistaa salasanojasi. Yritä myöhemmin uudelleen.</translation>
-<translation id="235650106824528204">Työprofiilin järjestelmänvalvoja voi poistaa tämän profiilin käytön aikana luotua Chrome-dataa (esim. kirjanmerkit, historia, salasanat ja muut asetukset). <ph name="LEARN_MORE" /></translation>
 <translation id="2359808026110333948">Jatka</translation>
 <translation id="2403703063067034158">Käynnistysvirhe: toinen käyttöönotto on käynnissä, yritä myöhemmin uudelleen.</translation>
 <translation id="2409816192575564775">{NUM_DEVICES,plural, =0{Yhdellä tai useammalla Chrome-laajennuksella oli pääsy yhdelle HID-laitteelle}=1{Yhdellä tai useammalla Chrome-laajennuksella on pääsy yhdelle HID-laitteelle}other{Yhdellä tai useammalla Chrome-laajennuksella on pääsy # HID-laitteelle}}</translation>
@@ -389,7 +388,6 @@
 <translation id="6069027071882229820">Kopioi kuvana</translation>
 <translation id="6070348360322141662">Google Chrome lisää suojausta salaamalla tietosi</translation>
 <translation id="6075300983329039771">Organisaatiosi (<ph name="MANAGER" />) edellyttää, että kirjaudut Chromeen</translation>
-<translation id="608006075545470555">Lisää työprofiili tähän selaimeen</translation>
 <translation id="6113794647360055231">Chrome on nyt entistä parempi</translation>
 <translation id="6116252277240876590">Chromen valikot, asetukset, ilmoitukset ja muu teksti näytetään tällä kielellä</translation>
 <translation id="6134085236017727171">Jos haluat käyttää mikrofonia, anna Chromelle pääsyoikeus <ph name="BEGIN_LINK" />järjestelmäasetuksista<ph name="END_LINK" /></translation>
@@ -585,7 +583,6 @@
 <translation id="8521348052903287641">Google Chromen kehittäjäversion saapuvien yhteyksien sääntö, joka sallii mDNS-liikenteen.</translation>
 <translation id="852529348814672339">Näytä Chrome tällä kielellä</translation>
 <translation id="8533056045953418157">Valitse Google Chrome PDF:ien oletuskatseluohjelmaksi</translation>
-<translation id="8550334526674375523">Tämä työprofiili on täysin erillinen henkilökohtaisesta profiilistasi.</translation>
 <translation id="8555465886620020932">Palveluvirhe: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="856656450041460113">Hakukielilista</translation>
 <translation id="8601359445272098721">Uutta! Voit kääntää näytöllä näkyvän tekstin ja kuvat valitsemalla "Käännä näyttö" ‑painikkeen</translation>
@@ -618,7 +615,6 @@
 <translation id="8914504000324227558">Käynnistä Chrome uudelleen</translation>
 <translation id="8922193594870374009">Jos haluat lähettää numeron osoitteesta <ph name="ORIGIN" /> Android-puhelimeesi, kirjaudu Chromeen molemmilla laitteilla.</translation>
 <translation id="8948460679427074738">Tästä laajennuksesta ei ole julkaistu tietosuojakäytäntöjä koskien esimerkiksi datan keräämistä ja käyttöä. Chrome suosittelee poistamaan sen.</translation>
-<translation id="8986207147630327271">Olet lisäämässä työprofiilia tähän selaimeen ja antamassa järjestelmänvalvojalle oikeuden hallita pelkkää työprofiilia.</translation>
 <translation id="8989968390305463310">Selaushistoria vaikuttaa näkemiisi mainoksiin ja alla kuvatulla tavalla arvioituihin kiinnostuksen kohteisiisi. Yksityisyyden suojaamiseksi Chrome poistaa kiinnostuksen kohteesi automaattisesti kuukausittain. Kiinnostuksen kohteet voivat päivittyä, ellet poista niitä.</translation>
 <translation id="8992769679401294069">Datasi salataan tunnuslauseella. Lisää se, niin voit käyttää ja tallentaa Chrome-dataa Google-tililläsi.</translation>
 <translation id="8999117580775242387">Kun HTTPS ei ole käytettävissä, Chrome käyttää suojaamatonta yhteyttä ilman erillistä varoitusta</translation>

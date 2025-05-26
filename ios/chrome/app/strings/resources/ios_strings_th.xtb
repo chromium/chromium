@@ -243,6 +243,7 @@
 <translation id="1972325230031091483">คุณจะท่องเว็บได้เร็วขึ้นเนื่องจากมีการโหลดเนื้อหาโดยอิงจากหน้าเว็บที่กำลังเข้าชมโดยที่คุณไม่ต้องขอ</translation>
 <translation id="1974060860693918893">ขั้นสูง</translation>
 <translation id="1977621687170192347">เปิด "ขอเปิดลิงก์จากแอปอื่นๆ ในโหมดไม่ระบุตัวตน"</translation>
+<translation id="1979055159547313322">บัญชี <ph name="USER_EMAIL" /> จัดการโดย <ph name="HOSTED_DOMAIN" /> ซึ่งอาจดูข้อมูลบางอย่างได้</translation>
 <translation id="1979188886349613713">รวมนามสกุลไฟล์ที่เว็บไซต์ไม่ได้ระบุ</translation>
 <translation id="1980417445547898121">{count,plural, =1{รับแท็บที่เพิ่งใช้งาน {count} แท็บจากอุปกรณ์อื่นบน iPhone เครื่องนี้}other{รับแท็บที่เพิ่งใช้งาน {count} แท็บจากอุปกรณ์อื่นบน iPhone เครื่องนี้}}</translation>
 <translation id="1981118202195772574">อุปกรณ์เคลื่อนที่</translation>
@@ -264,6 +265,7 @@
 <translation id="2044681667265133332">บัญชี <ph name="USER_EMAIL" /> จัดการโดย <ph name="HOSTED_DOMAIN" /> ซึ่งอาจดูข้อมูลบางอย่างได้ <ph name="BEGIN_LINK" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">รายการใหม่</translation>
 <translation id="2049727122989709386"><ph name="COUNT" /> บัญชีใช้รหัสผ่านเดียวกัน</translation>
+<translation id="2054044186557130763">ลงชื่อเข้าใช้ด้วย <ph name="NAME" /> <ph name="EMAIL" /> ซึ่งจัดการโดยองค์กรของคุณ</translation>
 <translation id="2059166748188874810">เทศบาล</translation>
 <translation id="2060638295449304809">ที่อยู่ข้างต้นจะบันทึกไว้ในอุปกรณ์นี้เท่านั้น หากต้องการใช้งานในอุปกรณ์อื่น ให้บันทึกไว้ในบัญชี Google <ph name="USER_EMAIL" /></translation>
 <translation id="20638360198452347">ตัวเลือกประเภทหน่วย</translation>
@@ -612,6 +614,7 @@
 <translation id="3572607909481582402">ในบัญชี Google</translation>
 <translation id="3575234738189584619">ค้นหาด้วย Lens</translation>
 <translation id="3575426792457739946">รายการนี้มีโปรไฟล์ที่โหลดทั้งหมด</translation>
+<translation id="3578866308944526475"><ph name="EMAIL" /> จัดการโดยองค์กร</translation>
 <translation id="3581564640715911333">เสนอที่จะแปลหน้าเว็บในภาษาอื่นๆ</translation>
 <translation id="3587885837929752825">องค์กรของคุณจํากัดสิ่งที่คุณสามารถบันทึกในบัญชี Google</translation>
 <translation id="3588820906588687999">เปิดภาพในแท็บใหม่</translation>
@@ -879,6 +882,9 @@
 <translation id="4669618761237477717">องค์กรกำหนดให้คุณเรียกดูแบบส่วนตัว กลุ่มแท็บจะไม่ซิงค์ในโหมดไม่ระบุตัวตน
 <ph name="BEGIN_LINK" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK" /></translation>
 <translation id="467189612236587057">ติดต่อกับธุรกิจด้วยการเริ่มต้นการโทร</translation>
+<translation id="4673565891421389203">การลงชื่อเข้าใช้ด้วยบัญชีที่จัดการจะช่วยแยกการท่องเว็บที่เกี่ยวข้องกับองค์กรของคุณ (รวมถึงแท็บ ประวัติการเข้าชม และรหัสผ่าน) ออกจากการท่องเว็บอื่นๆ
+
+       เลือกว่าจะทำอย่างไรกับข้อมูลการท่องเว็บที่มีอยู่ในอุปกรณ์นี้</translation>
 <translation id="4682496302933121474">แปลหน้าเว็บไหม</translation>
 <translation id="4682686630151240767">1. เปิดการตั้งค่า iPhone</translation>
 <translation id="4699172675775169585">รูปภาพและไฟล์ที่แคชไว้</translation>
@@ -887,6 +893,7 @@
 <translation id="4719927025381752090">เสนอการแปล</translation>
 <translation id="4720530280568305198">รายการที่คุณเลือกเปิดอยู่ในแท็บใหม่</translation>
 <translation id="472259426228234149">ราคา $100 - $180</translation>
+<translation id="4735849923335729414">ลงชื่อเข้าใช้ด้วย <ph name="EMAIL" /> ที่จัดการโดยองค์กรของคุณ</translation>
 <translation id="473775607612524610">อัปเดต</translation>
 <translation id="474209246745757965">เลือกซื้อและแปลภาษาด้วยกล้อง</translation>
 <translation id="4742407542027196863">จัดการรหัสผ่าน…</translation>
@@ -959,6 +966,7 @@
 <translation id="4985921635659180565">เมื่อตั้งเวลาลบไฟล์แล้ว จะยกเลิกไม่ได้</translation>
 <translation id="498624032394115435">ทุกคนที่มีลิงก์จะแก้ไขแท็บทั้งหมดได้</translation>
 <translation id="4989065233040279145">เลือกตำแหน่งที่จะบันทึก <ph name="FILENAME" /></translation>
+<translation id="499122600724363620"><ph name="NAME" />, <ph name="EMAIL" /> จัดการโดยองค์กร</translation>
 <translation id="4992255726304765516">สีของกลุ่มแท็บ <ph name="COLOR" /></translation>
 <translation id="5005498671520578047">คัดลอกรหัสผ่าน</translation>
 <translation id="5012914568031465281">ติดตามราคาไม่ได้</translation>
@@ -1018,6 +1026,7 @@
 <translation id="5234094073825090254">{count,plural, =1{บันทึกบุ๊กมาร์กไว้ในบัญชี Google {email} แล้ว}other{บันทึกบุ๊กมาร์กไว้ในบัญชี Google {email} แล้ว}}</translation>
 <translation id="5234764350956374838">ปิด</translation>
 <translation id="5238596603078743134">ตอนนี้ <ph name="BEGIN_BOLD" /><ph name="USERNAME" /><ph name="END_BOLD" /> ใช้ชื่อผู้ใช้และรหัสผ่านของคุณเมื่อใช้เครื่องมือจัดการรหัสผ่านบน Google เพื่อลงชื่อเข้าใช้ <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" /> ได้</translation>
+<translation id="5241106044372754566">เลือก <ph name="NAME" />, <ph name="EMAIL" /> ปัจจุบันที่จัดการโดยองค์กรของคุณ เลือกบัญชี</translation>
 <translation id="5242899254250321823">เปลี่ยนรหัสผ่านในเว็บไซต์</translation>
 <translation id="5248640482715684545">เว็บไซต์นี้พยายามเปิดแอปพลิเคชันอื่น</translation>
 <translation id="5250371859659394278">จากแหล่งที่มาที่ไม่รู้จัก</translation>
@@ -1074,6 +1083,7 @@
 <translation id="5524590039848017563">ปุ่มแถบเครื่องมือหลักที่ยุบอยู่</translation>
 <translation id="553151287733286479">{COUNT,plural, =1{มีรหัสผ่านที่ไม่รัดกุม {COUNT} รายการ}other{มีรหัสผ่านที่ไม่รัดกุม {COUNT} รายการ}}</translation>
 <translation id="5532545557415295622">กล่องโต้ตอบระยะหมดเวลาเนื่องจากไม่มีการใช้งาน</translation>
+<translation id="5547868626772433490">ขอความช่วยเหลือจาก Gemini</translation>
 <translation id="5548760955356983418">Handoff ช่วยให้คุณเริ่มการท่องเว็บไซต์บนอุปกรณ์นี้และใช้งานต่อบน Mac ได้อย่างง่ายดาย เว็บไซต์ที่เปิดอยู่ในปัจจุบันจะปรากฏใน Dock ของ Mac
 
 โดยต้องเปิดใช้ Handoff ในส่วน "ทั่วไป" ของการตั้งค่าและอุปกรณ์ของคุณต้องใช้บัญชี iCloud เดียวกัน</translation>
@@ -1285,6 +1295,9 @@
 <translation id="6339793034470834130">หากต้องการใช้เครื่องมือตรวจสอบเว็บ ให้เชื่อมต่อ Safari ในคอมพิวเตอร์โดยใช้สายและเข้าถึง iPhone จากเมนู "พัฒนา" คุณเปิดใช้เมนู "พัฒนา" ในส่วนขั้นสูงของการตั้งค่า Safari บนคอมพิวเตอร์ได้</translation>
 <translation id="6340285871011301182">ไม่สามารถแปลเพียงบางส่วน</translation>
 <translation id="6340526405444716530">การปรับเปลี่ยนในแบบของคุณ</translation>
+<translation id="6341140761912903432">การลงชื่อเข้าใช้ด้วยบัญชีที่จัดการจะช่วยแยกการท่องเว็บที่เกี่ยวข้องกับองค์กรของคุณ (รวมถึงแท็บ ประวัติการเข้าชม และรหัสผ่าน) ออกจากการท่องเว็บอื่นๆ
+
+       ระบบจะเก็บข้อมูลการท่องเว็บที่มีอยู่แยกต่างหาก หากต้องการใช้งาน ให้ออกจากระบบบัญชีที่จัดการ</translation>
 <translation id="6342069812937806050">เมื่อสักครู่</translation>
 <translation id="6344533709188026708">พื้นที่แยกต่างหากสำหรับการทำงาน</translation>
 <translation id="6347953390226388422">{count,plural, =1{ระบบจะลบที่อยู่นี้ออกจากบัญชี Google (<ph name="USER_EMAIL" />) และจากอุปกรณ์เครื่องนี้}other{ระบบจะลบที่อยู่เหล่านี้ออกจากบัญชี Google (<ph name="USER_EMAIL" />) และจากอุปกรณ์เครื่องนี้}}</translation>
@@ -1957,6 +1970,7 @@
 <translation id="8923178205567790913">รหัสผ่าน</translation>
 <translation id="892776311701544612">ดูข้อมูลเพิ่มเติม…</translation>
 <translation id="8928133177108699615">เดสก์ท็อป</translation>
+<translation id="8928426232677696166">เลือก <ph name="EMAIL" /> ปัจจุบันที่จัดการโดยองค์กรของคุณ เลือกบัญชี</translation>
 <translation id="894191600409472540">สร้างรหัสผ่านที่รัดกุม</translation>
 <translation id="8943780400130412484">เริ่มดาวน์โหลดใหม่ใช่ไหม</translation>
 <translation id="8944844131570002190">เปิดตำแหน่ง…</translation>

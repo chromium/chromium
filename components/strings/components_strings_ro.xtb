@@ -636,6 +636,7 @@
 <translation id="2088913896151127116">Adaugă text</translation>
 <translation id="2090451897496479509">Contactează furnizorul pentru mai multe informații</translation>
 <translation id="2091887806945687916">Sunet</translation>
+<translation id="2093184051799735948">Caută cu <ph name="ENGINE_NAME" /> sau introdu adresa URL</translation>
 <translation id="2093982008204312032">Google Chrome încearcă să dezactiveze Windows Hello pentru completarea parolelor.</translation>
 <translation id="2094505752054353250">Nepotrivire domeniu</translation>
 <translation id="2094704029599359040">Informații despre versiune</translation>
@@ -770,6 +771,7 @@
 <translation id="2296331629987861142">Plătește în rate simple (în funcție de eligibilitate; se aplică taxe)</translation>
 <translation id="2300306941146563769">Nu s-a încărcat</translation>
 <translation id="2301098101308036335">ce site-uri sunt accesate și când.</translation>
+<translation id="2302571905116831849">Completează automat cardul de fidelitate</translation>
 <translation id="230286397113210245">Butonul Deschide o fereastră incognito, activează pentru a deschide o nouă fereastră incognito ca să navighezi în privat</translation>
 <translation id="2305294852062272447">Salvezi permisul de conducere?</translation>
 <translation id="2306124309679506798">Permiți o experiență captivantă?</translation>
@@ -1837,6 +1839,7 @@
 <translation id="4140905366050378834">Alimente și accesorii de îngrijire pentru animalele de companie</translation>
 <translation id="4140905530744469899">Codul profilului:</translation>
 <translation id="4142935452406587478">Tava 10</translation>
+<translation id="4147897805161313378">Google Foto</translation>
 <translation id="4148925816941278100">American Express</translation>
 <translation id="4150099059797363385">Plic chinezesc 4</translation>
 <translation id="4151403195736952345">Folosește global în mod prestabilit (detectează)</translation>
@@ -1997,6 +2000,7 @@
 <translation id="437620492464254965">Uși și ferestre</translation>
 <translation id="4377125064752653719">Ați încercat să accesați <ph name="DOMAIN" />, dar certificatul furnizat de server a fost revocat de emitentul său. Aceasta înseamnă că acreditările de securitate furnizate de server nu sunt deloc de încredere. Este posibil să comunicați cu un atacator.</translation>
 <translation id="4378154925671717803">Telefon</translation>
+<translation id="4382484599443659549">PDF</translation>
 <translation id="4382833368532556056">De acum înainte, salvează fișierele în spațiul de stocare în cloud</translation>
 <translation id="4384395682990721132">A4x3</translation>
 <translation id="4387692837058041921">Încărcarea fișierelor în Microsoft OneDrive a fost întreruptă</translation>
@@ -4315,7 +4319,6 @@ Detalii suplimentare:
 Detalii suplimentare:
 <ph name="DEBUG_INFO" /></translation>
 <translation id="8416874502399604126">Microfonul este permis de această dată</translation>
-<translation id="8421158157346464398">Informațiile profilului de serviciu (cum ar fi numele de utilizator al profilului de serviciu)</translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" /> <ph name="SECOND_LABEL" /> <ph name="THIRD_LABEL" /></translation>
 <translation id="8425213833346101688">Modificați</translation>
 <translation id="8426945547715537628">Permiți modificarea tastaturii?</translation>

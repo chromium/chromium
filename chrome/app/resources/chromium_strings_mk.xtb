@@ -121,7 +121,6 @@
 <translation id="2572494885440352020">Помошник на Chromium</translation>
 <translation id="2575822587468774919">Изберете што било за да пребарате со „Пребарување со слики“</translation>
 <translation id="2576118232315942160">За да ги добиете лозинките и друго на сите ваши уреди, најавете се на Chromium</translation>
-<translation id="2583187216237139145">Податоците на Chromium што се генерирани при користењето на овој профил (како на пример, создавање обележувачи, историја, лозинки и други поставки) може да се отстранат од страна на администраторот на работниот профил. <ph name="LEARN_MORE" /></translation>
 <translation id="2592940277904433508">Продолжете да користите Chromium</translation>
 <translation id="259935314519650377">Преземениот инсталатор не можеше да се кешира. Грешка: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
 <translation id="2620436844016719705">Систем</translation>
@@ -366,7 +365,6 @@
 <translation id="6069027071882229820">Копирај како слика</translation>
 <translation id="6072279588547424923"><ph name="EXTENSION_NAME" /> беше додадена на Chromium</translation>
 <translation id="6072463441809498330">Имајте побрз Chromium</translation>
-<translation id="608006075545470555">Додајте работен профил во овој прелистувач</translation>
 <translation id="6096348254544841612">Приспособете го и контролирајте го Chromium. Достапно е ажурирање.</translation>
 <translation id="6107893135096467929">Вклучено • Chromium не може да потврди од каде е екстензијава</translation>
 <translation id="6119438414301547735">Дозволете екстензијата да прикажува барања за пристап во алатникот на Chromium</translation>
@@ -562,7 +560,6 @@ Chromium не може да ги обнови вашите поставки.</tr
 <translation id="8471947159125090285">За да користите и зачувувате податоци од Chromium во вашата сметка на Google, потврдете го вашиот идентитет</translation>
 <translation id="8493179195440786826">Chromium е застарен</translation>
 <translation id="8522801943730206384">Chromium може да ги проверува вашите лозинки ако ги зачувате</translation>
-<translation id="8550334526674375523">Овој работен профил е целосно одделен од вашиот личен профил.</translation>
 <translation id="8555465886620020932">Грешка на услугата: <ph name="SERVICE_ERROR" /></translation>
 <translation id="8556420416730706394">Може да ја закачите „Пребарување со слики“ за лесен пристап. Само кликнете го копчето „Закачи“ најгоре на страничната табла</translation>
 <translation id="856656450041460113">Пребарајте го списокот со јазици</translation>
@@ -591,7 +588,6 @@ Chromium не може да ги обнови вашите поставки.</tr
 <translation id="8931379085695076764">Chromium може да ги процени вашите интереси според вашата историја на прелистувањето од последните неколку седмици. Податоциве остануваат на вашиот уред.</translation>
 <translation id="8941642502866065432">Не може да се ажурира Chromium</translation>
 <translation id="897581876605952338">Лого на Chromium Enterprise</translation>
-<translation id="8986207147630327271">Додавате работен профил во овој прелистувач и му давате контрола на администраторот само врз тој профил.</translation>
 <translation id="8988036198400390003">Управувајте со профилите на Chromium</translation>
 <translation id="9019929317751753759">За Chromium да биде побезбеден, ја оневозможивме следнава екстензија што не е наведена во <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> и може да е додадена без ваше знаење.</translation>
 <translation id="9022552996538154597">Најавете се на Chromium</translation>

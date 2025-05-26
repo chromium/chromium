@@ -119,7 +119,6 @@
 <translation id="2572494885440352020">Chromium Helper</translation>
 <translation id="2575822587468774919">Valitse, mitä haluat hakea kuvahaulla</translation>
 <translation id="2576118232315942160">Kirjaudu sisään Chromiumiin, niin voit käyttää salasanojasi ja muita tietoja kaikilla laitteillasi</translation>
-<translation id="2583187216237139145">Työprofiilin järjestelmänvalvoja voi poistaa tämän profiilin käytön aikana luotua Chromium-dataa (esim. kirjanmerkit, historia, salasanat ja muut asetukset). <ph name="LEARN_MORE" /></translation>
 <translation id="2592940277904433508">Jatka Chromiumin käyttöä</translation>
 <translation id="259935314519650377">Ladatun asennusohjelman siirtäminen välimuistiin epäonnistui. Virhe: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
 <translation id="2620436844016719705">Järjestelmä</translation>
@@ -364,7 +363,6 @@
 <translation id="6069027071882229820">Kopioi kuvana</translation>
 <translation id="6072279588547424923"><ph name="EXTENSION_NAME" /> on lisätty Chromiumiin</translation>
 <translation id="6072463441809498330">Chromiumin nopeuttaminen</translation>
-<translation id="608006075545470555">Lisää työprofiili tähän selaimeen</translation>
 <translation id="6096348254544841612">Muokkaa ja hallinnoi Chromiumia. Päivitys on saatavilla.</translation>
 <translation id="6107893135096467929">Päällä • Chromium ei voi vahvistaa, mistä tämä laajennus on peräisin</translation>
 <translation id="6119438414301547735">Salli laajennuksen näyttää pääsyoikeuspyyntöjä Chromium-työkalupalkissa</translation>
@@ -560,7 +558,6 @@ Chromium ei voi palauttaa asetuksiasi.</translation>
 <translation id="8471947159125090285">Chromium-datan käyttö ja tallennus Google-tilillä edellyttää, että vahvistat henkilöllisyytesi</translation>
 <translation id="8493179195440786826">Chromium on vanhentunut</translation>
 <translation id="8522801943730206384">Chromium voi tarkistaa salasanasi, kun tallennat niitä</translation>
-<translation id="8550334526674375523">Tämä työprofiili on täysin erillinen henkilökohtaisesta profiilistasi.</translation>
 <translation id="8555465886620020932">Palveluvirhe: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="8556420416730706394">Kiinnitä kuvahaku klikkaamalla sivupaneelin yläreunan Kiinnitä-painiketta, niin löydät sen helposti</translation>
 <translation id="856656450041460113">Hakukielilista</translation>
@@ -589,7 +586,6 @@ Chromium ei voi palauttaa asetuksiasi.</translation>
 <translation id="8931379085695076764">Chromium voi arvioida kiinnostuksen kohteitasi muutaman viime viikon selaushistoriasi perusteella. Tiedot pysyvät laitteellasi.</translation>
 <translation id="8941642502866065432">Chromiumin päivitys epäonnistui</translation>
 <translation id="897581876605952338">Chromium Enterprise ‑logo</translation>
-<translation id="8986207147630327271">Olet lisäämässä työprofiilia tähän selaimeen ja antamassa järjestelmänvalvojalle oikeuden hallita pelkkää työprofiilia.</translation>
 <translation id="8988036198400390003">Ylläpidä Chromium-profiileja</translation>
 <translation id="9019929317751753759">Paransimme Chromiumin turvallisuutta poistamalla käytöstä sovelluksia, joita <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> ei tarjoa ja jotka on voitu lisätä ilman lupaasi.</translation>
 <translation id="9022552996538154597">Kirjaudu sisään Chromiumiin</translation>

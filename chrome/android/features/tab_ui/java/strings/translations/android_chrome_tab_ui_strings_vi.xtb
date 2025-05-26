@@ -43,7 +43,6 @@
 <translation id="2536366509642644298">Các nhóm thẻ "<ph name="TAB_GROUP_NAME_1" />" và "<ph name="TAB_GROUP_NAME_2" />" không còn hoạt động</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{Thu gọn <ph name="TABS_COUNT_ONE" /> thẻ.}other{Thu gọn nhóm thẻ có <ph name="TABS_COUNT_MANY" /> thẻ.}}</translation>
 <translation id="2569352796411618312">Đề xuất: Gần đây, bạn không sử dụng <ph name="NUMBER_OF_TABS" /> thẻ. Bạn có muốn đóng các thẻ này không?</translation>
-<translation id="2656693375914502139">Chuyển đến nhóm</translation>
 <translation id="2662028055331606429">Điểm xếp hạng: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="266935134738038806">Truy cập trang web</translation>
 <translation id="2671423594960767771">Chia sẻ nhóm</translation>
@@ -122,7 +121,6 @@
 <translation id="6109251075362363230">Giờ đây, tất cả các thẻ trùng lặp cũng sẽ được lưu trữ, ngoại trừ thẻ trùng lặp được sử dụng gần đây nhất.</translation>
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{Di chuyển nhóm sang cửa sổ mới}other{Di chuyển nhóm sang cửa sổ khác}}</translation>
 <translation id="6193448654517602979">Chọn các thẻ</translation>
-<translation id="6212567362666004597">Thêm thẻ vào nhóm</translation>
 <translation id="6220820548421939212">Có. Tôi đồng ý</translation>
 <translation id="6228793724645064692">(điểm xếp hạng cửa hàng)</translation>
 <translation id="6271513594716432922">Đóng tất cả các thẻ không hoạt động</translation>

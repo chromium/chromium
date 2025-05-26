@@ -102,7 +102,6 @@
 <translation id="2345992953227471816">Przeglądarka Chrome wykryła w tych rozszerzeniach złośliwe oprogramowanie:</translation>
 <translation id="2348335408836342058">Chrome potrzebuje uprawnień dostępu do aparatu i mikrofonu na tej stronie</translation>
 <translation id="234869673307233423">Chrome nie może sprawdzić Twoich haseł. Spróbuj później.</translation>
-<translation id="235650106824528204">Wszystkie dane Chrome wygenerowane podczas używania tego profilu (takie jak zakładki, historia, hasła i inne ustawienia) mogą zostać usunięte przez administratora profilu służbowego. <ph name="LEARN_MORE" /></translation>
 <translation id="2359808026110333948">Dalej</translation>
 <translation id="2403703063067034158">Błąd podczas uruchamiania: obecnie działa inna instancja konfiguracji. Spróbuj ponownie później.</translation>
 <translation id="2409816192575564775">{NUM_DEVICES,plural, =0{Co najmniej 1 rozszerzenie do Chrome uzyskiwało dostęp do 1 urządzenia HID}=1{Co najmniej 1 rozszerzenie do Chrome uzyskuje dostęp do 1 urządzenia HID}few{Co najmniej 1 rozszerzenie do Chrome uzyskuje dostęp do # urządzeń HID}many{Co najmniej 1 rozszerzenie do Chrome uzyskuje dostęp do # urządzeń HID}other{Co najmniej 1 rozszerzenie do Chrome uzyskuje dostęp do # urządzenia HID}}</translation>
@@ -388,7 +387,6 @@
 <translation id="6069027071882229820">Skopiuj jako obraz</translation>
 <translation id="6070348360322141662">Dla większego bezpieczeństwa Google Chrome szyfruje dane</translation>
 <translation id="6075300983329039771">Twoja organizacja (<ph name="MANAGER" />) wymaga od Ciebie zalogowania się w Chrome</translation>
-<translation id="608006075545470555">Dodaj profil służbowy w tej przeglądarce</translation>
 <translation id="6113794647360055231">Chrome jest jeszcze lepszy</translation>
 <translation id="6116252277240876590">Ten język jest używany do wyświetlania menu, ustawień, alertów i innego tekstu w Chrome</translation>
 <translation id="6134085236017727171">Aby używać mikrofonu, przyznaj Chrome dostęp w <ph name="BEGIN_LINK" />ustawieniach systemu<ph name="END_LINK" /></translation>
@@ -584,7 +582,6 @@
 <translation id="8521348052903287641">Reguła dla ruchu przychodzącego w wersji deweloperskiej Google Chrome zezwalająca na ruch mDNS.</translation>
 <translation id="852529348814672339">Wyświetlaj Chrome w tym języku</translation>
 <translation id="8533056045953418157">Ustaw Google Chrome jako domyślną przeglądarkę plików PDF</translation>
-<translation id="8550334526674375523">Ten profil służbowy jest całkowicie oddzielony od Twojego profilu osobistego.</translation>
 <translation id="8555465886620020932">Błąd usługi: <ph name="SERVICE_ERROR" /></translation>
 <translation id="856656450041460113">Przeszukaj listę języków</translation>
 <translation id="8601359445272098721">Nowość! Możesz przetłumaczyć tekst i obrazy na ekranie, klikając przycisk „Przetłumacz ekran”</translation>
@@ -617,7 +614,6 @@
 <translation id="8914504000324227558">Uruchom Chrome ponownie</translation>
 <translation id="8922193594870374009">Aby wysłać numer z <ph name="ORIGIN" /> na swój telefon z Androidem, zaloguj się w Chrome na obu urządzeniach.</translation>
 <translation id="8948460679427074738">Dla tego rozszerzenia nie opublikowano procedur ochrony prywatności, na przykład informacji o tym, jak zbiera i wykorzystuje ono dane. Chrome zaleca jego usunięcie.</translation>
-<translation id="8986207147630327271">Dodajesz profil służbowy w tej przeglądarce i dajesz swojemu administratorowi kontrolę tylko nad tym profilem.</translation>
 <translation id="8989968390305463310">Historia przeglądania wpływa na wyświetlane reklamy i oszacowane zainteresowania (patrz poniżej). Żeby chronić Twoją prywatność, Chrome co miesiąc automatycznie usuwa Twoje zainteresowania. Zainteresowania mogą być odświeżane, chyba że je usuniesz.</translation>
 <translation id="8992769679401294069">Dane zostały zaszyfrowane Twoim hasłem. Podaj je, aby korzystać z danych Chrome i zapisywać je na swoim koncie Google.</translation>
 <translation id="8999117580775242387">Gdy protokół HTTPS będzie niedostępny, Chrome bez ostrzeżenia użyje połączenia niezabezpieczonego</translation>

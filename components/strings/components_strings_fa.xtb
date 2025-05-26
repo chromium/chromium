@@ -636,6 +636,7 @@
 <translation id="2088913896151127116">افزودن نوشتار</translation>
 <translation id="2090451897496479509">برای اطلاعات بیشتر با ارائه‌دهنده تماس بگیرید</translation>
 <translation id="2091887806945687916">صدا</translation>
+<translation id="2093184051799735948">‫<ph name="ENGINE_NAME" /> را جستجو کنید یا نشانی وب را تایپ کنید</translation>
 <translation id="2093982008204312032">‏Google Chrome می‌خواهد Windows Hello را برای درج گذرواژه‌ها خاموش کند.</translation>
 <translation id="2094505752054353250">عدم تطابق دامنه</translation>
 <translation id="2094704029599359040">اطلاعات نسخه</translation>
@@ -770,6 +771,7 @@
 <translation id="2296331629987861142">با اقساط آسان پرداخت کنید (مشروط به واجدشرایط بودن، کارمزد اعمال می‌شود)</translation>
 <translation id="2300306941146563769">بارگذاری نشد</translation>
 <translation id="2301098101308036335">سایت‌هایی که از آن‌ها بازدید شده است و زمان بازدید.</translation>
+<translation id="2302571905116831849">تکمیل خودکار کارت وفاداری</translation>
 <translation id="230286397113210245">دکمه «باز کردن پنجره ناشناس»؛ برای باز کردن «پنجره ناشناس» جدید و مرور کردن به‌صورت خصوصی، آن را فعال کنید</translation>
 <translation id="2305294852062272447">گواهینامه رانندگی ذخیره شود؟</translation>
 <translation id="2306124309679506798">تجربه فراگیر مجاز شود؟</translation>
@@ -1837,6 +1839,7 @@
 <translation id="4140905366050378834">غذا و لوازم مراقبت از حیوانات خانگی</translation>
 <translation id="4140905530744469899">شناسه نمایه:</translation>
 <translation id="4142935452406587478">سینی ۱۰</translation>
+<translation id="4147897805161313378">Google Photos</translation>
 <translation id="4148925816941278100">American Express</translation>
 <translation id="4150099059797363385">پاکت چینی شماره ۴</translation>
 <translation id="4151403195736952345">استفاده از پیش‌فرض کلی (تشخیص)</translation>
@@ -1997,6 +2000,7 @@
 <translation id="437620492464254965">درب و پنجره</translation>
 <translation id="4377125064752653719">شما سعی در دسترسی به <ph name="DOMAIN" /> را داشتید، اما صادر کننده، گواهی ارائه شده از سوی سرور را باطل کرده است. یعنی اصلاً نباید به اطلاعات کاربری که این سرور ارائه می‌کند اطمینان کرد. ممکن است شما با مهاجمی در ارتباط باشید.</translation>
 <translation id="4378154925671717803">تلفن</translation>
+<translation id="4382484599443659549">PDF</translation>
 <translation id="4382833368532556056">ازاین‌پس فایل‌هایتان را در فضای ذخیره‌سازی ابری ذخیره کنید</translation>
 <translation id="4384395682990721132">A4x3</translation>
 <translation id="4387692837058041921">‏بارگذاری فایل در Microsoft OneDrive موقتاً متوقف شده است</translation>
@@ -4315,7 +4319,6 @@
 توضیحات بیشتر:
 <ph name="DEBUG_INFO" /></translation>
 <translation id="8416874502399604126">میکروفون این بار مجاز شد</translation>
-<translation id="8421158157346464398">اطلاعات نمایه کاری (مانند نام کاربری نمایه کاری شما)</translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" /> <ph name="SECOND_LABEL" /> <ph name="THIRD_LABEL" /></translation>
 <translation id="8425213833346101688">تغییر</translation>
 <translation id="8426945547715537628">ملغی کردن صفحه‌کلید مجاز شود؟</translation>

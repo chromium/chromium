@@ -206,6 +206,7 @@
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1758459542619182298"><ph name="CONTROL_TYPE" /> <ph name="KEY_LIST" /></translation>
 <translation id="1759842336958782510">Chrome</translation>
+<translation id="1762353673362288306">ตอนนี้คุณสามารถใช้เครื่องมือสำหรับชั้นเรียนได้เท่านั้น</translation>
 <translation id="1762483337755424125">ข้อความถอดเสียง</translation>
 <translation id="1765169783255151332">เปลี่ยนแป้นอย่างรวดเร็ว</translation>
 <translation id="1768959921651994223">ประเภทการตรวจสอบสิทธิ์</translation>
@@ -1613,6 +1614,7 @@
 <translation id="8088963492174775412">กดเพื่อบันทึก</translation>
 <translation id="8094062939584182041">อนุญาตให้ Google ส่งอีเมลถึงคุณเกี่ยวกับปัญหานี้</translation>
 <translation id="8104083085214006426">คุณกำลังใช้เครือข่ายแบบเปิดที่ไม่ปลอดภัย</translation>
+<translation id="8108879170356113798">คุณจะสามารถใช้เครื่องมือสำหรับชั้นเรียนได้เท่านั้นในอีก <ph name="NUM_SECONDS" /> วินาที</translation>
 <translation id="811820734797650957">(Android) ปิงเกตเวย์ได้</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />°C</translation>
 <translation id="8131740175452115882">ยืนยัน</translation>

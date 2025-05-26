@@ -243,6 +243,7 @@
 <translation id="1972325230031091483">Brskali boste hitreje, ker se vsebina proaktivno naloži glede na trenutni obisk spletne strani.</translation>
 <translation id="1974060860693918893">Dodatno</translation>
 <translation id="1977621687170192347">Vklopite možnost »Poziv za odpiranje povezav iz drugih aplikacij v anonimnem načinu.«</translation>
+<translation id="1979055159547313322">Račun <ph name="USER_EMAIL" /> upravlja <ph name="HOSTED_DOMAIN" />, ki si lahko morda ogleda nekatere podatke, vključno s tem:</translation>
 <translation id="1979188886349613713">Vključi pripone datotek, ki jih spletno mesto ni navedlo</translation>
 <translation id="1980417445547898121">{count,plural, =1{Dobite {count} nedavno aktivni zavihek iz druge naprave v tem iPhonu}one{Dobite {count} nedavno aktivni zavihek iz druge naprave v tem iPhonu}two{Dobite {count} nedavno aktivna zavihka iz druge naprave v tem iPhonu}few{Dobite {count} nedavno aktivne zavihke iz druge naprave v tem iPhonu}other{Dobite {count} nedavno aktivnih zavihkov iz druge naprave v tem iPhonu}}</translation>
 <translation id="1981118202195772574">Mobilna naprava</translation>
@@ -278,6 +279,7 @@
 <translation id="2103075008456228677">Odpri history.google.com</translation>
 <translation id="2104436223719117661">Iskanja v trendu</translation>
 <translation id="21133533946938348">Pripni zavihek</translation>
+<translation id="2117650889962717098">Poskrbite za zasebno brskanje tako, da preklopite v anonimni način</translation>
 <translation id="2119636449201577317">Odpri v aplikaciji …</translation>
 <translation id="2120553909046681540">Vaša organizacija je izklopila zasebno brskanje.</translation>
 <translation id="2122754583996902531">Vaš brskalnik je upravljan. <ph name="BEGIN_LINK" />Več o tem<ph name="END_LINK" /></translation>
@@ -562,6 +564,7 @@ Oglejte si navodila iskalnika za brisanje zgodovine iskanja, če je na voljo.</t
 <translation id="3348387552617855658">S to kartico lahko spremljate svoje pakete in prejmete pomembna obvestila o dostavi.</translation>
 <translation id="3349031117032695619">Blokiranje pojavnih oken</translation>
 <translation id="3349676726073650389">Spletna mesta in iskanja, ki jih spremljate, se shranjujejo v računu Google. Tisto, kar spremljate, lahko kadar koli upravljate v nastavitvah.</translation>
+<translation id="3353037916374303415"><ph name="EMAIL" />. Ta račun je upravljan.</translation>
 <translation id="3365529507898144230">Shrani v Foto</translation>
 <translation id="3371831930909698441">Prevod je na voljo. Možnosti so na voljo pri dnu zaslona.</translation>
 <translation id="3377063233124932127">Zdaj so shranjeni zaznamki, gesla in drugo na vrhu.</translation>
@@ -670,6 +673,7 @@ Oglejte si navodila iskalnika za brisanje zgodovine iskanja, če je na voljo.</t
 <translation id="3875783148670536197">Postopek</translation>
 <translation id="3878657761594430423">Orodje za prijemanje listov</translation>
 <translation id="3885587018298784481">Pridružitev skupini družinskih članov</translation>
+<translation id="3888230626190453136">Brskanje v anonimnem načinu</translation>
 <translation id="3888863481921783344">To bo uporabljeno za prikaz morebitnih povabljencev na vaš dogodek.</translation>
 <translation id="3891414008432200754">Cena</translation>
 <translation id="3892144330757387737">Tukaj bo prikazana zgodovina</translation>

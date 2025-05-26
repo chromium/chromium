@@ -636,6 +636,7 @@
 <translation id="2088913896151127116">ጽሑፍ አክል</translation>
 <translation id="2090451897496479509">ለበለጠ መረጃ አቅራቢውን ያነጋግሩ</translation>
 <translation id="2091887806945687916">ድምፅ</translation>
+<translation id="2093184051799735948"><ph name="ENGINE_NAME" />ን ይፈልጉ ወይም ዩአርኤል ይተይቡ</translation>
 <translation id="2093982008204312032">Google Chrome የይለፍ ቃላትን ለመሙላት Windows Helloን ለማጥፋት እየሞከረ ነው።</translation>
 <translation id="2094505752054353250">የጎራ አለመዛመድ</translation>
 <translation id="2094704029599359040">የስሪት መረጃ</translation>
@@ -770,6 +771,7 @@
 <translation id="2296331629987861142">በቀላል ተከታታይ ክፍያዎች ይክፈሉ (ለብቁነት ተገዢ ነው፣ ክፍያዎች ተፈጻሚ ናቸው)</translation>
 <translation id="2300306941146563769">አልተሰቀለም</translation>
 <translation id="2301098101308036335">የትኞቹ ድር ጣቢያዎች እንደሚጎበኙ እና መቼ እንደሚሆን።</translation>
+<translation id="2302571905116831849">የታማኝነት ካርድን ራስ-ሙላ</translation>
 <translation id="230286397113210245">ማንነትን የማያሳውቅ መስኮት አዝራርን ይክፈቱ፣ በግል እንዲያስሱ አዲስ ማንነትን የማያሳውቅ መስኮት ለመክፈት ያግብሩ</translation>
 <translation id="2305294852062272447">የመንጃ ፈቃድ ይቀመጥ?</translation>
 <translation id="2306124309679506798">መሳጭ ተሞክሮ እንዲኖር ይፈቀድ?</translation>
@@ -1836,6 +1838,7 @@
 <translation id="4140905366050378834">የቤት እንስሳት ምግብ እና የቤት እንስሳት እንክብካቤ አቅርቦቶች</translation>
 <translation id="4140905530744469899">የመገለጫ መታወቂያ፦</translation>
 <translation id="4142935452406587478">መሳቢያ 10</translation>
+<translation id="4147897805161313378">Google ፎቶዎች</translation>
 <translation id="4148925816941278100">American Express</translation>
 <translation id="4150099059797363385">#4 የቻይና ፖስታ</translation>
 <translation id="4151403195736952345">ሁለገብ ነባሪን ተጠቀም (አግኝ)</translation>
@@ -1996,6 +1999,7 @@
 <translation id="437620492464254965">በሮች እና መስኮቶች</translation>
 <translation id="4377125064752653719"><ph name="DOMAIN" />ን ለመድረስ ሞክረዋል፣ ነገር ግን አገልጋዩ ያቀረበው የእውቅና ማረጋገጫ በሰጪው ተሽሯል። ይህ ማለት አገልጋዩ ያቀረበው የደህንነት ምስክርነቶች ፈጽሞ ሊታመኑ አይገባም። ከአጥቂ ጋር እየተገናኙ ሊሆን ይችላል።</translation>
 <translation id="4378154925671717803">ስልክ</translation>
+<translation id="4382484599443659549">PDF</translation>
 <translation id="4382833368532556056">ከአሁን ጀምሮ ፋይሎችዎን ወደ የደመና ማከማቻ ያስቀምጡ</translation>
 <translation id="4384395682990721132">A4x3</translation>
 <translation id="4387692837058041921">ወደ Microsoft OneDrive የሚደረግ የፋይል ሰቀላ ባለበት ቆሟል</translation>
@@ -4314,7 +4318,6 @@
 ተጨማሪ ዝርዝሮች፦
 <ph name="DEBUG_INFO" /></translation>
 <translation id="8416874502399604126">ማይክሮፎን ለዚህ ጊዜ ይፈቀዳል</translation>
-<translation id="8421158157346464398">የስራ መገለጫ መረጃ (እንደ የእርስዎ የስራ መገለጫ የተጠቃሚ ስም ያለ)</translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" /> <ph name="SECOND_LABEL" /> <ph name="THIRD_LABEL" /></translation>
 <translation id="8425213833346101688">ለውጥ</translation>
 <translation id="8426945547715537628">የቁልፍ ሰሌዳ መሻር ይፈቀድ?</translation>

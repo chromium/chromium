@@ -5200,7 +5200,6 @@ A configuração <ph name="CHROME_OS_RELEASE_CHANNEL_POLICY_NAME" /> só terá e
 <translation id="4661889655253181651">As configurações de conteúdo permitem que você especifique como o conteúdo de um tipo específico (por exemplo, cookies, imagens ou JavaScript) é tratado.</translation>
 <translation id="4663509616441994711">Desativar a unificação das políticas da nuvem em nível de usuário.</translation>
 <translation id="4663588423815449593">Forçar o <ph name="PEPPER_NAME" /> a usar o decodificador de vídeo legado.</translation>
-<translation id="4665632569240493493">Ativar a atribuição de tema da extensão no rodapé da NTP</translation>
 <translation id="4665897631924472251">Configurações de gerenciamento de extensão</translation>
 <translation id="4666930704271463612">Especifica o subconjunto de servidores de impressão que serão consultados para impressoras de servidor.
 
@@ -6274,7 +6273,6 @@ Na versão 92 e mais recentes do <ph name="PRODUCT_NAME" />, esta política tamb
 <translation id="5373552304217872025">Se esta política for definida como verdadeira ou for deixada sem definição, o <ph name="PRODUCT_NAME" /> e o <ph name="LACROS_NAME" /> vão permitir que uma nova pessoa seja adicionada pelo gerenciador de usuários.
 
       Se ela for definida como falsa, o <ph name="PRODUCT_NAME" /> e o <ph name="LACROS_NAME" /> não vão permitir que uma nova pessoa seja adicionada pelo gerenciador de usuários.</translation>
-<translation id="5374300764724537955">Desativar a atribuição de tema da extensão no rodapé da NTP</translation>
 <translation id="5376712696238639532">A definição da política especifica se docentes podem usar o recurso de legendas.
 
 Se o valor for "true" ou não for definido, alguns docentes poderão adicionar legendas à própria voz e enviar a transcrição para estudantes.

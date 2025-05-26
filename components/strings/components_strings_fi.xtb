@@ -771,6 +771,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="2296331629987861142">Maksa helposti erissä (kelpoisuuden mukaan, lisämaksut mahdollisia)</translation>
 <translation id="2300306941146563769">Ei lähetetty</translation>
 <translation id="2301098101308036335">Millä verkkosivustoilla käydään ja milloin.</translation>
+<translation id="2302571905116831849">Täytä kanta-asiakaskortti automaattisesti</translation>
 <translation id="230286397113210245">Avaa incognito-ikkuna ‑painike, aktivoi avataksesi uusi incognito-ikkuna, niin voit selata yksityisesti</translation>
 <translation id="2305294852062272447">Tallennetaanko ajokortti?</translation>
 <translation id="2306124309679506798">Sallitaanko immersiivinen kokemus?</translation>
@@ -1839,6 +1840,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="4140905366050378834">Lemmikkien ruoka ja tarvikkeet</translation>
 <translation id="4140905530744469899">Profiilin tunnus:</translation>
 <translation id="4142935452406587478">Lokero 10</translation>
+<translation id="4147897805161313378">Google Kuvat</translation>
 <translation id="4148925816941278100">American Express</translation>
 <translation id="4150099059797363385">Kirjekuori kiinalainen #4</translation>
 <translation id="4151403195736952345">Käytä yleistä oletusta (havaitse)</translation>
@@ -1999,6 +2001,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="437620492464254965">Ovet ja ikkunat</translation>
 <translation id="4377125064752653719">Yritit yhdistää sivustoon <ph name="DOMAIN" />, mutta varmenteen myöntäjä on kumonnut palvelimen esittämän varmenteen. Palvelimen esittämiin suojaustietoihin ei siis tule luottaa. Saatat olla tekemisissä hakkerin kanssa.</translation>
 <translation id="4378154925671717803">Puhelin</translation>
+<translation id="4382484599443659549">PDF</translation>
 <translation id="4382833368532556056">Tallenna tiedostosi jatkossa pilvitallennustilaan</translation>
 <translation id="4384395682990721132">A4 x 3</translation>
 <translation id="4387692837058041921">Tiedostojen lataus Microsoft OneDriveen on keskeytetty</translation>
@@ -4317,7 +4320,6 @@ Lisätietoja:
 Lisätietoja:
 <ph name="DEBUG_INFO" /></translation>
 <translation id="8416874502399604126">Mikrofoni sallittu tällä kertaa</translation>
-<translation id="8421158157346464398">Työprofiilin tiedot (esimerkiksi työprofiilin käyttäjätunnus)</translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" /> <ph name="SECOND_LABEL" /> <ph name="THIRD_LABEL" /></translation>
 <translation id="8425213833346101688">Vaihda</translation>
 <translation id="8426945547715537628">Sallitaanko näppäimistön ohittaminen?</translation>

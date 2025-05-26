@@ -1837,6 +1837,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="4140905366050378834">Nourriture et soins pour animaux de compagnie</translation>
 <translation id="4140905530744469899">ID du profil</translation>
 <translation id="4142935452406587478">Bac 10</translation>
+<translation id="4147897805161313378">Google Photos</translation>
 <translation id="4148925816941278100">American Express</translation>
 <translation id="4150099059797363385">Enveloppe chinoise n°4</translation>
 <translation id="4151403195736952345">Utiliser la valeur par défaut globale (Détection)</translation>
@@ -1997,6 +1998,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="437620492464254965">Portes et fenêtres</translation>
 <translation id="4377125064752653719">Vous avez tenté d'accéder à <ph name="DOMAIN" />, mais le certificat présenté par le serveur a été révoqué par son émetteur. Cela signifie que le certificat présenté par le serveur ne doit pas être approuvé. Il est donc possible que vous communiquiez avec un pirate informatique.</translation>
 <translation id="4378154925671717803">Téléphone</translation>
+<translation id="4382484599443659549">PDF</translation>
 <translation id="4382833368532556056">À partir de maintenant, enregistrez vos fichiers dans le stockage cloud</translation>
 <translation id="4384395682990721132">A4x3</translation>
 <translation id="4387692837058041921">L'importation du fichier vers Microsoft OneDrive a été suspendue</translation>
@@ -4316,7 +4318,6 @@ Informations supplémentaires :
 Informations supplémentaires :
 <ph name="DEBUG_INFO" /></translation>
 <translation id="8416874502399604126">Accès au micro autorisé cette fois-ci</translation>
-<translation id="8421158157346464398">Informations sur votre profil professionnel (nom d'utilisateur, par exemple)</translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" /> <ph name="SECOND_LABEL" /> <ph name="THIRD_LABEL" /></translation>
 <translation id="8425213833346101688">Modifier</translation>
 <translation id="8426945547715537628">Autoriser le remplacement du clavier ?</translation>

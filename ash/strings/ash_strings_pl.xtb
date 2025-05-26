@@ -761,6 +761,7 @@ W przeciwnym razie za <ph name="TIMEOUT_SECONDS" /> touchpad znowu się włącz
 <translation id="3552189655002856821">Wi-Fi jest wyłączone</translation>
 <translation id="3554215588514239132">Pokaż lub ukryj panel Narzędzi dla programistów</translation>
 <translation id="3554637740840164787">Element <ph name="ITEM_TITLE" /> został przypięty</translation>
+<translation id="3554928024630051016">Aby dodać kolejne urządzenia USB, odłącz jedno z nich i podłącz nowe</translation>
 <translation id="3558768885091059911">Włączyć dostęp do kamery i mikrofonu?</translation>
 <translation id="3560174576767922131">Nagraj film</translation>
 <translation id="3563775809269155755">Włącz hotspot</translation>
@@ -868,6 +869,7 @@ Podłącz urządzenie do zasilania.</translation>
 <translation id="3861651314799684201">Aby nagrać pełny ekran, naciśnij Enter</translation>
 <translation id="3870197372373144624">Spróbuj wyłączyć urządzenie.</translation>
 <translation id="3879748587602334249">Menedżer pobierania</translation>
+<translation id="3884007280698606545">Osiągnięto limit USB</translation>
 <translation id="3886872229787704059">Otwierane dzisiaj</translation>
 <translation id="3891340733213178823">Naciśnij dwukrotnie Ctrl+Shift+Q, by się wylogować.</translation>
 <translation id="3892148308691398805">Kopiuj tekst</translation>

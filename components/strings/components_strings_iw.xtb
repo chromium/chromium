@@ -636,6 +636,7 @@
 <translation id="2088913896151127116">הוספת טקסט</translation>
 <translation id="2090451897496479509">כדי לקבל מידע נוסף, אפשר לפנות לספק</translation>
 <translation id="2091887806945687916">צליל</translation>
+<translation id="2093184051799735948">‏אפשר לחפש ב-<ph name="ENGINE_NAME" /> או להזין כתובת URL</translation>
 <translation id="2093982008204312032">‏Google Chrome מנסה לכבות את Windows Hello כדי למלא סיסמאות.</translation>
 <translation id="2094505752054353250">אי התאמה בדומיינים</translation>
 <translation id="2094704029599359040">פרטי הגרסה</translation>
@@ -1838,6 +1839,7 @@
 <translation id="4140905366050378834">מזון וציוד לחיות מחמד</translation>
 <translation id="4140905530744469899">מזהה הפרופיל:</translation>
 <translation id="4142935452406587478">מגש 10</translation>
+<translation id="4147897805161313378">Google Photos</translation>
 <translation id="4148925816941278100">American Express</translation>
 <translation id="4150099059797363385">מעטפה – סינית 4</translation>
 <translation id="4151403195736952345">שימוש בברירת מחדל גלובלית (זיהוי)</translation>
@@ -1998,6 +2000,7 @@
 <translation id="437620492464254965">דלתות וחלונות</translation>
 <translation id="4377125064752653719">ניסית להשיג את <ph name="DOMAIN" />, אך האישור שהשרת הציג בוטל על ידי המנפיק שלו. פירוש הדבר שאין כל אפשרות לתת אמון באישורי האבטחה שהשרת הציג. ייתכן שהתקשורת שלך היא עם תוקף.</translation>
 <translation id="4378154925671717803">טלפון</translation>
+<translation id="4382484599443659549">PDF</translation>
 <translation id="4382833368532556056">מעכשיו עליך לשמור את הקבצים באחסון בענן</translation>
 <translation id="4384395682990721132">A4x3</translation>
 <translation id="4387692837058041921">‏העלאת הקובץ אל Microsoft OneDrive הושהתה</translation>
@@ -4321,7 +4324,6 @@ Del</translation>
 פרטים נוספים:
 <ph name="DEBUG_INFO" /></translation>
 <translation id="8416874502399604126">יש אישור לשימוש חד-פעמי במיקרופון</translation>
-<translation id="8421158157346464398">פרטים מפרופיל העבודה (כמו שם המשתמש בפרופיל העבודה)</translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" /> <ph name="SECOND_LABEL" /> <ph name="THIRD_LABEL" /></translation>
 <translation id="8425213833346101688">שינוי</translation>
 <translation id="8426945547715537628">לאפשר שינוי ממקלדת ברירת המחדל?</translation>

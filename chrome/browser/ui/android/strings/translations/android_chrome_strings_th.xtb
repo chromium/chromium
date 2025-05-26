@@ -11,7 +11,6 @@
 <translation id="103269572468856066">ล้างข้อมูลเว็บไซต์และแอปเหล่านี้ด้วยไหม</translation>
 <translation id="1034259925032978114">หน้าต่างเปิดอยู่</translation>
 <translation id="1036348656032585052">ปิด</translation>
-<translation id="1045448422538531528">เพิ่มในกลุ่ม</translation>
 <translation id="1045899828449635435">ล้างข้อมูลเว็บไซต์เหล่านี้ด้วยไหม</translation>
 <translation id="1049743911850919806">โหมดไม่ระบุตัวตน</translation>
 <translation id="1052842760770519282">รหัสผ่านบางรายการเข้าถึงไม่ได้</translation>
@@ -376,6 +375,7 @@
 <translation id="2718352093833049315">Wi-Fi เท่านั้น</translation>
 <translation id="2718846868787000099">เว็บไซต์ที่คุณเข้าชมสามารถดูค่ากำหนดเพื่อแสดงเนื้อหาในภาษาที่คุณต้องการ</translation>
 <translation id="2723001399770238859">เสียง</translation>
+<translation id="2734335652257251631">แสดงโหมดการอ่าน</translation>
 <translation id="2739887572830526131">เก็บกลุ่มนี้ไว้เพื่อเพิ่มแท็บในภายหลัง หรือลบออกหากคุณไม่ต้องการแล้ว</translation>
 <translation id="2742373789128106053"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ไม่พร้อมใช้งานในขณะนี้</translation>
 <translation id="2760805590727089264">ดด/ปป</translation>
@@ -547,7 +547,6 @@
 <translation id="351672147489633468">{NUM_REVOKED_PERMISSIONS,plural, =1{นำสิทธิ์การแจ้งเตือนออกจากเว็บไซต์ 1 แห่งที่คุณไม่ได้เข้าชมเมื่อเร็วๆ นี้}other{นําสิทธิ์การแจ้งเตือนออกจากเว็บไซต์ # แห่งที่คุณไม่ได้เข้าชมเมื่อเร็วๆ นี้}}</translation>
 <translation id="3518985090088779359">ยอมรับและทำต่อ</translation>
 <translation id="3519014757432845220">ช่วยปรับปรุงการป้องกันสแปมโดยแชร์เนื้อหาการแจ้งเตือนและ URL ของเว็บไซต์กับ Google เนื้อหาอาจได้รับการตรวจสอบโดยเจ้าหน้าที่</translation>
-<translation id="351952459507671940">เพิ่มไปยังกลุ่มใหม่</translation>
 <translation id="3521388823983121502">ดำเนินการต่อด้วย <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ไม่ได้</translation>
 <translation id="3522247891732774234">มีการอัปเดตให้บริการ ตัวเลือกเพิ่มเติม</translation>
 <translation id="3523789730715594198">คุณหยุดการซิงค์ได้ทุกเมื่อในการตั้งค่า Google อาจปรับเปลี่ยน Search และบริการอื่นๆ ให้เหมาะกับคุณโดยอิงจากประวัติการเข้าชม</translation>
@@ -1746,6 +1745,7 @@
 <translation id="8676789164135894283">การยืนยันการลงชื่อเข้าใช้</translation>
 <translation id="8683039184091909753">รูปภาพ</translation>
 <translation id="8688183792442786085"><ph name="TAB_TITLE" />, แท็บที่เลือก</translation>
+<translation id="8693232767599693749">ดูโหมดการอ่านไหม</translation>
 <translation id="8697753151306746444">แชร์หน้าต่างหรือหน้าจอแทน</translation>
 <translation id="869891660844655955">วันหมดอายุ</translation>
 <translation id="8699120352855309748">ไม่ต้องเสนอการแปลภาษาเหล่านี้</translation>

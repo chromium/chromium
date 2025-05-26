@@ -11,7 +11,6 @@
 <translation id="103269572468856066">Webgune eta aplikazio hauetako datuak ere garbitu nahi dituzu?</translation>
 <translation id="1034259925032978114">Leihoa irekita dago</translation>
 <translation id="1036348656032585052">Desaktibatu</translation>
-<translation id="1045448422538531528">Gehitu taldean</translation>
 <translation id="1045899828449635435">Webgune hauetako datuak ere garbitu nahi dituzu?</translation>
 <translation id="1049743911850919806">Ezkutuko modua</translation>
 <translation id="1052842760770519282">Zure pasahitzetako batzuk ezin dira atzitu</translation>
@@ -547,7 +546,6 @@ Zure pasaesaldia dakitenek soilik irakur ditzakete zure datu enkriptatuak. Googl
 <translation id="351672147489633468">{NUM_REVOKED_PERMISSIONS,plural, =1{Jakinarazpenak bidaltzeko baimena kendu da azkenaldian bisitatu duzun webgune batetik}other{Jakinarazpenak bidaltzeko baimena kendu da azkenaldian bisitatu dituzun # webgunetik}}</translation>
 <translation id="3518985090088779359">Onartu eta jarraitu</translation>
 <translation id="3519014757432845220">Lagundu spamaren aurkako babesa hobetzen jakinarazpenen edukia eta webguneko URLa Google-rekin partekatuz. Baliteke edukia gizakiek berrikustea.</translation>
-<translation id="351952459507671940">Gehitu talde berrian</translation>
 <translation id="3521388823983121502">Ezin duzu egin aurrera <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> hornitzailearekin</translation>
 <translation id="3522247891732774234">Eguneratze bat dago eskuragarri. Aukera gehiago.</translation>
 <translation id="3523789730715594198">Sinkronizatzeari uzteko, joan ezarpenetara. Baliteke Google-k Bilaketa eta beste zerbitzu batzuk pertsonalizatzea zure historiaren arabera.</translation>

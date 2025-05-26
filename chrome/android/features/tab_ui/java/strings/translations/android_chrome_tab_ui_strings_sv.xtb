@@ -43,7 +43,6 @@
 <translation id="2536366509642644298">Flikgrupperna <ph name="TAB_GROUP_NAME_1" /> och <ph name="TAB_GROUP_NAME_2" /> är inte längre tillgängliga</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{Komprimera <ph name="TABS_COUNT_ONE" /> flik.}other{Komprimera flikgruppen med <ph name="TABS_COUNT_MANY" /> flikar.}}</translation>
 <translation id="2569352796411618312">Förslag: <ph name="NUMBER_OF_TABS" /> av flikarna har inte använts på länge. Vill du stänga dem?</translation>
-<translation id="2656693375914502139">Flytta till grupp</translation>
 <translation id="2662028055331606429"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> i betyg</translation>
 <translation id="266935134738038806">Besök webbplatsen</translation>
 <translation id="2671423594960767771">Dela grupp</translation>
@@ -122,7 +121,6 @@
 <translation id="6109251075362363230">Alla flikdubbletter arkiveras nu också, med undantag för den senast använda kopian.</translation>
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{Flytta gruppen till ett nytt fönster}other{Flytta gruppen till ett annat fönster}}</translation>
 <translation id="6193448654517602979">Välj flikar</translation>
-<translation id="6212567362666004597">Lägg till fliken i gruppen</translation>
 <translation id="6220820548421939212">Ja. Ja gärna</translation>
 <translation id="6228793724645064692">(butikens betyg)</translation>
 <translation id="6271513594716432922">Stänga alla inaktiva flikar</translation>

@@ -636,6 +636,7 @@
 <translation id="2088913896151127116">Текст нэмэх</translation>
 <translation id="2090451897496479509">Үйлчилгээ үзүүлэгчтэй холбогдож нэмэлт мэдээлэл авна уу</translation>
 <translation id="2091887806945687916">Дуу</translation>
+<translation id="2093184051799735948"><ph name="ENGINE_NAME" />-с хайх эсвэл URL-г бичих</translation>
 <translation id="2093982008204312032">Google Chrome нууц үгийг бөглөхөд Windows Hello-г унтраахаар оролдож байна.</translation>
 <translation id="2094505752054353250">Домэйн нэр нийцэхгүй байна</translation>
 <translation id="2094704029599359040">Хувилбарын мэдээлэл</translation>
@@ -770,6 +771,7 @@
 <translation id="2296331629987861142">Хялбархан хэсэгчлэн төлөх (зохих эрхтэй тохиолдолд, хураамжтай)</translation>
 <translation id="2300306941146563769">Байршуулаагүй</translation>
 <translation id="2301098101308036335">Аль вебсайтад хэзээ зочилсон болох.</translation>
+<translation id="2302571905116831849">Лояалти картыг автоматаар бөглөх</translation>
 <translation id="230286397113210245">Нууцлалтай цонхыг нээх товчлуур, хувиараа үзэхээр шинэ нууцлалтай цонхыг нээхийн тулд идэвхжүүлнэ үү</translation>
 <translation id="2305294852062272447">Жолооны үнэмлэхийг хадгалах уу?</translation>
 <translation id="2306124309679506798">Илүү бодит мэдрэмж авахыг зөвшөөрөх үү?</translation>
@@ -1838,6 +1840,7 @@
 <translation id="4140905366050378834">Тэжээвэр амьтны хоол, арчилгааны хэрэгслүүд</translation>
 <translation id="4140905530744469899">Профайлын ID:</translation>
 <translation id="4142935452406587478">Гарах цаасны тавиур 10</translation>
+<translation id="4147897805161313378">Google Зураг</translation>
 <translation id="4148925816941278100">Американ Эскпресс</translation>
 <translation id="4150099059797363385">Хятад дугтуй #4</translation>
 <translation id="4151403195736952345">Global default-г ашиглах (Илрүүлэх)</translation>
@@ -1998,6 +2001,7 @@
 <translation id="437620492464254965">Хаалга болон цонхнууд</translation>
 <translation id="4377125064752653719">Та <ph name="DOMAIN" />-тай холбогдох оролдлого хийсэн хэдий ч Серверээс өгсөн гэрчилгээг гаргагч этгээдээс цуцалсан байна. Энэ нь серверийн аюулгүй байдлын найдвартай эсэхэд огт итгэх хэрэггүй гэсэн үг юм. Та халдагчтай харилцаж байж болно.</translation>
 <translation id="4378154925671717803">Утас</translation>
+<translation id="4382484599443659549">PDF</translation>
 <translation id="4382833368532556056">Одооноос файлаа үүлэн хадгалах санд хадгална уу</translation>
 <translation id="4384395682990721132">A4x3</translation>
 <translation id="4387692837058041921">Microsoft OneDrive-т файл байршуулахыг түр зогсоосон</translation>
@@ -4314,7 +4318,6 @@
 Нэмэлт дэлгэрэнгүй мэдээлэл:
 <ph name="DEBUG_INFO" /></translation>
 <translation id="8416874502399604126">Микрофоныг энэ удаад зөвшөөрсөн</translation>
-<translation id="8421158157346464398">Ажлын профайлын мэдээлэл (таны ажлын профайлын хэрэглэгчийн нэр гэх мэт)</translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" /> <ph name="SECOND_LABEL" /> <ph name="THIRD_LABEL" /></translation>
 <translation id="8425213833346101688">Өөрчлөлт</translation>
 <translation id="8426945547715537628">Гарыг дарахыг зөвшөөрөх үү?</translation>

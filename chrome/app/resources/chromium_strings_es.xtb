@@ -121,7 +121,6 @@ Es posible que algunas funciones no estén disponibles y que no se guarden los c
 <translation id="2572494885440352020">Chromium Helper</translation>
 <translation id="2575822587468774919">Selecciona cualquier cosa para buscarla con la búsqueda por imágenes</translation>
 <translation id="2576118232315942160">Para acceder a tus contraseñas y más en todos tus dispositivos, inicia sesión en Chromium</translation>
-<translation id="2583187216237139145">El administrador del perfil de trabajo puede quitar cualquier dato de Chromium generado durante el uso de este perfil, como los marcadores, el historial, las contraseñas y otros ajustes. <ph name="LEARN_MORE" /></translation>
 <translation id="2592940277904433508">Seguir usando Chromium</translation>
 <translation id="259935314519650377">No se ha podido guardar en caché el instalador descargado. Error: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
 <translation id="2620436844016719705">Sistema</translation>
@@ -366,7 +365,6 @@ Es posible que algunas funciones no estén disponibles y que no se guarden los c
 <translation id="6069027071882229820">Copiar como imagen</translation>
 <translation id="6072279588547424923"><ph name="EXTENSION_NAME" /> se ha añadido a Chromium</translation>
 <translation id="6072463441809498330">Haz que Chromium sea más rápido</translation>
-<translation id="608006075545470555">Añadir perfil de trabajo a este navegador</translation>
 <translation id="6096348254544841612">Personaliza y controla Chromium. Hay una actualización disponible.</translation>
 <translation id="6107893135096467929">Activado • Chromium no puede verificar el origen de esta extensión</translation>
 <translation id="6119438414301547735">Permitir que la extensión muestre solicitudes de acceso en la barra de herramientas de Chromium</translation>
@@ -562,7 +560,6 @@ Chromium no puede recuperar tu configuración.</translation>
 <translation id="8471947159125090285">Para usar y guardar los datos de Chromium en tu cuenta de Google, verifica tu identidad</translation>
 <translation id="8493179195440786826">Chromium no está actualizado</translation>
 <translation id="8522801943730206384">Chromium puede comprobar tus contraseñas si las guardas</translation>
-<translation id="8550334526674375523">Este perfil de trabajo es completamente independiente de tu perfil personal.</translation>
 <translation id="8555465886620020932">Error del servicio: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="8556420416730706394">Puedes fijar la búsqueda por imágenes para acceder a ella fácilmente. Haz clic en el botón Fijar en la parte superior del panel lateral.</translation>
 <translation id="856656450041460113">Buscar en la lista de idiomas</translation>
@@ -591,7 +588,6 @@ Chromium no puede recuperar tu configuración.</translation>
 <translation id="8931379085695076764">Chromium puede estimar tus intereses basándose en tu historial de navegación de las últimas semanas. Esta información se queda en tu dispositivo.</translation>
 <translation id="8941642502866065432">No se puede actualizar Chromium</translation>
 <translation id="897581876605952338">Logotipo de Chromium Enterprise</translation>
-<translation id="8986207147630327271">Vas a añadir un perfil de trabajo a este navegador y le vas a dar a tu administrador el control únicamente sobre este perfil.</translation>
 <translation id="8988036198400390003">Gestionar perfiles de Chromium</translation>
 <translation id="9019929317751753759">Para aumentar la seguridad de Chromium, hemos inhabilitado la siguiente extensión que no figura en <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> y que puede haberse añadido sin tu conocimiento.</translation>
 <translation id="9022552996538154597">Iniciar sesión en Chromium</translation>

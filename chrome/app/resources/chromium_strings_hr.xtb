@@ -119,7 +119,6 @@
 <translation id="2572494885440352020">Chromium Helper</translation>
 <translation id="2575822587468774919">Odaberite bilo što za pretraživanje pomoću pretraživanja slika</translation>
 <translation id="2576118232315942160">Da biste mogli pristupati svojim zaporkama i drugim podacima na svim svojim uređajima, prijavite se na Chromium</translation>
-<translation id="2583187216237139145">Sve podatke iz Chromiuma koji se generiraju tijekom upotrebe ovog profila (primjerice izradom oznaka, povijesti, zaporki i drugih postavki) može ukloniti administrator poslovnog profila. <ph name="LEARN_MORE" /></translation>
 <translation id="2592940277904433508">Nastavi s upotrebom Chromiuma</translation>
 <translation id="259935314519650377">Spremanje preuzetog alata za instalaciju u predmemoriju nije uspjelo. Pogreška: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
 <translation id="2620436844016719705">Sustav</translation>
@@ -364,7 +363,6 @@
 <translation id="6069027071882229820">Kopiraj kao sliku</translation>
 <translation id="6072279588547424923">Proširenje <ph name="EXTENSION_NAME" /> dodano je u Chromium</translation>
 <translation id="6072463441809498330">Ubrzavanje Chromiuma</translation>
-<translation id="608006075545470555">Dodavanje poslovnog profila u ovaj preglednik</translation>
 <translation id="6096348254544841612">Prilagodite i kontrolirajte Chromium. Dostupno je ažuriranje.</translation>
 <translation id="6107893135096467929">Uključeno • Chromium ne može provjeriti odakle dolazi ovo proširenje</translation>
 <translation id="6119438414301547735">Omogućuje proširenju da prikazuje zahtjeve za pristup na alatnoj traci Chromiuma</translation>
@@ -560,7 +558,6 @@ Chromium ne može oporaviti vaše postavke.</translation>
 <translation id="8471947159125090285">Da biste upotrebljavali i spremali podatke iz Chromiuma na svoj Google račun, potvrdite svoj identitet</translation>
 <translation id="8493179195440786826">Chromium je zastario</translation>
 <translation id="8522801943730206384">Chromium može provjeriti vaše zaporke kad ih spremite</translation>
-<translation id="8550334526674375523">Ovaj poslovni profil potpuno je zaseban od vašeg osobnog profila.</translation>
 <translation id="8555465886620020932">Pogreška usluge: <ph name="SERVICE_ERROR" /></translation>
 <translation id="8556420416730706394">Pretraživanje slika možete prikvačiti radi lakšeg pristupa; kliknite gumb Prikvači pri vrhu bočne ploče</translation>
 <translation id="856656450041460113">Pretražite popis jezika</translation>
@@ -589,7 +586,6 @@ Chromium ne može oporaviti vaše postavke.</translation>
 <translation id="8931379085695076764">Chromium može procijeniti vaše interese na temelju vaše povijesti pregledavanja iz posljednjih nekoliko tjedana. Te informacije ostaju na vašem uređaju.</translation>
 <translation id="8941642502866065432">Nije moguće ažurirati Chromium</translation>
 <translation id="897581876605952338">Logotip za Chromium Enterprise</translation>
-<translation id="8986207147630327271">Dodat ćete poslovni profil u ovaj preglednik i dati administratoru kontrolu samo nad poslovnim profilom.</translation>
 <translation id="8988036198400390003">Upravljajte profilima na Chromiumu</translation>
 <translation id="9019929317751753759">Kako bismo Chromium učinili sigurnijim, onemogućili smo sljedeće proširenje koje nije navedeno na stranici <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> i možda je dodano bez vašeg znanja.</translation>
 <translation id="9022552996538154597">Prijava na Chromium</translation>

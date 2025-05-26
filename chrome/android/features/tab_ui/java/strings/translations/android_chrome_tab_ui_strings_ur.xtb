@@ -43,7 +43,6 @@
 <translation id="2536366509642644298">اب "<ph name="TAB_GROUP_NAME_1" />" اور "<ph name="TAB_GROUP_NAME_2" />" "ٹیب گروپس دستیاب نہیں ہیں</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ٹیب کو سکیڑیں۔}other{ٹیب گروپ کو <ph name="TABS_COUNT_MANY" /> ٹیبز کے ساتھ سکیڑیں۔}}</translation>
 <translation id="2569352796411618312">تجویز: آپ کے ٹیبز میں سے <ph name="NUMBER_OF_TABS" /> کا استعمال حال میں نہیں ہوا ہے۔ انہیں بند کریں؟</translation>
-<translation id="2656693375914502139">گروپ میں منتقل کریں</translation>
 <translation id="2662028055331606429"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> کی درجہ بندی</translation>
 <translation id="266935134738038806">سائٹ ملاحظہ کریں</translation>
 <translation id="2671423594960767771">گروپ کا اشتراک کریں</translation>
@@ -122,7 +121,6 @@
 <translation id="6109251075362363230">حال ہی میں سب سے زیادہ مستعمل کاپی کے استثناء کے ساتھ تمام ڈپلیکیٹ ٹیبز کو بھی آرکائیو کیا جائے گا۔</translation>
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{گروپ کو نئی ونڈو میں منتقل کریں}other{گروپ کو دوسری ونڈو میں منتقل کریں}}</translation>
 <translation id="6193448654517602979">ٹیبز منتخب کریں</translation>
-<translation id="6212567362666004597">گروپ میں ٹیب شامل کریں</translation>
 <translation id="6220820548421939212">ہاں۔ میں تیار ہوں</translation>
 <translation id="6228793724645064692">(اسٹور کی درجہ بندی)</translation>
 <translation id="6271513594716432922">تمام غیر فعال ٹیبز بند کریں</translation>

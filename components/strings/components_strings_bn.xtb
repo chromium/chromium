@@ -1838,6 +1838,7 @@
 <translation id="4140905366050378834">পোষ্যদের খাদ্য এবং যত্নের সরঞ্জাম সরবরাহ</translation>
 <translation id="4140905530744469899">প্রোফাইল আইডি:</translation>
 <translation id="4142935452406587478">ট্রে ১০</translation>
+<translation id="4147897805161313378">Google Photos</translation>
 <translation id="4148925816941278100">আমেরিকান এক্সপ্রেস</translation>
 <translation id="4150099059797363385">এনভেলপ চিনা #৪</translation>
 <translation id="4151403195736952345">গ্লোবাল ডিফল্ট (শনাক্ত করুন) ব্যবহার করুন</translation>
@@ -1998,6 +1999,7 @@
 <translation id="437620492464254965">দরজা ও জানলা</translation>
 <translation id="4377125064752653719">আপনি <ph name="DOMAIN" />-এ পৌঁছানোর প্রচেষ্টা করেছেন, তবে সার্ভারটি যে সার্টিফিকেটটি উপস্থাপন করেছে সেটির জারিকর্তা সেটিকে প্রত্যাহার করেছে৷ এর অর্থ হ'ল সার্ভারটি যে সুরক্ষা প্রমানপত্র উপস্থাপন করেছে তা কোনওমতেই বিশ্বাসযোগ্য নয়৷ হতে পারে আপনি একজন আক্রমণকারীর সাথে যোগাযোগ করছেন৷</translation>
 <translation id="4378154925671717803">ফোন</translation>
+<translation id="4382484599443659549">পিডিএফ</translation>
 <translation id="4382833368532556056">এখন থেকে আপনার ফাইল ক্লাউড স্টোরেজে সেভ করুন</translation>
 <translation id="4384395682990721132">A4x3</translation>
 <translation id="4387692837058041921">Microsoft OneDrive-এ ফাইল আপলোড করার প্রসেস পজ করা হয়েছে</translation>
@@ -4315,7 +4317,6 @@
 অতিরিক্ত বিবরণ:
 <ph name="DEBUG_INFO" /></translation>
 <translation id="8416874502399604126">এই সময় মাইক্রোফোনের অনুমতি দেওয়া হয়েছে</translation>
-<translation id="8421158157346464398">অফিস প্রোফাইল সম্পর্কিত তথ্য (যেমন আপনার অফিস প্রোফাইলের ইউজারনেম)</translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" /> <ph name="SECOND_LABEL" /> <ph name="THIRD_LABEL" /></translation>
 <translation id="8425213833346101688">পরিবর্তন</translation>
 <translation id="8426945547715537628">কীবোর্ড ওভাররাইড করার অনুমতি দেবেন?</translation>

@@ -11,7 +11,6 @@
 <translation id="103269572468856066">Vill du även rensa data?</translation>
 <translation id="1034259925032978114">Fönstret är öppet</translation>
 <translation id="1036348656032585052">Inaktivera</translation>
-<translation id="1045448422538531528">Lägg till i grupp</translation>
 <translation id="1045899828449635435">Vill du även rensa data?</translation>
 <translation id="1049743911850919806">Inkognito</translation>
 <translation id="1052842760770519282">Vissa av dina lösenord är inte tillgängliga</translation>
@@ -547,7 +546,6 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="351672147489633468">{NUM_REVOKED_PERMISSIONS,plural, =1{Aviseringsbehörigheter har tagits bort från en webbplats som du inte har besökt nyligen}other{Aviseringsbehörigheter har tagits bort från # webbplatser som du inte har besökt nyligen}}</translation>
 <translation id="3518985090088779359">Godkänn och fortsätt</translation>
 <translation id="3519014757432845220">Hjälp oss att förbättra skyddet mot spam genom att dela meddelandeinnehåll och webbplatsens webbadress med Google. Innehållet kan granskas av människor.</translation>
-<translation id="351952459507671940">Lägg till i ny grupp</translation>
 <translation id="3521388823983121502">Det går inte att fortsätta med <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="3522247891732774234">Det finns en tillgänglig uppdatering. Fler alternativ</translation>
 <translation id="3523789730715594198">Du kan sluta synkronisera när som helst i inställningarna. Google kan anpassa Sök och andra tjänster utifrån din historik.</translation>

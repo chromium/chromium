@@ -636,6 +636,7 @@
 <translation id="2088913896151127116">텍스트 추가</translation>
 <translation id="2090451897496479509">자세한 내용은 제공업체에 문의하세요</translation>
 <translation id="2091887806945687916">소리</translation>
+<translation id="2093184051799735948"><ph name="ENGINE_NAME" /> 검색 또는 URL 입력</translation>
 <translation id="2093982008204312032">Chrome에서 비밀번호 입력에 Windows Hello를 사용하지 않으려고 합니다.</translation>
 <translation id="2094505752054353250">도메인이 일치하지 않음</translation>
 <translation id="2094704029599359040">버전 정보</translation>
@@ -770,6 +771,7 @@
 <translation id="2296331629987861142">간편한 할부 결제(자격 요건에 따라 다르며 수수료 적용)</translation>
 <translation id="2300306941146563769">업로드되지 않음</translation>
 <translation id="2301098101308036335">방문한 웹사이트 및 방문 시기</translation>
+<translation id="2302571905116831849">포인트 카드 자동 완성</translation>
 <translation id="230286397113210245">시크릿 창 열기 버튼, 새 시크릿 창을 열어 비공개로 탐색하려면 활성화하세요.</translation>
 <translation id="2305294852062272447">운전면허증을 저장하시겠습니까?</translation>
 <translation id="2306124309679506798">몰입형 경험을 허용하시겠습니까?</translation>
@@ -1837,6 +1839,7 @@
 <translation id="4140905366050378834">반려동물 식품 및 반려동물 관리 용품</translation>
 <translation id="4140905530744469899">프로필 ID:</translation>
 <translation id="4142935452406587478">트레이 10</translation>
+<translation id="4147897805161313378">Google 포토</translation>
 <translation id="4148925816941278100">American Express</translation>
 <translation id="4150099059797363385">봉투 Chinese #4</translation>
 <translation id="4151403195736952345">글로벌 기본값 사용(감지)</translation>
@@ -1997,6 +2000,7 @@
 <translation id="437620492464254965">창호</translation>
 <translation id="4377125064752653719"><ph name="DOMAIN" />에 접속하려 했으나 발행기관에서 서버가 전달한 인증서를 폐기했습니다. 이는 서버가 제시한 보안 자격증명 정보를 신뢰할 수 없음을 의미합니다. 사용자는 현재 공격자와 통신 중일 수도 있습니다.</translation>
 <translation id="4378154925671717803">전화</translation>
+<translation id="4382484599443659549">PDF</translation>
 <translation id="4382833368532556056">이제부터 클라우드 스토리지에 파일을 저장하세요.</translation>
 <translation id="4384395682990721132">A4x3</translation>
 <translation id="4387692837058041921">Microsoft OneDrive에 대한 파일 업로드가 일시중지됨</translation>
@@ -4314,7 +4318,6 @@
 추가 세부정보:
 <ph name="DEBUG_INFO" /></translation>
 <translation id="8416874502399604126">현재 마이크 허용됨</translation>
-<translation id="8421158157346464398">직장 프로필 정보(예: 직장 프로필 사용자 이름)</translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" /> <ph name="SECOND_LABEL" /> <ph name="THIRD_LABEL" /></translation>
 <translation id="8425213833346101688">변경</translation>
 <translation id="8426945547715537628">키보드 재정의를 허용하시겠습니까?</translation>

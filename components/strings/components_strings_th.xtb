@@ -771,6 +771,7 @@
 <translation id="2296331629987861142">ผ่อนชำระได้ง่ายๆ (ขึ้นอยู่กับสิทธิ์และมีค่าธรรมเนียม)</translation>
 <translation id="2300306941146563769">ไม่ได้อัปโหลด</translation>
 <translation id="2301098101308036335">เข้าชมเว็บไซต์ใดบ้างและเมื่อใด</translation>
+<translation id="2302571905116831849">ป้อนข้อมูลบัตรสะสมคะแนนโดยอัตโนมัติ</translation>
 <translation id="230286397113210245">ปุ่มเปิดหน้าต่างที่ไม่ระบุตัวตน เปิดใช้งานเพื่อเปิดหน้าต่างใหม่ที่ไม่ระบุตัวตนสำหรับการท่องเว็บแบบส่วนตัว</translation>
 <translation id="2305294852062272447">บันทึกใบขับขี่ไหม</translation>
 <translation id="2306124309679506798">อนุญาตประสบการณ์ที่สมจริงไหม</translation>
@@ -1837,6 +1838,7 @@
 <translation id="4140905366050378834">อาหารและอุปกรณ์ดูแลสัตว์เลี้ยง</translation>
 <translation id="4140905530744469899">Profile ID:</translation>
 <translation id="4142935452406587478">ถาด 10</translation>
+<translation id="4147897805161313378">Google Photos</translation>
 <translation id="4148925816941278100">American Express</translation>
 <translation id="4150099059797363385">Envelope Chinese #4</translation>
 <translation id="4151403195736952345">ใช้ค่าเริ่มต้นส่วนกลาง (ตรวจหา)</translation>
@@ -1997,6 +1999,7 @@
 <translation id="437620492464254965">ประตูและหน้าต่าง</translation>
 <translation id="4377125064752653719">คุณพยายามเข้าถึง <ph name="DOMAIN" /> แต่ใบรับรองที่เซิร์ฟเวอร์แจ้งมาถูกเพิกถอนโดยผู้ออกใบรับรอง ซึ่งหมายความว่าข้อมูลรับรองด้านความปลอดภัยที่เซิร์ฟเวอร์แจ้งมานั้นไม่สามารถเชื่อถือได้ คุณอาจกำลังติดต่อกับคนที่คิดจะโจมตีคุณ</translation>
 <translation id="4378154925671717803">โทรศัพท์</translation>
+<translation id="4382484599443659549">PDF</translation>
 <translation id="4382833368532556056">นับจากนี้ไป ระบบจะบันทึกไฟล์ของคุณไปยังพื้นที่เก็บข้อมูลระบบคลาวด์</translation>
 <translation id="4384395682990721132">A4x3</translation>
 <translation id="4387692837058041921">หยุดอัปโหลดไฟล์ไปยัง Microsoft OneDrive ชั่วคราว</translation>
@@ -2444,6 +2447,7 @@
 <translation id="519422657042045905">โหมดคำอธิบายประกอบไม่พร้อมใช้งาน</translation>
 <translation id="5200063972779787617">บันทึกที่อยู่ในบัญชี</translation>
 <translation id="5201306358585911203">หน้าที่ฝังไว้ในหน้าเว็บนี้บอกว่า</translation>
+<translation id="5203716867500274632">ผู้ดูแลระบบได้เปิดใช้การซิงค์ต่อไปนี้ระหว่างเซสชันก่อนหน้าและปัจจุบันในอุปกรณ์ ChromeOS ของคุณ</translation>
 <translation id="5205114269877707377"><ph name="OMNIBOX_ACTION_FOCUSED_FRIENDLY_MATCH_TEXT" /> กด Tab เพื่อเรียกดูการดำเนินการที่ใช้ได้ จากนั้นกด Enter เพื่อเรียกใช้การดำเนินการที่เลือก</translation>
 <translation id="5205222826937269299">ต้องระบุชื่อ</translation>
 <translation id="5206392433295093945">ห้องนอน</translation>
@@ -2603,6 +2607,7 @@
 <translation id="5472588168895083535">การติดตามการเคลื่อนไหวของมือถูกบล็อก</translation>
 <translation id="547963486735802022">ลองโอนไฟล์อีกครั้ง</translation>
 <translation id="5481076368049295676">เนื้อหานี้อาจพยายามติดตั้งซอฟต์แวร์อันตรายที่จะขโมยหรือลบข้อมูลในอุปกรณ์ของคุณ <ph name="BEGIN_LINK" />แสดงเนื้อหา<ph name="END_LINK" /></translation>
+<translation id="5481604577800516617">การจัดเรียงหน้าต่างและแท็บ</translation>
 <translation id="5481682542063333508">เสนอความช่วยเหลือในการเขียน</translation>
 <translation id="54817484435770891">เพิ่มที่อยู่ที่ถูกต้อง</translation>
 <translation id="5483838506518938965">คุณพร้อมแล้ว</translation>
@@ -4277,6 +4282,7 @@
 <translation id="8352849934814541340">ผู้ดูแลระบบของอุปกรณ์นี้ได้ติดตั้งแอปพลิเคชันสำหรับฟังก์ชันเพิ่มเติม แอปพลิเคชันมีสิทธิ์เข้าถึงข้อมูลบางส่วนของคุณได้</translation>
 <translation id="8355270400102541638">บริบทของการขัดข้องในเครื่อง:</translation>
 <translation id="8363502534493474904">ปิดโหมดบนเครื่องบิน</translation>
+<translation id="8363929499301563123">คุกกี้ของเว็บไซต์ (สถานะที่ลงชื่อเข้าใช้บนเว็บไซต์ที่คุณเข้าชมล่าสุดจะได้รับการเก็บไว้)</translation>
 <translation id="8364627913115013041">ไม่ได้ตั้งค่า</translation>
 <translation id="8366057325711477500">ข่าวรอบโลก</translation>
 <translation id="836616551641291797">ดูข้อมูลเพิ่มเติมว่าเบราว์เซอร์ของคุณได้รับการจัดการอย่างไร</translation>
@@ -4315,7 +4321,6 @@
 รายละเอียดเพิ่มเติม:
 <ph name="DEBUG_INFO" /></translation>
 <translation id="8416874502399604126">อนุญาตให้ใช้ไมโครโฟนในครั้งนี้</translation>
-<translation id="8421158157346464398">ข้อมูลโปรไฟล์งาน (เช่น ชื่อผู้ใช้ในโปรไฟล์งาน)</translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" /> <ph name="SECOND_LABEL" /> <ph name="THIRD_LABEL" /></translation>
 <translation id="8425213833346101688">เปลี่ยน</translation>
 <translation id="8426945547715537628">อนุญาตให้ลบล้างแป้นพิมพ์ไหม</translation>

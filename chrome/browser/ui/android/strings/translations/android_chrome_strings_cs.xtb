@@ -11,7 +11,6 @@
 <translation id="103269572468856066">Vymazat data i z těchto webů a aplikací?</translation>
 <translation id="1034259925032978114">Okno je otevřené</translation>
 <translation id="1036348656032585052">Vypnout</translation>
-<translation id="1045448422538531528">Přidat do skupiny</translation>
 <translation id="1045899828449635435">Vymazat data i z těchto webů?</translation>
 <translation id="1049743911850919806">Anonymní režim</translation>
 <translation id="1052842760770519282">Některá z vašich hesel nejsou přístupná</translation>
@@ -547,7 +546,6 @@ Vaše šifrovaná data mohou číst pouze uživatelé, kteří mají vaši heslo
 <translation id="351672147489633468">{NUM_REVOKED_PERMISSIONS,plural, =1{Jednomu webu, který v poslední době nenavštívili, byla odebrána oprávnění k zasílání oznámení}few{# webům, které jste v poslední době nenavštívili, byla odebrána oprávnění k zasílání oznámení}many{# webu, který jste v poslední době nenavštívili, byla odebrána oprávnění k zasílání oznámení}other{# webům, které jste v poslední době nenavštívili, byla odebrána oprávnění k zasílání oznámení}}</translation>
 <translation id="3518985090088779359">PŘIJMOUT A POKRAČOVAT</translation>
 <translation id="3519014757432845220">Pomozte zlepšit ochranu proti spamu tím, že obsah oznámení a adresu URL webu budete sdílet s Googlem. Obsah můžou zkontrolovat lidé.</translation>
-<translation id="351952459507671940">Přidat do nové skupiny</translation>
 <translation id="3521388823983121502">S <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> nelze pokračovat</translation>
 <translation id="3522247891732774234">K dispozici je aktualizace. Další možnosti</translation>
 <translation id="3523789730715594198">Synchronizaci můžete v nastavení kdykoli zastavit. Google může personalizovat Vyhledávání a další služby na základě vaší historie.</translation>

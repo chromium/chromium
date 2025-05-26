@@ -1839,6 +1839,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="4140905366050378834">Thức ăn cho thú cưng và đồ dùng chăm sóc thú cưng</translation>
 <translation id="4140905530744469899">Mã hồ sơ:</translation>
 <translation id="4142935452406587478">Khay 10</translation>
+<translation id="4147897805161313378">Google Photos</translation>
 <translation id="4148925816941278100">American Express</translation>
 <translation id="4150099059797363385">Phong bì kiểu Trung số 4</translation>
 <translation id="4151403195736952345">Sử dụng giá trị mặc định chung (Phát hiện)</translation>
@@ -1999,6 +2000,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="437620492464254965">Cửa chính và cửa sổ</translation>
 <translation id="4377125064752653719">Bạn đã cố truy cập vào <ph name="DOMAIN" /> nhưng chứng chỉ mà máy chủ xuất trình đã bị nhà phát hành thu hồi. Điều này có nghĩa là giấy ủy nhiệm bảo mật mà máy chủ xuất trình hoàn toàn không đáng tin cậy. Bạn có thể đang giao tiếp với kẻ tấn công.</translation>
 <translation id="4378154925671717803">Điện thoại</translation>
+<translation id="4382484599443659549">PDF</translation>
 <translation id="4382833368532556056">Từ bây giờ, hãy lưu tệp của bạn vào bộ nhớ trên đám mây</translation>
 <translation id="4384395682990721132">A4x3</translation>
 <translation id="4387692837058041921">Đã tạm dừng tải tệp lên Microsoft OneDrive</translation>
@@ -4320,7 +4322,6 @@ Thông tin chi tiết bổ sung:
 Thông tin chi tiết bổ sung:
 <ph name="DEBUG_INFO" /></translation>
 <translation id="8416874502399604126">Đã cho phép sử dụng micrô cho lần này</translation>
-<translation id="8421158157346464398">Thông tin hồ sơ công việc (chẳng hạn như tên người dùng trên hồ sơ công việc)</translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" /> <ph name="SECOND_LABEL" /> <ph name="THIRD_LABEL" /></translation>
 <translation id="8425213833346101688">Thay đổi</translation>
 <translation id="8426945547715537628">Cho phép ghi đè bàn phím?</translation>

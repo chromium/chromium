@@ -43,7 +43,6 @@
 <translation id="2536366509642644298">"<ph name="TAB_GROUP_NAME_1" />" र "<ph name="TAB_GROUP_NAME_2" />" ट्याब समूहहरू अब उपलब्ध छैनन्</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ट्याब संक्षिप्त गर्नुहोस्।}other{<ph name="TABS_COUNT_MANY" /> वटा ट्याब भएको ट्याब समूह संक्षिप्त गर्नुहोस्।}}</translation>
 <translation id="2569352796411618312">सुझाव: तपाईंले केही समय यता आफ्ना <ph name="NUMBER_OF_TABS" /> वटा ट्याबहरू प्रयोग गर्नुभएको छैन। तिनलाई बन्द गर्ने हो?</translation>
-<translation id="2656693375914502139">समूहमा सार्नुहोस्</translation>
 <translation id="2662028055331606429"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> मूल्याङ्कन</translation>
 <translation id="266935134738038806">साइटमा जानुहोस्</translation>
 <translation id="2671423594960767771">समूहमा आदान प्रदान गर्नु</translation>
@@ -122,7 +121,6 @@
 <translation id="6109251075362363230">सबैभन्दा हालसालै प्रयोग गरिएको दोहोरिएको ट्याबबाहेक दोहोरिएका सबै ट्याबहरू अब अभिलेखमा राखिने छन्।</translation>
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{समूह सारेर नयाँ विन्डोमा लैजानुहोस्}other{समूह सारेर अर्को विन्डोमा लैजानुहोस्}}</translation>
 <translation id="6193448654517602979">ट्याबहरू चयन गर्नुहोस्</translation>
-<translation id="6212567362666004597">यो ट्याब समूहमा हाल्नुहोस्</translation>
 <translation id="6220820548421939212">अँ। म चाहन्छु</translation>
 <translation id="6228793724645064692">(स्टोरको रेटिङ)</translation>
 <translation id="6271513594716432922">सबै निष्क्रिय ट्याबहरू बन्द गर्नुहोस्</translation>

@@ -121,7 +121,6 @@ Neke funkcije su možda nedostupne i promene podešavanja neće biti sačuvane.
 <translation id="2572494885440352020">Chromium pomagač</translation>
 <translation id="2575822587468774919">Izaberite bilo šta za pretragu pomoću pretrage slika</translation>
 <translation id="2576118232315942160">Da bi vam lozinke i drugi sadržaj bili dostupni na svim uređajima, prijavite se u Chromium</translation>
-<translation id="2583187216237139145">Administrator poslovnog profila može da ukloni sve podatke Chromium-a koji se generišu tokom korišćenja ovog profila (poput pravljenja obeleživača, istorije, lozinki i drugih podešavanja). <ph name="LEARN_MORE" /></translation>
 <translation id="2592940277904433508">Nastavi sa korišćenjem Chromium-a</translation>
 <translation id="259935314519650377">Keširanje preuzetog instalacionog programa nije uspelo. Greška: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
 <translation id="2620436844016719705">Sistem</translation>
@@ -366,7 +365,6 @@ Neke funkcije su možda nedostupne i promene podešavanja neće biti sačuvane.
 <translation id="6069027071882229820">Kopiraj kao sliku</translation>
 <translation id="6072279588547424923">Dodatak <ph name="EXTENSION_NAME" /> je dodat u Chromium</translation>
 <translation id="6072463441809498330">Ubrzajte Chromium</translation>
-<translation id="608006075545470555">Dodajte poslovni profil u ovaj pregledač</translation>
 <translation id="6096348254544841612">Prilagodite i kontrolišite Chromium. Dostupno je ažuriranje.</translation>
 <translation id="6107893135096467929">Uključeno • Chromium ne može da proveri odakle potiče ovaj dodatak</translation>
 <translation id="6119438414301547735">Dozvoli dodatku da prikazuje zahteve za pristup na Chromium traci s alatkama</translation>
@@ -562,7 +560,6 @@ Chromium ne može da vrati podešavanja.</translation>
 <translation id="8471947159125090285">Da biste koristili i čuvali Chromium podatke na Google nalogu, potvrdite svoj identitet</translation>
 <translation id="8493179195440786826">Chromium je zastareo</translation>
 <translation id="8522801943730206384">Chromium može da proverava lozinke kada ih sačuvate</translation>
-<translation id="8550334526674375523">Ovaj poslovni profil je potpuno odvojen od ličnog profila.</translation>
 <translation id="8555465886620020932">Greška u usluzi: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="8556420416730706394">Možete da zakačite pretragu slika radi jednostavnog pristupa; kliknite na dugme Zakači u vrhu bočne table</translation>
 <translation id="856656450041460113">Pretražite listu jezika</translation>
@@ -591,7 +588,6 @@ Chromium ne može da vrati podešavanja.</translation>
 <translation id="8931379085695076764">Chromium može da proceni interesovanja na osnovu istorije pregledanja iz poslednjih nekoliko nedelja. Te informacije ostaju na uređaju.</translation>
 <translation id="8941642502866065432">Ne možete da ažurirate Chromium</translation>
 <translation id="897581876605952338">Logotip Chromium-a za preduzeća</translation>
-<translation id="8986207147630327271">Dodajete poslovni profil u ovaj pregledač i dajete administratoru kontrolu samo nad ovim poslovnim profilom.</translation>
 <translation id="8988036198400390003">Upravljaj Chromium profilima</translation>
 <translation id="9019929317751753759">Da bismo učinili Chromium bezbednijim, onemogućili smo sledeći dodatak koji <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> ne navodi i koji je možda dodat bez vašeg znanja.</translation>
 <translation id="9022552996538154597">Prijavljivanje na Chromium</translation>

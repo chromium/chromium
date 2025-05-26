@@ -120,7 +120,6 @@
 <translation id="2572494885440352020">Chromium 도우미</translation>
 <translation id="2575822587468774919">이미지 검색으로 검색할 항목을 선택하세요</translation>
 <translation id="2576118232315942160">모든 기기에서 비밀번호 등을 사용하려면 Chromium에 로그인하세요</translation>
-<translation id="2583187216237139145">북마크, 방문 기록, 비밀번호, 기타 설정 생성 등 이 프로필을 사용하는 동안 생성된 모든 Chromium 데이터는 직장 프로필 관리자가 삭제할 수 있습니다. <ph name="LEARN_MORE" /></translation>
 <translation id="2592940277904433508">Chromium 계속 사용</translation>
 <translation id="259935314519650377">다운로드한 설치 프로그램을 캐시할 수 없습니다. 오류(<ph name="UNPACK_CACHING_ERROR_CODE" />)가 발생했습니다.</translation>
 <translation id="2620436844016719705">시스템</translation>
@@ -365,7 +364,6 @@
 <translation id="6069027071882229820">이미지로 복사</translation>
 <translation id="6072279588547424923"><ph name="EXTENSION_NAME" />이(가) Chromium에 추가됨</translation>
 <translation id="6072463441809498330">Chromium의 속도를 높여보세요</translation>
-<translation id="608006075545470555">이 브라우저에 직장 프로필 추가</translation>
 <translation id="6096348254544841612">Chromium을 맞춤설정하고 제어하세요. 업데이트가 출시되었습니다.</translation>
 <translation id="6107893135096467929">사용 중 • Chromium에서 이 확장 프로그램의 출처를 확인할 수 없습니다.</translation>
 <translation id="6119438414301547735">확장 프로그램이 Chromium 툴바에 액세스 요청을 표시하도록 허용</translation>
@@ -561,7 +559,6 @@ Chromium에서 설정을 복구할 수 없습니다.</translation>
 <translation id="8471947159125090285">Google 계정에서 Chromium 데이터를 사용하고 저장하려면 본인 인증을 완료하세요.</translation>
 <translation id="8493179195440786826">Chromium이 이전 버전임</translation>
 <translation id="8522801943730206384">비밀번호를 저장하면 Chromium에서 확인할 수 있습니다</translation>
-<translation id="8550334526674375523">이 직장 프로필은 개인 프로필과 완전히 분리됩니다.</translation>
 <translation id="8555465886620020932">서비스 오류(<ph name="SERVICE_ERROR" />)가 발생했습니다.</translation>
 <translation id="8556420416730706394">측면 패널 상단의 고정 버튼을 클릭하여 이미지 검색을 고정하면 쉽게 액세스할 수 있습니다</translation>
 <translation id="856656450041460113">언어 목록 검색</translation>
@@ -590,7 +587,6 @@ Chromium에서 설정을 복구할 수 없습니다.</translation>
 <translation id="8931379085695076764">Chromium은 지난 몇 주간의 방문 기록을 토대로 내 관심분야를 예측할 수 있습니다. 예측 정보는 기기 외부로 전송되지 않습니다.</translation>
 <translation id="8941642502866065432">Chromium을 업데이트하지 못함</translation>
 <translation id="897581876605952338">Chromium Enterprise 로고</translation>
-<translation id="8986207147630327271">직장 프로필을 이 브라우저에 추가하고 직장 프로필 제어 권한을 관리자에게 부여합니다.</translation>
 <translation id="8988036198400390003">Chromium 프로필 관리</translation>
 <translation id="9019929317751753759">Google에서는 Chromium의 보안을 강화하기 위해 <ph name="IDS_EXTENSION_WEB_STORE_TITLE" />에 표시되지 않고 사용자가 모르게 추가되었을 수 있는 다음 확장 프로그램의 사용을 중지했습니다.</translation>
 <translation id="9022552996538154597">Chromium에 로그인</translation>

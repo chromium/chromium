@@ -11,7 +11,6 @@
 <translation id="103269572468856066">Clirio'r data o'r gwefannau ac apiau hyn hefyd?</translation>
 <translation id="1034259925032978114">Mae'r ffenestr ar agor</translation>
 <translation id="1036348656032585052">Diffodd</translation>
-<translation id="1045448422538531528">Ychwanegu at y grŵp</translation>
 <translation id="1045899828449635435">Clirio data o'r gwefannau hyn hefyd?</translation>
 <translation id="1049743911850919806">Anhysbys</translation>
 <translation id="1052842760770519282">Nid yw rhai o'ch cyfrineiriau yn hygyrch</translation>
@@ -548,7 +547,6 @@ Dim ond rhywun sydd â'ch cyfrinymadrodd all ddarllen eich data sydd wedi'u hamg
 <translation id="351672147489633468">{NUM_REVOKED_PERMISSIONS,plural, =1{Tynnwyd caniatâd hysbysu o un wefan nad ydych wedi ymweld â hi'n ddiweddar}zero{Tynnwyd caniatâd hysbysu o # gwefannau nad ydych wedi ymweld â hi'n ddiweddar}two{Tynnwyd caniatâd hysbysu o # wefan nad ydych wedi ymweld â hi'n ddiweddar}few{Tynnwyd caniatâd hysbysu o # gwefan nad ydych wedi ymweld â hi'n ddiweddar}many{Tynnwyd caniatâd hysbysu o # gwefan nad ydych wedi ymweld â hi'n ddiweddar}other{Tynnwyd caniatâd hysbysu o # gwefan nad ydych wedi ymweld â hi'n ddiweddar}}</translation>
 <translation id="3518985090088779359">Derbyn a pharhau</translation>
 <translation id="3519014757432845220">Helpu i wella amddiffyniad rhag sothach drwy rannu cynnwys hysbysiadau ac URL y wefan â Google. Gall y cynnwys gael ei adolygu gan bobl.</translation>
-<translation id="351952459507671940">Ychwanegu at grŵp newydd</translation>
 <translation id="3521388823983121502">Methu â pharhau gyda <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="3522247891732774234">Mae diweddariad ar gael. Rhagor o ddewisiadau</translation>
 <translation id="3523789730715594198">Gallwch stopio cysoni unrhyw bryd yn y gosodiadau. Gall Google bersonoleiddio Search a gwasanaethau eraill yn seiliedig ar eich hanes.</translation>

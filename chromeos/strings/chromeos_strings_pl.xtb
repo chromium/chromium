@@ -205,6 +205,7 @@
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1758459542619182298"><ph name="CONTROL_TYPE" /> <ph name="KEY_LIST" /></translation>
 <translation id="1759842336958782510">Chrome</translation>
+<translation id="1762353673362288306">Możesz teraz korzystać tylko z Narzędzi lekcyjnych</translation>
 <translation id="1762483337755424125">Transkrypcja</translation>
 <translation id="1765169783255151332">Szybkie przełączanie klawiszy</translation>
 <translation id="1768959921651994223">Typ uwierzytelniania</translation>
@@ -1609,6 +1610,7 @@ Aby korzystać z tej funkcji, pobierz model transkrypcji (do 100 MB).</transla
 <translation id="8088963492174775412">Naciśnij, aby nagrywać</translation>
 <translation id="8094062939584182041">Zezwalaj Google na wysyłanie e-maili dotyczących tego problemu</translation>
 <translation id="8104083085214006426">Używasz niezabezpieczonej sieci otwartej</translation>
+<translation id="8108879170356113798">Będziesz mieć możliwość korzystania z Narzędzi lekcyjnych za <ph name="NUM_SECONDS" /> s</translation>
 <translation id="811820734797650957">(Android) Brama reaguje na ping</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />°C</translation>
 <translation id="8131740175452115882">Potwierdź</translation>

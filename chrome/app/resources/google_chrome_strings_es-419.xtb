@@ -102,7 +102,6 @@
 <translation id="2345992953227471816">Chrome detectó que las siguientes extensiones contienen software malicioso:</translation>
 <translation id="2348335408836342058">Chrome necesita permiso para acceder a tu cámara y micrófono para este sitio</translation>
 <translation id="234869673307233423">Chrome no puede revisar las contraseñas. Vuelve a intentarlo más tarde.</translation>
-<translation id="235650106824528204">El administrador del perfil de trabajo puede quitar cualquier dato de Chrome que se genere durante el uso de este perfil (como la creación de favoritos, un historial, contraseñas y otras opciones de configuración). <ph name="LEARN_MORE" /></translation>
 <translation id="2359808026110333948">Continuar</translation>
 <translation id="2403703063067034158">Error de inicio: Se está ejecutando otra instancia de configuración. Vuelve a intentarlo más tarde.</translation>
 <translation id="2409816192575564775">{NUM_DEVICES,plural, =0{Una o más extensiones de Chrome tenían acceso a 1 dispositivo HID}=1{Una o más extensiones de Chrome tienen acceso a 1 dispositivo HID}other{Una o más extensiones de Chrome tienen acceso a # dispositivos HID}}</translation>
@@ -388,7 +387,6 @@
 <translation id="6069027071882229820">Copiar como imagen</translation>
 <translation id="6070348360322141662">Para mejorar la seguridad, Google Chrome encriptará los datos</translation>
 <translation id="6075300983329039771">Tu organización, <ph name="MANAGER" />, requiere que accedas a Chrome</translation>
-<translation id="608006075545470555">Agrega un perfil de trabajo a este navegador</translation>
 <translation id="6113794647360055231">Chrome mejorado</translation>
 <translation id="6116252277240876590">Este idioma se usa para mostrar menús, parámetros de configuración, alertas y otros textos en Chrome</translation>
 <translation id="6134085236017727171">Para usar el micrófono, otorga acceso a Chrome en la <ph name="BEGIN_LINK" />configuración del sistema<ph name="END_LINK" /></translation>
@@ -584,7 +582,6 @@
 <translation id="8521348052903287641">Regla de entrada para que Google Chrome Dev permita el tráfico mDNS.</translation>
 <translation id="852529348814672339">Mostrar Chrome en este idioma</translation>
 <translation id="8533056045953418157">Establece Google Chrome como tu lector de PDF predeterminado</translation>
-<translation id="8550334526674375523">Este perfil de trabajo está totalmente separado de tu perfil personal.</translation>
 <translation id="8555465886620020932">Error del servicio: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="856656450041460113">Buscar en la lista de idiomas</translation>
 <translation id="8601359445272098721">¡Novedad! Puedes traducir texto e imágenes en la pantalla seleccionando el botón “Traducir pantalla”</translation>
@@ -617,7 +614,6 @@
 <translation id="8914504000324227558">Volver a iniciar Chrome</translation>
 <translation id="8922193594870374009">Para enviar un número de <ph name="ORIGIN" /> a tu teléfono Android, accede a Chrome en ambos dispositivos.</translation>
 <translation id="8948460679427074738">Esta extensión no publicó prácticas de privacidad, como la forma en que recopila y usa datos. Chrome te recomienda quitarla.</translation>
-<translation id="8986207147630327271">Estás agregando un perfil de trabajo a este navegador y dándole a tu administrador el control únicamente del perfil de trabajo.</translation>
 <translation id="8989968390305463310">Tu historial de navegación afecta los anuncios que ves y los intereses como se estima a continuación. Para proteger tu privacidad, Chrome borra tus intereses automáticamente de manera continua todos los meses. Los intereses se pueden actualizar a no ser que los quites.</translation>
 <translation id="8992769679401294069">Tus datos se encriptan con tu frase de contraseña. Ingrésala para usar y guardar datos de Chrome en tu Cuenta de Google.</translation>
 <translation id="8999117580775242387">Cuando HTTPS no esté disponible, Chrome usará una conexión no segura sin advertirte</translation>

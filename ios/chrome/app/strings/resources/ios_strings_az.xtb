@@ -243,6 +243,7 @@
 <translation id="1972325230031091483">Cari veb səhifə ziyarətinizə əsasən məzmun proaktiv şəkildə yükləndiyinə görə daha sürətli gözdən keçirəcəksiniz</translation>
 <translation id="1974060860693918893">Qabaqcıl</translation>
 <translation id="1977621687170192347">"Digər tətbiqlərdən əldə edilən linkləri Anonim rejimdə açın" seçimini aktiv edin.</translation>
+<translation id="1979055159547313322"><ph name="USER_EMAIL" /> hesabı <ph name="HOSTED_DOMAIN" /> tərəfindən idarə olunur və o, aşağıdakılar da daxil olmaqla müəyyən məlumatlara baxa bilər:</translation>
 <translation id="1979188886349613713">Veb-sayt tərəfindən göstərilməyən fayl artırmalarını daxil edin</translation>
 <translation id="1980417445547898121">{count,plural, =1{Digər cihazdakı son {count} aktiv tabı bu iPhone-da əldə edin}other{Digər cihazdakı son {count} aktiv tabı bu iPhone-da əldə edin}}</translation>
 <translation id="1981118202195772574">Mobil</translation>
@@ -278,6 +279,7 @@
 <translation id="2103075008456228677">history.google.com linkində açın</translation>
 <translation id="2104436223719117661">Populyar axtarışlar</translation>
 <translation id="21133533946938348">Tabı sancın</translation>
+<translation id="2117650889962717098">Anonim rejimə keçməklə axtarışınızı gizli saxlayın</translation>
 <translation id="2119636449201577317">Burada açın:</translation>
 <translation id="2120553909046681540">Təşkilatınız şəxsi brauzinqi deaktiv edib.</translation>
 <translation id="2122754583996902531">Brauzeriniz idarə edilir. <ph name="BEGIN_LINK" />Ətraflı Məlumat<ph name="END_LINK" /></translation>
@@ -562,6 +564,7 @@ Axtarış tarixçənizi silmək üçün axtarış mexanizminizin təlimatlarına
 <translation id="3348387552617855658">Bu kart bağlamaları izləmək imkanı və vacib çatdırılma məlumatları təmin edir.</translation>
 <translation id="3349031117032695619">Popapları bloklayın</translation>
 <translation id="3349676726073650389">İzlədiyiniz sayt və axtarışlar Google Hesabında yadda saxlanır. Ayarlarda izlədiklərinizi idarə edə bilərsiniz.</translation>
+<translation id="3353037916374303415"><ph name="EMAIL" />. Bu hesab idarə edilir.</translation>
 <translation id="3365529507898144230">Fotoda yadda saxlayın</translation>
 <translation id="3371831930909698441">Tərcümə əlçatandır. Seçimlər ekranın aşağı hissəsində əlçatandır.</translation>
 <translation id="3377063233124932127">İndi yadda saxladığınız əlfəcinlər, parollar və s. yuxarıdadır.</translation>
@@ -670,6 +673,7 @@ Axtarış tarixçənizi silmək üçün axtarış mexanizminizin təlimatlarına
 <translation id="3875783148670536197">İstifadə Qaydasını Göstərin</translation>
 <translation id="3878657761594430423">Vərəq tutucu</translation>
 <translation id="3885587018298784481">Ailə qrupuna qoşulun</translation>
+<translation id="3888230626190453136">Anonim rejimdə axtarın</translation>
 <translation id="3888863481921783344">Bu, tədbirinizə mümkün dəvətliləri göstərmək üçün istifadə olunacaq.</translation>
 <translation id="3891414008432200754">Qiymət</translation>
 <translation id="3892144330757387737">Tarixçəni burada tapa bilərsiniz</translation>

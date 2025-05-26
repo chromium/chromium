@@ -118,7 +118,6 @@
 <translation id="2572494885440352020">Chromium Helper</translation>
 <translation id="2575822587468774919">画像検索で検索する範囲を選択</translation>
 <translation id="2576118232315942160">すべてのデバイスでパスワードやその他の設定を使用するには、Chromium にログインしてください</translation>
-<translation id="2583187216237139145">このプロファイルの使用中に生成された Chromium データ（ブックマーク、履歴、パスワード、他の設定など）は、仕事用プロファイルの管理者によって削除される場合があります。<ph name="LEARN_MORE" /></translation>
 <translation id="2592940277904433508">Chromium を引き続き使用</translation>
 <translation id="259935314519650377">ダウンロードしたインストーラのキャッシュに失敗しました。エラー: <ph name="UNPACK_CACHING_ERROR_CODE" />。</translation>
 <translation id="2620436844016719705">システム</translation>
@@ -363,7 +362,6 @@
 <translation id="6069027071882229820">画像としてコピー</translation>
 <translation id="6072279588547424923">「<ph name="EXTENSION_NAME" />」が Chromium に追加されました</translation>
 <translation id="6072463441809498330">Chromium を高速化する</translation>
-<translation id="608006075545470555">このブラウザに仕事用プロファイルを追加</translation>
 <translation id="6096348254544841612">Chromium をカスタマイズしてご活用ください。アップデートが利用可能です。</translation>
 <translation id="6107893135096467929">オン • Chromium では、この拡張機能の提供元を確認できません</translation>
 <translation id="6119438414301547735">拡張機能に Chromium ツールバーへのアクセス リクエストの表示を許可する</translation>
@@ -559,7 +557,6 @@
 <translation id="8471947159125090285">Google アカウントで Chromium のデータを使用、保存するには、本人確認を行ってください</translation>
 <translation id="8493179195440786826">Chromium は古いバージョンです</translation>
 <translation id="8522801943730206384">パスワードを保存すると、Chromium による確認が可能になります</translation>
-<translation id="8550334526674375523">この仕事用プロファイルは個人用プロファイルとは別に管理されます。</translation>
 <translation id="8555465886620020932">サービスエラー: <ph name="SERVICE_ERROR" />。</translation>
 <translation id="8556420416730706394">画像検索を固定して簡単にアクセスできます。固定するには、サイドパネルの上部にある [固定] ボタンをクリックします</translation>
 <translation id="856656450041460113">言語リストを検索</translation>
@@ -588,7 +585,6 @@
 <translation id="8931379085695076764">Chromium は、過去数週間の閲覧履歴に基づいてユーザーの興味 / 関心を推定する場合があります。この情報はユーザーのデバイスに保存されます。</translation>
 <translation id="8941642502866065432">Chromium を更新できません</translation>
 <translation id="897581876605952338">Chromium Enterprise ロゴ</translation>
-<translation id="8986207147630327271">このブラウザに仕事用プロファイルを追加し、管理者がこの仕事用プロファイルのみを管理できるようにします。</translation>
 <translation id="8988036198400390003">Chromium プロファイルを管理</translation>
 <translation id="9019929317751753759">Chromium をより安全にご利用いただくために、<ph name="IDS_EXTENSION_WEB_STORE_TITLE" />で提供していない次の拡張機能を無効にしました。これは知らないうちに追加された可能性があります。</translation>
 <translation id="9022552996538154597">Chromium にログイン</translation>

@@ -102,7 +102,6 @@
 <translation id="2345992953227471816">Chrome で次の拡張機能に不正なソフトウェアが含まれていることが検出されました。</translation>
 <translation id="2348335408836342058">このサイトを利用するには、Chrome でカメラとマイクの使用を許可する必要があります</translation>
 <translation id="234869673307233423">Chrome でパスワードを確認できません。しばらくしてからもう一度お試しください。</translation>
-<translation id="235650106824528204">このプロファイルの使用中に生成された Chrome データ（ブックマーク、履歴、パスワード、他の設定など）は、仕事用プロファイルの管理者によって削除される場合があります。<ph name="LEARN_MORE" /></translation>
 <translation id="2359808026110333948">続行</translation>
 <translation id="2403703063067034158">起動エラー: 現在、別のインスタンスのセットアップが実行中です。しばらくしてからもう一度お試しください。</translation>
 <translation id="2409816192575564775">{NUM_DEVICES,plural, =0{1 つ以上の Chrome 拡張機能が 1 台の HID デバイスにアクセスしていました}=1{1 つ以上の Chrome 拡張機能が 1 台の HID デバイスにアクセスしています}other{1 つ以上の Chrome 拡張機能が # 台の HID デバイスにアクセスしています}}</translation>
@@ -388,7 +387,6 @@
 <translation id="6069027071882229820">画像としてコピー</translation>
 <translation id="6070348360322141662">セキュリティ強化のため、データは Google Chrome で暗号化されます</translation>
 <translation id="6075300983329039771">組織（<ph name="MANAGER" />）が Chrome にログインするよう求めています</translation>
-<translation id="608006075545470555">このブラウザに仕事用プロファイルを追加</translation>
 <translation id="6113794647360055231">進化する Chrome</translation>
 <translation id="6116252277240876590">この言語が Chrome のメニュー、設定、アラートなどのテキストの表示に使用されます</translation>
 <translation id="6134085236017727171">マイクを使用するには、<ph name="BEGIN_LINK" />システム設定<ph name="END_LINK" />で Chrome にアクセスを許可してください</translation>
@@ -584,7 +582,6 @@
 <translation id="8521348052903287641">mDNS トラフィックを許可する Google Chrome Dev のインバウンド ルールです。</translation>
 <translation id="852529348814672339">Chrome をこの言語で表示する</translation>
 <translation id="8533056045953418157">Google Chrome を既定の PDF ビューアとして設定する</translation>
-<translation id="8550334526674375523">この仕事用プロファイルは個人用プロファイルとは別に管理されます。</translation>
 <translation id="8555465886620020932">サービスエラー: <ph name="SERVICE_ERROR" />。</translation>
 <translation id="856656450041460113">言語リストを検索</translation>
 <translation id="8601359445272098721">New! [画面を翻訳] ボタンを選択して、画面上のテキストや画像を翻訳できるようになりました</translation>
@@ -617,7 +614,6 @@
 <translation id="8914504000324227558">Chrome の再起動</translation>
 <translation id="8922193594870374009"><ph name="ORIGIN" /> から Android スマートフォンに番号を送信するには、両方のデバイスで Chrome にログインしてください。</translation>
 <translation id="8948460679427074738">この拡張機能は、データの収集方法や使用方法などのプライバシー保護の取り組みを公開していません。削除することをおすすめします。</translation>
-<translation id="8986207147630327271">このブラウザに仕事用プロファイルを追加し、管理者がこの仕事用プロファイルのみを管理できるようにします。</translation>
 <translation id="8989968390305463310">閲覧履歴は、表示される広告と以下の推定された興味 / 関心に影響します。プライバシーを保護するため、Chrome ではユーザーの興味 / 関心が毎月順番に自動削除されます。ユーザーが削除しない限り、興味 / 関心は更新される可能性があります。</translation>
 <translation id="8992769679401294069">データはパスフレーズで暗号化されます。Google アカウントで Chrome のデータを使用、保存するには、パスフレーズを入力してください。</translation>
 <translation id="8999117580775242387">HTTPS を使用できない場合、Chrome では警告を表示せずに安全でない接続を使用します</translation>

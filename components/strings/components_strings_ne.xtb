@@ -1837,6 +1837,7 @@
 <translation id="4140905366050378834">घरपालुवा जनावरको खाना तथा हेरचाहका सामग्री</translation>
 <translation id="4140905530744469899">प्रोफाइलको आइडी:</translation>
 <translation id="4142935452406587478">ट्रे १०</translation>
+<translation id="4147897805161313378">Google Photos</translation>
 <translation id="4148925816941278100">अमेरिकन एक्स्प्रेस</translation>
 <translation id="4150099059797363385">Envelope Chinese #4</translation>
 <translation id="4151403195736952345">विश्वव्यापी डिफल्ट (पत्ता लगाउनुहोस्) प्रयोग गर्नुहोस्</translation>
@@ -1997,6 +1998,7 @@
 <translation id="437620492464254965">ढोका तथा झ्यालहरू</translation>
 <translation id="4377125064752653719">तपाइँले <ph name="DOMAIN" /> मा पुग्ने पर्यास गर्नुभयो, तर सर्भरले प्रस्तुत गरेको प्रमाणपत्र त्यसको जारीकर्ताद्वारा रिभोक गरिएको छ। यसको अर्थ सर्भरले प्रस्तुत गरेको सुरक्षा पत्यारपत्रहरू विश्वास गरिनुहुन्न। तपाइँ एक आक्रमणकर्ता सँग सञ्चार गरिरहनुभएको हुन सक्छ।</translation>
 <translation id="4378154925671717803">फोन</translation>
+<translation id="4382484599443659549">PDF</translation>
 <translation id="4382833368532556056">अबदेखि आफ्ना फाइलहरू क्लाउड भण्डारणमा सेभ गर्नुहोस्</translation>
 <translation id="4384395682990721132">A4x3</translation>
 <translation id="4387692837058041921">Microsoft OneDrive मा फाइल अपलोड गर्ने प्रक्रिया रोकिएको छ</translation>
@@ -4314,7 +4316,6 @@
 थप विवरणहरू:
 <ph name="DEBUG_INFO" /></translation>
 <translation id="8416874502399604126">अहिले माइक्रोफोन प्रयोग गर्ने अनुमति दिइएको छ</translation>
-<translation id="8421158157346464398">वर्क प्रोफाइलसम्बन्धी जानकारी (तपाईंको वर्क प्रोफाइलको युजरनेम जस्ता)</translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" /> <ph name="SECOND_LABEL" /> <ph name="THIRD_LABEL" /></translation>
 <translation id="8425213833346101688">परिवर्तन गर्नुहोस्</translation>
 <translation id="8426945547715537628">किबोर्ड ओभरराइड गर्न दिने हो?</translation>

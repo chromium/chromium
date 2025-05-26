@@ -102,7 +102,6 @@
 <translation id="2345992953227471816">Chrome ha rilevato che le seguenti estensioni contengono malware:</translation>
 <translation id="2348335408836342058">Per questo sito Chrome ha bisogno dell'autorizzazione ad accedere alla fotocamera e al microfono</translation>
 <translation id="234869673307233423">Chrome non può controllare le tue password. Riprova più tardi.</translation>
-<translation id="235650106824528204">Tutti i dati di Chrome generati durante l'utilizzo di questo profilo (come i preferiti, la cronologia, le password e altre impostazioni) possono essere rimossi dall'amministratore del profilo di lavoro. <ph name="LEARN_MORE" /></translation>
 <translation id="2359808026110333948">Continua</translation>
 <translation id="2403703063067034158">Errore di avvio: è in esecuzione un'altra istanza di configurazione. Riprova più tardi.</translation>
 <translation id="2409816192575564775">{NUM_DEVICES,plural, =0{Una o più estensioni di Chrome stavano accedendo a 1 dispositivo HID}=1{Una o più estensioni di Chrome stanno accedendo a 1 dispositivo HID}other{Una o più estensioni di Chrome stanno accedendo a # dispositivi HID}}</translation>
@@ -388,7 +387,6 @@
 <translation id="6069027071882229820">Copia come immagine</translation>
 <translation id="6070348360322141662">Per maggiore sicurezza, Google Chrome cripterà i tuoi dati</translation>
 <translation id="6075300983329039771">La tua organizzazione, <ph name="MANAGER" />, richiede l'accesso a Chrome</translation>
-<translation id="608006075545470555">Aggiungi profilo di lavoro a questo browser</translation>
 <translation id="6113794647360055231">Da oggi Chrome è ancora meglio</translation>
 <translation id="6116252277240876590">Questa lingua è utilizzata per visualizzare menu, impostazioni, avvisi e altro testo in Chrome</translation>
 <translation id="6134085236017727171">Per usare il microfono, concedi l'accesso a Chrome nelle <ph name="BEGIN_LINK" />impostazioni di sistema<ph name="END_LINK" /></translation>
@@ -584,7 +582,6 @@
 <translation id="8521348052903287641">Regola inbound per consentire il traffico mDNS in Google Chrome Dev.</translation>
 <translation id="852529348814672339">Visualizza Chrome in questa lingua</translation>
 <translation id="8533056045953418157">Imposta Google Chrome come visualizzatore PDF predefinito</translation>
-<translation id="8550334526674375523">Questo profilo di lavoro è completamente separato dal tuo profilo personale.</translation>
 <translation id="8555465886620020932">Errore del servizio: <ph name="SERVICE_ERROR" /></translation>
 <translation id="856656450041460113">Elenco di ricerca delle lingue</translation>
 <translation id="8601359445272098721">Novità. Puoi tradurre sia testo che immagini sullo schermo selezionando il pulsante "Traduzione schermata"</translation>
@@ -617,7 +614,6 @@
 <translation id="8914504000324227558">Riavvia Chrome</translation>
 <translation id="8922193594870374009">Per inviare un numero da <ph name="ORIGIN" /> al tuo telefono Android, accedi a Chrome su entrambi i dispositivi.</translation>
 <translation id="8948460679427074738">Per questa estensione non sono state pubblicate Norme di tutela della privacy, ad esempio la modalità di raccolta e utilizzo dei dati. Chrome consiglia di rimuoverla.</translation>
-<translation id="8986207147630327271">Stai per aggiungere a questo browser un profilo di lavoro che sarà controllato dal tuo amministratore.</translation>
 <translation id="8989968390305463310">La cronologia di navigazione incide sugli annunci che ti vengono mostrati e sugli interessi stimati riportati qui sotto. Per tutelare la tua privacy, Chrome elimina automaticamente i tuoi interessi ogni mese. A meno che non li rimuovi, gli interessi possono essere aggiornati.</translation>
 <translation id="8992769679401294069">I dati sono criptati con la tua passphrase. Inseriscila per utilizzare e salvare i dati di Chrome nel tuo Account Google.</translation>
 <translation id="8999117580775242387">Quando HTTPS non è disponibile, Chrome utilizza una connessione non sicura senza avvisarti</translation>

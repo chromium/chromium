@@ -43,7 +43,6 @@
 <translation id="2536366509642644298">"<ph name="TAB_GROUP_NAME_1" />" ଏବଂ "<ph name="TAB_GROUP_NAME_2" />" ଟାବ ଗ୍ରୁପ ଆଉ ଉପଲବ୍ଧ ନାହିଁ</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" />ଟି ଟାବ୍ ସଙ୍କୁଚିତ କରନ୍ତୁ।}other{<ph name="TABS_COUNT_MANY" />ଟି ଟାବ୍ ଥିବା ଟାବ୍ ଗ୍ରୁପକୁ ସଙ୍କୁଚିତ କରନ୍ତୁ।}}</translation>
 <translation id="2569352796411618312">ପ୍ରସ୍ତାବ: ଆପଣଙ୍କର <ph name="NUMBER_OF_TABS" />ଟି ଟାବ୍ ନିକଟରେ ବ୍ୟବହୃତ ହୋଇନାହିଁ। ସେଗୁଡ଼ିକୁ ବନ୍ଦ କରିବେ?</translation>
-<translation id="2656693375914502139">ଗୋଷ୍ଠୀକୁ ଯାଆନ୍ତୁ</translation>
 <translation id="2662028055331606429"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> ରେଟିଂ</translation>
 <translation id="266935134738038806">ସାଇଟକୁ ଭିଜିଟ କରନ୍ତୁ</translation>
 <translation id="2671423594960767771">ଗୋଷ୍ଠୀ ସେୟାର୍‌ କରନ୍ତୁ</translation>
@@ -121,7 +120,6 @@
 <translation id="6054741997831917303">ଏହି ଆଇଟମର ମୂଲ୍ୟ ବର୍ତ୍ତମାନ <ph name="PREVIOUS_PRICE" />ରୁ <ph name="NEW_PRICE" />କୁ ହ୍ରାସ ପାଇଛି</translation>
 <translation id="6109251075362363230">ନିକଟରେ ବ୍ୟବହାର କରାଯାଇଥିବା କପି ବ୍ୟତୀତ ସମସ୍ତ ନକଲି ଟାବ ମଧ୍ୟ ବର୍ତ୍ତମାନ ଆର୍କାଇଭ ହେବ।</translation>
 <translation id="6193448654517602979">ଟାବ୍‌ଗୁଡ଼ିକ ବାଛନ୍ତୁ</translation>
-<translation id="6212567362666004597">ଗୋଷ୍ଠୀରେ ଟାବ ଯୋଗ କରନ୍ତୁ</translation>
 <translation id="6220820548421939212">ହଁ। ମୁଁ ରାଜି ଅଛି</translation>
 <translation id="6228793724645064692">(ଷ୍ଟୋର୍ ରେଟିଂ)</translation>
 <translation id="6271513594716432922">ସମସ୍ତ ନିଷ୍କ୍ରିୟ ଟାବକୁ ବନ୍ଦ କରନ୍ତୁ</translation>

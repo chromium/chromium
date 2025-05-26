@@ -121,7 +121,6 @@ Kai kurios funkcijos gali būti nepasiekiamos ir nuostatų pakeitimai nebus išs
 <translation id="2572494885440352020">„Chromium“ pagalbos priemonė</translation>
 <translation id="2575822587468774919">Pasirinkite bet ką, ko norite ieškoti naudodami vaizdų paiešką</translation>
 <translation id="2576118232315942160">Jei norite pasiekti slaptažodžius ir kitas funkcijas visuose įrenginiuose, prisijunkite prie „Chromium“</translation>
-<translation id="2583187216237139145">Visus „Chromium“ duomenis, sugeneruotus naudojant šį profilį (pvz., sukurtas žymes, istoriją, slaptažodžius ir kitus nustatymus), gali pašalinti darbo profilio administratorius. <ph name="LEARN_MORE" /></translation>
 <translation id="2592940277904433508">Toliau naudoti „Chromium“</translation>
 <translation id="259935314519650377">Nepavyko talpykloje išsaugoti atsisiųstos diegimo programos. Klaida: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
 <translation id="2620436844016719705">Sistema</translation>
@@ -366,7 +365,6 @@ Kai kurios funkcijos gali būti nepasiekiamos ir nuostatų pakeitimai nebus išs
 <translation id="6069027071882229820">Kopijuoti kaip vaizdą</translation>
 <translation id="6072279588547424923">„<ph name="EXTENSION_NAME" />“ pridėtas prie „Chromium“</translation>
 <translation id="6072463441809498330">Paspartinkite „Chromium“</translation>
-<translation id="608006075545470555">Darbo profilio pridėjimas prie šios naršyklės</translation>
 <translation id="6096348254544841612">Tinkinkite ir valdykite „Chromium“. Pasiekiamas naujinys.</translation>
 <translation id="6107893135096467929">Įjungta • „Chromium“ nepavyko patvirtinti, iš kur gaunamas šis plėtinys</translation>
 <translation id="6119438414301547735">Leisti plėtiniui rodyti prieigos užklausas „Chromium“ įrankių juostoje</translation>
@@ -562,7 +560,6 @@ Kai kurios funkcijos gali būti nepasiekiamos. Nurodykite kitą profilio katalog
 <translation id="8471947159125090285">Jei norite naudoti ir išsaugoti „Chromium“ duomenis „Google“ paskyroje, patvirtinkite savo tapatybę</translation>
 <translation id="8493179195440786826">„Chromium“ versija yra pasenusi</translation>
 <translation id="8522801943730206384">„Chromium“ gali tikrinti jūsų slaptažodžius, kai juos išsaugote</translation>
-<translation id="8550334526674375523">Šis darbo profilis visiškai atskirtas nuo jūsų asmeninio profilio.</translation>
 <translation id="8555465886620020932">Paslaugos klaida: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="8556420416730706394">Galite prisegti vaizdų paiešką, kad lengvai ją pasiektumėte; spustelėkite mygtuką „Prisegti“ šoninio skydelio viršuje</translation>
 <translation id="856656450041460113">Ieškoti kalbų sąrašo</translation>
@@ -591,7 +588,6 @@ Kai kurios funkcijos gali būti nepasiekiamos. Nurodykite kitą profilio katalog
 <translation id="8931379085695076764">„Chromium“ gali numatyti jūsų pomėgius pagal pastarųjų kelių savaičių naršymo istoriją. Ši informacija lieka jūsų įrenginyje.</translation>
 <translation id="8941642502866065432">Nepavyko atnaujinti „Chromium“</translation>
 <translation id="897581876605952338">„Chromium Enterprise“ logotipas</translation>
-<translation id="8986207147630327271">Pridedate darbo profilį prie šios naršyklės ir suteikiate administratoriui teisę valdyti tik darbo profilį.</translation>
 <translation id="8988036198400390003">Tvarkyti „Chromium“ profilius</translation>
 <translation id="9019929317751753759">Kad „Chromium“ būtų saugesnė, išjungėme toliau nurodytą plėtinį, kuris nepateiktas <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> sąraše ir tikriausiai buvo pridėtas be jūsų žinios.</translation>
 <translation id="9022552996538154597">Prisijungti prie „Chromium“</translation>

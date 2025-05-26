@@ -43,7 +43,6 @@
 <translation id="2536366509642644298">Grup tab "<ph name="TAB_GROUP_NAME_1" />" dan "<ph name="TAB_GROUP_NAME_2" />" tidak lagi tersedia</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{Ciutkan <ph name="TABS_COUNT_ONE" /> tab.}other{Ciutkan grup tab yang berisi <ph name="TABS_COUNT_MANY" /> tab.}}</translation>
 <translation id="2569352796411618312">Saran: <ph name="NUMBER_OF_TABS" /> dari beberapa tab Anda belum digunakan akhir-akhir ini. Tutup?</translation>
-<translation id="2656693375914502139">Pindahkan ke grup</translation>
 <translation id="2662028055331606429">Rating <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="266935134738038806">Buka situs</translation>
 <translation id="2671423594960767771">Bagikan grup</translation>
@@ -121,7 +120,6 @@
 <translation id="6054741997831917303">Harga item ini baru-baru ini turun dari <ph name="PREVIOUS_PRICE" /> ke <ph name="NEW_PRICE" /></translation>
 <translation id="6109251075362363230">Semua tab duplikat kini juga akan diarsipkan, kecuali salinan yang terakhir digunakan.</translation>
 <translation id="6193448654517602979">Pilih tab</translation>
-<translation id="6212567362666004597">Tambahkan tab ke grup</translation>
 <translation id="6220820548421939212">Ya. Izinkan</translation>
 <translation id="6228793724645064692">(rating toko)</translation>
 <translation id="6271513594716432922">Menutup semua tab tidak aktif</translation>

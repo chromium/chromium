@@ -243,6 +243,7 @@
 <translation id="1972325230031091483">Naršysite sparčiau, nes turinys įkeliamas iš anksto atsižvelgiant į tinklalapį, kuriame šiuo metu lankotės</translation>
 <translation id="1974060860693918893">Išplėstiniai</translation>
 <translation id="1977621687170192347">Įjunkite parinktį „Prašyti atidaryti nuorodas iš kitų programų inkognito režimu“.</translation>
+<translation id="1979055159547313322">Paskyrą <ph name="USER_EMAIL" /> tvarko svetainė <ph name="HOSTED_DOMAIN" />, kuri gali peržiūrėti tam tikrą informaciją, įskaitant</translation>
 <translation id="1979188886349613713">Įtraukti failų plėtinius, nenurodytus svetainėje</translation>
 <translation id="1980417445547898121">{count,plural, =1{Gaukite {count} neseniai aktyvų skirtuką iš kito įrenginio šiame „iPhone“ įrenginyje}one{Gaukite {count} neseniai aktyvų skirtuką iš kito įrenginio šiame „iPhone“ įrenginyje}few{Gaukite {count} neseniai aktyvius skirtukus iš kito įrenginio šiame „iPhone“ įrenginyje}many{Gaukite {count} neseniai aktyvaus skirtuko iš kito įrenginio šiame „iPhone“ įrenginyje}other{Gaukite {count} neseniai aktyvių skirtukų iš kito įrenginio šiame „iPhone“ įrenginyje}}</translation>
 <translation id="1981118202195772574">Mobiliojo įrenginio</translation>
@@ -279,6 +280,7 @@
 <translation id="2103075008456228677">Atidaryti history.google.com</translation>
 <translation id="2104436223719117661">Populiarios paieškos</translation>
 <translation id="21133533946938348">Pažymėti skirtuką</translation>
+<translation id="2117650889962717098">Toliau naršykite privačiai perjungę į inkognito režimą</translation>
 <translation id="2119636449201577317">Atidaryti…</translation>
 <translation id="2120553909046681540">Organizacija išjungė privatų naršymą.</translation>
 <translation id="2122754583996902531">Jūsų naršyklė tvarkoma. <ph name="BEGIN_LINK" />Sužinokite daugiau<ph name="END_LINK" /></translation>
@@ -563,6 +565,7 @@ Peržiūrėkite paieškos variklio instrukcijas, kaip ištrinti paieškos istori
 <translation id="3348387552617855658">Ši kortelė padeda stebėti siuntinius ir pateikia svarbių naujienų apie pristatymą.</translation>
 <translation id="3349031117032695619">Blokuoti iššokančiuosius langus</translation>
 <translation id="3349676726073650389">Stebimos svetainės ir paieškos išsaugomos „Google“ paskyroje. Stebimą turinį galite bet kada tvarkyti nustatymuose.</translation>
+<translation id="3353037916374303415"><ph name="EMAIL" />. Ši paskyra yra tvarkoma.</translation>
 <translation id="3365529507898144230">Išsaugoti Nuotraukose</translation>
 <translation id="3371831930909698441">Pasiekiamas vertimas. Parinktys pasiekiamos netoli ekrano apačios.</translation>
 <translation id="3377063233124932127">Dabar išsaugotos žymės, slaptažodžiai ir kt. yra viršuje.</translation>
@@ -672,6 +675,7 @@ Peržiūrėkite paieškos variklio instrukcijas, kaip ištrinti paieškos istori
 <translation id="3875783148670536197">Peržiūrėti, kaip tai padaryti</translation>
 <translation id="3878657761594430423">Lapo laikiklis</translation>
 <translation id="3885587018298784481">Prisijungimas prie šeimos grupės</translation>
+<translation id="3888230626190453136">Naršykite inkognito režimu</translation>
 <translation id="3888863481921783344">Šie duomenys bus naudojami norint parodyti galimus pakviestuosius į įvykį.</translation>
 <translation id="3891414008432200754">Kaina</translation>
 <translation id="3892144330757387737">Čia rasite istoriją</translation>

@@ -383,6 +383,7 @@ Tapak tidak boleh menggunakan kuki untuk melihat aktiviti penyemakan imbas anda 
 <translation id="2513103768503127042">Anda akan menemukan kumpulan tab anda di sini</translation>
 <translation id="251837347827266434">Anda akan dilog keluar, tab akan ditutup dan data semakan imbas akan dipadamkan</translation>
 <translation id="2520787026086861736">Untuk mematikan ciri Autolengkap, akses <ph name="BEGIN_LINK" />Autolengkap &amp; Kata Laluan<ph name="END_LINK" /></translation>
+<translation id="2523295204312809179">Apabila anda menutup kumpulan tab, kumpulan tab tersebut disimpan di sini secara automatik</translation>
 <translation id="2529021024822217800">Buka Semua</translation>
 <translation id="2536991091671391962">Anda boleh menggunakan kata laluan yang disimpan pada mana-mana peranti. Kata laluan tersebut disimpan pada Google Password Manager untuk <ph name="EMAIL" />.</translation>
 <translation id="2538103551183528357">Disembunyikan, kata laluan</translation>
@@ -1035,6 +1036,7 @@ Lihat arahan enjin carian anda untuk memadamkan sejarah carian anda, jika berken
 <translation id="5275912569557792098"><ph name="USER_NAME" /> (<ph name="USER_EMAIL" />) mahu anda menyertai kumpulan tab. Sesiapa sahaja yang mempunyai pautan boleh mengedit semua tab, maka sertailah kumpulan dengan berhati-hati. Pautan akan tamat tempoh selepas 48 jam.</translation>
 <translation id="5279600392753459966">Sekat semua</translation>
 <translation id="5282340693022193851">Untuk mendapatkan pemberitahuan penjejakan harga, hidupkan pemberitahuan dalam Tetapan iOS anda.</translation>
+<translation id="528857768909044842">Kumpulan tab disimpan di sini</translation>
 <translation id="5294624619177114121">Pemberitahuan mudah alih</translation>
 <translation id="5295239312320826323">Alih keluar akaun <ph name="USER_EMAIL" />?</translation>
 <translation id="5300589172476337783">Paparkan</translation>
@@ -1230,6 +1232,7 @@ Serah mestilah turut didayakan dalam bahagian Umum pada Tetapan dan peranti anda
 <translation id="6100617279104942061">Log masuk sebagai <ph name="USER_EMAIL" />. Membuka tetapan.</translation>
 <translation id="6103540626693881831">Penyulitan pada Peranti</translation>
 <translation id="611361228753138223">Laman yang telah anda lawati pada peranti ini baru-baru ini</translation>
+<translation id="611705554202268369">Tekan lama untuk ditambahkan pada kumpulan tab</translation>
 <translation id="6122191549521593678">Dalam talian</translation>
 <translation id="6122831415929794347">Matikan Penyemakan Imbas Selamat?</translation>
 <translation id="6123514585040403489">Tab anda akan ditutup</translation>
@@ -1855,6 +1858,7 @@ Tapak boleh menggunakan kuki untuk melihat aktiviti penyemakan imbas anda merent
 <translation id="8535368836838588657">Dedahkan kata laluan</translation>
 <translation id="8545276357312221485">Semak tetapan penyemak imbas anda</translation>
 <translation id="854938212724803178">Anda mempunyai 1 kata laluan yang terjejas. Betulkan sekarang untuk kekal selamat.</translation>
+<translation id="8551311254462607218">Dalam bar alamat, ketik ikon kamera Google Lens</translation>
 <translation id="8556590991644167667">{count,plural, =1{Anda mengetepikan {count} amaran}other{Anda mengetepikan {count} amaran}}</translation>
 <translation id="8558046478684552694">Tutup kumpulan.</translation>
 <translation id="8560253818350321773">Menunjukkan item yang sering digunakan dahulu.</translation>
@@ -1998,6 +2002,7 @@ Tapak boleh menggunakan kuki untuk melihat aktiviti penyemakan imbas anda merent
 <translation id="9032405509996909363">Sahkan pemadaman data semakan imbas</translation>
 <translation id="9039373489628511875">Lebar Jalur</translation>
 <translation id="9042893549633094279">Privasi dan keselamatan</translation>
+<translation id="9055291197094969722">Buat kumpulan tab untuk mengatur tab anda yang terbuka dan kekal produktif</translation>
 <translation id="9055580485132823283">Anda akan memadamkan {password_count} kata laluan, {passkey_count} kunci laluan serta senarai laman &amp; apl yang anda pilih untuk tidak sekali-kali menyimpan log masuk. Mana-mana akaun yang anda buat untuk laman dan apl tidak akan dipadamkan.</translation>
 <translation id="9057030985451135243">Ketahui tentang kumpulan tab dikongsi</translation>
 <translation id="9057972802061533987">Tidak dapat mengikuti. Ralat telah berlaku.</translation>

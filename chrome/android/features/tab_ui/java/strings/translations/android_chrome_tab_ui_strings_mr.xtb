@@ -43,7 +43,6 @@
 <translation id="2536366509642644298">"<ph name="TAB_GROUP_NAME_1" />" आणि "<ph name="TAB_GROUP_NAME_2" />" "हे टॅब गट आता उपलब्ध नाहीत</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> टॅब कोलॅप्स करा.}other{<ph name="TABS_COUNT_MANY" /> टॅबचा गट असलेले टॅब कोलॅप्स करा.}}</translation>
 <translation id="2569352796411618312">सूचना: तुमच्या टॅबपैकी <ph name="NUMBER_OF_TABS" /> चा काही दिवसांपासून वापर केला गेला नाही. ते बंद करायचे आहेत का?</translation>
-<translation id="2656693375914502139">गटावर हलवा</translation>
 <translation id="2662028055331606429"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> रेटिंग</translation>
 <translation id="266935134738038806">साइटवर भेट द्या</translation>
 <translation id="2671423594960767771">गट शेअर करा</translation>
@@ -121,7 +120,6 @@
 <translation id="6054741997831917303">या आयटमची किंमत अलीकडे <ph name="PREVIOUS_PRICE" /> वरून <ph name="NEW_PRICE" /> इतकी कमी झाली</translation>
 <translation id="6109251075362363230">सर्वात अलीकडे वापरलेल्या कॉपीचा अपवाद वगळता, सर्व डुप्लिकेट टॅबदेखील आता संग्रहित केले जातील.</translation>
 <translation id="6193448654517602979">टॅब निवडा</translation>
-<translation id="6212567362666004597">गटामध्ये टॅब जोडा</translation>
 <translation id="6220820548421939212">होय. मी तयार आहे</translation>
 <translation id="6228793724645064692">(स्टोअरचे रेटिंग)</translation>
 <translation id="6271513594716432922">सर्व इनॅक्टिव्ह टॅब बंद करा</translation>

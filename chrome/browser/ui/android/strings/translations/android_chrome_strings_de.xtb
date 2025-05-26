@@ -11,7 +11,6 @@
 <translation id="103269572468856066">Auch Daten dieser Websites &amp; Apps löschen?</translation>
 <translation id="1034259925032978114">Fenster ist geöffnet</translation>
 <translation id="1036348656032585052">Deaktivieren</translation>
-<translation id="1045448422538531528">Zur Gruppe hinzufügen</translation>
 <translation id="1045899828449635435">Auch Daten dieser Websites löschen?</translation>
 <translation id="1049743911850919806">Inkognito</translation>
 <translation id="1052842760770519282">Auf einige deiner Passwörter kann nicht zugegriffen werden</translation>
@@ -547,7 +546,6 @@ Nur Personen, die deine Passphrase kennen, können deine verschlüsselten Daten 
 <translation id="351672147489633468">{NUM_REVOKED_PERMISSIONS,plural, =1{Berechtigungen zum Senden von Benachrichtigungen für eine Website, die du in letzter Zeit nicht besucht hast, wurde entfernt}other{Berechtigungen zum Senden von Benachrichtigungen für # Websites, die du in letzter Zeit nicht besucht hast, wurde entfernt}}</translation>
 <translation id="3518985090088779359">Akzeptieren &amp; weiter</translation>
 <translation id="3519014757432845220">Du kannst uns bei der Verbesserung des Spamschutzes helfen, indem du den Inhalt von Benachrichtigungen zusammen mit der URL der jeweiligen Website an Google sendest. Inhalte werden möglicherweise von Prüfern gesehen.</translation>
-<translation id="351952459507671940">Neuer Gruppe hinzufügen</translation>
 <translation id="3521388823983121502">Fortfahren mit <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> nicht möglich</translation>
 <translation id="3522247891732774234">Update verfügbar. Weitere Optionen</translation>
 <translation id="3523789730715594198">Du kannst die Synchronisierung jederzeit in den Einstellungen beenden. Google kann die Google Suche und andere Dienste auf der Grundlage deines Verlaufs personalisieren.</translation>

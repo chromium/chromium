@@ -102,7 +102,6 @@
 <translation id="2345992953227471816">Chrome menemukan bahwa ekstensi berikut berisi malware:</translation>
 <translation id="2348335408836342058">Chrome memerlukan izin akses ke kamera dan mikrofon untuk situs ini</translation>
 <translation id="234869673307233423">Chrome tidak dapat memeriksa sandi Anda. Coba lagi nanti.</translation>
-<translation id="235650106824528204">Data Chrome yang dibuat selama penggunaan profil ini (seperti pembuatan bookmark, histori, sandi, dan setelan lain) dapat dihapus oleh administrator profil kerja. <ph name="LEARN_MORE" /></translation>
 <translation id="2359808026110333948">Lanjutkan</translation>
 <translation id="2403703063067034158">Error saat sistem dimulai: instance penyiapan lain sedang berjalan, coba lagi nanti.</translation>
 <translation id="2409816192575564775">{NUM_DEVICES,plural, =0{Tidak ada perangkat HID yang diakses oleh ekstensi Chrome}=1{1 perangkat HID sedang diakses oleh satu atau beberapa ekstensi Chrome}other{# perangkat HID sedang diakses oleh satu atau beberapa ekstensi Chrome}}</translation>
@@ -388,7 +387,6 @@
 <translation id="6069027071882229820">Salin sebagai gambar</translation>
 <translation id="6070348360322141662">Untuk keamanan tambahan, Google Chrome akan mengenkripsi data Anda</translation>
 <translation id="6075300983329039771">Organisasi Anda, <ph name="MANAGER" />, mengharuskan Anda login ke Chrome</translation>
-<translation id="608006075545470555">Tambahkan Profil Kerja ke browser ini</translation>
 <translation id="6113794647360055231">Chrome menjadi lebih baik</translation>
 <translation id="6116252277240876590">Bahasa ini digunakan untuk menampilkan menu, setelan, notifikasi, dan teks lainnya di Chrome</translation>
 <translation id="6134085236017727171">Untuk menggunakan mikrofon, beri Chrome akses di <ph name="BEGIN_LINK" />setelan sistem<ph name="END_LINK" /></translation>
@@ -584,7 +582,6 @@
 <translation id="8521348052903287641">Inbound rule untuk Google Chrome Dev guna mengizinkan traffic mDNS.</translation>
 <translation id="852529348814672339">Tampilkan Chrome dalam bahasa ini</translation>
 <translation id="8533056045953418157">Setel Google Chrome sebagai penampil PDF default Anda</translation>
-<translation id="8550334526674375523">Profil kerja ini sama sekali terpisah dari profil pribadi Anda.</translation>
 <translation id="8555465886620020932">Error layanan: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="856656450041460113">Telusuri daftar bahasa</translation>
 <translation id="8601359445272098721">Baru! Anda dapat menerjemahkan teks dan gambar di layar dengan memilih tombol "terjemahkan layar"</translation>
@@ -617,7 +614,6 @@
 <translation id="8914504000324227558">Luncurkan Ulang Chrome</translation>
 <translation id="8922193594870374009">Untuk mengirimkan nomor dari <ph name="ORIGIN" /> ke ponsel Android Anda, login ke Chrome di kedua perangkat.</translation>
 <translation id="8948460679427074738">Ekstensi ini belum memublikasikan praktik privasi, seperti cara ekstensi mengumpulkan dan menggunakan data. Chrome merekomendasikan agar Anda menghapusnya.</translation>
-<translation id="8986207147630327271">Anda menambahkan profil kerja ke browser ini dan memberikan kontrol kepada administrator hanya untuk profil kerja.</translation>
 <translation id="8989968390305463310">Histori penjelajahan Anda memengaruhi iklan yang Anda lihat dan minat yang diperkirakan di bawah. Untuk melindungi privasi Anda, Chrome otomatis menghapus minat Anda secara berkala setiap bulan. Minat dapat diperbarui kecuali jika Anda menghapusnya.</translation>
 <translation id="8992769679401294069">Data Anda dienkripsi dengan frasa sandi. Masukkan frasa sandi untuk menggunakan dan menyimpan data Chrome di Akun Google Anda.</translation>
 <translation id="8999117580775242387">Jika HTTPS tidak tersedia, Chrome akan menggunakan koneksi yang tidak aman tanpa memperingatkan Anda</translation>

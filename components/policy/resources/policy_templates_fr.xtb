@@ -4990,7 +4990,6 @@ La configuration de la règle <ph name="CHROME_OS_RELEASE_CHANNEL_POLICY_NAME" /
 <translation id="4661889655253181651">L'option "Paramètres de contenu" permet d'indiquer la manière dont le contenu d'un type spécifique (par exemple, cookies, images ou JavaScript) est géré.</translation>
 <translation id="4663509616441994711">Désactiver la fusion de règles cloud utilisateurs.</translation>
 <translation id="4663588423815449593">Forcer <ph name="PEPPER_NAME" /> à utiliser l'ancien décodeur vidéo.</translation>
-<translation id="4665632569240493493">Activer l'attribution du thème de l'extension dans le pied de la page "Nouvel onglet"</translation>
 <translation id="4665897631924472251">Paramètres de gestion des extensions</translation>
 <translation id="4666930704271463612">Permet de spécifier le sous-ensemble des serveurs d'impression qui sont interrogés pour accéder aux imprimantes disponibles qui y sont associées.
 
@@ -6024,7 +6023,6 @@ Si cette règle n'est pas configurée, aucune exception à <ph name="URL_BLOCKLI
 <translation id="5373552304217872025">Si cette règle est définie sur "true" ou si elle n'est pas configurée, <ph name="PRODUCT_NAME" /> et <ph name="LACROS_NAME" /> autorisent l'ajout d'une personne depuis le gestionnaire d'utilisateurs.
 
       Si elle est définie sur "false", <ph name="PRODUCT_NAME" /> et <ph name="LACROS_NAME" /> n'autorisent pas l'ajout d'une personne depuis le gestionnaire d'utilisateurs.</translation>
-<translation id="5374300764724537955">Désactiver l'attribution du thème de l'extension dans le pied de la page "Nouvel onglet"</translation>
 <translation id="5376712696238639532">Cette règle permet de spécifier si les enseignants peuvent utiliser la fonctionnalité de sous-titres.
 
 Si la règle est définie sur "True" ou n'est pas configurée, les enseignants sélectionnés peuvent sous-titrer leurs propos et envoyer la transcription aux élèves.

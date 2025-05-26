@@ -1837,6 +1837,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="4140905366050378834">Foder og udstyr til pleje af kæledyr</translation>
 <translation id="4140905530744469899">Profil-id:</translation>
 <translation id="4142935452406587478">Bakke 10</translation>
+<translation id="4147897805161313378">Google Fotos</translation>
 <translation id="4148925816941278100">American Express</translation>
 <translation id="4150099059797363385">Konvolut Kinesisk nr. 4</translation>
 <translation id="4151403195736952345">Brug globale standardindstillinger (registrer)</translation>
@@ -1997,6 +1998,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="437620492464254965">Døre og vinduer</translation>
 <translation id="4377125064752653719">Du har forsøgt at få fat på <ph name="DOMAIN" />, men serverens certifikat er blevet tilbagekaldt af udgiveren. Det betyder, at du bestemt ikke bør have tillid til serverens sikkerhedsoplysninger. Du kommunikerer muligvis med en hacker.</translation>
 <translation id="4378154925671717803">Telefon</translation>
+<translation id="4382484599443659549">PDF</translation>
 <translation id="4382833368532556056">Gem fremover dine filer i lagerplads i skyen</translation>
 <translation id="4384395682990721132">A4x3</translation>
 <translation id="4387692837058041921">Filupload til Microsoft OneDrive er sat på pause</translation>
@@ -4315,7 +4317,6 @@ Yderligere oplysninger:
 Yderligere oplysninger:
 <ph name="DEBUG_INFO" /></translation>
 <translation id="8416874502399604126">Der er givet adgang til mikrofonen denne gang</translation>
-<translation id="8421158157346464398">Oplysninger om din arbejdsprofil (f.eks. brugernavnet for din arbejdsprofil)</translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" /> <ph name="SECOND_LABEL" /> <ph name="THIRD_LABEL" /></translation>
 <translation id="8425213833346101688">Skift</translation>
 <translation id="8426945547715537628">Vil du tillade tilsidesættelse af tastaturet?</translation>

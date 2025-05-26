@@ -1837,6 +1837,7 @@
 <translation id="4140905366050378834">සුරතල් සතුන් සඳහා ආහාර සහ සුරතල් සතුන්ගේ සත්කාර සැපයුම්</translation>
 <translation id="4140905530744469899">පැතිකඩ ID:</translation>
 <translation id="4142935452406587478">බඳුන 10</translation>
+<translation id="4147897805161313378">Google ඡායාරූප</translation>
 <translation id="4148925816941278100">ඇමරිකන් එක්ස්ප්‍රස්</translation>
 <translation id="4150099059797363385">ලියුම් කවරය චීන #4</translation>
 <translation id="4151403195736952345">ගෝලීය පෙරනිමිය භාවිත කරන්න (හඳුනාගන්න)</translation>
@@ -1997,6 +1998,7 @@
 <translation id="437620492464254965">දොරෝවල් සහ ජනේල</translation>
 <translation id="4377125064752653719">ඔබ <ph name="DOMAIN" /> වෙත ළඟාවීමට උත්සාහ දරන ලදි, නමුත් එම සර්වරය විසින් ඉදිරිපත් කළ සහතිකය එය නිකුත් කරන්නා විසින් අවලංගු කර ඇත. මෙයින් අදහස් වන්නේ සර්වරය ඉදිරිපත් කළ ආරක්ෂිත සාක්ෂි කිසිසේත් විශ්වාස නොකළ යුතු බවයි. ඔබ සම්බන්ධ වී සිටින්නේ වෙබ් ප්‍රහාරකයෙකු සමඟ වීමට ඉඩ ඇත.</translation>
 <translation id="4378154925671717803">දුරකථනය</translation>
+<translation id="4382484599443659549">PDF</translation>
 <translation id="4382833368532556056">මෙතැන් සිට, ඔබේ ගොනු ක්ලවුඩ් ගබඩාවට සුරකින්න</translation>
 <translation id="4384395682990721132">A4x3</translation>
 <translation id="4387692837058041921">Microsoft OneDrive වෙත ගොනු උඩුගත කිරීම විරාම කර ඇත</translation>
@@ -4314,7 +4316,6 @@
 අමතර විස්තර:
 <ph name="DEBUG_INFO" /></translation>
 <translation id="8416874502399604126">මෙම අවස්ථාවේ දී මයික්‍රෆෝනයට ඉඩ දී ඇත</translation>
-<translation id="8421158157346464398">කාර්යාල පැතිකඩ තොරතුරු (ඔබේ කාර්යාල පැතිකඩ පරිශීලක නාමය වැනි)</translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" /> <ph name="SECOND_LABEL" /> <ph name="THIRD_LABEL" /></translation>
 <translation id="8425213833346101688">වෙනස් කරන්න</translation>
 <translation id="8426945547715537628">යතුරු පුවරුව අභිබවා යාමට ඉඩ දෙන්න ද?</translation>

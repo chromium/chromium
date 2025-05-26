@@ -118,7 +118,6 @@
 <translation id="2572494885440352020">Помощник по Chromium</translation>
 <translation id="2575822587468774919">Выберите что-нибудь для поиска по изображениям.</translation>
 <translation id="2576118232315942160">Чтобы синхронизировать пароли и другие данные на всех своих устройствах, войдите в Chromium.</translation>
-<translation id="2583187216237139145">Администратор рабочего профиля может удалять любые данные, сохраненные в браузере Chromium при использовании этого профиля (например, добавленные закладки, историю, пароли и настройки). <ph name="LEARN_MORE" /></translation>
 <translation id="2592940277904433508">Продолжить работу в Chromium</translation>
 <translation id="259935314519650377">Не удалось кешировать скачанный установщик. Ошибка: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
 <translation id="2620436844016719705">Система</translation>
@@ -361,7 +360,6 @@
 <translation id="6069027071882229820">Скопировать как изображение</translation>
 <translation id="6072279588547424923">Расширение "<ph name="EXTENSION_NAME" />" добавлено в Chromium</translation>
 <translation id="6072463441809498330">Chromium может работать ещё быстрее</translation>
-<translation id="608006075545470555">Добавление рабочего профиля в браузер</translation>
 <translation id="6096348254544841612">Новая версия Chromium уже вышла!</translation>
 <translation id="6107893135096467929">Включено • Chromium не может проверить происхождение расширения</translation>
 <translation id="6119438414301547735">Разрешить расширению показывать запросы доступа на панели инструментов Chromium</translation>
@@ -555,7 +553,6 @@
 <translation id="8471947159125090285">Чтобы использовать и сохранять данные Chromium в аккаунте Google, подтвердите свою личность.</translation>
 <translation id="8493179195440786826">Версия Chromium устарела</translation>
 <translation id="8522801943730206384">Чтобы браузер Chromium мог проверять пароли, сохраните их</translation>
-<translation id="8550334526674375523">Этот рабочий профиль никак не связан с вашим личным профилем.</translation>
 <translation id="8555465886620020932">Ошибка службы: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="8556420416730706394">Для быстрого доступа к поиску по изображениям нажмите кнопку "Закрепить" в верхней части боковой панели</translation>
 <translation id="856656450041460113">Поиск по списку языков</translation>
@@ -584,7 +581,6 @@
 <translation id="8931379085695076764">Chromium может предполагать ваши интересы, анализируя историю браузера за последние несколько недель. Эта информация хранится только на вашем устройстве.</translation>
 <translation id="8941642502866065432">Не удалось обновить Chromium</translation>
 <translation id="897581876605952338">Логотип Chromium Enterprise</translation>
-<translation id="8986207147630327271">После добавления рабочего профиля администратор не сможет управлять другими профилями.</translation>
 <translation id="8988036198400390003">Управлять профилями Chromium</translation>
 <translation id="9019929317751753759">Чтобы обеспечить безопасность ваших данных, некоторые расширения были отключены, так как <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> не содержит сведений о них (то есть они могли быть установлены без вашего ведома).</translation>
 <translation id="9022552996538154597">Войти в Chromium</translation>

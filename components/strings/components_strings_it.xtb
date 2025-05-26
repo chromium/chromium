@@ -1836,6 +1836,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="4140905366050378834">Cibo e articoli per animali domestici</translation>
 <translation id="4140905530744469899">ID profilo:</translation>
 <translation id="4142935452406587478">Vassoio 10</translation>
+<translation id="4147897805161313378">Google Foto</translation>
 <translation id="4148925816941278100">American Express</translation>
 <translation id="4150099059797363385">Busta Chinese #4</translation>
 <translation id="4151403195736952345">Utilizza impostazioni predefinite globali (Rileva)</translation>
@@ -1996,6 +1997,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="437620492464254965">Porte e finestre</translation>
 <translation id="4377125064752653719">Hai tentato di accedere a <ph name="DOMAIN" /> ma il server ha presentato un certificato revocato dall'autorità di certificazione. Ciò significa che le credenziali di sicurezza presentate dal server non sono assolutamente attendibili. Potresti avere stabilito una comunicazione con un utente malintenzionato.</translation>
 <translation id="4378154925671717803">Telefono</translation>
+<translation id="4382484599443659549">PDF</translation>
 <translation id="4382833368532556056">D'ora in poi, salva i tuoi file sullo spazio di archiviazione sul cloud</translation>
 <translation id="4384395682990721132">A4x3</translation>
 <translation id="4387692837058041921">Il caricamento del file su Microsoft OneDrive è stato messo in pausa</translation>
@@ -4313,7 +4315,6 @@ Ulteriori dettagli:
 Ulteriori dettagli:
 <ph name="DEBUG_INFO" /></translation>
 <translation id="8416874502399604126">Microfono consentito questa volta</translation>
-<translation id="8421158157346464398">Informazioni del profilo di lavoro (ad esempio, nome utente del profilo di lavoro)</translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" /> <ph name="SECOND_LABEL" /> <ph name="THIRD_LABEL" /></translation>
 <translation id="8425213833346101688">Cambia</translation>
 <translation id="8426945547715537628">Consenti l'override della tastiera?</translation>

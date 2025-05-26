@@ -43,7 +43,6 @@
 <translation id="2536366509642644298">Tabbladgroepen <ph name="TAB_GROUP_NAME_1" /> en <ph name="TAB_GROUP_NAME_2" /> zijn niet meer beschikbaar</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> tabblad samenvouwen.}other{Tabbladgroep met <ph name="TABS_COUNT_MANY" /> tabbladen samenvouwen.}}</translation>
 <translation id="2569352796411618312">Suggestie: <ph name="NUMBER_OF_TABS" /> van je tabbladen zijn niet recent gebruikt. Wil je ze sluiten?</translation>
-<translation id="2656693375914502139">Verplaatsen naar groep</translation>
 <translation id="2662028055331606429"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> beoordeling</translation>
 <translation id="266935134738038806">Site bezoeken</translation>
 <translation id="2671423594960767771">Groep delen</translation>
@@ -122,7 +121,6 @@
 <translation id="6109251075362363230">Alle dubbele tabbladen worden nu ook gearchiveerd, met uitzondering van het meest recent gebruikte exemplaar.</translation>
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{Groep verplaatsen naar nieuw venster}other{Groep verplaatsen naar ander venster}}</translation>
 <translation id="6193448654517602979">Tabbladen selecteren</translation>
-<translation id="6212567362666004597">Tabblad toevoegen aan groep</translation>
 <translation id="6220820548421939212">Ja. Nu aanzetten</translation>
 <translation id="6228793724645064692">(winkelbeoordeling)</translation>
 <translation id="6271513594716432922">Alle inactieve tabbladen sluiten</translation>

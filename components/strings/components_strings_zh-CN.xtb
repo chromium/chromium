@@ -636,6 +636,7 @@
 <translation id="2088913896151127116">添加文字</translation>
 <translation id="2090451897496479509">如需了解详情，请联系提供商</translation>
 <translation id="2091887806945687916">声音</translation>
+<translation id="2093184051799735948">在<ph name="ENGINE_NAME" />中搜索或输入网址</translation>
 <translation id="2093982008204312032">Google Chrome 正在尝试关闭 Windows Hello，以使其不再作为填充密码时的验证机制。</translation>
 <translation id="2094505752054353250">网域不匹配</translation>
 <translation id="2094704029599359040">版本信息</translation>
@@ -770,6 +771,7 @@
 <translation id="2296331629987861142">轻松分期付款（需满足资格要求，并支付相关费用）</translation>
 <translation id="2300306941146563769">未上传</translation>
 <translation id="2301098101308036335">访问了哪些网站以及访问时间。</translation>
+<translation id="2302571905116831849">自动填充会员卡</translation>
 <translation id="230286397113210245">“打开无痕式窗口”按钮，激活它即可打开新的无痕式窗口进行私密浏览</translation>
 <translation id="2305294852062272447">要保存驾照信息吗？</translation>
 <translation id="2306124309679506798">允许提供沉浸式体验？</translation>
@@ -1833,6 +1835,7 @@
 <translation id="4140905366050378834">宠物食品与宠物护理用品</translation>
 <translation id="4140905530744469899">个人资料 ID：</translation>
 <translation id="4142935452406587478">纸匣 10</translation>
+<translation id="4147897805161313378">Google 相册</translation>
 <translation id="4148925816941278100">American Express</translation>
 <translation id="4150099059797363385">中式 #4 信封</translation>
 <translation id="4151403195736952345">使用全局默认设置（检测）</translation>
@@ -1993,6 +1996,7 @@
 <translation id="437620492464254965">门窗</translation>
 <translation id="4377125064752653719">您尝试访问的是 <ph name="DOMAIN" />，但服务器出示的证书已被其颁发者吊销。这表明绝对不应该信任此服务器出示的安全凭据。您可能正在与攻击者进行通信。</translation>
 <translation id="4378154925671717803">电话</translation>
+<translation id="4382484599443659549">PDF</translation>
 <translation id="4382833368532556056">从现在起，请将您的文件保存到云端存储空间</translation>
 <translation id="4384395682990721132">A4x3</translation>
 <translation id="4387692837058041921">已暂停向 Microsoft OneDrive 上传文件</translation>
@@ -4310,7 +4314,6 @@
 更多详情：
 <ph name="DEBUG_INFO" /></translation>
 <translation id="8416874502399604126">这次可以使用麦克风</translation>
-<translation id="8421158157346464398">工作资料信息（例如工作资料用户名）</translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" /> - <ph name="SECOND_LABEL" /> - <ph name="THIRD_LABEL" /></translation>
 <translation id="8425213833346101688">更改</translation>
 <translation id="8426945547715537628">允许替换键盘按键？</translation>

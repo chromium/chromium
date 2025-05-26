@@ -243,6 +243,7 @@
 <translation id="1972325230031091483">Vei naviga mai rapid deoarece conținutul se încarcă proactiv în funcție de pagina web accesată în acel moment</translation>
 <translation id="1974060860693918893">Avansate</translation>
 <translation id="1977621687170192347">Activează Solicită deschiderea linkurilor din alte aplicații în modul incognito.</translation>
+<translation id="1979055159547313322">Contul <ph name="USER_EMAIL" /> este gestionat de <ph name="HOSTED_DOMAIN" />, care poate să vadă anumite informații, inclusiv</translation>
 <translation id="1979188886349613713">Include extensii de fișier care nu sunt specificate de site</translation>
 <translation id="1980417445547898121">{count,plural, =1{Accesează {count} filă activă recent de pe celălalt dispozitiv pe acest iPhone}few{Accesează {count} file active recent de pe celălalt dispozitiv pe acest iPhone}other{Accesează {count} de file active recent de pe celălalt dispozitiv pe acest iPhone}}</translation>
 <translation id="1981118202195772574">Mobil</translation>
@@ -278,6 +279,7 @@
 <translation id="2103075008456228677">Deschide history.google.com</translation>
 <translation id="2104436223719117661">Căutări populare</translation>
 <translation id="21133533946938348">Fixează fila</translation>
+<translation id="2117650889962717098">Păstrează-ți navigarea privată trecând la modul incognito</translation>
 <translation id="2119636449201577317">Deschide în…</translation>
 <translation id="2120553909046681540">Organizația ta a dezactivat navigarea privată.</translation>
 <translation id="2122754583996902531">Browserul tău este gestionat. <ph name="BEGIN_LINK" />Află mai multe<ph name="END_LINK" /></translation>
@@ -562,6 +564,7 @@ Vezi instrucțiunile motorului de căutare pentru ștergerea istoricului căută
 <translation id="3348387552617855658">Acest card te ajută să urmărești coletele și să primești actualizări importante privind livrările.</translation>
 <translation id="3349031117032695619">Blochează ferestrele de tip pop-up</translation>
 <translation id="3349676726073650389">Site-urile și căutările pe care le urmărești se salvează în Contul Google. Poți gestiona oricând elementele urmărite din setări.</translation>
+<translation id="3353037916374303415"><ph name="EMAIL" />. Acest cont este gestionat.</translation>
 <translation id="3365529507898144230">Salvează în Foto</translation>
 <translation id="3371831930909698441">Traducerea este disponibilă. Sunt disponibile opțiuni în partea de jos a ecranului.</translation>
 <translation id="3377063233124932127">Marcajele, parolele și alte elemente salvate apar acum în partea de sus.</translation>
@@ -670,6 +673,7 @@ Vezi instrucțiunile motorului de căutare pentru ștergerea istoricului căută
 <translation id="3875783148670536197">Arată-mi cum</translation>
 <translation id="3878657761594430423">Instrument pentru scoaterea foilor</translation>
 <translation id="3885587018298784481">Alătură-te unui grup de familie</translation>
+<translation id="3888230626190453136">Navighează în modul incognito</translation>
 <translation id="3888863481921783344">Aceasta se va folosi pentru a-ți arăta posibilii invitați la eveniment.</translation>
 <translation id="3891414008432200754">Preț</translation>
 <translation id="3892144330757387737">Aici vei vedea istoricul</translation>

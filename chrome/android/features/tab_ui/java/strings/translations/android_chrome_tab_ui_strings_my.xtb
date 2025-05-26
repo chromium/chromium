@@ -43,7 +43,6 @@
 <translation id="2536366509642644298">“<ph name="TAB_GROUP_NAME_1" />” နှင့် “<ph name="TAB_GROUP_NAME_2" />” တဘ်အုပ်စုများကို မရတော့ပါ</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> တဘ်ကို ခေါက်ပါ။}other{တဘ် <ph name="TABS_COUNT_MANY" /> ခုဖြင့် တဘ်အုပ်စု လျှော့ပြပါ။}}</translation>
 <translation id="2569352796411618312">အကြံပြုချက်- သင်၏တဘ် <ph name="NUMBER_OF_TABS" /> ခုကို အခုတစ်လော အသုံးပြုမထားပါ။ ၎င်းတို့ကို ပိတ်မလား။</translation>
-<translation id="2656693375914502139">အဖွဲ့သို့ ရွှေ့ရန်</translation>
 <translation id="2662028055331606429"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> အဆင့်သတ်မှတ်ချက်</translation>
 <translation id="266935134738038806">ဝဘ်ဆိုက်သို့ ဝင်ကြည့်ရန်</translation>
 <translation id="2671423594960767771">အုပ်စုကို မျှဝေရန်</translation>
@@ -122,7 +121,6 @@
 <translation id="6109251075362363230">နောက်ဆုံးသုံးထားသည့် မိတ္တူမှလွဲ၍ မိတ္တူပွားတဘ်အားလုံးကိုလည်း ယခုသိမ်းဆည်းပါမည်။</translation>
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{အုပ်စုကို ဝင်းဒိုးအသစ်သို့ ရွှေ့ရန်}other{အုပ်စုကို ဝင်းဒိုးနောက်တစ်ခုသို့ ရွှေ့ရန်}}</translation>
 <translation id="6193448654517602979">တဘ်ရွေးရန်</translation>
-<translation id="6212567362666004597">အုပ်စုသို့ တဘ်ထည့်ရန်</translation>
 <translation id="6220820548421939212">ဟုတ်ပါသည်။ ကျွန်ုပ်ပါဝင်ပါမည်</translation>
 <translation id="6228793724645064692">(ဆိုင်အဆင့်)</translation>
 <translation id="6271513594716432922">အသုံးမပြုသောတဘ်အားလုံး ပိတ်ရန်</translation>

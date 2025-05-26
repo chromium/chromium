@@ -43,7 +43,6 @@
 <translation id="2536366509642644298">Nid yw'r grwpiau tabiau "<ph name="TAB_GROUP_NAME_1" />" a "<ph name="TAB_GROUP_NAME_2" />" ar gael mwyach</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{Crebachu <ph name="TABS_COUNT_ONE" /> tab.}zero{Crebachu'r grŵp tabiau sydd â <ph name="TABS_COUNT_MANY" /> tab.}two{Crebachu'r grŵp tabiau sydd â <ph name="TABS_COUNT_MANY" /> dab.}few{Crebachu'r grŵp tabiau sydd â <ph name="TABS_COUNT_MANY" /> thab.}many{Crebachu'r grŵp tabiau sydd â <ph name="TABS_COUNT_MANY" /> thab.}other{Crebachu'r grŵp tabiau sydd â <ph name="TABS_COUNT_MANY" /> tab.}}</translation>
 <translation id="2569352796411618312">Awgrym: Nid yw <ph name="NUMBER_OF_TABS" /> o'ch tabiau wedi'u defnyddio'n ddiweddar. Cau'r tabiau?</translation>
-<translation id="2656693375914502139">Symud i grŵp</translation>
 <translation id="2662028055331606429">Sgôr <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="266935134738038806">Mynd i'r wefan</translation>
 <translation id="2671423594960767771">Rhannu â grŵp</translation>
@@ -121,7 +120,6 @@
 <translation id="6054741997831917303">Gwnaeth pris yr eitem hon ostwng yn ddiweddar o <ph name="PREVIOUS_PRICE" /> i <ph name="NEW_PRICE" /></translation>
 <translation id="6109251075362363230">Bydd pob tab dyblyg nawr yn cael ei archifo hefyd, ac eithrio'r copi a ddefnyddiwyd yn fwyaf diweddar.</translation>
 <translation id="6193448654517602979">Dewis tabiau</translation>
-<translation id="6212567362666004597">Ychwanegu tab at grŵp</translation>
 <translation id="6220820548421939212">Ie. Iawn</translation>
 <translation id="6228793724645064692">(sgôr siop)</translation>
 <translation id="6271513594716432922">Cau pob tab anweithredol</translation>

@@ -43,7 +43,6 @@
 <translation id="2536366509642644298">「<ph name="TAB_GROUP_NAME_1" />」と「<ph name="TAB_GROUP_NAME_2" />」のタブグループは使用できなくなりました</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> 個のタブを折りたたみます。}other{タブグループの <ph name="TABS_COUNT_MANY" /> 個のタブを折りたたみます。}}</translation>
 <translation id="2569352796411618312">提案: しばらく使用していないタブが <ph name="NUMBER_OF_TABS" /> 個あります。これらのタブを閉じますか？</translation>
-<translation id="2656693375914502139">グループに移動</translation>
 <translation id="2662028055331606429"><ph name="CURRENT_RATING" /> / <ph name="RATING_BASELINE" /> の評価</translation>
 <translation id="266935134738038806">サイトを見る</translation>
 <translation id="2671423594960767771">グループを共有</translation>
@@ -122,7 +121,6 @@
 <translation id="6109251075362363230">最後に使用したもの以外の重複するすべてのタブもアーカイブされるようになりました。</translation>
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{グループを新しいウィンドウに移動}other{グループを別のウィンドウに移動}}</translation>
 <translation id="6193448654517602979">タブを選択</translation>
-<translation id="6212567362666004597">タブをグループに追加</translation>
 <translation id="6220820548421939212">はい。オンにします。</translation>
 <translation id="6228793724645064692">（ストアの評価）</translation>
 <translation id="6271513594716432922">アクティブでないタブをすべて閉じる</translation>

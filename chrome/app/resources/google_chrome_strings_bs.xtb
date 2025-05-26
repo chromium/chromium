@@ -106,7 +106,6 @@ Neke funkcije možda neće biti dostupne i promjene postavki se neće sačuvati.
 <translation id="2345992953227471816">Chrome je otkrio da ove ekstenzije sadržavaju zlonamjerni softver:</translation>
 <translation id="2348335408836342058">Chromeu treba odobrenje za pristup vašoj kameri i mikrofonu na ovoj web lokaciji</translation>
 <translation id="234869673307233423">Chrome ne može provjeravati vaše lozinke. Pokušajte ponovo kasnije.</translation>
-<translation id="235650106824528204">Administrator radnog profila može ukloniti bilo koje podatke Chromea koji se generiraju tokom korištenja ovog profila (naprimjer kreiranje oznaka, historije, lozinki i drugih postavki). <ph name="LEARN_MORE" /></translation>
 <translation id="2359808026110333948">Nastavi</translation>
 <translation id="2403703063067034158">Došlo je do greške prilikom postavljanja. Trenutno se izvršava druga instanca postavljanja, Pokušajte ponovo kasnije.</translation>
 <translation id="2409816192575564775">{NUM_DEVICES,plural, =0{1 uređaju s korisničkim interfejsom je pristupala jedna ili više ekstenzija za Chrome}=1{1 uređaju s korisničkim interfejsom pristupa jedna ili više ekstenzija za Chrome}one{# uređaju s korisničkim interfejsom pristupa jedna ili više ekstenzija za Chrome}few{# uređajima s korisničkim interfejsom pristupa jedna ili više ekstenzija za Chrome}other{# uređaja s korisničkim interfejsom pristupa jedna ili više ekstenzija za Chrome}}</translation>
@@ -397,7 +396,6 @@ Google Chrome ne može vratiti vaše postavke.</translation>
 <translation id="6069027071882229820">Kopiraj kao sliku</translation>
 <translation id="6070348360322141662">Za dodatnu sigurnost, Google Chrome će šifrirati vaše podatke</translation>
 <translation id="6075300983329039771">Organizacija <ph name="MANAGER" /> zahtijeva da se prijavite u Chrome</translation>
-<translation id="608006075545470555">Dodajte radni profil na ovaj preglednik</translation>
 <translation id="6113794647360055231">Chrome je upravo postao još bolji</translation>
 <translation id="6116252277240876590">Ovaj jezik se koristi za prikaz menija, postavki, obavještenja i drugog teksta u Chromeu</translation>
 <translation id="6134085236017727171">Da koristite mikrofon, odobrite Chromeu pristup u <ph name="BEGIN_LINK" />postavkama sistema<ph name="END_LINK" /></translation>
@@ -593,7 +591,6 @@ Google Chrome ne može vratiti vaše postavke.</translation>
 <translation id="8521348052903287641">Ulazno pravilo da Google Chrome Dev dozvoli mDNS saobraćaj.</translation>
 <translation id="852529348814672339">Prikazuj Chrome na ovom jeziku</translation>
 <translation id="8533056045953418157">Postavite Google Chrome kao zadani preglednik PDF-a</translation>
-<translation id="8550334526674375523">Ovaj radni profil je u potpunosti odvojen od vašeg ličnog profila.</translation>
 <translation id="8555465886620020932">Greška usluge: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="856656450041460113">Pretraživanje liste jezika</translation>
 <translation id="8601359445272098721">Novo! Možete prevesti i tekst i slike s ekrana odabirom dugmeta "Prevedi ekran"</translation>
@@ -626,7 +623,6 @@ Google Chrome ne može vratiti vaše postavke.</translation>
 <translation id="8914504000324227558">Ponovo pokreni Chrome</translation>
 <translation id="8922193594870374009">Da pošaljete broj s uređaja <ph name="ORIGIN" /> na svoj Android telefon, prijavite se u Chrome na oba uređaja.</translation>
 <translation id="8948460679427074738">Ekstenzija nije objavila prakse u vezi s privatnošću, kao što je način na koji prikuplja i koristi podatke. Chrome vam preporučuje da je uklonite.</translation>
-<translation id="8986207147630327271">Dodajete radni profil na ovaj preglednik i dajte administratoru kontrolu samo nad radnim profilom.</translation>
 <translation id="8989968390305463310">Vaša historija pregledanja utiče na oglase koje vidite i interesovanja, kao što je procijenjeno u nastavku. Da zaštiti vašu privatnost, Chrome automatski briše vaša interesovanja na mjesečnoj osnovi. Interesovanja se mogu osvježiti ukoliko ih ne uklonite.</translation>
 <translation id="8992769679401294069">Vaši podaci su šifrirani pristupnim izrazom. Unesite ga da koristite i sačuvate podatke Chromea na Google računu.</translation>
 <translation id="8999117580775242387">Kada HTTPS nije dostupan, Chrome će koristiti nesigurnu vezu bez upozorenja</translation>

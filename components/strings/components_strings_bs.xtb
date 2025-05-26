@@ -1839,6 +1839,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="4140905366050378834">Hrana za kućne ljubimce i pribor za njihovu njegu</translation>
 <translation id="4140905530744469899">ID profila:</translation>
 <translation id="4142935452406587478">Ladica 10</translation>
+<translation id="4147897805161313378">Google Fotografije</translation>
 <translation id="4148925816941278100">American Express</translation>
 <translation id="4150099059797363385">Koverta Chinese #4</translation>
 <translation id="4151403195736952345">Koristi globalnu zadanu postavku (otkrij)</translation>
@@ -1999,6 +2000,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="437620492464254965">Vrata i prozori</translation>
 <translation id="4377125064752653719">Pokušali ste prići domeni <ph name="DOMAIN" />, ali je potvrdu koju je server prikazao odbio njen izdavač. Ovo znači da sigurnosnim akreditivima koje je server prikazao ne treba ni u kom slučaju vjerovati. Možda komunicirate baš sa napadačem.</translation>
 <translation id="4378154925671717803">Telefon</translation>
+<translation id="4382484599443659549">PDF</translation>
 <translation id="4382833368532556056">Odsad pohranjujte fajlove u pohranu u oblaku</translation>
 <translation id="4384395682990721132">A4x3</translation>
 <translation id="4387692837058041921">Otpremanje fajl(ov)a na Microsoft OneDrive je pauzirano</translation>
@@ -4317,7 +4319,6 @@ Dodatni detalji:
 Dodatni detalji:
 <ph name="DEBUG_INFO" /></translation>
 <translation id="8416874502399604126">Mikrofon je dozvoljen ovaj put</translation>
-<translation id="8421158157346464398">Informacije o radnom profilu (kao što je korisničko ime radnog profila)</translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" /> <ph name="SECOND_LABEL" /> <ph name="THIRD_LABEL" /></translation>
 <translation id="8425213833346101688">Izmijeni</translation>
 <translation id="8426945547715537628">Dozvoliti nadjačavanje tastature?</translation>

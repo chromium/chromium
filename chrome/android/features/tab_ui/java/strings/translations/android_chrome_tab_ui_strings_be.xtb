@@ -43,7 +43,6 @@
 <translation id="2536366509642644298">Групы ўкладак "<ph name="TAB_GROUP_NAME_1" />" і "<ph name="TAB_GROUP_NAME_2" />" больш не даступныя</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{Згарнуць <ph name="TABS_COUNT_ONE" /> укладку.}one{Згарнуць групу з <ph name="TABS_COUNT_MANY" /> укладкі.}few{Згарнуць групу з <ph name="TABS_COUNT_MANY" /> укладак.}many{Згарнуць групу з <ph name="TABS_COUNT_MANY" /> укладак.}other{Згарнуць групу з <ph name="TABS_COUNT_MANY" /> укладкі.}}</translation>
 <translation id="2569352796411618312">Прапанова: некалькі (<ph name="NUMBER_OF_TABS" />) укладак пэўны час не выкарыстоўваліся. Закрыць іх?</translation>
-<translation id="2656693375914502139">Перамясціць у групу</translation>
 <translation id="2662028055331606429">Ацэнка: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="266935134738038806">Наведаць сайт</translation>
 <translation id="2671423594960767771">Абагуліць групу</translation>
@@ -122,7 +121,6 @@
 <translation id="6109251075362363230">Цяпер усе паўторныя ўкладкі будуць таксама адпраўляцца ў архіў, за выключэннем той, якая выкарыстоўвалася апошняй.</translation>
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{Перамясціць групу ўкладак у новае акно}one{Перамясціць групу ўкладак у яшчэ адно акно}few{Перамясціць групу ўкладак у яшчэ адно акно}many{Перамясціць групу ўкладак у яшчэ адно акно}other{Перамясціць групу ўкладак у яшчэ адно акно}}</translation>
 <translation id="6193448654517602979">Выберыце ўкладкі</translation>
-<translation id="6212567362666004597">Дадаць укладку ў групу</translation>
 <translation id="6220820548421939212">Так. Згаджаюся</translation>
 <translation id="6228793724645064692">(ацэнка крамы)</translation>
 <translation id="6271513594716432922">Закрыць усе неактыўныя ўкладкі</translation>

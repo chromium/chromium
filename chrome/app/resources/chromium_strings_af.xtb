@@ -121,7 +121,6 @@ Sommige kenmerke kan dalk nie beskikbaar wees nie en veranderings aan voorkeure 
 <translation id="2572494885440352020">Chromium-helper</translation>
 <translation id="2575822587468774919">Kies enigiets om met Prentsoektog te soek</translation>
 <translation id="2576118232315942160">Meld aan by Chromium om jou wagwoorde en meer op al jou toestelle te kry</translation>
-<translation id="2583187216237139145">Enige Chromium-data wat tydens die gebruik van hierdie profiel gegenereer word (soos die skepping van boekmerke, geskiedenis, wagwoorde, en ander instellings) kan deur die werkprofieladministrateur verwyder word. <ph name="LEARN_MORE" /></translation>
 <translation id="2592940277904433508">Hou aan om Chromium te gebruik</translation>
 <translation id="259935314519650377">Kon nie die afgelaaide installeerder kas nie. Fout: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
 <translation id="2620436844016719705">Stelsel</translation>
@@ -366,7 +365,6 @@ Sommige kenmerke kan dalk nie beskikbaar wees nie en veranderings aan voorkeure 
 <translation id="6069027071882229820">Kopieer as prent</translation>
 <translation id="6072279588547424923"><ph name="EXTENSION_NAME" /> is by Chromium gevoeg</translation>
 <translation id="6072463441809498330">Maak Chromium vinniger</translation>
-<translation id="608006075545470555">Voeg werkprofiel by hierdie blaaier</translation>
 <translation id="6096348254544841612">Pasmaak en beheer Chromium. Opdatering is beskikbaar.</translation>
 <translation id="6107893135096467929">Aan • Chromium kan nie verifieer waarvandaan hierdie uitbreiding kom nie</translation>
 <translation id="6119438414301547735">Laat uitbreiding toe om toegangversoeke op die Chromium-nutsbalk te wys</translation>
@@ -562,7 +560,6 @@ Chromium kan nie jou instellings herwin nie.</translation>
 <translation id="8471947159125090285">Verifieer dis jy om Chromium-data in jou Google-rekening te gebruik en te stoor</translation>
 <translation id="8493179195440786826">Chromium is verouderd</translation>
 <translation id="8522801943730206384">Chromium kan jou wagwoorde nagaan wanneer jy hulle stoor</translation>
-<translation id="8550334526674375523">Hierdie werkprofiel is heeltemal apart van jou persoonlike profiel.</translation>
 <translation id="8555465886620020932">Diensfout: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="8556420416730706394">Jy kan Prentsoektog vir vinnige toegang vasspeld; klik die Speld Vas-knoppie boaan die kantpaneel</translation>
 <translation id="856656450041460113">Deursoek lys tale</translation>
@@ -591,7 +588,6 @@ Chromium kan nie jou instellings herwin nie.</translation>
 <translation id="8931379085695076764">Chromium kan jou belangstellings op grond van jou blaaigeskiedenis die afgelope paar weke skat. Hierdie inligting bly op jou toestel.</translation>
 <translation id="8941642502866065432">Kan nie Chromium opdateer nie</translation>
 <translation id="897581876605952338">Chromium Enterprise-logo</translation>
-<translation id="8986207147630327271">Jy voeg tans 'n werkprofiel by hierdie blaaier en gee jou administrateur beheer oor net jou werkprofiel.</translation>
 <translation id="8988036198400390003">Bestuur Chromium-profiele</translation>
 <translation id="9019929317751753759">Om Chromium veiliger te maak, het ons die volgende uitbreiding, wat nie in die <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> gelys word nie en wat dalk sonder jou medewete bygevoeg is, gedeaktiveer.</translation>
 <translation id="9022552996538154597">Meld by Chromium aan</translation>

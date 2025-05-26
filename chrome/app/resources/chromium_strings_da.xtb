@@ -119,7 +119,6 @@
 <translation id="2572494885440352020">Chromium Helper</translation>
 <translation id="2575822587468774919">Vælg det, du vil søge efter med billedsøgning</translation>
 <translation id="2576118232315942160">For at kunne se dine adgangskoder m.m. på alle dine enheder skal du logge ind på Chromium</translation>
-<translation id="2583187216237139145">Alle Chromium-data, der genereres ved brug af denne profil (f.eks. oprettelse af bogmærker, historik, adgangskoder og andre indstillinger) kan fjernes af arbejdsprofilens administrator. <ph name="LEARN_MORE" /></translation>
 <translation id="2592940277904433508">Fortsæt med at bruge Chromium</translation>
 <translation id="259935314519650377">Det downloadede installationsprogram kunne ikke gemmes i cache. Fejl: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
 <translation id="2620436844016719705">System</translation>
@@ -364,7 +363,6 @@
 <translation id="6069027071882229820">Kopiér som billede</translation>
 <translation id="6072279588547424923"><ph name="EXTENSION_NAME" /> er føjet til Chromium</translation>
 <translation id="6072463441809498330">Gør Chromium hurtigere</translation>
-<translation id="608006075545470555">Føj arbejdsprofilen til denne browser</translation>
 <translation id="6096348254544841612">Tilpas og administrer Chromium. Der er en tilgængelig opdatering.</translation>
 <translation id="6107893135096467929">Til • Chromium kan ikke verificere, hvor denne udvidelse kommer fra</translation>
 <translation id="6119438414301547735">Tillad, at udvidelsen viser adgangsanmodninger på Chromium-værktøjslinjen</translation>
@@ -560,7 +558,6 @@ Chromium kan ikke gendanne dine præferencer.</translation>
 <translation id="8471947159125090285">Verificer din identitet for at bruge og gemme Chromium-data på din Google-konto</translation>
 <translation id="8493179195440786826">Chromium er forældet</translation>
 <translation id="8522801943730206384">Chromium kan tjekke dine adgangskoder, når du gemmer dem</translation>
-<translation id="8550334526674375523">Denne arbejdsprofil er totalt adskilt fra din personlige profile.</translation>
 <translation id="8555465886620020932">Tjenestefejl: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="8556420416730706394">Du kan fastgøre billedsøgning for at få nem adgang. Klik på knappen Fastgør øverst i sidepanelet</translation>
 <translation id="856656450041460113">Søg i sproglisten</translation>
@@ -589,7 +586,6 @@ Chromium kan ikke gendanne dine præferencer.</translation>
 <translation id="8931379085695076764">Chromium kan estimere dine interesser baseret på din browserhistorik de seneste få uger. Disse oplysninger forbliver på din enhed.</translation>
 <translation id="8941642502866065432">Chromium kunne ikke opdateres</translation>
 <translation id="897581876605952338">Chromium Enterprise-logo</translation>
-<translation id="8986207147630327271">Du er ved at føje en arbejdsprofil til denne browser, og du giver kun din administrator kontrol over arbejdsprofilen.</translation>
 <translation id="8988036198400390003">Administrer Chromium-profiler</translation>
 <translation id="9019929317751753759">For at gøre Chromium mere sikker har vi deaktiveret følgende udvidelser, som ikke er anført i <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> og muligvis er blevet tilføjet, uden at du vidste det.</translation>
 <translation id="9022552996538154597">Log ind på Chromium</translation>

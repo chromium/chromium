@@ -120,7 +120,6 @@
 <translation id="2572494885440352020">Памочнік Chromium</translation>
 <translation id="2575822587468774919">Паспрабуйце знайсці што-небудзь з дапамогай пошуку відарысаў</translation>
 <translation id="2576118232315942160">Каб выкарыстоўваць свае паролі і іншыя даныя на ўсіх сваіх прыладах, увайдзіце ў Chromium</translation>
-<translation id="2583187216237139145">Любыя даныя Chromium, створаныя пры выкарыстанні гэтага профілю (напрыклад, закладкі, гісторыя, паролі і іншыя налады), могуць быць выдалены адміністратарам працоўнага профілю. <ph name="LEARN_MORE" /></translation>
 <translation id="2592940277904433508">Працягнуць работу ў Chromium</translation>
 <translation id="259935314519650377">Не ўдалося кэшаваць спампаваны ўсталёўшчык. Памылка: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
 <translation id="2620436844016719705">Сістэма</translation>
@@ -365,7 +364,6 @@
 <translation id="6069027071882229820">Скапіраваць як відарыс</translation>
 <translation id="6072279588547424923">Пашырэнне <ph name="EXTENSION_NAME" /> дададзена да Chromium</translation>
 <translation id="6072463441809498330">Паскорце работу Chromium</translation>
-<translation id="608006075545470555">Дадаванне працоўнага профілю ў гэты браўзер</translation>
 <translation id="6096348254544841612">Наладжвайце Chromium і кіруйце ім. Ёсць абнаўленне.</translation>
 <translation id="6107893135096467929">Укл. • Chromium не можа праверыць паходжанне гэтага пашырэння</translation>
 <translation id="6119438414301547735">Дазволіць пашырэнню паказваць запыты на доступ на панэлі інструментаў Chromium</translation>
@@ -561,7 +559,6 @@
 <translation id="8471947159125090285">Каб выкарыстоўваць і захоўваць даныя Chromium ва Уліковым запісе Google, пацвердзіце сваю асобу</translation>
 <translation id="8493179195440786826">Chromium састарэў</translation>
 <translation id="8522801943730206384">Chromium можа правяраць толькі захаваныя паролі</translation>
-<translation id="8550334526674375523">Гэты працоўны профіль і ваш асабісты профіль з’яўляюцца поўнасцю асобнымі профілямі.</translation>
 <translation id="8555465886620020932">Памылка службы: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="8556420416730706394">Для зручнага доступу можна замацаваць пошук відарысаў: націсніце кнопку "Замацаваць" уверсе бакавой панэлі</translation>
 <translation id="856656450041460113">Пошук у спісе моў</translation>
@@ -590,7 +587,6 @@
 <translation id="8931379085695076764">Chromium можа ацэньваць, якія вы маеце інтарэсы, на падставе гісторыі прагляду сайтаў за апошнія некалькі тыдняў. Гэта інфармацыя застаецца на прыладзе.</translation>
 <translation id="8941642502866065432">Не ўдаецца абнавіць Chromium</translation>
 <translation id="897581876605952338">Лагатып Chromium Enterprise</translation>
-<translation id="8986207147630327271">Вы дадаяце працоўны профіль у гэты браўзер і даяце адміністратару кантроль толькі над працоўным профілем.</translation>
 <translation id="8988036198400390003">Кіраваць профілямі Chromium</translation>
 <translation id="9019929317751753759">Каб павысіць бяспечнасць Chromium, мы выключылі прыведзенае ніжэй пашырэнне. <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> не змяшчае звестак пра гэта пашырэнне, а значыць, яно магло быць дададзена без вашага ведама.</translation>
 <translation id="9022552996538154597">Увайдзіце ў Chromium</translation>

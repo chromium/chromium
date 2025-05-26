@@ -43,7 +43,6 @@
 <translation id="2536366509642644298">Группы вкладок "<ph name="TAB_GROUP_NAME_1" />" и "<ph name="TAB_GROUP_NAME_2" />" больше не доступны.</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{Свернуть <ph name="TABS_COUNT_ONE" /> вкладку.}one{Свернуть группу из <ph name="TABS_COUNT_MANY" /> вкладки.}few{Свернуть группу из <ph name="TABS_COUNT_MANY" /> вкладок.}many{Свернуть группу из <ph name="TABS_COUNT_MANY" /> вкладок.}other{Свернуть группу из <ph name="TABS_COUNT_MANY" /> вкладки.}}</translation>
 <translation id="2569352796411618312">Подсказка: вы давно не использовали некоторые вкладки (всего: <ph name="NUMBER_OF_TABS" />). Закрыть их?</translation>
-<translation id="2656693375914502139">Переместить в группу</translation>
 <translation id="2662028055331606429">Оценка: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="266935134738038806">Открыть сайт</translation>
 <translation id="2671423594960767771">Открыть доступ</translation>
@@ -121,7 +120,6 @@
 <translation id="6054741997831917303">Цена на этот товар недавно снизилась с <ph name="PREVIOUS_PRICE" /> до <ph name="NEW_PRICE" /></translation>
 <translation id="6109251075362363230">Все одинаковые вкладки также будут добавляться в архив, за исключением недавно открытой</translation>
 <translation id="6193448654517602979">Выбрать вкладки</translation>
-<translation id="6212567362666004597">Добавить вкладку в группу</translation>
 <translation id="6220820548421939212">Да</translation>
 <translation id="6228793724645064692">(оценка магазина)</translation>
 <translation id="6271513594716432922">Закрыть все неактивные вкладки</translation>

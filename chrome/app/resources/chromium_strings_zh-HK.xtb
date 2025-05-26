@@ -120,7 +120,6 @@
 <translation id="2572494885440352020">Chromium 輔助工具</translation>
 <translation id="2575822587468774919">選取要使用「圖片搜尋」尋找的內容</translation>
 <translation id="2576118232315942160">如要在你的所有裝置上存取密碼和其他資料，請登入 Chromium</translation>
-<translation id="2583187216237139145">工作設定檔管理員可移除任何在使用此設定檔時產生的 Chromium 資料 (例如建立的書籤、記錄、密碼和其他設定)。<ph name="LEARN_MORE" /></translation>
 <translation id="2592940277904433508">繼續使用 Chromium</translation>
 <translation id="259935314519650377">無法快取已下載的安裝程式。錯誤代碼：<ph name="UNPACK_CACHING_ERROR_CODE" />。</translation>
 <translation id="2620436844016719705">系統</translation>
@@ -365,7 +364,6 @@
 <translation id="6069027071882229820">複製為圖像</translation>
 <translation id="6072279588547424923">已將 <ph name="EXTENSION_NAME" /> 加到 Chromium</translation>
 <translation id="6072463441809498330">加快 Chromium 的運作速度</translation>
-<translation id="608006075545470555">將工作設定檔新增至此瀏覽器</translation>
 <translation id="6096348254544841612">自訂和管理 Chromium。有可用的更新。</translation>
 <translation id="6107893135096467929">已開啟 • Chromium 無法驗證此擴充程式的來源</translation>
 <translation id="6119438414301547735">允許擴充程式在 Chromium 工具列中顯示存取要求</translation>
@@ -561,7 +559,6 @@ Chromium 無法復原您的設定。</translation>
 <translation id="8471947159125090285">如要將 Chromium 的資料儲存至 Google 帳戶及使用這類資料，請驗證身分</translation>
 <translation id="8493179195440786826">Chromium 版本過舊</translation>
 <translation id="8522801943730206384">儲存密碼時，Chromium 可檢查你的密碼</translation>
-<translation id="8550334526674375523">此工作設定檔與個人設定檔是完全分開。</translation>
 <translation id="8555465886620020932">服務錯誤：<ph name="SERVICE_ERROR" />。</translation>
 <translation id="8556420416730706394">你可以固定「圖片搜尋」方便存取；㩒一下側面板頂部嘅「固定」按鈕</translation>
 <translation id="856656450041460113">搜尋語言清單</translation>
@@ -590,7 +587,6 @@ Chromium 無法復原您的設定。</translation>
 <translation id="8931379085695076764">Chromium 可根據最近幾星期的瀏覽記錄推測您的興趣。這些資料會儲存在您的裝置上。</translation>
 <translation id="8941642502866065432">無法更新 Chromium</translation>
 <translation id="897581876605952338">Chromium Enterprise 標誌</translation>
-<translation id="8986207147630327271">您即將在此瀏覽器中新增工作設定檔，並只將工作設定檔的控制權授予管理員。</translation>
 <translation id="8988036198400390003">管理 Chromium 設定檔</translation>
 <translation id="9019929317751753759">為鞏固 Chromium 的安全性，我們已將未列在 <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> 中的擴充功能停用，因為它們可能在您不知情的情況下加入瀏覽器。</translation>
 <translation id="9022552996538154597">登入 Chromium</translation>

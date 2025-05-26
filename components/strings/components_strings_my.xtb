@@ -1838,6 +1838,7 @@
 <translation id="4140905366050378834">အိမ်မွေးတိရစ္ဆာန်အစာ၊ တိရစ္ဆာန်သုံးပစ္စည်း</translation>
 <translation id="4140905530744469899">ပရိုဖိုင် ID-</translation>
 <translation id="4142935452406587478">ဗန်း ၁၀</translation>
+<translation id="4147897805161313378">Google Photos</translation>
 <translation id="4148925816941278100">American Express</translation>
 <translation id="4150099059797363385">Chinese #4 စာအိတ်</translation>
 <translation id="4151403195736952345">အလုံးစုံဆိုင်ရာ မူလပုံစံကို အသုံးပြုပါ (ထောက်လှမ်းပါ)</translation>
@@ -1999,6 +2000,7 @@
 <translation id="437620492464254965">တံခါးနှင့် ပြတင်းပေါက်</translation>
 <translation id="4377125064752653719"><ph name="DOMAIN" /> သို့ရောက်ရှိရန် သင်ချဉ်းကပ်ခဲ့သည်၊ သို့သော် ဆာဗာမှပြသသည့် အသိမှတ်ပြုလက်မှတ်အား ၎င်း၏လျှောက်တင်သူမှ ရုတ်သိမ်းလိုက်သည်။ ဆိုလိုသည်မှာ ဆာဗာမှ ပြသသည့် လုံခြုံရေးလျှို့ဝက် အချက်များမှာ လုံးဝမယုံကြည်သင့်ပါ။ သင်သည် တိုက်ခိုက်သူနှင့်သာ ဆက်သွယ်ပါလိမ့်မည်။</translation>
 <translation id="4378154925671717803">ဖုန်း</translation>
+<translation id="4382484599443659549">PDF</translation>
 <translation id="4382833368532556056">ယခုမှစ၍ သင့်ဖိုင်များကို cloud သိုလှောင်ခန်းတွင် သိမ်းပါ</translation>
 <translation id="4384395682990721132">A4x3</translation>
 <translation id="4387692837058041921">Microsoft OneDrive သို့ ဖိုင်အပ်လုဒ်လုပ်ခြင်းကို ခဏရပ်ထားသည်</translation>
@@ -4317,7 +4319,6 @@
 နောက်ထပ်အသေးစိတ်များ−
 <ph name="DEBUG_INFO" /></translation>
 <translation id="8416874502399604126">ဤတစ်ကြိမ်အတွက် မိုက်ခရိုဖုန်း ခွင့်ပြုထားသည်</translation>
-<translation id="8421158157346464398">အလုပ်ပရိုဖိုင် အချက်အလက် (သင့်အလုပ်ပရိုဖိုင် အသုံးပြုသူအမည်ကဲ့သို့)</translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" /> <ph name="SECOND_LABEL" /> <ph name="THIRD_LABEL" /></translation>
 <translation id="8425213833346101688">ပြောင်းရန်</translation>
 <translation id="8426945547715537628">ကီးဘုတ် အစားထိုးခွင့်ပြုမလား။</translation>

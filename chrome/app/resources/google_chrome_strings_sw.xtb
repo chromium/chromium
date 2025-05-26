@@ -106,7 +106,6 @@ Baadhi ya vipengele huenda visipatikane na mabadiliko katika mapendeleo hayatahi
 <translation id="2345992953227471816">Chrome imegundua kwamba viendelezi hivi vina programu hasidi:</translation>
 <translation id="2348335408836342058">Chrome inahitaji ruhusa ya kufikia kamera na maikrofoni yako katika tovuti hii</translation>
 <translation id="234869673307233423">Chrome imeshindwa kukagua manenosiri yako. Jaribu tena baadaye.</translation>
-<translation id="235650106824528204">Data yoyote ya Chrome inayozalishwa unapotumia wasifu huu (kama vile alamisho ulizoweka, historia, manenosiri na mipangilio mingine) inaweza kuondolewa na msimamizi wa wasifu huu wa kazini. <ph name="LEARN_MORE" /></translation>
 <translation id="2359808026110333948">Endelea</translation>
 <translation id="2403703063067034158">Hitilafu ya kuwasha: tukio jingine la uwekaji mipangilio linaendelea kwa sasa, tafadhali jaribu tena baadaye.</translation>
 <translation id="2409816192575564775">{NUM_DEVICES,plural, =0{Kiendelezi kimoja au zaidi cha Chrome kilikuwa kinafikia kifaa 1 cha HID}=1{Kiendelezi kimoja au zaidi cha Chrome kinafikia kifaa 1 cha HID}other{Kiendelezi kimoja au zaidi cha Chrome kinafikia vifaa # vya HID}}</translation>
@@ -397,7 +396,6 @@ Google Chrome haiwezi kufufua mipangilio yako.</translation>
 <translation id="6069027071882229820">Nakili ikiwa picha</translation>
 <translation id="6070348360322141662">Kwa usalama wa ziada, Google Chrome itasimba data yako kwa njia fiche</translation>
 <translation id="6075300983329039771">Shirika lako, <ph name="MANAGER" /> linataka uingie katika akaunti ya Chrome</translation>
-<translation id="608006075545470555">Ongeza Wasifu wa Kazini kwenye kivinjari hiki</translation>
 <translation id="6113794647360055231">Chrome imeboreshwa zaidi</translation>
 <translation id="6116252277240876590">Lugha hii hutumika kuonyesha menyu, mipangilio, arifa na maandishi mengine katika Chrome</translation>
 <translation id="6134085236017727171">Ili utumie maikrofoni yako, ruhusu Chrome ifikie <ph name="BEGIN_LINK" />mipangilio ya mfumo<ph name="END_LINK" /></translation>
@@ -593,7 +591,6 @@ Google Chrome haiwezi kufufua mipangilio yako.</translation>
 <translation id="8521348052903287641">Sheria ya kuingia ya Google Chrome Dev ili kuruhusu trafiki ya mDNS.</translation>
 <translation id="852529348814672339">Onyesha Chrome katika lugha hii</translation>
 <translation id="8533056045953418157">Weka Google Chrome iwe kitazamaji chako chaguomsingi cha PDF</translation>
-<translation id="8550334526674375523">Wasifu huu wa kazini ni tofauti kabisa na wasifu wako wa binafsi.</translation>
 <translation id="8555465886620020932">Hitilafu ya huduma: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="856656450041460113">Tafuta orodha ya lugha</translation>
 <translation id="8601359445272098721">Mpya! Unaweza kutafsiri matini na picha kwenye skrini kwa kuchagua kitufe cha "tafsiri skrini"</translation>
@@ -626,7 +623,6 @@ Google Chrome haiwezi kufufua mipangilio yako.</translation>
 <translation id="8914504000324227558">Zindua upya Chrome</translation>
 <translation id="8922193594870374009">Ili uweze kutuma namba kwa simu yako ya Android kutoka <ph name="ORIGIN" />, ingia katika akaunti kwenye Chrome ukitumia vifaa vyote viwili.</translation>
 <translation id="8948460679427074738">Kiendelezi hiki hakijachapisha desturi za faragha, kama vile jinsi kinavyokusanya na kutumia data. Chrome inapendekeza ukiondoe.</translation>
-<translation id="8986207147630327271">Unaongeza wasifu wa kazini kwenye kivinjari hiki na unampa msimamizi wako uwezo wa kudhibiti wasifu huo wa kazini pekee.</translation>
 <translation id="8989968390305463310">Historia yako ya kuvinjari huathiri matangazo unayoyaona na mambo yanayokuvutia kama inavyokadiriwa hapa chini. Ili kulinda faragha yako, Chrome hufuta kiotomatiki mambo yanayokuvutia kadiri unavyoendelea kutumia kila mwezi. Mambo yanayokuvutia yanaweza kuonyeshwa upya isipokuwa ukiyaondoa.</translation>
 <translation id="8992769679401294069">Data yako imesimbwa kwa njia fiche kwa kutumia kauli yako ya siri. Iweke ili utumie na kuhifadhi data ya Chrome kwenye Akaunti yako ya Google.</translation>
 <translation id="8999117580775242387">Wakati kiendelezi cha HTTPS hakipatikani, Chrome itatumia muunganisho usio salama bila kukutahadharisha</translation>

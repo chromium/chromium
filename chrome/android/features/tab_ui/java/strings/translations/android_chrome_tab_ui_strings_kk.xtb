@@ -43,7 +43,6 @@
 <translation id="2536366509642644298">"<ph name="TAB_GROUP_NAME_1" />" және "<ph name="TAB_GROUP_NAME_2" />" қойындылар топтары енді қолжетімді емес.</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> қойындысын жию.}other{<ph name="TABS_COUNT_MANY" /> қойындысы бар қойындылар тобын жию.}}</translation>
 <translation id="2569352796411618312">Ұсыныс: <ph name="NUMBER_OF_TABS" /> қойынды біраздан бері пайдаланылмады. Олар жабылсын ба?</translation>
-<translation id="2656693375914502139">Топқа тасымалдау</translation>
 <translation id="2662028055331606429">Бағасы: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="266935134738038806">Сайтқа кіру</translation>
 <translation id="2671423594960767771">Топты бөлісу</translation>
@@ -121,7 +120,6 @@
 <translation id="6054741997831917303">Бұл тауардың бағасы жақында түсті. Ескі бағасы: <ph name="PREVIOUS_PRICE" />, жаңа бағасы: <ph name="NEW_PRICE" /></translation>
 <translation id="6109251075362363230">Ең соңғы қолданылған көшірмені есепке алмағанда, барлық қайталанатын қойынды да мұрағатталады.</translation>
 <translation id="6193448654517602979">Қойындыларды таңдау</translation>
-<translation id="6212567362666004597">Топқа қойынды қосу</translation>
 <translation id="6220820548421939212">Иә. Жарайды</translation>
 <translation id="6228793724645064692">(дүкен рейтингісі)</translation>
 <translation id="6271513594716432922">Барлық әрекетсіз қойындыны жабу</translation>

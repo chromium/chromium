@@ -120,7 +120,6 @@ Certaines fonctionnalités ne seront peut-être pas disponibles et les modificat
 <translation id="2572494885440352020">Aide de Chromium</translation>
 <translation id="2575822587468774919">Sélectionner n'importe quel élément pour effectuer une recherche avec la recherche d'images</translation>
 <translation id="2576118232315942160">Pour obtenir vos mots de passe et bien plus encore sur tous vos appareils, connectez-vous à Chromium</translation>
-<translation id="2583187216237139145">L'administrateur du profil professionnel peut retirer toutes les données Chromium générées durant l'utilisation de ce profil (comme la création de favoris, l'historique, les mots de passe et d'autres paramètres). <ph name="LEARN_MORE" /></translation>
 <translation id="2592940277904433508">Continuer à utiliser Chromium</translation>
 <translation id="259935314519650377">Échec de la mise en cache du programme d'installation téléchargé. Erreur : <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
 <translation id="2620436844016719705">Système</translation>
@@ -365,7 +364,6 @@ Certaines fonctionnalités ne seront peut-être pas disponibles et les modificat
 <translation id="6069027071882229820">Copier en tant qu'image</translation>
 <translation id="6072279588547424923">L'extension « <ph name="EXTENSION_NAME" /> » a été ajoutée à Chromium</translation>
 <translation id="6072463441809498330">Rendre Chromium plus rapide</translation>
-<translation id="608006075545470555">Ajouter le profil professionnel à ce navigateur</translation>
 <translation id="6096348254544841612">Personnalisez et contrôlez Chromium. Une mise à jour est disponible.</translation>
 <translation id="6107893135096467929">Activée • Chromium ne peut pas vérifier l'origine de cette extension</translation>
 <translation id="6119438414301547735">Autoriser l'extension à afficher les demandes d'accès dans la barre d'outils Chromium</translation>
@@ -561,7 +559,6 @@ Chromium est incapable de récupérer vos paramètres.</translation>
 <translation id="8471947159125090285">Pour utiliser et enregistrer des données Chromium dans votre compte Google, confirmez qu'il s'agit bien de vous</translation>
 <translation id="8493179195440786826">Chromium n'est pas à jour</translation>
 <translation id="8522801943730206384">Chromium peut vérifier vos mots de passe lorsque vous les enregistrez</translation>
-<translation id="8550334526674375523">Ce profil professionnel est distinct de votre profil personnel.</translation>
 <translation id="8555465886620020932">Erreur liée au service : <ph name="SERVICE_ERROR" />.</translation>
 <translation id="8556420416730706394">Vous pouvez épingler la recherche d'images pour un accès facile; cliquez sur le bouton Épingler en haut du panneau latéral</translation>
 <translation id="856656450041460113">Rechercher la liste de langues</translation>
@@ -590,7 +587,6 @@ Chromium est incapable de récupérer vos paramètres.</translation>
 <translation id="8931379085695076764">Chromium peut estimer vos centres intérêt en fonction de votre historique de navigation au cours des dernières semaines. Ces renseignements restent sur votre appareil.</translation>
 <translation id="8941642502866065432">Impossible de mettre à jour Chromium</translation>
 <translation id="897581876605952338">Logo de Chromium Enterprise</translation>
-<translation id="8986207147630327271">Vous ajoutez un profil professionnel à ce navigateur et vous octroyez uniquement le contrôle de ce profil à votre administrateur.</translation>
 <translation id="8988036198400390003">Gérer les profils Chromium</translation>
 <translation id="9019929317751753759">Afin de rendre Chromium plus sûr, nous avons désactivé l'extension suivante qui n'est pas répertoriée dans <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> et a pu être ajoutée à votre insu.</translation>
 <translation id="9022552996538154597">Connexion à Chromium</translation>

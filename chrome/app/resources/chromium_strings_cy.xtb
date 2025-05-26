@@ -121,7 +121,6 @@ Mae'n bosib na fydd rhai nodweddion ar gael ac ni fydd newidiadau o ran dewisiad
 <translation id="2572494885440352020">Chromium Helper</translation>
 <translation id="2575822587468774919">Dewiswch unrhyw beth i'w chwilio gyda Chwilio Lluniau</translation>
 <translation id="2576118232315942160">I gael eich cyfrineiriau a rhagor ar eich holl ddyfeisiau, mewngofnodwch i Chromium</translation>
-<translation id="2583187216237139145">Gall unrhyw ddata Chromium a gynhyrchir wrth ddefnyddio'r proffil hwn (megis creu nodau tudalen, hanes, cyfrineiriau, a gosodiadau eraill) gael eu tynnu gan weinyddwr y proffil gwaith. <ph name="LEARN_MORE" /></translation>
 <translation id="2592940277904433508">Parhau i ddefnyddio Chromium</translation>
 <translation id="259935314519650377">Wedi methu â storio'r gosodwr sydd wedi'i lawrlwytho dros dro. Gwall: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
 <translation id="2620436844016719705">System</translation>
@@ -366,7 +365,6 @@ Mae'n bosib na fydd rhai nodweddion ar gael ac ni fydd newidiadau o ran dewisiad
 <translation id="6069027071882229820">Copïo fel llun</translation>
 <translation id="6072279588547424923">Mae <ph name="EXTENSION_NAME" /> wedi'i ychwanegu at Chromium</translation>
 <translation id="6072463441809498330">Gwneud Chromium yn Gyflymach</translation>
-<translation id="608006075545470555">Ychwanegu Proffil Gwaith i'r porwr hwn</translation>
 <translation id="6096348254544841612">Personoleiddio a rheoli Chromium. Mae diweddariad ar gael.</translation>
 <translation id="6107893135096467929">Ymlaen • Nid yw Chromium yn gallu dilysu o ble mae'r estyniad hwn yn dod</translation>
 <translation id="6119438414301547735">Caniatáu i estyniad ddangos ceisiadau am fynediad ym mar offer Chromium</translation>
@@ -562,7 +560,6 @@ Ni all Chromium adfer eich gosodiadau.</translation>
 <translation id="8471947159125090285">I ddefnyddio a chadw data Chromium yn eich Cyfrif Google, cadarnhewch mai chi sydd yno</translation>
 <translation id="8493179195440786826">Mae Chromium yn Hen</translation>
 <translation id="8522801943730206384">Gall Chromium wirio'ch cyfrineiriau pan fyddwch yn eu cadw</translation>
-<translation id="8550334526674375523">Mae'r proffil gwaith hwn yn hollol ar wahân i'ch proffil personol.</translation>
 <translation id="8555465886620020932">Gwall gwasanaeth: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="8556420416730706394">Gallwch binio Chwilio Lluniau i gael mynediad hawdd; cliciwch ar y botwm Pinio ar frig y panel ochr</translation>
 <translation id="856656450041460113">Chwilio rhestr iaith</translation>
@@ -591,7 +588,6 @@ Ni all Chromium adfer eich gosodiadau.</translation>
 <translation id="8931379085695076764">Gall Chromium amcangyfrif eich diddordebau yn seiliedig ar eich hanes pori o'r ychydig wythnosau diwethaf. Mae'r wybodaeth hon yn aros ar eich dyfais.</translation>
 <translation id="8941642502866065432">Methu â diweddaru Chromium</translation>
 <translation id="897581876605952338">Logo Chromium Enterprise</translation>
-<translation id="8986207147630327271">Rydych yn ychwanegu proffil gwaith i'r porwr hwn ac yn rhoi rheolaeth i'ch gweinyddwr dros y proffil gwaith yn unig.</translation>
 <translation id="8988036198400390003">Rheoli proffiliau Chromium</translation>
 <translation id="9019929317751753759">I wneud Chromium yn fwy diogel, gwnaethom analluogi'r estyniad canlynol nad yw wedi'i restru yn y <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> ac a allai fod wedi'i ychwanegu heb i chi wybod.</translation>
 <translation id="9022552996538154597">Mewngofnodi i Chromium</translation>

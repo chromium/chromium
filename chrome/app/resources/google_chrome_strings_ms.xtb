@@ -102,7 +102,6 @@
 <translation id="2345992953227471816">Chrome mendapati bahawa item ini mengandungi perisian hasad:</translation>
 <translation id="2348335408836342058">Chrome memerlukan kebenaran untuk mengakses kamera dan mikrofon anda bagi tapak ini</translation>
 <translation id="234869673307233423">Chrome tidak dapat menyemak kata laluan anda. Cuba lagi nanti.</translation>
-<translation id="235650106824528204">Sebarang data Chrome yang dijana semasa penggunaan profil ini (seperti pembuatan penanda halaman, sejarah, kata laluan dan tetapan lain) boleh dialih keluar oleh pentadbir profil kerja. <ph name="LEARN_MORE" /></translation>
 <translation id="2359808026110333948">Teruskan</translation>
 <translation id="2403703063067034158">Ralat permulaan: terdapat tika persediaan lain sedang dijalankan pada masa ini, sila cuba sebentar lagi.</translation>
 <translation id="2409816192575564775">{NUM_DEVICES,plural, =0{1 peranti HID telah diakses oleh satu atau beberapa sambungan Chrome}=1{1 peranti HID sedang diakses oleh satu atau beberapa sambungan Chrome}other{# peranti HID sedang diakses oleh satu atau beberapa sambungan Chrome}}</translation>
@@ -389,7 +388,6 @@
 <translation id="6069027071882229820">Salin sebagai imej</translation>
 <translation id="6070348360322141662">Untuk keselamatan tambahan, Google Chrome akan menyulitkan data anda</translation>
 <translation id="6075300983329039771">Organisasi anda, <ph name="MANAGER" />, menghendaki anda untuk log masuk ke Chrome</translation>
-<translation id="608006075545470555">Tambahkan Profil Kerja pada penyemak imbas ini</translation>
 <translation id="6113794647360055231">Chrome kini lebih baik</translation>
 <translation id="6116252277240876590">Bahasa ini digunakan untuk memaparkan menu, tetapan, makluman dan teks lain dalam Chrome</translation>
 <translation id="6134085236017727171">Untuk menggunakan mikrofon anda, berikan akses kepada Chrome dalam <ph name="BEGIN_LINK" />tetapan sistem<ph name="END_LINK" /></translation>
@@ -585,7 +583,6 @@
 <translation id="8521348052903287641">Peraturan masuk bagi Google Chrome Dev untuk membenarkan trafik mDNS.</translation>
 <translation id="852529348814672339">Paparkan Chrome dalam bahasa ini</translation>
 <translation id="8533056045953418157">Tetapkan Google Chrome sebagai alat lihat PDF lalai saya</translation>
-<translation id="8550334526674375523">Profil kerja ini terpisah sepenuhnya daripada profil peribadi anda.</translation>
 <translation id="8555465886620020932">Ralat perkhidmatan: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="856656450041460113">Cari senarai bahasa</translation>
 <translation id="8601359445272098721">Baharu! Anda boleh menterjemahkan teks dan imej pada skrin anda dengan memilih butang "terjemahkan skrin"</translation>
@@ -618,7 +615,6 @@
 <translation id="8914504000324227558">Lancarkan semula Chrome</translation>
 <translation id="8922193594870374009">Untuk menghantar nombor daripada <ph name="ORIGIN" /> ke telefon Android anda, log masuk ke Chrome pada kedua-dua peranti.</translation>
 <translation id="8948460679427074738">Sambungan ini belum menerbitkan amalan privasi, seperti cara sambungan ini mengumpulkan dan menggunakan data. Chrome mengesyorkan supaya anda mengalih keluar sambungan tersebut.</translation>
-<translation id="8986207147630327271">Anda menambahkan profil kerja pada penyemak imbas ini dan memberi pentadbir anda kawalan terhadap profil kerja sahaja.</translation>
 <translation id="8989968390305463310">Sejarah penyemakan imbas anda mempengaruhi iklan yang anda lihat dan minat seperti yang dianggarkan di bawah. Untuk melindungi privasi anda, Chrome memadamkan minat anda secara automatik secara bergilir setiap bulan. Minat akan dimuat semula melainkan anda mengalih keluar minat anda.</translation>
 <translation id="8992769679401294069">Data anda telah disulitkan dengan ungkapan laluan anda. Masukkan ungkapan laluan tersebut untuk menggunakan dan menyimpan data Chrome dalam Google Account anda.</translation>
 <translation id="8999117580775242387">Apabila HTTPS tidak tersedia, Chrome akan menggunakan sambungan yang tidak selamat tanpa memberi anda amaran</translation>
@@ -628,6 +624,7 @@
 <translation id="9090566250983691233">Ketahui sebab Chrome menyekat sesetengah fail</translation>
 <translation id="9106236359747881194">Pilih teks untuk dicari</translation>
 <translation id="911206726377975832">Padamkan juga data menyemak imbas anda?</translation>
+<translation id="9134482777260927479">Bantuan kerja rumah</translation>
 <translation id="9138603949443464873">Untuk menggunakan perubahan anda, mulakan semula Chrome</translation>
 <translation id="9148058034647219655">Keluar</translation>
 <translation id="9195993889682885387">Chrome dapat menganggarkan minat anda berdasarkan sejarah penyemakan imbas anda dari beberapa minggu yang lalu. Maklumat ini kekal pada peranti anda.</translation>

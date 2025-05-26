@@ -2422,6 +2422,7 @@ Il sistema eseguirà una query sui record AAAA soltanto quando può essere conne
 <translation id="268695908564263739">Questa policy attiva o disattiva l'impostazione della modalità ad alta efficienza. Questa impostazione fa sì che le schede vengano chiuse dopo un certo periodo di tempo in background per recuperare memoria.
       Se questa policy non è impostata, l'utente finale può controllare questa impostazione all'indirizzo chrome://settings/performance.
       </translation>
+<translation id="2687600966277668971">Impossibile inviare il precaricamento di SpeculationRules agli URL controllati da ServiceWorkers (comportamento legacy).</translation>
 <translation id="2691668238491124549">Se questa policy viene impostata (come consigliato), le lingue consigliate per una sessione gestita vengono spostate in cima all'elenco, nell'ordine di visualizzazione nella policy. La prima lingua consigliata è preselezionata.
 
       Se la policy non viene impostata, viene preselezionata la lingua attuale dell'interfaccia utente.
@@ -4489,6 +4490,7 @@ Deprecato: la funzionalità di tracciamento delle spedizioni è disattivata dall
 <translation id="4189872355465413041">Applicazioni di sistema</translation>
 <translation id="4190316993598857632">Abilita la modifica dei preferiti</translation>
 <translation id="4192388905594723944">URL per la convalida del token di autenticazione del client di accesso remoto</translation>
+<translation id="4195119404667420672">Il precaricamento di SpeculationRules può essere inviato agli URL controllati da ServiceWorkers.</translation>
 <translation id="4195698007674066525">Imposta una tastiera numerica come predefinita per l'inserimento delle password</translation>
 <translation id="4203055629055264833">Se la policy viene impostata su Enabled o se non viene configurata, gli utenti possono visualizzare la pagina di risultati più recente del motore di ricerca predefinito in un riquadro laterale attivando un'icona nella barra degli strumenti.
 
@@ -5076,6 +5078,19 @@ L'impostazione di <ph name="CHROME_OS_RELEASE_CHANNEL_POLICY_NAME" /> ha effetto
 <translation id="4650044303940238102">Impostazioni dei caratteri locali</translation>
 <translation id="4650759511838826572">Disabilita schemi di protocollo dell'URL</translation>
 <translation id="465099050592230505">URL del web store dell'azienda (obsoleta)</translation>
+<translation id="4652388001247121058">Il precaricamento di SpeculationRules può essere inviato agli URL controllati da
+ServiceWorkers. Tuttavia, il codice legacy non lo ha consentito e ha annullato le richieste di
+precaricamento. Questa policy consente di controllare il comportamento.
+
+Se questa policy viene attivata o se non viene configurata, il precaricamento di SpeculationRules
+viene inviato agli URL controllati da ServiceWorkers (se il flag funzionalità PrefetchServiceWorker è
+attivato). Questo è il comportamento predefinito attuale ed è in linea con le
+specifiche.
+
+Se questa policy viene disattivata, il precaricamento di SpeculationRules
+non viene inviato agli URL controllati da ServiceWorkers. Questo è il comportamento legacy.
+
+Questa policy è stata pensata per essere temporanea e verrà rimossa in futuro.</translation>
 <translation id="4653465451589191309">Se la policy viene impostata su Attivata o se non viene configurata, gli utenti possono gestire (disconnettere o modificare) le connessioni VPN. Se la connessione VPN viene creata tramite un'app VPN, l'UI all'interno dell'app non viene influenzata. Pertanto, gli utenti potrebbero comunque essere in grado di utilizzare l'app per modificare la connessione VPN. Utilizza questa policy con la funzionalità VPN sempre attiva; in questo modo l'amministratore può decidere di stabilire una connessione VPN all'avvio di un dispositivo.
 
       Se la policy viene impostata su Disattivata, vengono disattivate le interfacce utente di <ph name="PRODUCT_OS_NAME" /> che consentirebbero all'utente di disconnettere o modificare le connessioni VPN.</translation>
@@ -5092,7 +5107,6 @@ L'impostazione di <ph name="CHROME_OS_RELEASE_CHANNEL_POLICY_NAME" /> ha effetto
 <translation id="4661889655253181651">Le impostazioni contenuti consentono di specificare la modalità di gestione di determinati tipi di contenuto (ad esempio Cookie, Immagini o JavaScript).</translation>
 <translation id="4663509616441994711">Viene disattivata l'unione delle policy relative al cloud a livello di utente.</translation>
 <translation id="4663588423815449593">Forza <ph name="PEPPER_NAME" /> a usare il decodificatore video precedente.</translation>
-<translation id="4665632569240493493">Attiva l'attribuzione del tema dell'estensione nel piè di pagina della pagina Nuova scheda</translation>
 <translation id="4665897631924472251">Impostazioni di gestione delle estensioni</translation>
 <translation id="4666930704271463612">Consente di specificare il sottoinsieme di server di stampa a cui verranno inviate query sulle stampanti.
 
@@ -6080,6 +6094,7 @@ Gli account gestiti non sono idonei a far parte di un gruppo Famiglia o a crearl
 <translation id="5334404204520035180">Controlla l'utilizzo dell'API WebPrinting</translation>
 <translation id="5334501839642146593">Non inviare mai le metriche a Google</translation>
 <translation id="5335910979215357815">Attiva l'API Save and Share per il controllo di <ph name="PRODUCT_OS_NAME" /> di terze parti.</translation>
+<translation id="5337869685871558036">Consenti il precaricamento di SpeculationRules per gli URL controllati da ServiceWorkers</translation>
 <translation id="5339096331970464266">Attiva la tastiera virtuale di accessibilità</translation>
 <translation id="5340008866815063393">Attiva la generazione di report sui dati delle policy</translation>
 <translation id="5345892164332459671">Disattiva il servizio SSO mobile e non trasferire le autenticazioni del web service dell'utente su un nuovo dispositivo</translation>
@@ -6132,7 +6147,6 @@ A partire dalla versione 92 di <ph name="PRODUCT_NAME" />, questa policy è supp
 <translation id="5373552304217872025">Se la policy viene impostata su true o se non viene configurata, <ph name="PRODUCT_NAME" /> e <ph name="LACROS_NAME" /> consentono l'aggiunta di una nuova persona da Gestione utenti.
 
       Se viene impostata su false, <ph name="PRODUCT_NAME" /> e <ph name="LACROS_NAME" /> non consentono l'aggiunta di una nuova persona da Gestione utenti.</translation>
-<translation id="5374300764724537955">Disattiva l'attribuzione del tema dell'estensione nel piè di pagina della pagina Nuova scheda</translation>
 <translation id="5376712696238639532">La configurazione della policy specifica se gli insegnanti possono utilizzare la funzionalità per le didascalie.
 
 Se il valore viene impostato su true o se la policy non viene configurata, gli insegnanti selezionati potranno aggiungere sottotitoli della propria voce e inviare la trascrizione agli studenti.

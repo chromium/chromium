@@ -11,7 +11,6 @@
 <translation id="103269572468856066">¿Borrar también datos de estos sitios y aplicaciones?</translation>
 <translation id="1034259925032978114">La ventana está abierta</translation>
 <translation id="1036348656032585052">Desactivar</translation>
-<translation id="1045448422538531528">Añadir a grupo</translation>
 <translation id="1045899828449635435">¿Borrar también datos de estos sitios?</translation>
 <translation id="1049743911850919806">Incógnito</translation>
 <translation id="1052842760770519282">No se puede acceder a algunas de tus contraseñas</translation>
@@ -376,6 +375,7 @@ Solo las personas que tengan tu frase de contraseña podrán leer tus datos cifr
 <translation id="2718352093833049315">Solo en Wi-Fi</translation>
 <translation id="2718846868787000099">Para mostrar contenido en los idiomas que has seleccionado, los sitios que visites pueden ver tus preferencias</translation>
 <translation id="2723001399770238859">audio</translation>
+<translation id="2734335652257251631">Mostrar modo Lectura</translation>
 <translation id="2739887572830526131">Conserva este grupo para añadir pestañas más tarde o elimínalo si ya no lo necesitas.</translation>
 <translation id="2742373789128106053"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> no está disponible en este momento.</translation>
 <translation id="2760805590727089264">MM/AA</translation>
@@ -547,7 +547,6 @@ Solo las personas que tengan tu frase de contraseña podrán leer tus datos cifr
 <translation id="351672147489633468">{NUM_REVOKED_PERMISSIONS,plural, =1{Se han eliminado los permisos de notificaciones de un sitio que no has visitado recientemente}other{Se han eliminado los permisos de notificaciones de # sitios que no has visitado recientemente}}</translation>
 <translation id="3518985090088779359">Aceptar y continuar</translation>
 <translation id="3519014757432845220">Ayuda a mejorar la protección contra el spam compartiendo con Google el contenido de la notificación y la URL del sitio. Es posible que el contenido lo revisen personas.</translation>
-<translation id="351952459507671940">Añadir a un nuevo grupo</translation>
 <translation id="3521388823983121502">No se puede continuar con <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="3522247891732774234">Actualización disponible. Más opciones</translation>
 <translation id="3523789730715594198">Puedes detener la sincronización en cualquier momento desde la configuración. Google puede personalizar la Búsqueda y otros servicios en función de tu historial.</translation>
@@ -1746,6 +1745,7 @@ Para cambiar este ajuste, <ph name="BEGIN_LINK" />elimina los datos de Chrome de
 <translation id="8676789164135894283">Verificar inicio de sesión</translation>
 <translation id="8683039184091909753">imagen</translation>
 <translation id="8688183792442786085"><ph name="TAB_TITLE" />, pestaña seleccionada</translation>
+<translation id="8693232767599693749">¿Ver modo Lectura?</translation>
 <translation id="8697753151306746444">En su lugar, comparte la ventana o la pantalla</translation>
 <translation id="869891660844655955">Fecha de caducidad</translation>
 <translation id="8699120352855309748">No ofrecer que se traduzcan estos idiomas</translation>

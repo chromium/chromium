@@ -120,7 +120,6 @@ Některé funkce možná nebudou k dispozici a změny nastavení se neuloží.</
 <translation id="2572494885440352020">Chromium Helper</translation>
 <translation id="2575822587468774919">Vyberte cokoli, co chcete vyhledat pomocí vyhledávání obrázků</translation>
 <translation id="2576118232315942160">Pokud svá hesla a další položky chcete mít na všech svých zařízeních, přihlaste se do prohlížeče Chromium</translation>
-<translation id="2583187216237139145">Veškerá data prohlížeče Chromium vygenerovaná během používání tohoto profilu (jako je vytvoření záložek, historie, hesel a další nastavení) může administrátor pracovního profilu odstranit. <ph name="LEARN_MORE" /></translation>
 <translation id="2592940277904433508">Pokračovat v používání prohlížeče Chromium</translation>
 <translation id="259935314519650377">Stažený instalační program se nepodařilo uložit do mezipaměti. Chyba: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
 <translation id="2620436844016719705">Systém</translation>
@@ -365,7 +364,6 @@ Některé funkce možná nebudou k dispozici a změny nastavení se neuloží.</
 <translation id="6069027071882229820">Kopírovat jako obrázek</translation>
 <translation id="6072279588547424923">Do prohlížeče Chromium bylo přidáno rozšíření <ph name="EXTENSION_NAME" /></translation>
 <translation id="6072463441809498330">Zrychlete si Chromium</translation>
-<translation id="608006075545470555">Přidat do tohoto prohlížeče pracovní profil</translation>
 <translation id="6096348254544841612">Přizpůsobte si prohlížeč Chromium a ovládejte jej. Je k dispozici aktualizace.</translation>
 <translation id="6107893135096467929">Zapnuto • Chromium nedokáže ověřit, odkud toto rozšíření pochází</translation>
 <translation id="6119438414301547735">Povolit rozšíření zobrazovat na liště prohlížeče Chromium žádosti o přístup</translation>
@@ -561,7 +559,6 @@ Chromium nemůže vaše nastavení obnovit.</translation>
 <translation id="8471947159125090285">Pokud chcete používat a ukládat data prohlížeče Chromium ve svém účtu Google, ověřte svou totožnost</translation>
 <translation id="8493179195440786826">Prohlížeč Chromium je zastaralý</translation>
 <translation id="8522801943730206384">Chromium může hesla zkontrolovat, pouze když si je uložíte</translation>
-<translation id="8550334526674375523">Tento pracovní profil je zcela oddělen od vašeho osobního profilu.</translation>
 <translation id="8555465886620020932">Chyba služby: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="8556420416730706394">Vyhledávání obrázků si můžete pro snadný přístup připnout. Stačí v horní části postranního panelu kliknout na tlačítko Připnout.</translation>
 <translation id="856656450041460113">Vyhledat v seznamu jazyků</translation>
@@ -590,7 +587,6 @@ Chromium nemůže vaše nastavení obnovit.</translation>
 <translation id="8931379085695076764">Chromium dokáže odhadovat vaše zájmy podle historie prohlížení za posledních několik týdnů. Tyto údaje zůstávají v zařízení.</translation>
 <translation id="8941642502866065432">Chromium nelze aktualizovat</translation>
 <translation id="897581876605952338">Logo Chromium Enterprise</translation>
-<translation id="8986207147630327271">Přidáváte do tohoto prohlížeče pracovní profil a povolujete administrátorovi ovládat pouze pracovní profil.</translation>
 <translation id="8988036198400390003">Spravovat profily Chromium</translation>
 <translation id="9019929317751753759">Aby byl prohlížeč Chromium bezpečnější, deaktivovali jsme následující rozšíření, které není uvedeno na webu <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> a pravděpodobně bylo přidáno bez vašeho vědomí.</translation>
 <translation id="9022552996538154597">Přihlásit se do prohlížeče Chromium</translation>

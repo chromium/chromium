@@ -102,7 +102,6 @@
 <translation id="2345992953227471816">Chrome je otkrio da ova proširenja sadrže zlonamjerni softver:</translation>
 <translation id="2348335408836342058">Chrome treba dopuštenje za pristup kameri i mikrofonu za ovu web-lokaciju</translation>
 <translation id="234869673307233423">Chrome ne može provjeriti vaše zaporke. Pokušajte ponovno kasnije.</translation>
-<translation id="235650106824528204">Sve podatke iz Chromea koji se generiraju tijekom upotrebe ovog profila (primjerice izradom oznaka, povijesti, zaporki i drugih postavki) može ukloniti administrator poslovnog profila. <ph name="LEARN_MORE" /></translation>
 <translation id="2359808026110333948">Nastavi</translation>
 <translation id="2403703063067034158">Pogreška pokretanja: trenutačno je u tijeku drugi primjerak postavljanja. Pokušajte ponovno kasnije.</translation>
 <translation id="2409816192575564775">{NUM_DEVICES,plural, =0{Jedno ili više Chromeovih proširenja pristupalo je jednom HID uređaju}=1{Jedno ili više Chromeovih proširenja pristupa jednom HID uređaju}one{Jedno ili više Chromeovih proširenja pristupa # HID uređaju}few{Jedno ili više Chromeovih proširenja pristupa # HID uređaja}other{Jedno ili više Chromeovih proširenja pristupa # HID uređaja}}</translation>
@@ -388,7 +387,6 @@
 <translation id="6069027071882229820">Kopiraj kao sliku</translation>
 <translation id="6070348360322141662">Radi dodatne sigurnosti Google Chrome kriptirat će vaše podatke</translation>
 <translation id="6075300983329039771">Vaša organizacija <ph name="MANAGER" /> zahtijeva da se prijavite u Chrome</translation>
-<translation id="608006075545470555">Dodavanje poslovnog profila u ovaj preglednik</translation>
 <translation id="6113794647360055231">Chrome je upravo postao bolji</translation>
 <translation id="6116252277240876590">Taj se jezik koristi za prikazivanje izbornika, postavki, upozorenja i drugog teksta u Chromeu</translation>
 <translation id="6134085236017727171">Da biste upotrebljavali mikrofon, odobrite Chromeu pristup u <ph name="BEGIN_LINK" />sistemskim postavkama<ph name="END_LINK" /></translation>
@@ -584,7 +582,6 @@
 <translation id="8521348052903287641">Ulazno pravilo kako bi Google Chrome Dev dopustio mDNS promet.</translation>
 <translation id="852529348814672339">Prikaži Chrome na tom jeziku</translation>
 <translation id="8533056045953418157">Postavite Google Chrome kao zadani preglednik PDF-ova</translation>
-<translation id="8550334526674375523">Ovaj poslovni profil potpuno je zaseban od vašeg osobnog profila.</translation>
 <translation id="8555465886620020932">Pogreška usluge: <ph name="SERVICE_ERROR" /></translation>
 <translation id="856656450041460113">Pretražite popis jezika</translation>
 <translation id="8601359445272098721">Novo! Možete prevesti tekst i slike na zaslonu tako da odaberete gumb Prevedi zaslon</translation>
@@ -617,7 +614,6 @@
 <translation id="8914504000324227558">Ponovo pokrenite Chrome</translation>
 <translation id="8922193594870374009">Da biste poslali broj s uređaja <ph name="ORIGIN" /> na svoj Android telefon, prijavite se na Chrome na oba uređaja.</translation>
 <translation id="8948460679427074738">Ovo proširenje nije objavilo prakse u vezi s privatnošću, na primjer način na koji prikuplja i upotrebljava podatke. Chrome preporučuje da ga uklonite.</translation>
-<translation id="8986207147630327271">Dodat ćete poslovni profil u ovaj preglednik i dati administratoru kontrolu samo nad poslovnim profilom.</translation>
 <translation id="8989968390305463310">Vaša povijest pregledavanja utječe na oglase koji vam se prikazuju i interese procijenjene u nastavku. Da bi zaštitio vašu privatnost, Chrome automatski kontinuirano briše vaše interese svakog mjeseca. Interesi se mogu osvježiti ako ih ne uklonite.</translation>
 <translation id="8992769679401294069">Vaši se podaci šifriraju vašom šifrom. Unesite je da biste upotrebljavali i spremali Chromeove podatke spremljene na vašem Google računu.</translation>
 <translation id="8999117580775242387">Kad HTTPS nije dostupan, Chrome će upotrebljavati nesigurnu vezu bez upozorenja</translation>

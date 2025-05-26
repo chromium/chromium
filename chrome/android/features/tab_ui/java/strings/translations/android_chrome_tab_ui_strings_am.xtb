@@ -43,7 +43,6 @@
 <translation id="2536366509642644298">«<ph name="TAB_GROUP_NAME_1" />» እና «<ph name="TAB_GROUP_NAME_2" />» የትር ቡድኖች ከእንግዲህ አይገኙም</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ትርን ሰብስብ።}one{ከ<ph name="TABS_COUNT_MANY" /> ትሮች ጋር የትር ቡድንን ሰብስብ።}other{ከ<ph name="TABS_COUNT_MANY" /> ትሮች ጋር የትር ቡድንን ሰብስብ።}}</translation>
 <translation id="2569352796411618312">ጥቆማ ሐሳብ፦ ከእርስዎ ትሮች <ph name="NUMBER_OF_TABS" /> ያክሉ በቅርቡ ጥቅም ላይ አልዋሉም። ይዘጉ?</translation>
-<translation id="2656693375914502139">ወደ ቡድን አንቀሳቅስ</translation>
 <translation id="2662028055331606429"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> ደረጃ</translation>
 <translation id="266935134738038806">ጣቢያ ይጎብኙ</translation>
 <translation id="2671423594960767771">ቡድንን አጋራ</translation>
@@ -120,8 +119,8 @@
 <translation id="6051432659151380973">የእርስዎ የትር ቡድኖች በራስ-ሰር ያስቀምጣሉ</translation>
 <translation id="6054741997831917303">የዚህ ንጥል ዋጋ በቅርቡ ከ<ph name="PREVIOUS_PRICE" /> ወደ <ph name="NEW_PRICE" /> ቀንሷል</translation>
 <translation id="6109251075362363230">በጣም በቅርብ ጊዜ ጥቅም ላይ ከዋለው ቅጂ በስተቀር ሁሉም የተባዙ ትሮች አሁን በማህደር ይቀመጣሉ።</translation>
+<translation id="61924696525243173">{WINDOW_COUNT,plural, =1{ስብስብን ወደ አዲስ መስኮት አንቀሳቅስ}one{ስብስብን ወደ ሌላ መስኮት አንቀሳቅስ}other{ስብስብን ወደ ሌላ መስኮት አንቀሳቅስ}}</translation>
 <translation id="6193448654517602979">ትሮችን ምረጥ</translation>
-<translation id="6212567362666004597">ትርን ወደ ቡድን ያክሉ</translation>
 <translation id="6220820548421939212">አዎ። ገብቼያለሁ</translation>
 <translation id="6228793724645064692">(የተሰጠ ደረጃ)</translation>
 <translation id="6271513594716432922">ሁሉንም የቦዘኑ ትሮች ዝጋ</translation>

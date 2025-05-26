@@ -1837,6 +1837,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="4140905366050378834">Evcil Hayvan Maması ve Evcil Hayvan Bakım Malzemeleri</translation>
 <translation id="4140905530744469899">Profil kimliği:</translation>
 <translation id="4142935452406587478">Tepsi 10</translation>
+<translation id="4147897805161313378">Google Fotoğraflar</translation>
 <translation id="4148925816941278100">American Express</translation>
 <translation id="4150099059797363385">Zarf Chinese #4</translation>
 <translation id="4151403195736952345">Genel varsayılanı kullan (Algıla)</translation>
@@ -1997,6 +1998,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="437620492464254965">Kapılar ve Pencereler</translation>
 <translation id="4377125064752653719"><ph name="DOMAIN" /> adresine ulaşmayı denediniz, ancak sunucunun sağladığı sertifika, sertifikayı veren tarafından iptal edildi. Bu, sunucunun sağladığı güvenlik kimlik bilgilerine kesinlikle güvenilmemesi gerektiği anlamına gelir. Bir saldırganla irtibat kuruyor olabilirsiniz.</translation>
 <translation id="4378154925671717803">Telefon</translation>
+<translation id="4382484599443659549">PDF</translation>
 <translation id="4382833368532556056">Artık dosyalarınızı bulut depolama alanına kaydedebilirsiniz</translation>
 <translation id="4384395682990721132">A4x3</translation>
 <translation id="4387692837058041921">Microsoft OneDrive'a dosya yükleme işlemi duraklatıldı</translation>
@@ -4315,7 +4317,6 @@ Ek ayrıntılar:
 Ek ayrıntılar:
 <ph name="DEBUG_INFO" /></translation>
 <translation id="8416874502399604126">Şu anda mikrofona izin veriliyor</translation>
-<translation id="8421158157346464398">İş profili bilgileri (ör. iş profili kullanıcı adınız)</translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" /> <ph name="SECOND_LABEL" /> <ph name="THIRD_LABEL" /></translation>
 <translation id="8425213833346101688">Değiştir</translation>
 <translation id="8426945547715537628">Klavye geçersiz kılmaya izin verilsin mi?</translation>

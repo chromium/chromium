@@ -106,7 +106,6 @@
 <translation id="2345992953227471816">Chrome에서 다음 확장 프로그램에 멀웨어가 포함된 것을 발견했습니다.</translation>
 <translation id="2348335408836342058">이 사이트에서 카메라와 마이크에 액세스하려면 Chrome에 권한이 필요합니다</translation>
 <translation id="234869673307233423">Chrome에서 비밀번호를 확인할 수 없습니다. 나중에 다시 시도하세요.</translation>
-<translation id="235650106824528204">북마크, 방문 기록, 비밀번호, 기타 설정 생성 등 이 프로필을 사용하는 동안 생성된 모든 Chrome 데이터는 직장 프로필 관리자가 삭제할 수 있습니다. <ph name="LEARN_MORE" /></translation>
 <translation id="2359808026110333948">계속</translation>
 <translation id="2403703063067034158">시작 오류: 현재 다른 설정 인스턴스가 실행 중입니다. 나중에 다시 시도해 주세요.</translation>
 <translation id="2409816192575564775">{NUM_DEVICES,plural, =0{하나 이상의 Chrome 확장 프로그램에서 HID 기기 1개에 액세스했습니다.}=1{하나 이상의 Chrome 확장 프로그램에서 HID 기기 1개에 액세스하고 있습니다.}other{하나 이상의 Chrome 확장 프로그램에서 HID 기기 #개에 액세스하고 있습니다.}}</translation>
@@ -244,6 +243,7 @@
 <translation id="4050175100176540509">최신 버전에는 중요한 보안 개선사항 및 새로운 기능이 포함되어 있습니다.</translation>
 <translation id="4053720452172726777">Chrome 맞춤설정 및 제어</translation>
 <translation id="408393047846373801">모든 기기에서 비밀번호 등을 가져오려면 Chrome에 로그인하세요. 로그인하면 이 비밀번호가 Google 계정에 저장됩니다.</translation>
+<translation id="409936259433005390">곧 Windows 11로 업그레이드하시나요? OneDrive에 Chrome 설치 프로그램을 다운로드하여 첫날부터 준비하세요.</translation>
 <translation id="4110895483821904099">새 Chrome 프로필 설정</translation>
 <translation id="4111566860456076004">Chrome에서 이 확장 프로그램의 출처를 확인할 수 없습니다. 안전하지 않은 확장 프로그램일 수 있습니다. 더 이상 개인 정보를 비롯한 방문 사이트의 데이터를 확인하고 변경할 수 없도록 Chrome에서 이 확장 프로그램을 삭제하세요.</translation>
 <translation id="4128488089242627000">Chrome이 더 빠르게 실행되며 JavaScript를 사용하는 기능이 의도한 대로 작동함(권장)</translation>
@@ -395,7 +395,6 @@ Chrome에서 설정을 복구할 수 없습니다.</translation>
 <translation id="6069027071882229820">이미지로 복사</translation>
 <translation id="6070348360322141662">보안 강화를 위해 Chrome에서 사용자 데이터 암호화</translation>
 <translation id="6075300983329039771">조직(<ph name="MANAGER" />)에서 Chrome에 로그인할 것을 요구합니다</translation>
-<translation id="608006075545470555">이 브라우저에 직장 프로필 추가</translation>
 <translation id="6113794647360055231">더욱 업그레이드된 Chrome</translation>
 <translation id="6116252277240876590">Chrome에서 메뉴, 설정, 알림, 기타 텍스트를 표시하는 데 사용되는 언어입니다</translation>
 <translation id="6134085236017727171">마이크를 사용하려면 <ph name="BEGIN_LINK" />시스템 설정<ph name="END_LINK" />에서 Chrome에 액세스 권한을 부여하세요.</translation>
@@ -591,7 +590,6 @@ Chrome에서 설정을 복구할 수 없습니다.</translation>
 <translation id="8521348052903287641">Chrome 개발자에서 mDNS 트래픽을 허용할 때 사용되는 인바운드 규칙입니다.</translation>
 <translation id="852529348814672339">이 언어로 Chrome 표시</translation>
 <translation id="8533056045953418157">Google Chrome을 기본 PDF 뷰어로 설정</translation>
-<translation id="8550334526674375523">이 직장 프로필은 개인 프로필과 완전히 분리됩니다.</translation>
 <translation id="8555465886620020932">서비스 오류(<ph name="SERVICE_ERROR" />)가 발생했습니다.</translation>
 <translation id="856656450041460113">언어 목록 검색</translation>
 <translation id="8601359445272098721">New! '화면 번역' 버튼을 선택하여 화면의 텍스트와 이미지를 모두 번역할 수 있습니다.</translation>
@@ -624,7 +622,6 @@ Chrome에서 설정을 복구할 수 없습니다.</translation>
 <translation id="8914504000324227558">Chrome 다시 시작</translation>
 <translation id="8922193594870374009"><ph name="ORIGIN" />에서 Android 휴대전화로 번호를 전송하려면 두 기기 모두에서 Chrome에 로그인하세요.</translation>
 <translation id="8948460679427074738">이 확장 프로그램은 데이터 수집 및 사용 방식과 같은 개인 정보 보호 관행을 게시하지 않았습니다. Chrome에서 삭제할 것을 권장합니다.</translation>
-<translation id="8986207147630327271">직장 프로필을 이 브라우저에 추가하고 직장 프로필 제어 권한을 관리자에게 부여합니다.</translation>
 <translation id="8989968390305463310">방문 기록에 따라 표시되는 광고 및 아래의 예측 관심분야가 달라집니다. 개인 정보를 보호하기 위해 Chrome에서는 매월 최소 한 번씩 수시로 관심분야를 자동 삭제합니다. 관심분야는 직접 삭제하지 않는 한 새로고침될 수 있습니다.</translation>
 <translation id="8992769679401294069">데이터가 암호로 암호화되어 있습니다. Google 계정에서 Chrome 데이터를 사용하고 저장하려면 암호를 입력하세요.</translation>
 <translation id="8999117580775242387">HTTPS를 사용할 수 없는 경우 Chrome에서 경고 없이 안전하지 않은 연결을 사용합니다.</translation>

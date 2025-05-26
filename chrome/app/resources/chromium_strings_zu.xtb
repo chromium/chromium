@@ -120,7 +120,6 @@ Ezinye izici kungenzeka zingabi khona futhi izinguquko kokuncamelayo ngeke zize 
 <translation id="2572494885440352020">Isisizi se-Chromium</translation>
 <translation id="2575822587468774919">Khetha noma yini ukuze useshe Ngosesho Lomfanekiso</translation>
 <translation id="2576118232315942160">Ukuze uthole amaphasiwedi akho kanye nokwengeziwe kuwo wonke amadivayisi akho, ngena ngemvume kuChromium</translation>
-<translation id="2583187216237139145">Noma iyiphi idatha ye-Chromium ekhiqizwa ngesikhathi sokusetshenziswa kwale phrofayela (efana nokudalwa kwamabhukhimakhi, umlando, amaphasiwedi, namanye amasethingi) ingasuswa umlawuli wephrofayela yomsebenzi. <ph name="LEARN_MORE" /></translation>
 <translation id="2592940277904433508">Qhubeka usebenzisa i-Chromium</translation>
 <translation id="259935314519650377">Yehlulekile ukufaka enqolobaneni isifaki esidawunilodiwe. Iphutha: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
 <translation id="2620436844016719705">Isistimu</translation>
@@ -365,7 +364,6 @@ Ezinye izici kungenzeka zingabi khona futhi izinguquko kokuncamelayo ngeke zize 
 <translation id="6069027071882229820">Kopisha njengesithombe</translation>
 <translation id="6072279588547424923">I-<ph name="EXTENSION_NAME" /> ingezwe ku-Chromium</translation>
 <translation id="6072463441809498330">Yenza i-Chromium Isheshe</translation>
-<translation id="608006075545470555">Engeza Iphrofayela Yomsebenzi kulesi siphequluli</translation>
 <translation id="6096348254544841612">Enza ngendlela oyifisayo uphinde ulawule i-Chromium. Isibuyekezo siyatholakala.</translation>
 <translation id="6107893135096467929">Kuvuliwe • I-Chromium ayikwazi ukuqinisekisa ukuthi lesi sandiso sivela kuphi</translation>
 <translation id="6119438414301547735">Vumela isandiso ukuze ubonise izicelo zokufinyelela kubha yamathuluzi ye-Chromium</translation>
@@ -561,7 +559,6 @@ I-Chromium ayikwazi ukubuyisela izilungiselelo zakho.</translation>
 <translation id="8471947159125090285">Ukuze usebenzise futhi ulondoloze idatha yeChromium kuGoogle Account yakho, qinisekisa ukuthi nguwe.</translation>
 <translation id="8493179195440786826">I-Chromium ayikho kudethi</translation>
 <translation id="8522801943730206384">I-Chromium ingahlola amaphasiwedi akho lapho uwalondoloza khona</translation>
-<translation id="8550334526674375523">Le phrofayela yomsebenzi ihluke ngokugcwele kusukela kuphrofayela yakho siqu.</translation>
 <translation id="8555465886620020932">Iphutha lesevisi: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="8556420416730706394">Ungaphina Usesho Lomfanekiso ukuze lufinyeleleke kalula; chofoza inkinobho ethi Phina phezulu kwephaneli eseceleni</translation>
 <translation id="856656450041460113">Sesha uhlu lwezilimi</translation>
@@ -590,7 +587,6 @@ I-Chromium ayikwazi ukubuyisela izilungiselelo zakho.</translation>
 <translation id="8931379085695076764">I-Chromium ingasikisela izinto ozithakaselayo ngokusekelwe kumlando wakho wokubhrawuza kusukela emavikini ambalwa adlule. Lolu lwazi luhlala kudivayisi yakho.</translation>
 <translation id="8941642502866065432">Ayikwazi ukubuyekeza i-Chromium</translation>
 <translation id="897581876605952338">Ilogo ye-Chromium Enterprise</translation>
-<translation id="8986207147630327271">Ungeza iphrofayela yomsebenzi kulesi siphequluli futhi unikeza umlawuli wakho ulawulo olungaphezulu nje kwephrofayela yomsebenzi.</translation>
 <translation id="8988036198400390003">Phatha amaphrofayela e-Chromium</translation>
 <translation id="9019929317751753759">Ukuze senze i-Chromium iphephe, sikhubaza isandiso esilandelayo esingafakiwe kuhlu lwe-<ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> futhi kungenzeka singezwe ngaphandle kolwazi lakho.</translation>
 <translation id="9022552996538154597">Ngena ngemvume ku-Chromium</translation>

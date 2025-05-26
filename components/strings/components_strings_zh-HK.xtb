@@ -1838,6 +1838,7 @@
 <translation id="4140905366050378834">寵物食品和護理用品</translation>
 <translation id="4140905530744469899">設定檔 ID：</translation>
 <translation id="4142935452406587478">紙匣 10</translation>
+<translation id="4147897805161313378">Google 相片</translation>
 <translation id="4148925816941278100">American Express</translation>
 <translation id="4150099059797363385">Chinese #4 信封</translation>
 <translation id="4151403195736952345">使用全域預設值 (偵測)</translation>
@@ -1998,6 +1999,7 @@
 <translation id="437620492464254965">門窗</translation>
 <translation id="4377125064752653719">您嘗試前往 <ph name="DOMAIN" />，但是發行者已撤銷伺服器提供的憑證。在這種情況下，請勿信任伺服器提供的安全性憑證，因為您可能連接至攻擊者。</translation>
 <translation id="4378154925671717803">電話號碼</translation>
+<translation id="4382484599443659549">PDF</translation>
 <translation id="4382833368532556056">由現在起，請將你的檔案儲存到雲端儲存空間</translation>
 <translation id="4384395682990721132">A4x3</translation>
 <translation id="4387692837058041921">已暫停上載檔案到 Microsoft OneDrive</translation>
@@ -4319,7 +4321,6 @@
 其他詳細資料：
 <ph name="DEBUG_INFO" /></translation>
 <translation id="8416874502399604126">呢次批准用咪</translation>
-<translation id="8421158157346464398">工作設定檔資料 (例如工作設定檔使用者名稱)</translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" /> <ph name="SECOND_LABEL" /> <ph name="THIRD_LABEL" /></translation>
 <translation id="8425213833346101688">變更</translation>
 <translation id="8426945547715537628">要允許取代鍵盤嗎？</translation>

@@ -119,7 +119,6 @@
 <translation id="2572494885440352020">Chromium Helper</translation>
 <translation id="2575822587468774919">هرچیزی را می‌خواهید انتخاب کنید تا با «جستجوی تصویر» جستجو شود</translation>
 <translation id="2576118232315942160">‏برای دریافت گذرواژه‌ها و موارد دیگر در همه دستگاه‌هایتان، به سیستم Chromium وارد شوید</translation>
-<translation id="2583187216237139145">‏سرپرست نمایه کاری می‌تواند داده‌های Chromium را که درطول استفاده از این نمایه ایجاد شده‌اند (مثل ایجاد سابقه نشانک‌ها، گذرواژه‌ها، و دیگر تنظیمات) بردارد. <ph name="LEARN_MORE" /></translation>
 <translation id="2592940277904433508">‏ادامه استفاده از Chromium</translation>
 <translation id="259935314519650377">نصب‌کننده بارگیری‌شده در حافظه نهان ذخیره نشد. خطا: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
 <translation id="2620436844016719705">سیستم</translation>
@@ -363,7 +362,6 @@
 <translation id="6069027071882229820">کپی کردن به‌عنوان تصویر</translation>
 <translation id="6072279588547424923">‏<ph name="EXTENSION_NAME" /> به Chromium اضافه شد</translation>
 <translation id="6072463441809498330">‏سرعت Chromium را افزایش دهید</translation>
-<translation id="608006075545470555">افزودن نمایه کاری به این مرورگر</translation>
 <translation id="6096348254544841612">‏سفارشی کردن و کنترل Chromium. به‌روزرسانی‌ در دسترس است.</translation>
 <translation id="6107893135096467929">‏روشن • Chromium نمی‌تواند منبع این افزونه را تأیید کند</translation>
 <translation id="6119438414301547735">‏مجاز کردن افزونه برای نمایش درخواست‌های دسترسی در نوارابزار Chromium</translation>
@@ -558,7 +556,6 @@ Chromium قادر به بازیابی تنظیمات شما نیست.</translati
 <translation id="8471947159125090285">‏برای ذخیره کردن داده‌های Chromium در «حساب Google» خود و استفاده کردن از آن‌ها، هویتتان را به‌تأیید برسانید</translation>
 <translation id="8493179195440786826">‏نسخه Chromium قدیمی است</translation>
 <translation id="8522801943730206384">‏‫Chromium زمانی می‌تواند گذرواژه‌هایتان را بررسی کند که آن‌ها را ذخیره کرده باشید</translation>
-<translation id="8550334526674375523">این نمایه کاری کاملاً مجزا از نمایه شخصی‌تان است.</translation>
 <translation id="8555465886620020932">خطای سرویس: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="8556420416730706394">می‌توانید «جستجوی تصویر» را برای دسترسی آسان سنجاق کنید؛ روی دکمه «سنجاق کردن» در بالای پانل کناری کلیک کنید</translation>
 <translation id="856656450041460113">جستجوی فهرست زبان‌ها</translation>
@@ -587,7 +584,6 @@ Chromium قادر به بازیابی تنظیمات شما نیست.</translati
 <translation id="8931379085695076764">‏Chromium می‌توانند علایقتان را براساس سابقه مرور چند هفته گذشته برآورد کند. این اطلاعات از دستگاهتان خارج نمی‌شود.</translation>
 <translation id="8941642502866065432">‏به‌روزرسانی Chromium امکان‌پذیر نیست</translation>
 <translation id="897581876605952338">‏نشان‌واره Chromium Enterprise</translation>
-<translation id="8986207147630327271">با این کار، نمایه کاری را به این مرورگر اضافه می‌کنید و فقط کنترل نمایه کاری را دراختیار سرپرست قرار می‌دهید.</translation>
 <translation id="8988036198400390003">‏مدیریت نمایه‌های Chromium</translation>
 <translation id="9019929317751753759">‏برای ایمن‌تر کردن Chromium، افزونه زیر را که در <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> فهرست نشده است و ممکن است بدون اطلاع شما اضافه شده باشد، غیرفعال کردیم.</translation>
 <translation id="9022552996538154597">‏ورود به سیستم Chromium</translation>
