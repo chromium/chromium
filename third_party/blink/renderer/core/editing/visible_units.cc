@@ -200,9 +200,7 @@ static PositionType CanonicalPosition(const PositionType& position) {
 
   if (!next_is_in_same_editable_element && !prev_is_in_same_editable_element) {
     // `prev/next_editing_root` is a child node of `editing_root`.
-    if (RuntimeEnabledFeatures::
-            PrevOrNextCandidateIsEditingRootChildEnabled() &&
-        editing_root) {
+    if (editing_root) {
       if (editing_root->contains(next_editing_root)) {
         return next;
       } else if (editing_root->contains(prev_editing_root)) {
