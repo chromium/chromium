@@ -17,6 +17,7 @@
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/not_fatal_until.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
@@ -108,7 +109,9 @@ viz::SharedImageFormat GetSharedImageFormat(gfx::BufferFormat buffer_format) {
       return viz::SinglePlaneFormat::kRGBA_8888;
     case gfx::BufferFormat::RGBA_F16:
       return viz::SinglePlaneFormat::kRGBA_F16;
-    case gfx::BufferFormat::BGR_565:
+    case gfx::BufferFormat::BGR_565: {
+      UMA_HISTOGRAM_BOOLEAN("Graphics.Exo.Buffer.Used_BRG_565", true);
+    }
       return viz::SinglePlaneFormat::kBGR_565;
     case gfx::BufferFormat::RG_88:
       if (base::FeatureList::IsEnabled(kExoDisableRG88Format)) {
