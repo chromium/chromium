@@ -528,9 +528,17 @@ set_defaults("rust_proc_macro") {
 }
 
 DEFAULT_MODULE_DEPS = [
+  "//buildtools/third_party/libc++:_Builtin_float",
+  "//buildtools/third_party/libc++:_Builtin_intrinsics",
+  "//buildtools/third_party/libc++:_Builtin_inttypes",
   "//buildtools/third_party/libc++:_Builtin_limits",
+  "//buildtools/third_party/libc++:_Builtin_stdalign",
   "//buildtools/third_party/libc++:_Builtin_stdarg",
+  "//buildtools/third_party/libc++:_Builtin_stdatomic",
+  "//buildtools/third_party/libc++:_Builtin_stdbool",
   "//buildtools/third_party/libc++:_Builtin_stddef",
+  "//buildtools/third_party/libc++:_Builtin_stdint",
+  "//buildtools/third_party/libc++:_Builtin_unwind",
   "//buildtools/third_party/libc++:std",
   "//buildtools/third_party/libc++:std_config",
   "//buildtools/third_party/libc++:std_core",
@@ -541,6 +549,8 @@ DEFAULT_MODULE_DEPS = [
   "//buildtools/third_party/libc++:std_inttypes_h",
   "//buildtools/third_party/libc++:std_math_h",
   "//buildtools/third_party/libc++:std_private_mbstate_t",
+  "//buildtools/third_party/libc++:std_stdatomic_h",
+  "//buildtools/third_party/libc++:std_stdbool_h",
   "//buildtools/third_party/libc++:std_string_h",
   "//buildtools/third_party/libc++:std_uchar_h",
   "//buildtools/third_party/libc++:std_wctype_h",
