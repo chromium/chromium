@@ -331,7 +331,7 @@ void UkmService::OnAppEnterForeground() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DVLOG(DebuggingLogLevel::Medium) << "UkmService::OnAppEnterForeground";
 
-  reporting_service_.SetIsInForegound(true);
+  reporting_service_.OnAppEnterForeground();
 
   // If initialize_started_ is false, UKM has not yet been started, so bail. The
   // scheduler will instead be started via EnableReporting().
@@ -346,7 +346,7 @@ void UkmService::OnAppEnterBackground() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DVLOG(DebuggingLogLevel::Medium) << "UkmService::OnAppEnterBackground";
 
-  reporting_service_.SetIsInForegound(false);
+  reporting_service_.OnAppEnterBackground();
 
   if (!initialize_started_) {
     return;

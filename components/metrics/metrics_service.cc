@@ -613,7 +613,7 @@ void MetricsService::OnAppEnterBackground(bool keep_recording_in_background) {
   base::RecordAction(base::UserMetricsAction("UMA_OnBackgrounded"));
   std::optional<bool> previous_is_in_foreground = is_in_foreground_;
   is_in_foreground_ = false;
-  reporting_service_.SetIsInForegound(false);
+  reporting_service_.OnAppEnterBackground();
   if (!keep_recording_in_background) {
     rotation_scheduler_->Stop();
     reporting_service_.Stop();
@@ -667,7 +667,7 @@ void MetricsService::OnAppEnterForeground(bool force_open_new_log) {
   base::RecordAction(base::UserMetricsAction("UMA_OnForegrounded"));
   std::optional<bool> previous_is_in_foreground = is_in_foreground_;
   is_in_foreground_ = true;
-  reporting_service_.SetIsInForegound(true);
+  reporting_service_.OnAppEnterForeground();
   state_manager_->LogHasSessionShutdownCleanly(false);
   StartSchedulerIfNecessary();
 

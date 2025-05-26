@@ -7,6 +7,7 @@
 
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
+#include "build/build_config.h"
 
 namespace metrics::features {
 
@@ -28,6 +29,26 @@ BASE_DECLARE_FEATURE(kReportingServiceAlwaysFlush);
 // components/metrics/metrics_service_client.cc and
 // components/metrics/unsent_log_store.cc.
 BASE_DECLARE_FEATURE(kMetricsLogTrimming);
+
+#if BUILDFLAG(IS_ANDROID)
+// If enabled, when foregrounding, the ReportingService backoff will be reset so
+// that uploads are scheduled normally again.
+// Context: In crbug.com/420459511, it was discovered that starting from Android
+// 15, apps cannot issue network requests from the background (they will fail).
+// This resulted in the ReportingService being throttled due to the backoff
+// logic, with uploads being scheduled very far ahead in the future (up to 24h).
+// During this time, periodic ongoing logs stop getting created. Even if there
+// are other scenarios where logs get created (upon backgrounding and
+// foregrounding), those simply accumulate on disk since no logs are being
+// uploaded. This can eventually lead to log trimming which in turn leads to
+// data loss.
+// TODO: crbug.com/420459511 - This feature mitigates data loss, but doesn't fix
+// the issue that periodic ongoing logs stop being created while in the
+// background (which is supposed to be controlled by the `UMABackgroundSessions`
+// feature). Integrate with WorkManager, JobScheduler, and/or
+// `background_task::BackgroundTask` for a proper fix of background metrics.
+BASE_DECLARE_FEATURE(kResetMetricsUploadBackoffOnForeground);
+#endif  // BUILDFLAG(IS_ANDROID)
 
 }  // namespace metrics::features
 

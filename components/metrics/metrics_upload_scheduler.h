@@ -33,6 +33,14 @@ class MetricsUploadScheduler : public MetricsScheduler {
   // Also stops the scheduler.
   void StopAndUploadCancelled();
 
+  // Re-schedules the next upload with the successful unsent logs interval (see
+  // GetUnsentLogsInterval() below). This is useful for resetting the scheduler
+  // when it is using backoff logic (see GetInitialBackoffInterval() below).
+  // This should only be called while the scheduler is running, but not while
+  // a callback is pending. This is currently only used for the feature
+  // kResetMetricsUploadBackoffOnForeground.
+  void RestartWithUnsentLogsInterval();
+
   // Callback from MetricsService when an upload is cancelled because it would
   // be over the allowed data usage cap.
   void UploadOverDataUsageCap();

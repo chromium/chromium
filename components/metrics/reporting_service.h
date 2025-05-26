@@ -77,9 +77,8 @@ class ReportingService {
   bool reporting_active() const;
 
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
-  void SetIsInForegound(bool is_in_foreground) {
-    is_in_foreground_ = is_in_foreground;
-  }
+  void OnAppEnterBackground();
+  void OnAppEnterForeground();
 #endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 
   // Registers local state prefs used by this class. This should only be called
@@ -150,6 +149,20 @@ class ReportingService {
 
   // Whether there is a current log upload in progress.
   bool log_upload_in_progress_;
+
+#if BUILDFLAG(IS_ANDROID)
+  // Whether the current log upload was initiated while the app was in the
+  // background. Set only when there is a log upload in progress (i.e. when
+  // `log_upload_in_progress_` above is true).
+  // TODO: crbug.com/420459511 - Consider putting this and
+  // `log_upload_in_progress_` together into a struct.
+  std::optional<bool> log_upload_initiated_from_background_ = std::nullopt;
+
+  // Set when the most recent uploads have failed. Its value will be whether the
+  // first failure was from an upload initiated from the background. Unset when
+  // a successful upload occurs.
+  std::optional<bool> failures_started_from_background_ = std::nullopt;
+#endif  // BUILDFLAG(IS_ANDROID)
 
   // The scheduler for determining when uploads should happen.
   std::unique_ptr<MetricsUploadScheduler> upload_scheduler_;

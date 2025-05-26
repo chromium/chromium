@@ -48,7 +48,7 @@ int MetricsScheduler::GetInitialIntervalSeconds() {
 void MetricsScheduler::TaskDone(base::TimeDelta next_interval) {
   DCHECK(callback_pending_);
   callback_pending_ = false;
-  interval_ = next_interval;
+  SetInterval(next_interval);
   if (running_)
     ScheduleNextTask();
 }
