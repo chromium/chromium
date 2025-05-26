@@ -2,13 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/core/messaging/blink_transferable_message_mojom_traits.h"
 
+#include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
@@ -70,9 +67,11 @@ TEST(BlinkTransferableMessageStructTraitsTest,
     v8::Local<v8::ArrayBuffer> v8_buffer =
         v8::ArrayBuffer::New(isolate, num_elements);
     auto backing_store = v8_buffer->GetBackingStore();
-    uint8_t* original_data = static_cast<uint8_t*>(backing_store->Data());
-    for (size_t i = 0; i < num_elements; i++)
-      original_data[i] = static_cast<uint8_t>(i);
+    {
+      ArrayBufferContents buffer_contents(backing_store);
+      uint8_t i = 0;
+      std::ranges::generate(buffer_contents.ByteSpan(), [&i]() { return i++; });
+    }
 
     DOMArrayBuffer* array_buffer =
         NativeValueTraits<DOMArrayBuffer>::NativeValue(
@@ -111,10 +110,12 @@ TEST(BlinkTransferableMessageStructTraitsTest,
   v8::Local<v8::ArrayBuffer> v8_buffer =
       v8::ArrayBuffer::New(isolate, num_elements);
   auto backing_store = v8_buffer->GetBackingStore();
-  void* originalContentsData = backing_store->Data();
-  uint8_t* contents = static_cast<uint8_t*>(originalContentsData);
-  for (size_t i = 0; i < num_elements; i++)
-    contents[i] = static_cast<uint8_t>(i);
+  auto* originalContentsData = static_cast<uint8_t*>(backing_store->Data());
+  {
+    ArrayBufferContents buffer_contents(backing_store);
+    uint8_t i = 0;
+    std::ranges::generate(buffer_contents.ByteSpan(), [&i]() { return i++; });
+  }
 
   DOMArrayBuffer* original_array_buffer =
       NativeValueTraits<DOMArrayBuffer>::NativeValue(isolate, v8_buffer,
