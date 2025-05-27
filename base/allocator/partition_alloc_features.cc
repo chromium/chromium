@@ -487,7 +487,11 @@ BASE_FEATURE(kPartitionAllocUseSmallSingleSlotSpans,
 #if PA_CONFIG(ENABLE_SHADOW_METADATA)
 BASE_FEATURE(kPartitionAllocShadowMetadata,
              "PartitionAllocShadowMetadata",
+#if BUILDFLAG(IS_LINUX)
+             FEATURE_ENABLED_BY_DEFAULT);
+#else
              FEATURE_DISABLED_BY_DEFAULT);
+#endif
 
 constexpr FeatureParam<ShadowMetadataEnabledProcesses>::Option
     kShadowMetadataEnabledProcessesOptions[] = {
