@@ -95,6 +95,17 @@ void PrefetchURLLoaderInterceptor::MaybeCreateLoader(
   CHECK(!loader_callback_);
   loader_callback_ = std::move(callback);
 
+  // Prefetches are only ever used to fulfill `GET` requests. spec: if
+  // documentResource is null,
+  // https://wicg.github.io/nav-speculation/prefetch.html#create-navigation-params-from-a-prefetch-record
+  // etc. are not called.
+  if (tentative_resource_request.method !=
+      net::HttpRequestHeaders::kGetMethod) {
+    redirect_reader_ = PrefetchContainer::Reader();
+    std::move(loader_callback_).Run(std::nullopt);
+    return;
+  }
+
   if (redirect_reader_ && redirect_reader_.DoesCurrentURLToServeMatch(
                               tentative_resource_request.url)) {
     if (redirect_reader_.HaveDefaultContextCookiesChanged()) {
