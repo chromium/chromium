@@ -81,10 +81,10 @@
 // relying on notifications.
 #if BUILDFLAG(ENABLE_SCREEN_AI_BROWSERTESTS) && \
     !BUILDFLAG(USE_FAKE_SCREEN_AI) && !BUILDFLAG(IS_LINUX)
-#define PDF_OCR_INTEGRATION_TEST_ENABLED
+#define PDF_SEARCHIFY_INTEGRATION_TEST_ENABLED
 #endif
 
-#if defined(PDF_OCR_INTEGRATION_TEST_ENABLED)
+#if defined(PDF_SEARCHIFY_INTEGRATION_TEST_ENABLED)
 #include "base/scoped_observation.h"
 #include "chrome/browser/screen_ai/screen_ai_install_state.h"
 #include "chrome/browser/screen_ai/screen_ai_service_router.h"
@@ -92,7 +92,7 @@
 #include "components/strings/grit/components_strings.h"
 #include "services/screen_ai/public/cpp/utilities.h"
 #include "ui/base/l10n/l10n_util.h"
-#endif  // defined(PDF_OCR_INTEGRATION_TEST_ENABLED)
+#endif  // defined(PDF_SEARCHIFY_INTEGRATION_TEST_ENABLED)
 
 namespace {
 
@@ -1236,22 +1236,21 @@ INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(
 INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(
     PDFExtensionAccessibilityNavigationTest);
 
-#if defined(PDF_OCR_INTEGRATION_TEST_ENABLED)
+#if defined(PDF_SEARCHIFY_INTEGRATION_TEST_ENABLED)
 
-class PdfOcrIntegrationTest
+class PdfSearchifyIntegrationTest
     : public PDFExtensionAccessibilityTest,
       public screen_ai::ScreenAIInstallState::Observer,
-      public ::testing::WithParamInterface<std::tuple<bool, bool, bool, bool>> {
+      public ::testing::WithParamInterface<std::tuple<bool, bool, bool>> {
  public:
-  PdfOcrIntegrationTest() = default;
-  ~PdfOcrIntegrationTest() override = default;
+  PdfSearchifyIntegrationTest() = default;
+  ~PdfSearchifyIntegrationTest() override = default;
 
   bool IsOcrServiceEnabled() const { return std::get<0>(GetParam()); }
   bool IsLibraryAvailable() const { return std::get<1>(GetParam()); }
-  bool IsSearchifyEnabled() const { return std::get<2>(GetParam()); }
 
   // PDFExtensionAccessibilityTest:
-  bool UseOopif() const override { return std::get<3>(GetParam()); }
+  bool UseOopif() const override { return std::get<2>(GetParam()); }
 
   bool IsOcrAvailable() const {
     return IsOcrServiceEnabled() && IsLibraryAvailable();
@@ -1313,9 +1312,6 @@ class PdfOcrIntegrationTest
     if (IsOcrServiceEnabled()) {
       enabled.push_back({ax::mojom::features::kScreenAIOCREnabled, {}});
     }
-    if (IsSearchifyEnabled()) {
-      enabled.push_back({chrome_pdf::features::kPdfSearchify, {}});
-    }
     if (UseOopif()) {
       enabled.push_back({chrome_pdf::features::kPdfOopif, {}});
     }
@@ -1326,9 +1322,6 @@ class PdfOcrIntegrationTest
     std::vector<base::test::FeatureRef> disabled;
     if (!IsOcrServiceEnabled()) {
       disabled.push_back(ax::mojom::features::kScreenAIOCREnabled);
-    }
-    if (!IsSearchifyEnabled()) {
-      disabled.push_back(chrome_pdf::features::kPdfSearchify);
     }
     if (!UseOopif()) {
       disabled.push_back(chrome_pdf::features::kPdfOopif);
@@ -1352,8 +1345,8 @@ class PdfOcrIntegrationTest
         GetAccessibilityTreeSnapshotForPdf(GetActiveWebContents());
     std::string ax_tree_dump =
         DumpPdfAccessibilityTree(ax_tree, /*skip_status_subtree=*/false);
-    std::string expected_tree_dump = GetExpectedAXTreeDumpForPdf(
-        test_pdf_path, IsOcrAvailable(), IsSearchifyEnabled());
+    std::string expected_tree_dump =
+        GetExpectedAXTreeDumpForPdf(test_pdf_path, IsOcrAvailable());
     ASSERT_NE("", expected_tree_dump);
 
     ASSERT_MULTILINE_STREQ(expected_tree_dump, ax_tree_dump);
@@ -1361,21 +1354,19 @@ class PdfOcrIntegrationTest
 
  private:
   std::string GetExpectedAXTreeDumpForPdf(const base::FilePath& pdf_path,
-                                          bool is_ocr_available,
-                                          bool is_searchify_enabled) {
+                                          bool is_ocr_available) {
     // If the given `pdf_path` contains a filename, "test.pdf", an expected
-    // file path will have a filename, "test-expected-with-pdfocr.txt", when
-    // PDF OCR is on. `expected_file_suffix` will be created based on whether
-    // PDF OCR is on and whether it has a separate output for Windows.
+    // file path will have a filename, "test-expected-with-pdf-searchify.txt",
+    // when OCR is available.
+    // `expected_file_suffix` will be created based on whether OCR is available
+    // and it has a separate output for Windows.
     base::FilePath::StringType expected_file_suffix;
 
     if (is_ocr_available) {
-      expected_file_suffix =
-          is_searchify_enabled
-              ? FILE_PATH_LITERAL("-expected-with-pdf-searchify")
-              : FILE_PATH_LITERAL("-expected-with-pdfocr");
+      expected_file_suffix = FILE_PATH_LITERAL("-expected-with-pdf-searchify");
     } else {
-      expected_file_suffix = FILE_PATH_LITERAL("-expected-without-pdfocr");
+      expected_file_suffix =
+          FILE_PATH_LITERAL("-expected-without-pdf-searchify");
     }
 #if BUILDFLAG(IS_WIN)
     // When OCR is unavailable, each test input has a separate expected output
@@ -1397,6 +1388,8 @@ class PdfOcrIntegrationTest
     {
       base::ScopedAllowBlockingForTesting allow_blocking;
       if (!base::PathExists(expected_file_path)) {
+        ADD_FAILURE() << "Unable to read an expected file at "
+                      << expected_file_path;
         return std::string();
       }
     }
@@ -1425,7 +1418,7 @@ class PdfOcrIntegrationTest
       component_download_observer_{this};
 };
 
-IN_PROC_BROWSER_TEST_P(PdfOcrIntegrationTest, EnsureScreenAIInitializes) {
+IN_PROC_BROWSER_TEST_P(PdfSearchifyIntegrationTest, EnsureScreenAIInitializes) {
   // Since screen reader is on, library download is triggered and if it is
   // successful, initialization of Screen AI OCR service will be successful.
 
@@ -1449,60 +1442,48 @@ IN_PROC_BROWSER_TEST_P(PdfOcrIntegrationTest, EnsureScreenAIInitializes) {
 
 // TODO(crbug.com/360803943): Add a test case with more than one image.
 
-IN_PROC_BROWSER_TEST_P(PdfOcrIntegrationTest, HelloWorld) {
+IN_PROC_BROWSER_TEST_P(PdfSearchifyIntegrationTest, HelloWorld) {
   base::HistogramTester histograms;
   RunPDFAXTreeDumpTest("hello-world-in-image.pdf",
                        GetExpectedStatus(/*has_content=*/true));
 
   metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
 
-  int expected_count = (IsSearchifyEnabled() && IsOcrAvailable()) ? 1 : 0;
+  int expected_count = IsOcrAvailable() ? 1 : 0;
   // Screen Reader is always enabled for this test.
   histograms.ExpectUniqueSample(
       "Accessibility.ScreenAI.Searchify.ScreenReaderModeEnabled",
       /*sample=*/true, expected_count);
 }
 
-IN_PROC_BROWSER_TEST_P(PdfOcrIntegrationTest, ThreePagePDF) {
+IN_PROC_BROWSER_TEST_P(PdfSearchifyIntegrationTest, ThreePagePDF) {
   base::HistogramTester histograms;
   RunPDFAXTreeDumpTest("inaccessible-text-in-three-page.pdf",
                        GetExpectedStatus(/*has_content=*/true));
 
   metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
-  int expected_count = (IsSearchifyEnabled() && IsOcrAvailable()) ? 1 : 0;
+  int expected_count = IsOcrAvailable() ? 1 : 0;
   histograms.ExpectUniqueSample(
       "Accessibility.ScreenAI.Searchify.ScreenReaderModeEnabled",
       /*sample=*/true, expected_count);
 }
 
-IN_PROC_BROWSER_TEST_P(PdfOcrIntegrationTest, TestBatchingWithTwentyPagePDF) {
-  if (IsSearchifyEnabled()) {
-    GTEST_SKIP()
-        << "PDF Searchify does not use batching, this test is redundant.";
-  }
-  RunPDFAXTreeDumpTest("inaccessible-text-in-twenty-page.pdf",
-                       GetExpectedStatus(/*has_content=*/true));
-}
-
-IN_PROC_BROWSER_TEST_P(PdfOcrIntegrationTest, NoOcrResultOnBlankImagePdf) {
+IN_PROC_BROWSER_TEST_P(PdfSearchifyIntegrationTest,
+                       NoOcrResultOnBlankImagePdf) {
   RunPDFAXTreeDumpTest("blank_image.pdf",
                        GetExpectedStatus(/*has_content=*/false));
 }
 
 INSTANTIATE_TEST_SUITE_P(
     All,
-    PdfOcrIntegrationTest,
-    ::testing::Combine(testing::Bool(),
-                       testing::Bool(),
-                       testing::Bool(),
-                       testing::Bool()),
-    [](const testing::TestParamInfo<std::tuple<bool, bool, bool, bool>>& info) {
+    PdfSearchifyIntegrationTest,
+    ::testing::Combine(testing::Bool(), testing::Bool(), testing::Bool()),
+    [](const testing::TestParamInfo<std::tuple<bool, bool, bool>>& info) {
       return base::StringPrintf(
-          "OcrService_%s_Library_%s_Searchify_%s_%s",
+          "OcrService_%s_Library_%s_%s",
           std::get<0>(info.param) ? "Enabled" : "Disabled",
           std::get<1>(info.param) ? "Available" : "Unavailable",
-          std::get<2>(info.param) ? "Enabled" : "Disabled",
-          std::get<3>(info.param) ? "OOPIF" : "GuestView");
+          std::get<2>(info.param) ? "OOPIF" : "GuestView");
     });
 
-#endif  // defined(PDF_OCR_INTEGRATION_TEST_ENABLED)
+#endif  // defined(PDF_SEARCHIFY_INTEGRATION_TEST_ENABLED)
