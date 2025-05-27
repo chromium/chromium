@@ -4,9 +4,6 @@
 
 import './app.js';
 
-export {PageCallbackRouter as ProductSpecificationsCallbackRouter} from 'chrome://resources/cr_components/commerce/product_specifications.mojom-webui.js';
-export {ProductSpecificationsBrowserProxyImpl} from 'chrome://resources/cr_components/commerce/product_specifications_browser_proxy.js';
-export {ShoppingServiceBrowserProxyImpl} from 'chrome://resources/cr_components/commerce/shopping_service_browser_proxy.js';
 export {HistoryEntry, QueryResult} from 'chrome://resources/cr_components/history/history.mojom-webui.js';
 export {BrowserProxyImpl} from 'chrome://resources/cr_components/history_clusters/browser_proxy.js';
 export {ClusterAction, PageCallbackRouter, PageHandlerRemote, RelatedSearchAction, VisitAction, VisitType} from 'chrome://resources/cr_components/history_clusters/history_clusters.mojom-webui.js';
@@ -28,8 +25,6 @@ export {HISTORY_EMBEDDINGS_ANSWERS_PROMO_SHOWN_KEY, HISTORY_EMBEDDINGS_PROMO_SHO
 export {HistoryItemElement} from './history_item.js';
 export {ActionMenuModel, HistoryListElement} from './history_list.js';
 export {HistoryToolbarElement} from './history_toolbar.js';
-export {ProductSpecificationsItemElement} from './product_specifications_item.js';
-export {ProductSpecificationsListsElement} from './product_specifications_lists.js';
 export {HistorySearchedLabelElement} from './searched_label.js';
 export {HistorySideBarElement} from './side_bar.js';
 export {HistorySyncedDeviceCardElement} from './synced_device_card.js';

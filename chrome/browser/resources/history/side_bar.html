@@ -95,16 +95,6 @@
         $i18n{openTabsMenuItem}
         <cr-ripple></cr-ripple>
       </a>
-      <template is="dom-if" if="[[compareHistoryEnabled_]]">
-        <a id="productSpecificationsLists" role="menuitem"
-            href="/comparisonTables"
-            class="page-item cr-nav-menu-item"
-            path="comparisonTables" on-click="onItemClick_">
-          <cr-icon icon="history:table-chart-organize"></cr-icon>
-          $i18n{compareHistoryListsMenuItem}
-          <cr-ripple></cr-ripple>
-        </a>
-      </template>
       <!-- tabindex is needed below because <a> without href attribute is not
             focusable in sequential keyboard navigation by default. -->
       <a role="menuitem" id="clear-browsing-data"

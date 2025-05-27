@@ -714,12 +714,12 @@ void PopulateChromeWebUIFrameBinders(
   RegisterWebUIControllerInterfaceBinder<
       shopping_service::mojom::ShoppingServiceHandlerFactory,
       BookmarksSidePanelUI, commerce::ProductSpecificationsUI,
-      ShoppingInsightsSidePanelUI, HistoryUI>(map);
+      ShoppingInsightsSidePanelUI>(map);
 
   RegisterWebUIControllerInterfaceBinder<
       commerce::product_specifications::mojom::
           ProductSpecificationsHandlerFactory,
-      commerce::ProductSpecificationsUI, HistoryUI>(map);
+      commerce::ProductSpecificationsUI>(map);
 
   RegisterWebUIControllerInterfaceBinder<
       commerce::price_tracking::mojom::PriceTrackingHandlerFactory,

@@ -497,8 +497,7 @@ void AddAiStrings(content::WebUIDataSource* html_source) {
                          commerce::kChromeUICompareLearnMoreUrl);
   html_source->AddString("compareLearnMoreManagedUrl",
                          commerce::kChromeUICompareLearnMoreManagedUrl);
-  html_source->AddString("compareDataHomeUrl",
-                         commerce::kChromeUICompareListsUrl);
+  html_source->AddString("compareDataHomeUrl", commerce::kChromeUICompareUrl);
   html_source->AddString("composeLearnMorePageURL",
                          chrome::kComposeLearnMorePageURL);
   html_source->AddString("composeLearnMorePageManagedURL",

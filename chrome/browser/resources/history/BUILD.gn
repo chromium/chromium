@@ -26,8 +26,6 @@ build_webui("build") {
     "history_item.ts",
     "history_list.ts",
     "history_toolbar.ts",
-    "product_specifications_item.ts",
-    "product_specifications_lists.ts",
     "side_bar.ts",
     "synced_device_card.ts",
     "synced_device_manager.ts",
@@ -65,18 +63,9 @@ build_webui("build") {
     "//tools/typescript/definitions/metrics_private.d.ts",
   ]
 
-  mojo_files_deps =
-      [ "//components/commerce/core/mojom:mojo_bindings_ts__generator" ]
-  mojo_files = [
-    "$root_gen_dir/components/commerce/core/mojom/product_specifications.mojom-webui.ts",
-    "$root_gen_dir/components/commerce/core/mojom/shared.mojom-webui.ts",
-    "$root_gen_dir/components/commerce/core/mojom/shopping_service.mojom-webui.ts",
-  ]
-
   ts_deps = [
     "//third_party/lit/v3_0:build_ts",
     "//third_party/polymer/v3_0:library",
-    "//ui/webui/resources/cr_components/commerce:build_ts",
     "//ui/webui/resources/cr_components/help_bubble:build_ts",
     "//ui/webui/resources/cr_components/history:build_ts",
     "//ui/webui/resources/cr_components/history_clusters:build_ts",

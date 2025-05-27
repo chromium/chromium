@@ -6,11 +6,8 @@ import 'chrome://history/history.js';
 
 import type {HistoryAppElement} from 'chrome://history/history.js';
 import {BrowserServiceImpl, CrRouter, HistoryEmbeddingsBrowserProxyImpl, HistoryEmbeddingsPageHandlerRemote} from 'chrome://history/history.js';
-import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {isMac} from 'chrome://resources/js/platform.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {pressAndReleaseKeyOn} from 'chrome://webui-test/keyboard_mock_interactions.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
@@ -362,66 +359,6 @@ suite('HistoryAppTest', function() {
     assertEquals(
         1, embeddingsHandler.getCallCount('maybeShowFeaturePromo'),
         'promo is disabled in setup');
-  });
-
-  test('ProductSpecsIncrementsToolbar', async () => {
-    // Reset the app with product spec lists feature enabled.
-    document.body.removeChild(element);
-    loadTimeData.overrideValues({compareHistoryEnabled: true});
-    element = document.createElement('history-app');
-    document.body.appendChild(element);
-    element.$.router.selectedPage = 'comparisonTables';
-    await flushTasks();
-    assertEquals(0, element.$.toolbar.count);
-
-    const productSpecificationsList =
-        element.shadowRoot!.querySelector('product-specifications-lists');
-    assert(!!productSpecificationsList);
-
-    // Mock adding a selected item.
-    productSpecificationsList.selectedItems.add('uuid1');
-    productSpecificationsList.dispatchEvent(
-        new CustomEvent('product-spec-item-select', {
-          bubbles: true,
-          composed: true,
-          detail: {
-            checked: true,
-            uuid: 'uuid1',
-          },
-        }));
-    await flushTasks();
-
-    assertEquals(1, element.$.toolbar.count);
-  });
-
-  test('ProductSpecsSelectUnselectAll', async () => {
-    // Reset the app with product spec lists feature enabled.
-    document.body.removeChild(element);
-    loadTimeData.overrideValues({compareHistoryEnabled: true});
-    element = document.createElement('history-app');
-    document.body.appendChild(element);
-    element.$.router.selectedPage = 'comparisonTables';
-    await flushTasks();
-    assertEquals(0, element.$.toolbar.count);
-
-    // Stub the selectOrUnselectAll method in the list element.
-    let selectAllCalled = false;
-    const productSpecificationsList =
-        element.shadowRoot!.querySelector('product-specifications-lists');
-    assert(!!productSpecificationsList);
-    productSpecificationsList.selectOrUnselectAll = function() {
-      selectAllCalled = true;
-    };
-
-    // Mock ctrl+A.
-    productSpecificationsList.selectedItems.add('uuid1');
-    productSpecificationsList.selectedItems.add('uuid2');
-    const modifier = isMac ? 'meta' : 'ctrl';
-    pressAndReleaseKeyOn(document.body, 65, modifier, 'a');
-    await flushTasks();
-
-    assertEquals(true, selectAllCalled);
-    assertEquals(2, element.$.toolbar.count);
   });
 
   test('PassesDisclaimerLinkClicksToEmbeddings', async () => {
