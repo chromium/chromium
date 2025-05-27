@@ -5088,6 +5088,10 @@
       status: "experimental",
     },
     {
+      name: "URLPatternGenerate",
+      status: "experimental",
+    },
+    {
       name: "URLSearchParamsHasAndDeleteMultipleArgs",
       status: "stable",
     },

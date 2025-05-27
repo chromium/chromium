@@ -2295,6 +2295,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     getter username
 [Worker]     method constructor
 [Worker]     method exec
+[Worker]     method generate
 [Worker]     method test
 [Worker] interface URLSearchParams
 [Worker]     attribute @@toStringTag
