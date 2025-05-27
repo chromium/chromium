@@ -158,6 +158,19 @@ test_interpolation({
 
 test_interpolation({
   property: 'clip-path',
+  from: 'shape(from 5% 5px, arc to 15% -15px of 10px, arc by 15% -5px of 30% cw rotate 30deg large, arc to 25% 20px of 10% small)',
+  to: 'shape(from 15% 15px, arc to 5% -25px of 15%, arc by 25% -15px of 12rem cw rotate 270deg small, arc to 15% 20px of 20% small cw)'
+}, [
+  {at: -0.3, expect: 'shape(from 2% 2px, arc to 18% -12px of calc(-4.5% + 13px), arc by 12% -2px of calc(39% - 57.6px) cw large rotate -42deg, arc to 28% 20px of 7%)'},
+  {at: 0, expect: 'shape(from 5% 5px, arc to 15% -15px of calc(0% + 10px), arc by 15% -5px of 30% cw large rotate 30deg, arc to 25% 20px of 10%)'},
+  {at: 0.3, expect: 'shape(from 8% 8px, arc to 12% -18px of calc(4.5% + 7px), arc by 18% -8px of calc(21% + 57.6px) rotate 102deg cw large, arc to 22% 20px of 13% cw)'},
+  {at: 0.5, expect: 'shape(from 10% 10px, arc to 10% -20px of calc(7.5% + 5px), arc by 20% -10px of calc(15% + 96px) cw large rotate 150deg, arc to 20% 20px of 15% cw)'},
+  {at: 1, expect: 'shape(from 15% 15px, arc to 5% -25px of 15%, arc by 25% -15px of calc(0% + 192px) cw rotate 270deg, arc to 15% 20px of 20% cw)'},
+  {at: 1.5, expect: 'shape(from 20% 20px, arc to 0% -30px of calc(22.5% - 5px), arc by 30% -20px of calc(-15% + 288px) cw rotate 390deg, arc to 10% 20px of 25% cw)'},
+]);
+
+test_interpolation({
+  property: 'clip-path',
   from: 'shape(from 5px -5%, hline to 10px, vline by 10rem, hline by 8.25px, close, vline by 3pt)',
   to: 'shape(from -5px 5px, hline to 20px, vline by 10%, hline by 1em, close, vline by 6pt)',
 }, [
