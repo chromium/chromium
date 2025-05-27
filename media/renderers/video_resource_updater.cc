@@ -972,8 +972,9 @@ bool VideoResourceUpdater::WriteRGBPixelsToTexture(
 
   auto color_type =
       viz::ToClosestSkColorType(resource_format, /*plane_index=*/0);
-  auto info = SkImageInfo::Make(gfx::SizeToSkISize(hardware_resource->size()),
-                                color_type, kPremul_SkAlphaType);
+  auto info = SkImageInfo::Make(
+      gfx::SizeToSkISize(hardware_resource->size()), color_type,
+      hardware_resource->shared_image()->alpha_type());
   SkPixmap pixmap(info, source_pixels, bytes_per_row);
   ri->WritePixels(
       hardware_resource->shared_image()->mailbox(), /*dst_x_offset=*/0,
@@ -1105,9 +1106,9 @@ bool VideoResourceUpdater::WriteYUVPixelsForAllPlanesToTexture(
     }
 
     auto color_type = viz::ToClosestSkColorType(yuv_si_format, plane_index);
-    SkImageInfo info = SkImageInfo::Make(resource_size_pixels.width(),
-                                         resource_size_pixels.height(),
-                                         color_type, kPremul_SkAlphaType);
+    SkImageInfo info = SkImageInfo::Make(
+        resource_size_pixels.width(), resource_size_pixels.height(), color_type,
+        resource->shared_image()->alpha_type());
     pixmaps[plane_index] = SkPixmap(info, pixels, pixels_stride_in_bytes);
   }
   resource->SetUniqueId(video_frame->unique_id());
