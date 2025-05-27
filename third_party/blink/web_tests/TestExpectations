@@ -8891,9 +8891,6 @@ crbug.com/357976373 [ Mac ] fast/forms/color-scheme/checkbox/checkbox-appearance
 # Gardener 2024-08-08
 crbug.com/358343067 [ Linux ] external/wpt/html/semantics/embedded-content/media-elements/track/track-element/track-cues-cuechange.html [ Failure Pass ]
 
-# Gardener 2024-08-09
-crbug.com/358463699 [ Linux ] http/tests/devtools/elements/styles-2/get-set-stylesheet-text.js [ Failure Pass ]
-
 # TODO(crbug.com/359319433) Those tests are flaky on Mac
 crbug.com/359319433 [ Mac ] external/wpt/secure-payment-confirmation/authentication-cannot-bypass-spc.https.html [ Failure Pass Skip ]
 crbug.com/359319433 [ Mac ] external/wpt/secure-payment-confirmation/authentication-cross-origin.sub.https.html [ Failure Pass Skip ]
