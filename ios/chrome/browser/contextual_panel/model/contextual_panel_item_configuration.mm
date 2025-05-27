@@ -17,7 +17,9 @@ ContextualPanelItemConfiguration::ContextualPanelItemConfiguration(
 ContextualPanelItemConfiguration::~ContextualPanelItemConfiguration() = default;
 
 bool ContextualPanelItemConfiguration::CanShowLargeEntrypoint() {
-  return !entrypoint_message.empty() && relevance >= high_relevance;
+  return !entrypoint_message.empty() &&
+         (relevance >= high_relevance ||
+          entrypoint_message_large_entrypoint_always_shown);
 }
 
 bool ContextualPanelItemConfiguration::CanShowEntrypointIPH() {

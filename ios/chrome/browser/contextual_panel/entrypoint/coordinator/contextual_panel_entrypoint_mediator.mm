@@ -148,6 +148,8 @@
   ContextualPanelTabHelper* contextualPanelTabHelper =
       ContextualPanelTabHelper::FromWebState(
           _webStateList->GetActiveWebState());
+  ContextualPanelItemConfiguration* config =
+      contextualPanelTabHelper->GetFirstCachedConfig().get();
 
   if (contextualPanelTabHelper->IsContextualPanelCurrentlyOpened()) {
     base::UmaHistogramEnumeration(
@@ -156,13 +158,20 @@
     [_contextualSheetHandler closeContextualSheet];
   } else {
     [self logEntrypointFirstTapMetrics];
-    // TODO(crbug.com/416224001): If the tapped item configuration is for
-    // Reading mode, open reading mode instead.
-    [_contextualSheetHandler openContextualSheet];
+    if (!config || !config->entrypoint_custom_action) {
+      // The contextual panel should not be opened if there is a primary item
+      // with a custom action.
+      [_contextualSheetHandler openContextualSheet];
+    }
   }
 
-  ContextualPanelItemConfiguration* config =
-      contextualPanelTabHelper->GetFirstCachedConfig().get();
+  if (config && config->entrypoint_custom_action) {
+    // Regardless of whether the contextual panel is opened or closed, if the
+    // primary item has a custom action, then it should be triggered when upon
+    // being tapped.
+    config->entrypoint_custom_action.Run();
+  }
+
   if (!config || config->iph_entrypoint_used_event_name.empty()) {
     return;
   }

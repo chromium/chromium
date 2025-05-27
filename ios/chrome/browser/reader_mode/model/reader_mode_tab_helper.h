@@ -58,6 +58,7 @@ class ReaderModeTabHelper : public web::WebStateObserver,
   bool IsActive() const;
   // Activates/deactivates Reader mode in the current tab.
   void SetActive(bool active);
+
   // Whether the Reader mode WebState is available. When Reader mode becomes
   // active, the Reader mode content will start being generated through
   // distillation. If distillation process is successful, then the Reader mode
@@ -66,6 +67,10 @@ class ReaderModeTabHelper : public web::WebStateObserver,
   // Returns the Reader mode content view. A precondition for calling this
   // method is for `IsReaderModeContentAvailable()` to be true.
   web::WebState* GetReaderModeWebState();
+
+  // Shows the Reader mode options UI.
+  void ShowReaderModeOptions();
+
   // Returns whether the current page supports Reading mode.
   bool CurrentPageSupportsReaderMode() const;
   // - If the eligibility of the last committed URL is already known, calls

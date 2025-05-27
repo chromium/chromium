@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/feature_list.h"
+#import "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 
 enum class ContextualPanelItemType;
@@ -48,6 +49,10 @@ struct ContextualPanelItemConfiguration {
   // contextual panel. If none is provided, no large entrypoint can be shown.
   std::string entrypoint_message;
 
+  // If this is the primary item in the contextual panel, then the message
+  // always will be shown using a larger entrypoint.
+  bool entrypoint_message_large_entrypoint_always_shown = false;
+
   // Required. The string the entrypoint's badge button should have for
   // accessibility.
   std::string accessibility_label;
@@ -55,6 +60,12 @@ struct ContextualPanelItemConfiguration {
   // Required. The name of the image the UI can show the user if this item is
   // the primary item in the contextual panel.
   std::string entrypoint_image_name;
+
+  // Optional. If this is set, then this will be called when tapping the
+  // contextual panel entrypoint while this item is the primary item, instead of
+  // opening the contextual panel. If the contextual panel is already opened,
+  // then it will be closed before the action is performed.
+  base::RepeatingClosure entrypoint_custom_action;
 
   // Required. The type of entrypoint image. This is used by the UI to decide
   // how to interpret `entrypoint_image_name`.
