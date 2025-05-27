@@ -1733,38 +1733,6 @@ void HTMLCanvasElement::ClearLayerTexture() {
   }
 }
 
-Canvas2DLayerBridge* HTMLCanvasElement::GetOrCreateCanvas2DLayerBridge() {
-  DCHECK(IsRenderingContext2D());
-
-  if (canvas2d_bridge_) {
-    return canvas2d_bridge_.get();
-  }
-
-  if (did_fail_to_create_resource_provider_) {
-    return nullptr;
-  }
-
-  if (!IsValidImageSize(Size())) {
-    did_fail_to_create_resource_provider_ = true;
-    if (!Size().IsEmpty() && context_) {
-      context_->LoseContext(CanvasRenderingContext::kInvalidCanvasSize);
-    }
-    return nullptr;
-  }
-
-  UpdatePreferred2DRasterMode();
-
-  canvas2d_bridge_ = std::make_unique<Canvas2DLayerBridge>(*this);
-
-  UpdateMemoryUsage();
-
-  if (context_) {
-    SetNeedsCompositingUpdate();
-  }
-
-  return canvas2d_bridge_.get();
-}
-
 void HTMLCanvasElement::SetNeedsPushProperties() {
   if (cc_layer_) {
     cc_layer_->SetNeedsSetTransferableResource();

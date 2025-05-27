@@ -191,8 +191,6 @@ class CORE_EXPORT HTMLCanvasElement final
   cc::TextureLayer* GetCcLayerForTesting() { return cc_layer_.get(); }
   void ClearLayerTexture() override;
 
-  Canvas2DLayerBridge* GetOrCreateCanvas2DLayerBridge();
-
   void SetNeedsPushProperties();
 
   void DiscardResourceProvider() override;
