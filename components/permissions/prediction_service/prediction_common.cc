@@ -136,7 +136,8 @@ std::unique_ptr<GeneratePredictionsRequest> GetPredictionRequestProto(
       proto_request->mutable_permission_features()->Add();
   FillInStatsFeatures(entity.requested_permission_counts,
                       permission_features->mutable_permission_stats());
-  if (base::FeatureList::IsEnabled(permissions::features::kPermissionsAIv1)) {
+  if (base::FeatureList::IsEnabled(permissions::features::kPermissionsAIv1) ||
+      base::FeatureList::IsEnabled(permissions::features::kPermissionsAIv3)) {
     permission_features->set_permission_relevance(
         ConvertToProtoRelevance(entity.permission_relevance));
   }
