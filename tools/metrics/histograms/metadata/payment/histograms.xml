@@ -183,7 +183,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PaymentRequest.PaymentDetailsUpdateService.ChangePaymentMethod"
-    enum="Boolean" expires_after="2025-09-03">
+    enum="Boolean" expires_after="2025-11-23">
   <owner>rouslan@chromium.org</owner>
   <owner>chrome-payments-eng@google.com</owner>
   <summary>
@@ -204,7 +204,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PaymentRequest.PaymentDetailsUpdateService.ChangeShippingAddress"
-    enum="Boolean" expires_after="2025-09-03">
+    enum="Boolean" expires_after="2025-11-23">
   <owner>rouslan@chromium.org</owner>
   <owner>chrome-payments-eng@google.com</owner>
   <summary>
@@ -224,7 +224,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PaymentRequest.PaymentDetailsUpdateService.ChangeShippingOption"
-    enum="Boolean" expires_after="2025-09-03">
+    enum="Boolean" expires_after="2025-11-23">
   <owner>rouslan@chromium.org</owner>
   <owner>chrome-payments-eng@google.com</owner>
   <summary>

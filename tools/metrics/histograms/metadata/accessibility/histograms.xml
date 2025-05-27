@@ -3429,7 +3429,7 @@ even if they fit the naming pattern. -->
 </histogram>
 
 <histogram name="Accessibility.VTTContainsStyleBlock" enum="BooleanEnabled"
-    expires_after="2025-09-21">
+    expires_after="2025-11-23">
   <owner>evliu@google.com</owner>
   <owner>chrome-media-ux@google.com</owner>
   <summary>
@@ -3499,7 +3499,7 @@ even if they fit the naming pattern. -->
 </histogram>
 
 <histogram name="Accessibility.WinAPIs.UIAutomation" enum="BooleanEnabled"
-    expires_after="2025-09-21">
+    expires_after="2025-11-23">
   <owner>aleventhal@chromium.org</owner>
   <owner>almaher@microsoft.com</owner>
   <owner>benjamin.beaudry@microsoft.com</owner>

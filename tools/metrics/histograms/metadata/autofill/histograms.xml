@@ -3204,7 +3204,7 @@ Called by update_autofill_enums.py. This is a manual comment.-->
 </histogram>
 
 <histogram name="Autofill.FormEvents.CreditCard.CardInfoRetrievalEnrolled"
-    enum="CardInfoRetrievalEnrolledLoggingEvent" expires_after="2025-08-31">
+    enum="CardInfoRetrievalEnrolledLoggingEvent" expires_after="2025-11-23">
   <owner>jialihuang@google.com</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>
@@ -4455,7 +4455,7 @@ Called by update_autofill_enums.py. This is a manual comment.-->
 </histogram>
 
 <histogram name="Autofill.OtpAuth.{CardType}.{OtpAuthType}.Result"
-    enum="AutofillOtpAuthEvent" expires_after="2025-08-31">
+    enum="AutofillOtpAuthEvent" expires_after="2025-11-23">
   <owner>siyua@chromium.org</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>Logs the result of the OTP authentication.</summary>
@@ -6213,7 +6213,7 @@ Called by update_autofill_enums.py. This is a manual comment.-->
 
 <histogram
     name="Autofill.StrikeDatabase.CreditCardSaveNotOfferedDueToMaxStrikes"
-    enum="AutofillSaveType" expires_after="2025-09-21">
+    enum="AutofillSaveType" expires_after="2025-11-23">
   <owner>jsaul@google.com</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>

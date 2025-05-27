@@ -44,7 +44,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.Settings.Accessibility.CaretBlinkInterval" units="ms"
-    expires_after="2025-09-23">
+    expires_after="2025-11-23">
   <owner>katie@chromium.org</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
@@ -125,7 +125,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.Settings.Accessibility.MagnifierFollowsChromeVox"
-    enum="BooleanToggled" expires_after="2025-09-23">
+    enum="BooleanToggled" expires_after="2025-11-23">
   <owner>aldietz@google.com</owner>
   <owner>chromeos-a11y-eng@google.com</owner>
   <summary>
@@ -135,7 +135,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.Settings.Accessibility.{SettingType}.Enabled"
-    enum="BooleanToggled" expires_after="2025-09-23">
+    enum="BooleanToggled" expires_after="2025-11-23">
   <owner>katie@chromium.org</owner>
   <owner>chromeos-a11y-eng@google.com</owner>
   <summary>

@@ -219,7 +219,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Event.Jank.ScrollUpdate.{ScrollSpeed}.{VsyncStatus}.FrameAboveJankyThreshold2"
-    units="ratio * 100" expires_after="2025-09-21">
+    units="ratio * 100" expires_after="2025-11-23">
   <owner>jonross@chromium.org</owner>
   <owner>woa-performance@google.com</owner>
   <summary>

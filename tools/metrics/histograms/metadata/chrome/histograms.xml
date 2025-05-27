@@ -23,7 +23,7 @@ chromium-metrics-reviews@google.com.
 <histograms>
 
 <histogram name="Chrome.AppMenu.MenuHostInitToNextFramePresented" units="ms"
-    expires_after="2025-09-21">
+    expires_after="2025-11-23">
   <owner>temao@chromium.org</owner>
   <owner>robliao@chromium.org</owner>
   <summary>
