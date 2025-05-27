@@ -13,7 +13,6 @@ import android.content.res.ColorStateList;
 import android.graphics.Rect;
 import android.util.AttributeSet;
 import android.view.View;
-import android.view.animation.Interpolator;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 
@@ -21,8 +20,6 @@ import androidx.annotation.ColorInt;
 import androidx.annotation.IntDef;
 
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.hub.NewTabAnimationUtils.NewTabAnim;
 import org.chromium.chrome.browser.theme.ThemeUtils;
 import org.chromium.chrome.browser.toolbar.top.ToggleTabStackButton;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
@@ -92,31 +89,17 @@ public class NewBackgroundTabAnimationHostView extends FrameLayout {
         target[0] -= Math.round(mLinkIcon.getWidth() / 2f);
         target[1] -= Math.round(mLinkIcon.getHeight() / 2f);
 
-        // TODO(crbug.com/419065710): Clean up versions.
-        @NewTabAnim int version = ChromeFeatureList.sShowNewTabAnimationsVersion.getValue();
-
         AnimatorSet transitionAnimator = getTransitionAnimator();
-        ObjectAnimator pathAnimator =
-                getPathArcAnimator(originX, originY, target[0], target[1], version);
+        ObjectAnimator pathAnimator = getPathArcAnimator(originX, originY, target[0], target[1]);
         AnimatorSet backgroundAnimation = new AnimatorSet();
         AnimatorSet fakeTabSwitcherAnimator;
 
         if (mAnimationType == AnimationType.DEFAULT) {
             fakeTabSwitcherAnimator =
                     mFakeTabSwitcherButton.getShrinkAnimator(/* incrementCount= */ true);
+            fakeTabSwitcherAnimator.setStartDelay(SHRINK_DELAY_DURATION_MS);
+            transitionAnimator.setStartDelay(SHRINK_DELAY_DURATION_MS);
 
-            if (version == NewTabAnim.BOUNCE
-                    || version == NewTabAnim.BOUNCE_DECELERATE_WITH_DELAY) {
-                fakeTabSwitcherAnimator.setInterpolator(
-                        Interpolators.NEW_BACKGROUND_TAB_ANIMATION_BOUNCE_INTERPOLATOR);
-                fakeTabSwitcherAnimator.setStartDelay(SHRINK_DELAY_DURATION_MS);
-                transitionAnimator.setStartDelay(SHRINK_DELAY_DURATION_MS);
-            } else if (version == NewTabAnim.BOUNCE_DECELERATE) {
-                fakeTabSwitcherAnimator.setInterpolator(
-                        Interpolators.NEW_BACKGROUND_TAB_ANIMATION_BOUNCE_INTERPOLATOR);
-            } else {
-                fakeTabSwitcherAnimator.setInterpolator(Interpolators.STANDARD_INTERPOLATOR);
-            }
             backgroundAnimation
                     .play(transitionAnimator)
                     .with(fakeTabSwitcherAnimator)
@@ -208,26 +191,16 @@ public class NewBackgroundTabAnimationHostView extends FrameLayout {
      * @param originY y-coordinate for the start point.
      * @param finalX x-coordinate for the end point.
      * @param finalY y-coordinate for the end point.
-     * @param version The {@link NewTabAnim} animation version.
      */
     private ObjectAnimator getPathArcAnimator(
-            float originX, float originY, float finalX, float finalY, @NewTabAnim int version) {
+            float originX, float originY, float finalX, float finalY) {
         boolean isClockwise = mIsTopToolbar ? (originX >= finalX) : (originX <= finalX);
 
         ObjectAnimator animator =
                 ViewCurvedMotionAnimatorFactory.build(
                         mLinkIcon, originX, originY, finalX, finalY, isClockwise);
         animator.setDuration(PATH_ARC_DURATION_MS);
-
-        Interpolator pathInterpolator =
-                switch (version) {
-                    case NewTabAnim.M137 -> Interpolators
-                            .NEW_BACKGROUND_TAB_ANIMATION_PATH_INTERPOLATOR;
-                    case NewTabAnim.BOUNCE -> Interpolators
-                            .NEW_BACKGROUND_TAB_ANIMATION_SECOND_PATH_INTERPOLATOR;
-                    default -> Interpolators.EMPHASIZED_DECELERATE;
-                };
-        animator.setInterpolator(pathInterpolator);
+        animator.setInterpolator(Interpolators.EMPHASIZED_DECELERATE);
 
         animator.addListener(
                 new AnimatorListenerAdapter() {

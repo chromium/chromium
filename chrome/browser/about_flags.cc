@@ -3769,26 +3769,6 @@ const FeatureEntry::FeatureVariation
         {" - all windowing modes", kAuxiliaryNavigationStaysInBrowserOn,
          std::size(kAuxiliaryNavigationStaysInBrowserOn), nullptr}};
 
-const FeatureEntry::FeatureParam kShowNewTabAnimationsBounce[] = {
-    {"version", "1"}};
-const FeatureEntry::FeatureParam kShowNewTabAnimationsDecelerate[] = {
-    {"version", "2"}};
-const FeatureEntry::FeatureParam kShowNewTabAnimationsBounceDecelerate[] = {
-    {"version", "3"}};
-const FeatureEntry::FeatureParam kShowNewTabAnimationsM137[] = {
-    {"version", "0"}};
-const FeatureEntry::FeatureVariation kShowNewTabAnimationsVariations[] = {
-    {"- Bouncy GTS icon with delay", kShowNewTabAnimationsBounce,
-     std::size(kShowNewTabAnimationsBounce), nullptr},
-    {"- Bouncy GTS icon with decelerate arc",
-     kShowNewTabAnimationsBounceDecelerate,
-     std::size(kShowNewTabAnimationsBounceDecelerate), nullptr},
-    {"- Decelerate arc", kShowNewTabAnimationsDecelerate,
-     std::size(kShowNewTabAnimationsDecelerate), nullptr},
-    {"- M137 with new duration", kShowNewTabAnimationsM137,
-     std::size(kShowNewTabAnimationsM137), nullptr},
-};
-
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || \
@@ -6762,8 +6742,7 @@ const FeatureEntry kFeatureEntries[] = {
 
     {"omnibox-show-popup-on-mouse-released",
      flag_descriptions::kOmniboxShowPopupOnMouseReleasedName,
-     flag_descriptions::kOmniboxShowPopupOnMouseReleasedDescription,
-     kOsDesktop,
+     flag_descriptions::kOmniboxShowPopupOnMouseReleasedDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(omnibox::kShowPopupOnMouseReleased)},
 
     {"omnibox-hide-suggestion-group-headers",
@@ -7685,9 +7664,7 @@ const FeatureEntry kFeatureEntries[] = {
 
     {"show-new-tab-animations", flag_descriptions::kShowNewTabAnimationsName,
      flag_descriptions::kShowNewTabAnimationsDescription, kOsAndroid,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(chrome::android::kShowNewTabAnimations,
-                                    kShowNewTabAnimationsVariations,
-                                    "ShowNewTabAnimations")},
+     FEATURE_VALUE_TYPE(chrome::android::kShowNewTabAnimations)},
 
     {"tab-switcher-color-blend-animate",
      flag_descriptions::kTabSwitcherColorBlendAnimateName,

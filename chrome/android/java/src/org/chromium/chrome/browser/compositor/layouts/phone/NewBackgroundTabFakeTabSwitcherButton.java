@@ -132,6 +132,7 @@ public class NewBackgroundTabFakeTabSwitcherButton extends FrameLayout implement
         AnimatorSet animatorSet = new AnimatorSet();
         animatorSet.playTogether(scaleXAnimator, scaleYAnimator);
         animatorSet.setDuration(SHRINK_DURATION_MS);
+        animatorSet.setInterpolator(Interpolators.NEW_BACKGROUND_TAB_ANIMATION_BOUNCE_INTERPOLATOR);
 
         animatorSet.addListener(
                 new AnimatorListenerAdapter() {

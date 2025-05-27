@@ -1590,8 +1590,6 @@ public abstract class ChromeFeatureList {
             sDisableBottomControlsStackerYOffsetDispatching =
                     sBottomBrowserControlsRefactor.newBooleanParam(
                             "disable_bottom_controls_stacker_y_offset", false);
-    public static final MutableIntParamWithSafeDefault sShowNewTabAnimationsVersion =
-            sShowNewTabAnimations.newIntParam("version", 4);
     public static final MutableIntParamWithSafeDefault sTabSwitcherColorBlendAnimateDurationMs =
             sTabSwitcherColorBlendAnimate.newIntParam("animation_duration_ms", 240);
     public static final MutableIntParamWithSafeDefault sTabSwitcherColorBlendAnimateInterpolator =
