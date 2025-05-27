@@ -1468,7 +1468,7 @@ public abstract class ChromeFeatureList {
 
     public static final BooleanCachedFeatureParam sTabStripLayoutOptimizationOnExternalDisplay =
             newBooleanCachedFeatureParam(
-                    TAB_STRIP_LAYOUT_OPTIMIZATION, "enable_on_external_display", false);
+                    TAB_STRIP_LAYOUT_OPTIMIZATION, "enable_on_external_display", true);
 
     public static final StringCachedFeatureParam
             sTabStripLayoutOptimizationOnExternalDisplayOemDenylist =
