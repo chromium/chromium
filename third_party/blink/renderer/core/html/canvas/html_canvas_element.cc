@@ -103,7 +103,7 @@
 #include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/fonts/plain_text_painter.h"
-#include "third_party/blink/renderer/platform/graphics/canvas_2d_layer_bridge.h"
+#include "third_party/blink/renderer/platform/graphics/canvas_hibernation_handler.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_resource_dispatcher.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_resource_host.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_resource_provider.h"
@@ -454,7 +454,7 @@ void HTMLCanvasElement::Dispose() {
     context_ = nullptr;
   }
 
-  canvas2d_bridge_ = nullptr;
+  hibernation_handler_ = nullptr;
 
   if (surface_layer_bridge_) {
     // Observer has to be cleared out at this point. Otherwise the
@@ -830,10 +830,7 @@ void HTMLCanvasElement::PreFinalizeFrame() {
   // Low-latency 2d canvases produce their frames after the resource gets single
   // buffered.
   // TODO(crbug.com/40280152): Analyze whether this call is redundant (i.e.,
-  // whether the CRP is guaranteed to always be present) once
-  // Canvas2DLayerBridge is definitively eliminated and the dust has settled on
-  // all flows via which CanvasResourceProviders are or are nont created coming
-  // into this flow.
+  // whether the CRP is guaranteed to always be present).
   if (LowLatencyEnabled() && !dirty_rect_.IsEmpty()) {
     GetOrCreateCanvasResourceProvider();
   }
@@ -1666,8 +1663,7 @@ void HTMLCanvasElement::Trace(Visitor* visitor) const {
 }
 
 CanvasHibernationHandler* HTMLCanvasElement::GetHibernationHandler() const {
-  return canvas2d_bridge_ ? &canvas2d_bridge_->GetHibernationHandler()
-                          : nullptr;
+  return hibernation_handler_.get();
 }
 
 void HTMLCanvasElement::UpdatePreferred2DRasterMode() {
@@ -1746,7 +1742,7 @@ void HTMLCanvasElement::SetResourceProviderForTesting(
   SetIntegralAttribute(html_names::kWidthAttr, size.width());
   SetIntegralAttribute(html_names::kHeightAttr, size.height());
   CanvasResourceHost::SetSize(size);
-  canvas2d_bridge_ = std::make_unique<Canvas2DLayerBridge>(*this);
+  hibernation_handler_ = std::make_unique<CanvasHibernationHandler>(*this);
   ReplaceResourceProvider(std::move(provider));
 }
 
@@ -2188,7 +2184,7 @@ void HTMLCanvasElement::ReplaceExistingResourceProviderFor2DContext() {
   // Bail out if it's not possible to create a new provider.
   CanvasResourceProvider* new_provider =
       RecreateCanvasResourceProviderFor2DContext(
-          canvas2d_bridge_->GetHibernationHandler());
+          CHECK_DEREF(hibernation_handler_.get()));
   if (!new_provider) {
     return;
   }
@@ -2240,12 +2236,12 @@ CanvasResourceProvider* HTMLCanvasElement::GetOrCreateCanvasResourceProvider() {
 
     UpdatePreferred2DRasterMode();
 
-    if (!canvas2d_bridge_) {
-      canvas2d_bridge_ = std::make_unique<Canvas2DLayerBridge>(*this);
+    if (!hibernation_handler_) {
+      hibernation_handler_ = std::make_unique<CanvasHibernationHandler>(*this);
     }
 
     resource_provider = RecreateCanvasResourceProviderFor2DContext(
-        canvas2d_bridge_->GetHibernationHandler());
+        CHECK_DEREF(hibernation_handler_.get()));
 
     UpdateMemoryUsage();
 

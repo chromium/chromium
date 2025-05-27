@@ -60,7 +60,6 @@
 namespace blink {
 
 class CanvasHibernationHandler;
-class Canvas2DLayerBridge;
 class CanvasContextCreationAttributesCore;
 class CanvasDrawListener;
 class CanvasHighDynamicRangeOptions;
@@ -170,10 +169,6 @@ class CORE_EXPORT HTMLCanvasElement final
 
   bool OriginClean() const override;
   void SetOriginTainted() override { origin_clean_ = false; }
-
-  Canvas2DLayerBridge* GetCanvas2DLayerBridge() {
-    return canvas2d_bridge_.get();
-  }
 
   CanvasHibernationHandler* GetHibernationHandler() const;
 
@@ -459,8 +454,8 @@ class CORE_EXPORT HTMLCanvasElement final
   bool needs_unbuffered_input_ = false;
   bool style_is_visible_ = false;
 
-  // Canvas2DLayerBridge is used when canvas has 2d rendering context
-  std::unique_ptr<Canvas2DLayerBridge> canvas2d_bridge_;
+  // CanvasHibernationHandler is used when canvas has 2d rendering context
+  std::unique_ptr<CanvasHibernationHandler> hibernation_handler_;
 
   // If the ResourceProvider currently exists, replaces it with a
   // CanvasResourceProvider that was newly created for usage with a 2D context.
