@@ -765,6 +765,41 @@ TEST_P(BtmDatabaseInteractionTest, ClearExpiredRowsFromPopupsTable) {
               testing::IsEmpty());
 }
 
+TEST_P(BtmDatabaseInteractionTest, FilterSites) {
+  LoadDatabase();
+
+  const std::set<std::string> sites_to_filter = {
+      "doesnotexist.test", "case1.test", "case2.test", "case3.test",
+      "case4.test",        "case5.test", "case6.test"};
+
+  EXPECT_THAT(db_->FilterSites(/*sites=*/{},
+                               BtmDatabase::BounceFilterType::kProtectiveEvent),
+              testing::IsEmpty());
+  EXPECT_THAT(
+      db_->FilterSites(sites_to_filter,
+                       BtmDatabase::BounceFilterType::kProtectiveEvent),
+      testing::UnorderedElementsAre("case1.test", "case2.test", "case3.test",
+                                    "case4.test", "case5.test"));
+
+  EXPECT_THAT(db_->FilterSites(/*sites=*/{},
+                               BtmDatabase::BounceFilterType::kUserActivation),
+              testing::IsEmpty());
+  EXPECT_THAT(db_->FilterSites(sites_to_filter,
+                               BtmDatabase::BounceFilterType::kUserActivation),
+              testing::UnorderedElementsAre("case1.test", "case2.test",
+                                            "case3.test", "case4.test"));
+
+  EXPECT_THAT(
+      db_->FilterSites(/*sites=*/{},
+                       BtmDatabase::BounceFilterType::kWebAuthnAssertion),
+      testing::IsEmpty());
+  EXPECT_THAT(
+      db_->FilterSites(sites_to_filter,
+                       BtmDatabase::BounceFilterType::kWebAuthnAssertion),
+      testing::UnorderedElementsAre("case1.test", "case2.test", "case3.test",
+                                    "case5.test"));
+}
+
 INSTANTIATE_TEST_SUITE_P(All, BtmDatabaseInteractionTest, ::testing::Bool());
 
 // A test class that verifies the behavior of the methods used to query the
@@ -1472,7 +1507,6 @@ TEST_F(BtmDatabaseHistogramTest, HealthMetrics) {
 
   // Write an entry to the db.
   db_->Write("url1.test", {},
-             /*interaction_times=*/
              {{Time::FromSecondsSinceUnixEpoch(1),
                Time::FromSecondsSinceUnixEpoch(1)}},
              {}, {}, {});
@@ -1500,7 +1534,6 @@ TEST_F(BtmDatabaseHistogramTest, ErrorMetrics) {
 
   // Write an entry to the db.
   db_->Write("url1.test", {},
-             /*interaction_times=*/
              {{Time::FromSecondsSinceUnixEpoch(1),
                Time::FromSecondsSinceUnixEpoch(1)}},
              {}, {}, {});
@@ -1536,7 +1569,6 @@ TEST_F(BtmDatabaseHistogramTest, PerformanceMetrics) {
 
   // Write an entry to the db.
   db_->Write("url.test", {},
-             /*interaction_times=*/
              {{Time::FromSecondsSinceUnixEpoch(1),
                Time::FromSecondsSinceUnixEpoch(1)}},
              {}, {}, {});

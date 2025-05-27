@@ -195,13 +195,25 @@ void BtmStorage::RecordBounce(const GURL& url, base::Time time, bool stateful) {
   }
 }
 
+std::pair<std::set<std::string>, std::set<std::string>>
+BtmStorage::FilterSitesWithProtectiveEvent(
+    const std::set<std::string>& sites) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(db_);
+
+  return {
+      db_->FilterSites(sites, BtmDatabase::BounceFilterType::kUserActivation),
+      db_->FilterSites(sites,
+                       BtmDatabase::BounceFilterType::kWebAuthnAssertion)};
+}
+
 std::set<std::string> BtmStorage::FilterSitesWithoutProtectiveEvent(
     std::set<std::string> sites) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(db_);
 
   std::set<std::string> interacted_sites =
-      db_->FilterSitesWithProtectiveEvent(sites);
+      db_->FilterSites(sites, BtmDatabase::BounceFilterType::kProtectiveEvent);
 
   for (const auto& site : interacted_sites) {
     if (sites.count(site)) {

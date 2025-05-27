@@ -72,6 +72,10 @@ reviewer.
   <variant name="ClearTimestamps" summary="ClearTimestamps"/>
   <variant name="FilterSitesWithProtectiveEvent"
       summary="FilterSitesWithProtectiveEvent"/>
+  <variant name="FilterSitesWithUserActivation"
+      summary="FilterSitesWithUserActivation"/>
+  <variant name="FilterSitesWithWebAuthnAssertion"
+      summary="FilterSitesWithWebAuthnAssertion"/>
   <variant name="GetSitesThatBounced" summary="GetSitesThatBounced"/>
   <variant name="GetSitesThatBouncedWithState"
       summary="GetSitesThatBouncedWithState"/>

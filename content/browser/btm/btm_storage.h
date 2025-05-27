@@ -73,6 +73,15 @@ class CONTENT_EXPORT BtmStorage {
 
   // Storage querying Methods --------------------------------------------------
 
+  // Returns two subsets of sites in `sites` with a protective event recorded.
+  // A protective event is a user activation or successful WebAuthn assertion.
+  //
+  // The first item in the return value contains the sites that had a user
+  // activation, and the second item contains the sites that had a WebAuthn
+  // assertion.
+  std::pair<std::set<std::string>, std::set<std::string>>
+  FilterSitesWithProtectiveEvent(const std::set<std::string>& sites) const;
+
   // Returns the subset of sites in |sites| WITHOUT a protective event recorded.
   // A protective event is a user activation or successful WebAuthn assertion.
   std::set<std::string> FilterSitesWithoutProtectiveEvent(
