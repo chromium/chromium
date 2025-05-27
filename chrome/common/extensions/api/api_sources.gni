@@ -20,7 +20,9 @@ schema_sources_ = [
   "identity.idl",
   "notifications.idl",
   "scripting.idl",
+  "tabs.json",
   "webstore_private.json",
+  "windows.json",
 ]
 
 # Schemas that should be used only to auto-generate the C++ types.
@@ -34,13 +36,6 @@ uncompiled_sources_ = [
 
 # Some APIs (e.g. cookies) rely on types and headers from other APIs.
 types_only_schema_sources_ = []
-
-if (enable_desktop_android_extensions) {
-  types_only_schema_sources_ += [
-    "tabs.json",
-    "windows.json",
-  ]
-}
 
 if (enable_extensions) {
   schema_sources_ += [
@@ -81,7 +76,6 @@ if (enable_extensions) {
     "system_private.json",
     "tab_capture.idl",
     "tab_groups.json",
-    "tabs.json",
     "web_authentication_proxy.idl",
     "web_navigation.json",
 
@@ -90,8 +84,6 @@ if (enable_extensions) {
     "webrtc_audio_private.idl",
     "webrtc_desktop_capture_private.idl",
     "webrtc_logging_private.idl",
-
-    "windows.json",
   ]
 
   if (!is_android) {
