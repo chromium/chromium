@@ -5479,6 +5479,11 @@
     "expiry_milestone": 140
   },
   {
+    "name": "http-cache-no-vary-search",
+    "owners": ["ricea@chromium.org", "net-dev@chromium.org"],
+    "expiry_milestone": 145
+  },
+  {
     "name": "https-first-balanced-mode",
     "owners": [
       "jdeblasio@chromium.org",

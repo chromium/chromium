@@ -1134,6 +1134,10 @@ const char kDsePreload2OnPressName[] =
 const char kDsePreload2OnPressDescription[] =
     "Enables on-press triggers of DsePreload2";
 
+const char kHttpCacheNoVarySearchName[] = "No Vary Search in Disk Cache";
+const char kHttpCacheNoVarySearchDescription[] =
+    "Enables the No-Vary-Search header in the disk cache";
+
 const char kViewportSegmentsName[] = "Viewport Segments API";
 const char kViewportSegmentsDescription[] =
     "Enable the viewport segment API, giving information about the logical "

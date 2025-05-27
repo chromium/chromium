@@ -10749,6 +10749,7 @@ from previous Chrome versions.
   <int value="-1194129602" label="ClientSideDetectionModelOnAndroid:disabled"/>
   <int value="-1192790333" label="ArcUseHighMemoryDalvikProfile:disabled"/>
   <int value="-1192334995" label="CrOSLateBootAudioHFPOffload:enabled"/>
+  <int value="-1191892115" label="HttpCacheNoVarySearch:disabled"/>
   <int value="-1191671217" label="TabGroupsNewBadgePromo:disabled"/>
   <int value="-1191392087" label="AmbientSubpageUIChange:disabled"/>
   <int value="-1191258368" label="PageInfoPerformanceHints:disabled"/>
@@ -15245,6 +15246,7 @@ from previous Chrome versions.
   <int value="503245473" label="disable-translate-new-ux"/>
   <int value="503573295" label="SingleCaCertVerificationPhase0:disabled"/>
   <int value="503722868" label="CrosBlockWarnings:disabled"/>
+  <int value="504292494" label="HttpCacheNoVarySearch:enabled"/>
   <int value="504549229" label="WebViewDisplayCutout:disabled"/>
   <int value="504717928" label="PasswordsWeaknessCheck:disabled"/>
   <int value="504994663" label="GenericSensor:disabled"/>

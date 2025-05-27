@@ -855,6 +855,9 @@ extern const char kDsePreload2Description[];
 extern const char kDsePreload2OnPressName[];
 extern const char kDsePreload2OnPressDescription[];
 
+extern const char kHttpCacheNoVarySearchName[];
+extern const char kHttpCacheNoVarySearchDescription[];
+
 extern const char kEnableTLS13EarlyDataName[];
 extern const char kEnableTLS13EarlyDataDescription[];
 
