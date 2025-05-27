@@ -5,8 +5,8 @@
 package org.chromium.chrome.test.transit.quick_delete;
 
 import org.chromium.chrome.browser.browsing_data.TimePeriod;
-import org.chromium.chrome.test.transit.SnackbarFacility;
 import org.chromium.chrome.test.transit.hub.TabSwitcherStation;
+import org.chromium.chrome.test.transit.ui.SnackbarFacility;
 
 /** Facility for the snackbar shown after deleting browsing data. */
 public class QuickDeleteSnackbarFacility extends SnackbarFacility<TabSwitcherStation> {

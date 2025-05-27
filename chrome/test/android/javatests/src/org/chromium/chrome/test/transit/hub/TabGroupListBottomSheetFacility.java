@@ -23,9 +23,9 @@ import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.test.R;
-import org.chromium.chrome.test.transit.BottomSheetFacility;
 import org.chromium.chrome.test.transit.SoftKeyboardFacility;
 import org.chromium.chrome.test.transit.tabmodel.TabGroupsExistCondition;
+import org.chromium.chrome.test.transit.ui.BottomSheetFacility;
 
 import java.util.List;
 

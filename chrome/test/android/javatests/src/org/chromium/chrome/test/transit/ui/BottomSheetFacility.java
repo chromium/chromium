@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.test.transit;
+package org.chromium.chrome.test.transit.ui;
 
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 

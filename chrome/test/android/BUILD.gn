@@ -200,15 +200,12 @@ android_library("chrome_java_transit") {
     "javatests/src/org/chromium/chrome/test/transit/AppMenuFacility.java",
     "javatests/src/org/chromium/chrome/test/transit/AutoResetCtaTransitTestRule.java",
     "javatests/src/org/chromium/chrome/test/transit/BaseCtaTransitTestRule.java",
-    "javatests/src/org/chromium/chrome/test/transit/BottomSheetFacility.java",
     "javatests/src/org/chromium/chrome/test/transit/ChromeTabbedActivityEntryPoints.java",
     "javatests/src/org/chromium/chrome/test/transit/ChromeTransitTestRules.java",
     "javatests/src/org/chromium/chrome/test/transit/CtaAppMenuFacility.java",
     "javatests/src/org/chromium/chrome/test/transit/FreshCtaTransitTestRule.java",
     "javatests/src/org/chromium/chrome/test/transit/Journeys.java",
-    "javatests/src/org/chromium/chrome/test/transit/MessageFacility.java",
     "javatests/src/org/chromium/chrome/test/transit/ReusedCtaTransitTestRule.java",
-    "javatests/src/org/chromium/chrome/test/transit/SnackbarFacility.java",
     "javatests/src/org/chromium/chrome/test/transit/SoftKeyboardFacility.java",
     "javatests/src/org/chromium/chrome/test/transit/context_menu/ContextMenuFacility.java",
     "javatests/src/org/chromium/chrome/test/transit/context_menu/LinkContextMenuFacility.java",
@@ -284,7 +281,10 @@ android_library("chrome_java_transit") {
     "javatests/src/org/chromium/chrome/test/transit/testhtmls/PopupOnClickPageStation.java",
     "javatests/src/org/chromium/chrome/test/transit/testhtmls/PopupOnLoadPageStation.java",
     "javatests/src/org/chromium/chrome/test/transit/testhtmls/TopBottomLinksPageStation.java",
+    "javatests/src/org/chromium/chrome/test/transit/ui/BottomSheetFacility.java",
+    "javatests/src/org/chromium/chrome/test/transit/ui/MessageFacility.java",
     "javatests/src/org/chromium/chrome/test/transit/ui/ModalDialogFacility.java",
+    "javatests/src/org/chromium/chrome/test/transit/ui/SnackbarFacility.java",
   ]
 
   deps = [
