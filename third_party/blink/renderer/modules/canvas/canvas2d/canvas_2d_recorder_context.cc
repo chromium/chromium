@@ -2681,10 +2681,9 @@ scoped_refptr<cc::RefCountedBuffer<SkPoint>> MakeSkPointBuffer(
   static_assert(std::is_trivially_copyable<SkPoint>::value);
   static_assert(sizeof(SkPoint) == sizeof(float) * 2);
 
-  const size_t size = array->length() / 2;
-  std::vector<SkPoint> skpoints(size);
-  UNSAFE_TODO(
-      std::memcpy(skpoints.data(), array->Data(), size * sizeof(SkPoint)));
+  std::vector<SkPoint> skpoints(array->length() / 2);
+  base::as_writable_byte_span(base::allow_nonunique_obj, skpoints)
+      .copy_from(array->ByteSpan());
 
   return base::MakeRefCounted<cc::RefCountedBuffer<SkPoint>>(
       std::move(skpoints));
