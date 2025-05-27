@@ -24205,15 +24205,45 @@
             ],
             "experiments": [
                 {
-                    "name": "UnimportantFrame_LowerPriority",
+                    "name": "ProcessPriority",
                     "enable_features": [
                         "UnimportantFramesPriority",
+                        "UserVisibleProcessPriority"
+                    ],
+                    "disable_features": [
+                        "RestrictThreadPoolInBackground",
+                        "SetIsolatesPriority",
+                        "ThrottleUnimportantFrameRate"
+                    ]
+                },
+                {
+                    "name": "RendererSettings",
+                    "enable_features": [
+                        "RestrictThreadPoolInBackground",
+                        "SetIsolatesPriority",
+                        "UnimportantFramesPriority"
+                    ],
+                    "disable_features": [
+                        "ThrottleUnimportantFrameRate",
                         "UserVisibleProcessPriority"
                     ]
                 },
                 {
-                    "name": "UnimportantFrame_LowerPriorityAndFrameRate",
+                    "name": "FrameRate",
                     "enable_features": [
+                        "ThrottleUnimportantFrameRate",
+                        "UnimportantFramesPriority"
+                    ],
+                    "disable_features": [
+                        "ThrottleUnimportantFrameRate",
+                        "UnimportantFramesPriority"
+                    ]
+                },
+                {
+                    "name": "All",
+                    "enable_features": [
+                        "RestrictThreadPoolInBackground",
+                        "SetIsolatesPriority",
                         "ThrottleUnimportantFrameRate",
                         "UnimportantFramesPriority",
                         "UserVisibleProcessPriority"
