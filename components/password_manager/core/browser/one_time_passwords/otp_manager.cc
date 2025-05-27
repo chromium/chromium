@@ -53,12 +53,13 @@ void OtpManager::ProcessClassificationModelPredictions(
   }
 
   if (form_managers_.find(form_id) == form_managers_.end()) {
-    form_managers_.emplace(
-        form_id, OtpFormManager(form_id, fillable_otp_fields, client_));
+    form_managers_.emplace(form_id, std::make_unique<OtpFormManager>(
+                                        form_id, fillable_otp_fields, client_));
     client_->InformPasswordChangeServiceOfOtpPresent();
 
   } else {
-    form_managers_.at(form_id).ProcessUpdatedPredictions(fillable_otp_fields);
+    CHECK(form_managers_.at(form_id));
+    form_managers_.at(form_id)->ProcessUpdatedPredictions(fillable_otp_fields);
   }
 }
 

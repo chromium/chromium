@@ -49,7 +49,7 @@ TEST_F(OtpManagerTest, FormManagerCreatedForOtpForm) {
   std::vector<autofill::FieldGlobalId> expected_otp_field_ids = {
       form.fields()[0].global_id()};
   EXPECT_EQ(expected_otp_field_ids,
-            otp_manager_.form_managers().at(form.global_id()).otp_field_ids());
+            otp_manager_.form_managers().at(form.global_id())->otp_field_ids());
 }
 
 TEST_F(OtpManagerTest, FormManagerNotCreatedForNotFillableForm) {
@@ -94,7 +94,7 @@ TEST_F(OtpManagerTest, ManagersUpdatedWhenPredictionsChange) {
   std::vector<autofill::FieldGlobalId> expected_otp_field_ids = {
       form.fields()[1].global_id()};
   EXPECT_EQ(expected_otp_field_ids,
-            otp_manager_.form_managers().at(form.global_id()).otp_field_ids());
+            otp_manager_.form_managers().at(form.global_id())->otp_field_ids());
 }
 
 TEST_F(OtpManagerTest, FormManagerdDeletedWhenOtpFieldIsNoLongerParsedAsSuch) {

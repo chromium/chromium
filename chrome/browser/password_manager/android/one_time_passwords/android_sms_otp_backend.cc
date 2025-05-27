@@ -7,6 +7,8 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 
+using password_manager::OtpFetchReply;
+
 AndroidSmsOtpBackend::AndroidSmsOtpBackend()
     : receiver_bridge_(AndroidSmsOtpFetchReceiverBridge::Create()),
       dispatcher_bridge_(AndroidSmsOtpFetchDispatcherBridge::Create()),
@@ -32,35 +34,44 @@ AndroidSmsOtpBackend::~AndroidSmsOtpBackend() {
   background_task_runner_->DeleteSoon(FROM_HERE, std::move(dispatcher_bridge_));
 }
 
-void AndroidSmsOtpBackend::RetrieveSmsOtp() {
+void AndroidSmsOtpBackend::RetrieveSmsOtp(
+    base::OnceCallback<void(const OtpFetchReply&)> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
-  if (!initialization_result_.has_value()) {
-    // The downstream backend initialization is in progress, postpone the call.
-    pending_fetch_request_ = true;
-    return;
-  }
 
-  // Return early if the downstream backend did not initialize successfully.
-  if (!initialization_result_.value()) {
-    return;
-  }
+  // Callbacks are simply stored in a queue, because with Android SMS OTPs API
+  // is not able to differentiate between senders and websites origins, so if
+  // the API is invoked a few times during a short period of time, the replies
+  // are the same and it makes no sense to add a more sophisticated mechanism to
+  // make sure that the callbacks and requests match.
+  pending_callbacks_.push(std::move(callback));
 
-  // The dispatcher bridge is deleted manually in this class' destructor on the
-  // sequence where all operations of this class are executed. It's safe to use
-  // `base::Unretained(dispatcher_bridge_)` for binding here.
-  background_task_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce(&AndroidSmsOtpFetchDispatcherBridge::RetrieveSmsOtp,
-                     base::Unretained(dispatcher_bridge_.get())));
+  StartDownstreamBackendRequest();
 }
 
 void AndroidSmsOtpBackend::OnOtpValueRetrieved(std::string value) {
-  // TODO(crbug.com/415271020): Implement.
+  DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
+  if (!pending_callbacks_.empty()) {
+    std::move(pending_callbacks_.front())
+        .Run(OtpFetchReply{value, /*request_complete_=*/true});
+    pending_callbacks_.pop();
+  }
 }
 
 void AndroidSmsOtpBackend::OnOtpValueRetrievalError(
     SmsOtpRetrievalApiErrorCode error_code) {
-  // TODO(crbug.com/415271020): Implement.
+  DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
+  // TODO(crbug.com/415272524): Record metrics on the API error codes.
+
+  if (!pending_callbacks_.empty()) {
+    // kTimeout means that nothing prevented the request from execution, but the
+    // SMS with the OTP value was not received within some time. All other
+    // errors mean that it was not possible to execute the request.
+    bool request_complete =
+        (error_code == SmsOtpRetrievalApiErrorCode::kTimeout);
+    std::move(pending_callbacks_.front())
+        .Run(OtpFetchReply{/*otp_value=*/std::nullopt, request_complete});
+    pending_callbacks_.pop();
+  }
 }
 
 void AndroidSmsOtpBackend::InitBridges() {
@@ -79,10 +90,32 @@ void AndroidSmsOtpBackend::InitBridges() {
 }
 
 void AndroidSmsOtpBackend::OnBridgesInitComplete(bool init_success) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
   initialization_result_ = init_success;
 
   if (init_success && pending_fetch_request_) {
     pending_fetch_request_ = false;
-    RetrieveSmsOtp();
+    StartDownstreamBackendRequest();
   }
+}
+
+void AndroidSmsOtpBackend::StartDownstreamBackendRequest() {
+  if (!initialization_result_.has_value()) {
+    // The downstream backend initialization is in progress, postpone the call.
+    pending_fetch_request_ = true;
+    return;
+  }
+
+  // Return early if the downstream backend did not initialize successfully.
+  if (!initialization_result_.value()) {
+    return;
+  }
+
+  // The dispatcher bridge is deleted manually in this class' destructor on the
+  // sequence where all operations of this class are executed. It's safe to use
+  // `base::Unretained(dispatcher_bridge_)` for binding here.
+  background_task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(&AndroidSmsOtpFetchDispatcherBridge::RetrieveSmsOtp,
+                     base::Unretained(dispatcher_bridge_.get())));
 }

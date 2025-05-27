@@ -7,6 +7,8 @@
 
 #include <optional>
 
+#include "base/containers/queue.h"
+#include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/task/single_thread_task_runner.h"
@@ -33,7 +35,9 @@ class AndroidSmsOtpBackend : public KeyedService,
   ~AndroidSmsOtpBackend() override;
 
   // password_manager::SmsOtpBackend
-  void RetrieveSmsOtp() override;
+  void RetrieveSmsOtp(
+      base::OnceCallback<void(const password_manager::OtpFetchReply&)> callback)
+      override;
 
   // AndroidSmsOtpFetchReceiverBridge::Consumer
   void OnOtpValueRetrieved(std::string value) override;
@@ -47,6 +51,9 @@ class AndroidSmsOtpBackend : public KeyedService,
 
   // Invoked when the downstream implementation in initialized.
   void OnBridgesInitComplete(bool init_success);
+
+  // Triggers the OTP value retrieval from the backend, if it's possible.
+  void StartDownstreamBackendRequest();
 
   // True if the downstream initialization was successful.
   std::optional<bool> initialization_result_ = false;
@@ -65,6 +72,10 @@ class AndroidSmsOtpBackend : public KeyedService,
   // Limited to a single thread as JNIEnv is only suitable for use on a single
   // thread.
   scoped_refptr<base::SingleThreadTaskRunner> background_task_runner_;
+
+  // Callbacks that needs to be invoked after the OTP retrieval is complete.
+  base::queue<base::OnceCallback<void(const password_manager::OtpFetchReply&)>>
+      pending_callbacks_;
 
   // All methods should be called on the main thread.
   SEQUENCE_CHECKER(main_sequence_checker_);
