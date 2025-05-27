@@ -4,7 +4,7 @@
 import {BrowserProxy, currentReadHighlightClass, MAX_SPEECH_LENGTH, NodeStore, ReadAloudHighlighter, SpeechBrowserProxyImpl, SpeechController, VoiceLanguageController, WordBoundaries} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals, assertFalse, assertGT, assertNotEquals, assertStringContains, assertStringExcludes, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 
-import {createSpeechErrorEvent, createSpeechSynthesisVoice, mockMetrics, setSimpleAxTreeWithText, setSimpleNodeStoreWithText} from './common.js';
+import {createSpeechErrorEvent, createSpeechSynthesisVoice, mockMetrics, setSimpleAxTreeWithText, setSimpleNodeStoreWithText, setSimpleTreeWithText} from './common.js';
 import {FakeReadingMode} from './fake_reading_mode.js';
 import {TestColorUpdaterBrowserProxy} from './test_color_updater_browser_proxy.js';
 import type {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
@@ -180,8 +180,7 @@ suite('SpeechController', () => {
 
   test('onSpeechSettingsChange cancels and resumes speech if playing', () => {
     const text = 'In all the time I\'ve been by your side';
-    setSimpleAxTreeWithText(text);
-    setSimpleNodeStoreWithText(text);
+    setSimpleTreeWithText(text);
     speechController.onPlayPauseToggle(null, text);
     speech.reset();
 
@@ -197,10 +196,8 @@ suite('SpeechController', () => {
   });
 
   test('onSpeechSettingsChange does not resume speech if not playing', () => {
-    const text = 'I\'ve never lost control';
     speechController.setHasSpeechBeenTriggered(true);
-    setSimpleAxTreeWithText(text);
-    setSimpleNodeStoreWithText(text);
+    setSimpleTreeWithText('I\'ve never lost control');
 
     speechController.onSpeechSettingsChange();
 
@@ -228,8 +225,7 @@ suite('SpeechController', () => {
 
   test('onPlayPauseToggle waits for engine load', async () => {
     const text = 'Sorry not sorry bout what I said';
-    setSimpleAxTreeWithText(text);
-    setSimpleNodeStoreWithText(text);
+    setSimpleTreeWithText(text);
 
     speechController.onPlayPauseToggle(null, text);
     const spoken = await speech.whenCalled('speak');
@@ -253,8 +249,7 @@ suite('SpeechController', () => {
     const text = 'I\'m just tryna have some fun';
     chrome.readingMode.speechRate = rate;
     chrome.readingMode.baseLanguageForSpeech = lang;
-    setSimpleAxTreeWithText(text);
-    setSimpleNodeStoreWithText(text);
+    setSimpleTreeWithText(text);
 
     speechController.onPlayPauseToggle(null, text);
 
@@ -335,8 +330,7 @@ suite('SpeechController', () => {
         'here I stay- let the storm rage on';
 
     setup(() => {
-      setSimpleAxTreeWithText(longSentences);
-      setSimpleNodeStoreWithText(longSentences);
+      setSimpleTreeWithText(longSentences);
     });
 
     test('uses max speech length', () => {
@@ -380,8 +374,7 @@ suite('SpeechController', () => {
   test('stops speech on language-unavailable', async () => {
     const textContent = 'I\'m done cuz all this time';
     const pageLanguage = 'es';
-    setSimpleAxTreeWithText(textContent);
-    setSimpleNodeStoreWithText(textContent);
+    setSimpleTreeWithText(textContent);
     assertNotEquals(chrome.readingMode.defaultLanguageForSpeech, pageLanguage);
     chrome.readingMode.baseLanguageForSpeech = pageLanguage;
     voiceLanguageController.onPageLanguageChanged();
@@ -407,8 +400,7 @@ suite('SpeechController', () => {
   test('stops speech on voice-unavailable', async () => {
     const textContent = 'I\'ve been just one word';
     const pageLanguage = 'es';
-    setSimpleAxTreeWithText(textContent);
-    setSimpleNodeStoreWithText(textContent);
+    setSimpleTreeWithText(textContent);
     assertNotEquals(chrome.readingMode.defaultLanguageForSpeech, pageLanguage);
     chrome.readingMode.baseLanguageForSpeech = pageLanguage;
     voiceLanguageController.onPageLanguageChanged();
@@ -433,8 +425,7 @@ suite('SpeechController', () => {
   test('invalid argument updates speech rate', () => {
     const textContent = 'In a stupid rhyme';
     const pageLanguage = 'es';
-    setSimpleAxTreeWithText(textContent);
-    setSimpleNodeStoreWithText(textContent);
+    setSimpleTreeWithText(textContent);
     assertNotEquals(chrome.readingMode.defaultLanguageForSpeech, pageLanguage);
     chrome.readingMode.speechRate = 4;
     chrome.readingMode.baseLanguageForSpeech = pageLanguage;
@@ -459,8 +450,7 @@ suite('SpeechController', () => {
   test('speech interrupt while repositioning keeps playing speech', () => {
     const textContent = 'So I picked up a pen and a microphone';
     const pageLanguage = 'es';
-    setSimpleAxTreeWithText(textContent);
-    setSimpleNodeStoreWithText(textContent);
+    setSimpleTreeWithText(textContent);
     assertNotEquals(chrome.readingMode.defaultLanguageForSpeech, pageLanguage);
     chrome.readingMode.speechRate = 4;
     chrome.readingMode.baseLanguageForSpeech = pageLanguage;
@@ -487,8 +477,7 @@ suite('SpeechController', () => {
   test('speech interrupt stops speech', async () => {
     const textContent = 'History\'s about to get overthrown';
     const pageLanguage = 'es';
-    setSimpleAxTreeWithText(textContent);
-    setSimpleNodeStoreWithText(textContent);
+    setSimpleTreeWithText(textContent);
     assertNotEquals(chrome.readingMode.defaultLanguageForSpeech, pageLanguage);
     chrome.readingMode.speechRate = 4;
     chrome.readingMode.baseLanguageForSpeech = pageLanguage;
@@ -517,8 +506,7 @@ suite('SpeechController', () => {
 
   test('speech finished clears state', async () => {
     const text = 'New phone who dis?';
-    setSimpleAxTreeWithText(text);
-    setSimpleNodeStoreWithText(text);
+    setSimpleTreeWithText(text);
 
     speechController.onPlayPauseToggle(null, text);
 

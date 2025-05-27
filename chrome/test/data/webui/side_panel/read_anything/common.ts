@@ -124,3 +124,9 @@ export function setSimpleNodeStoreWithText(text: string) {
   chrome.readingMode.getCurrentTextEndIndex = () => text.length;
   NodeStore.getInstance().setDomNode(document.createTextNode(text), id);
 }
+
+// Sets up the simple AX tree and node store with the given text.
+export function setSimpleTreeWithText(text: string) {
+  setSimpleAxTreeWithText(text);
+  setSimpleNodeStoreWithText(text);
+}

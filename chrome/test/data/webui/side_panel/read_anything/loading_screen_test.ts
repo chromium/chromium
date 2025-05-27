@@ -8,7 +8,7 @@ import type {AppElement, SpEmptyStateElement} from 'chrome-untrusted://read-anyt
 import {assertEquals, assertFalse, assertStringContains, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {microtasksFinished} from 'chrome-untrusted://webui-test/test_util.js';
 
-import {createApp, emitEvent, setSimpleAxTreeWithText, setSimpleNodeStoreWithText} from './common.js';
+import {createApp, emitEvent, setSimpleTreeWithText} from './common.js';
 import {FakeReadingMode} from './fake_reading_mode.js';
 import {TestColorUpdaterBrowserProxy} from './test_color_updater_browser_proxy.js';
 
@@ -41,9 +41,7 @@ suite('LoadingScreen', () => {
   });
 
   test('clears read aloud state', () => {
-    const text = 'My name is Regina George';
-    setSimpleNodeStoreWithText(text);
-    setSimpleAxTreeWithText(text);
+    setSimpleTreeWithText('My name is Regina George');
     emitEvent(app, ToolbarEvent.PLAY_PAUSE);
     assertTrue(speechController.isSpeechActive());
 
