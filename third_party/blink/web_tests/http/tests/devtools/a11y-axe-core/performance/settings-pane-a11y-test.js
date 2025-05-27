@@ -15,7 +15,7 @@ import {PerformanceTestRunner} from 'performance_test_runner';
   const widget = await PerformanceTestRunner.getTimelineWidget();
   const settingsButton = widget.showSettingsPaneButton.element;
   settingsButton.click();
-  await AxeCoreTestRunner.runValidation(widget.settingsPane.contentElement);
+  await AxeCoreTestRunner.runValidation(widget.settingsPane);
 
   TestRunner.completeTest();
 })();

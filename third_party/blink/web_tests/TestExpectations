@@ -8837,9 +8837,6 @@ crbug.com/324441376 [ Linux ] virtual/threaded-prefer-compositing/fast/scrolling
 crbug.com/388445687 http/tests/devtools/console/console-copy-treeoutline.js [ Failure Pass ]
 crbug.com/388445687 http/tests/devtools/console/console-viewport-selection.js [ Failure Pass ]
 
-# Temporarily disabled to unblock https://crrev.com/c/6164904
-crbug.com/388445687 http/tests/devtools/a11y-axe-core/performance/settings-pane-a11y-test.js [ Failure Pass ]
-
 # Gardener 2024-06-28
 crbug.com/349938120 [ Linux ] wpt_internal/webmidi/requestmidiaccess-basic.https.html [ Failure Pass ]
 
