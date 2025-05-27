@@ -277,7 +277,6 @@ testing/data/link-manifest-change.html
 testing/data/link-manifest-fetch.json
 testing/data/listener/listener_leak1.html
 testing/data/listener/listener_leak2.html
-testing/data/listener/mutation_event_listener.html
 testing/data/long_press_draggable_div.html
 testing/data/long_press_empty_div.html
 testing/data/long_press_empty_editable_selection.html

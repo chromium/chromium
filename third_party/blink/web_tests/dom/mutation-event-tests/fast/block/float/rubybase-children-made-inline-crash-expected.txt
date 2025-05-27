@@ -1,7 +1,0 @@
-CONSOLE WARNING: Listener added for a 'DOMCharacterDataModified' mutation event. This event type is deprecated, and will be removed from this browser VERY soon. Usage of this event listener will cause performance issues today, and represents a large risk of imminent site breakage. Consider using MutationObserver instead. See https://chromestatus.com/feature/5083947249172480 for more information.
-CONSOLE WARNING: Listener added for a 'DOMNodeInserted' mutation event. This event type is deprecated, and will be removed from this browser VERY soon. Usage of this event listener will cause performance issues today, and represents a large risk of imminent site breakage. Consider using MutationObserver instead. See https://chromestatus.com/feature/5083947249172480 for more information.
-CONSOLE MESSAGE: `float` property is not supported correctly inside an element with `display: ruby` or `display: ruby-text`.
-CONSOLE ERROR: Uncaught TypeError: oElement.insertAdjacentText is not a function
-crbug.com/658584: Clear floats when a ruby column's children are made inline. This test passes if it does not crash.
-
-AAA

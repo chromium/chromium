@@ -204,33 +204,10 @@ crbug.com/40849593 external/wpt/content-security-policy/media-src/media-src-7_1_
 # ====== Timed HTML parser budget tests to here ========================
 
 # ====== Mutation Events tests from here ========================
-
-# This is the virtual suite that should continue passing.
-crbug.com/1446498 virtual/mutation-events-enabled/* [ Pass ]
-
-# TODO(crbug.com/1446498) These are all of the files that test Mutation Events
-# directly. These can all be deleted once Mutation Events are disabled by
-# default and things have stabilized.
-crbug.com/1446498 dom/mutation-event-tests/* [ Failure Skip ]
-# These are immovable tests, either because they're WPT or http/tests/*.
-crbug.com/1446498 external/wpt/editing/crashtests/indent-outdent-after-closing-editable-dialog-element.html [ Failure Skip ]
-crbug.com/1446498 external/wpt/editing/other/move-inserted-node-from-DOMNodeInserted-during-exec-command-insertHTML.html [ Failure Skip ]
-crbug.com/1446498 external/wpt/html/semantics/scripting-1/the-script-element/execution-timing/042.html [ Failure Skip ]
-crbug.com/1446498 external/wpt/html/semantics/scripting-1/the-script-element/execution-timing/043.html [ Failure Skip ]
-crbug.com/1446498 external/wpt/html/semantics/scripting-1/the-script-element/execution-timing/044.html [ Failure Skip ]
-crbug.com/1446498 external/wpt/html/semantics/scripting-1/the-script-element/execution-timing/045.html [ Failure Skip ]
-crbug.com/1446498 external/wpt/html/semantics/scripting-1/the-script-element/execution-timing/054.html [ Failure Skip ]
-crbug.com/1446498 external/wpt/html/semantics/scripting-1/the-script-element/execution-timing/055.html [ Failure Skip ]
-crbug.com/1446498 external/wpt/uievents/legacy-domevents-tests/approved/domnodeinserted.html [ Failure Skip ]
-crbug.com/1446498 external/wpt/uievents/legacy-domevents-tests/approved/ProcessingInstruction.DOMCharacterDataModified.html [ Failure Skip ]
-crbug.com/1446498 http/tests/inspector-protocol/console/console-dom-mutation-violations.js [ Failure Skip ]
-crbug.com/1446498 http/tests/inspector-protocol/issues/mutation-events-issue.js [ Failure Skip ]
-crbug.com/1446498 virtual/text-antialias/split-text-crash.xhtml [ Failure Skip ]
-
 # TODO(crbug.com/1446498) These fail when Mutation Events are disabled, but
 # these are tests of other (non-Mutation-Event) things, and just happen to use
-# Mutation Events for the test. Triage and fix or remove all of these before
-# disabling Mutation Events by default.
+# Mutation Events for the test. These still need triage to either fix or remove
+# them. Mutation events have been removed.
 crbug.com/1446498 accessibility/details-summary-crash.html [ Failure Pass ]
 crbug.com/1446498 custom-elements/cereactions-with-exception.html [ Failure Pass ]
 crbug.com/1446498 dom/node/replace_child_recheck.html [ Failure Pass ]
@@ -263,8 +240,6 @@ crbug.com/1446498 fast/dom/mutation-event-for-fragment-insertion.html [ Pass Tim
 crbug.com/1446498 fast/events/window-onerror-isolatedworld-02.html [ Pass Timeout ]
 crbug.com/1446498 http/tests/xmlhttprequest/reentrant-cancel.html [ Pass Timeout ]
 crbug.com/1446498 svg/foreignObject/viewport-foreignobject-crash.html [ Pass Timeout ]
-
-
 # ====== Mutation Events tests to here ========================
 
 

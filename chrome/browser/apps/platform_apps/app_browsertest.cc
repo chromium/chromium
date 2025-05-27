@@ -818,12 +818,6 @@ IN_PROC_BROWSER_TEST_F(PlatformAppBrowserTest, OpenLink) {
   ASSERT_EQ(2, browser()->tab_strip_model()->count());
 }
 
-IN_PROC_BROWSER_TEST_F(PlatformAppBrowserTest, MutationEventsDisabled) {
-  ASSERT_TRUE(RunExtensionTest("platform_apps/mutation_events",
-                               {.launch_as_platform_app = true}))
-      << message_;
-}
-
 // This appears to be unreliable.
 // TODO(stevenjb): Investigate and enable
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
