@@ -3511,7 +3511,7 @@ TEST_F(LegacySWPictureLayerImplTest, TilingSetRasterQueue) {
   EXPECT_TRUE(queue->IsEmpty());
 }
 
-TEST_F(LegacySWPictureLayerImplTest, TilingSetRasterQueueActiveTree) {
+TEST_F(NoLowResPictureLayerImplTest, TilingSetRasterQueueActiveTree) {
   host_impl()->AdvanceToNextFrame(base::Milliseconds(1));
 
   host_impl()->active_tree()->SetDeviceViewportRect(gfx::Rect(500, 500));
@@ -3523,7 +3523,7 @@ TEST_F(LegacySWPictureLayerImplTest, TilingSetRasterQueueActiveTree) {
 
   SetupPendingTree(pending_raster_source);
   ActivateTree();
-  EXPECT_EQ(2u, active_layer()->num_tilings());
+  EXPECT_EQ(1u, active_layer()->num_tilings());
 
   std::unique_ptr<TilingSetRasterQueueRequired> queue =
       TilingSetRasterQueueRequired::Create(
