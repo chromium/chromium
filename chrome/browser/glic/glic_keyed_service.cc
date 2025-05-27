@@ -353,7 +353,8 @@ void GlicKeyedService::GetContextFromFocusedTab(
 
   metrics_->DidRequestContextFromFocusedTab();
 
-  FetchPageContext(GetFocusedTabData(), options, std::move(callback));
+  FetchPageContext(GetFocusedTabData(), options,
+                   /*include_actionable_data=*/false, std::move(callback));
 }
 
 void GlicKeyedService::ActInFocusedTab(

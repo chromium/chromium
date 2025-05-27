@@ -323,6 +323,7 @@ class GlicActorControllerUiTest : public test::InteractiveGlicTest {
 
       FetchPageContext(
           glic_service->GetFocusedTabData(), *options,
+          /*include_actionable_data=*/false,
           base::BindLambdaForTesting([&](mojom::GetContextResultPtr result) {
             mojo_base::ProtoWrapper& serialized_apc =
                 *result->get_tab_context()
