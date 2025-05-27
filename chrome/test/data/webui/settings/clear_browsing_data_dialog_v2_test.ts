@@ -6,7 +6,7 @@
 
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
-import type {ClearBrowsingDataResult, SettingsCheckboxElement, SettingsClearBrowsingDataDialogV2Element} from 'chrome://settings/lazy_load.js';
+import type {ClearBrowsingDataResult, SettingsCheckboxElement, SettingsClearBrowsingDataDialogV2Element, SettingsHistoryDeletionDialogElement} from 'chrome://settings/lazy_load.js';
 import {BrowsingDataType, ClearBrowsingDataBrowserProxyImpl, getDataTypePrefName, getTimePeriodString, TimePeriod} from 'chrome://settings/lazy_load.js';
 import type {SettingsPrefsElement} from 'chrome://settings/settings.js';
 import {CrSettingsPrefs} from 'chrome://settings/settings.js';
@@ -498,6 +498,45 @@ suite('DeleteBrowsingDataDialog', function() {
     await promiseResolver.promise;
 
     // Verify dialog is closed after deletion is completed.
+    assertFalse(dialog.$.deleteBrowsingDataDialog.open);
+  });
+
+  test('showHistoryDeletionDialog', async function() {
+    // Select a datatype for deletion to enable the delete button.
+    const historyCheckbox = getCheckboxForDataType(BrowsingDataType.HISTORY);
+    assertTrue(!!historyCheckbox);
+    historyCheckbox.$.checkbox.click();
+    await flushTasks();
+
+    const promiseResolver = new PromiseResolver<ClearBrowsingDataResult>();
+    testClearBrowsingDataBrowserProxy.setClearBrowsingDataPromise(
+        promiseResolver.promise);
+    dialog.$.deleteButton.click();
+
+    await testClearBrowsingDataBrowserProxy.whenCalled('clearBrowsingData');
+    // Trigger the history notice to show.
+    promiseResolver.resolve(
+        {showHistoryNotice: true, showPasswordsNotice: false});
+    await promiseResolver.promise;
+    await flushTasks();
+
+    const historyNoticeDialog =
+        dialog.shadowRoot!.querySelector<SettingsHistoryDeletionDialogElement>(
+            '#historyNotice');
+    assertTrue(!!historyNoticeDialog);
+
+    // The notice should have replaced the main dialog.
+    assertFalse(dialog.$.deleteBrowsingDataDialog.open);
+    assertTrue(historyNoticeDialog.$.dialog.open);
+
+    // Tapping the ok button will close the notice.
+    historyNoticeDialog.$.okButton.click();
+    await eventToPromise('close', historyNoticeDialog);
+    await flushTasks();
+
+    // Verify all dialogs should be closed after closing the history notice
+    // dialog.
+    assertFalse(!!dialog.shadowRoot!.querySelector('#historyNotice'));
     assertFalse(dialog.$.deleteBrowsingDataDialog.open);
   });
 });

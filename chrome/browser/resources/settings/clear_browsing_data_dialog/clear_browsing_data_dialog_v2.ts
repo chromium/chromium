@@ -15,6 +15,7 @@ import '../settings_shared.css.js';
 import './clear_browsing_data_account_indicator.js';
 // </if>
 import './clear_browsing_data_time_picker.js';
+import './history_deletion_dialog.js';
 
 import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
 import type {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
@@ -30,6 +31,21 @@ import type {ClearBrowsingDataBrowserProxy} from './clear_browsing_data_browser_
 import {BrowsingDataType, ClearBrowsingDataBrowserProxyImpl} from './clear_browsing_data_browser_proxy.js';
 import {getTemplate} from './clear_browsing_data_dialog_v2.html.js';
 import type {SettingsClearBrowsingDataTimePicker} from './clear_browsing_data_time_picker.js';
+
+/**
+ * @param dialog the dialog to close
+ * @param isLast whether this is the last CBD-related dialog
+ */
+function closeDialog(dialog: CrDialogElement, isLast: boolean) {
+  // If this is not the last dialog, then stop the 'close' event from
+  // propagating so that other (following) dialogs don't get closed as well.
+  if (!isLast) {
+    dialog.addEventListener('close', e => {
+      e.stopPropagation();
+    }, {once: true});
+  }
+  dialog.close();
+}
 
 export interface SettingsClearBrowsingDataDialogV2Element {
   $: {
@@ -138,6 +154,11 @@ export class SettingsClearBrowsingDataDialogV2Element extends
         value: false,
       },
 
+      showHistoryDeletionDialog_: {
+        type: Boolean,
+        value: false,
+      },
+
       expandedBrowsingDataTypeOptionsList_: Array,
 
       moreBrowsingDataTypeOptionsList_: Array,
@@ -147,6 +168,7 @@ export class SettingsClearBrowsingDataDialogV2Element extends
   declare private dataTypesExpanded_: boolean;
   declare private isDeletionInProgress_: boolean;
   declare private isNoDatatypeSelected_: boolean;
+  declare private showHistoryDeletionDialog_: boolean;
   declare private expandedBrowsingDataTypeOptionsList_:
       BrowsingDataTypeOption[];
   declare private moreBrowsingDataTypeOptionsList_: BrowsingDataTypeOption[];
@@ -259,13 +281,14 @@ export class SettingsClearBrowsingDataDialogV2Element extends
         .forEach(checkbox => checkbox.sendPrefChange());
     this.$.timePicker.sendPrefChange();
 
-    // TODO(crbug.com/397187800): Show history and passwords notice dialogs.
-    await this.clearBrowsingDataBrowserProxy_.clearBrowsingData(
-        dataTypes, timePeriod);
-
+    const {showHistoryNotice} =
+        await this.clearBrowsingDataBrowserProxy_.clearBrowsingData(
+            dataTypes, timePeriod);
     this.isDeletionInProgress_ = false;
+    this.showHistoryDeletionDialog_ = showHistoryNotice;
+
     if (this.$.deleteBrowsingDataDialog.open) {
-      this.$.deleteBrowsingDataDialog.close();
+      closeDialog(this.$.deleteBrowsingDataDialog, !showHistoryNotice);
     }
   }
 
@@ -299,6 +322,10 @@ export class SettingsClearBrowsingDataDialogV2Element extends
 
   private shouldDisableDeleteButton_(): boolean {
     return this.isDeletionInProgress_ || this.isNoDatatypeSelected_;
+  }
+
+  private onHistoryDeletionDialogClose_() {
+    this.showHistoryDeletionDialog_ = false;
   }
 }
 

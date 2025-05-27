@@ -118,3 +118,9 @@
     </cr-button>
   </div>
 </cr-dialog>
+
+<template is="dom-if" if="[[showHistoryDeletionDialog_]]" restamp>
+  <settings-history-deletion-dialog id="historyNotice"
+      on-close="onHistoryDeletionDialogClose_">
+  </settings-history-deletion-dialog>
+</template>
