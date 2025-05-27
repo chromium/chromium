@@ -362,9 +362,6 @@
 #include "chrome/browser/ui/webui/signin/turn_sync_on_helper.h"
 #endif
 
-#if BUILDFLAG(ENABLE_PDF)
-#include "chrome/browser/accessibility/pdf_ocr_controller_factory.h"
-#endif
 #endif
 
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || \
@@ -1264,9 +1261,6 @@ void ChromeBrowserMainExtraPartsProfiles::
   if (features::IsMainNodeAnnotationsEnabled()) {
     screen_ai::AXMainNodeAnnotatorControllerFactory::GetInstance();
   }
-#if BUILDFLAG(ENABLE_PDF)
-  screen_ai::PdfOcrControllerFactory::GetInstance();
-#endif
   screen_ai::ScreenAIServiceRouterFactory::EnsureFactoryBuilt();
 #endif
 #if BUILDFLAG(IS_CHROMEOS)

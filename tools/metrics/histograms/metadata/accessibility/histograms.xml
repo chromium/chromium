@@ -2329,17 +2329,6 @@ even if they fit the naming pattern. -->
   </summary>
 </histogram>
 
-<histogram name="Accessibility.PdfOcr.UserAcceptLanguage"
-    enum="LocaleCodeBCP47" expires_after="2025-10-26">
-  <owner>kyungjunlee@google.com</owner>
-  <owner>chrome-a11y-core@google.com</owner>
-  <summary>
-    Records user accept languages when PDF OCR first runs for the always mode
-    after user login; or whenever the user uses the once mode to extract text
-    from a PDF file.
-  </summary>
-</histogram>
-
 <histogram
     name="Accessibility.Performance.AccessibilityTreeSnapshotCombiner::~AccessibilityTreeSnapshotCombiner"
     units="microseconds" expires_after="2025-07-28">

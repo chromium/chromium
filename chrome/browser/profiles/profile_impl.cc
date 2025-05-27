@@ -229,10 +229,6 @@
 #include "ui/accessibility/accessibility_features.h"
 #endif
 
-#if !BUILDFLAG(IS_ANDROID) && BUILDFLAG(ENABLE_PDF)
-#include "chrome/browser/accessibility/pdf_ocr_controller_factory.h"
-#endif  // !BUILDFLAG(IS_ANDROID) && BUILDFLAG(ENABLE_PDF)
-
 #if BUILDFLAG(ENABLE_BACKGROUND_MODE)
 #include "chrome/browser/background/extensions/background_mode_manager.h"
 #endif
@@ -846,19 +842,6 @@ void ProfileImpl::DoFinalInit(CreateMode create_mode) {
   // changes from Google Mobile Services, as early as possible.
   PasswordManagerSettingsServiceFactory::GetForProfile(this);
 #else
-
-#if BUILDFLAG(ENABLE_PDF)
-  bool pcf_ocr_may_be_needed = true;
-#if BUILDFLAG(IS_CHROMEOS)
-  // `PdfOcrControllerFactory` is not needed in the not-signed-in profile of
-  // ChromeOS as no user navigation to PDFs is possible there.
-  pcf_ocr_may_be_needed = IsSignedIn();
-#endif
-  // Create the PDF OCR controller so that it can self-activate as needed.
-  if (pcf_ocr_may_be_needed) {
-    screen_ai::PdfOcrControllerFactory::GetForProfile(this);
-  }
-#endif  // BUILDFLAG(ENABLE_PDF)
 
   if (features::IsMainNodeAnnotationsEnabled()) {
     screen_ai::AXMainNodeAnnotatorControllerFactory::GetForProfile(this);

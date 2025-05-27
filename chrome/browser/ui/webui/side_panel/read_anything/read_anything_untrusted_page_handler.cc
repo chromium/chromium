@@ -64,8 +64,6 @@
 #include "url/gurl.h"
 
 #if BUILDFLAG(ENABLE_PDF)
-#include "chrome/browser/accessibility/pdf_ocr_controller.h"
-#include "chrome/browser/accessibility/pdf_ocr_controller_factory.h"
 #include "chrome/browser/pdf/pdf_viewer_stream_manager.h"
 #include "components/pdf/common/pdf_util.h"
 #include "pdf/pdf_features.h"
@@ -376,16 +374,6 @@ ReadAnythingUntrustedPageHandler::ReadAnythingUntrustedPageHandler(
             base::BindOnce(
                 &ReadAnythingUntrustedPageHandler::OnScreenAIServiceInitialized,
                 weak_factory_.GetWeakPtr()));
-#if BUILDFLAG(ENABLE_PDF)
-    // PDF searchify feature adds OCR text to images while loading the PDF, so
-    // warming up the OCR service is not needed.
-    if (!base::FeatureList::IsEnabled(chrome_pdf::features::kPdfSearchify)) {
-      screen_ai::ScreenAIServiceRouterFactory::GetForBrowserContext(profile_)
-          ->GetServiceStateAsync(
-              screen_ai::ScreenAIServiceRouter::Service::kOCR,
-              base::DoNothing());
-    }
-#endif  // BUILDFLAG(ENABLE_PDF)
   }
 
   // Enable accessibility for the top level render frame and all descendants.
@@ -855,12 +843,6 @@ void ReadAnythingUntrustedPageHandler::SetUpPdfObserver() {
       pdf_observer_ = std::make_unique<ReadAnythingWebContentsObserver>(
           weak_factory_.GetSafeRef(), inner_contents[0], kReadAnythingAXMode);
     }
-  }
-  // PDF searchify feature adds OCR text to images while loading the PDF, so
-  // activating PDF OCR is not needed.
-  if (use_screen_ai_service_ &&
-      !base::FeatureList::IsEnabled(chrome_pdf::features::kPdfSearchify)) {
-    screen_ai::PdfOcrControllerFactory::GetForProfile(profile_)->Activate();
   }
 #endif  // BUILDFLAG(ENABLE_PDF)
 }

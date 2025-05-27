@@ -3851,7 +3851,6 @@ if (!is_android) {
 
     if (enable_pdf) {
       sources += [
-        "../browser/accessibility/pdf_ocr_controller_browsertest.cc",
         "../browser/pdf/pdf_extension_accessibility_test.cc",
         "../browser/pdf/pdf_extension_download_test.cc",
         "../browser/pdf/pdf_extension_js_test.cc",
