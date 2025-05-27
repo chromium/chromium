@@ -16,6 +16,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/ash/app_list/search/ranking/removed_results.pb.h"
 #include "chrome/browser/ash/app_list/search/test/test_search_controller.h"
+#include "chrome/browser/ash/drive/drive_integration_service_factory.h"
 #include "chrome/browser/ash/file_suggest/file_suggest_keyed_service.h"
 #include "chrome/browser/ash/file_suggest/file_suggest_keyed_service_factory.h"
 #include "chrome/browser/ui/ash/holding_space/scoped_test_mount_point.h"

@@ -19,6 +19,7 @@
 #include "base/test/mock_callback.h"
 #include "chrome/browser/apps/platform_apps/app_browsertest_util.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
+#include "chrome/browser/ash/drive/drive_integration_service_factory.h"
 #include "chrome/browser/ash/drive/drivefs_test_support.h"
 #include "chrome/browser/ash/file_manager/volume_manager.h"
 #include "chrome/browser/ash/test/kiosk_app_logged_in_browser_test_mixin.h"

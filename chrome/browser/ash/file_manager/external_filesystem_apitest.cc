@@ -17,6 +17,7 @@
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
+#include "chrome/browser/ash/drive/drive_integration_service_factory.h"
 #include "chrome/browser/ash/drive/drivefs_test_support.h"
 #include "chrome/browser/ash/extensions/file_manager/event_router.h"
 #include "chrome/browser/ash/extensions/file_manager/event_router_factory.h"

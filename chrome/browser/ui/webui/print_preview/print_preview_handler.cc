@@ -86,6 +86,7 @@
 #include "chrome/browser/ash/crosapi/crosapi_manager.h"
 #include "chrome/browser/ash/crosapi/local_printer_ash.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
+#include "chrome/browser/ash/drive/drive_integration_service_factory.h"
 #include "chromeos/crosapi/mojom/local_printer.mojom.h"
 #endif
 

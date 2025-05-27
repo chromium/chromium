@@ -20,6 +20,7 @@
 #include "base/threading/thread_restrictions.h"
 #include "base/values.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
+#include "chrome/browser/ash/drive/drive_integration_service_factory.h"
 #include "chrome/browser/ash/drive/drivefs_test_support.h"
 #include "chrome/browser/ash/system_web_apps/test_support/system_web_app_integration_test.h"
 #include "chrome/browser/notifications/notification_display_service.h"

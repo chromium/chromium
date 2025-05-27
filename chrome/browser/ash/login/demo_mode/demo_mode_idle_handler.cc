@@ -20,6 +20,7 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
+#include "chrome/browser/ash/drive/drive_integration_service_factory.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chromeos/ash/components/demo_mode/utils/demo_session_utils.h"
 #include "chromeos/ash/experiences/idle_detector/idle_detector.h"

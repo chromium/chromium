@@ -22,6 +22,7 @@
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/launch_utils.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
+#include "chrome/browser/ash/drive/drive_integration_service_factory.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ash/scanning/scan_service.h"
 #include "chrome/browser/ash/scanning/scan_service_factory.h"

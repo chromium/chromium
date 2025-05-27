@@ -38,6 +38,7 @@
 #include "chrome/browser/apps/app_service/launch_result_type.h"
 #include "chrome/browser/apps/app_service/publishers/app_publisher.h"
 #include "chrome/browser/ash/arc/fileapi/arc_documents_provider_util.h"
+#include "chrome/browser/ash/drive/drive_integration_service_factory.h"
 #include "chrome/browser/ash/drive/file_system_util.h"
 #include "chrome/browser/ash/extensions/file_manager/event_router_factory.h"
 #include "chrome/browser/ash/file_manager/file_manager_browsertest_base.h"

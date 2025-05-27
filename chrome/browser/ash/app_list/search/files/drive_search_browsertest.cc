@@ -9,6 +9,7 @@
 #include "chrome/browser/ash/app_list/search/search_features.h"
 #include "chrome/browser/ash/app_list/search/test/app_list_search_test_helper.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
+#include "chrome/browser/ash/drive/drive_integration_service_factory.h"
 #include "chrome/browser/ash/drive/drivefs_test_support.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"

@@ -7,6 +7,7 @@
 #include "chrome/browser/ash/crostini/crostini_manager.h"
 #include "chrome/browser/ash/crostini/fake_crostini_features.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
+#include "chrome/browser/ash/drive/drive_integration_service_factory.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ash/fileapi/file_system_backend.h"
 #include "chrome/browser/ash/policy/dlp/files_policy_notification_manager_factory.h"

@@ -10,6 +10,8 @@ static_library("drive") {
   sources = [
     "drive_integration_service.cc",
     "drive_integration_service.h",
+    "drive_integration_service_factory.cc",
+    "drive_integration_service_factory.h",
     "drivefs_native_message_host_ash.cc",
     "drivefs_native_message_host_ash.h",
     "file_system_util.cc",

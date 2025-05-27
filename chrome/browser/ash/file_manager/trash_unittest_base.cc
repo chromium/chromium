@@ -8,6 +8,7 @@
 #include "base/i18n/time_formatting.h"
 #include "base/strings/escape.h"
 #include "base/strings/strcat.h"
+#include "chrome/browser/ash/drive/drive_integration_service_factory.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ash/file_manager/trash_common_util.h"
 #include "chromeos/ash/components/dbus/chunneld/chunneld_client.h"

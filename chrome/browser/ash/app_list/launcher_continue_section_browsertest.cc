@@ -23,6 +23,7 @@
 #include "chrome/browser/ash/app_list/search/test/search_results_changed_waiter.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chrome/browser/ash/drive/drive_integration_service_browser_test_base.h"
+#include "chrome/browser/ash/drive/drive_integration_service_factory.h"
 #include "chrome/browser/ash/drive/drivefs_test_support.h"
 #include "chrome/browser/ash/file_manager/file_tasks_observer.h"
 #include "chrome/browser/ash/file_manager/path_util.h"

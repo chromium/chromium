@@ -13,6 +13,7 @@
 #include "base/threading/scoped_blocking_call.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
+#include "chrome/browser/ash/drive/drive_integration_service_factory.h"
 #include "chrome/browser/ash/file_suggest/file_suggest_util.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"

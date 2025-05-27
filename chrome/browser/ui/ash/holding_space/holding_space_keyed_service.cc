@@ -19,6 +19,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/strings/string_util.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
+#include "chrome/browser/ash/drive/drive_integration_service_factory.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_downloads_delegate.h"

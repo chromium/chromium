@@ -36,6 +36,7 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
+#include "chrome/browser/ash/drive/drive_integration_service_factory.h"
 #include "chrome/browser/ash/drive/file_system_util.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/file_util_service.h"

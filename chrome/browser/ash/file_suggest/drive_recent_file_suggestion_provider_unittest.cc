@@ -17,6 +17,7 @@
 #include "base/time/time.h"
 #include "base/time/time_override.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
+#include "chrome/browser/ash/drive/drive_integration_service_factory.h"
 #include "chrome/browser/ash/drive/drivefs_test_support.h"
 #include "chrome/browser/ash/file_manager/mount_test_util.h"
 #include "chrome/browser/ash/file_suggest/file_suggest_keyed_service.h"

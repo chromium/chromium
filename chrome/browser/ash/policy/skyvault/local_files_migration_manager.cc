@@ -22,6 +22,8 @@
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "base/timer/wall_clock_timer.h"
+#include "chrome/browser/ash/drive/drive_integration_service.h"
+#include "chrome/browser/ash/drive/drive_integration_service_factory.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ash/policy/skyvault/histogram_helper.h"
 #include "chrome/browser/ash/policy/skyvault/local_files_migration_constants.h"

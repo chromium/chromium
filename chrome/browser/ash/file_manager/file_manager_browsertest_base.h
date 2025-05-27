@@ -25,6 +25,7 @@
 #include "base/values.h"
 #include "chrome/browser/ash/crostini/fake_crostini_features.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
+#include "chrome/browser/ash/drive/drive_integration_service_factory.h"
 #include "chrome/browser/ash/login/test/logged_in_user_mixin.h"
 #include "chrome/browser/extensions/mixin_based_extension_apitest.h"
 #include "chrome/browser/profiles/profile.h"

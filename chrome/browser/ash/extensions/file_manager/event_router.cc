@@ -32,6 +32,7 @@
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/crostini/crostini_util.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
+#include "chrome/browser/ash/drive/drive_integration_service_factory.h"
 #include "chrome/browser/ash/drive/file_system_util.h"
 #include "chrome/browser/ash/extensions/file_manager/file_system_provider_metrics_util.h"
 #include "chrome/browser/ash/extensions/file_manager/private_api_util.h"

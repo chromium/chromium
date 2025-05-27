@@ -14,6 +14,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/time/time_override.h"
+#include "chrome/browser/ash/drive/drive_integration_service_factory.h"
 #include "chrome/browser/ash/file_manager/trash_common_util.h"
 #include "chrome/browser/ash/file_manager/trash_unittest_base.h"
 #include "components/account_id/account_id.h"

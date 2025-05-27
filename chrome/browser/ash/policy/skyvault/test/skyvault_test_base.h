@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ASH_POLICY_SKYVAULT_TEST_SKYVAULT_TEST_BASE_H_
 
 #include "chrome/browser/ash/drive/drive_integration_service.h"
+#include "chrome/browser/ash/drive/drive_integration_service_factory.h"
 #include "chrome/browser/ash/file_manager/file_manager_test_util.h"
 #include "chrome/browser/ash/file_manager/io_task.h"
 #include "chrome/browser/ash/file_manager/io_task_controller.h"

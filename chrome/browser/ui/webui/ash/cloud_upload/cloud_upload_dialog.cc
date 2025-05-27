@@ -29,6 +29,8 @@
 #include "chrome/browser/ash/arc/fileapi/arc_documents_provider_util.h"
 #include "chrome/browser/ash/browser_delegate/browser_controller.h"
 #include "chrome/browser/ash/browser_delegate/browser_delegate.h"
+#include "chrome/browser/ash/drive/drive_integration_service.h"
+#include "chrome/browser/ash/drive/drive_integration_service_factory.h"
 #include "chrome/browser/ash/extensions/file_manager/event_router_factory.h"
 #include "chrome/browser/ash/file_manager/file_tasks.h"
 #include "chrome/browser/ash/file_manager/io_task.h"

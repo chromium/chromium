@@ -6,6 +6,7 @@
 
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
+#include "chrome/browser/ash/drive/drive_integration_service_factory.h"
 #include "chrome/browser/ash/extensions/file_manager/event_router.h"
 #include "chrome/browser/ash/file_manager/volume_manager_factory.h"
 #include "chrome/browser/ash/guest_os/public/guest_os_service_factory.h"

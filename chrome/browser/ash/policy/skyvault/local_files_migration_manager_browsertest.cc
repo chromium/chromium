@@ -20,6 +20,8 @@
 #include "base/test/scoped_mock_time_message_loop_task_runner.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
+#include "chrome/browser/ash/drive/drive_integration_service.h"
+#include "chrome/browser/ash/drive/drive_integration_service_factory.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ash/file_manager/volume_manager.h"
 #include "chrome/browser/ash/policy/skyvault/local_files_migration_constants.h"

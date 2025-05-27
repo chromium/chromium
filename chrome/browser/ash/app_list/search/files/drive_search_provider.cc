@@ -22,6 +22,7 @@
 #include "chrome/browser/ash/app_list/search/search_features.h"
 #include "chrome/browser/ash/app_list/search/types.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
+#include "chrome/browser/ash/drive/drive_integration_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/ash/components/drivefs/drivefs_search_query.h"
 #include "components/drive/file_errors.h"

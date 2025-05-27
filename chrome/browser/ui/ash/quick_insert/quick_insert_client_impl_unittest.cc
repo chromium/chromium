@@ -18,6 +18,7 @@
 #include "base/test/test_future.h"
 #include "chrome/browser/ash/app_list/search/test/test_ranker_manager.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
+#include "chrome/browser/ash/drive/drive_integration_service_factory.h"
 #include "chrome/browser/ash/drive/drivefs_test_support.h"
 #include "chrome/browser/ash/fileapi/recent_model.h"
 #include "chrome/browser/ash/fileapi/recent_model_factory.h"
