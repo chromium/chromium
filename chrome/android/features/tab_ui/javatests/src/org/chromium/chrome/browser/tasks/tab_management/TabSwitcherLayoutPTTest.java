@@ -18,7 +18,6 @@ import static org.chromium.chrome.browser.flags.ChromeFeatureList.ANDROID_ELEGAN
 
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
-import android.os.Build;
 import android.widget.ImageView;
 
 import androidx.test.filters.MediumTest;
@@ -33,7 +32,6 @@ import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.transit.CarryOn;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.DisableFeatures;
@@ -45,6 +43,7 @@ import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.ui.signin.signin_promo.SigninPromoCoordinator;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
@@ -265,7 +264,6 @@ public class TabSwitcherLayoutPTTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
-    @DisableIf.Build(sdk_equals = Build.VERSION_CODES.O, message = "crbug.com/419915694")
     public void testRenderGrid_1TabGroup_ColorIcon() throws IOException {
         ChromeTabbedActivity cta = mCtaTestRule.getActivity();
 
@@ -286,6 +284,7 @@ public class TabSwitcherLayoutPTTest {
         dialog.pressDone();
 
         ChromeRenderTestRule.sanitize(cta.findViewById(R.id.pane_frame));
+        SigninPromoCoordinator.disablePromoForTesting();
         mRenderTestRule.render(
                 cta.findViewById(R.id.pane_frame), "1_tab_group_GTS_card_item_color_icon_v2");
 
