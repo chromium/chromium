@@ -222,42 +222,16 @@ void FetchProcess::OnSimpleUrlLoaderComplete(
 
     // Retry the request.
     triggered_retry_on_http_auth_error_ = true;
-    switch (config_->access_token_config.credentials_requirement) {
-      case AccessTokenConfig::CredentialsRequirement::kStrict:
-        // Requests must have valid credentials. Trigger a full request, which
-        // will result in either:
-        //
-        // * A new access token being fetched, followed by a successful request
-        // * A new access token being fetched, followed by a request which is
-        //   again rejected by the server. At this point we give up and treat
-        //   the request as failed.
-        // * We fail to get a new access token (eg. because the refresh token)
-        //   is invalid, and fail the request.
-        fetcher_.GetToken(base::BindOnce(
-            &FetchProcess::OnAccessTokenFetchComplete,
+    simple_url_loader_ =
+        InitializeSimpleUrlLoader(/*access_token_info=*/std::nullopt,
+                                  config_.get(), args_, channel_, payload_);
+    simple_url_loader_->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
+        url_loader_factory.get(),
+        base::BindOnce(
+            &FetchProcess::OnSimpleUrlLoaderComplete,
             base::Unretained(this),  // Unretained(.) is safe because
-                                     // `this` owns `fetcher_`.
+                                     // `this` owns `simple_url_loader_`.
             url_loader_factory));
-        break;
-
-      case AccessTokenConfig::CredentialsRequirement::kBestEffort:
-        // Immediately retry the request without access credentials.
-        //
-        // In theory we could first try to get a valid access token as in the
-        // case above, but this would require more complex logic and would
-        // rarely result in different behavior.
-        simple_url_loader_ =
-            InitializeSimpleUrlLoader(/*access_token_info=*/std::nullopt,
-                                      config_.get(), args_, channel_, payload_);
-        simple_url_loader_->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
-            url_loader_factory.get(),
-            base::BindOnce(
-                &FetchProcess::OnSimpleUrlLoaderComplete,
-                base::Unretained(this),  // Unretained(.) is safe because
-                                         // `this` owns `simple_url_loader_`.
-                url_loader_factory));
-        break;
-    }
     return;
   }
 
