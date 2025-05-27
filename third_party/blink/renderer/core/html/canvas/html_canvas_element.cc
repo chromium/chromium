@@ -1312,11 +1312,8 @@ scoped_refptr<StaticBitmapImage> HTMLCanvasElement::Snapshot(
     image_bitmap = OffscreenCanvasFrame()->Bitmap();
   } else if (IsWebGL()) {
     if (context_->CreationAttributes().premultiplied_alpha) {
-      CanvasResourceProvider* provider =
-          context_->PaintRenderingResultsToCanvas(source_buffer);
-      if (provider) {
-        image_bitmap = provider->Snapshot(reason);
-      }
+      image_bitmap =
+          context_->PaintRenderingResultsToSnapshot(source_buffer, reason);
     } else {
       image_bitmap =
           context_->GetRGBAUnacceleratedStaticBitmapImage(source_buffer);

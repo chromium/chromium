@@ -217,6 +217,12 @@ class CORE_EXPORT CanvasRenderingContext
     return Host()->ResourceProvider();
   }
 
+  // Returns a StaticBitmapImage containing the current content, or nullptr
+  // if it was not possible to obtain that content.
+  scoped_refptr<StaticBitmapImage> PaintRenderingResultsToSnapshot(
+      SourceDrawingBuffer source_buffer,
+      FlushReason reason);
+
   // Copy the contents of the rendering context to a media::VideoFrame created
   // using `frame_pool`, with color space specified by `dst_color_space`. If
   // successful, take (using std::move) `callback` and issue it with the
