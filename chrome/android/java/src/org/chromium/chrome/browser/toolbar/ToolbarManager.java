@@ -1172,7 +1172,6 @@ public class ToolbarManager
 
         mProgressBarCoordinator =
                 new LoadProgressCoordinator(mActivityTabProvider, mToolbar.getProgressBar());
-        mToolbar.addUrlExpansionObserver(statusBarColorController);
         mToolbar.setToolbarColorObserver(statusBarColorController);
 
         mActivityTabTabObserver =
@@ -2325,7 +2324,6 @@ public class ToolbarManager
             mTabStripHeightObserver = null;
         }
         mTabStripHeightSupplier = null;
-        mToolbar.removeUrlExpansionObserver(mStatusBarColorController);
         mToolbar.destroy();
         mToolbarLongPressMenuHandler.destroy();
 
