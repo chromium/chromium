@@ -180,10 +180,6 @@ class WTF_EXPORT String {
     return impl_->Bytes();
   }
 
-  // Return characters8() or characters16() depending on CharacterType.
-  template <typename CharacterType>
-  inline const CharacterType* GetCharacters() const;
-
   bool Is8Bit() const { return impl_->Is8Bit(); }
 
   [[nodiscard]] std::string Ascii() const;
