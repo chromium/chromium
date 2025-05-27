@@ -102,7 +102,7 @@ struct Index {
 
 // Main structure for an entry on the backing storage. If the key is longer than
 // what can be stored on this structure, it will be extended on consecutive
-// blocks (adding 256 bytes each time), up to 4 blocks (1024 - 32 - 1 chars).
+// blocks (adding 256 bytes each time), up to 4 blocks (1024 - 96 - 1 chars).
 // After that point, the whole key will be stored as a data block or external
 // file.
 struct EntryStore {

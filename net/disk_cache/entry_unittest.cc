@@ -5518,6 +5518,35 @@ TEST_F(DiskCacheEntryTest, MemoryOnlySparseReadLength0) {
   SparseReadLength0();
 }
 
+TEST_F(DiskCacheEntryTest, BlockFileKeyLenCalc) {
+  constexpr int kFirstBlockPortion =
+      sizeof(disk_cache::EntryStore) - offsetof(disk_cache::EntryStore, key);
+  constexpr int kOtherBlocksPortion = sizeof(disk_cache::EntryStore);
+  EXPECT_EQ(1,
+            disk_cache::EntryImpl::NumBlocksForEntry(kFirstBlockPortion - 1));
+  // This needs 2 blocks for terminating nul. This pattern continues on below.
+  EXPECT_EQ(2, disk_cache::EntryImpl::NumBlocksForEntry(kFirstBlockPortion));
+
+  EXPECT_EQ(2, disk_cache::EntryImpl::NumBlocksForEntry(
+                   kFirstBlockPortion + kOtherBlocksPortion - 1));
+  EXPECT_EQ(3, disk_cache::EntryImpl::NumBlocksForEntry(kFirstBlockPortion +
+                                                        kOtherBlocksPortion));
+
+  EXPECT_EQ(3, disk_cache::EntryImpl::NumBlocksForEntry(
+                   kFirstBlockPortion + 2 * kOtherBlocksPortion - 1));
+  EXPECT_EQ(4, disk_cache::EntryImpl::NumBlocksForEntry(
+                   kFirstBlockPortion + 2 * kOtherBlocksPortion));
+
+  EXPECT_EQ(4, disk_cache::EntryImpl::NumBlocksForEntry(
+                   kFirstBlockPortion + 3 * kOtherBlocksPortion - 1));
+
+  // And this now requires an external block.
+  EXPECT_EQ(1, disk_cache::EntryImpl::NumBlocksForEntry(
+                   kFirstBlockPortion + 3 * kOtherBlocksPortion));
+  EXPECT_EQ(kFirstBlockPortion + 3 * kOtherBlocksPortion,
+            disk_cache::kMaxInternalKeyLength + 1);
+}
+
 class DiskCacheSimplePrefetchTest : public DiskCacheEntryTest {
  public:
   DiskCacheSimplePrefetchTest() = default;
