@@ -8,18 +8,13 @@
 
 #include "base/test/task_environment.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
-#include "components/safe_search_api/fake_url_checker_client.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/supervised_user/core/browser/supervised_user_preferences.h"
-#include "components/supervised_user/core/browser/supervised_user_service.h"
-#include "components/supervised_user/core/browser/supervised_user_url_filter.h"
+#include "components/supervised_user/core/browser/supervised_user_test_environment.h"
 #include "components/supervised_user/core/common/pref_names.h"
-#include "components/supervised_user/test_support/supervised_user_url_filter_test_utils.h"
-#include "components/sync_preferences/testing_pref_service_syncable.h"
-#include "supervised_user_sync_data_fake.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace supervised_user {
@@ -31,16 +26,18 @@ constexpr char kEmail[] = "name@gmail.com";
 class FamilyLinkUserLogRecordTest : public ::testing::Test {
  public:
   FamilyLinkUserLogRecordTest() {
-    PrefRegistrySimple* registry = pref_service_.registry();
-    supervised_user::RegisterProfilePrefs(registry);
-    sync_data_fake_.Init();
-    registry->RegisterBooleanPref(
-        prefs::kSupervisedUserExtensionsMayRequestPermissions, false);
-    registry->RegisterBooleanPref(prefs::kSkipParentApprovalToInstallExtensions,
-                                  false);
-    HostContentSettingsMap::RegisterProfilePrefs(pref_service_.registry());
+    supervised_user_test_environment_.pref_service_syncable()
+        ->registry()
+        ->RegisterBooleanPref(
+            prefs::kSupervisedUserExtensionsMayRequestPermissions, false);
+    supervised_user_test_environment_.pref_service_syncable()
+        ->registry()
+        ->RegisterBooleanPref(prefs::kSkipParentApprovalToInstallExtensions,
+                              false);
+    HostContentSettingsMap::RegisterProfilePrefs(
+        supervised_user_test_environment_.pref_service_syncable()->registry());
     host_content_settings_map_ = base::MakeRefCounted<HostContentSettingsMap>(
-        &pref_service_,
+        supervised_user_test_environment_.pref_service(),
         /*is_off_the_record=*/false,
         /*store_last_modified=*/false,
         /*restore_session=*/false,
@@ -49,6 +46,7 @@ class FamilyLinkUserLogRecordTest : public ::testing::Test {
 
   ~FamilyLinkUserLogRecordTest() override {
     host_content_settings_map_->ShutdownOnUIThread();
+    supervised_user_test_environment_.Shutdown();
   }
 
   signin::IdentityTestEnvironment* GetIdentityTestEnv() {
@@ -56,15 +54,12 @@ class FamilyLinkUserLogRecordTest : public ::testing::Test {
   }
 
   std::unique_ptr<FamilyLinkUserLogRecord> CreateFamilyLinkUserLogRecord() {
-    SupervisedUserURLFilter filter(pref_service_,
-                                   std::make_unique<FakeURLFilterDelegate>());
-    filter.SetURLCheckerClient(
-        std::make_unique<safe_search_api::FakeURLCheckerClient>());
-
     return std::make_unique<FamilyLinkUserLogRecord>(
-        FamilyLinkUserLogRecord::Create(identity_test_env_.identity_manager(),
-                                        pref_service_,
-                                        *host_content_settings_map_, &filter));
+        FamilyLinkUserLogRecord::Create(
+            identity_test_env_.identity_manager(),
+            *supervised_user_test_environment_.pref_service(),
+            *host_content_settings_map_,
+            supervised_user_test_environment_.url_filter()));
   }
 
   void CreateParentUser(kidsmanagement::FamilyRole family_role) {
@@ -77,8 +72,9 @@ class FamilyLinkUserLogRecordTest : public ::testing::Test {
     mutator.set_is_opted_in_to_parental_supervision(false);
     GetIdentityTestEnv()->UpdateAccountInfoForAccount(account_info);
 
-    pref_service_.SetString(prefs::kFamilyLinkUserMemberRole,
-                            supervised_user::FamilyRoleToString(family_role));
+    supervised_user_test_environment_.pref_service()->SetString(
+        prefs::kFamilyLinkUserMemberRole,
+        supervised_user::FamilyRoleToString(family_role));
   }
 
   void CreateSupervisedUser(bool is_subject_to_parental_controls,
@@ -94,10 +90,11 @@ class FamilyLinkUserLogRecordTest : public ::testing::Test {
         is_opted_in_to_parental_supervision);
     GetIdentityTestEnv()->UpdateAccountInfoForAccount(account_info);
 
-    supervised_user::EnableParentalControls(pref_service_);
+    supervised_user::EnableParentalControls(
+        *supervised_user_test_environment_.pref_service());
     // Set the Family Link `Permissions` switch to default value,
     // as done by the SupervisedUserPrefStore.
-    pref_service_.SetBoolean(
+    supervised_user_test_environment_.pref_service()->SetBoolean(
         prefs::kSupervisedUserExtensionsMayRequestPermissions, true);
   }
 
@@ -105,26 +102,20 @@ class FamilyLinkUserLogRecordTest : public ::testing::Test {
       WebFilterType web_filter_type) {
     CreateSupervisedUser(/*is_subject_to_parental_controls=*/true,
                          /*is_opted_in_to_parental_supervision=*/false);
-
-    SupervisedUserURLFilter filter(pref_service_,
-                                   std::make_unique<FakeURLFilterDelegate>());
-    filter.SetURLCheckerClient(
-        std::make_unique<safe_search_api::FakeURLCheckerClient>());
-    sync_data_fake_.SetWebFilterType(web_filter_type);
+    supervised_user_test_environment_.SetWebFilterType(web_filter_type);
 
     return std::make_unique<FamilyLinkUserLogRecord>(
-        FamilyLinkUserLogRecord::Create(identity_test_env_.identity_manager(),
-                                        pref_service_,
-                                        *host_content_settings_map_, &filter));
+        FamilyLinkUserLogRecord::Create(
+            identity_test_env_.identity_manager(),
+            *supervised_user_test_environment_.pref_service(),
+            *host_content_settings_map_,
+            supervised_user_test_environment_.url_filter()));
   }
 
  private:
   base::test::TaskEnvironment task_environment_;
   signin::IdentityTestEnvironment identity_test_env_;
-  sync_preferences::TestingPrefServiceSyncable pref_service_;
-  supervised_user::test::SupervisedUserSyncDataFake<
-      sync_preferences::TestingPrefServiceSyncable>
-      sync_data_fake_{pref_service_};
+  SupervisedUserTestEnvironment supervised_user_test_environment_;
   scoped_refptr<HostContentSettingsMap> host_content_settings_map_;
 };
 

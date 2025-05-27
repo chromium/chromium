@@ -154,6 +154,7 @@ static_library("test_support") {
     "//chrome/browser/ui:ui_features",
     "//chrome/test/data/webui:resources",
     "//components/affiliations/core/browser:test_support",
+    "//components/supervised_user/core/browser:test_support",
   ]
 
   if (enable_background_mode) {

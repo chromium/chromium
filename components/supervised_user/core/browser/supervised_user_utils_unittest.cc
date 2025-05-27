@@ -7,50 +7,37 @@
 #include <string>
 
 #include "base/base64.h"
-#include "components/prefs/testing_pref_service.h"
-#include "components/safe_search_api/fake_url_checker_client.h"
+#include "base/test/task_environment.h"
 #include "components/supervised_user/core/browser/proto/parent_access_callback.pb.h"
-#include "components/supervised_user/core/browser/supervised_user_preferences.h"
-#include "components/supervised_user/core/browser/supervised_user_sync_data_fake.h"
-#include "components/supervised_user/core/browser/supervised_user_url_filter.h"
-#include "components/supervised_user/test_support/supervised_user_url_filter_test_utils.h"
+#include "components/supervised_user/core/browser/supervised_user_test_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
 namespace supervised_user {
 namespace {
 
-using test::UrlStatus;
-
 class SupervisedUserUtilsTest : public ::testing::Test {
- public:
+ protected:
   SupervisedUserUtilsTest() {
-    RegisterProfilePrefs(pref_service_.registry());
-    sync_data_fake_.Init();
-    EnableParentalControls(pref_service_);
-    filter_.SetURLCheckerClient(
-        std::make_unique<safe_search_api::FakeURLCheckerClient>());
+    EnableParentalControls(*supervised_user_test_environment_.pref_service());
+  }
+  ~SupervisedUserUtilsTest() override {
+    supervised_user_test_environment_.Shutdown();
   }
 
-  ~SupervisedUserUtilsTest() override = default;
-
-  SupervisedUserURLFilter& filter() { return filter_; }
-  test::SupervisedUserSyncDataFake<TestingPrefServiceSimple>& sync_data_fake() {
-    return sync_data_fake_;
+  SupervisedUserTestEnvironment& supervised_user_test_environment() {
+    return supervised_user_test_environment_;
   }
 
  private:
-  TestingPrefServiceSimple pref_service_;
-  test::SupervisedUserSyncDataFake<TestingPrefServiceSimple> sync_data_fake_{
-      pref_service_};
-  SupervisedUserURLFilter filter_ =
-      SupervisedUserURLFilter(pref_service_,
-                              std::make_unique<FakeURLFilterDelegate>());
+  base::test::TaskEnvironment task_environment_;
+  SupervisedUserTestEnvironment supervised_user_test_environment_;
 };
 
 TEST_F(SupervisedUserUtilsTest, StripOnDefaultFilteringBehaviour) {
   FilteringBehaviorReason reason = FilteringBehaviorReason::DEFAULT;
-  UrlFormatter url_formatter(filter(), reason);
+  UrlFormatter url_formatter(*supervised_user_test_environment().url_filter(),
+                             reason);
 
   GURL full_url("http://www.example.com");
   GURL stripped_url("http://example.com");
@@ -61,7 +48,8 @@ TEST_F(SupervisedUserUtilsTest, StripOnDefaultFilteringBehaviour) {
 TEST_F(SupervisedUserUtilsTest,
        StripOnManualFilteringBehaviourWithoutConflict) {
   FilteringBehaviorReason reason = FilteringBehaviorReason::MANUAL;
-  UrlFormatter url_formatter(filter(), reason);
+  UrlFormatter url_formatter(*supervised_user_test_environment().url_filter(),
+                             reason);
 
   GURL full_url("http://www.example.com");
   GURL stripped_url("http://example.com");
@@ -75,10 +63,11 @@ TEST_F(SupervisedUserUtilsTest,
   GURL full_url("http://www.example.com");
 
   // Add an conflicting entry in the blocklist.
-  sync_data_fake().SetManualHosts({{full_url.host(), UrlStatus::kBlocked}});
-  filter().UpdateManualHosts();
+  supervised_user_test_environment().SetManualFilterForHost(full_url.host(),
+                                                            false);
 
-  UrlFormatter url_formatter(filter(), reason);
+  UrlFormatter url_formatter(*supervised_user_test_environment().url_filter(),
+                             reason);
 
   EXPECT_EQ(full_url, url_formatter.FormatUrl(full_url));
 }

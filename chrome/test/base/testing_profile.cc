@@ -85,9 +85,8 @@
 #include "components/security_interstitials/content/stateful_ssl_host_state_delegate.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
-#include "components/supervised_user/core/browser/supervised_user_pref_store.h"
-#include "components/supervised_user/core/browser/supervised_user_preferences.h"
 #include "components/supervised_user/core/browser/supervised_user_settings_service.h"
+#include "components/supervised_user/core/browser/supervised_user_test_environment.h"
 #include "components/supervised_user/core/common/pref_names.h"
 #include "components/supervised_user/core/common/supervised_user_constants.h"
 #include "components/sync/base/features.h"
@@ -150,41 +149,6 @@ using content::BrowserThread;
 using content::DownloadManagerDelegate;
 using testing::NiceMock;
 using testing::Return;
-
-// Just like SupervisedUserPrefStore. The difference is that
-// SupervisedUserPrefStore does not offer TestingPrefStore interface, but this
-// one does (by actually wrapping SupervisedUserPrefStore).
-class SupervisedUserTestingPrefStore : public TestingPrefStore,
-                                       public PrefStore::Observer {
- public:
-  explicit SupervisedUserTestingPrefStore(
-      supervised_user::SupervisedUserSettingsService* settings_service)
-      : pref_store_(
-            base::MakeRefCounted<SupervisedUserPrefStore>(settings_service)) {
-    observation_.Observe(pref_store_.get());
-  }
-
- private:
-  ~SupervisedUserTestingPrefStore() override = default;
-
-  void OnPrefValueChanged(std::string_view key) override {
-    const base::Value* value = nullptr;
-    // Flags are ignored in the TestingPrefStore.
-    if (pref_store_->GetValue(key, &value)) {
-      SetValue(key, value->Clone(), /*flags=*/0);
-    } else {
-      RemoveValue(key, /*flags=*/0);
-    }
-  }
-
-  void OnInitializationCompleted(bool succeeded) override {
-    CHECK(succeeded) << "During tests initialization must succeed";
-    SetInitializationCompleted();
-  }
-
-  scoped_refptr<PrefStore> pref_store_;
-  base::ScopedObservation<PrefStore, PrefStore::Observer> observation_{this};
-};
 }  // namespace
 
 TestingProfile::TestingFactory::TestingFactory(
@@ -396,20 +360,8 @@ void TestingProfile::Init(bool is_supervised_profile, CreateMode create_mode) {
       EnsureBrowserContextKeyedServiceFactoriesBuilt();
 
   if (!IsOffTheRecord()) {
-    supervised_user::SupervisedUserSettingsService* settings_service =
-        SupervisedUserSettingsServiceFactory::GetForKey(key_.get());
-
-    // Note: this pref store is not a part of any pref service, but rather a
-    // convenient storage backend of the supervised user settings service.
-    scoped_refptr<TestingPrefStore> supervised_user_backing_pref_store =
-        base::MakeRefCounted<TestingPrefStore>();
-    supervised_user_backing_pref_store->SetInitializationCompleted();
-
-    settings_service->Init(supervised_user_backing_pref_store);
-    settings_service->MergeDataAndStartSyncing(
-        syncer::SUPERVISED_USER_SETTINGS, syncer::SyncDataList(),
-        std::unique_ptr<syncer::SyncChangeProcessor>(
-            new syncer::FakeSyncChangeProcessor));
+    supervised_user::InitializeSettingsServiceForTesting(
+        SupervisedUserSettingsServiceFactory::GetForKey(key_.get()));
   }
 
   if (prefs_.get()) {
@@ -783,7 +735,7 @@ void TestingProfile::CreateTestingPrefService() {
   testing_prefs_ = new sync_preferences::TestingPrefServiceSyncable(
       /*managed_prefs=*/base::MakeRefCounted<TestingPrefStore>(),
       /*supervised_user_prefs=*/
-      base::MakeRefCounted<SupervisedUserTestingPrefStore>(
+      supervised_user::CreateTestingPrefStore(
           SupervisedUserSettingsServiceFactory::GetForKey(key_.get())),
       /*extension_prefs=*/base::MakeRefCounted<TestingPrefStore>(),
       /*user_prefs=*/base::MakeRefCounted<TestingPrefStore>(),
