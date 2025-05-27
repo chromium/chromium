@@ -1619,22 +1619,6 @@ Called by update_protocol_commands_enum.py.-->
   <int value="2" label="Recording finished"/>
 </enum>
 
-<enum name="DevToolsSidebarPane">
-  <int value="0" label="Other sidebar pane"/>
-  <int value="1" label="Elements - Styles"/>
-  <int value="2" label="Elements - Computed"/>
-  <int value="3" label="Elements - Layout"/>
-  <int value="4" label="Elements - Event Listeners"/>
-  <int value="5" label="Elements - DOM Breakpoints"/>
-  <int value="6" label="Elements - Properties"/>
-  <int value="7" label="Elements - Accessibility"/>
-  <int value="8" label="Sources - Page"/>
-  <int value="9" label="Sources - Workspace"/>
-  <int value="10" label="Sources - Overrides"/>
-  <int value="11" label="Sources - Content Scripts"/>
-  <int value="12" label="Sources - Snippets"/>
-</enum>
-
 <enum name="DevToolsSwatchActivated">
   <int value="0" label="Variable link"/>
   <int value="1" label="Animation name link"/>

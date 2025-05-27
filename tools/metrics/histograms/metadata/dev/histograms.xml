@@ -461,13 +461,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="DevTools.SidebarPaneShown" enum="DevToolsSidebarPane"
-    expires_after="2025-07-06">
-  <owner>bmeurer@google.com</owner>
-  <owner>changhaohan@google.com</owner>
-  <summary>Specified DevTools sidebar pane was shown.</summary>
-</histogram>
-
 <histogram name="DevTools.SourcesPanelFileDebugged" enum="DevToolsMediaType"
     expires_after="M140">
   <owner>bmeurer@google.com</owner>
