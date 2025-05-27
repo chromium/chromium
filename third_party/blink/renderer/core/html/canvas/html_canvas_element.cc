@@ -1186,46 +1186,47 @@ void HTMLCanvasElement::Paint(GraphicsContext& context,
 
 void HTMLCanvasElement::PaintInternal(GraphicsContext& context,
                                       const PhysicalRect& r) {
+  // For 2D Canvas, there are two ways of render Canvas for printing:
+  // display list or image snapshot. Display list allows better PDF printing
+  // and we prefer this method.
+  // Here are the requirements for display list to be used:
+  //    1. We must have had a full repaint of the Canvas after beforeprint
+  //       event has been fired. Otherwise, we don't have a PaintRecord.
+  //    2. CSS property 'image-rendering' must not be 'pixelated'.
+
+  // display list rendering: we replay the last full PaintRecord, if Canvas
+  // has been redraw since beforeprint happened.
+
+  // Note: Test coverage for this is assured by manual (non-automated)
+  // web test printing/manual/canvas2d-vector-text.html
+  // That test should be run manually against CLs that touch this code.
+  if (IsPrinting() && IsRenderingContext2D() && ResourceProvider()) {
+    auto* provider = ResourceProvider();
+    FlushRecording(FlushReason::kPrinting);
+    // `FlushRecording` might be a no-op if a flush already happened before.
+    // Fortunately, the last flush recording was kept by the provider.
+    const std::optional<cc::PaintRecord>& last_recording =
+        provider->LastRecording();
+    if (last_recording.has_value() &&
+        filter_quality_ != cc::PaintFlags::FilterQuality::kNone) {
+      context.Canvas()->save();
+      context.Canvas()->translate(r.X(), r.Y());
+      context.Canvas()->scale(r.Width() / Size().width(),
+                              r.Height() / Size().height());
+      context.Canvas()->drawPicture(*last_recording);
+      context.Canvas()->restore();
+      UMA_HISTOGRAM_BOOLEAN("Blink.Canvas.2DPrintingAsVector", true);
+      return;
+    }
+    UMA_HISTOGRAM_ENUMERATION("Blink.Canvas.VectorPrintFallbackReason",
+                              provider->printing_fallback_reason());
+    UMA_HISTOGRAM_BOOLEAN("Blink.Canvas.2DPrintingAsVector", false);
+  }
+
+  // Grab a snapshot.
   CanvasResourceProvider* provider =
       context_->PaintRenderingResultsToCanvas(kFrontBuffer);
-
   if (provider != nullptr) {
-    // For 2D Canvas, there are two ways of render Canvas for printing:
-    // display list or image snapshot. Display list allows better PDF printing
-    // and we prefer this method.
-    // Here are the requirements for display list to be used:
-    //    1. We must have had a full repaint of the Canvas after beforeprint
-    //       event has been fired. Otherwise, we don't have a PaintRecord.
-    //    2. CSS property 'image-rendering' must not be 'pixelated'.
-
-    // display list rendering: we replay the last full PaintRecord, if Canvas
-    // has been redraw since beforeprint happened.
-
-    // Note: Test coverage for this is assured by manual (non-automated)
-    // web test printing/manual/canvas2d-vector-text.html
-    // That test should be run manually against CLs that touch this code.
-    if (IsPrinting() && IsRenderingContext2D()) {
-      FlushRecording(FlushReason::kPrinting);
-      // `FlushRecording` might be a no-op if a flush already happened before.
-      // Fortunately, the last flush recording was kept by the provider.
-      const std::optional<cc::PaintRecord>& last_recording =
-          provider->LastRecording();
-      if (last_recording.has_value() &&
-          filter_quality_ != cc::PaintFlags::FilterQuality::kNone) {
-        context.Canvas()->save();
-        context.Canvas()->translate(r.X(), r.Y());
-        context.Canvas()->scale(r.Width() / Size().width(),
-                                r.Height() / Size().height());
-        context.Canvas()->drawPicture(*last_recording);
-        context.Canvas()->restore();
-        UMA_HISTOGRAM_BOOLEAN("Blink.Canvas.2DPrintingAsVector", true);
-        return;
-      }
-      UMA_HISTOGRAM_ENUMERATION("Blink.Canvas.VectorPrintFallbackReason",
-                                provider->printing_fallback_reason());
-      UMA_HISTOGRAM_BOOLEAN("Blink.Canvas.2DPrintingAsVector", false);
-    }
-    // or image snapshot rendering: grab a snapshot and raster it.
     SkBlendMode composite_operator =
         !context_ || context_->CreationAttributes().alpha
             ? SkBlendMode::kSrcOver
@@ -1236,18 +1237,17 @@ void HTMLCanvasElement::PaintInternal(GraphicsContext& context,
     // recording is properly flushed (note that the fact that the canvas has
     // a valid resource provider means that it is not possible for the
     // canvas to be in hibernation at this point as the canvas' resource
-    // provider is dropped when going into hibernation and hibernation is ended
-    // if the canvas' resource provider is recreated).
-    // For all contexts other than canvas 2D, get a snapshot directly from
-    // the CanvasResourceProvider as the above
-    // `PaintRenderingResultsToCanvas()` call has ensured that the CRP has the
-    // current canvas contents.
+    // provider is dropped when going into hibernation and hibernation is
+    // ended if the canvas' resource provider is recreated). For all contexts
+    // other than canvas 2D, get a snapshot directly from the
+    // CanvasResourceProvider as the above `PaintRenderingResultsToCanvas()`
+    // call has ensured that the CRP has the current canvas contents.
     // TODO(crbug.com/40260472): Move this flow to get the snapshot from the
     // context for all context types as part of moving CanvasResourceProvider
-    // ownership to the context and decoupling non-2D canvas context types from
-    // needing to shoehorn contents into CanvasResourceProvider instances. Each
-    // context type will then flush any content in whatever way it needs to
-    // internally before snapshotting.
+    // ownership to the context and decoupling non-2D canvas context types
+    // from needing to shoehorn contents into CanvasResourceProvider
+    // instances. Each context type will then flush any content in whatever
+    // way it needs to internally before snapshotting.
     scoped_refptr<StaticBitmapImage> snapshot =
         IsRenderingContext2D() ? context_->GetImage(FlushReason::kPaint)
                                : provider->Snapshot(FlushReason::kPaint);
