@@ -488,7 +488,7 @@ void AttributionInternalsHandlerImpl::OnTriggerHandled(
     DCHECK_EQ(
         result.event_level_status(),
         AttributionTrigger::EventLevelResult::kSuccessDroppedLowerPriority);
-    DCHECK(result.new_event_level_report());
+    CHECK(result.new_event_level_report());
 
     observer_->OnReportHandled(
         WebUIReport(*report, /*is_debug_report=*/false,

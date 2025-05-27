@@ -721,9 +721,9 @@ AttributionManagerImpl::AttributionManagerImpl(
       report_sender_(std::move(report_sender)),
       os_level_manager_(std::move(os_level_manager)),
       debug_mode_(debug_mode) {
-  DCHECK(resolver_task_runner_);
-  DCHECK(report_sender_);
-  DCHECK(os_level_manager_);
+  CHECK(resolver_task_runner_);
+  CHECK(report_sender_);
+  CHECK(os_level_manager_);
 
   scheduler_timer_ = std::make_unique<ReportSchedulerTimer>(
       std::make_unique<ReportScheduler>(weak_factory_.GetWeakPtr()));
@@ -757,7 +757,7 @@ void AttributionManagerImpl::RemoveObserver(AttributionObserver* observer) {
 }
 
 AttributionDataHostManager* AttributionManagerImpl::GetDataHostManager() {
-  DCHECK(data_host_manager_);
+  CHECK(data_host_manager_);
   return data_host_manager_.get();
 }
 
@@ -1013,7 +1013,7 @@ void AttributionManagerImpl::GetPendingReportsForInternalUse(
 
 void AttributionManagerImpl::SendReportForWebUI(AttributionReport::Id id,
                                                 base::OnceClosure done) {
-  DCHECK(done);
+  CHECK(done);
 
   OnUserVisibleTaskStarted();
   done = std::move(done).Then(

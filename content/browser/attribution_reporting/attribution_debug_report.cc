@@ -313,7 +313,7 @@ base::Value::Dict GetReportDataBody(DebugDataTypeAndBody data,
                                     const CreateReportResult& result) {
   if (data.debug_data_type == DebugDataType::kTriggerEventExcessiveReports ||
       data.debug_data_type == DebugDataType::kTriggerEventLowPriority) {
-    DCHECK(result.dropped_event_level_report());
+    CHECK(result.dropped_event_level_report());
     return result.dropped_event_level_report()->ReportBody();
   }
 
