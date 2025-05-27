@@ -31,7 +31,6 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_biquad_filter_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_biquad_filter_type.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_graph_tracer.h"
-#include "third_party/blink/renderer/modules/webaudio/biquad_filter_handler.h"
 #include "third_party/blink/renderer/platform/bindings/exception_messages.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 
@@ -139,7 +138,7 @@ BiquadProcessor* BiquadFilterNode::GetBiquadProcessor() const {
 
 V8BiquadFilterType BiquadFilterNode::type() const {
   switch (
-      const_cast<BiquadFilterNode*>(this)->GetBiquadProcessor()->GetType()) {
+      const_cast<BiquadFilterNode*>(this)->GetBiquadProcessor()->Type()) {
     case BiquadProcessor::FilterType::kLowPass:
       return V8BiquadFilterType(V8BiquadFilterType::Enum::kLowpass);
     case BiquadProcessor::FilterType::kHighPass:
@@ -154,7 +153,7 @@ V8BiquadFilterType BiquadFilterNode::type() const {
       return V8BiquadFilterType(V8BiquadFilterType::Enum::kPeaking);
     case BiquadProcessor::FilterType::kNotch:
       return V8BiquadFilterType(V8BiquadFilterType::Enum::kNotch);
-    case BiquadProcessor::FilterType::kAllpass:
+    case BiquadProcessor::FilterType::kAllPass:
       return V8BiquadFilterType(V8BiquadFilterType::Enum::kAllpass);
   }
   NOTREACHED();
@@ -184,14 +183,14 @@ void BiquadFilterNode::setType(const V8BiquadFilterType& type) {
       SetType(BiquadProcessor::FilterType::kNotch);
       return;
     case V8BiquadFilterType::Enum::kAllpass:
-      SetType(BiquadProcessor::FilterType::kAllpass);
+      SetType(BiquadProcessor::FilterType::kAllPass);
       return;
   }
   NOTREACHED();
 }
 
 bool BiquadFilterNode::SetType(BiquadProcessor::FilterType type) {
-  if (type > BiquadProcessor::FilterType::kAllpass) {
+  if (type > BiquadProcessor::FilterType::kAllPass) {
     return false;
   }
 
