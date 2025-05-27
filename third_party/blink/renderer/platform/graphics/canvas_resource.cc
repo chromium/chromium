@@ -58,14 +58,12 @@
 namespace blink {
 
 CanvasResource::CanvasResource(base::WeakPtr<CanvasResourceProvider> provider,
-                               SkAlphaType alpha_type,
-                               const gfx::ColorSpace& color_space)
+                               SkAlphaType alpha_type)
     : owning_thread_ref_(base::PlatformThread::CurrentRef()),
       owning_thread_task_runner_(
           ThreadScheduler::Current()->CleanupTaskRunner()),
       provider_(std::move(provider)),
-      alpha_type_(alpha_type),
-      color_space_(color_space) {}
+      alpha_type_(alpha_type) {}
 
 CanvasResource::~CanvasResource() {}
 
@@ -200,9 +198,10 @@ bool CanvasResource::PrepareTransferableResource(
 SkImageInfo CanvasResource::CreateSkImageInfo() const {
   auto size = GetClientSharedImage()->size();
   auto format = GetClientSharedImage()->format();
+  auto color_space = GetClientSharedImage()->color_space();
   return SkImageInfo::Make(SkISize::Make(size.width(), size.height()),
                            viz::ToClosestSkColorType(format), alpha_type_,
-                           color_space_.ToSkColorSpace());
+                           color_space.ToSkColorSpace());
 }
 
 // CanvasResourceSharedImage
@@ -216,9 +215,7 @@ CanvasResourceSharedImage::CanvasResourceSharedImage(
     base::WeakPtr<CanvasResourceProvider> provider,
     base::WeakPtr<WebGraphicsSharedImageInterfaceProvider>
         shared_image_interface_provider)
-    : CanvasResource(std::move(provider),
-                     alpha_type,
-                     color_space),
+    : CanvasResource(std::move(provider), alpha_type),
       is_accelerated_(false),
       use_oop_rasterization_(false) {
   if (!shared_image_interface_provider) {
@@ -268,9 +265,7 @@ CanvasResourceSharedImage::CanvasResourceSharedImage(
     base::WeakPtr<CanvasResourceProvider> provider,
     bool is_accelerated,
     gpu::SharedImageUsageSet shared_image_usage_flags)
-    : CanvasResource(std::move(provider),
-                     alpha_type,
-                     color_space),
+    : CanvasResource(std::move(provider), alpha_type),
       context_provider_wrapper_(std::move(context_provider_wrapper)),
       is_accelerated_(is_accelerated),
       use_oop_rasterization_(is_accelerated &&
@@ -575,8 +570,8 @@ scoped_refptr<StaticBitmapImage> CanvasResourceSharedImage::Bitmap() {
   image = AcceleratedStaticBitmapImage::CreateFromCanvasSharedImage(
       client_shared_image, GetSyncToken(), texture_id_for_image,
       client_shared_image->size(), client_shared_image->format(),
-      GetAlphaType(), GetColorSpace(), context_provider_wrapper_,
-      owning_thread_ref_, owning_thread_task_runner_,
+      GetAlphaType(), client_shared_image->color_space(),
+      context_provider_wrapper_, owning_thread_ref_, owning_thread_task_runner_,
       std::move(release_callback));
 
   DCHECK(image);
@@ -778,9 +773,9 @@ scoped_refptr<StaticBitmapImage> ExternalCanvasResource::Bitmap() {
 
   return AcceleratedStaticBitmapImage::CreateFromCanvasSharedImage(
       client_si_, GetSyncToken(), /*shared_image_texture_id=*/0u,
-      client_si_->size(), client_si_->format(), GetAlphaType(), GetColorSpace(),
-      context_provider_wrapper_, owning_thread_ref_, owning_thread_task_runner_,
-      std::move(release_callback));
+      client_si_->size(), client_si_->format(), GetAlphaType(),
+      client_si_->color_space(), context_provider_wrapper_, owning_thread_ref_,
+      owning_thread_task_runner_, std::move(release_callback));
 }
 
 const gpu::SyncToken
@@ -822,9 +817,7 @@ ExternalCanvasResource::ExternalCanvasResource(
     viz::ReleaseCallback out_callback,
     base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper,
     base::WeakPtr<CanvasResourceProvider> provider)
-    : CanvasResource(std::move(provider),
-                     kPremul_SkAlphaType,
-                     client_si->color_space()),
+    : CanvasResource(std::move(provider), kPremul_SkAlphaType),
       client_si_(std::move(client_si)),
       context_provider_wrapper_(std::move(context_provider_wrapper)),
       sync_token_(sync_token),
@@ -910,8 +903,8 @@ scoped_refptr<StaticBitmapImage> CanvasResourceSwapChain::Bitmap() {
   return AcceleratedStaticBitmapImage::CreateFromCanvasSharedImage(
       back_buffer_shared_image_, GetSyncToken(), shared_texture_id,
       back_buffer_shared_image_->size(), back_buffer_shared_image_->format(),
-      GetAlphaType(), GetColorSpace(), context_provider_wrapper_,
-      owning_thread_ref_, owning_thread_task_runner_,
+      GetAlphaType(), back_buffer_shared_image_->color_space(),
+      context_provider_wrapper_, owning_thread_ref_, owning_thread_task_runner_,
       std::move(release_callback));
 }
 
@@ -984,9 +977,7 @@ CanvasResourceSwapChain::CanvasResourceSwapChain(
     const gfx::ColorSpace& color_space,
     base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper,
     base::WeakPtr<CanvasResourceProvider> provider)
-    : CanvasResource(std::move(provider),
-                     alpha_type,
-                     color_space),
+    : CanvasResource(std::move(provider), alpha_type),
       context_provider_wrapper_(std::move(context_provider_wrapper)),
       use_oop_rasterization_(context_provider_wrapper_->ContextProvider()
                                  .GetCapabilities()

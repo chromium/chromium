@@ -88,8 +88,6 @@ class PLATFORM_EXPORT CanvasResource
   // The bounds for this resource.
   gfx::Size Size() const { return GetClientSharedImage()->size(); }
 
-  const gfx::ColorSpace& GetColorSpace() const { return color_space_; }
-
   SkAlphaType GetAlphaType() const { return alpha_type_; }
 
   // The ClientSharedImage containing information on the SharedImage
@@ -144,9 +142,7 @@ class PLATFORM_EXPORT CanvasResource
   }
 
  protected:
-  CanvasResource(base::WeakPtr<CanvasResourceProvider>,
-                 SkAlphaType alpha_type,
-                 const gfx::ColorSpace& color_space);
+  CanvasResource(base::WeakPtr<CanvasResourceProvider>, SkAlphaType alpha_type);
 
   virtual gfx::HDRMetadata GetHDRMetadata() const { return gfx::HDRMetadata(); }
   virtual viz::TransferableResource::ResourceSource
@@ -186,7 +182,6 @@ class PLATFORM_EXPORT CanvasResource
 
   base::WeakPtr<CanvasResourceProvider> provider_;
   SkAlphaType alpha_type_;
-  gfx::ColorSpace color_space_;
   bool is_origin_clean_ = true;
 };
 
