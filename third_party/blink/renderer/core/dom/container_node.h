@@ -73,11 +73,6 @@ enum class DynamicRestyleFlags {
       kChildrenAffectedByBackwardPositionalRules
 };
 
-enum SubtreeModificationAction {
-  kDispatchSubtreeModifiedEvent,
-  kOmitSubtreeModifiedEvent
-};
-
 // This constant controls how much buffer is initially allocated
 // for a Node Vector that is used to store child Nodes of a given Node.
 // FIXME: Optimize the value.
@@ -165,7 +160,7 @@ class CORE_EXPORT ContainerNode : public Node {
   StaticNodeList* FindAllTextNodesMatchingRegex(const String& regex) const;
 
   // These methods are only used during parsing.
-  // They don't send DOM mutation events or accept DocumentFragments.
+  // They don't accept DocumentFragments.
   void ParserAppendChild(Node*);
 
   // Called when the parser adds a child to a DocumentFragment as the result
@@ -183,8 +178,7 @@ class CORE_EXPORT ContainerNode : public Node {
   void ParserInsertBefore(Node* new_child, Node& ref_child);
   void ParserTakeAllChildrenFrom(ContainerNode&);
 
-  void RemoveChildren(
-      SubtreeModificationAction = kDispatchSubtreeModifiedEvent);
+  void RemoveChildren();
 
   void CloneChildNodesFrom(const ContainerNode&, NodeCloningData&);
 

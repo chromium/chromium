@@ -14643,26 +14643,6 @@
             ]
         }
     ],
-    "MutationEvents": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "fuchsia",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Disabled",
-                    "disable_features": [
-                        "MutationEvents"
-                    ]
-                }
-            ]
-        }
-    ],
     "MvcUpdateViewWhenModelChanged": [
         {
             "platforms": [

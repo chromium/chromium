@@ -1189,28 +1189,17 @@ class CORE_EXPORT Document : public ContainerNode,
   // keep track of what types of event listeners are registered, so we don't
   // dispatch events unnecessarily
   enum ListenerType {
-    kDOMSubtreeModifiedListener = 1,
-    kDOMNodeInsertedListener = 1 << 1,
-    kDOMNodeRemovedListener = 1 << 2,
-    kDOMNodeRemovedFromDocumentListener = 1 << 3,
-    kDOMNodeInsertedIntoDocumentListener = 1 << 4,
-    kDOMCharacterDataModifiedListener = 1 << 5,
-    kAnimationEndListener = 1 << 6,
-    kAnimationStartListener = 1 << 7,
-    kAnimationIterationListener = 1 << 8,
-    kAnimationCancelListener = 1 << 9,
-    kTransitionRunListener = 1 << 10,
-    kTransitionStartListener = 1 << 11,
-    kTransitionEndListener = 1 << 12,
-    kTransitionCancelListener = 1 << 13,
-    kScrollListener = 1 << 14,
-    kLoadListenerAtCapturePhaseOrAtStyleElement = 1 << 15,
-    // 0 bits remaining
-    kDOMMutationEventListener =
-        kDOMSubtreeModifiedListener | kDOMNodeInsertedListener |
-        kDOMNodeRemovedListener | kDOMNodeRemovedFromDocumentListener |
-        kDOMNodeInsertedIntoDocumentListener |
-        kDOMCharacterDataModifiedListener,
+    kAnimationEndListener = 1,
+    kAnimationStartListener = 1 << 1,
+    kAnimationIterationListener = 1 << 2,
+    kAnimationCancelListener = 1 << 3,
+    kTransitionRunListener = 1 << 4,
+    kTransitionStartListener = 1 << 5,
+    kTransitionEndListener = 1 << 6,
+    kTransitionCancelListener = 1 << 7,
+    kScrollListener = 1 << 8,
+    kLoadListenerAtCapturePhaseOrAtStyleElement = 1 << 9,
+    // 6 bits remaining
   };
 
   bool HasListenerType(ListenerType listener_type) const;
@@ -1880,14 +1869,6 @@ class CORE_EXPORT Document : public ContainerNode,
     return slot_assignment_recalc_depth_ == 1;
   }
 
-  bool ShouldSuppressMutationEvents() const {
-    return suppress_mutation_events_;
-  }
-  // To be called from MutationEventSuppressionScope.
-  void SetSuppressMutationEvents(bool suppress) {
-    suppress_mutation_events_ = suppress;
-  }
-
   bool IsVerticalScrollEnforced() const { return is_vertical_scroll_enforced_; }
   bool IsFocusAllowed(FocusTrigger trigger) const;
 
@@ -2132,8 +2113,6 @@ class CORE_EXPORT Document : public ContainerNode,
   void UpdateApplicationTitle();
 
   void ResetAgent(Agent& agent);
-
-  bool SupportsLegacyDOMMutations();
 
   void EnqueuePageRevealEvent();
 
@@ -2446,8 +2425,6 @@ class CORE_EXPORT Document : public ContainerNode,
   void AddListenerType(ListenerType listener_type) {
     listener_types_ |= listener_type;
   }
-  void AddMutationEventListenerTypeIfEnabled(ListenerType);
-
   void ClearFocusedElementTimerFired(TimerBase*);
 
   bool HaveScriptBlockingStylesheetsLoaded() const;
@@ -2944,7 +2921,6 @@ class CORE_EXPORT Document : public ContainerNode,
 #endif
   unsigned slot_assignment_recalc_depth_ = 0;
   unsigned flat_tree_traversal_forbidden_recursion_depth_ = 0;
-  bool suppress_mutation_events_ = false;
 
   Member<DOMFeaturePolicy> policy_;
 
@@ -3064,9 +3040,6 @@ class CORE_EXPORT Document : public ContainerNode,
 
   // Number of disabled <fieldset> elements in this document.
   unsigned disabled_fieldset_count_ = 0;
-
-  // If legacy DOM Mutation event listeners are supported by the embedder.
-  std::optional<bool> legacy_dom_mutations_supported_;
 
   // True if the document has scroll marker groups that need to be
   // recalculated due to e.g. a new element with scroll-marker-contain

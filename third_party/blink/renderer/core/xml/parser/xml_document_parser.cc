@@ -422,7 +422,10 @@ bool XMLDocumentParser::UpdateLeafTextNode() {
   buffered_text_.clear();
   leaf_text_node_ = nullptr;
 
-  // Mutation event handlers executed by appendData() might detach this parser.
+  // Synchronous event handlers executed by appendData() might detach this
+  // parser.
+  // TODO(358407357): it's possible that no synchronous event handlers can run
+  // here, so this could just be `return true`.
   return !IsStopped();
 }
 

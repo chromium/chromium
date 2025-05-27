@@ -224,7 +224,7 @@ Element* MediaControlPlaybackSpeedListElement::CreatePlaybackSpeedHeaderItem() {
 
 void MediaControlPlaybackSpeedListElement::RefreshPlaybackSpeedListMenu() {
   EventDispatchForbiddenScope::AllowUserAgentEvents allow_events;
-  RemoveChildren(kOmitSubtreeModifiedEvent);
+  RemoveChildren();
 
   ParserAppendChild(CreatePlaybackSpeedHeaderItem());
 

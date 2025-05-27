@@ -955,7 +955,7 @@ void HTMLElement::setInnerTextForBinding(
 void HTMLElement::setInnerText(const String& text) {
   // FIXME: This doesn't take whitespace collapsing into account at all.
 
-  // The usage of ASSERT_NO_EXCEPTION in this function is subject to mutation
+  // The usage of ASSERT_NO_EXCEPTION in this function is subject to synchronous
   // events being fired while removing elements. By delaying them to the end of
   // the function, we can guarantee that no exceptions will be thrown.
   EventQueueScope delay_mutation_events;

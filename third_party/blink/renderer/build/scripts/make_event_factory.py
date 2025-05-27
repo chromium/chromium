@@ -62,7 +62,6 @@ def create_event_ignore_case_and_measure_list(name):
             or name == 'DragEvent' or name == 'ErrorEvent'
             or name == 'FocusEvent' or name == 'HashChangeEvent'
             or name == 'IDBVersionChangeEvent' or name == 'KeyboardEvents'
-            or name == 'MutationEvent' or name == 'MutationEvents'
             or name == 'PageTransitionEvent' or name == 'PopStateEvent'
             or name == 'StorageEvent' or name == 'SVGEvents'
             or name == 'TextEvent' or name == 'TrackEvent'

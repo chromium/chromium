@@ -239,7 +239,6 @@ static_idl_files_in_core = [
   "//third_party/blink/renderer/core/events/message_event_init.idl",
   "//third_party/blink/renderer/core/events/mouse_event.idl",
   "//third_party/blink/renderer/core/events/mouse_event_init.idl",
-  "//third_party/blink/renderer/core/events/mutation_event.idl",
   "//third_party/blink/renderer/core/events/navigator_events.idl",
   "//third_party/blink/renderer/core/events/overscroll_event.idl",
   "//third_party/blink/renderer/core/events/overscroll_event_init.idl",

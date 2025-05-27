@@ -572,7 +572,7 @@ DocumentFragment* Range::ProcessContents(ActionType action,
   // These are deleted, cloned, or extracted (i.e. both) depending on action.
 
   // Note that we are verifying that our common root hierarchy is still intact
-  // after any DOM mutation event, at various stages below. See webkit bug
+  // after any synchronous DOM event, at various stages below. See webkit bug
   // 60350.
 
   Node* left_contents = nullptr;
@@ -768,7 +768,7 @@ Node* Range::ProcessAncestorsAndTheirSiblings(
   for (wtf_size_t i = 0; i < ancestors.size(); ++i) {
     const auto& ancestor = ancestors[i];
     if (action == kExtractContents || action == kCloneContents) {
-      // Might have been removed already during mutation event.
+      // Might have been removed already during synchronous event.
       if (auto cloned_ancestor = cloned_ancestors[i]) {
         cloned_ancestor->appendChild(cloned_container, exception_state);
         cloned_container = cloned_ancestor;
@@ -776,7 +776,8 @@ Node* Range::ProcessAncestorsAndTheirSiblings(
     }
 
     // Copy siblings of an ancestor of start/end containers
-    // FIXME: This assertion may fail if DOM is modified during mutation event
+    // FIXME: This assertion may fail if DOM is modified during a synchronous
+    //        event handler.
     // FIXME: Share code with Range::processNodes
     DCHECK(!first_child_in_ancestor_to_process ||
            first_child_in_ancestor_to_process->parentNode() == ancestor);
@@ -1485,10 +1486,11 @@ void Range::NodeWillBeRemoved(Node& node) {
   DCHECK_EQ(node.GetDocument(), owner_document_);
   DCHECK_NE(node, owner_document_.Get());
 
-  // FIXME: Once DOMNodeRemovedFromDocument mutation event removed, we
-  // should change following if-statement to DCHECK(!node->parentNode).
-  if (!node.parentNode())
+  // Synchronous event handlers (e.g. `blur`) can change the DOM
+  // tree. Make sure we're still within the same parent.
+  if (!node.parentNode()) {
     return;
+  }
   const bool is_collapsed = collapsed();
   const bool start_updated = BoundaryNodeWillBeRemoved(start_, node);
   if (is_collapsed) {

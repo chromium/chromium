@@ -26,7 +26,6 @@
 #include "third_party/blink/renderer/core/css_value_keywords.h"
 #include "third_party/blink/renderer/core/dom/element_traversal.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
-#include "third_party/blink/renderer/core/dom/events/mutation_event_suppression_scope.h"
 #include "third_party/blink/renderer/core/dom/flat_tree_traversal.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/dom/slot_assignment.h"
@@ -201,10 +200,6 @@ void HTMLDetailsElement::ParseAttribute(
       // AttributeChanged instead?
       if (!GetName().empty() &&
           params.reason == AttributeModificationReason::kDirectly) {
-        // Don't fire mutation events for any changes to the open attribute
-        // that this causes.
-        MutationEventSuppressionScope scope(GetDocument());
-
         HeapVector<Member<HTMLDetailsElement>> details_with_name(
             OtherElementsInNameGroup());
         for (HTMLDetailsElement* other_details : details_with_name) {
@@ -258,10 +253,6 @@ void HTMLDetailsElement::MaybeCloseForExclusivity() {
     return;
   }
 
-  // Don't fire mutation events for any changes to the open attribute
-  // that this causes.
-  MutationEventSuppressionScope scope(GetDocument());
-
   HeapVector<Member<HTMLDetailsElement>> details_with_name(
       OtherElementsInNameGroup());
   for (HTMLDetailsElement* other_details : details_with_name) {
@@ -304,9 +295,9 @@ bool HTMLDetailsElement::IsInteractiveContent() const {
 // static
 bool HTMLDetailsElement::ExpandDetailsAncestors(const Node& node) {
   CHECK(&node);
-  // Since setting the open attribute fires mutation events which could mess
-  // with the FlatTreeTraversal iterator, we should first iterate details
-  // elements to open and then open them all.
+  // Since setting the open attribute could fire synchronous events (e.g.
+  // `blur`), which could mess with the FlatTreeTraversal iterator, we should
+  // first iterate details elements to open and then open them all.
   HeapVector<Member<HTMLDetailsElement>> details_to_open;
 
   for (Node& parent : FlatTreeTraversal::AncestorsOf(node)) {

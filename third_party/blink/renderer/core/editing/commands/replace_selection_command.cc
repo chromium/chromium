@@ -1507,7 +1507,8 @@ void ReplaceSelectionCommand::DoApply(EditingState* editing_state) {
     inserted_nodes.RespondToNodeInsertion(*inserted_nodes.RefNode());
   }
 
-  // Mutation events (bug 22634) may have already removed the inserted content
+  // Synchronous events (bug 22634) may have already removed the inserted
+  // content
   if (!inserted_nodes.RefNode()->isConnected())
     return;
 
@@ -1540,7 +1541,7 @@ void ReplaceSelectionCommand::DoApply(EditingState* editing_state) {
       }
       inserted_nodes.RespondToNodeInsertion(*node);
 
-      // Mutation events (bug 22634) may have already removed the inserted
+      // Synchronous events (bug 22634) may have already removed the inserted
       // content
       if (!node->isConnected()) {
         return;
@@ -1561,7 +1562,8 @@ void ReplaceSelectionCommand::DoApply(EditingState* editing_state) {
 
   GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kEditing);
 
-  // Mutation events (bug 20161) may have already removed the inserted content
+  // Synchronous events (bug 20161) may have already removed the inserted
+  // content
   if (!inserted_nodes.FirstNodeInserted() ||
       !inserted_nodes.FirstNodeInserted()->isConnected())
     return;
@@ -1709,8 +1711,8 @@ void ReplaceSelectionCommand::DoApply(EditingState* editing_state) {
                    end_of_inserted_content.DeepEquivalent(), editing_state);
       if (editing_state->IsAborted())
         return;
-      // Mutation events (bug 22634) triggered by inserting the <br> might have
-      // removed the content we're about to move
+      // Synchronous events (bug 22634) triggered by inserting the <br> might
+      // have removed the content we're about to move
       if (!start_of_paragraph_to_move_position.IsConnected())
         return;
     }
@@ -1971,7 +1973,7 @@ void ReplaceSelectionCommand::CompleteHTMLReplacement(
   Position start = PositionAtStartOfInsertedContent().DeepEquivalent();
   Position end = PositionAtEndOfInsertedContent().DeepEquivalent();
 
-  // Mutation events may have deleted start or end
+  // Synchronous events may have deleted start or end
   if (start.IsNotNull() && !start.IsOrphan() && end.IsNotNull() &&
       !end.IsOrphan()) {
     // FIXME (11475): Remove this and require that the creator of the fragment

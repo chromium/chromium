@@ -6592,11 +6592,6 @@
     "expiry_milestone": 120
   },
   {
-    "name": "mutation-events",
-    "owners": [ "masonf@chromium.org" ],
-    "expiry_milestone": 138
-  },
-  {
     "name": "mute-notification-snooze-action",
     "owners": [ "knollr@chromium.org", "peter@chromium.org" ],
     "expiry_milestone": 96

@@ -45,8 +45,6 @@ blink_core_sources_events = [
   "message_event.h",
   "mouse_event.cc",
   "mouse_event.h",
-  "mutation_event.cc",
-  "mutation_event.h",
   "navigator_events.cc",
   "navigator_events.h",
   "overscroll_event.cc",

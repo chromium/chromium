@@ -553,8 +553,8 @@ void HTMLDocumentParser::PrepareToStopParsing() {
   if (script_runner_)
     GetDocument()->SetReadyState(Document::kInteractive);
 
-  // Setting the ready state above can fire mutation event and detach us from
-  // underneath. In that case, just bail out.
+  // Setting the ready state above can fire synchronous events and detach us
+  // from underneath. In that case, just bail out.
   if (IsDetached())
     return;
 

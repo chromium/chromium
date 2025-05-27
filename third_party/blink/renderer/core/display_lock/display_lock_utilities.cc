@@ -826,9 +826,9 @@ bool DisplayLockUtilities::IsAutoWithoutLayout(const LayoutObject& object) {
 }
 
 bool DisplayLockUtilities::RevealHiddenUntilFoundAncestors(const Node& node) {
-  // Since setting the open attribute fires mutation events which could mess
-  // with the FlatTreeTraversal iterator, we should first iterate details
-  // elements to open and then open them all.
+  // Since setting the open attribute could fire synchronous events (e.g.
+  // `blur`), which could mess with the FlatTreeTraversal iterator, we should
+  // first iterate details elements to open and then open them all.
   HeapVector<Member<HTMLElement>> elements_to_reveal;
 
   for (Node& parent : AncestorTraversal(&node, true)) {

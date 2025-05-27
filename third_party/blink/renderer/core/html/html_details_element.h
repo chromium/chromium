@@ -44,7 +44,7 @@ class HTMLDetailsElement final : public HTMLElement {
 
   // Walks up the ancestor chain and expands all <details> elements found along
   // the way by setting the open attribute. If any were expanded, returns true.
-  // This method may run script because of the mutation events fired when
+  // This method may run script because of the synchronous events fired when
   // setting the open attribute.
   static bool ExpandDetailsAncestors(const Node&);
 

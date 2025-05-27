@@ -117,7 +117,7 @@ void PluginDocumentParser::CreateDocumentStructure() {
                                *cssvalue::CSSColor::Create(background_color_));
   root_element->AppendChild(body);
   if (IsStopped()) {
-    // Possibly detached by a mutation event listener installed in
+    // Possibly detached by a synchronous event listener installed in
     // runScriptsAtDocumentElementAvailable.
     return;
   }
@@ -135,7 +135,7 @@ void PluginDocumentParser::CreateDocumentStructure() {
                                GetDocument()->Loader()->MimeType());
   body->AppendChild(embed_element_);
   if (IsStopped()) {
-    // Possibly detached by a mutation event listener installed in
+    // Possibly detached by a synchronous event listener installed in
     // runScriptsAtDocumentElementAvailable.
     return;
   }
@@ -152,7 +152,7 @@ void PluginDocumentParser::CreateDocumentStructure() {
   if (frame->IsMainFrame()) {
     embed_element_->Focus();
     if (IsStopped()) {
-      // Possibly detached by a mutation event listener installed in
+      // Possibly detached by a synchronous event listener installed in
       // runScriptsAtDocumentElementAvailable.
       return;
     }

@@ -56,9 +56,6 @@ class ContentSettingsAgentImpl
     // blink::WebContentSettingsClient methods.
     virtual bool AllowReadFromClipboard();
     virtual bool AllowWriteToClipboard();
-    // If an optional value is
-    // returned, return std::nullopt to use the default logic.
-    virtual std::optional<bool> AllowMutationEvents();
   };
 
   ContentSettingsAgentImpl(content::RenderFrame* render_frame,
@@ -82,7 +79,6 @@ class ContentSettingsAgentImpl
   bool AllowStorageAccessSync(StorageType type) override;
   bool AllowReadFromClipboard() override;
   bool AllowWriteToClipboard() override;
-  bool AllowMutationEvents(bool default_value) override;
   void DidNotAllowImage() override;
   void DidNotAllowScript() override;
   bool AllowRunningInsecureContent(bool allowed_per_settings,

@@ -74,7 +74,7 @@ void HTMLTitleElement::setText(const String& value) {
     // Avoid calling Document::setTitleElement() during intermediate steps.
     base::AutoReset<bool> inhibit_title_update_scope(
         &ignore_title_updates_when_children_change_, !value.empty());
-    RemoveChildren(kOmitSubtreeModifiedEvent);
+    RemoveChildren();
   }
 
   if (!value.empty()) {

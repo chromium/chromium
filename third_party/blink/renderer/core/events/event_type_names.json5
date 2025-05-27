@@ -6,15 +6,9 @@
 
   data: [
     "DOMActivate",
-    "DOMCharacterDataModified",
     "DOMContentLoaded",
     "DOMFocusIn",
     "DOMFocusOut",
-    "DOMNodeInserted",
-    "DOMNodeInsertedIntoDocument",
-    "DOMNodeRemoved",
-    "DOMNodeRemovedFromDocument",
-    "DOMSubtreeModified",
     "abort",
     "abortpayment",
     "accessibleclick",

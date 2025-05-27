@@ -139,12 +139,6 @@ bool ChromeContentSettingsAgentDelegate::AllowWriteToClipboard() {
   return false;
 }
 
-std::optional<bool> ChromeContentSettingsAgentDelegate::AllowMutationEvents() {
-  if (IsPlatformApp())
-    return false;
-  return std::nullopt;
-}
-
 void ChromeContentSettingsAgentDelegate::DidCommitProvisionalLoad(
     ui::PageTransition transition) {
   if (render_frame()->GetWebFrame()->Parent())

@@ -33,7 +33,6 @@
 #include "third_party/blink/renderer/core/dom/text.h"
 #include "third_party/blink/renderer/core/dom/text_diff_range.h"
 #include "third_party/blink/renderer/core/editing/frame_selection.h"
-#include "third_party/blink/renderer/core/events/mutation_event.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/parkable_string_manager.h"
@@ -232,20 +231,6 @@ void CharacterData::DidModifyData(const String& old_data, UpdateSource source) {
         .sibling_after_change = nextSibling(),
         .old_text = &old_data};
     parentNode()->ChildrenChanged(change);
-  }
-
-  // Skip DOM mutation events if the modification is from parser.
-  // Note that mutation observer events will still fire.
-  // Spec: https://html.spec.whatwg.org/C/#insert-a-character
-  if (source != kUpdateFromParser && !IsInShadowTree() &&
-      !GetDocument().ShouldSuppressMutationEvents()) {
-    if (GetDocument().HasListenerType(
-            Document::kDOMCharacterDataModifiedListener)) {
-      DispatchScopedEvent(*MutationEvent::Create(
-          event_type_names::kDOMCharacterDataModified, Event::Bubbles::kYes,
-          nullptr, old_data, data()));
-    }
-    DispatchSubtreeModifiedEvent();
   }
   probe::CharacterDataModified(this);
 }

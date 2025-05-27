@@ -534,7 +534,7 @@ void HTMLSelectElement::setLength(unsigned new_len,
         break;
     } while (++diff);
   } else {
-    // Removing children fires mutation events, which might mutate the DOM
+    // Removing children fires synchronous events, which might mutate the DOM
     // further, so we first copy out a list of elements that we intend to
     // remove then attempt to remove them one at a time.
     HeapVector<Member<HTMLOptionElement>> items_to_remove;

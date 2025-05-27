@@ -1168,7 +1168,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="867" label="V8Event_InitEvent_Method"/>
   <int value="868" label="V8KeyboardEvent_InitKeyboardEvent_Method"/>
   <int value="869" label="V8MouseEvent_InitMouseEvent_Method"/>
-  <int value="870" label="V8MutationEvent_InitMutationEvent_Method"/>
+  <int value="870" label="OBSOLETE_V8MutationEvent_InitMutationEvent_Method"/>
   <int value="871" label="V8StorageEvent_InitStorageEvent_Method"/>
   <int value="872" label="V8TouchEvent_InitTouchEvent_Method"/>
   <int value="873" label="V8UIEvent_InitUIEvent_Method"/>
@@ -1486,7 +1486,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="1170" label="DocumentCreateEventErrorEvent"/>
   <int value="1171" label="DocumentCreateEventFocusEvent"/>
   <int value="1172" label="DocumentCreateEventHashChangeEvent"/>
-  <int value="1173" label="DocumentCreateEventMutationEvent"/>
+  <int value="1173" label="OBSOLETE_DocumentCreateEventMutationEvent"/>
   <int value="1174" label="DocumentCreateEventPageTransitionEvent"/>
   <int value="1175" label="DocumentCreateEventPointerEvent"/>
   <int value="1176" label="DocumentCreateEventPopStateEvent"/>
@@ -1501,7 +1501,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="1185" label="DocumentCreateEventMediaKeyEvent"/>
   <int value="1186" label="DocumentCreateEventTrackEvent"/>
   <int value="1187" label="OBSOLETE_DocumentCreateEventWebKitAnimationEvent"/>
-  <int value="1188" label="DocumentCreateEventMutationEvents"/>
+  <int value="1188" label="OBSOLETE_DocumentCreateEventMutationEvents"/>
   <int value="1189" label="DocumentCreateEventOrientationEvent"/>
   <int value="1190" label="DocumentCreateEventSVGEvents"/>
   <int value="1191" label="OBSOLETE_DocumentCreateEventWebKitTransitionEvent"/>
@@ -5450,8 +5450,8 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4888" label="DOMNodeRemovedFromDocumentEventFired"/>
   <int value="4889" label="DOMNodeInsertedIntoDocumentEventFired"/>
   <int value="4890" label="DOMCharacterDataModifiedEventFired"/>
-  <int value="4891" label="AnyMutationEventFired"/>
-  <int value="4892" label="AnyMutationEventListenerAdded"/>
+  <int value="4891" label="OBSOLETE_AnyMutationEventFired"/>
+  <int value="4892" label="OBSOLETE_AnyMutationEventListenerAdded"/>
   <int value="4893"
       label="BadgeSetWithoutNotificationPermissionInBrowserWindow"/>
   <int value="4894" label="BadgeSetWithoutNotificationPermissionInAppWindow"/>

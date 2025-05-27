@@ -46,7 +46,6 @@ class ChromeContentSettingsAgentDelegate
   bool IsSchemeAllowlisted(const std::string& scheme) override;
   bool AllowReadFromClipboard() override;
   bool AllowWriteToClipboard() override;
-  std::optional<bool> AllowMutationEvents() override;
 
  private:
   FRIEND_TEST_ALL_PREFIXES(ChromeContentSettingsAgentDelegateBrowserTest,
