@@ -21,6 +21,9 @@ BASE_DECLARE_FEATURE(kPushSubscriptionWithExpirationTime);
 // corresponds to.
 BASE_DECLARE_FEATURE(kPushMessagingGcmEndpointEnvironment);
 
+// Feature flag to control use of new /wp/ path based Webpush endpoints.
+BASE_DECLARE_FEATURE(kPushMessagingGcmEndpointWebpushPath);
+
 }  // namespace features
 
 #endif  // CHROME_BROWSER_PUSH_MESSAGING_PUSH_MESSAGING_FEATURES_H_

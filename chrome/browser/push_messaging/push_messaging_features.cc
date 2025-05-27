@@ -20,4 +20,8 @@ BASE_FEATURE(kPushMessagingGcmEndpointEnvironment,
              "PushMessagingGcmEndpointEnvironment",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kPushMessagingGcmEndpointWebpushPath,
+             "PushMessagingGcmEndpointWebpushPath",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace features
