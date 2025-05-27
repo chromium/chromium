@@ -1,2 +1,0 @@
-ci/linux-blink-wpt-3pcd-fyi-rel
-try/linux-blink-wpt-3pcd-fyi-rel

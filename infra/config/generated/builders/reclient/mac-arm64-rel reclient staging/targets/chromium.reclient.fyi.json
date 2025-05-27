@@ -1,7 +1,0 @@
-{
-  "mac-arm64-rel reclient staging": {
-    "additional_compile_targets": [
-      "all"
-    ]
-  }
-}

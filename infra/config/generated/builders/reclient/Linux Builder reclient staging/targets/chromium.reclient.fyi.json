@@ -1,7 +1,0 @@
-{
-  "Linux Builder reclient staging": {
-    "additional_compile_targets": [
-      "all"
-    ]
-  }
-}
