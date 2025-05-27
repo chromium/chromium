@@ -5173,7 +5173,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.Sync.ActualSyncedTabCountPercentage"
-    units="% of tab count" expires_after="2025-06-29">
+    units="% of tab count" expires_after="2025-12-29">
   <owner>bjfong@google.com</owner>
   <owner>ckitagawa@chromium.org</owner>
   <summary>
@@ -5291,7 +5291,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.TabMultiSelectV2.BookmarkTabsCount" units="count"
-    expires_after="2025-06-30">
+    expires_after="2025-12-30">
   <owner>ckitagawa@chromium.org</owner>
   <owner>bjfong@google.com</owner>
   <owner>fredmello@chromium.org</owner>
@@ -5303,7 +5303,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.TabMultiSelectV2.SharingState"
-    enum="TabListEditorShareActionState" expires_after="2025-06-30">
+    enum="TabListEditorShareActionState" expires_after="2025-12-30">
   <owner>ckitagawa@chromium.org</owner>
   <owner>bjfong@google.com</owner>
   <owner>fredmello@chromium.org</owner>
@@ -5314,7 +5314,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.TabMultiSelectV2.TimeSinceLastShown" units="ms"
-    expires_after="2025-06-30">
+    expires_after="2025-12-30">
   <owner>ckitagawa@chromium.org</owner>
   <owner>fredmello@chromium.org</owner>
   <summary>
