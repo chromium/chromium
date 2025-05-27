@@ -40,7 +40,7 @@ struct AudioGlitchInfo;
 namespace audio {
 class AudioProcessorHandler;
 class AudioCallback;
-class DeviceOutputListener;
+class ReferenceSignalProvider;
 class OutputTapper;
 
 #if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
@@ -184,7 +184,7 @@ class InputController final {
       media::AudioManager* audio_manager,
       EventHandler* event_handler,
       SyncWriter* sync_writer,
-      DeviceOutputListener* device_output_listener,
+      std::unique_ptr<ReferenceSignalProvider> reference_signal_provider,
       media::AecdumpRecordingManager* aecdump_recording_manager,
       media::mojom::AudioProcessingConfigPtr processing_config,
       const media::AudioParameters& params,
@@ -229,14 +229,15 @@ class InputController final {
     CAPTURE_STARTUP_RESULT_MAX = CAPTURE_STARTUP_STOPPED_EARLY,
   };
 
-  InputController(EventHandler* event_handler,
-                  SyncWriter* sync_writer,
-                  DeviceOutputListener* device_output_listener,
-                  media::AecdumpRecordingManager* aecdump_recording_manager,
-                  media::mojom::AudioProcessingConfigPtr processing_config,
-                  const media::AudioParameters& output_params,
-                  const media::AudioParameters& device_params,
-                  StreamType type);
+  InputController(
+      EventHandler* event_handler,
+      SyncWriter* sync_writer,
+      std::unique_ptr<ReferenceSignalProvider> reference_signal_provider,
+      media::AecdumpRecordingManager* aecdump_recording_manager,
+      media::mojom::AudioProcessingConfigPtr processing_config,
+      const media::AudioParameters& output_params,
+      const media::AudioParameters& device_params,
+      StreamType type);
 
   void DoCreate(media::AudioManager* audio_manager,
                 const media::AudioParameters& params,
@@ -289,7 +290,7 @@ class InputController final {
       media::mojom::AudioProcessingConfigPtr processing_config,
       const media::AudioParameters& processing_output_params,
       const media::AudioParameters& device_params,
-      DeviceOutputListener* device_output_listener,
+      std::unique_ptr<ReferenceSignalProvider> reference_signal_provider,
       media::AecdumpRecordingManager* aecdump_recording_manager);
 
   // Used as a callback for |audio_processor_handler_|.

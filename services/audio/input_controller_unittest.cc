@@ -26,9 +26,9 @@
 #include "media/base/audio_processing.h"
 #include "media/base/media_switches.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "services/audio/device_output_listener.h"
 #include "services/audio/processing_audio_fifo.h"
 #include "services/audio/reference_output.h"
+#include "services/audio/reference_signal_provider.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -387,10 +387,10 @@ class InputControllerTestHelper {
   raw_ptr<InputController> controller_;
 };
 
-class MockDeviceOutputListener : public DeviceOutputListener {
+class MockReferenceSignalProvider : public ReferenceSignalProvider {
  public:
-  MockDeviceOutputListener() = default;
-  ~MockDeviceOutputListener() override = default;
+  MockReferenceSignalProvider() = default;
+  ~MockReferenceSignalProvider() override = default;
 
   MOCK_METHOD2(StartListening,
                void(ReferenceOutput::Listener*, const std::string&));
@@ -407,9 +407,10 @@ class TimeSourceInputControllerTestWithDeviceListener
     // https://stackoverflow.com/q/4643074
     this->controller_ = InputController::Create(
         this->audio_manager_.get(), &this->event_handler_, &this->sync_writer_,
-        &this->device_output_listener_, &this->aecdump_recording_manager_,
-        std::move(processing_config_), this->params_,
-        media::AudioDeviceDescription::kDefaultDeviceId, false);
+        std::unique_ptr<ReferenceSignalProvider>(
+            this->reference_signal_provider_),
+        &this->aecdump_recording_manager_, std::move(processing_config_),
+        this->params_, media::AudioDeviceDescription::kDefaultDeviceId, false);
 
     helper_ =
         std::make_unique<InputControllerTestHelper>(this->controller_.get());
@@ -444,7 +445,13 @@ class TimeSourceInputControllerTestWithDeviceListener
         remote_controls_.BindNewPipeAndPassReceiver(), settings);
   }
 
-  NiceMock<MockDeviceOutputListener> device_output_listener_;
+  // The MockReferenceSignalProvider will be destroyed automatically when the
+  // InputController is destroyed. We retain a pointer to it to be able to
+  // expect mock calls. It will be dangling between the destruction of the
+  // InputController and the destruction of the test suite, so we disable
+  // dangling pointer detection.
+  raw_ptr<NiceMock<MockReferenceSignalProvider>, DisableDanglingPtrDetection>
+      reference_signal_provider_ = new NiceMock<MockReferenceSignalProvider>();
   media::mojom::AudioProcessingConfigPtr processing_config_;
   mojo::Remote<media::mojom::AudioProcessorControls> remote_controls_;
   std::unique_ptr<InputControllerTestHelper> helper_;
@@ -527,8 +534,8 @@ TEST_P(
   base::test::ScopedFeatureList features;
   const std::string kOutputDeviceId = "0x123";
 
-  EXPECT_CALL(device_output_listener_, StartListening(_, _)).Times(0);
-  EXPECT_CALL(device_output_listener_, StopListening(_)).Times(0);
+  EXPECT_CALL(*reference_signal_provider_, StartListening(_, _)).Times(0);
+  EXPECT_CALL(*reference_signal_provider_, StopListening(_)).Times(0);
 
   SetupProcessingConfig(AudioProcessingType::kWithoutPlayoutReference);
   CreateAudioController();
@@ -550,10 +557,10 @@ TEST_P(InputControllerTestWithDeviceListener, RecordBeforeSetOutputForAec) {
   const std::string kOutputDeviceId = "0x123";
 
   // Calling Record() will start listening to the "" device by default.
-  EXPECT_CALL(device_output_listener_, StartListening(_, "")).Times(1);
-  EXPECT_CALL(device_output_listener_, StartListening(_, kOutputDeviceId))
+  EXPECT_CALL(*reference_signal_provider_, StartListening(_, "")).Times(1);
+  EXPECT_CALL(*reference_signal_provider_, StartListening(_, kOutputDeviceId))
       .Times(1);
-  EXPECT_CALL(device_output_listener_, StopListening(_)).Times(1);
+  EXPECT_CALL(*reference_signal_provider_, StopListening(_)).Times(1);
 
   SetupProcessingConfig(AudioProcessingType::kWithPlayoutReference);
   CreateAudioController();
@@ -574,9 +581,9 @@ TEST_P(InputControllerTestWithDeviceListener, RecordBeforeSetOutputForAec) {
 
 TEST_P(InputControllerTestWithDeviceListener, RecordAfterSetOutputForAec) {
   const std::string kOutputDeviceId = "0x123";
-  EXPECT_CALL(device_output_listener_, StartListening(_, kOutputDeviceId))
+  EXPECT_CALL(*reference_signal_provider_, StartListening(_, kOutputDeviceId))
       .Times(1);
-  EXPECT_CALL(device_output_listener_, StopListening(_)).Times(1);
+  EXPECT_CALL(*reference_signal_provider_, StopListening(_)).Times(1);
 
   SetupProcessingConfig(AudioProcessingType::kWithPlayoutReference);
   CreateAudioController();
@@ -597,9 +604,9 @@ TEST_P(InputControllerTestWithDeviceListener, RecordAfterSetOutputForAec) {
 
 TEST_P(InputControllerTestWithDeviceListener, FifoSize) {
   const std::string kOutputDeviceId = "0x123";
-  EXPECT_CALL(device_output_listener_, StartListening(_, kOutputDeviceId))
+  EXPECT_CALL(*reference_signal_provider_, StartListening(_, kOutputDeviceId))
       .Times(1);
-  EXPECT_CALL(device_output_listener_, StopListening(_)).Times(1);
+  EXPECT_CALL(*reference_signal_provider_, StopListening(_)).Times(1);
 
   SetupProcessingConfig(AudioProcessingType::kWithPlayoutReference);
   CreateAudioController();
@@ -629,13 +636,14 @@ TEST_P(InputControllerTestWithDeviceListener, ChangeOutputForAec) {
   const std::string kOtherOutputDeviceId = "0x987";
 
   // Each output ID should receive one call to StartListening().
-  EXPECT_CALL(device_output_listener_, StartListening(_, kOutputDeviceId))
+  EXPECT_CALL(*reference_signal_provider_, StartListening(_, kOutputDeviceId))
       .Times(1);
-  EXPECT_CALL(device_output_listener_, StartListening(_, kOtherOutputDeviceId))
+  EXPECT_CALL(*reference_signal_provider_,
+              StartListening(_, kOtherOutputDeviceId))
       .Times(1);
 
   // StopListening() should be called once, regardless of how many ID changes.
-  EXPECT_CALL(device_output_listener_, StopListening(_)).Times(1);
+  EXPECT_CALL(*reference_signal_provider_, StopListening(_)).Times(1);
 
   SetupProcessingConfig(AudioProcessingType::kWithPlayoutReference);
   CreateAudioController();

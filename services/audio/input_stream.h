@@ -29,7 +29,6 @@ class AudioParameters;
 }  // namespace media
 
 namespace audio {
-class DeviceOutputListener;
 class InputSyncWriter;
 
 class InputStream final : public media::mojom::AudioInputStream,
@@ -50,7 +49,7 @@ class InputStream final : public media::mojom::AudioInputStream,
       mojo::PendingRemote<media::mojom::AudioLog> log,
       media::AudioManager* manager,
       media::AecdumpRecordingManager* aecdump_recording_manager,
-      DeviceOutputListener* device_output_listener,
+      std::unique_ptr<ReferenceSignalProvider> reference_signal_provider,
       media::mojom::AudioProcessingConfigPtr processing_config,
       const std::string& device_id,
       const media::AudioParameters& params,

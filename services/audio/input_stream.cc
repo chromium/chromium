@@ -21,6 +21,7 @@
 #include "mojo/public/cpp/system/handle.h"
 #include "mojo/public/cpp/system/platform_handle.h"
 #include "services/audio/input_sync_writer.h"
+#include "services/audio/reference_signal_provider.h"
 
 namespace audio {
 
@@ -70,7 +71,7 @@ InputStream::InputStream(
     mojo::PendingRemote<media::mojom::AudioLog> log,
     media::AudioManager* audio_manager,
     media::AecdumpRecordingManager* aecdump_recording_manager,
-    DeviceOutputListener* device_output_listener,
+    std::unique_ptr<ReferenceSignalProvider> reference_signal_provider,
     media::mojom::AudioProcessingConfigPtr processing_config,
     const std::string& device_id,
     const media::AudioParameters& params,
@@ -129,7 +130,7 @@ InputStream::InputStream(
   }
 
   controller_ = InputController::Create(
-      audio_manager, this, writer_.get(), device_output_listener,
+      audio_manager, this, writer_.get(), std::move(reference_signal_provider),
       aecdump_recording_manager, std::move(processing_config), params,
       device_id, enable_agc);
 }
