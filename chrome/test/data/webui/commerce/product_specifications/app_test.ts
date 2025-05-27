@@ -2542,10 +2542,6 @@ suite('AppTest', () => {
       const pluralStringProxy = new TestPluralStringProxy();
       PluralStringProxyImpl.setInstance(pluralStringProxy);
 
-      loadTimeData.overrideValues({
-        'comparisonTableListEnabled': true,
-      });
-
       shoppingServiceApi.setResultFor(
           'getAllProductSpecificationsSets', Promise.resolve({
             sets: SPECS_SETS,
@@ -2563,18 +2559,6 @@ suite('AppTest', () => {
           'getComparisonTableUrlForUuid', (uuid: Uuid) => {
             return Promise.resolve({url: `chrome://compare/?id=${uuid.value}`});
           });
-    });
-
-    test('list does not appear when the feature is off', async () => {
-      loadTimeData.overrideValues({
-        'comparisonTableListEnabled': false,
-      });
-
-      const appElement = await createAppElement();
-      await microtasksFinished();
-
-      const listElement = appElement.$.comparisonTableList;
-      assertFalse(isVisible(listElement));
     });
 
     test('list is hidden if there are no comparison tables', async () => {

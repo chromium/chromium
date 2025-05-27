@@ -464,10 +464,6 @@ export class ProductSpecificationsElement extends CrLitElement {
   }
 
   private computeShowComparisonTableList_() {
-    if (!loadTimeData.getBoolean('comparisonTableListEnabled')) {
-      return false;
-    }
-
     return this.showEmptyState_ && this.id_ === null && this.sets_.length > 0 &&
         this.appState_ === AppState.TABLE_EMPTY;
   }
@@ -695,13 +691,7 @@ export class ProductSpecificationsElement extends CrLitElement {
   }
 
   protected seeAllSets_() {
-    if (loadTimeData.getBoolean('comparisonTableListEnabled')) {
-      this.productSpecificationsProxy_.showComparePage(true);
-      return;
-    }
-
-    OpenWindowProxyImpl.getInstance().openUrl(
-        loadTimeData.getString('productSpecificationsManagementUrl'));
+    this.productSpecificationsProxy_.showComparePage(true);
   }
 
   protected async onUrlAdd_(
@@ -1034,8 +1024,7 @@ export class ProductSpecificationsElement extends CrLitElement {
 
     // If we show the empty state and there are no comparison tables, try to
     // fetch them.
-    if (loadTimeData.getBoolean('comparisonTableListEnabled') &&
-        this.showEmptyState_ && this.sets_.length === 0) {
+    if (this.showEmptyState_ && this.sets_.length === 0) {
       const {sets} = await this.shoppingApi_.getAllProductSpecificationsSets();
       this.sets_ = sets;
     }

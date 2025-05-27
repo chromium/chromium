@@ -13,10 +13,6 @@ inline constexpr char kChromeUICommerceInternalsHost[] = "commerce-internals";
 // The host for compare.
 inline constexpr char kChromeUICompareHost[] = "compare";
 
-// The URL for managing compare entities.
-inline constexpr char kChromeUICompareListsUrl[] =
-    "chrome://history/comparisonTables";
-
 // The URL for compare.
 inline constexpr char kChromeUICompareUrl[] = "chrome://compare";
 
