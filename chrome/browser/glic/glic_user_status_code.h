@@ -5,9 +5,21 @@
 #ifndef CHROME_BROWSER_GLIC_GLIC_USER_STATUS_CODE_H_
 #define CHROME_BROWSER_GLIC_GLIC_USER_STATUS_CODE_H_
 
+#include "base/json/json_value_converter.h"
 #include "base/time/time.h"
 
 namespace glic {
+
+// Keys of the pref dict.
+inline constexpr char kUserStatus[] = "user_status";
+inline constexpr char kUpdatedAt[] = "updated_at";
+inline constexpr char kAccountId[] = "account_id";
+
+// Keys of the JSON response of the glic user status RPC.
+inline constexpr char kIsGlicEnabled[] = "isGlicEnabled";
+inline constexpr char kIsAccessDeniedByAdmin[] = "isAccessDeniedByAdmin";
+inline constexpr char kIsEnterpriseAccountDataProtected[] =
+    "isEnterpriseAccountDataProtected";
 
 // These enums are persisted in the disk as integers. They should not be
 // renumbered or removed.
@@ -20,6 +32,9 @@ enum UserStatusCode {
 
 struct CachedUserStatus {
   UserStatusCode user_status_code;
+  // If true, this is an enterprise account for whom different disclosures
+  // should be shown. See b/413482904 for details.
+  bool is_enterprise_account_data_protected;
   base::Time last_updated;
 };
 

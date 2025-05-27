@@ -83,7 +83,7 @@ class GlicUserStatusFetcher {
   void FetchNow();
 
   void ProcessResponse(const std::string& account_id_hash,
-                       UserStatusCode result_code);
+                       CachedUserStatus user_status);
 
   bool is_user_status_waiting_for_refresh_token_ = false;
   raw_ptr<Profile> profile_;
