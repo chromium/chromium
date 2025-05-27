@@ -39,7 +39,7 @@ class DigitalIdentityProviderAndroid : public content::DigitalIdentityProvider {
                  std::string result,
                  jint j_status_for_metrics);
 
-  bool IsLowRiskOrigin(
+  bool IsLastCommittedOriginLowRisk(
       content::RenderFrameHost& render_frame_host) const override;
   DigitalIdentityInterstitialAbortCallback ShowDigitalIdentityInterstitial(
       content::WebContents& web_contents,

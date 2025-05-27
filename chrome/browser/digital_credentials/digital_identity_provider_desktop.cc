@@ -101,9 +101,9 @@ DigitalIdentityProviderDesktop::DigitalIdentityProviderDesktop() = default;
 
 DigitalIdentityProviderDesktop::~DigitalIdentityProviderDesktop() = default;
 
-bool DigitalIdentityProviderDesktop::IsLowRiskOrigin(
+bool DigitalIdentityProviderDesktop::IsLastCommittedOriginLowRisk(
     content::RenderFrameHost& render_frame_host) const {
-  return digital_credentials::IsLowRiskOrigin(render_frame_host);
+  return digital_credentials::IsLastCommittedOriginLowRisk(render_frame_host);
 }
 
 DigitalIdentityInterstitialAbortCallback

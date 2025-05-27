@@ -57,7 +57,7 @@ using GetCallback = blink::mojom::DigitalIdentityRequest::GetCallback;
 using RequestData = blink::mojom::RequestData;
 
 // StubDigitalIdentityProvider which enables overriding
-// DigitalIdentityProvider::IsLowRiskOrigin().
+// DigitalIdentityProvider::IsLastCommittedOriginLowRisk().
 class TestDigitalIdentityProviderWithCustomRisk
     : public StubDigitalIdentityProvider {
  public:
@@ -65,7 +65,8 @@ class TestDigitalIdentityProviderWithCustomRisk
       : are_origins_low_risk_(are_origins_low_risk) {}
   ~TestDigitalIdentityProviderWithCustomRisk() override = default;
 
-  bool IsLowRiskOrigin(RenderFrameHost& render_frame_host) const override {
+  bool IsLastCommittedOriginLowRisk(
+      RenderFrameHost& render_frame_host) const override {
     return are_origins_low_risk_;
   }
 

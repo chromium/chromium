@@ -315,7 +315,7 @@ DigitalIdentityRequestImpl::ComputeInterstitialType(
     return InterstitialType::kLowRisk;
   }
 
-  if (provider->IsLowRiskOrigin(render_frame_host)) {
+  if (provider->IsLastCommittedOriginLowRisk(render_frame_host)) {
     return std::nullopt;
   }
   return std::ranges::all_of(

@@ -65,8 +65,9 @@ class DigitalIdentityLowRiskOriginsTest
   base::CallbackListSubscription subscription_;
 };
 
-// Test IsLowRiskOrigin when the kKnownLowRiskOrigins list is empty (default)
-// and the OptimizationGuideKeyedService reports the URL as low friction.
+// Test IsLastCommittedOriginLowRisk when the kKnownLowRiskOrigins list is empty
+// (default) and the OptimizationGuideKeyedService reports the URL as low
+// friction.
 TEST_F(DigitalIdentityLowRiskOriginsTest,
        IsLowRiskOrigin_KnownOriginsEmpty_LowFrictionUrlIsTrue) {
   GURL url("https://example_low_friction.com");
@@ -79,11 +80,12 @@ TEST_F(DigitalIdentityLowRiskOriginsTest,
       .WillOnce(testing::Return(
           optimization_guide::OptimizationGuideDecision::kTrue));
 
-  EXPECT_TRUE(IsLowRiskOrigin(*main_rfh()));
+  EXPECT_TRUE(IsLastCommittedOriginLowRisk(*main_rfh()));
 }
 
-// Test IsLowRiskOrigin when the kKnownLowRiskOrigins list is empty (default)
-// and the OptimizationGuideKeyedService reports the URL as NOT low friction.
+// Test IsLastCommittedOriginLowRisk when the kKnownLowRiskOrigins list is empty
+// (default) and the OptimizationGuideKeyedService reports the URL as NOT low
+// friction.
 TEST_F(DigitalIdentityLowRiskOriginsTest,
        IsLowRiskOrigin_KnownOriginsEmpty_LowFrictionUrlIsFalse) {
   NavigateAndCommit(GURL("https://example_not_low_friction.com"));
@@ -95,7 +97,7 @@ TEST_F(DigitalIdentityLowRiskOriginsTest,
       .WillOnce(testing::Return(
           optimization_guide::OptimizationGuideDecision::kFalse));
 
-  EXPECT_FALSE(IsLowRiskOrigin(*main_rfh()));
+  EXPECT_FALSE(IsLastCommittedOriginLowRisk(*main_rfh()));
 }
 
 TEST_F(DigitalIdentityLowRiskOriginsTest,
@@ -134,7 +136,7 @@ TEST_F(DigitalIdentityLowRiskOriginsTest,
       .WillOnce(testing::Return(
           optimization_guide::OptimizationGuideDecision::kTrue));
 
-  EXPECT_TRUE(IsLowRiskOrigin(*otr_rfh));
+  EXPECT_TRUE(IsLastCommittedOriginLowRisk(*otr_rfh));
 }
 
 // Test fixture for scenarios where DigitalCredentialsKeyedService is not
@@ -156,14 +158,15 @@ class DigitalIdentityLowRiskOriginsServiceNotAvailableTest
   }
 };
 
-// Test IsLowRiskOrigin when DigitalCredentialsKeyedService is not available.
-// In this case, the internal IsLowFrictionUrl helper should return false.
+// Test IsLastCommittedOriginLowRisk when DigitalCredentialsKeyedService is not
+// available. In this case, the internal IsLowFrictionUrl helper should return
+// false.
 TEST_F(DigitalIdentityLowRiskOriginsServiceNotAvailableTest,
        IsLowRiskOrigin_ServiceNotAvailable) {
   NavigateAndCommit(GURL("https://example.com"));
   // Since kKnownLowRiskOrigins is empty and the service isn't available (so
   // low friction check is false), the result should be false.
-  EXPECT_FALSE(IsLowRiskOrigin(*main_rfh()));
+  EXPECT_FALSE(IsLastCommittedOriginLowRisk(*main_rfh()));
 }
 
 // Tests for IsLowRiskOriginMatcherForTesting (allows custom lists)

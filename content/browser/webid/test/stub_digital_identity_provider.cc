@@ -14,7 +14,7 @@ using DigitalIdentityInterstitialAbortCallback =
 StubDigitalIdentityProvider::StubDigitalIdentityProvider() = default;
 StubDigitalIdentityProvider::~StubDigitalIdentityProvider() = default;
 
-bool StubDigitalIdentityProvider::IsLowRiskOrigin(
+bool StubDigitalIdentityProvider::IsLastCommittedOriginLowRisk(
     RenderFrameHost& render_frame_host) const {
   return false;
 }
