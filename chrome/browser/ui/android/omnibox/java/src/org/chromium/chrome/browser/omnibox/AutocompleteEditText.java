@@ -27,6 +27,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.widget.text.VerticallyFixedEditText;
 import org.chromium.components.omnibox.OmniboxFeatures;
+import org.chromium.ui.accessibility.AccessibilityState;
 import org.chromium.ui.text.EmptyTextWatcher;
 
 import java.util.Optional;
@@ -269,6 +270,13 @@ public class AutocompleteEditText extends VerticallyFixedEditText
             return;
         }
         super.sendAccessibilityEventUnchecked(event);
+    }
+
+    @Override
+    public void sendAccessibilityEvent(AccessibilityEvent event) {
+        if (AccessibilityState.isTouchExplorationEnabled()) {
+            sendAccessibilityEventUnchecked(event);
+        }
     }
 
     @Override

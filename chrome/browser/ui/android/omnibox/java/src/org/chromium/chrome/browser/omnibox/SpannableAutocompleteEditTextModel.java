@@ -145,12 +145,12 @@ public class SpannableAutocompleteEditTextModel
             event.setFromIndex(fromIndex);
             event.setRemovedCount(removedCount);
             event.setAddedCount(addedCount);
-            mDelegate.sendAccessibilityEventUnchecked(event);
+            mDelegate.sendAccessibilityEvent(event);
         }
 
         if (oldState.getSelStart() != newState.getSelStart()
                 || oldState.getSelEnd() != newState.getSelEnd()) {
-            mDelegate.sendAccessibilityEventUnchecked(
+            mDelegate.sendAccessibilityEvent(
                     AccessibilityEvent.obtain(AccessibilityEvent.TYPE_VIEW_TEXT_SELECTION_CHANGED));
         }
         mDelegateShouldIgnoreAccessibilityEvents = true;
@@ -167,7 +167,7 @@ public class SpannableAutocompleteEditTextModel
         eventTextChanged.setAddedCount(
                 newState.getAutocompleteText().map(t -> t.length()).orElse(0));
         mDelegateShouldIgnoreAccessibilityEvents = false;
-        mDelegate.sendAccessibilityEventUnchecked(eventTextChanged);
+        mDelegate.sendAccessibilityEvent(eventTextChanged);
         mDelegateShouldIgnoreAccessibilityEvents = true;
     }
 
