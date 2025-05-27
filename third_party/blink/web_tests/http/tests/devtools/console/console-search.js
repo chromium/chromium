@@ -31,8 +31,8 @@ import * as Console from 'devtools/panels/console/console.js';
   function setQuery(text, isRegex, caseSensitive, callback) {
     TestRunner.addSniffer(consoleView, 'searchFinishedForTests', callback);
     consoleView.searchableView().searchInputElement.value = text;
-    consoleView.searchableView().regexButton.toggled = isRegex;
-    consoleView.searchableView().caseSensitiveButton.toggled = caseSensitive;
+    consoleView.searchableView().regexButton.setToggled(isRegex);
+    consoleView.searchableView().caseSensitiveButton.setToggled(caseSensitive);
     consoleView.searchableView().showSearchField();
   }
 

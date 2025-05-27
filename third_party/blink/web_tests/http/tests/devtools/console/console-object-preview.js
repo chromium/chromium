@@ -9,7 +9,6 @@ import {ConsoleTestRunner} from 'console_test_runner';
   TestRunner.addResult(`Tests that console produces instant previews for arrays and objects.\n`);
   await TestRunner.showPanel('console');
   await TestRunner.evaluateInPagePromise(`
-
           console.log("Mutating object in a loop");
           var object = { a: 0, b: 0 };
           for (var i = 0; i < 3; ++i) {

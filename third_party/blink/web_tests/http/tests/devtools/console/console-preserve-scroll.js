@@ -29,8 +29,8 @@ import * as Console from 'devtools/panels/console/console.js';
   viewport.element.scrollTop = 10;
   dumpScrollTop();
 
-  UI.InspectorView.InspectorView.instance().tabbedPane.addEventListener(UI.TabbedPane.Events.TabSelected, () => {
-    TestRunner.addResult('Panel ' + UI.InspectorView.InspectorView.instance().tabbedPane.currentTab.id + ' was opened.');
+  UI.InspectorView.InspectorView.instance()._tabbedPane.addEventListener(UI.TabbedPane.Events.TabSelected, () => {
+    TestRunner.addResult('Panel ' + UI.InspectorView.InspectorView.instance()._tabbedPane._currentTab.id + ' was opened.');
   });
 
   TestRunner.runTestSuite([
@@ -44,10 +44,10 @@ import * as Console from 'devtools/panels/console/console.js';
     async function testClickLinkToRevealAnotherPanel(next) {
       // Ordering is important here, as accessing the element the first time around
       // triggers live location creation and updates which we need to await properly.
-      const element = consoleView.visibleViewMessages[0].element();
+      const element = consoleView.visibleViewMessages[0]._element;
       await TestRunner.waitForPendingLiveLocationUpdates();
       element.querySelector('.devtools-link').click();
-      await UI.InspectorView.InspectorView.instance().tabbedPane.once(UI.TabbedPane.Events.TabSelected);
+      await UI.InspectorView.InspectorView.instance()._tabbedPane.once(UI.TabbedPane.Events.TabSelected);
       await TestRunner.showPanel('console');
       dumpScrollTop();
       next();
@@ -56,7 +56,7 @@ import * as Console from 'devtools/panels/console/console.js';
     async function testConsolePanelToDrawer(next) {
       await TestRunner.showPanel('console');
       await showDrawerPromise();
-      TestRunner.addResult('Drawer panel set to ' + UI.InspectorView.InspectorView.instance().drawerTabbedPane.currentTab.id);
+      TestRunner.addResult('Drawer panel set to ' + UI.InspectorView.InspectorView.instance()._drawerTabbedPane._currentTab.id);
       await TestRunner.showPanel('sources');
       dumpScrollTop();
       await TestRunner.showPanel('console');
@@ -66,15 +66,15 @@ import * as Console from 'devtools/panels/console/console.js';
 
     async function testCloseDrawerFromConsolePanelAndOpenFromAnotherPanel(next) {
       await TestRunner.showPanel('console');
-      TestRunner.addSniffer(UI.SplitWidget.SplitWidget.prototype, 'showFinishedForTest', async () => {
+      TestRunner.addSniffer(UI.SplitWidget.SplitWidget.prototype, '_showFinishedForTest', async () => {
         await TestRunner.showPanel('sources');
         await showDrawerPromise();
-        TestRunner.addResult('Drawer panel set to ' + UI.InspectorView.InspectorView.instance().drawerTabbedPane.currentTab.id);
+        TestRunner.addResult('Drawer panel set to ' + UI.InspectorView.InspectorView.instance()._drawerTabbedPane._currentTab.id);
         dumpScrollTop();
         next();
       });
       // Close the drawer with animation.
-      UI.InspectorView.InspectorView.instance().drawerSplitWidget.hideSidebar(true /* animate */);
+      UI.InspectorView.InspectorView.instance()._drawerSplitWidget.hideSidebar(true /* animate */);
     }
   ]);
 
@@ -86,8 +86,8 @@ import * as Console from 'devtools/panels/console/console.js';
     // Restoring scroll positions may occur during materialization, which is
     // done asynchronously for TabbedPane contents.
     return new Promise((resolve, reject) => {
-      UI.InspectorView.InspectorView.instance().showDrawer({ focus: true, hasTargetDrawer: false });
-      TestRunner.addSniffer(UI.ViewManager.ContainerWidget.prototype, 'wasShownForTest', resolve);
+      UI.InspectorView.InspectorView.instance()._showDrawer(true);
+      TestRunner.addSniffer(UI.ViewManager.ContainerWidget.prototype, '_wasShownForTest', resolve);
     });
   }
 })();
