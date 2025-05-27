@@ -10,6 +10,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/system/privacy_hub/privacy_hub_controller.h"
+#include "base/check_deref.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/gtest_prod_util.h"
@@ -30,6 +31,7 @@
 #include "chrome/browser/ash/settings/stats_reporting_controller.h"
 #include "chrome/browser/ash/system/timezone_resolver_manager.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/global_features.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profiles_state.h"
 #include "chrome/common/pref_names.h"
@@ -696,13 +698,19 @@ void ArcSettingsServiceImpl::SyncLocale() const {
     return;
   }
 
+  // TODO(crbug.com/404130092): Remove g_browser_process usage.
+  const ApplicationLocaleStorage& application_locale_storage = CHECK_DEREF(
+      g_browser_process->GetFeatures()->application_locale_storage());
+
   std::string locale;
   std::string preferred_languages;
-  base::Value::Dict extras;
   // Chrome OS locale may contain only the language part (e.g. fr) but country
   // code (e.g. fr_FR).  Since Android expects locale to contain country code,
   // ARC will derive a likely locale with country code from such
-  GetLocaleAndPreferredLanguages(profile_, &locale, &preferred_languages);
+  GetLocaleAndPreferredLanguages(application_locale_storage, profile_, &locale,
+                                 &preferred_languages);
+
+  base::Value::Dict extras;
   extras.Set("locale", locale);
   extras.Set("preferredLanguages", preferred_languages);
   SendSettingsBroadcast("org.chromium.arc.intent_helper.SET_LOCALE", extras);

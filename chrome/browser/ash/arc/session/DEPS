@@ -34,6 +34,7 @@ include_rules = [
   "+chrome/browser/consent_auditor",
   "+chrome/browser/extensions/api/tabs",
   "+chrome/browser/extensions/extension_tab_util.h",
+  "+chrome/browser/global_features.h",
   "+chrome/browser/lifetime",
   "+chrome/browser/net",
   "+chrome/browser/notifications",

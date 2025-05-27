@@ -42,6 +42,7 @@ static_library("session") {
     "//base",
     "//chrome/app/vector_icons",
     "//chrome/browser:browser_process",
+    "//chrome/browser:global_features",
     "//chrome/browser/ash/app_list/arc",
     "//chrome/browser/ash/apps",
     "//chrome/browser/ash/arc:arc_util",
