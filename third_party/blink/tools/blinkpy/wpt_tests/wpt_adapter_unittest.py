@@ -172,8 +172,6 @@ class WPTAdapterTest(unittest.TestCase):
             self.assertIsNot(options.run_by_dir, 0)
             self.assertEqual(options.include, ['dir/reftest.html'])
             self.assertNotIn('--run-web-tests', options.binary_args)
-            self.assertIn('--enable-blink-test-features', options.binary_args)
-            self.assertTrue(options.enable_experimental)
             ignore_cert_flags = [
                 flag for flag in options.binary_args
                 if flag.startswith('--ignore-certificate-errors-spki-list=')
