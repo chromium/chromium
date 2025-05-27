@@ -74,6 +74,7 @@ public final class AutofillSaveCardBottomSheetBridgeTest {
     private void requestShowContent() {
         mBridge.requestShowContent(
                 new AutofillSaveCardUiInfo.Builder()
+                        .withLogoIconDescription("")
                         .withCardDetail(new CardDetail(/* iconId= */ 0, "label", "subLabel"))
                         .withCardDescription("Card description")
                         .withLegalMessageLines(Collections.EMPTY_LIST)

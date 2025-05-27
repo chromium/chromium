@@ -80,6 +80,9 @@ public class AutofillSaveCardBottomSheetCoordinator {
                                 AutofillSaveCardBottomSheetProperties.LOGO_ICON,
                                 uiInfo.isForUpload() ? uiInfo.getLogoIcon() : 0)
                         .with(
+                                AutofillSaveCardBottomSheetProperties.LOGO_ICON_DESCRIPTION,
+                                uiInfo.getLogoIconDescription())
+                        .with(
                                 AutofillSaveCardBottomSheetProperties.CARD_DESCRIPTION,
                                 uiInfo.getCardDescription())
                         .with(

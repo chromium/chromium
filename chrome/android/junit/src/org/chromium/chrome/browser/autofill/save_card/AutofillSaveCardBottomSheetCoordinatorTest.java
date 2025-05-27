@@ -92,6 +92,11 @@ public final class AutofillSaveCardBottomSheetCoordinatorTest {
                         .getPropertyModelForTesting()
                         .get(AutofillSaveCardBottomSheetProperties.LOGO_ICON));
         assertEquals(
+                uiInfoForTest().getLogoIconDescription(),
+                mCoordinator
+                        .getPropertyModelForTesting()
+                        .get(AutofillSaveCardBottomSheetProperties.LOGO_ICON_DESCRIPTION));
+        assertEquals(
                 uiInfoForTest().getCardDescription(),
                 mCoordinator
                         .getPropertyModelForTesting()
@@ -190,6 +195,7 @@ public final class AutofillSaveCardBottomSheetCoordinatorTest {
                                 .withDescriptionText("Description text.")
                                 .withIsForUpload(false)
                                 .withLogoIcon(TEST_DRAWABLE_RES)
+                                .withLogoIconDescription("Logo icon description")
                                 .withCardDetail(
                                         new CardDetail(
                                                 TEST_DRAWABLE_RES, "Card label", "Card sub label"))
@@ -274,6 +280,7 @@ public final class AutofillSaveCardBottomSheetCoordinatorTest {
                 .withDescriptionText("Description text.")
                 .withIsForUpload(true)
                 .withLogoIcon(TEST_DRAWABLE_RES)
+                .withLogoIconDescription("Logo icon description")
                 .withCardDetail(new CardDetail(TEST_DRAWABLE_RES, "Card label", "Card sub label"))
                 .withLegalMessageLines(List.of(new LegalMessageLine("Legal message line")))
                 .withConfirmText("Confirm text")

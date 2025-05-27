@@ -135,6 +135,26 @@ public class AutofillSaveCardBottomSheetViewBinderTest {
 
     @Test
     @SmallTest
+    public void testLogoIconDescription() {
+        bind(mModelBuilder.with(AutofillSaveCardBottomSheetProperties.LOGO_ICON_DESCRIPTION, ""));
+        assertEquals(
+                View.IMPORTANT_FOR_ACCESSIBILITY_NO,
+                mView.mLogoIcon.getImportantForAccessibility());
+        assertThat(String.valueOf(mView.mLogoIcon.getContentDescription()), isEmptyString());
+
+        String descriptionText = "Logo Icon";
+        bind(
+                mModelBuilder.with(
+                        AutofillSaveCardBottomSheetProperties.LOGO_ICON_DESCRIPTION,
+                        descriptionText));
+        assertEquals(
+                View.IMPORTANT_FOR_ACCESSIBILITY_YES,
+                mView.mLogoIcon.getImportantForAccessibility());
+        assertEquals(descriptionText, String.valueOf(mView.mLogoIcon.getContentDescription()));
+    }
+
+    @Test
+    @SmallTest
     public void testCard() {
         assertEquals(R.id.autofill_credit_card_chip, mView.mCardView.getId());
     }
