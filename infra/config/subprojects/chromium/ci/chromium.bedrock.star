@@ -25,7 +25,7 @@ ci.builder(
     description_html = "This builder collects browser metrics for project bedrock.",
     executable = "recipe:chromium_bedrock/browser_metrics",
     # TODO: jwata - trigger builds routinely once works fine.
-    schedule = "triggered",
+    schedule = "0 0 1 1 *",
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
