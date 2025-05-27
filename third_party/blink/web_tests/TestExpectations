@@ -8927,9 +8927,6 @@ crbug.com/359319433 [ Mac ] external/wpt/secure-payment-confirmation/authenticat
 crbug.com/359319433 [ Mac ] external/wpt/secure-payment-confirmation/enrollment-in-iframe.sub.https.html [ Failure Pass Skip ]
 crbug.com/359319433 [ Mac ] external/wpt/secure-payment-confirmation/enrollment.https.html [ Failure Pass Skip ]
 
-# Gardener 2024-08-11
-crbug.com/358504673 [ Win ] http/tests/devtools/oopif/oopif-elements-navigate-out.js [ Failure ]
-
 # Gardener 2024-08-13
 crbug.com/358437652 [ Linux ] external/wpt/dom/events/scrolling/wheel-event-transactions-multiple-action-chains.html [ Failure ]
 crbug.com/358437652 [ Mac ] external/wpt/dom/events/scrolling/wheel-event-transactions-multiple-action-chains.html [ Failure ]
