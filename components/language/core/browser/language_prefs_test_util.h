@@ -6,6 +6,7 @@
 #define COMPONENTS_LANGUAGE_CORE_BROWSER_LANGUAGE_PREFS_TEST_UTIL_H_
 
 #include <string>
+#include <vector>
 
 #include "base/memory/raw_ptr.h"
 
