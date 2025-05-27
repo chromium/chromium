@@ -70,6 +70,7 @@ TabMetadata::TabOrigin GetTabOriginFromLaunchType(int type) {
     case TabModel::TabLaunchType::FROM_SYNC_BACKGROUND:
     case TabModel::TabLaunchType::FROM_COLLABORATION_BACKGROUND_IN_GROUP:
     case TabModel::TabLaunchType::FROM_REPARENTING_BACKGROUND:
+    case TabModel::TabLaunchType::FROM_TAB_LIST_INTERFACE:
       return TabMetadata::TabOrigin::kOpenedWithoutUserAction;
 
     case TabModel::TabLaunchType::SIZE:

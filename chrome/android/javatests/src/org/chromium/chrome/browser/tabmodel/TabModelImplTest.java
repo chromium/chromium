@@ -220,9 +220,9 @@ public class TabModelImplTest {
                     tabModel.openTabProgrammatically(url, 0);
                     assertEquals(2, tabModel.getCount());
 
-                    Tab tab1 = tabModel.getTabAt(1);
-                    assertNotNull(tab1);
-                    assertEquals(url, tab1.getUrl());
+                    Tab tab = tabModel.getTabAt(0);
+                    assertNotNull(tab);
+                    assertEquals(url, tab.getUrl());
                 });
     }
 }

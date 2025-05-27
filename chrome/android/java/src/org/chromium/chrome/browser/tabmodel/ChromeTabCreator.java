@@ -150,6 +150,8 @@ public class ChromeTabCreator extends TabCreator
                 return "HistoryNavigationBackground";
             case TabLaunchType.FROM_LONGPRESS_FOREGROUND_IN_GROUP:
                 return "LongpressForegroundInGroup";
+            case TabLaunchType.FROM_TAB_LIST_INTERFACE:
+                return "TabListInterface";
             default:
                 assert false : "Unexpected serialization of tabLaunchType: " + tabLaunchType;
                 return "TypeUnknown";
@@ -711,6 +713,7 @@ public class ChromeTabCreator extends TabCreator
             case TabLaunchType.FROM_HISTORY_NAVIGATION_BACKGROUND:
             case TabLaunchType.FROM_REPARENTING_BACKGROUND:
             case TabLaunchType.FROM_SPECULATIVE_BACKGROUND_CREATION:
+            case TabLaunchType.FROM_TAB_LIST_INTERFACE:
                 // On low end devices tabs are backgrounded in a frozen state, so we set the
                 // transition type to RELOAD to avoid handling intents when the tab is foregrounded.
                 // (https://crbug.com/758027)
