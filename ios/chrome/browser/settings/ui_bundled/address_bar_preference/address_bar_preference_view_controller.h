@@ -10,6 +10,17 @@
 #import "ios/chrome/browser/settings/ui_bundled/settings_root_table_view_controller.h"
 
 @protocol AddressBarPreferenceServiceDelegate;
+@class AddressBarPreferenceViewController;
+
+// Delegate for the presentation events related to
+// `AddressBarPreferenceViewController`.
+@protocol AddressBarPreferenceViewControllerPresentationDelegate
+
+// Called when the view controller is removed from its parent.
+- (void)addressBarPreferenceViewControllerWasRemoved:
+    (AddressBarPreferenceViewController*)controller;
+
+@end
 
 // This class is the view controller for the address bar preference setting.
 @interface AddressBarPreferenceViewController
@@ -18,6 +29,10 @@
 
 @property(nonatomic, weak) id<AddressBarPreferenceServiceDelegate>
     prefServiceDelegate;
+
+@property(nonatomic, weak)
+    id<AddressBarPreferenceViewControllerPresentationDelegate>
+        presentationDelegate;
 
 @end
 

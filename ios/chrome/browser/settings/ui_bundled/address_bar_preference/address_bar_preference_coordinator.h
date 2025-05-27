@@ -7,10 +7,21 @@
 
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
 
+@class AddressBarPreferenceCoordinator;
 class Browser;
+
+@protocol AddressBarPreferenceCoordinatorDelegate
+
+// Called when the view controller is removed from navigation controller.
+- (void)addressBarPreferenceCoordinatorViewControllerWasRemoved:
+    (AddressBarPreferenceCoordinator*)coordinator;
+
+@end
 
 // This class is the coordinator for the address bar setting.
 @interface AddressBarPreferenceCoordinator : ChromeCoordinator
+
+@property(nonatomic, weak) id<AddressBarPreferenceCoordinatorDelegate> delegate;
 
 // Designated initializer.
 - (instancetype)initWithBaseNavigationController:

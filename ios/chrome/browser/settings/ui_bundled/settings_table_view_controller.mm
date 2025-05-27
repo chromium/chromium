@@ -188,6 +188,7 @@ struct EnhancedSafeBrowsingActivePromoData
 #pragma mark - SettingsTableViewController
 
 @interface SettingsTableViewController () <
+    AddressBarPreferenceCoordinatorDelegate,
     BooleanObserver,
     DiscoverFeedVisibilityObserver,
     DownloadsSettingsCoordinatorDelegate,
@@ -1497,6 +1498,7 @@ struct EnhancedSafeBrowsingActivePromoData
   _addressBarPreferenceCoordinator = [[AddressBarPreferenceCoordinator alloc]
       initWithBaseNavigationController:self.navigationController
                                browser:_browser];
+  _addressBarPreferenceCoordinator.delegate = self;
   [_addressBarPreferenceCoordinator start];
 }
 
@@ -2067,6 +2069,7 @@ struct EnhancedSafeBrowsingActivePromoData
   _tabsCoordinator = nil;
 
   [_addressBarPreferenceCoordinator stop];
+  _addressBarPreferenceCoordinator.delegate = nil;
   _addressBarPreferenceCoordinator = nil;
 
   [_downloadsSettingsCoordinator stop];
@@ -2140,6 +2143,17 @@ struct EnhancedSafeBrowsingActivePromoData
             ios::TemplateURLServiceFactory::GetForProfile(_profile)));
     [self reconfigureCellsForItems:@[ _defaultSearchEngineItem ]];
   }
+}
+
+#pragma mark - AddressBarPreferenceCoordinatorDelegate
+
+- (void)addressBarPreferenceCoordinatorViewControllerWasRemoved:
+    (AddressBarPreferenceCoordinator*)coordinator {
+  CHECK_EQ(_addressBarPreferenceCoordinator, coordinator,
+           base::NotFatalUntil::M139);
+  [_addressBarPreferenceCoordinator stop];
+  _addressBarPreferenceCoordinator.delegate = nil;
+  _addressBarPreferenceCoordinator = nil;
 }
 
 #pragma mark - BooleanObserver
