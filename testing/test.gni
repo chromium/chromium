@@ -320,6 +320,12 @@ template("mixed_test") {
           write_runtime_deps = "$root_build_dir/${_fuzzer_name}.runtime_deps"
         }
       }
+    } else {
+      not_needed([
+                   "_common_fuzzer_args",
+                   "_fuzzer_binary_name",
+                   "_fuzztest_target_name",
+                 ])
     }
   }
 }
