@@ -389,6 +389,8 @@ Version: 4.0.0
 License: MIT
 Security Critical: no
 Shipped: no
+Mitigated: CVE-2022-37620
+CVE-2022-37620: See "Local modifications" below for more context.
 
 Description:
 HTMLMinifier is a highly configurable, well-tested, JavaScript-based HTML
@@ -398,8 +400,16 @@ html-minifier itself is only used during build time. It does affect the contents
 of shipped HTML files though.
 
 Local Modifications:
-Removed uglify-js dependency since we don't plan to use the --minify-js flag in
-Chromium.
+ - Removed uglify-js dependency since we don't plan to use the --minify-js flag
+   in Chromium.
+ - Applied local patch patches/html_minifier2.patch to address vulnerability,
+   see https://osv.dev/vulnerability/GHSA-pfq8-rq6v-vf5m and
+   https://github.com/kangax/html-minifier/issues/1135. The local patch
+   completely removes the affected code, making it impossible to trigger it from
+   client code, since there is no later version with the vulnerability fixed
+   provided by the tool's authors. The tool should eventually be replaced with a
+   more modern tool as part of crbug.com/40943411.
+
 
 -------------------- DEPENDENCY DIVIDER --------------------
 
