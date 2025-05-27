@@ -27,6 +27,7 @@
 #include "base/path_service.h"
 #include "base/rand_util.h"
 #include "base/run_loop.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -895,12 +896,16 @@ void BrowserTestBase::ProxyRunTestOnMainThreadLoop() {
         auto* test = ::testing::UnitTest::GetInstance()->current_test_info();
         // This might be nullptr in a fuzz test or something else without gtest.
         if (test) {
-          TRACE_EVENT("test", "RunTestOnMainThread", "test_name",
-                      test->test_suite_name() + std::string(".") + test->name(),
-                      "file", test->file(), "line", test->line());
+          TRACE_EVENT_BEGIN(
+              "test", "RunTestOnMainThread", "test_name",
+              base::StrCat({test->test_suite_name(), ".", test->name()}),
+              "file", test->file(), "line", test->line());
         }
         base::ScopedDisallowBlocking disallow_blocking;
         RunTestOnMainThread();
+        if (test) {
+          TRACE_EVENT_END("test");
+        }
       }
     }
 
