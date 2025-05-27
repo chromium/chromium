@@ -9,7 +9,7 @@
 #include "base/not_fatal_until.h"
 
 void OnlyNotFatalUntil() {
-  CHECK(base::NotFatalUntil::M130);  // expected-error {{value of type 'base::NotFatalUntil' is not contextually convertible to 'bool'}}
+  CHECK(base::NotFatalUntil::NoSpecifiedMilestoneInternal);  // expected-error {{value of type 'base::NotFatalUntil' is not contextually convertible to 'bool'}}
 }
 
 void NotFatalUntilAsInt() {
