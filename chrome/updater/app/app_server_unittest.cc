@@ -26,12 +26,11 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-using testing::Invoke;
-using testing::Return;
-
 namespace updater {
-
 namespace {
+
+using ::testing::Invoke;
+using ::testing::Return;
 
 class AppServerTest : public AppServer {
  public:

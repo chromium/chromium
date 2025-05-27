@@ -23,10 +23,10 @@
 #include "components/update_client/update_client_errors.h"
 #include "content/public/browser/browser_thread.h"
 
-using on_device_translation::LanguagePackKey;
-
 namespace component_updater {
 namespace {
+
+using ::on_device_translation::LanguagePackKey;
 
 // The manifest name prefix of the TranslateKit language pack component.
 constexpr char kTranslateKitLanguagePackManifestNamePrefix[] =

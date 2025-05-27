@@ -58,12 +58,12 @@ scoped_refptr<winhttp::ProxyConfiguration> GetProxyConfiguration(
 class NetworkFetcher : public update_client::NetworkFetcher {
  public:
   using ResponseStartedCallback =
-      update_client::NetworkFetcher::ResponseStartedCallback;
-  using ProgressCallback = update_client::NetworkFetcher::ProgressCallback;
+      ::update_client::NetworkFetcher::ResponseStartedCallback;
+  using ProgressCallback = ::update_client::NetworkFetcher::ProgressCallback;
   using PostRequestCompleteCallback =
-      update_client::NetworkFetcher::PostRequestCompleteCallback;
+      ::update_client::NetworkFetcher::PostRequestCompleteCallback;
   using DownloadToFileCompleteCallback =
-      update_client::NetworkFetcher::DownloadToFileCompleteCallback;
+      ::update_client::NetworkFetcher::DownloadToFileCompleteCallback;
 
   NetworkFetcher(scoped_refptr<winhttp::SharedHInternet> session_handle,
                  scoped_refptr<winhttp::ProxyConfiguration> proxy_config);

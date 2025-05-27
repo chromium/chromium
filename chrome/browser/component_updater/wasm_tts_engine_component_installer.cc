@@ -15,8 +15,6 @@
 #include "ui/accessibility/accessibility_features.h"
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
-using component_updater::ComponentUpdateService;
-
 namespace {
 
 const base::FilePath::CharType kManifestFileName[] =

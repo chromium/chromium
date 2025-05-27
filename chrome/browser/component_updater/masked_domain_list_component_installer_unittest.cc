@@ -42,7 +42,6 @@ constexpr char kFlatbufferBuildTimeHistogram[] =
 constexpr char kMdlSizeHistogram[] = "NetworkService.MaskedDomainList.Size2";
 constexpr char kDiskUsageHistogram[] =
     "NetworkService.MaskedDomainList.DiskUsage";
-
 }  // namespace
 
 class MaskedDomainListComponentInstallerTest : public ::testing::Test {

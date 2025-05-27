@@ -34,10 +34,12 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-using Configurator = update_client::Configurator;
-using Result = update_client::CrxInstaller::Result;
-using TestConfigurator = update_client::TestConfigurator;
-using UpdateClient = update_client::UpdateClient;
+namespace component_updater {
+
+using Configurator = ::update_client::Configurator;
+using Result = ::update_client::CrxInstaller::Result;
+using TestConfigurator = ::update_client::TestConfigurator;
+using UpdateClient = ::update_client::UpdateClient;
 
 using ::testing::_;
 using ::testing::AnyNumber;
@@ -45,8 +47,6 @@ using ::testing::Invoke;
 using ::testing::Mock;
 using ::testing::Return;
 using ::testing::Unused;
-
-namespace component_updater {
 
 class MockInstaller : public update_client::CrxInstaller {
  public:
@@ -384,7 +384,7 @@ TEST_F(ComponentUpdaterTest, OnDemandUpdate) {
   EXPECT_CALL(scheduler(), Stop());
 
   {
-    using update_client::jebg_hash;
+    using ::update_client::jebg_hash;
     std::vector<uint8_t> hash;
     hash.assign(std::begin(jebg_hash), std::end(jebg_hash));
     EXPECT_TRUE(cus.RegisterComponent(ComponentRegistration(
@@ -398,7 +398,7 @@ TEST_F(ComponentUpdaterTest, OnDemandUpdate) {
         /*allow_updates=*/true)));
   }
   {
-    using update_client::abag_hash;
+    using ::update_client::abag_hash;
     std::vector<uint8_t> hash;
     hash.assign(std::begin(abag_hash), std::end(abag_hash));
     EXPECT_TRUE(cus.RegisterComponent(ComponentRegistration(
@@ -436,7 +436,7 @@ TEST_F(ComponentUpdaterTest, MaybeThrottle) {
   // Don't run periodic update task.
   ON_CALL(scheduler(), Schedule(_, _, _, _)).WillByDefault(Return());
 
-  using update_client::jebg_hash;
+  using ::update_client::jebg_hash;
   std::vector<uint8_t> hash;
   hash.assign(std::begin(jebg_hash), std::end(jebg_hash));
 
@@ -471,7 +471,7 @@ TEST_F(ComponentUpdaterTest, ComponentDetails) {
   const std::string id = "abagagagagagagagagagagagagagagag";
   const std::string name = "test_name";
 
-  using update_client::abag_hash;
+  using ::update_client::abag_hash;
   std::vector<uint8_t> hash;
   hash.assign(std::begin(abag_hash), std::end(abag_hash));
 
@@ -509,7 +509,7 @@ TEST_F(ComponentUpdaterTest, UpdatesDisabled) {
   const std::string id = "abagagagagagagagagagagagagagagag";
   const std::string name = "test_name";
 
-  using update_client::abag_hash;
+  using ::update_client::abag_hash;
   std::vector<uint8_t> hash;
   hash.assign(std::begin(abag_hash), std::end(abag_hash));
 

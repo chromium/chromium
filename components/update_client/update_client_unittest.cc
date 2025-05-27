@@ -534,8 +534,6 @@ class MockUpdateCheckerAlwaysFails : public UpdateChecker {
   }
 };
 
-}  // namespace
-
 using ::testing::_;
 using ::testing::AnyNumber;
 using ::testing::AtLeast;
@@ -545,6 +543,8 @@ using ::testing::Mock;
 using ::testing::Return;
 using ::testing::Truly;
 using ::testing::Unused;
+
+}  // namespace
 
 class MockPingManagerImpl : public PingManager {
  public:

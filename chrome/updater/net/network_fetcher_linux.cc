@@ -50,12 +50,12 @@ using CurlUniquePtr = std::unique_ptr<CURL, CurlDeleter>;
 class LibcurlNetworkFetcherImpl {
  public:
   using ResponseStartedCallback =
-      update_client::NetworkFetcher::ResponseStartedCallback;
-  using ProgressCallback = update_client::NetworkFetcher::ProgressCallback;
+      ::update_client::NetworkFetcher::ResponseStartedCallback;
+  using ProgressCallback = ::update_client::NetworkFetcher::ProgressCallback;
   using PostRequestCompleteCallback =
-      update_client::NetworkFetcher::PostRequestCompleteCallback;
+      ::update_client::NetworkFetcher::PostRequestCompleteCallback;
   using DownloadToFileCompleteCallback =
-      update_client::NetworkFetcher::DownloadToFileCompleteCallback;
+      ::update_client::NetworkFetcher::DownloadToFileCompleteCallback;
 
   LibcurlNetworkFetcherImpl() = delete;
   LibcurlNetworkFetcherImpl(const LibcurlNetworkFetcherImpl&) = delete;
@@ -396,12 +396,12 @@ int LibcurlNetworkFetcherImpl::CurlTransferCallback(void* userp,
 class LibcurlNetworkFetcher : public update_client::NetworkFetcher {
  public:
   using ResponseStartedCallback =
-      update_client::NetworkFetcher::ResponseStartedCallback;
-  using ProgressCallback = update_client::NetworkFetcher::ProgressCallback;
+      ::update_client::NetworkFetcher::ResponseStartedCallback;
+  using ProgressCallback = ::update_client::NetworkFetcher::ProgressCallback;
   using PostRequestCompleteCallback =
-      update_client::NetworkFetcher::PostRequestCompleteCallback;
+      ::update_client::NetworkFetcher::PostRequestCompleteCallback;
   using DownloadToFileCompleteCallback =
-      update_client::NetworkFetcher::DownloadToFileCompleteCallback;
+      ::update_client::NetworkFetcher::DownloadToFileCompleteCallback;
 
   LibcurlNetworkFetcher() = delete;
   LibcurlNetworkFetcher(const LibcurlNetworkFetcher&) = delete;

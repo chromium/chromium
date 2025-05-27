@@ -34,7 +34,7 @@ constexpr char kTestCompressedVerifiedContents[] =
 
 namespace crx_file {
 
-using CrxCreatorTest = testing::Test;
+using CrxCreatorTest = ::testing::Test;
 
 TEST_F(CrxCreatorTest, Create) {
   // Set up a signing key.

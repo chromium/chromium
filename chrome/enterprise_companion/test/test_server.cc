@@ -24,9 +24,9 @@
 
 namespace enterprise_companion {
 
-using HttpRequest = net::test_server::HttpRequest;
-using HttpResponse = net::test_server::HttpResponse;
-using QueryParams = base::flat_map<std::string, std::string>;
+using HttpRequest = ::net::test_server::HttpRequest;
+using HttpResponse = ::net::test_server::HttpResponse;
+using QueryParams = ::base::flat_map<std::string, std::string>;
 
 TestServer::TestServer() {
   test_server_->RegisterRequestHandler(

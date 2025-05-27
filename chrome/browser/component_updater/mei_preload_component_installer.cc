@@ -23,8 +23,6 @@
 #include "components/component_updater/component_updater_paths.h"
 #include "media/base/media_switches.h"
 
-using component_updater::ComponentUpdateService;
-
 namespace {
 
 constexpr base::FilePath::CharType kMediaEngagementPreloadBinaryPbFileName[] =

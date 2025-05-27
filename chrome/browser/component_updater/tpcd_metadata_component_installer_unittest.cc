@@ -14,9 +14,7 @@
 
 namespace component_updater {
 
-namespace {
 using ::testing::_;
-}  // namespace
 
 class TpcdMetadataComponentInstallerTest : public ::testing::Test {
  protected:

@@ -48,9 +48,9 @@
 #include "base/mac/scoped_authorizationref.h"
 #endif
 
-using content::BrowserThread;
-
 namespace component_updater {
+
+using ::content::BrowserThread;
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)

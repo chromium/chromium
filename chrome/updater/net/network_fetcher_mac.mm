@@ -49,12 +49,12 @@
 #include "url/gurl.h"
 
 using ResponseStartedCallback =
-    update_client::NetworkFetcher::ResponseStartedCallback;
-using ProgressCallback = update_client::NetworkFetcher::ProgressCallback;
+    ::update_client::NetworkFetcher::ResponseStartedCallback;
+using ProgressCallback = ::update_client::NetworkFetcher::ProgressCallback;
 using PostRequestCompleteCallback =
-    update_client::NetworkFetcher::PostRequestCompleteCallback;
+    ::update_client::NetworkFetcher::PostRequestCompleteCallback;
 using DownloadToFileCompleteCallback =
-    update_client::NetworkFetcher::DownloadToFileCompleteCallback;
+    ::update_client::NetworkFetcher::DownloadToFileCompleteCallback;
 
 @interface CRUUpdaterNetworkController : NSObject <NSURLSessionDelegate>
 - (instancetype)initWithResponseStartedCallback:

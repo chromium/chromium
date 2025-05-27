@@ -19,8 +19,6 @@
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/optimization_hints_component_update_listener.h"
 
-using component_updater::ComponentUpdateService;
-
 namespace component_updater {
 
 namespace {

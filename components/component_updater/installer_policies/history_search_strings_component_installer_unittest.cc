@@ -24,12 +24,8 @@
 
 namespace component_updater {
 
-namespace {
-
-using testing::_;
-using testing::Return;
-
-}  // namespace
+using ::testing::_;
+using ::testing::Return;
 
 class HistorySearchStringsComponentInstallerPolicyPublic
     : public HistorySearchStringsComponentInstallerPolicy {

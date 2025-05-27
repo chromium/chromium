@@ -22,11 +22,10 @@
 #include "components/component_updater/component_updater_paths.h"
 #include "net/cookies/cookie_util.h"
 
-using component_updater::ComponentUpdateService;
 
 namespace {
 
-using SetsReadyOnceCallback = component_updater::
+using SetsReadyOnceCallback = ::component_updater::
     FirstPartySetsComponentInstallerPolicy::SetsReadyOnceCallback;
 
 // The SHA256 of the SubjectPublicKeyInfo used to sign the component.

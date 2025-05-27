@@ -51,7 +51,7 @@ constexpr auto kEocd64 = std::to_array<uint8_t>({'P', 'K', 0x06, 0x07});
 
 using VerifierCollection =
     std::vector<std::unique_ptr<crypto::SignatureVerifier>>;
-using RepeatedProof = google::protobuf::RepeatedPtrField<AsymmetricKeyProof>;
+using RepeatedProof = ::google::protobuf::RepeatedPtrField<AsymmetricKeyProof>;
 
 std::optional<size_t> ReadAndHashBuffer(base::span<uint8_t> buffer,
                                         base::File* file,

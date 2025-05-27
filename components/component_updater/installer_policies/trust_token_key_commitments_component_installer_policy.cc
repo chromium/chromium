@@ -23,8 +23,6 @@
 #include "components/component_updater/component_updater_paths.h"
 #include "components/component_updater/component_updater_switches.h"
 
-using component_updater::ComponentUpdateService;
-
 namespace {
 
 // The SHA256 of the SubjectPublicKeyInfo used to sign the extension.

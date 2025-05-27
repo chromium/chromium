@@ -13,8 +13,6 @@
 #include "content/public/common/content_features.h"
 #include "net/base/features.h"
 
-using component_updater::ComponentUpdateService;
-
 namespace {
 
 base::TaskPriority GetTaskPriority() {

@@ -13,7 +13,7 @@
 
 #include "testing/gtest/include/gtest/gtest.h"
 
-using updater::StackString;
+using ::updater::StackString;
 
 namespace {
 class InstallerStringTest : public testing::Test {

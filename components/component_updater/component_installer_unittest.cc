@@ -49,16 +49,16 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-using Configurator = update_client::Configurator;
-using CrxUpdateItem = update_client::CrxUpdateItem;
-using TestConfigurator = update_client::TestConfigurator;
-using UpdateClient = update_client::UpdateClient;
+namespace component_updater {
+namespace {
+
+using Configurator = ::update_client::Configurator;
+using CrxUpdateItem = ::update_client::CrxUpdateItem;
+using TestConfigurator = ::update_client::TestConfigurator;
+using UpdateClient = ::update_client::UpdateClient;
 
 using ::testing::_;
 using ::testing::Invoke;
-
-namespace component_updater {
-namespace {
 
 // This hash corresponds to jebgalgnebhfojomionfpkfelancnnkf.crx.
 constexpr uint8_t kSha256Hash[] = {

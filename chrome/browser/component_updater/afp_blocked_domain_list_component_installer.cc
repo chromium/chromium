@@ -27,8 +27,6 @@
 #include "components/subresource_filter/content/shared/browser/ruleset_service.h"
 #include "components/subresource_filter/core/browser/subresource_filter_constants.h"
 
-using component_updater::ComponentUpdateService;
-
 namespace component_updater {
 
 // The SHA256 of the SubjectPublicKeyInfo used to sign the component.

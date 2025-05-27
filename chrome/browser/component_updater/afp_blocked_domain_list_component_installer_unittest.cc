@@ -36,7 +36,7 @@ using ::testing::_;
 constexpr char kTestRulesetVersion[] = "1.2.3.4";
 constexpr int kInvalidRulesetFormat = 0;
 
-class TestRulesetService : public subresource_filter::RulesetService {
+class TestRulesetService : public ::subresource_filter::RulesetService {
  public:
   TestRulesetService(
       PrefService* local_state,
@@ -56,7 +56,7 @@ class TestRulesetService : public subresource_filter::RulesetService {
   TestRulesetService(const TestRulesetService&) = delete;
   TestRulesetService& operator=(const TestRulesetService&) = delete;
 
-  using UnindexedRulesetInfo = subresource_filter::UnindexedRulesetInfo;
+  using UnindexedRulesetInfo = ::subresource_filter::UnindexedRulesetInfo;
   void IndexAndStoreAndPublishRulesetIfNeeded(
       const UnindexedRulesetInfo& unindexed_ruleset_info) override {
     unindexed_ruleset_info_ = unindexed_ruleset_info;

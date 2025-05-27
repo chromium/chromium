@@ -12,10 +12,10 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+namespace component_updater {
+
 using ::testing::_;
 using ::testing::StrictMock;
-
-namespace component_updater {
 
 class MockRealTimeUrlChecksAllowlist
     : public safe_browsing::RealTimeUrlChecksAllowlist {

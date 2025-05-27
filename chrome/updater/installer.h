@@ -48,9 +48,9 @@ struct AppInfo {
   base::FilePath ecp;
 };
 
-using InstallProgressCallback = update_client::CrxInstaller::ProgressCallback;
+using InstallProgressCallback = ::update_client::CrxInstaller::ProgressCallback;
 
-using InstallerResult = update_client::CrxInstaller::Result;
+using InstallerResult = ::update_client::CrxInstaller::Result;
 
 // Runs an app installer.
 //   The file `server_install_data` contains additional application-specific

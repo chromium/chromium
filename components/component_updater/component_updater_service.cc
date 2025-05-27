@@ -41,10 +41,10 @@
 #include "components/update_client/utils.h"
 #include "url/gurl.h"
 
-using CrxInstaller = update_client::CrxInstaller;
-using UpdateClient = update_client::UpdateClient;
-
 namespace {
+
+using CrxInstaller = ::update_client::CrxInstaller;
+using UpdateClient = ::update_client::UpdateClient;
 
 enum UpdateType {
   UPDATE_TYPE_MANUAL = 0,

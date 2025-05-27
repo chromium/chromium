@@ -19,8 +19,6 @@
 #include "mojo/public/cpp/base/proto_wrapper_passkeys.h"
 #include "services/network/public/cpp/features.h"
 
-using component_updater::ComponentUpdateService;
-
 namespace {
 
 using ListReadyRepeatingCallback = component_updater::

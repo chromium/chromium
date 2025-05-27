@@ -22,8 +22,6 @@
 #include "components/tpcd/metadata/browser/parser.h"
 #include "net/base/features.h"
 
-using component_updater::ComponentUpdateService;
-
 namespace {
 // This is similar to the display name at http://omaharelease/1915488/settings
 // and
