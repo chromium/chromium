@@ -19992,6 +19992,24 @@
             ]
         }
     ],
+    "ReportNotificationContentDetectionDataAndroid": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "ReportNotificationContentDetectionDataRate": "100"
+                    },
+                    "enable_features": [
+                        "ReportNotificationContentDetectionData"
+                    ]
+                }
+            ]
+        }
+    ],
     "ReportingEventsForAndroid": [
         {
             "platforms": [

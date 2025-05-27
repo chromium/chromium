@@ -143,9 +143,8 @@ public class NotificationContentDetectionManager {
                                                     notificationOrigin,
                                                     SchemeDisplay.OMIT_HTTP_AND_HTTPS)))
                             .setSmallIconId(
-                                    ChromeFeatureList.isEnabled(
-                                                    ChromeFeatureList
-                                                            .REPORT_NOTIFICATION_CONTENT_DETECTION_DATA)
+                                    ChromeFeatureList.sReportNotificationContentDetectionData
+                                                    .isEnabled()
                                             ? R.drawable.ic_warning_red_24dp
                                             : R.drawable.report_octagon)
                             .setTicker(tickerText)
@@ -154,8 +153,7 @@ public class NotificationContentDetectionManager {
                             .setOrigin(
                                     UrlFormatter.formatUrlForSecurityDisplay(
                                             origin, SchemeDisplay.OMIT_HTTP_AND_HTTPS));
-            if (ChromeFeatureList.isEnabled(
-                    ChromeFeatureList.REPORT_NOTIFICATION_CONTENT_DETECTION_DATA)) {
+            if (ChromeFeatureList.sReportNotificationContentDetectionData.isEnabled()) {
                 // Don't show default icon on warning notification.
                 notificationBuilder.setSuppressShowingLargeIcon(true);
             }
@@ -374,8 +372,7 @@ public class NotificationContentDetectionManager {
     }
 
     static boolean shouldAllowReportingSpam(Bundle extras) {
-        if (ChromeFeatureList.isEnabled(
-                        ChromeFeatureList.REPORT_NOTIFICATION_CONTENT_DETECTION_DATA)
+        if (ChromeFeatureList.sReportNotificationContentDetectionData.isEnabled()
                 && extras.containsKey(
                         NotificationConstants
                                 .EXTRA_ALLOW_REPORTING_AS_SPAM_IS_NOTIFICATION_WARNED)) {
