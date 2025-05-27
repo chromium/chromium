@@ -1,0 +1,26 @@
+This is a testharness.js-based test.
+Found 11 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] https-private to http-local: success.
+  assert_equals: error expected (undefined) undefined but got (string) "TypeError: Failed to fetch"
+[FAIL] https-private to http-local: PUT success.
+  assert_equals: error expected (undefined) undefined but got (string) "TypeError: Failed to fetch"
+[FAIL] https-private to http-local: no-cors success.
+  assert_equals: error expected (undefined) undefined but got (string) "TypeError: Failed to fetch"
+[FAIL] https-public to http-local: success.
+  assert_equals: error expected (undefined) undefined but got (string) "TypeError: Failed to fetch"
+[FAIL] https-public to http-local: PUT success.
+  assert_equals: error expected (undefined) undefined but got (string) "TypeError: Failed to fetch"
+[FAIL] https-public to http-local: no-cors success.
+  assert_equals: error expected (undefined) undefined but got (string) "TypeError: Failed to fetch"
+[FAIL] https-public to http-private: success.
+  assert_equals: error expected (undefined) undefined but got (string) "TypeError: Failed to fetch"
+[FAIL] https-public to http-private: PUT success.
+  assert_equals: error expected (undefined) undefined but got (string) "TypeError: Failed to fetch"
+[FAIL] https-public to http-private: no-cors success.
+  assert_equals: error expected (undefined) undefined but got (string) "TypeError: Failed to fetch"
+[FAIL] https-treat-as-public to http-local: success.
+  assert_equals: error expected (undefined) undefined but got (string) "TypeError: Failed to fetch"
+[FAIL] https-treat-as-public to http-private: success.
+  assert_equals: error expected (undefined) undefined but got (string) "TypeError: Failed to fetch"
+Harness: the test ran to completion.
+

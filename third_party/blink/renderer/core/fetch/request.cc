@@ -588,16 +588,8 @@ Request* Request::CreateRequestWithRequestOrString(
   // - "Let |targetAddressSpace| be |init|'s targetAddressSpace member if it is
   // present, and |unknown| otherwise."
   if (init->hasTargetAddressSpace()) {
-    // 'private' is kept as an alias to 'local'; the previous PNA spec had
-    // 'private' for what LNA considers to be 'local'.
-    //
-    // TODO(crbug.com/418737577): Public names don't match
-    // network::mojom::IPAddressSpace enum yet. Finish rename by changing the
-    // enum.
-    if (init->targetAddressSpace() == "loopback") {
+    if (init->targetAddressSpace() == "local") {
       request->SetTargetAddressSpace(network::mojom::IPAddressSpace::kLocal);
-    } else if (init->targetAddressSpace() == "local") {
-      request->SetTargetAddressSpace(network::mojom::IPAddressSpace::kPrivate);
     } else if (init->targetAddressSpace() == "private") {
       UseCounter::Count(execution_context,
                         WebFeature::kLocalNetworkAccessPrivateAliasUse);
@@ -1191,9 +1183,9 @@ bool Request::keepalive() const {
 V8IPAddressSpace Request::targetAddressSpace() const {
   switch (request_->TargetAddressSpace()) {
     case network::mojom::IPAddressSpace::kLocal:
-      return V8IPAddressSpace(V8IPAddressSpace::Enum::kLoopback);
-    case network::mojom::IPAddressSpace::kPrivate:
       return V8IPAddressSpace(V8IPAddressSpace::Enum::kLocal);
+    case network::mojom::IPAddressSpace::kPrivate:
+      return V8IPAddressSpace(V8IPAddressSpace::Enum::kPrivate);
     case network::mojom::IPAddressSpace::kPublic:
       return V8IPAddressSpace(V8IPAddressSpace::Enum::kPublic);
     case network::mojom::IPAddressSpace::kUnknown:
