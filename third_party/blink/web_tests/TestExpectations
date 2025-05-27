@@ -2683,6 +2683,10 @@ crbug.com/395962971 [ Android ] external/wpt/webdriver/tests/classic/perform_act
 crbug.com/395962971 [ Android ] external/wpt/webdriver/tests/classic/perform_actions/pointer_mouse.py [ Skip Timeout ]
 crbug.com/395962971 [ Android ] external/wpt/webdriver/tests/classic/send_alert_text/send.py [ Skip Timeout ]
 crbug.com/395962971 [ Android ] external/wpt/webdriver/tests/classic/set_window_rect/user_prompts.py [ Failure ]
+crbug.com/395962971 [ Android ] external/wpt/webdriver/tests/bidi/browsing_context/handle_user_prompt/handle_user_prompt.py [ Skip Timeout ]
+crbug.com/395962971 [ Android ] external/wpt/webdriver/tests/bidi/browsing_context/set_viewport/invalid.py [ Skip Timeout ]
+crbug.com/395962971 [ Android ] external/wpt/webdriver/tests/bidi/input/perform_actions/pointer_mouse_modifier.py [ Skip Timeout ]
+crbug.com/395962971 [ Android ] external/wpt/webdriver/tests/bidi/input/perform_actions/pointer_touch.py [ Skip Timeout ]
 
 # ====== Test expectations added to unblock wpt-importer ======
 crbug.com/413633034 external/wpt/html/webappapis/scripting/event-loops/new-scroll-event-dispatched-at-next-updating-rendering-time.html [ Failure ]

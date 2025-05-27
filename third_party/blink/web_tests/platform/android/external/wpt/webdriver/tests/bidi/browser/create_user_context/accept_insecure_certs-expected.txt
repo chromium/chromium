@@ -1,9 +1,7 @@
 This is a wdspec test.
-[FAIL] test_reference_context[window]
-  asyncio.exceptions.CancelledError
-[FAIL] test_reference_context_with_no_user_context_set[tab]
+[FAIL] test_create_context[True]
   webdriver.bidi.error.UnknownErrorException: unknown error (Failed to create browser context.)
-[FAIL] test_reference_context_with_no_user_context_set[window]
+[FAIL] test_create_context[False]
   webdriver.bidi.error.UnknownErrorException: unknown error (Failed to create browser context.)
 Harness: the test ran to completion.
 
