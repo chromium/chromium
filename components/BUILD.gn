@@ -910,6 +910,7 @@ test("components_unittests") {
     "FilterDataTest.Matches",
     "OsRegistrationTest.Parses",
     "PrivacyMathTest.GetKCombinationAtIndexDoesNotCrash",
+    "PrivacyMathTest.GetNumStatesDoesNotCrash",
     "RegistrationInfoTest.Parses",
     "SourceRegistrationTest.Parses",
     "TriggerRegistrationTest.Parses",

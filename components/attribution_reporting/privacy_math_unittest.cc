@@ -22,7 +22,9 @@
 #include "base/types/expected_macros.h"
 #include "components/attribution_reporting/attribution_scopes_data.h"
 #include "components/attribution_reporting/attribution_scopes_set.h"
+#include "components/attribution_reporting/constants.h"
 #include "components/attribution_reporting/event_report_windows.h"
+#include "components/attribution_reporting/fuzz_utils.h"
 #include "components/attribution_reporting/max_event_level_reports.h"
 #include "components/attribution_reporting/source_type.mojom.h"
 #include "components/attribution_reporting/test_utils.h"
@@ -888,6 +890,20 @@ FUZZ_TEST(PrivacyMathTest, GetKCombinationAtIndexDoesNotCrash)
     .WithDomains(
         /*combination_index=*/fuzztest::Arbitrary<uint32_t>(),
         /*k=*/fuzztest::InRange<uint32_t>(0, 20));
+
+void GetNumStatesDoesNotCrash(
+    const int trigger_data_cardinality,
+    const int num_report_windows,
+    const MaxEventLevelReports max_event_level_reports) {
+  std::ignore = GetNumStates(
+      TriggerDataSetWithCardinality(trigger_data_cardinality),
+      EventReportWindowsWithCount(num_report_windows), max_event_level_reports);
+}
+
+FUZZ_TEST(PrivacyMathTest, GetNumStatesDoesNotCrash)
+    .WithDomains(fuzztest::InRange<int>(0, kMaxTriggerDataPerSource),
+                 fuzztest::InRange<int>(1, kMaxEventLevelReportWindows),
+                 AnyMaxEventLevelReports());
 
 }  // namespace
 }  // namespace attribution_reporting
