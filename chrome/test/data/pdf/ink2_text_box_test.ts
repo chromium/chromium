@@ -125,7 +125,23 @@ chrome.test.runTests([
     await microtasksFinished();
     chrome.test.assertFalse(textbox.hidden);
     chrome.test.assertTrue(isVisible(textbox));
-    assertPositionAndSize(textbox, '160px', '40px', '80px', '120px');
+    // Check both the textbox and inner <textarea> to confirm styling is set
+    // correctly. The <textarea> should have the size specified as its width
+    // and height style. The ink-text-box is positioned to account for padding
+    // and border offsets, and is larger to fit the padding inside.
+    // x: 10px UX padding + 2px border + 5px outer padding = 17px offset
+    // y: 8px UX padding + 2px border + 5px outer padding = 15px offset
+    // Outer padding is excluded in width and height computed style. So the
+    // width = 2 * x - 2 * outer padding = 24px + specified width
+    // height = 2 * y - 2 * outer padding = 20px + specified height
+    assertPositionAndSize(textbox, '184px', '60px', '63px', '105px');
+    chrome.test.assertEq(194, textbox.clientWidth);
+    chrome.test.assertEq(70, textbox.clientHeight);
+    assertPositionAndSize(textbox.$.textbox, '160px', '40px', 'auto', 'auto');
+    // Inner textarea has 5px inline padding and 3px vertical padding to match
+    // UX specified 10px and 8px total.
+    chrome.test.assertEq(170, textbox.$.textbox.clientWidth);
+    chrome.test.assertEq(46, textbox.$.textbox.clientHeight);
     chrome.test.assertEq('Sample Text', textbox.$.textbox.value);
 
     // Update to a 100x200 box at 400, 300 with existing "Hello World" text.
@@ -133,7 +149,12 @@ chrome.test.runTests([
     await microtasksFinished();
     chrome.test.assertFalse(textbox.hidden);
     chrome.test.assertTrue(isVisible(textbox));
-    assertPositionAndSize(textbox, '100px', '200px', '400px', '300px');
+    assertPositionAndSize(textbox, '124px', '220px', '383px', '285px');
+    chrome.test.assertEq(134, textbox.clientWidth);
+    chrome.test.assertEq(230, textbox.clientHeight);
+    assertPositionAndSize(textbox.$.textbox, '100px', '200px', 'auto', 'auto');
+    chrome.test.assertEq(110, textbox.$.textbox.clientWidth);
+    chrome.test.assertEq(206, textbox.$.textbox.clientHeight);
     chrome.test.assertEq('Hello World', textbox.$.textbox.value);
     chrome.test.succeed();
   },
@@ -216,87 +237,96 @@ chrome.test.runTests([
     await microtasksFinished();
     chrome.test.assertFalse(textbox.hidden);
     chrome.test.assertTrue(isVisible(textbox));
-    assertPositionAndSize(textbox, '100px', '200px', '400px', '300px');
+    assertPositionAndSize(textbox, '124px', '220px', '383px', '285px');
 
     // Drag the top left handle up and left to make the box 100px bigger in
     // each dimension.
     const topLeft = getRequiredElement(textbox, '.handle.top.left');
     await dragHandle(topLeft, -100, -100);
-    assertPositionAndSize(textbox, '200px', '300px', '300px', '200px');
+    assertPositionAndSize(textbox, '224px', '320px', '283px', '185px');
 
     // Try to drag the top left handle down and right to make the box too small.
     // It should clamp at the size needed to render the text box in the bottom
     // right corner (at 500, 500);
     await dragHandle(topLeft, 400, 400);
-    const clampedWidth = textbox.$.textbox.clientWidth;
-    const clampedHeight = textbox.$.textbox.clientHeight;
-    chrome.test.assertTrue(clampedHeight >= textbox.$.textbox.scrollHeight);
-    // Min width is 36px.
-    chrome.test.assertEq(36, clampedWidth);
-    const clampedTop = 500 - clampedHeight;
+    // Note these include padding.
+    const clampedTextareaWidth = textbox.$.textbox.clientWidth;
+    const clampedTextareaHeight = textbox.$.textbox.clientHeight;
+    // Inner border padding + border = 14px
+    const clampedHeight = clampedTextareaHeight + 14;
+    const clampedWidth = clampedTextareaWidth + 14;
+    chrome.test.assertTrue(
+        clampedTextareaHeight >= textbox.$.textbox.scrollHeight);
+    chrome.test.assertEq(34, clampedTextareaWidth);
+    // yCorner - textareaInnerHeight - yOffset
+    const clampedTop = 500 - (clampedTextareaHeight - 6) - 15;
+    // clampedLeft = 500 - 24 - 17
     assertPositionAndSize(
-        textbox, '36px', `${clampedHeight}px`, '464px', `${clampedTop}px`);
+        textbox, `${clampedWidth}px`, `${clampedHeight}px`, '459px',
+        `${clampedTop}px`);
 
     // Drag the top handle up and left to make the box 212px tall. Left
     // motion is ignored.
     const top = getRequiredElement(textbox, '.handle.top.center');
-    await dragHandle(top, -100, -212 + clampedHeight);
+    await dragHandle(top, -100, -212 + (clampedTextareaHeight - 6));
     // height 212, width the same, x same, y 288
-    assertPositionAndSize(textbox, '36px', '212px', '464px', '288px');
+    assertPositionAndSize(
+        textbox, `${clampedWidth}px`, '232px', '459px', '273px');
 
     // Drag the top right handle down and right to make the box 12px shorter
     // and 100px wide.
     const topRight = getRequiredElement(textbox, '.handle.top.right');
-    await dragHandle(topRight, 64, 12);
-    assertPositionAndSize(textbox, '100px', '200px', '464px', '300px');
+    await dragHandle(topRight, 76, 12);
+    assertPositionAndSize(textbox, '124px', '220px', '459px', '285px');
 
     // Drag the left handle right and up. Upward motion is ignored. Left motion
     // makes the box 40px narrower.
     const left = getRequiredElement(textbox, '.handle.left.center');
     await dragHandle(left, 40, -200);
-    assertPositionAndSize(textbox, '60px', '200px', '504px', '300px');
+    assertPositionAndSize(textbox, '84px', '220px', '499px', '285px');
 
     // Drag the right handle right and down. Downward motion is ignored. Right
     // motion makes the box 100px wider.
     const right = getRequiredElement(textbox, '.handle.right.center');
     await dragHandle(right, 100, 100);
-    assertPositionAndSize(textbox, '160px', '200px', '504px', '300px');
+    assertPositionAndSize(textbox, '184px', '220px', '499px', '285px');
 
     // Drag the bottom left handle down and left to make the box 100px bigger
     // in both dimensions.
     const bottomLeft = getRequiredElement(textbox, '.handle.bottom.left');
     await dragHandle(bottomLeft, -100, 100);
-    assertPositionAndSize(textbox, '260px', '300px', '404px', '300px');
+    assertPositionAndSize(textbox, '284px', '320px', '399px', '285px');
 
     // Drag the bottom handle down and left to make the box 100px taller.
     // Motion left is ignored.
     const bottom = getRequiredElement(textbox, '.handle.bottom.center');
     await dragHandle(bottom, -100, 100);
-    assertPositionAndSize(textbox, '260px', '400px', '404px', '300px');
+    assertPositionAndSize(textbox, '284px', '420px', '399px', '285px');
 
     // Drag the bottom right handle down and right to make the box 20px bigger
     // in both dimensions.
     const bottomRight = getRequiredElement(textbox, '.handle.bottom.right');
     await dragHandle(bottomRight, 20, 20);
-    assertPositionAndSize(textbox, '280px', '420px', '404px', '300px');
+    assertPositionAndSize(textbox, '304px', '440px', '399px', '285px');
 
     // Drag the bottom right handle up and left to try to make the box too
     // small. Make sure it clamps at the same minimum size, anchored on the top
     // left corner.
     await dragHandle(bottomRight, -400, -400);
     assertPositionAndSize(
-        textbox, '36px', `${clampedHeight}px`, '404px', '300px');
+        textbox, `${clampedWidth}px`, `${clampedHeight}px`, '399px', '285px');
 
     chrome.test.succeed();
   },
 
   async function testAutoResize() {
     // Textbox is in clamped size from the previous test.
-    const clampedWidth = textbox.$.textbox.clientWidth;
-    const clampedHeight = textbox.$.textbox.clientHeight;
-    chrome.test.assertEq(36, clampedWidth);
+    const clampedTextareaWidth = textbox.$.textbox.clientWidth;
+    const clampedTextareaHeight = textbox.$.textbox.clientHeight;
+    chrome.test.assertEq(34, clampedTextareaWidth);
     assertPositionAndSize(
-        textbox, '36px', `${clampedHeight}px`, '404px', '300px');
+        textbox, `${clampedTextareaWidth + 14}px`,
+        `${clampedTextareaHeight + 14}px`, '399px', '285px');
 
     // Simulate putting in a really long input that won't fit in the clamped
     // size.
@@ -305,27 +335,30 @@ chrome.test.runTests([
     textbox.$.textbox.dispatchEvent(new CustomEvent('input'));
     await microtasksFinished();
 
-    const updatedWidth = textbox.$.textbox.clientWidth;
-    const updatedHeight = textbox.$.textbox.clientHeight;
-    chrome.test.assertTrue(updatedHeight > clampedHeight);
-    chrome.test.assertTrue(updatedHeight >= textbox.$.textbox.scrollHeight);
-    chrome.test.assertEq(36, updatedWidth);
+    const updatedTextareaWidth = textbox.$.textbox.clientWidth;
+    const updatedTextareaHeight = textbox.$.textbox.clientHeight;
+    const updatedHeight = updatedTextareaHeight + 14;
+    chrome.test.assertTrue(updatedTextareaHeight > clampedTextareaHeight);
+    chrome.test.assertTrue(
+        updatedTextareaHeight >= textbox.$.textbox.scrollHeight);
+    chrome.test.assertEq(34, updatedTextareaWidth);
 
     // Make sure that if the user makes the box wider, they can then make it
     // shorter.
     const right = getRequiredElement(textbox, '.handle.right.center');
-    await dragHandle(right, 264, 0);
+    // Makes the textarea 300px wide.
+    await dragHandle(right, 276, 0);
     // Wider box is still just as tall since the user didn't resize it
     // vertically yet.
     assertPositionAndSize(
-        textbox, '300px', `${updatedHeight}px`, '404px', '300px');
+        textbox, '324px', `${updatedHeight}px`, '399px', '285px');
 
     // User should now be able to shrink the box vertically, since the text
     // should fit in a shorter height with the updated width.
     const bottom = getRequiredElement(textbox, '.handle.bottom.center');
     await dragHandle(bottom, 0, -100);
     assertPositionAndSize(
-        textbox, '300px', `${updatedHeight - 100}px`, '404px', '300px');
+        textbox, '324px', `${updatedHeight - 100}px`, '399px', '285px');
 
     // Reset the sample text for later tests.
     textbox.$.textbox.value = 'Sample Text';
@@ -339,18 +372,18 @@ chrome.test.runTests([
     // Initialize to a 100x100 box at 400, 300.
     initializeBox(100, 100, 400, 300);
     await microtasksFinished();
-    assertPositionAndSize(textbox, '100px', '100px', '400px', '300px');
+    assertPositionAndSize(textbox, '124px', '120px', '383px', '285px');
     await dragHandle(textbox, 100, 100);
-    assertPositionAndSize(textbox, '100px', '100px', '500px', '400px');
+    assertPositionAndSize(textbox, '124px', '120px', '483px', '385px');
     await dragHandle(textbox, -200, 100);
-    assertPositionAndSize(textbox, '100px', '100px', '300px', '500px');
+    assertPositionAndSize(textbox, '124px', '120px', '283px', '485px');
     await dragHandle(textbox, 0, -200);
-    assertPositionAndSize(textbox, '100px', '100px', '300px', '300px');
+    assertPositionAndSize(textbox, '124px', '120px', '283px', '285px');
 
     // Make sure that clicking and trying to drag the textarea itself does
     // not move the textbox.
     await dragHandle(textbox.$.textbox, -200, -200);
-    assertPositionAndSize(textbox, '100px', '100px', '300px', '300px');
+    assertPositionAndSize(textbox, '124px', '120px', '283px', '285px');
     chrome.test.succeed();
   },
 
@@ -359,7 +392,7 @@ chrome.test.runTests([
     initializeBox(100, 100, 410, 303);
     await microtasksFinished();
 
-    assertPositionAndSize(textbox, '100px', '100px', '410px', '303px');
+    assertPositionAndSize(textbox, '124px', '120px', '393px', '288px');
     chrome.test.assertEq(
         '12px',
         getComputedStyle(textbox.$.textbox).getPropertyValue('font-size'));
@@ -374,7 +407,7 @@ chrome.test.runTests([
       },
     }));
     await microtasksFinished();
-    assertPositionAndSize(textbox, '50px', '50px', '230px', '151.5px');
+    assertPositionAndSize(textbox, '74px', '70px', '213px', '136.5px');
     chrome.test.assertEq(
         '6px',
         getComputedStyle(textbox.$.textbox).getPropertyValue('font-size'));
@@ -389,7 +422,7 @@ chrome.test.runTests([
       },
     }));
     await microtasksFinished();
-    assertPositionAndSize(textbox, '200px', '200px', '810px', '606px');
+    assertPositionAndSize(textbox, '224px', '220px', '793px', '591px');
     chrome.test.assertEq(
         '24px',
         getComputedStyle(textbox.$.textbox).getPropertyValue('font-size'));
@@ -403,7 +436,7 @@ chrome.test.runTests([
       },
     }));
     await microtasksFinished();
-    assertPositionAndSize(textbox, '100px', '100px', '500px', '400px');
+    assertPositionAndSize(textbox, '124px', '120px', '483px', '385px');
     chrome.test.assertEq(
         '12px',
         getComputedStyle(textbox.$.textbox).getPropertyValue('font-size'));
@@ -417,7 +450,7 @@ chrome.test.runTests([
       },
     }));
     await microtasksFinished();
-    assertPositionAndSize(textbox, '100px', '100px', '300px', '200px');
+    assertPositionAndSize(textbox, '124px', '120px', '283px', '185px');
     chrome.test.assertEq(
         '12px',
         getComputedStyle(textbox.$.textbox).getPropertyValue('font-size'));
@@ -431,7 +464,7 @@ chrome.test.runTests([
       },
     }));
     await microtasksFinished();
-    assertPositionAndSize(textbox, '100px', '100px', '-100px', '-200px');
+    assertPositionAndSize(textbox, '124px', '120px', '-117px', '-215px');
     chrome.test.assertEq(
         '12px',
         getComputedStyle(textbox.$.textbox).getPropertyValue('font-size'));
@@ -515,26 +548,26 @@ chrome.test.runTests([
     await microtasksFinished();
     // Position and size are in viewport coordinates, so the box is 50x48 in
     // the rotated viewport.
-    assertPositionAndSize(textbox, '50px', '48px', '25px', '33px');
+    assertPositionAndSize(textbox, '74px', '68px', '8px', '18px');
     // Textbox is non-rotated relative to the current viewport orientation.
     assertTextboxStyles(0);
 
     await updateViewportWithClockwiseRotations(0);
-    assertPositionAndSize(textbox, '48px', '50px', '17px', '23px');
+    assertPositionAndSize(textbox, '68px', '74px', '2px', '6px');
     assertTextboxStyles(1);
 
     await updateViewportWithClockwiseRotations(1);
-    assertPositionAndSize(textbox, '50px', '48px', '35px', '5px');
+    assertPositionAndSize(textbox, '74px', '68px', '18px', '-10px');
     assertTextboxStyles(2);
 
     await updateViewportWithClockwiseRotations(2);
-    assertPositionAndSize(textbox, '48px', '50px', '45px', '33px');
+    assertPositionAndSize(textbox, '68px', '74px', '30px', '16px');
     assertTextboxStyles(3);
 
     // Back to the original position, size and style since we've now rotated
     // all the way around.
     await updateViewportWithClockwiseRotations(3);
-    assertPositionAndSize(textbox, '50px', '48px', '25px', '33px');
+    assertPositionAndSize(textbox, '74px', '68px', '8px', '18px');
     assertTextboxStyles(0);
 
     // Now initialize a box with no rotation relative to the PDF, at the same
@@ -543,24 +576,24 @@ chrome.test.runTests([
     await updateViewportWithClockwiseRotations(0);
     initializeBoxWithOrientation(50, 48, 35, 33, 0);
     await microtasksFinished();
-    assertPositionAndSize(textbox, '50px', '48px', '35px', '33px');
+    assertPositionAndSize(textbox, '74px', '68px', '18px', '18px');
     assertTextboxStyles(0);
 
     await updateViewportWithClockwiseRotations(1);
-    assertPositionAndSize(textbox, '48px', '50px', '27px', '23px');
+    assertPositionAndSize(textbox, '68px', '74px', '12px', '6px');
     assertTextboxStyles(1);
 
     await updateViewportWithClockwiseRotations(2);
-    assertPositionAndSize(textbox, '50px', '48px', '25px', '25px');
+    assertPositionAndSize(textbox, '74px', '68px', '8px', '10px');
     assertTextboxStyles(2);
 
     await updateViewportWithClockwiseRotations(3);
-    assertPositionAndSize(textbox, '48px', '50px', '35px', '13px');
+    assertPositionAndSize(textbox, '68px', '74px', '20px', '-4px');
     assertTextboxStyles(3);
 
     // Back to 0 rotation should get us back to the original location and style.
     await updateViewportWithClockwiseRotations(0);
-    assertPositionAndSize(textbox, '50px', '48px', '35px', '33px');
+    assertPositionAndSize(textbox, '74px', '68px', '18px', '18px');
     assertTextboxStyles(0);
 
     chrome.test.succeed();
@@ -684,61 +717,61 @@ chrome.test.runTests([
     await microtasksFinished();
     chrome.test.assertFalse(textbox.hidden);
     chrome.test.assertTrue(isVisible(textbox));
-    assertPositionAndSize(textbox, '100px', '200px', '400px', '300px');
+    assertPositionAndSize(textbox, '124px', '220px', '383px', '285px');
 
     // 5px up and left.
     const topLeft = getRequiredElement(textbox, '.handle.top.left');
     await dragHandleWithKeyboard(topLeft, 'ArrowUp', 5);
     await dragHandleWithKeyboard(topLeft, 'ArrowLeft', 5);
-    assertPositionAndSize(textbox, '105px', '205px', '395px', '295px');
+    assertPositionAndSize(textbox, '129px', '225px', '378px', '280px');
 
     // Top handle 3px up and left. Left arrow is ignored on this handle.
     const top = getRequiredElement(textbox, '.handle.top.center');
     await dragHandleWithKeyboard(top, 'ArrowUp', 3);
     await dragHandleWithKeyboard(top, 'ArrowLeft', 3);
-    assertPositionAndSize(textbox, '105px', '208px', '395px', '292px');
+    assertPositionAndSize(textbox, '129px', '228px', '378px', '277px');
 
     // Top right handle 4px down and right -> makes box shorter and wider.
     // Use focusout event to finish right arrow drag to ensure it works.
     const topRight = getRequiredElement(textbox, '.handle.top.right');
     await dragHandleWithKeyboard(topRight, 'ArrowDown', 4);
     await dragHandleWithKeyboard(topRight, 'ArrowRight', 4, true);
-    assertPositionAndSize(textbox, '109px', '204px', '395px', '296px');
+    assertPositionAndSize(textbox, '133px', '224px', '378px', '281px');
 
     // Drag the left handle right and up. Upward motion is ignored. Left motion
     // makes the box 2px narrower.
     const left = getRequiredElement(textbox, '.handle.left.center');
     await dragHandleWithKeyboard(left, 'ArrowUp', 2);
     await dragHandleWithKeyboard(left, 'ArrowRight', 2);
-    assertPositionAndSize(textbox, '107px', '204px', '397px', '296px');
+    assertPositionAndSize(textbox, '131px', '224px', '380px', '281px');
 
     // Drag the right handle right and down. Downward motion is ignored. Right
     // motion makes the box 3px wider.
     const right = getRequiredElement(textbox, '.handle.right.center');
     await dragHandleWithKeyboard(right, 'ArrowDown', 3);
     await dragHandleWithKeyboard(right, 'ArrowRight', 3);
-    assertPositionAndSize(textbox, '110px', '204px', '397px', '296px');
+    assertPositionAndSize(textbox, '134px', '224px', '380px', '281px');
 
     // Drag the bottom left handle down and left to make the box 10px bigger
     // in both dimensions.
     const bottomLeft = getRequiredElement(textbox, '.handle.bottom.left');
     await dragHandleWithKeyboard(bottomLeft, 'ArrowDown', 10);
     await dragHandleWithKeyboard(bottomLeft, 'ArrowLeft', 10);
-    assertPositionAndSize(textbox, '120px', '214px', '387px', '296px');
+    assertPositionAndSize(textbox, '144px', '234px', '370px', '281px');
 
     // Drag the bottom handle down and left to make the box 5px taller.
     // Motion left is ignored.
     const bottom = getRequiredElement(textbox, '.handle.bottom.center');
     await dragHandleWithKeyboard(bottom, 'ArrowDown', 5);
     await dragHandleWithKeyboard(bottom, 'ArrowLeft', 5);
-    assertPositionAndSize(textbox, '120px', '219px', '387px', '296px');
+    assertPositionAndSize(textbox, '144px', '239px', '370px', '281px');
 
     // Drag the bottom right handle down and right to make the box 2px bigger
     // in both dimensions.
     const bottomRight = getRequiredElement(textbox, '.handle.bottom.right');
     await dragHandleWithKeyboard(bottomRight, 'ArrowDown', 2);
     await dragHandleWithKeyboard(bottomRight, 'ArrowRight', 2);
-    assertPositionAndSize(textbox, '122px', '221px', '387px', '296px');
+    assertPositionAndSize(textbox, '146px', '241px', '370px', '281px');
 
     // Drag the bottom right handle up and left to try to make the box too
     // small. Make sure it clamps at the same minimum size, anchored on the top
@@ -748,10 +781,10 @@ chrome.test.runTests([
     const clampedWidth = textbox.$.textbox.clientWidth;
     const clampedHeight = textbox.$.textbox.clientHeight;
     chrome.test.assertTrue(clampedHeight >= textbox.$.textbox.scrollHeight);
-    // Min width is 36px.
-    chrome.test.assertEq(36, clampedWidth);
+    // Min width is 34px (24 + 10px padding).
+    chrome.test.assertEq(34, clampedWidth);
     assertPositionAndSize(
-        textbox, '36px', `${clampedHeight}px`, '387px', '296px');
+        textbox, '48px', `${clampedHeight + 14}px`, '370px', '281px');
 
     chrome.test.succeed();
   },
@@ -760,22 +793,22 @@ chrome.test.runTests([
     // Initialize to a 100x100 box at 400, 300.
     initializeBox(100, 100, 400, 300);
     await microtasksFinished();
-    assertPositionAndSize(textbox, '100px', '100px', '400px', '300px');
+    assertPositionAndSize(textbox, '124px', '120px', '383px', '285px');
     await dragHandleWithKeyboard(textbox, 'ArrowUp', 5);
-    assertPositionAndSize(textbox, '100px', '100px', '400px', '295px');
+    assertPositionAndSize(textbox, '124px', '120px', '383px', '280px');
     await dragHandleWithKeyboard(textbox, 'ArrowDown', 5);
-    assertPositionAndSize(textbox, '100px', '100px', '400px', '300px');
+    assertPositionAndSize(textbox, '124px', '120px', '383px', '285px');
     await dragHandleWithKeyboard(textbox, 'ArrowRight', 5);
-    assertPositionAndSize(textbox, '100px', '100px', '405px', '300px');
+    assertPositionAndSize(textbox, '124px', '120px', '388px', '285px');
     await dragHandleWithKeyboard(textbox, 'ArrowLeft', 5);
-    assertPositionAndSize(textbox, '100px', '100px', '400px', '300px');
+    assertPositionAndSize(textbox, '124px', '120px', '383px', '285px');
 
     // Make sure that arrow keys in the textarea are ignored.
     await dragHandleWithKeyboard(textbox.$.textbox, 'ArrowUp', 1);
     await dragHandleWithKeyboard(textbox.$.textbox, 'ArrowDown', 1);
     await dragHandleWithKeyboard(textbox.$.textbox, 'ArrowLeft', 1);
     await dragHandleWithKeyboard(textbox.$.textbox, 'ArrowRight', 1);
-    assertPositionAndSize(textbox, '100px', '100px', '400px', '300px');
+    assertPositionAndSize(textbox, '124px', '120px', '383px', '285px');
     chrome.test.succeed();
   },
 
@@ -965,8 +998,8 @@ chrome.test.runTests([
     await eventToPromise('textbox-focused-for-test', textbox);
     await microtasksFinished();
     const styles = getComputedStyle(textbox);
-    chrome.test.assertEq('20px', styles.getPropertyValue('left'));
-    chrome.test.assertEq('20px', styles.getPropertyValue('top'));
+    chrome.test.assertEq('3px', styles.getPropertyValue('left'));
+    chrome.test.assertEq('5px', styles.getPropertyValue('top'));
 
     // Scroll away from the textbox. Note this method accepts page coordinates.
     // Scrolling by 35 in page coordinates scrolls by 70 in screen coordinates
@@ -978,8 +1011,8 @@ chrome.test.runTests([
     manager.dispatchEvent(new CustomEvent('blur-text-box'));
     viewport.goToPageAndXy(0, 35, 35);
     await microtasksFinished();
-    chrome.test.assertEq('-50px', styles.getPropertyValue('left'));
-    chrome.test.assertEq('-50px', styles.getPropertyValue('top'));
+    chrome.test.assertEq('-67px', styles.getPropertyValue('left'));
+    chrome.test.assertEq('-65px', styles.getPropertyValue('top'));
 
     // Focus the textbox, which should cause the manager to scroll the viewport.
     // This won't actually scroll the viewport in the test, since the plugin
