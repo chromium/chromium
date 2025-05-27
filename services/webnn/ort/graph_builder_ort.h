@@ -39,8 +39,8 @@ class GraphBuilderOrt {
   // external data (weights).
   //
   // Returns unexpected if it fails.
-  [[nodiscard]] base::expected<std::unique_ptr<ModelEditor::ModelInfo>,
-                               mojom::ErrorPtr>
+  [[nodiscard]] static base::expected<std::unique_ptr<ModelEditor::ModelInfo>,
+                                      mojom::ErrorPtr>
   CreateAndBuild(
       const mojom::GraphInfo& graph_info,
       ContextProperties context_properties,
