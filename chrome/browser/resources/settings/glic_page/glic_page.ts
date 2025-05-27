@@ -40,6 +40,7 @@ export enum SettingsGlicPageFeaturePrefName {
   MICROPHONE_ENABLED = 'glic.microphone_enabled',
   SETTINGS_POLICY = 'browser.gemini_settings',
   TAB_CONTEXT_ENABLED = 'glic.tab_context_enabled',
+  TABSTRIP_BUTTON_ENABLED = 'glic.pinned_to_tabstrip',
 }
 
 // browser_element_identifiers constants
@@ -287,6 +288,12 @@ export class SettingsGlicPageElement extends SettingsGlicPageElementBase {
     const enabled = (event.target as SettingsToggleButtonElement).checked;
     this.metricsBrowserProxy_.recordAction(
         'Glic.Settings.ClosedCaptions.' + (enabled ? 'Enabled' : 'Disabled'));
+  }
+
+  private onTabstripButtonToggleChange_(event: Event) {
+    const enabled = (event.target as SettingsToggleButtonElement).checked;
+    this.metricsBrowserProxy_.recordAction(
+        'Glic.Settings.TabstripButton.' + (enabled ? 'Enabled' : 'Disabled'));
   }
 }
 

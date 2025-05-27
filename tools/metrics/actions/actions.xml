@@ -12498,6 +12498,22 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Glic.Settings.TabstripButton.Disabled">
+  <owner>sanaakbani@google.com</owner>
+  <owner>iwells@chromium.org</owner>
+  <description>
+    Logged if the user disables the tabstrip button in glic settings.
+  </description>
+</action>
+
+<action name="Glic.Settings.TabstripButton.Enabled">
+  <owner>sanaakbani@google.com</owner>
+  <owner>iwells@chromium.org</owner>
+  <description>
+    Logged if the user enables the tabstrip button in glic settings.
+  </description>
+</action>
+
 <action name="Glic.Unpinned">
   <owner>charlesmeng@chromium.org</owner>
   <owner>erikchen@chromium.org</owner>
