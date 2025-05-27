@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {hexToColor, Ink2Manager, PluginController, PluginControllerEventType, TEXT_COLORS, TextAlignment, TextBoxState, TextStyle, TextTypeface} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
+import {hexToColor, Ink2Manager, MIN_TEXTBOX_SIZE_PX, PluginController, PluginControllerEventType, TEXT_COLORS, TextAlignment, TextBoxState, TextStyle, TextTypeface} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
 import type {TextAnnotation} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
 import {keyDownOn, keyUpOn} from 'chrome://webui-test/keyboard_mock_interactions.js';
 import {eventToPromise, isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
@@ -142,7 +142,7 @@ chrome.test.runTests([
     // UX specified 10px and 8px total.
     chrome.test.assertEq(170, textbox.$.textbox.clientWidth);
     chrome.test.assertEq(46, textbox.$.textbox.clientHeight);
-    chrome.test.assertEq('Sample Text', textbox.$.textbox.value);
+    chrome.test.assertEq('', textbox.$.textbox.value);
 
     // Update to a 100x200 box at 400, 300 with existing "Hello World" text.
     initializeBox(100, 200, 400, 300, true);
@@ -166,7 +166,7 @@ chrome.test.runTests([
     await microtasksFinished();
     chrome.test.assertFalse(textbox.hidden);
     chrome.test.assertTrue(isVisible(textbox));
-    chrome.test.assertEq('Sample Text', textbox.$.textbox.value);
+    chrome.test.assertEq('', textbox.$.textbox.value);
     const textboxStyles = getComputedStyle(textbox.$.textbox);
 
     // Initial state
@@ -257,10 +257,10 @@ chrome.test.runTests([
     const clampedWidth = clampedTextareaWidth + 14;
     chrome.test.assertTrue(
         clampedTextareaHeight >= textbox.$.textbox.scrollHeight);
-    chrome.test.assertEq(34, clampedTextareaWidth);
+    chrome.test.assertEq(MIN_TEXTBOX_SIZE_PX + 10, clampedTextareaWidth);
     // yCorner - textareaInnerHeight - yOffset
     const clampedTop = 500 - (clampedTextareaHeight - 6) - 15;
-    // clampedLeft = 500 - 24 - 17
+    // clampedLeft = 500 - MIN_TEXTBOX_SIZE_PX - 17
     assertPositionAndSize(
         textbox, `${clampedWidth}px`, `${clampedHeight}px`, '459px',
         `${clampedTop}px`);
@@ -323,7 +323,8 @@ chrome.test.runTests([
     // Textbox is in clamped size from the previous test.
     const clampedTextareaWidth = textbox.$.textbox.clientWidth;
     const clampedTextareaHeight = textbox.$.textbox.clientHeight;
-    chrome.test.assertEq(34, clampedTextareaWidth);
+    // Add 10 to min size for measured clientWidth due to padding.
+    chrome.test.assertEq(MIN_TEXTBOX_SIZE_PX + 10, clampedTextareaWidth);
     assertPositionAndSize(
         textbox, `${clampedTextareaWidth + 14}px`,
         `${clampedTextareaHeight + 14}px`, '399px', '285px');
@@ -341,7 +342,7 @@ chrome.test.runTests([
     chrome.test.assertTrue(updatedTextareaHeight > clampedTextareaHeight);
     chrome.test.assertTrue(
         updatedTextareaHeight >= textbox.$.textbox.scrollHeight);
-    chrome.test.assertEq(34, updatedTextareaWidth);
+    chrome.test.assertEq(MIN_TEXTBOX_SIZE_PX + 10, updatedTextareaWidth);
 
     // Make sure that if the user makes the box wider, they can then make it
     // shorter.
@@ -361,7 +362,7 @@ chrome.test.runTests([
         textbox, '324px', `${updatedHeight - 100}px`, '399px', '285px');
 
     // Reset the sample text for later tests.
-    textbox.$.textbox.value = 'Sample Text';
+    textbox.$.textbox.value = '';
     textbox.$.textbox.dispatchEvent(new CustomEvent('input'));
     await microtasksFinished();
 
@@ -638,11 +639,13 @@ chrome.test.runTests([
     await microtasksFinished();
     startNewAnnotationAndVerifyMessage();
     await microtasksFinished();
-    // Reset expectation.
-    testAnnotation.text = 'Sample Text';
 
-    // Moving (or resizing) the box is an edit.
+    // Moving (or resizing) the box is an edit. Also need to input some text,
+    // as empty annotations are ignored.
     chrome.test.assertTrue(isVisible(textbox));
+    textbox.$.textbox.value = testAnnotation.text;
+    textbox.$.textbox.dispatchEvent(new CustomEvent('input'));
+    await microtasksFinished();
     await dragHandle(textbox, 100, 100);
     // Adjust expectations for new box. Text is reset.
     // At 2x zoom, a 100px move in screen coordinates is a 50px move in page
@@ -657,6 +660,9 @@ chrome.test.runTests([
 
     // Any modifications to font are an edit.
     chrome.test.assertTrue(isVisible(textbox));
+    textbox.$.textbox.value = testAnnotation.text;
+    textbox.$.textbox.dispatchEvent(new CustomEvent('input'));
+    await microtasksFinished();
     manager.setTextTypeface(TextTypeface.MONOSPACE);
     await microtasksFinished();
     testAnnotation.textAttributes.typeface = TextTypeface.MONOSPACE;
@@ -781,8 +787,7 @@ chrome.test.runTests([
     const clampedWidth = textbox.$.textbox.clientWidth;
     const clampedHeight = textbox.$.textbox.clientHeight;
     chrome.test.assertTrue(clampedHeight >= textbox.$.textbox.scrollHeight);
-    // Min width is 34px (24 + 10px padding).
-    chrome.test.assertEq(34, clampedWidth);
+    chrome.test.assertEq(MIN_TEXTBOX_SIZE_PX + 10, clampedWidth);
     assertPositionAndSize(
         textbox, '48px', `${clampedHeight + 14}px`, '370px', '281px');
 
@@ -815,7 +820,7 @@ chrome.test.runTests([
   async function testEscapeAndDelete() {
     viewport.setZoom(1.0);
     // Initialize to a 100x100 box at 10, 10. Place the box in the top corner
-    // so that the viewport won't scroll when it is focused.
+    // of the page, so that the viewport won't scroll when it is focused.
     initializeBox(100, 100, 10, 10);
     // Wait for focus to happen so that we can correctly test focus changes
     // later.
@@ -890,7 +895,7 @@ chrome.test.runTests([
     chrome.test.assertEq(
         undefined, mockPlugin.findMessage('setTextAnnotation'));
 
-    // Initialize to a 100x100 box at 400, 300 with some text content. Use
+    // Initialize to a 100x100 box at 10, 10 with some text content. Use
     // "Delete" to clear all the content, which will trigger a message since
     // this is for an existing annotation.
     initializeBox(100, 100, 10, 10, true);

@@ -61,7 +61,7 @@ export {ViewerToolbarDropdownElement} from './elements/viewer_toolbar_dropdown.j
 // </if>
 export {GestureDetector, PinchEventDetail} from './gesture_detector.js';
 // <if expr="enable_pdf_ink2">
-export {DEFAULT_TEXTBOX_HEIGHT, DEFAULT_TEXTBOX_WIDTH, Ink2Manager, TextBoxInit} from './ink2_manager.js';
+export {DEFAULT_TEXTBOX_WIDTH, Ink2Manager, MIN_TEXTBOX_SIZE_PX, TextBoxInit} from './ink2_manager.js';
 // </if>
 export {PdfPluginElement} from './internal_plugin.js';
 export {record, recordFitTo, resetForTesting, UserAction} from './metrics.js';

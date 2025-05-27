@@ -9,7 +9,7 @@ import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import type {TextAttributes, TextBoxRect} from '../constants.js';
 import {TextTypeface} from '../constants.js';
-import {colorsEqual, convertRotatedCoordinates, Ink2Manager, stylesEqual} from '../ink2_manager.js';
+import {colorsEqual, convertRotatedCoordinates, Ink2Manager, MIN_TEXTBOX_SIZE_PX, stylesEqual} from '../ink2_manager.js';
 import type {TextBoxInit, ViewportParams} from '../ink2_manager.js';
 import {colorToHex} from '../pdf_viewer_utils.js';
 
@@ -28,10 +28,6 @@ export enum TextBoxState {
   NEW = 1,  // Box initialized with an annotation, but user has not made edits.
   EDITED = 2,  // User has edited the annotation (position, text, style).
 }
-
-// Blink crashes when rendering a textarea that is too small (<24px wide).
-// This value is held constant regardless of zoom due to the rendering issue.
-const MIN_SIZE_PX = 24;
 
 function getStyleForTypeface(typeface: TextTypeface): string {
   switch (typeface) {
@@ -83,15 +79,15 @@ export class InkTextBoxElement extends InkTextBoxElementBase {
   // are in screen coordinates.
   private accessor locationX_: number = 0;
   private accessor locationY_: number = 0;
-  private accessor minHeight_: number = MIN_SIZE_PX;
-  private accessor minWidth_: number = MIN_SIZE_PX;
-  private accessor height_: number = MIN_SIZE_PX;
+  private accessor minHeight_: number = MIN_TEXTBOX_SIZE_PX;
+  private accessor minWidth_: number = MIN_TEXTBOX_SIZE_PX;
+  private accessor height_: number = MIN_TEXTBOX_SIZE_PX;
   private accessor state_: TextBoxState = TextBoxState.INACTIVE;
   private accessor textOrientation_: number = 0;
   protected accessor textRotations_: number = 0;
   protected accessor textValue_: string = '';
   private accessor viewportRotations_: number = 0;
-  private accessor width_: number = MIN_SIZE_PX;
+  private accessor width_: number = MIN_TEXTBOX_SIZE_PX;
   private accessor zoom_: number = 1.0;
 
   private attributes_?: TextAttributes;
@@ -239,14 +235,14 @@ export class InkTextBoxElement extends InkTextBoxElementBase {
     if (this.textRotations_ % 2 === 0) {
       this.$.textbox.style.height = 'auto';
       const scrollHeight = this.$.textbox.scrollHeight;
-      this.minHeight_ = Math.max(MIN_SIZE_PX, scrollHeight);
+      this.minHeight_ = Math.max(MIN_TEXTBOX_SIZE_PX, scrollHeight);
       // Reset the height styling back.
       this.$.textbox.style.height = `${this.height_}px`;
     } else {
       // Adjust the width if the user is typing vertically.
       this.$.textbox.style.width = 'auto';
       const scrollWidth = this.$.textbox.scrollWidth;
-      this.minWidth_ = Math.max(MIN_SIZE_PX, scrollWidth);
+      this.minWidth_ = Math.max(MIN_TEXTBOX_SIZE_PX, scrollWidth);
       // Reset the width styling back.
       this.$.textbox.style.width = `${this.width_}px`;
     }
@@ -340,14 +336,13 @@ export class InkTextBoxElement extends InkTextBoxElementBase {
     this.pageY_ = data.pageCoordinates.y;
     this.width_ = data.annotation.textBoxRect.width;
     this.height_ = data.annotation.textBoxRect.height;
-    this.minHeight_ = MIN_SIZE_PX;
-    this.minWidth_ = MIN_SIZE_PX;
+    this.minHeight_ = MIN_TEXTBOX_SIZE_PX;
+    this.minWidth_ = MIN_TEXTBOX_SIZE_PX;
     this.locationX_ = data.annotation.textBoxRect.locationX;
     this.locationY_ = data.annotation.textBoxRect.locationY;
     this.state_ = TextBoxState.NEW;
     this.existing_ = data.annotation.text !== '';
-    this.textValue_ =
-        data.annotation.text === '' ? 'Sample Text' : data.annotation.text;
+    this.textValue_ = data.annotation.text;
     this.id_ = data.annotation.id;
     this.pageNumber_ = data.annotation.pageNumber;
     this.textOrientation_ = data.annotation.textOrientation;
@@ -373,8 +368,10 @@ export class InkTextBoxElement extends InkTextBoxElementBase {
     const adjusted = {
       locationX: (this.locationX_ - this.pageX_) * update.zoom / this.zoom_,
       locationY: (this.locationY_ - this.pageY_) * update.zoom / this.zoom_,
-      width: Math.max(this.width_ * update.zoom / this.zoom_, MIN_SIZE_PX),
-      height: Math.max(this.height_ * update.zoom / this.zoom_, MIN_SIZE_PX),
+      width:
+          Math.max(this.width_ * update.zoom / this.zoom_, MIN_TEXTBOX_SIZE_PX),
+      height: Math.max(
+          this.height_ * update.zoom / this.zoom_, MIN_TEXTBOX_SIZE_PX),
     };
     const rotated = convertRotatedCoordinates(
         adjusted, this.viewportRotations_, update.clockwiseRotations,

@@ -22,8 +22,11 @@ export interface TextBoxInit {
   pageCoordinates: Point;
 }
 
-export const DEFAULT_TEXTBOX_WIDTH: number = 200;
-export const DEFAULT_TEXTBOX_HEIGHT: number = 100;
+export const DEFAULT_TEXTBOX_WIDTH: number = 222;
+
+// Blink crashes when rendering a textarea that is too small (<24px wide).
+// This value is held constant regardless of zoom due to the rendering issue.
+export const MIN_TEXTBOX_SIZE_PX = 24;
 
 export function colorsEqual(color1: Color, color2: Color): boolean {
   return color1.r === color2.r && color1.g === color2.g &&
@@ -183,6 +186,14 @@ export class Ink2Manager extends EventTarget {
     }
 
     const pageDimensions = this.viewport_.getPageScreenRect(page);
+    // Enough space for 1 line of text. Default line height is around 1.2.
+    const defaultHeight = Math.max(
+        MIN_TEXTBOX_SIZE_PX,
+        Math.ceil(1.2 * this.attributes_.size * this.viewport_.getZoom()));
+    const defaultWidth = Math.min(
+        DEFAULT_TEXTBOX_WIDTH,
+        Math.max(MIN_TEXTBOX_SIZE_PX, pageDimensions.width));
+
     // Set location to the middle of the visible portion of the page.
     if (!location) {
       const minX = Math.max(pageDimensions.x, 0);
@@ -192,8 +203,8 @@ export class Ink2Manager extends EventTarget {
       const maxY = Math.min(
           pageDimensions.y + pageDimensions.height, this.viewport_.size.height);
       location = {
-        x: Math.max(0, (minX + maxX) / 2 - DEFAULT_TEXTBOX_WIDTH / 2),
-        y: Math.max(0, (minY + maxY) / 2 - DEFAULT_TEXTBOX_HEIGHT / 2),
+        x: Math.max(0, (minX + maxX) / 2 - defaultWidth / 2),
+        y: Math.max(0, (minY + maxY) / 2 - defaultHeight / 2),
       };
     }
 
@@ -226,10 +237,10 @@ export class Ink2Manager extends EventTarget {
       pageNumber: page,
       textAttributes: structuredClone(this.attributes_),
       textBoxRect: {
-        height: DEFAULT_TEXTBOX_HEIGHT,
+        height: defaultHeight,
         locationX: location.x,
         locationY: location.y,
-        width: DEFAULT_TEXTBOX_WIDTH,
+        width: defaultWidth,
       },
       textOrientation: (4 - this.viewport_.getClockwiseRotations()) % 4,
     };

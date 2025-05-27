@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import type {AnnotationBrush, TextAnnotation, TextAttributes, TextBoxInit} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
-import {AnnotationBrushType, DEFAULT_TEXTBOX_HEIGHT, DEFAULT_TEXTBOX_WIDTH, Ink2Manager, PluginController, PluginControllerEventType, TextAlignment, TextTypeface} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
+import {AnnotationBrushType, DEFAULT_TEXTBOX_WIDTH, Ink2Manager, MIN_TEXTBOX_SIZE_PX, PluginController, PluginControllerEventType, TextAlignment, TextTypeface} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
@@ -358,7 +358,7 @@ chrome.test.runTests([
 
     // The full document fits in the window.
     chrome.test.assertEq(
-        DEFAULT_TEXTBOX_HEIGHT, initEvent.detail.annotation.textBoxRect.height);
+        MIN_TEXTBOX_SIZE_PX, initEvent.detail.annotation.textBoxRect.height);
     // The page is centered on the viewport in the x direction, so it runs from
     // 55 to 445 after subtracting the 5px shadows on each side. The center is
     // at (55 + 445) / 2 = 250. Subtract half the default width to get the left
@@ -371,7 +371,7 @@ chrome.test.runTests([
     // (493 + 3) / 2 = 248. Subtract half the default height to get the top
     // edge.
     chrome.test.assertEq(
-        248 - DEFAULT_TEXTBOX_HEIGHT / 2,
+        248 - MIN_TEXTBOX_SIZE_PX / 2,
         initEvent.detail.annotation.textBoxRect.locationY);
     chrome.test.assertEq(
         DEFAULT_TEXTBOX_WIDTH, initEvent.detail.annotation.textBoxRect.width);
@@ -389,7 +389,7 @@ chrome.test.runTests([
     initEvent = await whenInitEvent;
 
     chrome.test.assertEq(
-        DEFAULT_TEXTBOX_HEIGHT, initEvent.detail.annotation.textBoxRect.height);
+        MIN_TEXTBOX_SIZE_PX, initEvent.detail.annotation.textBoxRect.height);
     // The page starts at the x shadow/margin, which is 10, and goes to the
     // viewport edge. The center is (500 + 10) / 2 = 255. Subtract half the
     // default width to get the left edge.
@@ -400,7 +400,7 @@ chrome.test.runTests([
     // the viewport edge. The center is (500 + 6) / 2 = 253. Subtract half the
     // default height to get the top edge.
     chrome.test.assertEq(
-        253 - DEFAULT_TEXTBOX_HEIGHT / 2,
+        253 - MIN_TEXTBOX_SIZE_PX / 2,
         initEvent.detail.annotation.textBoxRect.locationY);
     chrome.test.assertEq(
         DEFAULT_TEXTBOX_WIDTH, initEvent.detail.annotation.textBoxRect.width);
@@ -417,23 +417,23 @@ chrome.test.runTests([
     Ink2Manager.getInstance().initializeTextAnnotation();
     initEvent = await whenInitEvent;
 
+    // The default width goes down from 222 to the width of the page, which is
+    // 195 at 0.5 zoom: (pageWidth - 2 * shadow) * zoom = (400 - 2 * 5) * .5.
     chrome.test.assertEq(
-        DEFAULT_TEXTBOX_HEIGHT, initEvent.detail.annotation.textBoxRect.height);
+        MIN_TEXTBOX_SIZE_PX, initEvent.detail.annotation.textBoxRect.height);
     // The page is centered on the viewport in the x direction, so it runs from
     // 152.5 to 347.5. The center is at (152.5 + 347.5) / 2 = 250. Subtract half
     // the default width to get the left edge.
     chrome.test.assertEq(
-        250 - DEFAULT_TEXTBOX_WIDTH / 2,
-        initEvent.detail.annotation.textBoxRect.locationX);
+        250 - 195 / 2, initEvent.detail.annotation.textBoxRect.locationX);
     // The page starts at the y margin/shadow of 1.5 and runs to 246.5 since it
     // is 245 tall without the shadows. The center is at
     // (1.5 + 246.5) / 2 = 124. Subtract half the default height to get the top
     // edge.
     chrome.test.assertEq(
-        124 - DEFAULT_TEXTBOX_HEIGHT / 2,
+        124 - MIN_TEXTBOX_SIZE_PX / 2,
         initEvent.detail.annotation.textBoxRect.locationY);
-    chrome.test.assertEq(
-        DEFAULT_TEXTBOX_WIDTH, initEvent.detail.annotation.textBoxRect.width);
+    chrome.test.assertEq(195, initEvent.detail.annotation.textBoxRect.width);
     chrome.test.assertEq(0, initEvent.detail.annotation.pageNumber);
     chrome.test.assertEq(152.5, initEvent.detail.pageCoordinates.x);
     chrome.test.assertEq(1.5, initEvent.detail.pageCoordinates.y);
@@ -475,11 +475,12 @@ chrome.test.runTests([
       chrome.test.assertEq('', initData.annotation.text);
       assertDeepEquals(attributes, initData.annotation.textAttributes);
       chrome.test.assertEq(
-          DEFAULT_TEXTBOX_HEIGHT, initData.annotation.textBoxRect.height);
+          MIN_TEXTBOX_SIZE_PX, initData.annotation.textBoxRect.height);
       chrome.test.assertEq(x, initData.annotation.textBoxRect.locationX);
       chrome.test.assertEq(y, initData.annotation.textBoxRect.locationY);
+      // Textbox width gets clamped because the page is small.
       chrome.test.assertEq(
-          DEFAULT_TEXTBOX_WIDTH, initData.annotation.textBoxRect.width);
+          rotation % 2 === 0 ? 70 : 90, initData.annotation.textBoxRect.width);
       chrome.test.assertEq(0, initData.annotation.pageNumber);
       chrome.test.assertEq(id, initData.annotation.id);
       chrome.test.assertEq(rotation, initData.annotation.textOrientation);
