@@ -9389,11 +9389,6 @@ crbug.com/415223384 external/wpt/storage-access-api/storage-access-beyond-cookie
 crbug.com/415223384 external/wpt/storage-access-api/storage-access-beyond-cookies.thirdPartyBlobStorage.sub.https.window.html [ Crash Failure Pass Timeout ]
 crbug.com/415223384 external/wpt/storage-access-api/storage-access-beyond-cookies.unpartitioned.sub.https.window.html [ Crash Failure Pass Timeout ]
 
-
-crbug.com/407751668 http/tests/devtools/sources/debugger/async-callstack-network-initiator.js [ Failure Pass ]
-crbug.com/407751668 http/tests/devtools/elements/styles/up-down-numerics-and-colors.js [ Failure Pass ]
-crbug.com/407751668 http/tests/devtools/elements/styles/styles-mouse-test.js [ Failure Pass ]
-
 # Gardener 2025-05-05
 crbug.com/413289778 [ Mac12 ] wpt_internal/fedcm/fedcm-cache-manifest.https.html [ Failure ]
 
