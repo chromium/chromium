@@ -144,6 +144,11 @@ build_recipe(
 )
 
 build_recipe(
+    name = "recipe:chromium_bedrock/browser_metrics",
+    bootstrappable = True,
+)
+
+build_recipe(
     name = "recipe:celab",
 )
 

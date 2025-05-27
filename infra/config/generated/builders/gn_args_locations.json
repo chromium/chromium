@@ -101,6 +101,9 @@
     "win-angle-chromium-x64-builder": "ci/win-angle-chromium-x64-builder/gn-args.json",
     "win-angle-chromium-x86-builder": "ci/win-angle-chromium-x86-builder/gn-args.json"
   },
+  "chromium.bedrock": {
+    "linux-bedrock-browser-metrics": "ci/linux-bedrock-browser-metrics/gn-args.json"
+  },
   "chromium.build": {
     "android-build-perf-developer": "build/android-build-perf-developer/gn-args.json",
     "android-build-perf-ninja": "build/android-build-perf-ninja/gn-args.json",
