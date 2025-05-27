@@ -407,13 +407,11 @@ bool HttpStreamPool::AttemptManager::IsEndpointUsableForTcpBasedAttempt(
   // See https://www.rfc-editor.org/rfc/rfc9460.html#section-9.3. Endpoints are
   // usable if there is an overlap between the endpoint's ALPNs and the
   // configured ones.
-  for (const auto& alpn : endpoint.metadata.supported_protocol_alpns) {
-    if (base::Contains(http_network_session()->GetAlpnProtos(),
-                       NextProtoFromString(alpn))) {
-      return true;
-    }
-  }
-  return false;
+  return std::ranges::any_of(
+      endpoint.metadata.supported_protocol_alpns, [&](const auto& alpn) {
+        return base::Contains(http_network_session()->GetAlpnProtos(),
+                              NextProtoFromString(alpn));
+      });
 }
 
 HttpStreamPool::AttemptManager::InitialAttemptState
