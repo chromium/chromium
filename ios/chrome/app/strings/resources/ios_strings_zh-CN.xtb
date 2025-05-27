@@ -580,7 +580,7 @@
 <translation id="3464194322481586217">无法跟踪价格。</translation>
 <translation id="3469117812148449995">密码保存选项</translation>
 <translation id="3474048842645761983">{COUNT,plural, =1{涉及 {COUNT} 个网站或应用}other{涉及 {COUNT} 个网站和应用}}</translation>
-<translation id="3474624961160222204">以<ph name="NAME" />的身份继续</translation>
+<translation id="3474624961160222204">以 <ph name="NAME" /> 的身份继续</translation>
 <translation id="3476450923187944815">在不同应用中使用保存的密码。</translation>
 <translation id="3488501490964659223">标签页已关闭，而且浏览数据已被删除。您已退出账号</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />详细了解<ph name="END_LINK" />推荐内容</translation>
@@ -623,7 +623,7 @@
 <translation id="3642060527569456384">标签页分组会自动保存并在您的所有设备上更新。</translation>
 <translation id="3643338347976071250">{count,plural, =1{有 {count} 个密码会仅保存到此设备上。若要在其他设备上使用它，请将它保存到您的 Google 账号 {email}。}other{有 {count} 个密码会仅保存到此设备上。若要在其他设备上使用它们，请将它们保存到您的 Google 账号 {email}。}}</translation>
 <translation id="3650299480924308502">您退出账号后，未保存的数据将从此设备中删除。这些数据可能包括密码、历史记录等。</translation>
-<translation id="3659297405161482746">未找到任何付款方式</translation>
+<translation id="3659297405161482746">未找到任何支付方式</translation>
 <translation id="3668816008081204991">已隐藏阅读清单</translation>
 <translation id="3670030362669914947">卡号</translation>
 <translation id="3679163990085797665">删除已读项</translation>
@@ -1760,7 +1760,7 @@
 <translation id="8263809106706527890">您的默认浏览器设置可能发生了变更。您可以在设置中检查这项变更。</translation>
 <translation id="8264966119170358612">您保存的密码中有一些已在非 Google 数据泄露事件中外泄。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
 <translation id="826614135184049678">您在 iPad 重置过程中退出了账号 <ph name="USER_NAME" />。如需重新登录，请点按下方的“继续”。</translation>
-<translation id="8273982424131314219">您的信息将自动填充到 <ph name="URL" /> 中</translation>
+<translation id="8273982424131314219">即将填写信息到 <ph name="URL" /></translation>
 <translation id="8275068909952022340">更多…</translation>
 <translation id="8278488584187265939">自定义首页</translation>
 <translation id="8281781826761538115">默认语言区域 - <ph name="DEFAULT_LOCALE" /></translation>
@@ -1793,7 +1793,7 @@
 <translation id="8395180897620197612">停止日志记录</translation>
 <translation id="8395339334550012808">不久之后，您就会在“已关注”部分中看到来自<ph name="CHANNEL_NAME" />及与其相关的内容。</translation>
 <translation id="8402673309244746971">前往“已关注”</translation>
-<translation id="8407669440184693619">未找到任何用于此网站的密码</translation>
+<translation id="8407669440184693619">未找到此网站的密码</translation>
 <translation id="8407831512155324054">您的密码看起来安全系数较高</translation>
 <translation id="8414283596511250978">再也不必担心忘记密码</translation>
 <translation id="842523302461531262">在“设置”中设为默认选项…</translation>
@@ -1950,7 +1950,7 @@
 <translation id="895541991026785598">报告问题</translation>
 <translation id="8960979149015305">关闭下载栏</translation>
 <translation id="8961092256396236619">已关闭增强型保护</translation>
-<translation id="8968766641738584599">保存卡片</translation>
+<translation id="8968766641738584599">保存卡</translation>
 <translation id="8974714402877957201">1. 打开 iPad 设置</translation>
 <translation id="8975015774710126284">浏览数据已被删除</translation>
 <translation id="8976382372951310360">帮助</translation>

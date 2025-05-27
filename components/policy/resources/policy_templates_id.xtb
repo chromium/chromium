@@ -4022,9 +4022,9 @@ Jika kebijakan ini tidak disetel, setelan default-nya tidak diizinkan bagi pengg
       Jika kebijakan ini tidak disetel, atau disetel ke false, <ph name="PRODUCT_NAME" /> akan mengikuti jadwal penghentian yang diumumkan secara publik.
 
       Lihat https://g.co/chrome/symantecpkicerts untuk mengetahui detail selengkapnya tentang penghentian ini.</translation>
-<translation id="3831836327853123066">Menyetel kebijakan akan membatasi waktu beroperasi perangkat dengan menjadwalkan mulai ulang otomatis, yang dapat Anda tunda hingga 24 jam jika pengguna sedang aktif di perangkat. Nilai kebijakan harus ditentukan dalam detik. Nilai dikunci ke setidaknya 3.600 (satu jam).
+<translation id="3831836327853123066">Menyetel kebijakan akan membatasi waktu operasional perangkat dengan menjadwalkan mulai ulang otomatis, yang dapat Anda tunda hingga 24 jam jika pengguna sedang aktif di perangkat. Nilai kebijakan harus ditentukan dalam detik. Nilai dikunci ke setidaknya 3.600 (satu jam).
 
-      Jika kebijakan disetel, pengguna tidak dapat mengubahnya. Jika tidak disetel, waktu beroperasi perangkat tidak akan dibatasi.
+      Jika kebijakan disetel, pengguna tidak dapat mengubahnya. Jika tidak disetel, waktu operasional perangkat tidak akan dibatasi.
 
       Catatan: Mulai ulang otomatis hanya aktif saat layar login muncul atau selama sesi aplikasi kios.</translation>
 <translation id="3835692988507803626">Menonaktifkan secara paksa fitur pemeriksa ejaan bahasa</translation>

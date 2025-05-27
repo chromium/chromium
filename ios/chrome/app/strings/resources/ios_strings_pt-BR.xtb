@@ -36,7 +36,7 @@
 <translation id="1126696498560056882">Gerenciar contas neste dispositivo</translation>
 <translation id="1126809382673880764">Não protege você contra sites, downloads e extensões perigosos. Você ainda terá a proteção do "Navegação segura", sempre que possível, em outros Serviços do Google, como o Gmail e a Pesquisa.</translation>
 <translation id="1136104150802877429">Mostrar avaliações de produtos</translation>
-<translation id="1142371195993008685">Desativar as notificações de <ph name="FEATURE_NAME" /></translation>
+<translation id="1142371195993008685">Desativar as Dicas de <ph name="FEATURE_NAME" /></translation>
 <translation id="1147031633655575115">Conta conectada: <ph name="USER" /></translation>
 <translation id="1149401351239820326">Mês de expiração</translation>
 <translation id="1150989369772528668">Agenda</translation>
@@ -969,7 +969,7 @@ Veja as instruções do seu mecanismo de pesquisa para excluir o histórico de p
 <translation id="507187271399539513">{count,plural, =1{{position} de {count} forma de pagamento}one{{position} de {count} forma de pagamento}other{{position} de {count} formas de pagamento}}</translation>
 <translation id="5075939510584558547">Salvar sem criptografia</translation>
 <translation id="5076534614343816664">Monitoramento de preços</translation>
-<translation id="5078303485429639424">Ativar as notificações de <ph name="FEATURE_NAME" /></translation>
+<translation id="5078303485429639424">Ativar as Dicas de <ph name="FEATURE_NAME" /></translation>
 <translation id="5079950360618752063">Usar senha sugerida</translation>
 <translation id="5083464117946352670">Não é possível saber o tamanho do arquivo.</translation>
 <translation id="5085558938118581974">Pesquisar guias em dispositivos sincronizados</translation>
