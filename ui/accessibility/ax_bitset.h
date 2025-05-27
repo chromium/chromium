@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 
+#include <bit>
 #include <optional>
 
 #include "base/functional/function_ref.h"
