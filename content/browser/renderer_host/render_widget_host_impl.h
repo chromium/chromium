@@ -43,6 +43,7 @@
 #include "content/browser/renderer_host/agent_scheduling_group_host.h"
 #include "content/browser/renderer_host/frame_token_message_queue.h"
 #include "content/browser/renderer_host/input/touch_emulator_impl.h"
+#include "content/browser/renderer_host/mojo_render_input_router_delegate_impl.h"
 #include "content/browser/renderer_host/render_frame_metadata_provider_impl.h"
 #include "content/browser/renderer_host/render_widget_host_delegate.h"
 #include "content/browser/renderer_host/render_widget_host_view_base.h"
@@ -420,6 +421,9 @@ class CONTENT_EXPORT RenderWidgetHostImpl
   void SetView(RenderWidgetHostViewBase* view);
 
   RenderWidgetHostDelegate* delegate() const { return delegate_; }
+  MojoRenderInputRouterDelegateImpl* mojo_rir_delegate() {
+    return &mojo_rir_delegate_impl_;
+  }
 
   // Bind the provided widget interfaces.
   void BindWidgetInterfaces(
@@ -1245,6 +1249,11 @@ class CONTENT_EXPORT RenderWidgetHostImpl
 
   // True if |Destroy()| has been called.
   bool destroyed_ = false;
+
+  // Handles mojo connections for RenderInputRouterDelegate[Client] interface to
+  // allow sycing information between the Browser and the GPU process for input
+  // handling with InputVizard.
+  MojoRenderInputRouterDelegateImpl mojo_rir_delegate_impl_{this};
 
   // Our delegate, which wants to know mainly about keyboard events.
   // It will remain non-null until DetachDelegate() is called.

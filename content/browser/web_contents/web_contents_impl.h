@@ -31,7 +31,6 @@
 #include "base/types/pass_key.h"
 #include "build/build_config.h"
 #include "components/download/public/common/download_url_parameters.h"
-#include "components/input/render_input_router.mojom.h"
 #include "components/input/render_widget_host_input_event_router.h"
 #include "content/browser/media/audio_stream_monitor.h"
 #include "content/browser/media/forwarding_audio_stream_factory.h"
@@ -215,8 +214,7 @@ class CONTENT_EXPORT WebContentsImpl
       public ui::NativeThemeObserver,
       public ui::ColorProviderSourceObserver,
       public SlowWebPreferenceCacheObserver,
-      public input::RenderWidgetHostInputEventRouter::Delegate,
-      public input::mojom::RenderInputRouterDelegateClient {
+      public input::RenderWidgetHostInputEventRouter::Delegate {
  public:
   class FriendWrapper;
 
@@ -1202,8 +1200,6 @@ class CONTENT_EXPORT WebContentsImpl
   gfx::mojom::DelegatedInkPointRenderer* GetDelegatedInkRenderer(
       ui::Compositor* compositor) override;
   void OnInputIgnored(const blink::WebInputEvent& event) override;
-  input::mojom::RenderInputRouterDelegate* GetRenderInputRouterDelegateRemote()
-      override;
 #if BUILDFLAG(IS_ANDROID)
   float GetCurrentTouchSequenceYOffset() override;
 #endif
@@ -1288,26 +1284,6 @@ class CONTENT_EXPORT WebContentsImpl
 
   //  RenderWidgetHostInputEventRouter::Delegate -------------------------------
   input::TouchEmulator* GetTouchEmulator(bool create_if_necessary) override;
-
-  // input::mojom::RenderInputRouterDelegateClient -----------------------------
-  void NotifyObserversOfInputEvent(
-      const viz::FrameSinkId& frame_sink_id,
-      std::unique_ptr<blink::WebCoalescedInputEvent> event,
-      bool dispatched_to_renderer) override;
-  void NotifyObserversOfInputEventAcks(
-      const viz::FrameSinkId& frame_sink_id,
-      blink::mojom::InputEventResultSource ack_source,
-      blink::mojom::InputEventResultState ack_result,
-      std::unique_ptr<blink::WebCoalescedInputEvent> event) override;
-  void OnInvalidInputEventSource(
-      const viz::FrameSinkId& frame_sink_id) override;
-  void StateOnOverscrollTransfer(
-      const viz::FrameSinkId& frame_sink_id,
-      blink::mojom::DidOverscrollParamsPtr params) override;
-  void RendererInputResponsivenessChanged(
-      const viz::FrameSinkId& frame_sink_id,
-      bool is_responsive,
-      std::optional<base::TimeTicks> ack_timeout_ts) override;
 
   // Invoked before a form repost warning is shown.
   void NotifyBeforeFormRepostWarningShow() override;
@@ -2233,10 +2209,6 @@ class CONTENT_EXPORT WebContentsImpl
   // JavascriptDialogManager.
   void CancelDialogManagerDialogs(bool reset_state);
 
-  // Sets up RenderInputRouterDelegate mojo connections with InputManager on
-  // the VizCompositorThread for input handling with InputVizard.
-  void SetupRenderInputRouterDelegateConnection();
-
   // See GetPartitionedPopinEmbedderOrigin for details.
   GURL GetPartitionedPopinEmbedderOriginImpl() const;
 
@@ -2752,11 +2724,6 @@ class CONTENT_EXPORT WebContentsImpl
   // WebContents(concept in browser) to allow grouping CompositorFrameSinks for
   // input event routing with InputVizard.
   const base::UnguessableToken compositor_frame_sink_grouping_id_;
-
-  mojo::Receiver<input::mojom::RenderInputRouterDelegateClient>
-      rir_delegate_client_receiver_{this};
-
-  mojo::Remote<input::mojom::RenderInputRouterDelegate> rir_delegate_remote_;
 
   // Indicates if the instance is hosted in a preview window.
   // This will be set in Init() and will be reset in WillActivatePreviewPage().

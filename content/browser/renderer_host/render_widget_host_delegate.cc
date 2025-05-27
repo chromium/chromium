@@ -187,11 +187,6 @@ bool RenderWidgetHostDelegate::ShouldDoLearning() {
   return true;
 }
 
-input::mojom::RenderInputRouterDelegate*
-RenderWidgetHostDelegate::GetRenderInputRouterDelegateRemote() {
-  return nullptr;
-}
-
 #if BUILDFLAG(IS_ANDROID)
 float RenderWidgetHostDelegate::GetCurrentTouchSequenceYOffset() {
   return 0.f;
