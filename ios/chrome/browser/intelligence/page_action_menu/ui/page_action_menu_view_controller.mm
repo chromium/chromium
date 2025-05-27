@@ -7,6 +7,8 @@
 #import "build/branding_buildflags.h"
 #import "ios/chrome/browser/intelligence/page_action_menu/utils/ai_hub_constants.h"
 #import "ios/chrome/browser/shared/public/commands/glic_commands.h"
+#import "ios/chrome/browser/shared/public/commands/lens_overlay_commands.h"
+#import "ios/chrome/browser/shared/public/commands/page_action_menu_commands.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -34,7 +36,7 @@ const CGFloat kSmallButtonIconSize = 18;
 const CGFloat kSmallButtonPadding = 8;
 
 // The corner radius of the menu and its elements.
-const CGFloat kMenuCornerRadius = 16;
+const CGFloat kMenuCornerRadius = 20;
 const CGFloat kButtonsCornerRadius = 16;
 
 // The height of the menu's header.
@@ -42,12 +44,18 @@ const CGFloat kMenuHeaderHeight = 58;
 
 }  // namespace
 
+@interface PageActionMenuViewController () <
+    UIAdaptivePresentationControllerDelegate>
+@end
+
 @implementation PageActionMenuViewController {
   UIStackView* _mainStackView;
 }
 
 - (void)viewDidLoad {
   [super viewDidLoad];
+
+  self.presentationController.delegate = self;
 
   // Add blurred background.
   UIBlurEffect* blurEffect =
@@ -110,6 +118,13 @@ const CGFloat kMenuHeaderHeight = 58;
   self.sheetPresentationController.prefersGrabberVisible = NO;
 }
 
+#pragma mark - UIAdaptivePresentationControllerDelegate
+
+- (void)presentationControllerDidDismiss:
+    (UIPresentationController*)presentationController {
+  [self.pageActionMenuHandler dismissPageActionMenuWithCompletion:nil];
+}
+
 #pragma mark - Private
 
 // The total height of the presented menu.
@@ -123,8 +138,7 @@ const CGFloat kMenuHeaderHeight = 58;
 
 // Dismisses the page action menu.
 - (void)dismissPageActionMenu {
-  // TODO(crbug.com/414374298): Handle button actions and make sure the
-  // coordinator is stopped when the menu is dismissed.
+  [self.pageActionMenuHandler dismissPageActionMenuWithCompletion:nil];
 }
 
 // Creates a top bar header with a logo and dismiss button.
@@ -181,6 +195,9 @@ const CGFloat kMenuHeaderHeight = 58;
                                                           kSmallButtonIconSize)
                           title:l10n_util::GetNSString(
                                     IDS_IOS_AI_HUB_LENS_LABEL)];
+  [lensButton addTarget:self
+                 action:@selector(handleLensEntryPointTapped:)
+       forControlEvents:UIControlEventTouchUpInside];
   [stackView addArrangedSubview:lensButton];
   UIButton* readerModeButton =
       [self createSmallButtonWithIcon:DefaultSymbolWithPointSize(
@@ -263,15 +280,22 @@ const CGFloat kMenuHeaderHeight = 58;
   return button;
 }
 
-#pragma mark - Private
-
 // Dismisses this view controller and starts the GLIC overlay.
 - (void)handleGlicTapped:(UIButton*)button {
   PageActionMenuViewController* __weak weakSelf = self;
-  [self dismissViewControllerAnimated:YES
-                           completion:^{
-                             [weakSelf.handler startGlicFlow];
-                           }];
+  [self.pageActionMenuHandler dismissPageActionMenuWithCompletion:^{
+    [weakSelf.glicHandler startGlicFlow];
+  }];
+}
+
+- (void)handleLensEntryPointTapped:(UIButton*)button {
+  PageActionMenuViewController* __weak weakSelf = self;
+  [self.pageActionMenuHandler dismissPageActionMenuWithCompletion:^{
+    [weakSelf.lensOverlayHandler
+        createAndShowLensUI:YES
+                 entrypoint:LensOverlayEntrypoint::kAIHub
+                 completion:nil];
+  }];
 }
 
 @end

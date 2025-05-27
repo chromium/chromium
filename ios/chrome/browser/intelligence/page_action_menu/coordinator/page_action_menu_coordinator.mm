@@ -9,6 +9,8 @@
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/glic_commands.h"
+#import "ios/chrome/browser/shared/public/commands/lens_overlay_commands.h"
+#import "ios/chrome/browser/shared/public/commands/page_action_menu_commands.h"
 
 @implementation PageActionMenuCoordinator {
   PageActionMenuViewController* _viewController;
@@ -20,9 +22,12 @@
 - (void)start {
   _viewController = [[PageActionMenuViewController alloc] init];
   _mediator = [[PageActionMenuMediator alloc] init];
-  id<GlicCommands> handler =
+  _viewController.glicHandler =
       HandlerForProtocol(self.browser->GetCommandDispatcher(), GlicCommands);
-  _viewController.handler = handler;
+  _viewController.lensOverlayHandler = HandlerForProtocol(
+      self.browser->GetCommandDispatcher(), LensOverlayCommands);
+  _viewController.pageActionMenuHandler = HandlerForProtocol(
+      self.browser->GetCommandDispatcher(), PageActionMenuCommands);
 
   [self.baseViewController presentViewController:_viewController
                                         animated:YES
@@ -32,9 +37,21 @@
 }
 
 - (void)stop {
+  [self stopWithCompletion:nil];
+}
+
+#pragma mark - Public
+
+- (void)stopWithCompletion:(ProceduralBlock)completion {
+  if (self.baseViewController.presentedViewController) {
+    // If there is no completion block, stop the coordinator immediately by
+    // skipping the animation.
+    const BOOL animated = completion != nil;
+    [self.baseViewController dismissViewControllerAnimated:animated
+                                                completion:completion];
+  }
   _viewController = nil;
   _mediator = nil;
-
   [super stop];
 }
 

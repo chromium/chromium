@@ -7,6 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
+#import "base/ios/block_types.h"
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
 
 @protocol PageActionMenuCommands;
@@ -16,6 +17,9 @@
 
 // The dispatcher for commands.
 @property(nonatomic, weak) id<PageActionMenuCommands> pageActionMenuHandler;
+
+// Dismisses the menu with a completion block before stopping the coordinator.
+- (void)stopWithCompletion:(ProceduralBlock)completion;
 
 @end
 

@@ -3003,8 +3003,8 @@ enum class ToolbarKind {
   [_pageActionMenuCoordinator start];
 }
 
-- (void)dismissPageActionMenu {
-  [_pageActionMenuCoordinator stop];
+- (void)dismissPageActionMenuWithCompletion:(ProceduralBlock)completion {
+  [_pageActionMenuCoordinator stopWithCompletion:completion];
   _pageActionMenuCoordinator = nil;
 }
 
