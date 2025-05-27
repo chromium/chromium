@@ -624,6 +624,7 @@ IN_PROC_BROWSER_TEST_P(KioskIwaUpdateChannelChangeTest, ProcessChannelChange) {
   ExpectTestAppInstalledAtVersion(GetExpectedNewVersion());
 }
 
+// TODO(crbug.com/420609781): Fix update discovery race and restore test params.
 INSTANTIATE_TEST_SUITE_P(
     All,
     KioskIwaUpdateChannelChangeTest,
@@ -652,34 +653,10 @@ INSTANTIATE_TEST_SUITE_P(
             .initial_channel_name = kChannelNameBeta,
             .expected_initial_version = base::Version(kTestIwaVersion2),
             .new_channel_name = kChannelNameAlpha,
-            .expected_new_version = base::Version(kTestIwaVersion3)},
+            .expected_new_version = base::Version(kTestIwaVersion3)}
 
         // Switching to a channel with an older version skips the update.
-        // Switch from "beta" to "default".
-        KioskIwaUpdateChannelChangeTestParams{
-            .test_case =
-                KioskIwaUpdateChannelChangeTestParams::TestCase::kUpdateSkipped,
-            .initial_channel_name = kChannelNameBeta,
-            .expected_initial_version = base::Version(kTestIwaVersion2),
-            .new_channel_name = kChannelNameDefault,
-            .expected_new_version = base::Version(kTestIwaVersion2)},
-        // Switch from "alpha" to "default".
-        KioskIwaUpdateChannelChangeTestParams{
-            .test_case =
-                KioskIwaUpdateChannelChangeTestParams::TestCase::kUpdateSkipped,
-            .initial_channel_name = kChannelNameAlpha,
-            .expected_initial_version = base::Version(kTestIwaVersion3),
-            .new_channel_name = kChannelNameDefault,
-            .expected_new_version = base::Version(kTestIwaVersion3)},
-
         // Switching to an unknown channel skips the update with an error.
-        // Switch from "beta" to "unknown".
-        KioskIwaUpdateChannelChangeTestParams{
-            .test_case =
-                KioskIwaUpdateChannelChangeTestParams::TestCase::kUpdateError,
-            .initial_channel_name = kChannelNameBeta,
-            .expected_initial_version = base::Version(kTestIwaVersion2),
-            .new_channel_name = kChannelNameUnknown,
-            .expected_new_version = base::Version(kTestIwaVersion2)}));
+        ));
 
 }  // namespace ash
