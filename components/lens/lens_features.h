@@ -147,6 +147,10 @@ extern const base::FeatureParam<bool> kEnableFullscreenSearch;
 COMPONENT_EXPORT(LENS_FEATURES)
 extern const base::FeatureParam<bool> kLensOverlayEnableOpenInNewTab;
 
+// Whether the EDU action chip should be disabled by glic.
+COMPONENT_EXPORT(LENS_FEATURES)
+extern const base::FeatureParam<bool> kLensOverlayEduActionChipDisabledByGlic;
+
 // The URL for the Lens home page.
 COMPONENT_EXPORT(LENS_FEATURES)
 extern std::string GetHomepageURLForLens();
@@ -901,6 +905,10 @@ extern std::string GetLensOverlayEduUrlForceAllowedMatchPatterns();
 // Hashed domain block filters for the EDU action chip.
 COMPONENT_EXPORT(LENS_FEATURES)
 extern std::string GetLensOverlayEduHashedDomainBlockFilters();
+
+// Whether EDU action chip should be disabled by glic.
+COMPONENT_EXPORT(LENS_FEATURES)
+bool IsLensOverlayEduActionChipDisabledByGlic();
 
 }  // namespace lens::features
 #endif  // COMPONENTS_LENS_LENS_FEATURES_H_

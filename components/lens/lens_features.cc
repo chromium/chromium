@@ -556,6 +556,9 @@ const base::FeatureParam<std::string>
         &kLensOverlayEduActionChip, "url-path-forced-allowed-match-patterns",
         "[]"};
 
+const base::FeatureParam<bool> kLensOverlayEduActionChipDisabledByGlic{
+    &kLensOverlayEduActionChip, "disabled-by-glic", true};
+
 std::string GetHomepageURLForLens() {
   return kHomepageURLForLens.Get();
 }
@@ -1185,6 +1188,10 @@ std::string GetLensOverlayEduUrlForceAllowedMatchPatterns() {
 
 std::string GetLensOverlayEduHashedDomainBlockFilters() {
   return kLensOverlayEduHashedDomainBlockFilters.Get();
+}
+
+bool IsLensOverlayEduActionChipDisabledByGlic() {
+  return kLensOverlayEduActionChipDisabledByGlic.Get();
 }
 
 }  // namespace lens::features
