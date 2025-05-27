@@ -15,8 +15,6 @@
 #endif
 
 #include "base/strings/string_util.h"
-#include "components/prefs/pref_registry_simple.h"
-#include "components/prefs/pref_service.h"
 
 #if BUILDFLAG(IS_WIN)
 #include <windows.h>
@@ -93,28 +91,6 @@ CountryId GeoIDToCountryID(GEOID geo_id) {
 #endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace
-
-CountryId GetCountryIDFromPrefs(PrefService* prefs) {
-  if (!prefs) {
-    return GetCurrentCountryID();
-  }
-
-  // Cache first run Country ID value in prefs, and use it afterwards.  This
-  // ensures that just because the user moves around, we won't automatically
-  // make major changes to their available search providers, which would feel
-  // surprising.
-  if (!prefs->HasPrefPath(country_codes::kCountryIDAtInstall)) {
-    prefs->SetInteger(country_codes::kCountryIDAtInstall,
-                      GetCurrentCountryID().Serialize());
-  }
-  return CountryId::Deserialize(
-      prefs->GetInteger(country_codes::kCountryIDAtInstall));
-}
-
-void RegisterProfilePrefs(PrefRegistrySimple* registry) {
-  registry->RegisterIntegerPref(country_codes::kCountryIDAtInstall,
-                                CountryId().Serialize());
-}
 
 #if BUILDFLAG(IS_WIN)
 

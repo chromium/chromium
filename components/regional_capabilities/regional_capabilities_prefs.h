@@ -17,6 +17,10 @@ class PrefRegistrySyncable;
 // regional_capabilities component.
 namespace regional_capabilities::prefs {
 
+// Preference key containing the country ID used for regional capability checks
+// and to determine the list of search engine options to prepopulate.
+inline constexpr char kCountryIDAtInstall[] = "countryid_at_install";
+
 void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 
 // Returns a random number to use as a profile-constant seed for the random

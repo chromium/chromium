@@ -17,6 +17,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/regional_capabilities/regional_capabilities_country_id.h"
 #include "components/regional_capabilities/regional_capabilities_metrics.h"
+#include "components/regional_capabilities/regional_capabilities_prefs.h"
 #include "components/regional_capabilities/regional_capabilities_switches.h"
 #include "components/regional_capabilities/regional_capabilities_utils.h"
 #include "third_party/search_engines_data/resources/definitions/prepopulated_engines.h"
@@ -221,12 +222,12 @@ void RegionalCapabilitiesService::ClearCountryIdCacheForTesting() {
 std::optional<CountryId> RegionalCapabilitiesService::GetPersistedCountryId() {
   // TODO(crbug.com/328040066): Move `kCountryIDAtInstall` pref declaration in
   // this file / package.
-  if (!profile_prefs_->HasPrefPath(country_codes::kCountryIDAtInstall)) {
+  if (!profile_prefs_->HasPrefPath(prefs::kCountryIDAtInstall)) {
     return std::nullopt;
   }
 
   CountryId persisted_country_id = CountryId::Deserialize(
-      profile_prefs_->GetInteger(country_codes::kCountryIDAtInstall));
+      profile_prefs_->GetInteger(prefs::kCountryIDAtInstall));
 
   // Check and report on the validity of the initially persisted value.
   if (persisted_country_id.IsValid()) {
@@ -237,7 +238,7 @@ std::optional<CountryId> RegionalCapabilitiesService::GetPersistedCountryId() {
 
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
   if (base::FeatureList::IsEnabled(switches::kClearPrefForUnknownCountry)) {
-    profile_prefs_->ClearPref(country_codes::kCountryIDAtInstall);
+    profile_prefs_->ClearPref(prefs::kCountryIDAtInstall);
     base::UmaHistogramEnumeration(kUnknownCountryIdStored,
                                   UnknownCountryIdStored::kClearedPref);
     return std::nullopt;
@@ -255,13 +256,13 @@ void RegionalCapabilitiesService::TrySetPersistedCountryId(
   if (!country_id.IsValid()) {
     return;
   }
-  if (profile_prefs_->HasPrefPath(country_codes::kCountryIDAtInstall)) {
+  if (profile_prefs_->HasPrefPath(prefs::kCountryIDAtInstall)) {
     // Deliberately do not override the current value. This would be a
     // dedicated feature like `kDynamicProfileCountryMetrics` for example.
     return;
   }
 
-  profile_prefs_->SetInteger(country_codes::kCountryIDAtInstall,
+  profile_prefs_->SetInteger(prefs::kCountryIDAtInstall,
                              country_id.Serialize());
 }
 

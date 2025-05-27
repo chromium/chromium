@@ -111,7 +111,6 @@ std::unique_ptr<TemplateURLData> FindPrepopulatedEngineInternal(
 // Global functions -----------------------------------------------------------
 
 void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
-  country_codes::RegisterProfilePrefs(registry);
   registry->RegisterListPref(prefs::kSearchProviderOverrides);
   registry->RegisterIntegerPref(prefs::kSearchProviderOverridesVersion, -1);
 }
