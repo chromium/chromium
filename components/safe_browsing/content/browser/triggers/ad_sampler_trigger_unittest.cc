@@ -5,6 +5,7 @@
 #include "components/safe_browsing/content/browser/triggers/ad_sampler_trigger.h"
 
 #include "base/memory/scoped_refptr.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_simple_task_runner.h"

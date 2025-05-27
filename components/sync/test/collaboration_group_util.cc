@@ -4,6 +4,7 @@
 
 #include "components/sync/test/collaboration_group_util.h"
 
+#include "base/strings/string_number_conversions.h"
 #include "components/sync/base/time.h"
 #include "components/sync/model/entity_change.h"
 #include "components/sync/protocol/collaboration_group_specifics.pb.h"

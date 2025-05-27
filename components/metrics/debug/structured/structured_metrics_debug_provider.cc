@@ -11,6 +11,7 @@
 #include "base/i18n/number_formatting.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "components/metrics/structured/event_validator.h"
 #include "components/metrics/structured/project_validator.h"

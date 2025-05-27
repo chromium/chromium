@@ -13,6 +13,7 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/notimplemented.h"
 #include "base/scoped_observation.h"
+#include "base/strings/string_number_conversions.h"
 #include "components/data_sharing/internal/android/data_sharing_conversion_bridge.h"
 #include "components/data_sharing/internal/android/data_sharing_network_loader_android.h"
 #include "components/data_sharing/internal/android/fake_preview_server_proxy.h"

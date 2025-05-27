@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <string_view>
 
+#include "base/strings/string_number_conversions.h"
 #include "components/page_load_metrics/browser/features.h"
 #include "components/page_load_metrics/common/page_load_timing.h"
 #include "components/page_load_metrics/common/page_visit_final_status.h"

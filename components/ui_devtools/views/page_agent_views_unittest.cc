@@ -5,6 +5,7 @@
 #include "components/ui_devtools/views/page_agent_views.h"
 
 #include "base/command_line.h"
+#include "base/strings/string_number_conversions.h"
 #include "components/ui_devtools/agent_util.h"
 #include "components/ui_devtools/ui_devtools_unittest_utils.h"
 #include "components/ui_devtools/ui_element.h"
