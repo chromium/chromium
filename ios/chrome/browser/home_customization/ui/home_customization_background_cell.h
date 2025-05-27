@@ -5,8 +5,6 @@
 #ifndef IOS_CHROME_BROWSER_HOME_CUSTOMIZATION_UI_HOME_CUSTOMIZATION_BACKGROUND_CELL_H_
 #define IOS_CHROME_BROWSER_HOME_CUSTOMIZATION_UI_HOME_CUSTOMIZATION_BACKGROUND_CELL_H_
 
-#import <UIKit/UIKit.h>
-
 #import "ios/chrome/browser/home_customization/model/background_customization_configuration.h"
 
 @protocol LogoVendor;
@@ -20,6 +18,10 @@
 
 // Mutator for communicating with the HomeCustomizationMediator.
 @property(nonatomic, weak) id<HomeCustomizationMutator> mutator;
+
+// Sets up and positions the view responsible for displaying the cell's
+// content.
+- (void)setupContentView:(UIView*)contentView;
 
 // Configures the cell using the given background customization configuration.
 - (void)configureWithBackgroundOption:

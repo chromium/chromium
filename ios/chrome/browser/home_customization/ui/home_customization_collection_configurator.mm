@@ -112,13 +112,13 @@ const CGFloat kSpacingBelowHeader = 10;
   NSCollectionLayoutSize* itemSize = [NSCollectionLayoutSize
       sizeWithWidthDimension:
           [NSCollectionLayoutDimension
-              estimatedDimension:isCompactHeight ? kRegularBackgroundCellWidth
-                                                 : kCompactBackgroundCellWidth]
+              absoluteDimension:isCompactHeight ? kRegularBackgroundCellWidth
+                                                : kCompactBackgroundCellWidth]
              heightDimension:
                  [NSCollectionLayoutDimension
-                     estimatedDimension:isCompactHeight
-                                            ? kCompactBackgroundCellHeight
-                                            : kRegularBackgroundCellHeight]];
+                     absoluteDimension:isCompactHeight
+                                           ? kCompactBackgroundCellHeight
+                                           : kRegularBackgroundCellHeight]];
 
   NSCollectionLayoutItem* item =
       [NSCollectionLayoutItem itemWithLayoutSize:itemSize];

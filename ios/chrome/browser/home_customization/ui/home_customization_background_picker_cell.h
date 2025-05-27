@@ -5,8 +5,6 @@
 #ifndef IOS_CHROME_BROWSER_HOME_CUSTOMIZATION_UI_HOME_CUSTOMIZATION_BACKGROUND_PICKER_CELL_H_
 #define IOS_CHROME_BROWSER_HOME_CUSTOMIZATION_UI_HOME_CUSTOMIZATION_BACKGROUND_PICKER_CELL_H_
 
-#import <UIKit/UIKit.h>
-
 #import "ios/chrome/browser/home_customization/ui/home_customization_background_cell.h"
 
 // Mutator protocol for the UI layer to communicate to the

@@ -54,6 +54,7 @@ bundle_data_xcassets("resources") {
     "Assets.xcassets/magic_stack_edit_button_background_color.colorset/Contents.json",
     "Assets.xcassets/mdc_ink_color.colorset/Contents.json",
     "Assets.xcassets/mdc_secondary_ink_color.colorset/Contents.json",
+    "Assets.xcassets/mini_fake_omnibox_background_color.colorset/Contents.json",
     "Assets.xcassets/omnibox_keyboard_button_color.colorset/Contents.json",
     "Assets.xcassets/omnibox_popout_overlay_color.colorset/Contents.json",
     "Assets.xcassets/omnibox_popout_suggestion_row_separator_color.colorset/Contents.json",

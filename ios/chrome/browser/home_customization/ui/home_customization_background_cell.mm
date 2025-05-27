@@ -4,8 +4,6 @@
 
 #import "ios/chrome/browser/home_customization/ui/home_customization_background_cell.h"
 
-#import <UIKit/UIKit.h>
-
 #import "ios/chrome/browser/home_customization/model/background_customization_configuration.h"
 #import "ios/chrome/browser/home_customization/ui/home_customization_mutator.h"
 #import "ios/chrome/browser/ntp/ui_bundled/logo_vendor.h"
@@ -39,6 +37,39 @@ const CGFloat kLogoWidth = 34.0;
 
 // Fixed height for the logoView.
 const CGFloat kLogoHeight = 11.0;
+
+// Ccorner radius for small rounded views.
+const CGFloat kSmallCornerRadius = 4.5;
+
+// Corner radius for the omnibox view.
+const CGFloat kOmniboxCornerRadius = 6.0;
+
+// Top margin between logo view and omnibox.
+const CGFloat kOmniboxTopMargin = 10.0;
+
+// Fixed height for omnibox view.
+const CGFloat kOmniboxHeight = 12.0;
+
+// Fixed width for omnibox view.
+const CGFloat kOmniboxWidth = 64.0;
+
+// Top margin between omnibox and magic stack view.
+const CGFloat kMagicStackTopMargin = 5.0;
+
+// Fixed height for magic stack view.
+const CGFloat kMagicStackHeight = 26.0;
+
+// Fixed height for magic stack view.
+const CGFloat kMagicStackWidth = 70.0;
+
+// Top margin between magic stack and feeds view.
+const CGFloat kFeedsTopMargin = 3.0;
+
+// Fixed height for feeds view.
+const CGFloat kFeedsHeight = 67.0;
+
+// Fixed height for feeds view.
+const CGFloat kFeedsWidth = 70.0;
 
 }  // namespace
 
@@ -78,9 +109,9 @@ const CGFloat kLogoHeight = 11.0;
     // Inner content view, placed with a gap inside the border wrapper view.
     // This holds the actual content.
     self.innerContentView = [[UIStackView alloc] init];
+    self.innerContentView.axis = UILayoutConstraintAxisVertical;
+    self.innerContentView.alignment = UIStackViewAlignmentCenter;
     self.innerContentView.translatesAutoresizingMaskIntoConstraints = NO;
-    self.innerContentView.backgroundColor =
-        [UIColor colorNamed:@"ntp_background_color"];
     self.innerContentView.layer.cornerRadius = kContentViewCornerRadius;
     self.innerContentView.layer.masksToBounds = YES;
     self.innerContentView.axis = UILayoutConstraintAxisVertical;
@@ -110,8 +141,54 @@ const CGFloat kLogoHeight = 11.0;
 
     AddSameConstraintsWithInset(self.innerContentView, self.borderWrapperView,
                                 kGapBorderWidth + kHighlightBorderWidth);
+
+    [self setupContentView:self.innerContentView];
   }
   return self;
+}
+
+- (void)setupContentView:(UIStackView*)contentView {
+  contentView.backgroundColor = [UIColor colorNamed:@"ntp_background_color"];
+
+  UIView* spacerView = [[UIView alloc] init];
+  spacerView.translatesAutoresizingMaskIntoConstraints = NO;
+
+  UIView* omniboxView =
+      [self createContentViewWithBackgroundColor:
+                [UIColor colorNamed:kMiniFakeOmniboxBackgroundColor]
+                                    cornerRadius:kOmniboxCornerRadius];
+  UIView* magicStackView = [self
+      createContentViewWithBackgroundColor:[[UIColor
+                                               colorNamed:kBackgroundColor]
+                                               colorWithAlphaComponent:0.6]
+                              cornerRadius:kSmallCornerRadius];
+  UIView* feedsView = [self
+      createContentViewWithBackgroundColor:[[UIColor
+                                               colorNamed:kBackgroundColor]
+                                               colorWithAlphaComponent:0.6]
+                              cornerRadius:kSmallCornerRadius];
+
+  [contentView addArrangedSubview:spacerView];
+  [contentView addArrangedSubview:omniboxView];
+  [contentView addArrangedSubview:magicStackView];
+  [contentView addArrangedSubview:feedsView];
+
+  [contentView setCustomSpacing:kMagicStackTopMargin afterView:omniboxView];
+  [contentView setCustomSpacing:kFeedsTopMargin afterView:magicStackView];
+
+  [NSLayoutConstraint activateConstraints:@[
+    [spacerView.heightAnchor constraintEqualToAnchor:contentView.heightAnchor
+                                          multiplier:kLogoTopMultiplier],
+
+    [omniboxView.widthAnchor constraintEqualToConstant:kOmniboxWidth],
+    [omniboxView.heightAnchor constraintEqualToConstant:kOmniboxHeight],
+
+    [magicStackView.widthAnchor constraintEqualToConstant:kMagicStackWidth],
+    [magicStackView.heightAnchor constraintEqualToConstant:kMagicStackHeight],
+
+    [feedsView.widthAnchor constraintEqualToConstant:kFeedsWidth],
+    [feedsView.heightAnchor constraintEqualToConstant:kFeedsHeight]
+  ]];
 }
 
 - (void)configureWithBackgroundOption:
@@ -119,23 +196,17 @@ const CGFloat kLogoHeight = 11.0;
                            logoVendor:(id<LogoVendor>)logoVendor {
   _backgroundConfiguration = option;
   UIView* logoView = logoVendor.view;
+  logoView.translatesAutoresizingMaskIntoConstraints = NO;
 
-  [self.innerContentView addSubview:logoView];
-  logoVendor.view.translatesAutoresizingMaskIntoConstraints = NO;
+  // Insert the logo view right after the spacer.
+  [self.innerContentView insertArrangedSubview:logoView atIndex:1];
 
   [NSLayoutConstraint activateConstraints:@[
-    [NSLayoutConstraint constraintWithItem:logoView
-                                 attribute:NSLayoutAttributeTop
-                                 relatedBy:NSLayoutRelationEqual
-                                    toItem:self.innerContentView
-                                 attribute:NSLayoutAttributeBottom
-                                multiplier:kLogoTopMultiplier
-                                  constant:0],
-    [logoView.centerXAnchor
-        constraintEqualToAnchor:self.innerContentView.centerXAnchor],
     [logoView.widthAnchor constraintEqualToConstant:kLogoWidth],
-    [logoView.heightAnchor constraintEqualToConstant:kLogoHeight]
+    [logoView.heightAnchor constraintEqualToConstant:kLogoHeight],
   ]];
+
+  [self.innerContentView setCustomSpacing:kOmniboxTopMargin afterView:logoView];
 }
 
 - (void)updateBackgroundImage:(UIImage*)image {
@@ -159,6 +230,19 @@ const CGFloat kLogoHeight = 11.0;
     self.borderWrapperView.layer.borderColor = nil;
     self.borderWrapperView.layer.borderWidth = 0;
   }
+}
+
+#pragma mark - Private
+
+// Creates and returns a `UIView` instance with the specified background color
+// and corner radius.
+- (UIView*)createContentViewWithBackgroundColor:(UIColor*)backgroundColor
+                                   cornerRadius:(CGFloat)cornerRadius {
+  UIView* view = [[UIView alloc] init];
+  view.translatesAutoresizingMaskIntoConstraints = NO;
+  view.backgroundColor = backgroundColor;
+  view.layer.cornerRadius = cornerRadius;
+  return view;
 }
 
 @end

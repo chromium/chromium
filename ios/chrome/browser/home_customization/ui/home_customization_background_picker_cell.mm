@@ -4,7 +4,6 @@
 
 #import "ios/chrome/browser/home_customization/ui/home_customization_background_picker_cell.h"
 
-#import "ios/chrome/browser/home_customization/ui/home_customization_background_cell+subclassing.h"
 #import "ios/chrome/browser/home_customization/ui/home_customization_background_picker_presentation_delegate.h"
 #import "ios/chrome/browser/home_customization/ui/home_customization_mutator.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
@@ -19,40 +18,36 @@ const CGFloat kSymbolAddBackgroundPointSize = 12;
 
 @implementation HomeCustomizationBackgroundPickerCell
 
-- (instancetype)initWithFrame:(CGRect)frame {
-  self = [super initWithFrame:frame];
-  if (self) {
-    self.innerContentView.backgroundColor = [UIColor colorNamed:kGrey200Color];
-    self.borderWrapperView.layer.borderColor = nil;
-    self.borderWrapperView.layer.borderWidth = 0;
+#pragma mark - HomeCustomizationBackgroundCell
 
-    UIImage* plusIcon = SymbolWithPalette(
-        CustomSymbolWithPointSize(kPlusCircleFillSymbol,
-                                  kSymbolAddBackgroundPointSize),
-        @[
-          // The color of the 'plus'.
-          [UIColor whiteColor],
-          // The filling color of the circle.
-          [UIColor colorNamed:kBlueColor]
-        ]);
+- (void)setupContentView:(UIView*)contentView {
+  contentView.backgroundColor = [UIColor colorNamed:kGrey200Color];
 
-    UIImageView* plusIconView = [[UIImageView alloc] initWithImage:plusIcon];
-    plusIconView.translatesAutoresizingMaskIntoConstraints = NO;
-    [self.innerContentView addSubview:plusIconView];
+  UIImage* plusIcon = SymbolWithPalette(
+      CustomSymbolWithPointSize(kPlusCircleFillSymbol,
+                                kSymbolAddBackgroundPointSize),
+      @[
+        // The color of the 'plus'.
+        [UIColor whiteColor],
+        // The filling color of the circle.
+        [UIColor colorNamed:kBlueColor]
+      ]);
 
-    [NSLayoutConstraint activateConstraints:@[
-      [plusIconView.centerXAnchor
-          constraintEqualToAnchor:self.innerContentView.centerXAnchor],
-      [plusIconView.centerYAnchor
-          constraintEqualToAnchor:self.innerContentView.centerYAnchor],
-    ]];
+  UIImageView* plusIconView = [[UIImageView alloc] initWithImage:plusIcon];
+  plusIconView.translatesAutoresizingMaskIntoConstraints = NO;
+  [contentView addSubview:plusIconView];
 
-    UITapGestureRecognizer* tapGesture =
-        [[UITapGestureRecognizer alloc] initWithTarget:self
-                                                action:@selector(handleTap)];
-    [self.contentView addGestureRecognizer:tapGesture];
-  }
-  return self;
+  [NSLayoutConstraint activateConstraints:@[
+    [plusIconView.centerXAnchor
+        constraintEqualToAnchor:contentView.centerXAnchor],
+    [plusIconView.centerYAnchor
+        constraintEqualToAnchor:contentView.centerYAnchor],
+  ]];
+
+  UITapGestureRecognizer* tapGesture =
+      [[UITapGestureRecognizer alloc] initWithTarget:self
+                                              action:@selector(handleTap)];
+  [self.contentView addGestureRecognizer:tapGesture];
 }
 
 #pragma mark - Private
