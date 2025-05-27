@@ -28526,40 +28526,6 @@ TEST_P(
   EXPECT_EQ("HTTP/1.1 200", response->headers->GetStatusLine());
 }
 
-// Tests specific to the HappyEyeballsV3 feature.
-// TODO(crbug.com/346835898): Find ways to run more tests with the
-// HappyEyeballsV3 feature enabled.
-class HttpNetworkTransactionPoolTest : public HttpNetworkTransactionTest {
- public:
-  HttpNetworkTransactionPoolTest() {
-    feature_list_.InitAndEnableFeature(features::kHappyEyeballsV3);
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         HttpNetworkTransactionPoolTest,
-                         ::testing::ValuesIn(GetTestParams()));
-
-TEST_P(HttpNetworkTransactionPoolTest, SwitchToHttpStreamPool) {
-  MockRead data_reads[] = {
-      MockRead("HTTP/1.1 200 OK\r\n\r\n"),
-      MockRead("hello world"),
-      MockRead(SYNCHRONOUS, OK),
-  };
-  SimpleGetHelperResult out = SimpleGetHelper(data_reads);
-  EXPECT_THAT(out.rv, IsOk());
-  EXPECT_EQ("HTTP/1.1 200 OK", out.status_line);
-  EXPECT_EQ("hello world", out.response_data);
-  int64_t reads_size = CountReadBytes(data_reads);
-  EXPECT_EQ(reads_size, out.total_received_bytes);
-  EXPECT_EQ(0u, out.connection_attempts.size());
-
-  EXPECT_FALSE(out.remote_endpoint_after_start.address().empty());
-}
-
 TEST_P(HttpNetworkTransactionTest, EarlyHintsWithAltSvcHeader) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(

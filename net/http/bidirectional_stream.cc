@@ -414,11 +414,6 @@ void BidirectionalStream::OnNeedsClientAuth(SSLCertRequestInfo* cert_info) {
 
 void BidirectionalStream::OnQuicBroken() {}
 
-void BidirectionalStream::OnSwitchesToHttpStreamPool(
-    HttpStreamPoolRequestInfo request_info) {
-  NOTREACHED();
-}
-
 void BidirectionalStream::NotifyFailed(int error) {
   delegate_->OnFailed(error);
 }

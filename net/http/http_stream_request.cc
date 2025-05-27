@@ -98,4 +98,8 @@ void HttpStreamRequest::SetDnsResolutionTimeOverrides(
   }
 }
 
+void HttpStreamRequest::SetHelperForSwitchingToPool(Helper* helper) {
+  helper_ = helper;
+}
+
 }  // namespace net

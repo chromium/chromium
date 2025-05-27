@@ -280,8 +280,15 @@ class StreamRequester : public HttpStreamRequest::Delegate {
 
   HttpStreamRequest* RequestStream(HttpStreamPool& pool) {
     const HttpStreamKey stream_key = GetStreamKey();
-    request_ = pool.RequestStream(
-        this,
+    const auto net_log = NetLogWithSource::Make(
+        pool.http_network_session()->net_log(), NetLogSourceType::URL_REQUEST);
+    request_ = std::make_unique<HttpStreamRequest>(
+        /*helper=*/nullptr,
+        /*websocket_handshake_stream_create_helper=*/nullptr, net_log,
+        HttpStreamRequest::StreamType::HTTP_STREAM);
+    pool.HandleStreamRequest(
+        request_.get(),
+        /*delegate=*/this,
         HttpStreamPoolRequestInfo(
             stream_key.destination(), stream_key.privacy_mode(),
             stream_key.socket_tag(), stream_key.network_anonymization_key(),
@@ -293,9 +300,7 @@ class StreamRequester : public HttpStreamRequest::Delegate {
                 pool.http_network_session()->net_log(),
                 NetLogSourceType::HTTP_STREAM_JOB_CONTROLLER)),
         priority_, allowed_bad_certs_, enable_ip_based_pooling_,
-        enable_alternative_services_,
-        NetLogWithSource::Make(pool.http_network_session()->net_log(),
-                               NetLogSourceType::URL_REQUEST));
+        enable_alternative_services_);
     Group* group = pool.GetGroupForTesting(stream_key);
     AttemptManager* attempt_manager =
         group ? group->attempt_manager() : nullptr;
@@ -366,9 +371,6 @@ class StreamRequester : public HttpStreamRequest::Delegate {
   }
 
   void OnQuicBroken() override {}
-
-  void OnSwitchesToHttpStreamPool(
-      HttpStreamPoolRequestInfo request_info) override {}
 
   HttpStream* stream() {
     CHECK(stream_);

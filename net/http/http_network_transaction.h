@@ -124,9 +124,6 @@ class NET_EXPORT_PRIVATE HttpNetworkTransaction
 
   void OnQuicBroken() override;
 
-  void OnSwitchesToHttpStreamPool(
-      HttpStreamPoolRequestInfo request_info) override;
-
   ConnectionAttempts GetConnectionAttempts() const override;
 
  private:
