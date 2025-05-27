@@ -5982,7 +5982,6 @@ targets.bundle(
             variants = [
                 "MAC_MINI_INTEL_GPU_STABLE",
                 "MAC_RETINA_AMD_GPU_STABLE",
-                "MAC_RETINA_NVIDIA_GPU_STABLE",
             ],
         ),
         targets.bundle(
@@ -6004,7 +6003,6 @@ targets.bundle(
             variants = [
                 "MAC_MINI_INTEL_GPU_STABLE",
                 "MAC_RETINA_AMD_GPU_STABLE",
-                "MAC_RETINA_NVIDIA_GPU_STABLE",
             ],
         ),
         targets.bundle(
@@ -6012,7 +6010,6 @@ targets.bundle(
             variants = [
                 "MAC_MINI_INTEL_GPU_STABLE",
                 "MAC_RETINA_AMD_GPU_STABLE",
-                "MAC_RETINA_NVIDIA_GPU_STABLE",
             ],
         ),
         targets.bundle(
@@ -6082,7 +6079,6 @@ targets.bundle(
             variants = [
                 "MAC_MINI_INTEL_GPU_STABLE",
                 "MAC_RETINA_AMD_GPU_STABLE",
-                "MAC_RETINA_NVIDIA_GPU_STABLE",
             ],
         ),
         targets.bundle(
@@ -6090,7 +6086,6 @@ targets.bundle(
             variants = [
                 "MAC_MINI_INTEL_GPU_STABLE",
                 "MAC_RETINA_AMD_GPU_STABLE",
-                "MAC_RETINA_NVIDIA_GPU_STABLE",
             ],
         ),
     ],
