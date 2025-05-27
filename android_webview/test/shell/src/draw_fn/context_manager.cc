@@ -671,8 +671,7 @@ void ContextManagerVulkan::DoCreateContext(JNIEnv* env, int width, int height) {
   backend_context.fMaxAPIVersion = vulkan_implementation_->GetVulkanInstance()
                                        ->vulkan_info()
                                        .used_api_version;
-  backend_context.fMemoryAllocator =
-      gpu::CreateSkiaVulkanMemoryAllocator(device_queue_.get());
+  backend_context.fMemoryAllocator = device_queue_->GetSkiaVkMemoryAllocator();
 
   skgpu::VulkanGetProc get_proc = [](const char* proc_name, VkInstance instance,
                                      VkDevice device) {

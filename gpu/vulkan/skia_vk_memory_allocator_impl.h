@@ -12,9 +12,8 @@
 
 namespace gpu {
 
-class VulkanDeviceQueue;
-
-class SkiaVulkanMemoryAllocator : public skgpu::VulkanMemoryAllocator {
+class COMPONENT_EXPORT(VULKAN) SkiaVulkanMemoryAllocator
+    : public skgpu::VulkanMemoryAllocator {
  public:
   explicit SkiaVulkanMemoryAllocator(VmaAllocator allocator);
   ~SkiaVulkanMemoryAllocator() override = default;
@@ -22,6 +21,8 @@ class SkiaVulkanMemoryAllocator : public skgpu::VulkanMemoryAllocator {
   SkiaVulkanMemoryAllocator(const SkiaVulkanMemoryAllocator&) = delete;
   SkiaVulkanMemoryAllocator& operator=(const SkiaVulkanMemoryAllocator&) =
       delete;
+
+  uint64_t totalLazyAllocatedMemory() const { return lazy_allocated_size_; }
 
  private:
   // skgpu::VulkanMemoryAllocator:
@@ -53,11 +54,10 @@ class SkiaVulkanMemoryAllocator : public skgpu::VulkanMemoryAllocator {
   std::pair<uint64_t, uint64_t> totalAllocatedAndUsedMemory() const override;
 
   const VmaAllocator allocator_;
-};
 
-COMPONENT_EXPORT(VULKAN)
-sk_sp<skgpu::VulkanMemoryAllocator> CreateSkiaVulkanMemoryAllocator(
-    VulkanDeviceQueue* device_queue);
+  // Tracks vulkan memory that has lazily allocated flag.
+  VkDeviceSize lazy_allocated_size_ = 0;
+};
 
 }  // namespace gpu
 

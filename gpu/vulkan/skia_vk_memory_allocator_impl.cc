@@ -56,6 +56,11 @@ VkResult SkiaVulkanMemoryAllocator::allocateImageMemory(
   VkResult result = vma::AllocateMemoryForImage(allocator_, image, &info,
                                                 &allocation, nullptr);
   if (VK_SUCCESS == result) {
+    if (info.requiredFlags & VK_MEMORY_PROPERTY_LAZILY_ALLOCATED_BIT) {
+      VmaAllocationInfo vma_info;
+      vma::GetAllocationInfo(allocator_, allocation, &vma_info);
+      lazy_allocated_size_ += vma_info.size;
+    }
     *backend_memory = reinterpret_cast<skgpu::VulkanBackendMemory>(allocation);
   }
 
@@ -119,6 +124,11 @@ VkResult SkiaVulkanMemoryAllocator::allocateBufferMemory(
   VkResult result = vma::AllocateMemoryForBuffer(allocator_, buffer, &info,
                                                  &allocation, nullptr);
   if (VK_SUCCESS == result) {
+    if (info.preferredFlags & VK_MEMORY_PROPERTY_LAZILY_ALLOCATED_BIT) {
+      VmaAllocationInfo vma_info;
+      vma::GetAllocationInfo(allocator_, allocation, &vma_info);
+      lazy_allocated_size_ += vma_info.size;
+    }
     *backend_memory = reinterpret_cast<skgpu::VulkanBackendMemory>(allocation);
   }
 
@@ -129,7 +139,18 @@ void SkiaVulkanMemoryAllocator::freeMemory(
     const skgpu::VulkanBackendMemory& memory) {
   TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("gpu.vulkan.vma"),
                "SkiaVulkanMemoryAllocator::freeMemory");
-  vma::FreeMemory(allocator_, reinterpret_cast<const VmaAllocation>(memory));
+  VmaAllocation allocation = reinterpret_cast<const VmaAllocation>(memory);
+
+  // Update `lazy_allocated_size_` tracking.
+  VmaAllocationInfo vma_info;
+  vma::GetAllocationInfo(allocator_, allocation, &vma_info);
+  VkMemoryPropertyFlags mem_flags;
+  vma::GetMemoryTypeProperties(allocator_, vma_info.memoryType, &mem_flags);
+  if (mem_flags & VK_MEMORY_PROPERTY_LAZILY_ALLOCATED_BIT) {
+    lazy_allocated_size_ -= vma_info.size;
+  }
+
+  vma::FreeMemory(allocator_, allocation);
 }
 
 void SkiaVulkanMemoryAllocator::getAllocInfo(
@@ -218,11 +239,6 @@ SkiaVulkanMemoryAllocator::totalAllocatedAndUsedMemory() const {
   }
   DCHECK_LE(total_used_memory, total_allocated_memory);
   return {total_allocated_memory, total_used_memory};
-}
-
-sk_sp<skgpu::VulkanMemoryAllocator> CreateSkiaVulkanMemoryAllocator(
-    VulkanDeviceQueue* device_queue) {
-  return sk_make_sp<SkiaVulkanMemoryAllocator>(device_queue->vma_allocator());
 }
 
 }  // namespace gpu
