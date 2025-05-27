@@ -1,0 +1,46 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/ui.gni")
+
+source_set("infobars") {
+  public = [
+    "confirm_infobar_creator.h",
+    "infobar_responder.h",
+    "simple_alert_infobar_creator.h",
+  ]
+
+  sources = [
+    "confirm_infobar_creator.cc",
+    "infobar_responder.cc",
+    "simple_alert_infobar_creator.cc",
+  ]
+
+  public_deps = [
+    "//base",
+    "//components/infobars/content",
+  ]
+
+  if (toolkit_views) {
+    public_deps += [ "//chrome/browser/ui/views/infobars" ]
+  }
+
+  if (is_android) {
+    public_deps += [ "//components/infobars/android" ]
+  }
+}
+
+source_set("test_support") {
+  testonly = true
+
+  sources = [
+    "test_support/infobar_observer.cc",
+    "test_support/infobar_observer.h",
+  ]
+
+  deps = [
+    "//base",
+    "//components/infobars/core",
+  ]
+}

@@ -25,7 +25,7 @@ source_set("page_info") {
   }
   public_deps += [
     "//base",
-    "//components/infobars/core",
+    "//chrome/browser/infobars",
     "//components/page_info",
     "//components/page_info/core:proto",
     "//components/security_state/core",

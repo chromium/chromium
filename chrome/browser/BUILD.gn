@@ -605,12 +605,6 @@ static_library("browser") {
     "icon_manager.h",
     "idle/idle_detection_permission_context.cc",
     "idle/idle_detection_permission_context.h",
-    "infobars/confirm_infobar_creator.cc",
-    "infobars/confirm_infobar_creator.h",
-    "infobars/infobar_responder.cc",
-    "infobars/infobar_responder.h",
-    "infobars/simple_alert_infobar_creator.cc",
-    "infobars/simple_alert_infobar_creator.h",
     "interstitials/chrome_settings_page_helper.cc",
     "interstitials/chrome_settings_page_helper.h",
     "interstitials/enterprise_util.cc",
@@ -2053,6 +2047,7 @@ static_library("browser") {
 
     # TODO(417228688): Remove this dependency when both chrome/browser/serial and
     # chrome/browser/profiles/profile_manager.h get modularized.
+    "//chrome/browser/infobars",
     "//chrome/browser/ui/serial",
     "//chrome/browser/ui/serial:impl",
     "//chrome/browser/ui/startup:startup_tab",

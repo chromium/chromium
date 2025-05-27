@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/infobars/infobar_observer.h"
+#include "chrome/browser/infobars/test_support/infobar_observer.h"
 
 InfoBarObserver::InfoBarObserver(infobars::InfoBarManager* manager, Type type)
     : type_(type) {

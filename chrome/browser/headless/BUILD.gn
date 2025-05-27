@@ -108,6 +108,7 @@ if (!is_android) {
       ":headless",
       "//base",
       "//chrome/browser",
+      "//chrome/browser/infobars",
       "//chrome/test:test_support",
       "//content/test:test_support",
       "//pdf",
@@ -117,6 +118,7 @@ if (!is_android) {
 
     if (is_linux || is_win || is_mac) {
       deps += [
+        "//chrome/browser/infobars",
         "//chrome/browser/profiles",
         "//chrome/browser/ui",
         "//components/devtools/simple_devtools_protocol_client",

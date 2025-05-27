@@ -448,6 +448,7 @@ source_set("extensions") {
     "//chrome/browser/extensions/api:api_registration",
     "//chrome/browser/favicon",
     "//chrome/browser/google",
+    "//chrome/browser/infobars",
     "//chrome/browser/lifetime:termination_notification",
     "//chrome/browser/prefetch",
     "//chrome/browser/prefs",
