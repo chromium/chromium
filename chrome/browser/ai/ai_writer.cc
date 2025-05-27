@@ -74,7 +74,8 @@ AIWriter::AIWriter(
 
 AIWriter::~AIWriter() {
   for (auto& responder : responder_set_) {
-    responder->OnError(
+    AIUtils::SendStreamingStatus(
+        responder,
         blink::mojom::ModelStreamingResponseStatus::kErrorSessionDestroyed);
   }
 }
@@ -118,20 +119,25 @@ void AIWriter::DidGetExecutionInputSizeForWrite(
   }
 
   if (!session_wrapper_.session()) {
-    responder->OnError(
+    AIUtils::SendStreamingStatus(
+        responder,
         blink::mojom::ModelStreamingResponseStatus::kErrorSessionDestroyed);
     return;
   }
 
   if (!result.has_value()) {
-    responder->OnError(
+    AIUtils::SendStreamingStatus(
+        responder,
         blink::mojom::ModelStreamingResponseStatus::kErrorGenericFailure);
     return;
   }
 
-  if (result.value() > blink::mojom::kWritingAssistanceMaxInputTokenSize) {
-    responder->OnError(
-        blink::mojom::ModelStreamingResponseStatus::kErrorInputTooLarge);
+  uint32_t quota = blink::mojom::kWritingAssistanceMaxInputTokenSize;
+  if (result.value() > quota) {
+    AIUtils::SendStreamingStatus(
+        responder,
+        blink::mojom::ModelStreamingResponseStatus::kErrorInputTooLarge,
+        blink::mojom::QuotaErrorInfo::New(result.value(), quota));
     return;
   }
 
@@ -150,7 +156,8 @@ void AIWriter::ModelExecutionCallback(
     return;
   }
   if (!result.response.has_value()) {
-    responder->OnError(
+    AIUtils::SendStreamingStatus(
+        responder,
         AIUtils::ConvertModelExecutionError(result.response.error().error()));
     return;
   }

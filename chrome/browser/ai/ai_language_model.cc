@@ -33,6 +33,7 @@
 #include "mojo/public/cpp/bindings/message.h"
 #include "services/on_device_model/public/cpp/capabilities.h"
 #include "third_party/blink/public/common/features_generated.h"
+#include "third_party/blink/public/mojom/ai/ai_common.mojom-shared.h"
 #include "third_party/blink/public/mojom/ai/ai_language_model.mojom-forward.h"
 #include "third_party/blink/public/mojom/ai/ai_language_model.mojom-shared.h"
 #include "third_party/blink/public/mojom/ai/ai_manager.mojom-shared.h"
@@ -168,9 +169,11 @@ class AILanguageModel::PromptState
                        weak_factory_.GetWeakPtr(), std::move(session)));
   }
 
-  void OnError(blink::mojom::ModelStreamingResponseStatus error) {
+  void OnError(blink::mojom::ModelStreamingResponseStatus error,
+               blink::mojom::QuotaErrorInfoPtr quota_error_info = nullptr) {
     if (responder_) {
-      responder_->OnError(error);
+      AIUtils::SendStreamingStatus(responder_, error,
+                                   std::move(quota_error_info));
     }
     session_.reset();
     responder_.reset();
@@ -474,10 +477,11 @@ void AILanguageModel::Initialize(
   } else {
     auto input = ConvertToInput(initial_prompts, session_params_->capabilities);
     if (!input) {
-      mojo::Remote<blink::mojom::AIManagerCreateLanguageModelClient>(
-          std::move(create_client))
-          ->OnError(
-              blink::mojom::AIManagerCreateClientError::kUnableToCreateSession);
+      mojo::Remote<blink::mojom::AIManagerCreateLanguageModelClient>
+          client_remote(std::move(create_client));
+      AIUtils::SendClientRemoteError(
+          client_remote,
+          blink::mojom::AIManagerCreateClientError::kUnableToCreateSession);
       return;
     }
     // This does not need to be queued because the AILanguageModel receiver has
@@ -597,19 +601,23 @@ void AILanguageModel::InitializeGetInputSizeComplete(
         create_client,
     std::optional<uint32_t> token_count) {
   if (!initial_session_ || !token_count) {
-    mojo::Remote<blink::mojom::AIManagerCreateLanguageModelClient>(
-        std::move(create_client))
-        ->OnError(
-            blink::mojom::AIManagerCreateClientError::kUnableToCreateSession);
+    mojo::Remote<blink::mojom::AIManagerCreateLanguageModelClient>
+        client_remote(std::move(create_client));
+    AIUtils::SendClientRemoteError(
+        client_remote,
+        blink::mojom::AIManagerCreateClientError::kUnableToCreateSession);
     return;
   }
 
   uint32_t max_tokens = context_->max_tokens();
   if (*token_count > max_tokens) {
-    mojo::Remote<blink::mojom::AIManagerCreateLanguageModelClient>(
-        std::move(create_client))
-        ->OnError(
-            blink::mojom::AIManagerCreateClientError::kInitialInputTooLarge);
+    auto quota = context_->max_tokens() - context_->current_tokens();
+    mojo::Remote<blink::mojom::AIManagerCreateLanguageModelClient>
+        client_remote(std::move(create_client));
+    AIUtils::SendClientRemoteError(
+        client_remote,
+        blink::mojom::AIManagerCreateClientError::kInitialInputTooLarge,
+        blink::mojom::QuotaErrorInfo::New(token_count.value(), quota));
     return;
   }
 
@@ -641,7 +649,8 @@ void AILanguageModel::InitializeSafetyChecksComplete(
   // failure.
   if (safety_result.failed_to_run || safety_result.is_unsafe ||
       safety_result.is_unsupported_language) {
-    client->OnError(
+    AIUtils::SendClientRemoteError(
+        client,
         blink::mojom::AIManagerCreateClientError::kUnableToCreateSession);
     return;
   }
@@ -662,7 +671,8 @@ void AILanguageModel::ForkInternal(
   mojo::Remote<blink::mojom::AIManagerCreateLanguageModelClient> remote(
       std::move(client));
   if (!initial_session_ || !model_client_) {
-    remote->OnError(
+    AIUtils::SendClientRemoteError(
+        remote,
         blink::mojom::AIManagerCreateClientError::kUnableToCreateSession);
     return;
   }
@@ -687,19 +697,21 @@ void AILanguageModel::PromptInternal(
         pending_responder,
     base::OnceClosure on_complete) {
   if (!initial_session_) {
-    mojo::Remote<blink::mojom::ModelStreamingResponder>(
-        std::move(pending_responder))
-        ->OnError(
-            blink::mojom::ModelStreamingResponseStatus::kErrorSessionDestroyed);
+    mojo::Remote<blink::mojom::ModelStreamingResponder> responder(
+        std::move(pending_responder));
+    AIUtils::SendStreamingStatus(
+        responder,
+        blink::mojom::ModelStreamingResponseStatus::kErrorSessionDestroyed);
     return;
   }
 
   auto input = ConvertToInputForExecute(prompts, session_params_->capabilities);
   if (!input) {
-    mojo::Remote<blink::mojom::ModelStreamingResponder>(
-        std::move(pending_responder))
-        ->OnError(
-            blink::mojom::ModelStreamingResponseStatus::kErrorInvalidRequest);
+    mojo::Remote<blink::mojom::ModelStreamingResponder> responder(
+        std::move(pending_responder));
+    AIUtils::SendStreamingStatus(
+        responder,
+        blink::mojom::ModelStreamingResponseStatus::kErrorInvalidRequest);
     return;
   }
   prompt_state_ = std::make_unique<PromptState>(
@@ -729,8 +741,10 @@ void AILanguageModel::PromptGetInputSizeComplete(
 
   auto space_reserved = context_->ReserveSpace(*token_count);
   if (space_reserved == Context::SpaceReservationResult::kInsufficientSpace) {
+    auto quota = context_->max_tokens() - context_->current_tokens();
     prompt_state_->OnError(
-        blink::mojom::ModelStreamingResponseStatus::kErrorInputTooLarge);
+        blink::mojom::ModelStreamingResponseStatus::kErrorInputTooLarge,
+        blink::mojom::QuotaErrorInfo::New(token_count.value(), quota));
     return;
   }
 
@@ -800,19 +814,21 @@ void AILanguageModel::AppendInternal(
         pending_responder,
     base::OnceClosure on_complete) {
   if (!initial_session_) {
-    mojo::Remote<blink::mojom::ModelStreamingResponder>(
-        std::move(pending_responder))
-        ->OnError(
-            blink::mojom::ModelStreamingResponseStatus::kErrorSessionDestroyed);
+    mojo::Remote<blink::mojom::ModelStreamingResponder> responder(
+        std::move(pending_responder));
+    AIUtils::SendStreamingStatus(
+        responder,
+        blink::mojom::ModelStreamingResponseStatus::kErrorSessionDestroyed);
     return;
   }
 
   auto input = ConvertToInput(prompts, session_params_->capabilities);
   if (!input) {
-    mojo::Remote<blink::mojom::ModelStreamingResponder>(
-        std::move(pending_responder))
-        ->OnError(
-            blink::mojom::ModelStreamingResponseStatus::kErrorInvalidRequest);
+    mojo::Remote<blink::mojom::ModelStreamingResponder> responder(
+        std::move(pending_responder));
+    AIUtils::SendStreamingStatus(
+        responder,
+        blink::mojom::ModelStreamingResponseStatus::kErrorInvalidRequest);
     return;
   }
   prompt_state_ = std::make_unique<PromptState>(

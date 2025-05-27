@@ -13,6 +13,7 @@
 #include "base/run_loop.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/mojom/ai/ai_common.mojom-blink.h"
 #include "third_party/blink/public/mojom/ai/model_streaming_responder.mojom-blink.h"
 #include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
 #include "third_party/blink/renderer/bindings/core/v8/idl_types.h"
@@ -121,7 +122,8 @@ TEST(CreateModelExecutionResponder, ErrorPermissionDenied) {
   base::RunLoop runloop;
   responder.set_disconnect_handler(runloop.QuitClosure());
   responder->OnError(
-      blink::mojom::ModelStreamingResponseStatus::kErrorPermissionDenied);
+      blink::mojom::ModelStreamingResponseStatus::kErrorPermissionDenied,
+      blink::mojom::blink::QuotaErrorInfo::New(0u, 0u));
 
   // Check that the promise will be rejected with an ErrorInvalidRequest.
   ScriptPromiseTester tester(scope.GetScriptState(), promise);
@@ -263,7 +265,8 @@ TEST(CreateModelExecutionStreamingResponder, ErrorPermissionDenied) {
   base::RunLoop runloop;
   responder.set_disconnect_handler(runloop.QuitClosure());
   responder->OnError(
-      blink::mojom::ModelStreamingResponseStatus::kErrorPermissionDenied);
+      blink::mojom::ModelStreamingResponseStatus::kErrorPermissionDenied,
+      blink::mojom::blink::QuotaErrorInfo::New(0u, 0u));
 
   // Check that the NotAllowedError is passed to the stream.
   auto* reader =

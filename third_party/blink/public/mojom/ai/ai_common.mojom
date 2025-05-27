@@ -14,6 +14,14 @@ struct AILanguageCode {
   string code;
 };
 
+struct QuotaErrorInfo {
+  // The number of tokens requested that caused the quota exceeded error.
+  uint32 requested;
+
+  // The number of available tokens. Expected to be less than `requested`.
+  uint32 quota;
+};
+
 // Types of error that could occur when AIManager attempts to create a client
 // such as AISummarizer, AIWriter, AIRewriter or AILanguageModel.
 enum AIManagerCreateClientError {
@@ -21,6 +29,7 @@ enum AIManagerCreateClientError {
   kUnableToCreateSession = 0,
 
   // The manager is unable to calculate the token size of the initial input.
+  // This error type should be sent with `QuotaErrorInfo`.
   kUnableToCalculateTokenSize = 1,
 
   // The initial input (context or prompt) exceeds the quota limit.

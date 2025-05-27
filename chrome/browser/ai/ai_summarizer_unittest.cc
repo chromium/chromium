@@ -53,7 +53,8 @@ class MockCreateSummarizerClient
               (override));
   MOCK_METHOD(void,
               OnError,
-              (blink::mojom::AIManagerCreateClientError error),
+              (blink::mojom::AIManagerCreateClientError error,
+               blink::mojom::QuotaErrorInfoPtr quota_error_info),
               (override));
 
  private:
@@ -252,9 +253,11 @@ TEST_F(AISummarizerTest, CreateSummarizerNoService) {
   SetupNullOptimizationGuideKeyedService();
   MockCreateSummarizerClient mock_create_summarizer_client;
   base::RunLoop run_loop;
-  EXPECT_CALL(mock_create_summarizer_client, OnError(_))
+  EXPECT_CALL(mock_create_summarizer_client, OnError(_, _))
       .WillOnce(testing::Invoke([&](blink::mojom::AIManagerCreateClientError
-                                        error) {
+                                        error,
+                                    blink::mojom::QuotaErrorInfoPtr
+                                        quota_error_info) {
         ASSERT_EQ(
             error,
             blink::mojom::AIManagerCreateClientError::kUnableToCreateSession);
@@ -285,9 +288,11 @@ TEST_F(AISummarizerTest, CreateSummarizerModelNotEligible) {
 
   MockCreateSummarizerClient mock_create_summarizer_client;
   base::RunLoop run_loop;
-  EXPECT_CALL(mock_create_summarizer_client, OnError(_))
+  EXPECT_CALL(mock_create_summarizer_client, OnError(_, _))
       .WillOnce(testing::Invoke([&](blink::mojom::AIManagerCreateClientError
-                                        error) {
+                                        error,
+                                    blink::mojom::QuotaErrorInfoPtr
+                                        quota_error_info) {
         ASSERT_EQ(
             error,
             blink::mojom::AIManagerCreateClientError::kUnableToCreateSession);
@@ -401,12 +406,19 @@ TEST_F(AISummarizerTest, CreateSummarizerContextLimitExceededError) {
 
   MockCreateSummarizerClient mock_create_summarizer_client;
   base::RunLoop run_loop;
-  EXPECT_CALL(mock_create_summarizer_client, OnError(_))
+  EXPECT_CALL(mock_create_summarizer_client, OnError(_, _))
       .WillOnce(testing::Invoke([&](blink::mojom::AIManagerCreateClientError
-                                        error) {
+                                        error,
+                                    blink::mojom::QuotaErrorInfoPtr
+                                        quota_error_info) {
         ASSERT_EQ(
             error,
             blink::mojom::AIManagerCreateClientError::kInitialInputTooLarge);
+        ASSERT_TRUE(quota_error_info);
+        ASSERT_EQ(quota_error_info->requested,
+                  blink::mojom::kWritingAssistanceMaxInputTokenSize + 1);
+        ASSERT_EQ(quota_error_info->quota,
+                  blink::mojom::kWritingAssistanceMaxInputTokenSize);
         run_loop.Quit();
       }));
 
@@ -527,12 +539,19 @@ TEST_F(AISummarizerTest, InputLimitExceededError) {
           }));
   AITestUtils::MockModelStreamingResponder mock_responder;
   base::RunLoop run_loop;
-  EXPECT_CALL(mock_responder, OnError(_))
+  EXPECT_CALL(mock_responder, OnError(_, _))
       .WillOnce(testing::Invoke([&](blink::mojom::ModelStreamingResponseStatus
-                                        status) {
+                                        status,
+                                    blink::mojom::QuotaErrorInfoPtr
+                                        quota_error_info) {
         EXPECT_EQ(
             status,
             blink::mojom::ModelStreamingResponseStatus::kErrorInputTooLarge);
+        ASSERT_TRUE(quota_error_info);
+        ASSERT_EQ(quota_error_info->requested,
+                  blink::mojom::kWritingAssistanceMaxInputTokenSize + 1);
+        ASSERT_EQ(quota_error_info->quota,
+                  blink::mojom::kWritingAssistanceMaxInputTokenSize);
         run_loop.Quit();
       }));
 
@@ -562,9 +581,11 @@ TEST_F(AISummarizerTest, ModelExecutionError) {
   auto summarizer_remote = GetAISummarizerRemote();
   AITestUtils::MockModelStreamingResponder mock_responder;
   base::RunLoop run_loop;
-  EXPECT_CALL(mock_responder, OnError(_))
+  EXPECT_CALL(mock_responder, OnError(_, _))
       .WillOnce(testing::Invoke([&](blink::mojom::ModelStreamingResponseStatus
-                                        status) {
+                                        status,
+                                    blink::mojom::QuotaErrorInfoPtr
+                                        quota_error_info) {
         EXPECT_EQ(
             status,
             blink::mojom::ModelStreamingResponseStatus::kErrorPermissionDenied);
@@ -729,9 +750,11 @@ TEST_F(AISummarizerTest, SummarizerDisconnected) {
   auto summarizer_remote = GetAISummarizerRemote();
   AITestUtils::MockModelStreamingResponder mock_responder;
   base::RunLoop run_loop_for_response;
-  EXPECT_CALL(mock_responder, OnError(_))
+  EXPECT_CALL(mock_responder, OnError(_, _))
       .WillOnce(testing::Invoke([&](blink::mojom::ModelStreamingResponseStatus
-                                        status) {
+                                        status,
+                                    blink::mojom::QuotaErrorInfoPtr
+                                        quota_error_info) {
         EXPECT_EQ(
             status,
             blink::mojom::ModelStreamingResponseStatus::kErrorSessionDestroyed);

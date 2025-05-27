@@ -8,6 +8,7 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/metrics/histogram_functions.h"
+#include "third_party/blink/public/mojom/ai/ai_common.mojom-blink.h"
 #include "third_party/blink/public/mojom/ai/model_streaming_responder.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/core/dom/abort_signal.h"
@@ -101,10 +102,12 @@ class Responder final : public GarbageCollected<Responder>,
     Cleanup();
   }
 
-  void OnError(mojom::blink::ModelStreamingResponseStatus status) override {
+  void OnError(mojom::blink::ModelStreamingResponseStatus status,
+               mojom::blink::QuotaErrorInfoPtr quota_error_info) override {
     RecordResponseStatusMetrics(status);
     response_callback_count_++;
-    resolver_->Reject(ConvertModelStreamingResponseErrorToDOMException(status));
+    resolver_->Reject(ConvertModelStreamingResponseErrorToDOMException(
+        status, std::move(quota_error_info)));
     RecordResponseMetrics();
     Cleanup();
   }
@@ -260,11 +263,12 @@ class StreamingResponder final
     return;
   }
 
-  void OnError(ModelStreamingResponseStatus status) override {
+  void OnError(ModelStreamingResponseStatus status,
+               mojom::blink::QuotaErrorInfoPtr quota_error_info) override {
     RecordResponseStatusMetrics(status);
     response_callback_count_++;
-    Controller()->Error(
-        ConvertModelStreamingResponseErrorToDOMException(status));
+    Controller()->Error(ConvertModelStreamingResponseErrorToDOMException(
+        status, std::move(quota_error_info)));
     RecordResponseMetrics();
     Cleanup();
   }

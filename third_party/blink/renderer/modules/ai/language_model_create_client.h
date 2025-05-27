@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_AI_LANGUAGE_MODEL_CREATE_CLIENT_H_
 
 #include "base/task/sequenced_task_runner.h"
+#include "third_party/blink/public/mojom/ai/ai_common.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_language_model_create_options.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/modules/ai/ai_context_observer.h"
@@ -39,7 +40,8 @@ class LanguageModelCreateClient
   void OnResult(
       mojo::PendingRemote<mojom::blink::AILanguageModel> pending_remote,
       mojom::blink::AILanguageModelInstanceInfoPtr info) override;
-  void OnError(mojom::blink::AIManagerCreateClientError error) override;
+  void OnError(mojom::blink::AIManagerCreateClientError error,
+               mojom::blink::QuotaErrorInfoPtr quota_error_info) override;
 
   // AIContextObserver:
   void ResetReceiver() override;

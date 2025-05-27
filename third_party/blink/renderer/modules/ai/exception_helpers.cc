@@ -6,6 +6,7 @@
 
 #include "base/debug/dump_without_crashing.h"
 #include "base/notreached.h"
+#include "third_party/blink/public/mojom/ai/ai_common.mojom-blink.h"
 #include "third_party/blink/public/mojom/ai/ai_manager.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/ai/ai_manager.mojom-shared.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_quota_exceeded_error_options.h"
@@ -193,7 +194,8 @@ DOMException* CreateUnknown(const char* error) {
 }  // namespace
 
 DOMException* ConvertModelStreamingResponseErrorToDOMException(
-    ModelStreamingResponseStatus error) {
+    ModelStreamingResponseStatus error,
+    mojom::blink::QuotaErrorInfoPtr quota_error_info) {
   switch (error) {
     case ModelStreamingResponseStatus::kErrorUnknown:
       base::debug::DumpWithoutCrashing();
@@ -240,9 +242,12 @@ DOMException* ConvertModelStreamingResponseErrorToDOMException(
           DOMException::GetErrorName(DOMExceptionCode::kInvalidStateError));
     case ModelStreamingResponseStatus::kErrorInputTooLarge:
       if (RuntimeEnabledFeatures::QuotaExceededErrorUpdateEnabled()) {
-        return QuotaExceededError::Create(
-            kExceptionMessageInputTooLarge,
-            MakeGarbageCollected<QuotaExceededErrorOptions>());
+        CHECK(quota_error_info);
+        auto* options = MakeGarbageCollected<QuotaExceededErrorOptions>();
+        options->setQuota(static_cast<double>(quota_error_info->quota));
+        options->setRequested(static_cast<double>(quota_error_info->requested));
+        return QuotaExceededError::Create(kExceptionMessageInputTooLarge,
+                                          std::move(options));
       }
       return DOMException::Create(
           kExceptionMessageInputTooLarge,
