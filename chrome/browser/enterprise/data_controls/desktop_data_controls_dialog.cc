@@ -4,13 +4,10 @@
 
 #include "chrome/browser/enterprise/data_controls/desktop_data_controls_dialog.h"
 
-#include "chrome/browser/ui/tabs/public/tab_dialog_manager.h"
-#include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/constrained_window/constrained_window_views.h"
 #include "components/guest_view/browser/guest_view_base.h"
 #include "components/strings/grit/components_strings.h"
-#include "components/tabs/public/tab_interface.h"
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -22,10 +19,6 @@
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout_view.h"
-
-#if BUILDFLAG(ENABLE_GLIC)
-#include "chrome/browser/glic/host/guest_util.h"
-#endif  // BUILDFLAG(ENABLE_GLIC)
 
 namespace data_controls {
 
@@ -42,26 +35,6 @@ std::unique_ptr<views::View> CreateEnterpriseIcon() {
       vector_icons::kBusinessIcon, ui::kColorSysOnSurfaceSubtle,
       kBusinessIconSize));
   return enterprise_icon;
-}
-
-gfx::Rect GetDialogBounds(content::WebContents* contents,
-                          const gfx::Rect& current_widget_bounds) {
-  gfx::Rect rect = contents->GetContainerBounds();
-
-
-  // This will show the dialog right above the top of the contents.
-  rect.set_y(rect.y() - 40);
-#if BUILDFLAG(ENABLE_GLIC)
-  if (glic::IsGlicWebUI(contents)) {
-    // This will show the dialog right below the "header" part of Glic.
-    rect.set_y(rect.y() + 80);
-  }
-#endif  // BUILDFLAG(ENABLE_GLIC)
-
-  rect.set_x(rect.x() + (rect.width() / 2) -
-             (current_widget_bounds.width() / 2));
-
-  return rect;
 }
 
 class DataControlsDialogDelegate : public views::DialogDelegate {
@@ -239,23 +212,11 @@ void DesktopDataControlsDialog::Show(base::OnceClosure on_destructed) {
   dialog_delegate_->SetOwnershipOfNewWidget(
       views::Widget::InitParams::CLIENT_OWNS_WIDGET);
 
-  widget_ = base::WrapUnique(views::DialogDelegate::CreateDialogWidget(
-      dialog_delegate_.get(), gfx::NativeWindow(),
-#if BUILDFLAG(IS_MAC)
-      top_web_contents->GetNativeView()));
-#else
-      top_web_contents->GetTopLevelNativeWindow()));
-#endif
-
+  widget_ = constrained_window::ShowWebModalDialogViewsOwned(
+      dialog_delegate_.get(), top_web_contents,
+      views::Widget::InitParams::CLIENT_OWNS_WIDGET);
   widget_->MakeCloseSynchronous(base::BindOnce(
       &DesktopDataControlsDialog::CloseDialog, base::Unretained(this)));
-  widget_->SetBounds(
-      GetDialogBounds(top_web_contents, widget_->GetWindowBoundsInScreen()));
-  scoped_ignore_input_events_ =
-      top_web_contents->IgnoreInputEvents(std::nullopt);
-
-  constrained_window::ShowModalDialog(widget_->GetNativeWindow(),
-                                      top_web_contents);
 }
 
 void DesktopDataControlsDialog::CloseDialog(
