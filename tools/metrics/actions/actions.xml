@@ -10216,6 +10216,16 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="DomDistiller.Android.OnStartedReaderMode">
+  <owner>wylieb@google.com</owner>
+  <owner>chrome-reader-mode-team@google.com</owner>
+  <description>
+    Recorded when a user started reader mode through an interaction with a
+    message or the magic toolbar button. This doesn't record when the actual
+    viewer appears, but rather when the viewer is requested.
+  </description>
+</action>
+
 <action name="DomDistiller.Android.ThemeChanged">
   <owner>wylieb@google.com</owner>
   <owner>chrome-reader-mode-team@google.com</owner>
@@ -10225,6 +10235,9 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="DomDistiller_DistilledPageOpened">
+  <obsolete>
+    Long dead, reimplemented as DomDistiller.Android.OnStartedReaderMode.
+  </obsolete>
   <owner>smaslo@chromium.org</owner>
   <owner>yfriedman@chromium.org</owner>
   <description>User opens reader mode on a page.</description>

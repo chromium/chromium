@@ -26,6 +26,7 @@ import org.chromium.base.RequiredCallback;
 import org.chromium.base.SysUtils;
 import org.chromium.base.UserData;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.IntentHandler;
@@ -362,6 +363,7 @@ public class ReaderModeManager extends EmptyTabObserver implements UserData {
         new UkmRecorder(mTab.getWebContents(), "DomDistiller.Android.ReaderModeShown")
                 .addBooleanMetric("Shown")
                 .record();
+        RecordUserAction.record("DomDistiller.Android.OnStartedReaderMode");
     }
 
     /**
