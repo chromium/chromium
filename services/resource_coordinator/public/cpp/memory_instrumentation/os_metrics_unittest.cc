@@ -164,7 +164,8 @@ TEST(OSMetricsTest, GivesNonZeroResults) {
   base::ProcessHandle handle = base::kNullProcessHandle;
   mojom::RawOSMemDump dump;
   dump.platform_private_footprint = mojom::PlatformPrivateFootprint::New();
-  EXPECT_TRUE(OSMetrics::FillOSMemoryDump(handle, &dump));
+  OSMetrics::MemDumpFlagSet flags = OSMetrics::MemDumpFlagSet::All();
+  EXPECT_TRUE(OSMetrics::FillOSMemoryDump(handle, flags, &dump));
   EXPECT_TRUE(dump.platform_private_footprint);
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID) || \
     BUILDFLAG(IS_FUCHSIA)
@@ -286,7 +287,10 @@ TEST(OSMetricsTest, GetMappedAndResidentPages) {
 TEST(OSMetricsTest, CountMappings) {
   mojom::RawOSMemDump dump;
   dump.platform_private_footprint = mojom::PlatformPrivateFootprint::New();
-  ASSERT_TRUE(OSMetrics::FillOSMemoryDump(base::kNullProcessHandle, &dump));
+  OSMetrics::MemDumpFlagSet flags = {
+      mojom::MemDumpFlags::MEM_DUMP_COUNT_MAPPINGS};
+  ASSERT_TRUE(
+      OSMetrics::FillOSMemoryDump(base::kNullProcessHandle, flags, &dump));
   uint32_t mappings_count = dump.mappings_count;
   EXPECT_GT(dump.mappings_count, 0u);
 
@@ -306,10 +310,18 @@ TEST(OSMetricsTest, CountMappings) {
               mprotect(reinterpret_cast<void*>(start), page_size, PROT_NONE));
   }
 
-  ASSERT_TRUE(OSMetrics::FillOSMemoryDump(base::kNullProcessHandle, &dump));
+  ASSERT_TRUE(
+      OSMetrics::FillOSMemoryDump(base::kNullProcessHandle, flags, &dump));
   EXPECT_GT(dump.mappings_count, mappings_count);
 
   munmap(addr, kPageCount * page_size);
+}
+
+TEST(OSMetricsTest, CountMappingsDisabled) {
+  mojom::RawOSMemDump dump;
+  dump.platform_private_footprint = mojom::PlatformPrivateFootprint::New();
+  ASSERT_TRUE(OSMetrics::FillOSMemoryDump(base::kNullProcessHandle, {}, &dump));
+  EXPECT_EQ(dump.mappings_count, 0u);
 }
 
 TEST(OSMetricsTest, Pss) {
@@ -321,11 +333,20 @@ TEST(OSMetricsTest, Pss) {
 
   mojom::RawOSMemDump dump;
   dump.platform_private_footprint = mojom::PlatformPrivateFootprint::New();
-  ASSERT_TRUE(OSMetrics::FillOSMemoryDump(base::kNullProcessHandle, &dump));
+  ASSERT_TRUE(OSMetrics::FillOSMemoryDump(
+      base::kNullProcessHandle, {mojom::MemDumpFlags::MEM_DUMP_PSS}, &dump));
   uint32_t pss = dump.pss_kb;
 
   // We don't know the exact value here, but it should be greater than 0.
   EXPECT_GT(pss, 0u);
+}
+
+TEST(OSMetricsTest, PssDisabled) {
+  mojom::RawOSMemDump dump;
+  dump.platform_private_footprint = mojom::PlatformPrivateFootprint::New();
+  ASSERT_TRUE(OSMetrics::FillOSMemoryDump(base::kNullProcessHandle, {}, &dump));
+  EXPECT_EQ(dump.pss_kb, 0u);
+  EXPECT_EQ(dump.swap_pss_kb, 0u);
 }
 
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) ||
