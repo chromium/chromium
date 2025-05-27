@@ -5,6 +5,8 @@
 #ifndef NET_FILTER_FILTER_SOURCE_STREAM_TEST_UTIL_H_
 #define NET_FILTER_FILTER_SOURCE_STREAM_TEST_UTIL_H_
 
+#include <stdint.h>
+
 #include <string_view>
 #include <vector>
 
