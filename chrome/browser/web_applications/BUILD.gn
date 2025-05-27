@@ -1232,6 +1232,8 @@ source_set("web_applications_browser_tests") {
       "//chrome/browser/web_applications/ash/migrations:browser_tests",
       "//chromeos/ash/components/system:system",
     ]
+  } else {
+    deps += [ "//chrome/browser/apps/link_capturing:link_capturing" ]
   }
 
   if (is_mac) {

@@ -2,11 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <utility>
 #include <vector>
 
+#include "base/run_loop.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/test/test_future.h"
+#include "chrome/browser/apps/link_capturing/enable_link_capturing_infobar_delegate.h"
 #include "chrome/browser/apps/link_capturing/link_capturing_feature_test_support.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/web_apps/web_app_link_capturing_test_utils.h"
+#include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
@@ -36,6 +43,18 @@ class WebAppNavigationCapturingIntentPickerBrowserTest
     return https_server()->GetURL(
         "/web_apps/intent_picker_nav_capture/"
         "index.html?q=fake_query_to_check_navigation");
+  }
+
+  GURL GetAppUrlWithWCO() {
+    return https_server()->GetURL(
+        "/web_apps/intent_picker_nav_capture/index_wco.html");
+  }
+
+  void FlushTaskRunner() {
+    base::RunLoop run_loop;
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, run_loop.QuitClosure());
+    run_loop.Run();
   }
 };
 
@@ -146,6 +165,77 @@ IN_PROC_BROWSER_TEST_F(WebAppNavigationCapturingIntentPickerBrowserTest,
   ASSERT_NE(nullptr, host);
 
   ASSERT_TRUE(WaitForIntentPickerToShow(browser()));
+}
+
+IN_PROC_BROWSER_TEST_F(WebAppNavigationCapturingIntentPickerBrowserTest,
+                       VerifyWindowControlsOverlayReappears) {
+  auto ensure_app_browser =
+      [&](base::FunctionRef<webapps::AppId()> app_browser_launcher) {
+        ui_test_utils::BrowserChangeObserver add_observer(
+            nullptr, ui_test_utils::BrowserChangeObserver::ChangeType::kAdded);
+        webapps::AppId app_id = app_browser_launcher();
+        Browser* app_browser = add_observer.Wait();
+        EXPECT_NE(app_browser, browser());
+        EXPECT_TRUE(AppBrowserController::IsForWebApp(app_browser, app_id));
+        return std::make_pair(app_browser, app_id);
+      };
+
+  // Install WCO app and toggle the Window Controls Overlay display.
+  std::pair<Browser*, webapps::AppId> install_data = ensure_app_browser(
+      [&] { return InstallWebAppFromPage(browser(), GetAppUrlWithWCO()); });
+  Browser* app_browser = install_data.first;
+  const webapps::AppId app_id = install_data.second;
+
+  // Toggle the Window Controls Overlay display in the current app_browser so
+  // that the behavior is stored.
+  base::test::TestFuture<void> test_future;
+  content::WebContents* contents =
+      app_browser->tab_strip_model()->GetActiveWebContents();
+  content::TitleWatcher title_watcher1(contents, u"WCO Enabled");
+  app_browser->GetBrowserView().ToggleWindowControlsOverlayEnabled(
+      test_future.GetCallback());
+
+  ASSERT_TRUE(test_future.Wait());
+  std::ignore = title_watcher1.WaitAndGetTitle();
+  ASSERT_TRUE(app_browser->GetBrowserView().IsWindowControlsOverlayEnabled());
+
+  // Disable navigation capturing for the app_id so that the enable link
+  // capturing infobar shows up.
+  ASSERT_EQ(apps::test::DisableLinkCapturingByUser(profile(), app_id),
+            base::ok());
+
+  // Navigate to the WCO app site, verify the intent picker icon shows up.
+  EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), GetAppUrlWithWCO()));
+  ASSERT_TRUE(web_app::WaitForIntentPickerToShow(browser()));
+  content::WebContents* new_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  EXPECT_NE(new_contents, nullptr);
+
+  // Click on the intent picker icon, and verify an app browser gets launched
+  // with no WCO. The link capturing infobar is shown.
+  content::TitleWatcher title_watcher2(new_contents, u"WCO Disabled");
+  std::pair<Browser*, webapps::AppId> post_intent_picker_data =
+      ensure_app_browser([&] {
+        EXPECT_TRUE(web_app::ClickIntentPickerChip(browser()));
+        return app_id;
+      });
+  Browser* new_app_browser = post_intent_picker_data.first;
+  FlushTaskRunner();
+  std::ignore = title_watcher2.WaitAndGetTitle();
+  EXPECT_FALSE(
+      new_app_browser->GetBrowserView().IsWindowControlsOverlayEnabled());
+  EXPECT_TRUE(
+      apps::EnableLinkCapturingInfoBarDelegate::FindInfoBar(new_contents));
+
+  // Close the infobar, and wait for the WCO to come back on.
+  content::TitleWatcher title_watcher3(new_contents, u"WCO Enabled");
+  apps::EnableLinkCapturingInfoBarDelegate::RemoveInfoBar(new_contents);
+  FlushTaskRunner();
+  std::ignore = title_watcher3.WaitAndGetTitle();
+  EXPECT_TRUE(
+      new_app_browser->GetBrowserView().IsWindowControlsOverlayEnabled());
+  EXPECT_FALSE(
+      apps::EnableLinkCapturingInfoBarDelegate::FindInfoBar(new_contents));
 }
 
 }  // namespace web_app
