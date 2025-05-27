@@ -141,10 +141,12 @@ class MEDIA_EXPORT VideoResourceUpdater
   FrameResource* RecycleOrAllocateResource(const gfx::Size& resource_size,
                                            viz::SharedImageFormat si_format,
                                            const gfx::ColorSpace& color_space,
+                                           SkAlphaType alpha_type,
                                            VideoFrame::ID unique_id);
   FrameResource* AllocateResource(const gfx::Size& size,
                                   viz::SharedImageFormat format,
-                                  const gfx::ColorSpace& color_space);
+                                  const gfx::ColorSpace& color_space,
+                                  SkAlphaType alpha_type);
 
   // Create a copy of a texture-backed source video frame in a new GL_TEXTURE_2D
   // texture. This is used when there are multiple GPU threads (Android WebView)
