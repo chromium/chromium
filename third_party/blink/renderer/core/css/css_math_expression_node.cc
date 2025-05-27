@@ -1549,23 +1549,6 @@ CSSMathExpressionNode* CSSMathExpressionOperation::CreateComparisonFunction(
     return nullptr;
   }
 
-  return MakeGarbageCollected<CSSMathExpressionOperation>(
-      category, std::move(operands), op);
-}
-
-// static
-CSSMathExpressionNode*
-CSSMathExpressionOperation::CreateComparisonFunctionSimplified(
-    Operands&& operands,
-    CSSMathOperator op) {
-  DCHECK(op == CSSMathOperator::kMin || op == CSSMathOperator::kMax ||
-         op == CSSMathOperator::kClamp);
-
-  CalculationResultCategory category = DetermineComparisonCategory(operands);
-  if (category == kCalcOther) {
-    return nullptr;
-  }
-
   if (CanEagerlySimplify(operands)) {
     Vector<double> canonical_values;
     canonical_values.reserve(operands.size());
@@ -4334,7 +4317,7 @@ class CSSMathExpressionNodeParser {
           op = CSSMathOperator::kClamp;
         }
         CSSMathExpressionNode* node =
-            CSSMathExpressionOperation::CreateComparisonFunctionSimplified(
+            CSSMathExpressionOperation::CreateComparisonFunction(
                 std::move(nodes), op);
         if (node) {
           context_.Count(WebFeature::kCSSComparisonFunctions);
