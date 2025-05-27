@@ -13,48 +13,154 @@
 #include "base/values.h"
 #include "net/test/cert_builder.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/boringssl/src/include/openssl/rsa.h"
 
 namespace net {
 namespace {
 
-// Builds a header that has the minimal required set of parameters
-base::DictValue MinimalBindingHeader() {
-  auto [leaf, root] = net::CertBuilder::CreateSimpleChain2();
-  base::Value::Dict header =
-      base::Value::Dict()
-          .Set("alg", "test alg")
-          .Set("cty", "TLS-Certificate-Binding-v1")
-          .Set("x5c", base::Value::List()
-                          // These are base64 encoded, not base64url encoded
-                          .Append(base::Base64Encode(leaf->GetDER()))
-                          .Append(base::Base64Encode(root->GetDER())))
-          .Set("sigD",
-               base::Value::Dict()
-                   .Set("mId", "http://uri.etsi.org/19182/ObjectIdByURIHash")
-                   .Set("pars", base::Value::List().Append("").Append(""))
-                   .Set("hashM", "S256")
-                   // These are hashes of the certs that this
-                   // TlsCertificateBinding binds, not hashes of the certs in
-                   // the x5c cert chain.
-                   .Set("hashV", base::Value::List()
-                                     .Append("fakehash1A")
-                                     .Append("fakehash2A")));
-  return header;
-}
+class TwoQwacCertBindingBuilder {
+ public:
+  TwoQwacCertBindingBuilder()
+      : cert_chain_(net::CertBuilder::CreateSimpleChain(2)) {
+    GenerateKeyForSigAlg();
+  }
 
-// Creates a TLS Certificate Binding from the provided header. This test helper
-// leaves the signature empty.
-std::string CreateTwoQwacCertBinding(const base::DictValue& header) {
-  std::string header_string;
-  EXPECT_TRUE(JSONStringValueSerializer(&header_string).Serialize(header));
-  // Create the JWS from the header.
-  std::string jws;
-  base::Base64UrlEncode(header_string,
-                        base::Base64UrlEncodePolicy::OMIT_PADDING, &jws);
-  // Add empty payload and signature to JWS.
-  jws += "..";
-  return jws;
-}
+  void SetJwsSigAlg(JwsSigAlg sig_alg) {
+    sig_alg_ = sig_alg;
+    GenerateKeyForSigAlg();
+  }
+
+  // Set values to override in the JWS header.
+  void SetHeaderOverrides(base::DictValue header_overrides) {
+    Invalidate();
+    header_overrides_ = std::move(header_overrides);
+  }
+
+  std::string GetJWS() { return GetHeader() + ".." + GetSignature(); }
+
+  const std::string& GetHeader() {
+    if (!header_b64_.has_value()) {
+      GenerateHeader();
+    }
+    return *header_b64_;
+  }
+
+  const std::string& GetSignature() {
+    if (!signature_b64_.has_value()) {
+      GenerateSignature();
+    }
+    return *signature_b64_;
+  }
+
+ private:
+  void GenerateKeyForSigAlg() {
+    switch (sig_alg_) {
+      case JwsSigAlg::kRsaPkcs1Sha256:
+      case JwsSigAlg::kRsaPssSha256:
+        cert_chain_[0]->GenerateRSAKey();
+        break;
+      case JwsSigAlg::kEcdsaP256Sha256:
+        cert_chain_[0]->GenerateECKey();
+    }
+    Invalidate();
+  }
+
+  std::string SigAlg() const {
+    switch (sig_alg_) {
+      case JwsSigAlg::kRsaPkcs1Sha256:
+        return "RS256";
+      case JwsSigAlg::kRsaPssSha256:
+        return "PS256";
+      case JwsSigAlg::kEcdsaP256Sha256:
+        return "ES256";
+    }
+    return "";
+  }
+
+  void GenerateHeader() {
+    // Build the minimal JWS header needed for a 2-QWAC TLS certificate binding.
+    base::DictValue header =
+        base::DictValue()
+            .Set("alg", SigAlg())
+            .Set("cty", "TLS-Certificate-Binding-v1")
+            .Set("sigD",
+                 base::Value::Dict()
+                     .Set("mId", "http://uri.etsi.org/19182/ObjectIdByURIHash")
+                     .Set("pars", base::Value::List().Append("").Append(""))
+                     .Set("hashM", "S256")
+                     // These are hashes of the certs that this TLS certificate
+                     // binding binds, not hashes of the certs in the x5c cert
+                     // chain.
+                     //
+                     // TODO(crbug.com/392931070): Add support to set the bound
+                     // certs in this certificate binding.
+                     .Set("hashV", base::Value::List()
+                                       .Append("fakehash1A")
+                                       .Append("fakehash2A")));
+    base::ListValue x5c_list;
+    for (const auto& cert : cert_chain_) {
+      x5c_list.Append(base::Base64Encode(cert->GetDER()));
+    }
+    header.Set("x5c", std::move(x5c_list));
+    // Add/override values in the header
+    header.Merge(header_overrides_.Clone());
+
+    std::string header_string;
+    ASSERT_TRUE(JSONStringValueSerializer(&header_string).Serialize(header));
+    header_b64_ = std::string();
+    base::Base64UrlEncode(header_string,
+                          base::Base64UrlEncodePolicy::OMIT_PADDING,
+                          &*header_b64_);
+  }
+
+  void GenerateSignature() {
+    // All JWS signature algorithms that we support use SHA-256 as their digest.
+    const EVP_MD* digest = EVP_sha256();
+    bssl::ScopedEVP_MD_CTX ctx;
+    EVP_PKEY_CTX* pkey_ctx;
+    EVP_PKEY* key = cert_chain_[0]->GetKey();
+    ASSERT_TRUE(
+        EVP_DigestSignInit(ctx.get(), &pkey_ctx, EVP_sha256(), nullptr, key));
+    if (sig_alg_ == JwsSigAlg::kRsaPssSha256) {
+      ASSERT_TRUE(
+          EVP_PKEY_CTX_set_rsa_padding(pkey_ctx, RSA_PKCS1_PSS_PADDING));
+      ASSERT_TRUE(EVP_PKEY_CTX_set_rsa_mgf1_md(pkey_ctx, digest));
+      ASSERT_TRUE(EVP_PKEY_CTX_set_rsa_pss_saltlen(
+          pkey_ctx, -1 /* match digest and salt length */));
+    }
+
+    // The JWS signing input is the the (base64url-encoded) header and payload
+    // concatenated and separated by a '.'. For a 2-QWAC cert binding, the
+    // payload is always empty.
+    const std::string& header = GetHeader();
+    const std::array<uint8_t, 1> separator = {'.'};
+    ASSERT_TRUE(EVP_DigestSignUpdate(ctx.get(), header.data(), header.size()));
+    ASSERT_TRUE(
+        EVP_DigestSignUpdate(ctx.get(), separator.data(), separator.size()));
+    size_t len = 0;
+    std::vector<uint8_t> sig;
+    ASSERT_TRUE(EVP_DigestSignFinal(ctx.get(), nullptr, &len));
+    sig.resize(len);
+    ASSERT_TRUE(EVP_DigestSignFinal(ctx.get(), sig.data(), &len));
+    sig.resize(len);
+    signature_b64_ = std::string();
+    base::Base64UrlEncode(sig, base::Base64UrlEncodePolicy::OMIT_PADDING,
+                          &*signature_b64_);
+  }
+
+  void Invalidate() {
+    header_b64_.reset();
+    signature_b64_.reset();
+  }
+
+  std::vector<std::unique_ptr<net::CertBuilder>> cert_chain_;
+  base::DictValue header_overrides_;
+  JwsSigAlg sig_alg_ = JwsSigAlg::kEcdsaP256Sha256;
+  // The header and signature are lazily built, and if any inputs to the builder
+  // are possibly modified, then they are cleared.
+  std::optional<std::string> header_b64_;
+  std::optional<std::string> signature_b64_;
+};
 
 TEST(ParseTlsCertificateBinding, MinimalValidBinding) {
   // TODO(crbug.com/392929826): Once we start validating signatures, these
@@ -64,30 +170,59 @@ TEST(ParseTlsCertificateBinding, MinimalValidBinding) {
   // net::X509Certificate and check that the "alg" matches the leaf cert.)
 
   // Build a header that has the minimally required set of parameters
-  base::DictValue header = MinimalBindingHeader();
-  std::string jws = CreateTwoQwacCertBinding(header);
+  TwoQwacCertBindingBuilder binding_builder;
+  std::string jws = binding_builder.GetJWS();
   auto cert_binding = TwoQwacCertBinding::Parse(jws);
   ASSERT_TRUE(cert_binding.has_value());
 }
 
 TEST(ParseTlsCertificateBinding, MaximalValidBinding) {
-  // Create a header that has all allowed fields
-  base::DictValue header = MinimalBindingHeader();
-  header.Set("kid", base::Value::Dict()
-                        .Set("random key", "random value")
-                        .Set("kids can have", "whatever they want"));
-  header.Set("x5t#S256", "base64urlhashA");
-  header.Set("iat", 12345);
-  header.Set("exp", 67.89);
-  header.Set("crit", base::ListValue().Append("sigD"));
+  TwoQwacCertBindingBuilder binding_builder;
+  // Set all of the optional fields in the header.
+  binding_builder.SetHeaderOverrides(
+      base::DictValue()
+          .Set("kid", base::Value::Dict()
+                          .Set("random key", "random value")
+                          .Set("kids can have", "whatever they want"))
+          .Set("x5t#S256", "base64urlhashA")
+          .Set("iat", 12345)
+          .Set("exp", 67.89)
+          .Set("crit", base::ListValue().Append("sigD"))
+          .Set("sigD",
+               base::DictValue().Set("ctys", base::Value::List()
+                                                 .Append("content-type1")
+                                                 .Append("content-type2"))));
+  std::string jws = binding_builder.GetJWS();
 
-  header.FindDict("sigD")->Set(
-      "ctys",
-      base::Value::List().Append("content-type1").Append("content-type2"));
-
-  std::string jws = CreateTwoQwacCertBinding(header);
   auto cert_binding = TwoQwacCertBinding::Parse(jws);
   ASSERT_TRUE(cert_binding.has_value());
+}
+
+TEST(ParseTlsCertificateBinding, RS256ValidSigAlg) {
+  TwoQwacCertBindingBuilder binding_builder;
+  binding_builder.SetHeaderOverrides(base::DictValue().Set("alg", "RS256"));
+  std::string jws = binding_builder.GetJWS();
+  auto cert_binding = TwoQwacCertBinding::Parse(jws);
+  ASSERT_TRUE(cert_binding.has_value());
+  ASSERT_EQ(cert_binding->header().sig_alg, JwsSigAlg::kRsaPkcs1Sha256);
+}
+
+TEST(ParseTlsCertificateBinding, PS256ValidSigAlg) {
+  TwoQwacCertBindingBuilder binding_builder;
+  binding_builder.SetHeaderOverrides(base::DictValue().Set("alg", "PS256"));
+  std::string jws = binding_builder.GetJWS();
+  auto cert_binding = TwoQwacCertBinding::Parse(jws);
+  ASSERT_TRUE(cert_binding.has_value());
+  ASSERT_EQ(cert_binding->header().sig_alg, JwsSigAlg::kRsaPssSha256);
+}
+
+TEST(ParseTlsCertificateBinding, InvalidSigAlg) {
+  TwoQwacCertBindingBuilder binding_builder;
+  binding_builder.SetHeaderOverrides(base::DictValue().Set("alg", "RSA1_5"));
+  std::string jws = binding_builder.GetJWS();
+  EXPECT_FALSE(jws.empty());
+  auto cert_binding = TwoQwacCertBinding::Parse(jws);
+  ASSERT_FALSE(cert_binding.has_value());
 }
 
 // Test failure when the JWS header isn't a JSON object.
@@ -119,12 +254,7 @@ TEST(ParseTlsCertificateBinding, JwsHeaderNotBase64) {
 
 // Test failure when the JWS payload is non-empty.
 TEST(ParseTlsCertificateBinding, JwsPayloadNonEmpty) {
-  std::string header_string;
-  EXPECT_TRUE(JSONStringValueSerializer(&header_string)
-                  .Serialize(MinimalBindingHeader()));
-  std::string header_b64;
-  base::Base64UrlEncode(header_string,
-                        base::Base64UrlEncodePolicy::OMIT_PADDING, &header_b64);
+  std::string header_b64 = TwoQwacCertBindingBuilder().GetHeader();
   // Make a JWS consisting of a valid header, a payload (base64url-encoded as
   // "AAAA") and an empty signature.
   std::string jws = header_b64 + ".AAAA.";
@@ -133,36 +263,21 @@ TEST(ParseTlsCertificateBinding, JwsPayloadNonEmpty) {
 
 // Test failure when the JWS signature is not valid base64url.
 TEST(ParseTlsCertificateBinding, JwsSignatureNotBase64) {
-  std::string header_string;
-  EXPECT_TRUE(JSONStringValueSerializer(&header_string)
-                  .Serialize(MinimalBindingHeader()));
-  std::string header_b64;
-  base::Base64UrlEncode(header_string,
-                        base::Base64UrlEncodePolicy::OMIT_PADDING, &header_b64);
+  std::string header_b64 = TwoQwacCertBindingBuilder().GetHeader();
   std::string jws = header_b64 + "..A";
   EXPECT_FALSE(TwoQwacCertBinding::Parse(jws).has_value());
 }
 
 // Test failure when the JWS consists of 2 components instead of 3.
 TEST(ParseTlsCertificateBinding, JwsHas2Components) {
-  std::string header_string;
-  EXPECT_TRUE(JSONStringValueSerializer(&header_string)
-                  .Serialize(MinimalBindingHeader()));
-  std::string header_b64;
-  base::Base64UrlEncode(header_string,
-                        base::Base64UrlEncodePolicy::OMIT_PADDING, &header_b64);
+  std::string header_b64 = TwoQwacCertBindingBuilder().GetHeader();
   std::string jws = header_b64 + ".AAAA";
   EXPECT_FALSE(TwoQwacCertBinding::Parse(jws).has_value());
 }
 
 // Test failure when the JWS consists of 4 components instead of 3.
 TEST(ParseTlsCertificateBinding, JwsHas4Components) {
-  std::string header_string;
-  EXPECT_TRUE(JSONStringValueSerializer(&header_string)
-                  .Serialize(MinimalBindingHeader()));
-  std::string header_b64;
-  base::Base64UrlEncode(header_string,
-                        base::Base64UrlEncodePolicy::OMIT_PADDING, &header_b64);
+  std::string header_b64 = TwoQwacCertBindingBuilder().GetHeader();
   std::string jws = header_b64 + "..AAAA.AAAA";
   EXPECT_FALSE(TwoQwacCertBinding::Parse(jws).has_value());
 }
@@ -178,9 +293,10 @@ TEST(ParseTlsCertificateBinding, InvalidFields) {
           base::Value(1),
       },
       {
-          // "alg" expects a non-empty string
+          // "alg" expects a supported signature algorithm from the IANA
+          // registry. "none" is in the registry but we will never support it.
           "alg",
-          base::Value(""),
+          base::Value("none"),
       },
       {
           // "cty" expects a string
@@ -257,9 +373,10 @@ TEST(ParseTlsCertificateBinding, InvalidFields) {
 
   for (const auto& test : kTests) {
     SCOPED_TRACE(test.header_key);
-    base::DictValue header = MinimalBindingHeader();
-    header.Set(test.header_key, test.value.Clone());
-    std::string jws = CreateTwoQwacCertBinding(header);
+    TwoQwacCertBindingBuilder binding_builder;
+    binding_builder.SetHeaderOverrides(
+        base::DictValue().Set(test.header_key, test.value.Clone()));
+    std::string jws = binding_builder.GetJWS();
     auto cert_binding = TwoQwacCertBinding::Parse(jws);
     ASSERT_FALSE(cert_binding.has_value());
   }
@@ -291,8 +408,6 @@ TEST(ParseTlsCertificateBinding, SigDHeaderParam) {
           false,
       },
       {
-          // This repeats the default value used in MinimalBindingHeader() in
-          // other tests, but is here for completeness.
           "SHA-256 supported",
           base::BindRepeating(
               [](base::DictValue* sig_d) { sig_d->Set("hashM", "S256"); }),
@@ -437,12 +552,86 @@ TEST(ParseTlsCertificateBinding, SigDHeaderParam) {
 
   for (const auto& test : kTests) {
     SCOPED_TRACE(test.name);
-    base::DictValue header = MinimalBindingHeader();
-    test.header_func.Run(header.FindDict("sigD"));
-    std::string jws = CreateTwoQwacCertBinding(header);
+    base::DictValue sig_d;
+    test.header_func.Run(&sig_d);
+    TwoQwacCertBindingBuilder binding_builder;
+    binding_builder.SetHeaderOverrides(
+        base::DictValue().Set("sigD", std::move(sig_d)));
+    std::string jws = binding_builder.GetJWS();
     auto cert_binding = TwoQwacCertBinding::Parse(jws);
     EXPECT_EQ(cert_binding.has_value(), test.valid);
   }
+}
+
+TEST(VerifyTwoQwacCertBinding, ValidSignatureRS256) {
+  TwoQwacCertBindingBuilder binding_builder;
+  // Use RSA-PKCS1v1.5 for the TLS Certificate Binding.
+  binding_builder.SetJwsSigAlg(JwsSigAlg::kRsaPkcs1Sha256);
+  std::string jws = binding_builder.GetJWS();
+
+  std::optional<TwoQwacCertBinding> cert_binding =
+      TwoQwacCertBinding::Parse(jws);
+  ASSERT_TRUE(cert_binding.has_value());
+  // Check that the JWS header has "alg": "RS256"
+  EXPECT_EQ(cert_binding->header().sig_alg, JwsSigAlg::kRsaPkcs1Sha256);
+  EXPECT_TRUE(cert_binding->VerifySignature());
+}
+
+TEST(VerifyTwoQwacCertBinding, ValidSignaturePS256) {
+  TwoQwacCertBindingBuilder binding_builder;
+  // Use RSA-PSS for the TLS Certificate Binding.
+  binding_builder.SetJwsSigAlg(JwsSigAlg::kRsaPssSha256);
+  std::string jws = binding_builder.GetJWS();
+
+  std::optional<TwoQwacCertBinding> cert_binding =
+      TwoQwacCertBinding::Parse(jws);
+  ASSERT_TRUE(cert_binding.has_value());
+  // Check that the JWS header has "alg": "PS256"
+  EXPECT_EQ(cert_binding->header().sig_alg, JwsSigAlg::kRsaPssSha256);
+  EXPECT_TRUE(cert_binding->VerifySignature());
+}
+
+TEST(VerifyTwoQwacCertBinding, ValidSignatureES256) {
+  TwoQwacCertBindingBuilder binding_builder;
+  // Use ECDSA for the TLS Certificate Binding.
+  binding_builder.SetJwsSigAlg(JwsSigAlg::kEcdsaP256Sha256);
+  std::string jws = binding_builder.GetJWS();
+
+  std::optional<TwoQwacCertBinding> cert_binding =
+      TwoQwacCertBinding::Parse(jws);
+  ASSERT_TRUE(cert_binding.has_value());
+  // Check that the JWS header has "alg": "ES256"
+  EXPECT_EQ(cert_binding->header().sig_alg, JwsSigAlg::kEcdsaP256Sha256);
+  EXPECT_TRUE(cert_binding->VerifySignature());
+}
+
+TEST(VerifyTwoQwacCertBinding, InvalidSignature) {
+  TwoQwacCertBindingBuilder binding_builder;
+  const auto& header = binding_builder.GetHeader();
+  std::string signature = binding_builder.GetSignature();
+
+  // Build the JWS from the header and signature and confirm the signature is
+  // valid.
+  std::string jws = header + ".." + signature;
+  std::optional<TwoQwacCertBinding> cert_binding =
+      TwoQwacCertBinding::Parse(jws);
+  ASSERT_TRUE(cert_binding.has_value());
+  EXPECT_TRUE(cert_binding->VerifySignature());
+
+  // Mess with the base64url-encoded signature to make it invalid.
+  if (signature[0] != 'A') {
+    signature[0] = 'A';
+  } else {
+    signature[0] = 'B';
+  }
+
+  // rebuild the JWS with the invalid signature, and check that the signature
+  // is invalid.
+  std::string jws_bad_sig = header + ".." + signature;
+  std::optional<TwoQwacCertBinding> cert_binding_bad_sig =
+      TwoQwacCertBinding::Parse(jws_bad_sig);
+  ASSERT_TRUE(cert_binding_bad_sig.has_value());
+  EXPECT_FALSE(cert_binding_bad_sig->VerifySignature());
 }
 
 }  // namespace

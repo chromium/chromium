@@ -113,8 +113,7 @@ void FuzzParseTwoQwacCertBinding(std::string_view jws) {
   if (!cert_binding.has_value()) {
     return;
   }
-  ASSERT_FALSE(cert_binding->header_string.empty());
-  ASSERT_FALSE(cert_binding->header.sig_alg.empty());
+  ASSERT_FALSE(cert_binding->header_string().empty());
 }
 
 FUZZ_TEST(QwacFuzzTest, FuzzParseTwoQwacCertBinding);
