@@ -160,6 +160,8 @@ namespace {
 // kHitTestAsk after the threshold is reached.
 const size_t kAssumeOverlapThreshold = 100;
 
+constexpr auto kHasInputResetDelay = base::Milliseconds(250);
+
 // gfx::DisplayColorSpaces stores up to 3 different color spaces. This should be
 // updated to match any size changes in DisplayColorSpaces.
 constexpr size_t kContainsSrgbCacheSize = 3;
@@ -467,7 +469,11 @@ LayerTreeHostImpl::LayerTreeHostImpl(
       frame_trackers_(settings.single_thread_proxy_scheduler,
                       &dropped_frame_counter_),
       lcd_text_metrics_reporter_(LCDTextMetricsReporter::CreateIfNeeded(this)),
-      frame_rate_estimator_(GetTaskRunner()),
+      has_input_resetter_(
+          GetTaskRunner(),
+          base::BindRepeating(&LayerTreeHostImpl::ResetHasInputForFrameInterval,
+                              base::Unretained(this)),
+          kHasInputResetDelay),
       contains_srgb_cache_(kContainsSrgbCacheSize),
       zero_scroll_metrics_update_enabled_(
           base::FeatureList::IsEnabled(features::kZeroScrollMetricsUpdate)) {
@@ -1163,7 +1169,8 @@ LayerTreeHostImpl::GetScopedEventMetricsMonitor(
 }
 
 void LayerTreeHostImpl::NotifyInputEvent(bool is_fling) {
-  frame_rate_estimator_.NotifyInputEvent();
+  has_input_for_frame_interval_ = true;
+  has_input_resetter_.Schedule();
   has_non_fling_input_since_last_frame_ |= (!is_fling);
 }
 
@@ -1413,8 +1420,6 @@ DrawResult LayerTreeHostImpl::CalculateRenderPasses(FrameData* frame) {
       active_tree()->property_trees()->effect_tree().HasCopyRequests();
 
   bool have_missing_animated_tiles = false;
-  int num_of_layers_with_videos = 0;
-
   const bool compute_video_layer_preferred_interval =
       !features::UseSurfaceLayerForVideo();
 
@@ -1489,11 +1494,8 @@ DrawResult LayerTreeHostImpl::CalculateRenderPasses(FrameData* frame) {
         // LayerTreeHostImpl::DidDrawAllLayers().
         frame->will_draw_layers.push_back(layer);
 
-        if (layer->may_contain_video()) {
-          num_of_layers_with_videos++;
-          if (output_frame_data) {
-            frame->may_contain_video = true;
-          }
+        if (layer->may_contain_video() && output_frame_data) {
+          frame->may_contain_video = true;
         }
         if (output_frame_data && compute_video_layer_preferred_interval &&
             layer->GetLayerType() == mojom::LayerType::kVideo) {
@@ -1583,11 +1585,6 @@ DrawResult LayerTreeHostImpl::CalculateRenderPasses(FrameData* frame) {
     if (RequiresHighResToDraw())
       draw_result = DrawResult::kAbortedMissingHighResContent;
   }
-
-  // Only enable frame rate estimation if it would help lower the composition
-  // rate for videos.
-  const bool assumes_video_conference_mode = num_of_layers_with_videos > 1;
-  frame_rate_estimator_.SetVideoConferenceMode(assumes_video_conference_mode);
 
   // When doing a resourceless software draw, we don't have control over the
   // surface the compositor draws to, so even though the frame may not be
@@ -3134,8 +3131,7 @@ viz::CompositorFrame LayerTreeHostImpl::GenerateCompositorFrame(
       frame->use_default_lower_bound_deadline);
   metadata.frame_interval_inputs.frame_time =
       CurrentBeginFrameArgs().frame_time;
-  metadata.frame_interval_inputs.has_input =
-      frame_rate_estimator_.input_priority_mode();
+  metadata.frame_interval_inputs.has_input = has_input_for_frame_interval_;
   metadata.frame_interval_inputs.has_user_input =
       has_non_fling_input_since_last_frame_;
   has_non_fling_input_since_last_frame_ = false;
@@ -3549,7 +3545,6 @@ void LayerTreeHostImpl::DidNotProduceFrame(const viz::BeginFrameAck& ack,
         return "";
       }(reason),
       "Frame Sequence Number", ack.frame_id.sequence_number);
-  frame_rate_estimator_.DidNotProduceFrame();
   if (layer_tree_frame_sink_) {
     layer_tree_frame_sink_->DidNotProduceFrame(ack, reason);
   }
@@ -6076,5 +6071,8 @@ bool LayerTreeHostImpl::RunningOnRendererProcess() const {
   return !settings().single_thread_proxy_scheduler;
 }
 
+void LayerTreeHostImpl::ResetHasInputForFrameInterval() {
+  has_input_for_frame_interval_ = false;
+}
 
 }  // namespace cc

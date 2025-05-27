@@ -28,6 +28,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "base/types/optional_ref.h"
+#include "cc/base/delayed_unique_notifier.h"
 #include "cc/benchmarks/micro_benchmark_controller_impl.h"
 #include "cc/cc_export.h"
 #include "cc/input/actively_scrolling_type.h"
@@ -54,7 +55,6 @@
 #include "cc/tiles/tile_manager.h"
 #include "cc/tiles/tile_manager_client.h"
 #include "cc/trees/animated_paint_worklet_tracker.h"
-#include "cc/trees/frame_rate_estimator.h"
 #include "cc/trees/image_animation_controller.h"
 #include "cc/trees/layer_tree_frame_sink_client.h"
 #include "cc/trees/layer_tree_host.h"
@@ -1062,6 +1062,8 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
   // Returns the most up to date display color spaces.
   gfx::DisplayColorSpaces GetDisplayColorSpaces() const;
 
+  void ResetHasInputForFrameInterval();
+
   // Once bound, this instance owns the InputHandler. However, an InputHandler
   // need not be bound so this should be null-checked before dereferencing.
   std::unique_ptr<InputDelegateForCompositor> input_delegate_;
@@ -1316,7 +1318,8 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
 
   std::unique_ptr<LCDTextMetricsReporter> lcd_text_metrics_reporter_;
 
-  FrameRateEstimator frame_rate_estimator_;
+  bool has_input_for_frame_interval_ = false;
+  DelayedUniqueNotifier has_input_resetter_;
   bool has_non_fling_input_since_last_frame_ = false;
   bool has_observed_first_scroll_delay_ = false;
 
