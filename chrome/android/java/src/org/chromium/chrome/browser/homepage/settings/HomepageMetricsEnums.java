@@ -6,10 +6,13 @@ package org.chromium.chrome.browser.homepage.settings;
 
 import androidx.annotation.IntDef;
 
+import org.chromium.build.annotations.NullMarked;
+
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /** Contains Homepage related enums used for metrics. */
+@NullMarked
 public final class HomepageMetricsEnums {
     private HomepageMetricsEnums() {}
 
