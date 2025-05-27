@@ -7688,6 +7688,12 @@ class ServiceWorkerSyntheticResponseBrowserTest
                             base::Seconds(2))
                       : std::make_unique<net::test_server::BasicHttpResponse>();
 
+          // Set opt-in header.
+          constexpr std::string_view kOptInHeaderName =
+              "Service-Worker-Synthetic-Response";
+          constexpr std::string_view kOptInHeaderValue = "?1";
+          http_response->AddCustomHeader(kOptInHeaderName, kOptInHeaderValue);
+
           if (base::Contains(request.GetURL().query(), "echo=foo")) {
             http_response->set_content("[SyntheticResponse] foo");
           } else if (base::Contains(request.GetURL().query(), "echo=bar")) {
