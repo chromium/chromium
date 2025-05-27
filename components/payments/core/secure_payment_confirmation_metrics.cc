@@ -18,4 +18,18 @@ void RecordEnrollSystemPromptResult(
       result);
 }
 
+void RecordBrowserBoundKeyCreation(
+    SecurePaymentConfirmationBrowserBoundKeyDeviceResult result) {
+  base::UmaHistogramEnumeration(
+      "PaymentRequest.SecurePaymentConfirmation.BrowserBoundKeyStoreCreate",
+      result);
+}
+
+void RecordBrowserBoundKeyRetrieval(
+    SecurePaymentConfirmationBrowserBoundKeyDeviceResult result) {
+  base::UmaHistogramEnumeration(
+      "PaymentRequest.SecurePaymentConfirmation.BrowserBoundKeyStoreRetrieve",
+      result);
+}
+
 }  // namespace payments

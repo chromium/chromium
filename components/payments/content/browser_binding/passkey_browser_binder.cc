@@ -20,6 +20,7 @@
 #include "components/payments/content/browser_binding/browser_bound_key_metadata.h"
 #include "components/payments/content/browser_binding/browser_bound_key_store.h"
 #include "components/payments/content/payment_manifest_web_data_service.h"
+#include "components/payments/core/secure_payment_confirmation_metrics.h"
 #include "components/webdata/common/web_data_results.h"
 #include "crypto/random.h"
 
@@ -170,6 +171,9 @@ PasskeyBrowserBinder::CreateUnboundKey(
   std::unique_ptr<BrowserBoundKey> browser_bound_key =
       key_store_->GetOrCreateBrowserBoundKeyForCredentialId(
           browser_bound_key_id, allowed_algorithms);
+  RecordCreationOrRetrieval(
+      /*is_creation=*/true,
+      /*did_succeed=*/!!browser_bound_key);
   if (!browser_bound_key) {
     return std::nullopt;
   }
@@ -309,8 +313,13 @@ void PasskeyBrowserBinder::GetBrowserBoundKey(
   }
   // The BBK is only retrieved: With an empty `allowed_algorithms` no BBK will
   // be created.
-  std::move(callback).Run(key_store_->GetOrCreateBrowserBoundKeyForCredentialId(
-      existing_browser_bound_key_id, /*allowed_algorithms=*/{}));
+  std::unique_ptr<BrowserBoundKey> browser_bound_key =
+      key_store_->GetOrCreateBrowserBoundKeyForCredentialId(
+          existing_browser_bound_key_id, /*allowed_algorithms=*/{});
+  RecordCreationOrRetrieval(
+      /*is_creation=*/false,
+      /*did_succeed=*/!!browser_bound_key);
+  std::move(callback).Run(std::move(browser_bound_key));
 }
 
 void PasskeyBrowserBinder::GetOrCreateBrowserBoundKey(
@@ -319,7 +328,8 @@ void PasskeyBrowserBinder::GetOrCreateBrowserBoundKey(
     BrowserBoundKeyStore::CredentialInfoList allowed_algorithms,
     base::OnceCallback<void(std::unique_ptr<BrowserBoundKey>)> callback,
     std::vector<uint8_t> browser_bound_key_id) {
-  if (browser_bound_key_id.empty()) {
+  bool needs_to_be_created = browser_bound_key_id.empty();
+  if (needs_to_be_created) {
     browser_bound_key_id =
         random_bytes_as_vector_callback_.Run(kBrowserBoundKeyIdLength);
     // TODO(crbug.com/384954763): Delete the browser bound key from the key
@@ -330,8 +340,35 @@ void PasskeyBrowserBinder::GetOrCreateBrowserBoundKey(
         /*consumer=*/this);
     set_browser_bound_key_handlers_[handle] = base::DoNothing();
   }
-  std::move(callback).Run(key_store_->GetOrCreateBrowserBoundKeyForCredentialId(
-      browser_bound_key_id, allowed_algorithms));
+  std::unique_ptr<BrowserBoundKey> browser_bound_key =
+      key_store_->GetOrCreateBrowserBoundKeyForCredentialId(
+          browser_bound_key_id, allowed_algorithms);
+  RecordCreationOrRetrieval(/*is_creation=*/needs_to_be_created,
+                            /*did_succeed=*/!!browser_bound_key);
+  std::move(callback).Run(std::move(browser_bound_key));
+}
+
+void PasskeyBrowserBinder::RecordCreationOrRetrieval(bool is_creation,
+                                                     bool did_succeed) {
+  bool has_device_hardware_support =
+      key_store_->GetDeviceSupportsHardwareKeys();
+  auto metrics_result =
+      did_succeed
+          ? (has_device_hardware_support
+                 ? SecurePaymentConfirmationBrowserBoundKeyDeviceResult::
+                       kSuccessWithDeviceHardware
+                 : SecurePaymentConfirmationBrowserBoundKeyDeviceResult::
+                       kSuccessWithoutDeviceHardware)
+          : (has_device_hardware_support
+                 ? SecurePaymentConfirmationBrowserBoundKeyDeviceResult::
+                       kFailureWithDeviceHardware
+                 : SecurePaymentConfirmationBrowserBoundKeyDeviceResult::
+                       kFailureWithoutDeviceHardware);
+  if (is_creation) {
+    RecordBrowserBoundKeyCreation(metrics_result);
+  } else {
+    RecordBrowserBoundKeyRetrieval(metrics_result);
+  }
 }
 
 }  // namespace payments

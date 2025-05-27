@@ -38,6 +38,10 @@ void FakeBrowserBoundKeyStore::DeleteBrowserBoundKey(
   key_map_.erase(bbk_id);
 }
 
+bool FakeBrowserBoundKeyStore::GetDeviceSupportsHardwareKeys() {
+  return device_supports_hardware_keys_;
+}
+
 void FakeBrowserBoundKeyStore::PutFakeKey(FakeBrowserBoundKey bbk) {
   key_map_.insert(std::make_pair(bbk.GetIdentifier(), std::move(bbk)));
 }

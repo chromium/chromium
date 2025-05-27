@@ -253,6 +253,32 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="PaymentRequest.SecurePaymentConfirmation.BrowserBoundKeyStoreCreate"
+    enum="SecurePaymentConfirmationBrowserBoundKeyDeviceResult"
+    expires_after="2025-12-04">
+  <owner>slobodan@chromium.org</owner>
+  <owner>chrome-payments-eng@google.com</owner>
+  <summary>
+    Whether the creation of a browser bound key succeeded or failed and whether
+    hardware storage of key pairs is available on the device. Recorded after a
+    browser bound key creation is attempted.
+  </summary>
+</histogram>
+
+<histogram
+    name="PaymentRequest.SecurePaymentConfirmation.BrowserBoundKeyStoreRetrieve"
+    enum="SecurePaymentConfirmationBrowserBoundKeyDeviceResult"
+    expires_after="2025-12-04">
+  <owner>slobodan@chromium.org</owner>
+  <owner>chrome-payments-eng@google.com</owner>
+  <summary>
+    Whether the retrieval of a browser bound key succeeded or failed and whether
+    hardware storage of key pairs is available on the device. Recorded after a
+    browser bound key retrieval is attempted.
+  </summary>
+</histogram>
+
 <histogram name="PaymentRequest.Show.TryShowOutcome"
     enum="PaymentRequestTryShowOutcome" expires_after="2025-09-28">
   <owner>smcgruer@chromium.org</owner>

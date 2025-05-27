@@ -67,6 +67,17 @@ uploading your change for review.  These are checked by presubmit scripts.
 
 <!-- LINT.ThenChange(//components/payments/content/payment_request_display_manager.h:PaymentRequestTryShowOutcome) -->
 
+<!-- LINT.IfChange(BrowserBoundKeys) -->
+
+<enum name="SecurePaymentConfirmationBrowserBoundKeyDeviceResult">
+  <int value="0" label="Success (Device does support hardware)"/>
+  <int value="1" label="Success (No device hardware support)"/>
+  <int value="2" label="Failure (Device does support hardware)"/>
+  <int value="3" label="Failure (No device hardware support)"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/payments/core/secure_payment_confirmation_metrics.h:BrowserBoundKeys) -->
+
 <!-- LINT.IfChange(SecurePaymentRequestOutcome) -->
 
 <enum name="SecurePaymentRequestOutcome">

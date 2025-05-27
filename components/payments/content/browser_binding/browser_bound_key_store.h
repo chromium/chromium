@@ -44,6 +44,10 @@ class BrowserBoundKeyStore : public base::RefCounted<BrowserBoundKeyStore> {
   // appropriate to avoid copying the `bbk_id` vector.
   virtual void DeleteBrowserBoundKey(std::vector<uint8_t> bbk_id) = 0;
 
+  // Returns whether hardware keys are supported by this implementation on the
+  // current device.
+  virtual bool GetDeviceSupportsHardwareKeys() = 0;
+
  protected:
   virtual ~BrowserBoundKeyStore() = default;
 

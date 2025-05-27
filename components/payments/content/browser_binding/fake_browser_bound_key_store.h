@@ -33,6 +33,7 @@ class FakeBrowserBoundKeyStore : public BrowserBoundKeyStore {
       const std::vector<device::PublicKeyCredentialParams::CredentialInfo>&
           allowed_algorithms) override;
   void DeleteBrowserBoundKey(std::vector<uint8_t> bbk_id) override;
+  bool GetDeviceSupportsHardwareKeys() override;
 
   // Insert a fake key.
   void PutFakeKey(FakeBrowserBoundKey bbk);
@@ -40,11 +41,17 @@ class FakeBrowserBoundKeyStore : public BrowserBoundKeyStore {
   // Return whether the key with identifier `bbk_id` is present.
   bool ContainsFakeKey(std::vector<uint8_t> bbk_id) const;
 
+  // Sets the value returned by GetDeviceSupportsHardwareKeys().
+  void SetDeviceSupportsHardwareKeys(bool value) {
+    device_supports_hardware_keys_ = value;
+  }
+
  protected:
   ~FakeBrowserBoundKeyStore() override;
 
  private:
   std::map<std::vector<uint8_t>, FakeBrowserBoundKey> key_map_;
+  bool device_supports_hardware_keys_ = true;
 };
 
 }  // namespace payments

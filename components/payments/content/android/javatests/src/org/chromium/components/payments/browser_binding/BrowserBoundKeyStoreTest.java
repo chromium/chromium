@@ -4,6 +4,7 @@
 
 package org.chromium.components.payments.browser_binding;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
@@ -141,5 +142,10 @@ public class BrowserBoundKeyStoreTest {
         assertNotNull(bbkAfter);
         // Assert a new bbk was created by comparing the public keys.
         assertFalse(Arrays.equals(bbk.getPublicKeyAsCoseKey(), bbkAfter.getPublicKeyAsCoseKey()));
+    }
+
+    @Test
+    public void testDetectsStrongBoxSupport() {
+        assertEquals(isStrongBoxAvailable(), BrowserBoundKeyStore.getDeviceSupportsHardwareKeys());
     }
 }

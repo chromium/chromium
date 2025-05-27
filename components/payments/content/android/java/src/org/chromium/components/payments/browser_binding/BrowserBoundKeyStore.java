@@ -4,6 +4,7 @@
 
 package org.chromium.components.payments.browser_binding;
 
+import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Build.VERSION_CODES;
 import android.security.keystore.KeyGenParameterSpec;
@@ -15,6 +16,7 @@ import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.JniType;
 
+import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.blink.mojom.PublicKeyCredentialParameters;
 import org.chromium.blink.mojom.PublicKeyCredentialType;
@@ -147,6 +149,14 @@ public final class BrowserBoundKeyStore {
             // retries if appropriate. (e.g. The keystore daemon did not respond).
             Log.e(TAG, "The key store could not delete the browser bound key.", e);
         }
+    }
+
+    /** Returns whether StrongBox (hardware) key storage is supported on this device. */
+    @CalledByNative
+    public static boolean getDeviceSupportsHardwareKeys() {
+        return ContextUtils.getApplicationContext()
+                .getPackageManager()
+                .hasSystemFeature(PackageManager.FEATURE_STRONGBOX_KEYSTORE);
     }
 
     private boolean containsEs256(List<PublicKeyCredentialParameters> allowedAlgorithms) {

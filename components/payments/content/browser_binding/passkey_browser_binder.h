@@ -198,6 +198,9 @@ class PasskeyBrowserBinder : public WebDataServiceConsumer {
       base::OnceClosure callback,
       std::vector<BrowserBoundKeyMetadata> stale_bbk_metas);
 
+  // Records a creation or retrieval metric.
+  void RecordCreationOrRetrieval(bool is_creation, bool did_succeed);
+
   scoped_refptr<BrowserBoundKeyStore> key_store_;
   scoped_refptr<PaymentManifestWebDataService> web_data_service_;
   std::map<WebDataServiceBase::Handle, base::OnceCallback<void(bool)>>
