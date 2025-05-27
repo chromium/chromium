@@ -3056,6 +3056,12 @@ const char kOmniboxUrlSuggestionsOnFocusDecription[] =
     "Enables zero-prefix URL suggestions on web and SRP when the omnibox is "
     "focused.";
 
+const char kOmniboxShowPopupOnMouseReleasedName[] =
+    "Show omnibox suggestions popup on mouse released";
+const char kOmniboxShowPopupOnMouseReleasedDescription[] =
+    "Enables delaying presentation of the omnibox suggestions popup until the "
+    "mouse is released.";
+
 const char kWebUIOmniboxPopupName[] = "WebUI Omnibox Popup";
 const char kWebUIOmniboxPopupDescription[] =
     "If enabled, shows the omnibox suggestions popup in WebUI.";

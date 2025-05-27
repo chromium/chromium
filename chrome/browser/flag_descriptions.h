@@ -1748,6 +1748,9 @@ extern const char kOmniboxContextualSuggestionsDescription[];
 extern const char kOmniboxFocusTriggersWebAndSRPZeroSuggestName[];
 extern const char kOmniboxFocusTriggersWebAndSRPZeroSuggestDescription[];
 
+extern const char kOmniboxShowPopupOnMouseReleasedName[];
+extern const char kOmniboxShowPopupOnMouseReleasedDescription[];
+
 extern const char kOmniboxHideSuggestionGroupHeadersName[];
 extern const char kOmniboxHideSuggestionGroupHeadersDescription[];
 

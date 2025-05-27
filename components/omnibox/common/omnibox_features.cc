@@ -191,6 +191,12 @@ BASE_FEATURE(kDocumentProviderNoSyncRequirement,
 // domains.
 BASE_FEATURE(kDomainSuggestions, "OmniboxDomainSuggestions", DISABLED);
 
+// If enabled, the omnibox popup is not presented until the mouse button is
+// released.
+BASE_FEATURE(kShowPopupOnMouseReleased,
+             "OmniboxShowPopupOnMouseReleased",
+             DISABLED);
+
 // If enabled, makes Most Visited Tiles a Horizontal render group.
 // Horizontal render group decomposes aggregate suggestions (such as old Most
 // Visited Tiles), expecting individual AutocompleteMatch entry for every
