@@ -12044,6 +12044,21 @@
             ]
         }
     ],
+    "IOSMiniMapUniversalLink": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "IOSMiniMapUniversalLink"
+                    ]
+                }
+            ]
+        }
+    ],
     "IOSOmahaResyncTimerOnForeground": [
         {
             "platforms": [

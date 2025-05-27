@@ -1219,6 +1219,10 @@ BASE_FEATURE(kIOSOneTapMiniMapRemoveSectionsBreaks,
              "IOSOneTapMiniMapRemoveSectionsBreaks",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kIOSMiniMapUniversalLink,
+             "IOSMiniMapUniversalLink",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 bool IsNotificationCollisionManagementEnabled() {
   return base::FeatureList::IsEnabled(kNotificationCollisionManagement);
 }

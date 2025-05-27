@@ -2706,6 +2706,10 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          autofill::features::
              kAutofillEnableMultipleRequestInVirtualCardDownstreamEnrollment)},
+    {"ios-mini-map-universal-links",
+     flag_descriptions::kIOSMiniMapUniversalLinkName,
+     flag_descriptions::kIOSMiniMapUniversalLinkDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(kIOSMiniMapUniversalLink)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

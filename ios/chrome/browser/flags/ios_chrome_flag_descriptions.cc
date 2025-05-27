@@ -650,6 +650,12 @@ const char kIOSOneTapMiniMapRemoveSectionBreaksName[] =
 const char kIOSOneTapMiniMapRemoveSectionBreaksDescription[] =
     "Replace section break by spaces when detecting addresses.";
 
+const char kIOSMiniMapUniversalLinkName[] =
+    "Open Maps Universal links in native view.";
+const char kIOSMiniMapUniversalLinkDescription[] =
+    "When enabled, maps universal links on Google Page are opened in "
+    "native views (under conditions).";
+
 const char kIOSOneTapMiniMapRestrictionsName[] =
     "Revalidate detected addresses for one tap Mini Map.";
 const char kIOSOneTapMiniMapRestrictionsDescription[] =

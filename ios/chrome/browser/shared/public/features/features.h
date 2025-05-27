@@ -1016,6 +1016,9 @@ extern const char kIOSOneTapMiniMapRestrictionMinAlphanumProportionParamName[];
 extern const base::FeatureParam<double>
     kIOSOneTapMiniMapRestrictionMinAlphanumProportionParam;
 
+// Feature flag to forward Maps Universal links to native maps.
+BASE_DECLARE_FEATURE(kIOSMiniMapUniversalLink);
+
 // Returns whether notification collision management is enabled.
 bool IsNotificationCollisionManagementEnabled();
 
