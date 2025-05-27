@@ -42,6 +42,7 @@ disable_media_foundation_clear_playback
 disable_media_foundation_frame_size_change
 disable_media_foundation_hardware_security
 disable_metal
+disable_mfvea_shared_device
 disable_multisampling_color_mask_usage
 disable_nv12_dxgi_video
 disable_nv12_dynamic_textures
@@ -57,6 +58,7 @@ disable_texture_storage
 disable_timestamp_queries
 disable_video_overlay_if_moving
 disable_vp9_hmft_temporal_encoding
+disable_vp9_shared_image_encode
 disable_vp_auto_hdr
 disable_vp_scaling
 disable_vp_super_resolution

@@ -3481,6 +3481,36 @@
       "features": [
         "disable_dcomp_texture"
       ]
+    },
+    {
+      "id": 444,
+      "description": "Disable shared image encode for VP9 MFVEA on Intel ",
+      "comment":[
+        "VP9 encode accelerator corrupts color output when accepting RGB shared images",
+        "as input."
+      ],
+      "os": {
+        "type": "win"
+      },
+      "vendor_id": "0x8086",
+      "features": [
+        "disable_vp9_shared_image_encode"
+      ]
+    },
+    {
+      "id": 445,
+      "description": "Disable shared D3D device for MFVEA on Intel ",
+      "comment":[
+        "Video encoder MFT acquires device lock and does not release it, leading to",
+        "gpu process stall."
+      ],
+      "os": {
+        "type": "win"
+      },
+      "vendor_id": "0x8086",
+      "features": [
+        "disable_mfvea_shared_device"
+      ]
     }
   ]
 }

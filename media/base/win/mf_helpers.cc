@@ -607,7 +607,7 @@ GUID VideoPixelFormatToMFSubtype(VideoPixelFormat video_pixel_format) {
     case VideoPixelFormat::PIXEL_FORMAT_ABGR:
       if (base::win::GetVersion() < base::win::Version::WIN10_RS5) {
         // For a long time, there was no MFVideoFormat specific to BGR
-        // in Media Foundaiton.  BGR formats were only handled as
+        // in Media Foundation.  BGR formats were only handled as
         // textures, and both the DirectX Video Processor and pixel
         // shaders handled these fine because they operate off of the
         // texture format and not the MF media type. Use of the

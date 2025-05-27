@@ -9,6 +9,7 @@
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/service/shared_image/d3d_image_backing.h"
 #include "gpu/ipc/common/dxgi_helpers.h"
+#include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 #include "third_party/angle/include/EGL/eglext_angle.h"
 #include "ui/gl/gl_angle_util_win.h"
 #include "ui/gl/gl_surface_egl.h"
@@ -351,6 +352,15 @@ D3D11VideoImageCopyRepresentation::CreateFromD3D(SharedImageManager* manager,
                                                  ID3D11Texture2D* texture,
                                                  std::string_view debug_label,
                                                  ID3D11Device* texture_device) {
+  auto* d3d_backing = static_cast<D3DImageBacking*>(backing);
+  if (!d3d_backing->BeginAccessD3D11(texture_device, /*write_access=*/false,
+                                     /*is_overlay_access=*/false)) {
+    return nullptr;
+  }
+  absl::Cleanup end_access = [&] {
+    d3d_backing->EndAccessD3D11(texture_device, /*is_overlay_access=*/false);
+  };
+
   D3D11_TEXTURE2D_DESC source_desc;
   texture->GetDesc(&source_desc);
 
