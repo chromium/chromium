@@ -3087,7 +3087,7 @@ public class ChromeTabbedActivity extends ChromeActivity {
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.HEADLESS_TAB_MODEL)) {
             Profile profile = getProfileProviderSupplier().get().getOriginalProfile();
             TabWindowManagerSingleton.getInstance()
-                    .keepAllTabModelsLoaded(mMultiInstanceManager, profile);
+                    .keepAllTabModelsLoaded(mMultiInstanceManager, profile, getTabModelSelector());
         } else {
             mMultiInstanceManager.cleanupSyncedTabGroupsIfOnlyInstance(mTabModelSelector);
         }
