@@ -559,8 +559,6 @@ target(libcxx_target_type, "libc++") {
     # (https://crbug.com/40440396#comment81). Also we don't take care about the
     # libc++'s build performance much.
     # (https://crrev.com/c/6248376/4#message-0ddf8e6a0f3ce1eb1654f7025280d8ed75cf2e81)
-    configs -= [ "//build/config/compiler:libcxx_module" ]
-
     # This removes deps to libc++'s modules from libc++'s build as libc++
     # doesn't support modules build itself.
     use_libcxx_modules = false
