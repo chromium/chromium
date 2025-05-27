@@ -39,7 +39,8 @@ class RTCEncodedAudioFrameDelegate
   base::expected<void, String> SetWebRtcFrameMetadata(
       uint32_t rtp_timestamp,
       std::optional<uint8_t> payload_type,
-      std::optional<webrtc::Timestamp> capture_time);
+      std::optional<webrtc::Timestamp> capture_time,
+      std::optional<double> linear_audio_level);
   std::optional<uint32_t> Ssrc() const;
   std::optional<uint8_t> PayloadType() const;
   std::optional<std::string> MimeType() const;
@@ -48,6 +49,7 @@ class RTCEncodedAudioFrameDelegate
   std::optional<base::TimeTicks> ReceiveTime() const;
   std::optional<base::TimeTicks> CaptureTime() const;
   std::optional<base::TimeDelta> SenderCaptureTimeOffset() const;
+  std::optional<double> AudioLevel() const;
   std::unique_ptr<webrtc::TransformableAudioFrameInterface> PassWebRtcFrame();
   std::unique_ptr<webrtc::TransformableAudioFrameInterface> CloneWebRtcFrame();
 
