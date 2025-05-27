@@ -287,8 +287,7 @@ constexpr base::TimeDelta kSigninTimeout = base::Seconds(10);
       [self cancelSigninWithError:ConsistencyPromoSigninMediatorErrorGeneric];
       break;
     case signin::WebSigninTracker::Result::kAuthError:
-      // TODO(crbug.com/388871821): Add special handling for auth errors.
-      [self cancelSigninWithError:ConsistencyPromoSigninMediatorErrorGeneric];
+      [self cancelSigninWithError:ConsistencyPromoSigninMediatorErrorAuth];
       break;
     case signin::WebSigninTracker::Result::kTimeout:
       [self cancelSigninWithError:ConsistencyPromoSigninMediatorErrorTimeout];
@@ -301,6 +300,7 @@ constexpr base::TimeDelta kSigninTimeout = base::Seconds(10);
   if (!_authenticationService) {
     return;
   }
+  id<SystemIdentity> signinIdentity = _signingIdentity;
   _signingIdentity = nil;
   _authenticationFlow = nil;
   switch (error) {
@@ -314,12 +314,18 @@ constexpr base::TimeDelta kSigninTimeout = base::Seconds(10);
           signin_metrics::AccountConsistencyPromoAction::GENERIC_ERROR_SHOWN,
           _accessPoint);
       break;
+    case ConsistencyPromoSigninMediatorErrorAuth:
+      RecordConsistencyPromoUserAction(
+          signin_metrics::AccountConsistencyPromoAction::AUTH_ERROR_SHOWN,
+          _accessPoint);
+      break;
   }
   __weak __typeof(self) weakSelf = self;
   _authenticationService->SignOut(
       signin_metrics::ProfileSignout::kAbortSignin, ^() {
         [weakSelf.delegate consistencyPromoSigninMediator:weakSelf
-                                           errorDidHappen:error];
+                                           errorDidHappen:error
+                                             withIdentity:signinIdentity];
       });
 }
 

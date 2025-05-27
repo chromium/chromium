@@ -12,7 +12,9 @@
 #import "base/strings/sys_string_conversions.h"
 #import "components/prefs/pref_service.h"
 #import "components/signin/public/base/signin_metrics.h"
+#import "components/signin/public/base/signin_switches.h"
 #import "components/signin/public/browser/web_signin_tracker.h"
+#import "components/signin/public/identity_manager/account_info.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "ios/chrome/browser/authentication/ui_bundled/authentication_flow/authentication_flow.h"
 #import "ios/chrome/browser/authentication/ui_bundled/authentication_ui_util.h"
@@ -24,6 +26,7 @@
 #import "ios/chrome/browser/authentication/ui_bundled/signin/consistency_promo_signin/consistency_sheet/consistency_sheet_navigation_controller.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/consistency_promo_signin/consistency_sheet/consistency_sheet_presentation_controller.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/consistency_promo_signin/consistency_sheet/consistency_sheet_slide_transition_animator.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin/reauth/reauth_coordinator.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_constants.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_coordinator+protected.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_utils.h"
@@ -50,6 +53,7 @@
     ConsistencyDefaultAccountCoordinatorDelegate,
     ConsistencyPromoSigninMediatorDelegate,
     ConsistencyLayoutDelegate,
+    ReauthCoordinatorDelegate,
     UINavigationControllerDelegate,
     UIViewControllerTransitioningDelegate>
 
@@ -68,6 +72,8 @@
 @property(nonatomic, strong, readonly) id<SystemIdentity> selectedIdentity;
 // Coordinator to add an account to the device.
 @property(nonatomic, strong) SigninCoordinator* addAccountCoordinator;
+// Coordinator to show a reauth screen.
+@property(nonatomic, strong) ReauthCoordinator* reauthCoordinator;
 
 @property(nonatomic, strong)
     ConsistencyPromoSigninMediator* consistencyPromoSigninMediator;
@@ -262,6 +268,19 @@
   self.consistencyPromoSigninMediator = nil;
 }
 
+- (void)startReauthFlowWithIdentity:(id<SystemIdentity>)identity {
+  // TODO(crbug.com/391342053): Add logging.
+  CoreAccountInfo account;
+  account.gaia = GaiaId(identity.gaiaID);
+  account.email = base::SysNSStringToUTF8(identity.userEmail);
+  self.reauthCoordinator = [[ReauthCoordinator alloc]
+      initWithBaseViewController:self.navigationController
+                         browser:self.browser
+                         account:account];
+  self.reauthCoordinator.delegate = self;
+  [self.reauthCoordinator start];
+}
+
 - (void)stopAlertCoordinator {
   [self.alertCoordinator stop];
   self.alertCoordinator = nil;
@@ -286,6 +305,10 @@
   self.addAccountCoordinator = nil;
 }
 
+- (void)stopReauthCoordinator {
+  [self.reauthCoordinator stop];
+  self.reauthCoordinator = nil;
+}
 // Does cleanup (metrics and remove coordinator) once the add-account flow is
 // finished. If `hasAccounts == NO` and `signinResult` is successful , the
 // function immediately signs in to Chrome with the identity acquired from the
@@ -420,6 +443,11 @@
 - (void)consistencyDefaultAccountCoordinatorSignin:
     (ConsistencyDefaultAccountCoordinator*)coordinator {
   DCHECK_EQ(coordinator, self.defaultAccountCoordinator);
+  if (base::FeatureList::IsEnabled(switches::kEnableIdentityInAuthError) &&
+      !self.selectedIdentity.hasValidAuth) {
+    [self startReauthFlowWithIdentity:self.selectedIdentity];
+    return;
+  }
   [self startSignIn];
 }
 
@@ -432,6 +460,15 @@
 
 - (ConsistencySheetDisplayStyle)displayStyle {
   return self.navigationController.displayStyle;
+}
+
+#pragma mark - ReauthCoordinatorDelegate
+
+- (void)reauthFinishedWithResult:(ReauthResult)result {
+  [self stopReauthCoordinator];
+  if (result == ReauthResult::kSuccess) {
+    [self startSignIn];
+  }
 }
 
 #pragma mark - UINavigationControllerDelegate
@@ -518,21 +555,27 @@
 
 - (void)consistencyPromoSigninMediator:(ConsistencyPromoSigninMediator*)mediator
                         errorDidHappen:
-                            (ConsistencyPromoSigninMediatorError)error {
-  NSString* errorTitle = l10n_util::GetNSString(IDS_IOS_WEBSIGN_ERROR_TITLE);
+                            (ConsistencyPromoSigninMediatorError)error
+                          withIdentity:(id<SystemIdentity>)identity {
+  CHECK([identity isEqual:self.selectedIdentity]);
+  [self.defaultAccountCoordinator stopSigninSpinner];
+
   NSString* errorMessage = nil;
   switch (error) {
-    case ConsistencyPromoSigninMediatorErrorGeneric:
-      errorMessage =
-          l10n_util::GetNSString(IDS_IOS_WEBSIGN_ERROR_GENERIC_ERROR);
-      break;
     case ConsistencyPromoSigninMediatorErrorTimeout:
       errorMessage =
           l10n_util::GetNSString(IDS_IOS_WEBSIGN_ERROR_TIMEOUT_ERROR);
       break;
+    case ConsistencyPromoSigninMediatorErrorGeneric:
+      errorMessage =
+          l10n_util::GetNSString(IDS_IOS_WEBSIGN_ERROR_GENERIC_ERROR);
+      break;
+    case ConsistencyPromoSigninMediatorErrorAuth:
+      [self startReauthFlowWithIdentity:identity];
+      return;
   }
   DCHECK(!self.alertCoordinator);
-  [self.defaultAccountCoordinator stopSigninSpinner];
+  NSString* errorTitle = l10n_util::GetNSString(IDS_IOS_WEBSIGN_ERROR_TITLE);
   self.alertCoordinator = [[AlertCoordinator alloc]
       initWithBaseViewController:self.navigationController
                          browser:self.browser
@@ -546,6 +589,7 @@
                   [weakSelf stopAlertCoordinator];
                 }
                  style:UIAlertActionStyleCancel];
+
   [self.alertCoordinator start];
 }
 

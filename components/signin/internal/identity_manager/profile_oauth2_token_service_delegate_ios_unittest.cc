@@ -402,7 +402,8 @@ TEST_F(ProfileOAuth2TokenServiceIOSDelegateTest,
     EXPECT_CALL(observer, OnAuthErrorChanged).Times(0);
     EXPECT_CALL(observer, OnRefreshTokenAvailable).Times(0);
     EXPECT_CALL(observer, OnEndBatchChanges).Times(0);
-    oauth2_delegate_->AddOrUpdateAccount(account_id);
+    oauth2_delegate_->AddOrUpdateAccount(
+        account_id, GoogleServiceAuthError::AuthErrorNone());
     testing::Mock::VerifyAndClearExpectations(&observer);
   }
 }

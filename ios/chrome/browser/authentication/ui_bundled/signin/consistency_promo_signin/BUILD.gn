@@ -28,6 +28,7 @@ source_set("consistency_promo_signin") {
     "//ios/chrome/browser/authentication/ui_bundled/signin/consistency_promo_signin/consistency_account_chooser",
     "//ios/chrome/browser/authentication/ui_bundled/signin/consistency_promo_signin/consistency_default_account",
     "//ios/chrome/browser/authentication/ui_bundled/signin/consistency_promo_signin/consistency_sheet",
+    "//ios/chrome/browser/authentication/ui_bundled/signin/reauth",
     "//ios/chrome/browser/net/model:crurl",
     "//ios/chrome/browser/shared/coordinator/alert",
     "//ios/chrome/browser/shared/model/browser",
@@ -102,7 +103,9 @@ source_set("eg2_tests") {
   deps = [
     "//base",
     "//base/test:test_support",
+    "//components/signin/public/base:signin_switches",
     "//components/sync/base:features",
+    "//google_apis:google_apis",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/authentication/ui_bundled:eg_test_support+eg2",
     "//ios/chrome/browser/authentication/ui_bundled/signin:constants",

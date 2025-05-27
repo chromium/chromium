@@ -23,6 +23,8 @@
 #import "components/sync/base/user_selectable_type.h"
 #import "components/sync/service/sync_service.h"
 #import "components/sync/service/sync_user_settings.h"
+#import "google_apis/gaia/core_account_id.h"
+#import "google_apis/gaia/gaia_id.h"
 #import "ios/chrome/browser/authentication/ui_bundled/cells/table_view_identity_cell.h"
 #import "ios/chrome/browser/authentication/ui_bundled/enterprise/enterprise_utils.h"
 #import "ios/chrome/browser/bookmarks/model/bookmarks_utils.h"
@@ -90,6 +92,14 @@
       FakeSystemIdentityManager::FromSystemIdentityManager(
           GetApplicationContext()->GetSystemIdentityManager());
   return systemIdentityManager->ContainsIdentity(fakeIdentity);
+}
+
++ (void)setPersistentAuthErrorForAccount:(NSString*)accountGaiaId {
+  CoreAccountId accountId = CoreAccountId::FromGaiaId(GaiaId(accountGaiaId));
+  FakeSystemIdentityManager* systemIdentityManager =
+      FakeSystemIdentityManager::FromSystemIdentityManager(
+          GetApplicationContext()->GetSystemIdentityManager());
+  systemIdentityManager->SetPersistentAuthErrorForAccount(accountId);
 }
 
 + (NSString*)primaryAccountGaiaID {
