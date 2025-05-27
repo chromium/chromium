@@ -819,9 +819,9 @@ chrome.test.runTests([
 
   async function testEscapeAndDelete() {
     viewport.setZoom(1.0);
-    // Initialize to a 100x100 box at 10, 10. Place the box in the top corner
+    // Initialize to a 100x100 box at 55, 10. Place the box in the top corner
     // of the page, so that the viewport won't scroll when it is focused.
-    initializeBox(100, 100, 10, 10);
+    initializeBox(100, 100, 55, 10);
     // Wait for focus to happen so that we can correctly test focus changes
     // later.
     await eventToPromise('textbox-focused-for-test', textbox);
@@ -862,7 +862,7 @@ chrome.test.runTests([
 
     // If the user is dragging, escape commits the annotation at the start
     // location and hides the box.
-    initializeBox(100, 100, 10, 10);
+    initializeBox(100, 100, 55, 10);
     await microtasksFinished();
     chrome.test.assertTrue(isVisible(textbox));
     mockPlugin.clearMessages();
@@ -884,7 +884,7 @@ chrome.test.runTests([
     verifyFinishTextAnnotationMessage(testAnnotation);
 
     // Escape without any modification hides the box but doesn't send a message.
-    initializeBox(100, 100, 10, 10);
+    initializeBox(100, 100, 55, 10);
     await microtasksFinished();
     chrome.test.assertTrue(isVisible(textbox));
     mockPlugin.clearMessages();
@@ -895,10 +895,10 @@ chrome.test.runTests([
     chrome.test.assertEq(
         undefined, mockPlugin.findMessage('setTextAnnotation'));
 
-    // Initialize to a 100x100 box at 10, 10 with some text content. Use
+    // Initialize to a 100x100 box at 55, 10 with some text content. Use
     // "Delete" to clear all the content, which will trigger a message since
     // this is for an existing annotation.
-    initializeBox(100, 100, 10, 10, true);
+    initializeBox(100, 100, 55, 10, true);
     await microtasksFinished();
     chrome.test.assertFalse(textbox.hidden);
     chrome.test.assertTrue(isVisible(textbox));
@@ -999,12 +999,12 @@ chrome.test.runTests([
 
     // Using manager initialization to get correct coordinates for the zoom
     // level.
-    manager.initializeTextAnnotation({x: 20, y: 20});
+    manager.initializeTextAnnotation({x: 60, y: 60});
     await eventToPromise('textbox-focused-for-test', textbox);
     await microtasksFinished();
     const styles = getComputedStyle(textbox);
-    chrome.test.assertEq('3px', styles.getPropertyValue('left'));
-    chrome.test.assertEq('5px', styles.getPropertyValue('top'));
+    chrome.test.assertEq('43px', styles.getPropertyValue('left'));
+    chrome.test.assertEq('45px', styles.getPropertyValue('top'));
 
     // Scroll away from the textbox. Note this method accepts page coordinates.
     // Scrolling by 35 in page coordinates scrolls by 70 in screen coordinates
@@ -1016,8 +1016,8 @@ chrome.test.runTests([
     manager.dispatchEvent(new CustomEvent('blur-text-box'));
     viewport.goToPageAndXy(0, 35, 35);
     await microtasksFinished();
-    chrome.test.assertEq('-67px', styles.getPropertyValue('left'));
-    chrome.test.assertEq('-65px', styles.getPropertyValue('top'));
+    chrome.test.assertEq('-27px', styles.getPropertyValue('left'));
+    chrome.test.assertEq('-25px', styles.getPropertyValue('top'));
 
     // Focus the textbox, which should cause the manager to scroll the viewport.
     // This won't actually scroll the viewport in the test, since the plugin
@@ -1027,9 +1027,9 @@ chrome.test.runTests([
     const syncScrollMessage = mockPlugin.findMessage('syncScrollToRemote');
     chrome.test.assertTrue(syncScrollMessage !== undefined);
     chrome.test.assertEq('syncScrollToRemote', syncScrollMessage.type);
-    // The box is at 20, 20 in viewport coordinates, and the viewport is 100px
+    // The box is at 60, 60 in viewport coordinates, and the viewport is 500px
     // wide. The manager specifies a margin of 10% of the viewport when
-    // scrolling.
+    // scrolling, so both of these end up at 10.
     chrome.test.assertEq(10, syncScrollMessage.x);
     chrome.test.assertEq(10, syncScrollMessage.y);
 
