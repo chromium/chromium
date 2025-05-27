@@ -317,13 +317,12 @@
         "is_try_builder": true,
         "is_cq_builder": true
     },
-    "android-15-chrome-blink-rel": {
+    "android-chrome-13-x64-wpt-android-specific": {
         "main": "tryserver.chromium.android",
         "port_name": "android",
         "specifiers": ["Android", "Release"],
         "steps": {
-            "android_chrome_wpt_tests": {},
-            "android_webdriver_wpt_tests": {}
+            "android_chrome_wpt_tests": {}
         },
         "is_try_builder": true
     }

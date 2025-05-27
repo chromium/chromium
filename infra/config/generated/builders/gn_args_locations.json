@@ -89,6 +89,7 @@
     "android-15-x64-fyi-rel": "ci/android-15-x64-fyi-rel/gn-args.json",
     "android-16-x64-fyi-rel": "ci/android-16-x64-fyi-rel/gn-args.json",
     "android-annotator-rel": "ci/android-annotator-rel/gn-args.json",
+    "android-chrome-13-x64-wpt-android-specific": "ci/android-chrome-13-x64-wpt-android-specific/gn-args.json",
     "android-cronet-asan-x86-rel": "ci/android-cronet-asan-x86-rel/gn-args.json",
     "android-pie-x86-fyi-rel": "ci/android-pie-x86-fyi-rel/gn-args.json"
   },
@@ -532,7 +533,6 @@
     "win-arm64-rel": "ci/win-arm64-rel/gn-args.json"
   },
   "tryserver.blink": {
-    "android-15-chrome-blink-rel": "try/android-15-chrome-blink-rel/gn-args.json",
     "linux-blink-rel": "try/linux-blink-rel/gn-args.json",
     "linux-wpt-chromium-rel": "try/linux-wpt-chromium-rel/gn-args.json",
     "mac-skia-alt-arm64-blink-rel": "try/mac-skia-alt-arm64-blink-rel/gn-args.json",
@@ -596,6 +596,7 @@
     "android-cast-arm-rel": "try/android-cast-arm-rel/gn-args.json",
     "android-cast-arm64-dbg": "try/android-cast-arm64-dbg/gn-args.json",
     "android-cast-arm64-rel": "try/android-cast-arm64-rel/gn-args.json",
+    "android-chrome-13-x64-wpt-android-specific": "try/android-chrome-13-x64-wpt-android-specific/gn-args.json",
     "android-clobber-rel": "try/android-clobber-rel/gn-args.json",
     "android-code-coverage": "try/android-code-coverage/gn-args.json",
     "android-code-coverage-native": "try/android-code-coverage-native/gn-args.json",

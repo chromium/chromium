@@ -103,6 +103,60 @@ ci.builder(
 )
 
 ci.builder(
+    name = "android-chrome-13-x64-wpt-android-specific",
+    description_html = "Run wpt tests on Chrome Android in Android 13 emulators.",
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+            apply_configs = ["android"],
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "main_builder",
+            apply_configs = ["mb"],
+            build_config = builder_config.build_config.RELEASE,
+            target_arch = builder_config.target_arch.INTEL,
+            target_bits = 64,
+            target_platform = builder_config.target_platform.ANDROID,
+        ),
+        android_config = builder_config.android_config(
+            config = "base_config",
+        ),
+        build_gs_bucket = "chromium-android-archive",
+    ),
+    gn_args = gn_args.config(
+        configs = [
+            "android_builder",
+            "release_builder",
+            "remoteexec",
+            "minimal_symbols",
+            "x64",
+            "strip_debug_info",
+            "android_fastbuild",
+        ],
+    ),
+    targets = targets.bundle(
+        targets = [
+            "wpt_web_tests_android",
+        ],
+        mixins = [
+            "has_native_resultdb_integration",
+            "13-x64-emulator",
+            "emulator-8-cores",
+            "linux-jammy",
+            "x86-64",
+        ],
+    ),
+    targets_settings = targets.settings(
+        os_type = targets.os_type.ANDROID,
+    ),
+    console_view_entry = consoles.console_view_entry(
+        category = "wpt|chrome",
+        short_name = "13-x64",
+    ),
+    contact_team_email = "chrome-blink-engprod@google.com",
+)
+
+ci.builder(
     name = "android-15-webview-wpt-fyi-rel",
     description_html = "This builder runs upstream web platform tests for reporting results to wpt.fyi.",
     builder_spec = builder_config.builder_spec(
