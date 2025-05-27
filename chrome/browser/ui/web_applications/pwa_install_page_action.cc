@@ -169,6 +169,9 @@ void PwaInstallPageActionController::Show(content::WebContents* web_contents,
       GetPageActionController();
   all_actions_controller.OverrideText(
       kActionInstallPwa,
+      l10n_util::GetStringUTF16(IDS_OMNIBOX_PWA_INSTALL_ICON_LABEL));
+  all_actions_controller.OverrideAccessibleName(
+      kActionInstallPwa,
       l10n_util::GetStringFUTF16(
           IDS_OMNIBOX_PWA_INSTALL_ICON_TOOLTIP,
           webapps::AppBannerManager::GetInstallableWebAppName(web_contents)));
@@ -191,6 +194,7 @@ void PwaInstallPageActionController::Hide() {
       GetPageActionController();
   all_actions_controller.HideSuggestionChip(kActionInstallPwa);
   all_actions_controller.Hide(kActionInstallPwa);
+  all_actions_controller.ClearOverrideAccessibleName(kActionInstallPwa);
   all_actions_controller.ClearOverrideText(kActionInstallPwa);
   all_actions_controller.ClearOverrideTooltip(kActionInstallPwa);
 }
