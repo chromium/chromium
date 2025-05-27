@@ -145,6 +145,8 @@ struct ContextualSearch : Config<ContextualSearch> {
   DECLARE_FEATURE(kContextualSearchOpenLensActionUsesThumbnail);
   DECLARE_FEATURE(kSendPageTitleSuggestParam);
   DECLARE_FEATURE(kContextualSearchAlternativeActionLabel);
+  DECLARE_FEATURE(kUseApcPaywallSignal);
+  DECLARE_FEATURE(kShowSuggestionsOnNoApc);
 
   // Whether to use contextual search features, for example the lens action.
   bool IsContextualSearchEnabled() const;
@@ -198,6 +200,14 @@ struct ContextualSearch : Config<ContextualSearch> {
 
   // Whether the Lens entrypoint action should be shown in the Omnibox popup.
   bool show_open_lens_action;
+
+  // Whether to use the APC paywall signal to determine whether to show
+  // contextual suggestions.
+  bool use_apc_paywall_signal;
+
+  // Whether to show contextual suggestions when the user focuses the omnibox
+  // but APC is not yet available.
+  bool show_suggestions_on_no_apc;
 };
 
 // If enabled, allows MIA zero-prefix suggestions in NTP omnibox and realbox.

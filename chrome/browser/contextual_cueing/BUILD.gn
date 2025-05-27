@@ -86,6 +86,7 @@ source_set("unit_tests") {
     "//chrome/browser:global_features",
     "//chrome/browser/content_extraction",
     "//chrome/browser/optimization_guide:test_support",
+    "//chrome/browser/page_content_annotations:extraction_service",
     "//chrome/browser/ui:ui_features",
     "//chrome/common:buildflags",
     "//chrome/test:test_support",

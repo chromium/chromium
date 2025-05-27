@@ -225,12 +225,23 @@ class AutocompleteProviderClient : public OmniboxAction::Client {
   // Returns true if history embeddings is enabled and user can opt in/out.
   virtual bool IsHistoryEmbeddingsSettingVisible() const;
 
-  // Returns true if the current profile is eligible for Lens.
+  // Returns true if the current profile is eligible for Lens. This is used to
+  // control whether Lens entrypoints can be shown during this browsing session.
+  // Can be changed on demand via enterprise policy.
   virtual bool IsLensEnabled() const;
 
-  // Returns true if the Lens entrypoints can be shown to the user. That is if
-  // Lens is not already active.
+  // Returns true if the Lens entrypoints can be shown to the user at this
+  // instant in time. This is false if Lens is already active, and therefore the
+  // entrypoint shouldn't be shown as it will cause nothing to happen if
+  // clicked. This is per tab dependent.
   virtual bool AreLensEntrypointsVisible() const;
+
+  // Returns true if the page contains the paywall hint in the HTML. Returns
+  // false if the page does not contain the paywall hint. Returns std::nullopt
+  // if the page content wasn't extracted and therefore the signal could not be
+  // calculated. This is used to control whether contextual suggestions can be
+  // shown to the user.
+  virtual std::optional<bool> IsPagePaywalled() const;
 
   // Returns whether the app is currently in the background state (Mobile only).
   virtual bool in_background_state() const;
