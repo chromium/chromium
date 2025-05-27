@@ -7,6 +7,7 @@ package org.chromium.components.browser_ui.settings;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.text.method.LinkMovementMethod;
+import android.text.style.ClickableSpan;
 import android.util.AttributeSet;
 import android.view.Gravity;
 import android.view.View.OnClickListener;
@@ -51,7 +52,12 @@ public class CardPreference extends TextMessagePreference {
         mCloseIcon = (ChromeImageView) holder.findViewById(R.id.close_icon);
 
         mDescriptionView.setText(mSummary);
-        mDescriptionView.setMovementMethod(LinkMovementMethod.getInstance());
+        ClickableSpan[] spans = mDescriptionView.getClickableSpans();
+        // Set the movement method, only if there is an interactive element. This avoids the element
+        // being keyboard focusable if there isn't any focusable element.
+        if (spans != null && spans.length > 0) {
+            mDescriptionView.setMovementMethod(LinkMovementMethod.getInstance());
+        }
 
         mIcon.setImageDrawable(mIconDrawable);
         if (mShouldCenterIcon) {
