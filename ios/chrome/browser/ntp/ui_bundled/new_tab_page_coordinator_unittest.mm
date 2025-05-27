@@ -8,11 +8,6 @@
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/task_environment.h"
 #import "components/commerce/core/mock_shopping_service.h"
-#import "components/metrics/metrics_state_manager.h"
-#import "components/metrics/test/test_enabled_state_provider.h"
-#import "components/variations/service/variations_service.h"
-#import "components/variations/service/variations_service_client.h"
-#import "components/variations/synthetic_trial_registry.h"
 #import "ios/chrome/browser/bookmarks/model/bookmark_model_factory.h"
 #import "ios/chrome/browser/browser_view/model/browser_view_visibility_notifier_browser_agent.h"
 #import "ios/chrome/browser/commerce/model/shopping_service_factory.h"
@@ -69,105 +64,16 @@
 #import "ios/chrome/test/fakes/fake_discover_feed_eligibility_handler.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/chrome/test/providers/discover_feed/test_discover_feed_service.h"
-#import "ios/chrome/test/testing_application_context.h"
 #import "ios/testing/scoped_block_swizzler.h"
 #import "ios/web/public/test/fakes/fake_navigation_context.h"
 #import "ios/web/public/test/fakes/fake_navigation_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/test/web_task_environment.h"
-#import "services/network/test/test_network_connection_tracker.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
-
-using variations::SyntheticTrialRegistry;
-using variations::UIStringOverrider;
-using variations::VariationsService;
-using variations::VariationsServiceClient;
-
-namespace {
-
-// TODO(crbug.com/40742801): Remove when fake VariationsServiceClient created.
-// TODO(crbug.com/377275759): Check if TestVariationsServiceClient and
-// ScopedVariationsService can be consolidated with implementations elsewhere.
-class TestVariationsServiceClient : public VariationsServiceClient {
- public:
-  TestVariationsServiceClient() = default;
-  TestVariationsServiceClient(const TestVariationsServiceClient&) = delete;
-  TestVariationsServiceClient& operator=(const TestVariationsServiceClient&) =
-      delete;
-  ~TestVariationsServiceClient() override = default;
-
-  // VariationsServiceClient:
-  base::Version GetVersionForSimulation() override { return base::Version(); }
-  scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory()
-      override {
-    return nullptr;
-  }
-  network_time::NetworkTimeTracker* GetNetworkTimeTracker() override {
-    return nullptr;
-  }
-  bool OverridesRestrictParameter(std::string* parameter) override {
-    return false;
-  }
-  bool IsEnterprise() override { return false; }
-  void RemoveGoogleGroupsFromPrefsForDeletedProfiles(
-      PrefService* local_state) override {}
-
- private:
-  // VariationsServiceClient:
-  version_info::Channel GetChannel() override {
-    return version_info::Channel::UNKNOWN;
-  }
-};
-
-// Creates a VariationsService and sets it as the TestingApplicationContext's
-// VariationService for the life of the instance.
-class ScopedVariationsService {
- public:
-  ScopedVariationsService() {
-    EXPECT_EQ(nullptr,
-              TestingApplicationContext::GetGlobal()->GetVariationsService());
-    synthetic_trial_registry_ = std::make_unique<SyntheticTrialRegistry>();
-    enabled_state_provider_ =
-        std::make_unique<metrics::TestEnabledStateProvider>(false, false);
-    metrics_state_manager_ = metrics::MetricsStateManager::Create(
-        TestingApplicationContext::GetGlobal()->GetLocalState(),
-        enabled_state_provider_.get(),
-        /*backup_registry_key=*/std::wstring(),
-        /*user_data_dir=*/base::FilePath(),
-        metrics::StartupVisibility::kUnknown);
-
-    variations_service_ = VariationsService::Create(
-        std::make_unique<TestVariationsServiceClient>(),
-        TestingApplicationContext::GetGlobal()->GetLocalState(),
-        metrics_state_manager_.get(),
-        /*disable_network_switch=*/"dummy-disable-background-switch",
-        UIStringOverrider(),
-        network::TestNetworkConnectionTracker::CreateGetter(),
-        synthetic_trial_registry_.get());
-    TestingApplicationContext::GetGlobal()->SetVariationsService(
-        variations_service_.get());
-  }
-
-  ~ScopedVariationsService() {
-    EXPECT_EQ(variations_service_.get(),
-              TestingApplicationContext::GetGlobal()->GetVariationsService());
-    TestingApplicationContext::GetGlobal()->SetVariationsService(nullptr);
-    variations_service_.reset();
-  }
-
-  VariationsService* Get() { return variations_service_.get(); }
-
-  std::unique_ptr<metrics::MetricsStateManager> metrics_state_manager_;
-  std::unique_ptr<metrics::TestEnabledStateProvider> enabled_state_provider_;
-  std::unique_ptr<VariationsService> variations_service_;
-  std::unique_ptr<SyntheticTrialRegistry> synthetic_trial_registry_;
-};
-
-}  // namespace
 
 // Test fixture for testing NewTabPageCoordinator class.
 class NewTabPageCoordinatorTest : public PlatformTest {
