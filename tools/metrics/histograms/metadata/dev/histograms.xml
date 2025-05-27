@@ -87,7 +87,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="DevTools.DeveloperResourceLoaded"
-    enum="DevToolsDeveloperResourceLoaded" expires_after="2025-07-06">
+    enum="DevToolsDeveloperResourceLoaded" expires_after="M140">
   <owner>bmeurer@google.com</owner>
   <owner>danilsomsikov@google.com</owner>
   <summary>
@@ -122,7 +122,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="DevTools.DeveloperResourceScheme"
-    enum="DevToolsDeveloperResourceScheme" expires_after="2025-07-06">
+    enum="DevToolsDeveloperResourceScheme" expires_after="M140">
   <owner>bmeurer@google.com</owner>
   <owner>danilsomsikov@google.com</owner>
   <summary>
