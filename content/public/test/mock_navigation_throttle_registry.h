@@ -5,6 +5,8 @@
 #ifndef CONTENT_PUBLIC_TEST_MOCK_NAVIGATION_THROTTLE_REGISTRY_H_
 #define CONTENT_PUBLIC_TEST_MOCK_NAVIGATION_THROTTLE_REGISTRY_H_
 
+#include <vector>
+
 #include "base/memory/raw_ref.h"
 #include "content/public/browser/navigation_throttle_registry.h"
 
