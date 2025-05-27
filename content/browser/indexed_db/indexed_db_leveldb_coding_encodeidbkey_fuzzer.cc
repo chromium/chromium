@@ -111,10 +111,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   }
 
   // Ensure that |result| can be decoded back into the original key.
-  auto decoded_key = std::make_unique<IndexedDBKey>();
   auto result_str_view = std::string_view(result);
-  std::ignore =
-      content::indexed_db::DecodeIDBKey(&result_str_view, &decoded_key);
-  assert(decoded_key->Equals(key));
+  assert(content::indexed_db::DecodeIDBKey(&result_str_view).Equals(key));
   return 0;
 }
