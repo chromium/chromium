@@ -17,6 +17,7 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/ui/android/hats/survey_ui_delegate_android.h"
 #include "chrome/browser/ui/hats/hats_service.h"
 #include "components/messages/android/message_enums.h"
 #include "content/public/browser/web_contents.h"
@@ -79,6 +80,7 @@ class HatsServiceAndroid : public HatsService {
     raw_ptr<HatsServiceAndroid> hats_service_;
 
     std::unique_ptr<messages::MessageWrapper> message_;
+    std::unique_ptr<hats::SurveyUiDelegateAndroid> delegate_;
     std::string trigger_;
     SurveyBitsData product_specific_bits_data_;
     SurveyStringData product_specific_string_data_;
