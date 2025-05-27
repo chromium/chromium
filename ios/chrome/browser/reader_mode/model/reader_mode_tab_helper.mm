@@ -107,6 +107,13 @@ NSString* GenerateSnackbarMessage(base::TimeDelta heuristic_latency,
   return base::SysUTF8ToNSString(message);
 }
 
+// Returns whether `web_state` currently satisfies basic requirements for Reader
+// mode before running a distillation heuristic.
+bool CurrentPageSupportsReaderModeHeuristic(web::WebState* web_state) {
+  return web_state && !web_state->IsBeingDestroyed() &&
+         !IsUrlNtp(web_state->GetVisibleURL()) && web_state->ContentIsHTML();
+}
+
 }  // namespace
 
 ReaderModeTabHelper::ReaderModeTabHelper(web::WebState* web_state,
@@ -163,13 +170,20 @@ web::WebState* ReaderModeTabHelper::GetReaderModeWebState() {
 }
 
 bool ReaderModeTabHelper::CurrentPageSupportsReaderMode() const {
-  if (!web_state_ || web_state_->IsBeingDestroyed() ||
-      !reader_mode_eligible_url_.EqualsIgnoringRef(
-          web_state_->GetLastCommittedURL()) ||
-      !reader_mode_eligible_url_.is_valid()) {
-    return false;
+  return web_state_ && CurrentPageSupportsReaderModeHeuristic(web_state_) &&
+         last_committed_url_eligibility_ready_ &&
+         last_committed_url_without_ref_.is_valid() &&
+         last_committed_url_without_ref_.EqualsIgnoringRef(
+             reader_mode_eligible_url_);
+}
+
+void ReaderModeTabHelper::FetchLastCommittedUrlEligibilityResult(
+    base::OnceCallback<void(std::optional<bool>)> callback) {
+  if (last_committed_url_eligibility_ready_) {
+    std::move(callback).Run(CurrentPageSupportsReaderMode());
+    return;
   }
-  return !IsUrlNtp(web_state_->GetVisibleURL()) && web_state_->ContentIsHTML();
+  last_committed_url_eligibility_callbacks_.push_back(std::move(callback));
 }
 
 void ReaderModeTabHelper::SetSnackbarHandler(
@@ -192,6 +206,7 @@ void ReaderModeTabHelper::TriggerReaderModeHeuristicAsync(const GURL& url) {
   }
   // Guarantee that there is only one trigger heuristic running at a time.
   ResetUrlEligibility(url);
+
   trigger_reader_mode_timer_.Start(
       FROM_HERE, ReaderModeDistillerPageLoadDelay(),
       base::BindOnce(&ReaderModeTabHelper::TriggerReaderModeHeuristic,
@@ -217,6 +232,8 @@ void ReaderModeTabHelper::DidFinishNavigation(
       navigation_context->HasUserGesture()) {
     SetActive(false);
   }
+
+  SetLastCommittedUrl(web_state->GetLastCommittedURL());
 }
 
 void ReaderModeTabHelper::WebStateDestroyed(web::WebState* web_state) {
@@ -276,6 +293,11 @@ void ReaderModeTabHelper::HandleReaderModeHeuristicResult(
   }
   reader_mode_eligible_url_ =
       result == ReaderModeHeuristicResult::kReaderModeEligible ? url : GURL();
+  if (last_committed_url_without_ref_.EqualsIgnoringRef(
+          reader_mode_eligible_url_)) {
+    last_committed_url_eligibility_ready_ = true;
+    CallLastCommittedUrlEligibilityCallbacks(CurrentPageSupportsReaderMode());
+  }
 }
 
 void ReaderModeTabHelper::RecordReaderModeHeuristicLatency(
@@ -293,6 +315,13 @@ void ReaderModeTabHelper::RecordReaderModeHeuristicLatency(
 
 void ReaderModeTabHelper::TriggerReaderModeHeuristic(const GURL& url) {
   if (!IsReaderModeAvailable()) {
+    return;
+  }
+  if (web_state_ && !CurrentPageSupportsReaderModeHeuristic(web_state_)) {
+    // If the current page does not support running the heuristic, then the
+    // eligibility of the current page is already know.
+    last_committed_url_eligibility_ready_ = true;
+    CallLastCommittedUrlEligibilityCallbacks(false);
     return;
   }
   web::WebFramesManager* web_frames_manager =
@@ -388,4 +417,24 @@ void ReaderModeTabHelper::DestroyReaderModeWebState() {
   reader_mode_web_state_.reset();
   // Cancel any ongoing distillation task.
   distiller_viewer_.reset();
+}
+
+void ReaderModeTabHelper::SetLastCommittedUrl(const GURL& url) {
+  if (url.EqualsIgnoringRef(last_committed_url_without_ref_)) {
+    return;
+  }
+  last_committed_url_without_ref_ = url;
+  last_committed_url_eligibility_ready_ = false;
+  // At this point, the only callbacks waiting for results have been added since
+  // the last committed URL, before the Reader mode heuristic could determine
+  // eligibility. Hence, they can all be called with nullopt (no result).
+  CallLastCommittedUrlEligibilityCallbacks(std::nullopt);
+}
+
+void ReaderModeTabHelper::CallLastCommittedUrlEligibilityCallbacks(
+    std::optional<bool> result) {
+  for (auto& callback : last_committed_url_eligibility_callbacks_) {
+    std::move(callback).Run(result);
+  }
+  last_committed_url_eligibility_callbacks_.clear();
 }
