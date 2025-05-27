@@ -421,7 +421,7 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, ClickTool_ViewportCoordinate) {
 IN_PROC_BROWSER_TEST_F(ActorToolsTest, ClickTool_Subframe_DomNodeId) {
   // This test only applies if cross-origin frames are put into separate
   // processes.
-  if (content::AreAllSitesIsolatedForTesting()) {
+  if (!content::AreAllSitesIsolatedForTesting()) {
     GTEST_SKIP();
   }
 
