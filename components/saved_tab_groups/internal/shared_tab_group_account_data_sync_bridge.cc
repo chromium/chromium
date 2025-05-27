@@ -62,6 +62,7 @@ sync_pb::SharedTabGroupAccountDataSpecifics TrimSpecifics(
   trimmed_account_specifics.clear_guid();
   trimmed_account_specifics.clear_collaboration_id();
   trimmed_account_specifics.clear_update_time_windows_epoch_micros();
+  trimmed_account_specifics.clear_version();
 
   if (trimmed_account_specifics.has_shared_tab_details()) {
     sync_pb::SharedTabDetails* tab =
@@ -113,6 +114,7 @@ std::unique_ptr<syncer::EntityData> CreateEntityDataFromSavedTabGroupTab(
   sync_pb::SharedTabGroupAccountDataSpecifics specifics;
   specifics.set_guid(tab.saved_tab_guid().AsLowercaseString());
   specifics.set_collaboration_id(collaboration_id->value());
+  specifics.set_version(kCurrentSharedTabGroupAccountDataSpecificsProtoVersion);
 
   sync_pb::SharedTabDetails* tab_group_details =
       specifics.mutable_shared_tab_details();

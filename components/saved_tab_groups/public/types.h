@@ -205,6 +205,9 @@ struct SharedAttribution {
 // The current proto version for SharedTabGroupDataSpecifics.
 inline constexpr int kCurrentSharedTabGroupDataSpecificsProtoVersion = 1;
 
+// The current proto version for SharedTabGroupAccountDataSpecifics.
+inline constexpr int kCurrentSharedTabGroupAccountDataSpecificsProtoVersion = 1;
+
 }  // namespace tab_groups
 
 #endif  // COMPONENTS_SAVED_TAB_GROUPS_PUBLIC_TYPES_H_

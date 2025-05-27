@@ -35,8 +35,17 @@ using testing::Invoke;
 using testing::Matcher;
 using testing::Not;
 using testing::Return;
+using testing::SaveArgPointee;
 using testing::Sequence;
 using testing::UnorderedElementsAre;
+
+// Action SaveArgPointeeMove<k>(pointer) saves the value pointed to by the k-th
+// (0-based) argument of the mock function by moving it to *pointer.
+ACTION_TEMPLATE(SaveArgPointeeMove,
+                HAS_1_TEMPLATE_PARAMS(int, k),
+                AND_1_VALUE_PARAMS(pointer)) {
+  *pointer = std::move(*testing::get<k>(args));
+}
 
 MATCHER_P3(HasAccountMetadata, title, color, collaboration_id, "") {
   return base::UTF16ToUTF8(arg.title()) == title && arg.color() == color &&
@@ -668,9 +677,23 @@ TEST_F(SharedTabGroupAccountDataSyncBridgeTest,
   base::Time last_seen_time3 = base::Time::Now() + base::Seconds(55);
   base::Time last_seen_time4 = base::Time::Now() + base::Seconds(99);
 
-  EXPECT_CALL(mock_processor(), Put(Eq(storage_key1), _, _)).Times(1);
+  syncer::EntityData entity_data;
+  EXPECT_CALL(mock_processor(), Put(Eq(storage_key1), _, _))
+      .WillOnce(SaveArgPointeeMove<1>(&entity_data));
   model().UpdateTabLastSeenTime(group_id, tab_id1, last_seen_time3,
                                 TriggerSource::LOCAL);
+
+  // Verify the written specifics.
+  const sync_pb::SharedTabGroupAccountDataSpecifics& specifics =
+      entity_data.specifics.shared_tab_group_account_data();
+  EXPECT_EQ(kCurrentSharedTabGroupDataSpecificsProtoVersion,
+            specifics.version());
+  EXPECT_EQ(tab_id1.AsLowercaseString(), specifics.guid());
+  EXPECT_TRUE(specifics.has_shared_tab_details());
+  EXPECT_EQ(group_id.AsLowercaseString(),
+            specifics.shared_tab_details().shared_tab_group_guid());
+  EXPECT_EQ(last_seen_time3.ToDeltaSinceWindowsEpoch().InMicroseconds(),
+            specifics.shared_tab_details().last_seen_timestamp_windows_epoch());
 
   // Update the last seen timestamp for tab2 from sync. The updated timestamp
   // should not be sent back to sync.
@@ -814,6 +837,7 @@ TEST_F(SharedTabGroupAccountDataSyncBridgeTest,
   account_data_specifics2->set_update_time_windows_epoch_micros(1234567890);
   account_data_specifics2->mutable_shared_tab_group_details()
       ->set_pinned_position(11);
+  account_data_specifics2->set_version(999);
 
   EXPECT_THAT(bridge().TrimAllSupportedFieldsFromRemoteSpecifics(
                   remote_account_data_specifics2),
