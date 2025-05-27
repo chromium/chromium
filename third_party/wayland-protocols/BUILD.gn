@@ -168,6 +168,11 @@ wayland_protocol("touchpad_haptics_protocol") {
 }
 
 wayland_protocol("ui_controls_protocol") {
+  sources = [ "unstable/ui-controls/ui-controls-unstable-v2.xml" ]
+}
+
+wayland_protocol("ui_controls_v1_protocol") {
+  # This is used by exo.
   sources = [ "unstable/ui-controls/ui-controls-unstable-v1.xml" ]
 }
 

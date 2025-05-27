@@ -419,7 +419,7 @@ source_set("client_support") {
     "//third_party/wayland-protocols:text_input_extension_protocol",
     "//third_party/wayland-protocols:text_input_protocol",
     "//third_party/wayland-protocols:touchpad_haptics_protocol",
-    "//third_party/wayland-protocols:ui_controls_protocol",
+    "//third_party/wayland-protocols:ui_controls_v1_protocol",
     "//third_party/wayland-protocols:viewporter_protocol",
     "//third_party/wayland-protocols:vsync_feedback_protocol",
     "//third_party/wayland-protocols:vsync_feedback_protocol",
