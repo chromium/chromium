@@ -38,10 +38,6 @@
 #include "third_party/blink/renderer/platform/wtf/wtf_export.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"
 
-#ifdef __OBJC__
-#include "base/apple/bridging.h"
-#endif
-
 namespace WTF {
 class WTF_EXPORT AtomicString;
 }
@@ -207,7 +203,6 @@ class WTF_EXPORT AtomicString {
   unsigned Hash() const { return string_.Impl()->ExistingHash(); }
 
 #ifdef __OBJC__
-  AtomicString(NSString* s) : string_(Add(base::apple::NSToCFPtrCast(s))) {}
   operator NSString*() const { return string_; }
 #endif
   // AtomicString::fromUTF8 will return a null string if
@@ -252,9 +247,6 @@ class WTF_EXPORT AtomicString {
   }
   static scoped_refptr<StringImpl> AddSlowCase(scoped_refptr<StringImpl>&&);
   static scoped_refptr<StringImpl> AddSlowCase(StringImpl*);
-#if BUILDFLAG(IS_APPLE)
-  static scoped_refptr<StringImpl> Add(CFStringRef);
-#endif
 };
 
 inline bool operator==(const AtomicString& a, const AtomicString& b) {
