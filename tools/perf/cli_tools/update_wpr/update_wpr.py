@@ -19,7 +19,6 @@ import subprocess
 import tempfile
 import time
 import shlex
-import sys
 import webbrowser
 
 from chrome_telemetry_build import chromium_config
@@ -55,7 +54,6 @@ MISSING_RESOURCE_RE = re.compile(
     r'of 404 \(\) ([^\s]+)')
 TELEMETRY_BIN_DEPS_CONFIG = os.path.join(
     path_util.GetTelemetryDir(), 'telemetry', 'binary_dependencies.json')
-PY_EXECUTABLE = [sys.executable]
 
 
 def _GetBranchName():
@@ -832,7 +830,7 @@ class CrossbenchWprUpdater(object):
   def _GenerateCommandList(self, args=None, cb_output_dir=None):
     args = args or []
     cb_output_dir = cb_output_dir or self.output_dir
-    command = PY_EXECUTABLE + [
+    command = [
         f'{self._CB_TOOL}',
         self.bss,
         '--repeat=1',

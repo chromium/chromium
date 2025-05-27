@@ -574,7 +574,7 @@ class UpdateWprTest(unittest.TestCase):
       return updater
 
   def _CrossbenchCommonExpectedCommand(self, cb_path):
-    return update_wpr.PY_EXECUTABLE + [
+    return [
         update_wpr.CrossbenchWprUpdater._CB_TOOL,
         'test_benchmark',
         '--repeat=1',
