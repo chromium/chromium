@@ -22161,6 +22161,14 @@ should be able to be added at any place in this file.
   <description>Recorded when the user opens Lens View Finder.</description>
 </action>
 
+<action name="Mobile.LensViewFinder.PostCapture.Closed">
+  <owner>christianxu@google.com</owner>
+  <owner>stkhapugin@google.com</owner>
+  <description>
+    Recorded when the Lens View Finder post capture overlay UI is closed.
+  </description>
+</action>
+
 <action name="Mobile.Omnibox.iOS.PastedValidURL">
   <owner>nicolasmacbeth@google.com</owner>
   <owner>bling-get-set-up@google.com</owner>
