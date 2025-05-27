@@ -4,9 +4,14 @@
 
 package org.chromium.chrome.browser.pdf;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.when;
 
+import android.content.ContentResolver;
+import android.content.Context;
 import android.net.Uri;
+import android.text.TextUtils;
 
 import org.junit.After;
 import org.junit.Assert;
@@ -22,11 +27,14 @@ import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.chrome.browser.util.ChromeFileProvider;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.content_public.browser.LoadUrlParams;
+import org.chromium.ui.base.MimeTypeUtils;
 
 @RunWith(BaseRobolectricTestRunner.class)
 public class PdfUtilsUnitTest {
     @Mock private LoadUrlParams mLoadUrlParams;
     @Mock private NativePage mNativePage;
+    @Mock private Context mContext;
+    @Mock private ContentResolver mContentResolver;
     private AutoCloseable mCloseableMocks;
     private String mPdfPageUrl;
     private String mPdfPageBlobUrl;
@@ -51,6 +59,7 @@ public class PdfUtilsUnitTest {
         ChromeFileProvider.setGeneratedUriForTesting(Uri.parse(CONTENT_URL));
         mPdfPageUrl = PdfUtils.encodePdfPageUrl(PDF_LINK);
         mPdfPageBlobUrl = PdfUtils.encodePdfPageUrl(PDF_BLOB_URL);
+        when(mContext.getContentResolver()).thenReturn(mContentResolver);
     }
 
     @After
@@ -232,5 +241,25 @@ public class PdfUtilsUnitTest {
         String decodedUrl = PdfUtils.decodePdfPageUrl(encodedUrl);
         Assert.assertEquals(
                 "The decoded url should match", CONTENT_URL_SPECIAL_CHARACTER, decodedUrl);
+    }
+
+    @Test
+    public void testGetEncodedContentUri_PDF() {
+        when(mContentResolver.getType(any())).thenReturn(MimeTypeUtils.PDF_MIME_TYPE);
+        String encodedUrl = PdfUtils.getEncodedContentUri(CONTENT_URL, mContext);
+        Assert.assertFalse("The encoded url should exist", TextUtils.isEmpty(encodedUrl));
+    }
+
+    @Test
+    public void testGetEncodedContentUri_Image() {
+        when(mContentResolver.getType(any())).thenReturn("image/jpeg");
+        String encodedUrl = PdfUtils.getEncodedContentUri(CONTENT_URL, mContext);
+        Assert.assertTrue("The encoded url should not exist", TextUtils.isEmpty(encodedUrl));
+    }
+
+    @Test
+    public void testGetEncodedContentUri_Https() {
+        String encodedUrl = PdfUtils.getEncodedContentUri(PDF_LINK, mContext);
+        Assert.assertTrue("The encoded url should not exist", TextUtils.isEmpty(encodedUrl));
     }
 }

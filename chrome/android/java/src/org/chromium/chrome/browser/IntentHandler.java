@@ -49,6 +49,7 @@ import org.chromium.chrome.browser.externalnav.IntentWithRequestMetadataHandler.
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.gsa.GSAUtils;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteCoordinator;
+import org.chromium.chrome.browser.pdf.PdfUtils;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.renderer_host.ChromeNavigationUiData;
@@ -1015,7 +1016,8 @@ public class IntentHandler {
                 String lowerCaseUrl = url.toLowerCase(Locale.US);
                 if (ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL.equals(lowerCaseUrl)
                         || ContentUrlConstants.ABOUT_BLANK_URL.equals(lowerCaseUrl)
-                        || UrlConstants.CHROME_DINO_URL.equals(lowerCaseUrl)) {
+                        || UrlConstants.CHROME_DINO_URL.equals(lowerCaseUrl)
+                        || lowerCaseUrl.startsWith(UrlConstants.PDF_URL)) {
                     return false;
                 }
 
@@ -1156,6 +1158,12 @@ public class IntentHandler {
         String url = extractUrlFromIntent(intent);
         if (isGoogleChromeScheme(url)) {
             url = ExternalNavigationHandler.getUrlFromSelfSchemeUrl(GOOGLECHROME_SCHEME, url);
+        }
+        // To display a PDF in Chrome, the content URI must be encoded.
+        String encodedPdfUrl =
+                PdfUtils.getEncodedContentUri(url, ContextUtils.getApplicationContext());
+        if (!TextUtils.isEmpty(encodedPdfUrl)) {
+            url = encodedPdfUrl;
         }
         return url;
     }
