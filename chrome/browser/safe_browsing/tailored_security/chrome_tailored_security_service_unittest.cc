@@ -180,6 +180,11 @@ class ChromeTailoredSecurityServiceTest : public testing::Test {
       prefs()->RemoveManagedPref(prefs::kSafeBrowsingEnhanced);
     }
 
+    // This may be called multiple times, we must reset the original test
+    // browser and its associated window.
+    browser_.reset();
+    browser_window_.reset();
+
     browser_window_ = std::make_unique<TestBrowserWindow>();
     Browser::CreateParams params(profile(), true);
     params.type = Browser::TYPE_NORMAL;

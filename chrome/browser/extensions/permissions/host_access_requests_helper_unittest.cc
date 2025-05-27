@@ -59,8 +59,8 @@ class HostAccessRequestsHelperUnittest : public ExtensionServiceTestBase {
 
  private:
   // The browser and accompaying window.
-  std::unique_ptr<Browser> browser_;
   std::unique_ptr<TestBrowserWindow> browser_window_;
+  std::unique_ptr<Browser> browser_;
 
   raw_ptr<PermissionsManager> permissions_manager_;
 };
