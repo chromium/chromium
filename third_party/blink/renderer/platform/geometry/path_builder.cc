@@ -286,7 +286,7 @@ PathBuilder& PathBuilder::AddContouredRect(
   ContouredRect origin_contoured_rect(origin_rect,
                                       contoured_rect.GetCornerCurvature());
 
-  if (!contoured_rect.GetRadii().TopRight().IsZero()) {
+  if (!origin_rect.GetRadii().TopRight().IsZero()) {
     SkPath path;
     path.moveTo(infinite_rect.left(), infinite_rect.top());
     AddCurvedCorner(path, contoured_rect.TopRightCorner());
@@ -296,7 +296,7 @@ PathBuilder& PathBuilder::AddContouredRect(
     op_builder.add(path, kIntersect_SkPathOp);
   }
 
-  if (!contoured_rect.GetRadii().BottomRight().IsZero()) {
+  if (!origin_rect.GetRadii().BottomRight().IsZero()) {
     SkPath path;
     path.moveTo(infinite_rect.right(), infinite_rect.top());
     AddCurvedCorner(path, contoured_rect.BottomRightCorner());
@@ -306,7 +306,7 @@ PathBuilder& PathBuilder::AddContouredRect(
     op_builder.add(path, kIntersect_SkPathOp);
   }
 
-  if (!contoured_rect.GetRadii().BottomLeft().IsZero()) {
+  if (!origin_rect.GetRadii().BottomLeft().IsZero()) {
     SkPath path;
     path.moveTo(infinite_rect.right(), infinite_rect.bottom());
     AddCurvedCorner(path, contoured_rect.BottomLeftCorner());
@@ -316,7 +316,7 @@ PathBuilder& PathBuilder::AddContouredRect(
     op_builder.add(path, kIntersect_SkPathOp);
   }
 
-  if (!contoured_rect.GetRadii().TopLeft().IsZero()) {
+  if (!origin_rect.GetRadii().TopLeft().IsZero()) {
     SkPath path;
     path.moveTo(infinite_rect.left(), infinite_rect.bottom());
     AddCurvedCorner(path, contoured_rect.TopLeftCorner());

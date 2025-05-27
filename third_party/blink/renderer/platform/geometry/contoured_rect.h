@@ -200,7 +200,9 @@ class PLATFORM_EXPORT ContouredRect {
 
   void SetRadii(const FloatRoundedRect::Radii& radii) { rect_.SetRadii(radii); }
 
-  bool IsRounded() const { return rect_.IsRounded(); }
+  bool IsRounded() const {
+    return rect_.IsRounded() || (origin_rect_ && origin_rect_->IsRounded());
+  }
 
   const FloatRoundedRect& AsRoundedRect() const { return rect_; }
 
