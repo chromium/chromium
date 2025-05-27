@@ -287,6 +287,9 @@ void WaylandKeyboard::OnLeave(void* data,
   if (auto* window = wl::RootWindowFromWlSurface(surface))
     self->delegate_->OnKeyboardFocusChanged(window, /*focused=*/false);
 
+  // Upon window focus lose, reset modifier state.
+  self->delegate_->OnKeyboardModifiersChanged(0);
+
   // Upon window focus lose, reset the key repeat timers.
   self->auto_repeat_handler_.StopKeyRepeat();
 }
