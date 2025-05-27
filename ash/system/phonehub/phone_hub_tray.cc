@@ -147,18 +147,15 @@ PhoneHubTray::PhoneHubTray(Shelf* shelf)
 
   UpdateTrayItemColor(is_active());
 
-  onboarding_nudge_controller_ =
-      features::IsPhoneHubOnboardingNotifierRevampEnabled()
-          ? std::make_unique<OnboardingNudgeController>(
-                /*phone_hub_tray=*/this,
-                /*animation_stop_callback=*/
-                base::BindRepeating(&PhoneHubTray::StopPulseAnimation,
-                                    weak_factory_.GetWeakPtr()),
-                /*start_animation_callback=*/
-                base::BindRepeating(&PhoneHubTray::StartPulseAnimation,
-                                    weak_factory_.GetWeakPtr()),
-                base::DefaultClock::GetInstance())
-          : nullptr;
+  onboarding_nudge_controller_ = std::make_unique<OnboardingNudgeController>(
+      /*phone_hub_tray=*/this,
+      /*animation_stop_callback=*/
+      base::BindRepeating(&PhoneHubTray::StopPulseAnimation,
+                          weak_factory_.GetWeakPtr()),
+      /*start_animation_callback=*/
+      base::BindRepeating(&PhoneHubTray::StartPulseAnimation,
+                          weak_factory_.GetWeakPtr()),
+      base::DefaultClock::GetInstance());
 
   Shell::Get()->display_manager()->AddDisplayManagerObserver(this);
 
@@ -172,8 +169,7 @@ PhoneHubTray::~PhoneHubTray() {
   if (phone_hub_manager_) {
     phone_hub_manager_->GetAppStreamManager()->RemoveObserver(this);
   }
-  if (phone_hub_manager_ && IsInPhoneHubNudgeExperimentGroup() &&
-      onboarding_nudge_controller_) {
+  if (phone_hub_manager_ && onboarding_nudge_controller_) {
     phone_hub_manager_->GetFeatureStatusProvider()->RemoveObserver(
         onboarding_nudge_controller_.get());
   }
@@ -190,8 +186,7 @@ void PhoneHubTray::SetPhoneHubManager(
     phone_hub_manager->GetAppStreamManager()->AddObserver(this);
   }
   phone_hub_manager_ = phone_hub_manager;
-  if (phone_hub_manager_ && IsInPhoneHubNudgeExperimentGroup() &&
-      onboarding_nudge_controller_) {
+  if (phone_hub_manager_ && onboarding_nudge_controller_) {
     phone_hub_manager_->GetFeatureStatusProvider()->AddObserver(
         onboarding_nudge_controller_.get());
   }
@@ -287,9 +282,8 @@ void PhoneHubTray::OnVisibilityAnimationFinished(
     bool aborted) {
   TrayBackgroundView::OnVisibilityAnimationFinished(
       should_log_visible_pod_count, aborted);
-  if (IsInPhoneHubNudgeExperimentGroup() &&
-      ui_controller_->ui_state() ==
-          PhoneHubUiController::UiState::kOnboardingWithoutPhone) {
+  if (ui_controller_->ui_state() ==
+      PhoneHubUiController::UiState::kOnboardingWithoutPhone) {
     onboarding_nudge_controller_->ShowNudgeIfNeeded();
   }
 }
@@ -534,8 +528,7 @@ void PhoneHubTray::PhoneHubIconActivated(const ui::Event& event) {
     return;
   }
 
-  if (features::IsPhoneHubOnboardingNotifierRevampEnabled() &&
-      AnchoredNudgeManager::Get()->IsNudgeShown(
+  if (AnchoredNudgeManager::Get()->IsNudgeShown(
           OnboardingNudgeController::kPhoneHubNudgeId)) {
     is_icon_clicked_when_nudge_visible_ = true;
     onboarding_nudge_controller_->HideNudge();
@@ -568,12 +561,7 @@ views::View* PhoneHubTray::GetPhoneStatusView() {
 
 bool PhoneHubTray::IsInsideUnlockWindow() {
   return (base::Time::NowFromSystemTime() - last_unlocked_timestamp_) <=
-         features::kMultiDeviceSetupNotificationTimeLimit.Get();
-}
-
-bool PhoneHubTray::IsInPhoneHubNudgeExperimentGroup() {
-  return features::IsPhoneHubOnboardingNotifierRevampEnabled() &&
-         features::kPhoneHubOnboardingNotifierUseNudge.Get();
+         kMultiDeviceSetupNotificationTimeLimit;
 }
 
 BEGIN_METADATA(PhoneHubTray)

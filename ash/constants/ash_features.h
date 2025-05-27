@@ -670,9 +670,6 @@ COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kModifierSplit);
 COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kMouseImposterCheck);
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kMultiCalendarSupport);
-COMPONENT_EXPORT(ASH_CONSTANTS)
-extern const base::FeatureParam<base::TimeDelta>
-    kMultiDeviceSetupNotificationTimeLimit;
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kMultiZoneRgbKeyboard);
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kNearbyPresence);
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kNotificationLimit);
@@ -795,22 +792,6 @@ extern const base::FeatureParam<base::TimeDelta>
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kPhoneHubCallNotification);
 COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kPhoneHubMonochromeNotificationIcons);
-COMPONENT_EXPORT(ASH_CONSTANTS)
-BASE_DECLARE_FEATURE(kPhoneHubOnboardingNotifierRevamp);
-COMPONENT_EXPORT(ASH_CONSTANTS)
-extern const base::FeatureParam<bool> kPhoneHubOnboardingNotifierUseNudge;
-enum class PhoneHubNotifierTextGroup {
-  // The int values should not be changed as they are referenced on the server.
-  kNotifierTextGroupA = 1,
-  kNotifierTextGroupB = 2
-};
-COMPONENT_EXPORT(ASH_CONSTANTS)
-extern const base::FeatureParam<PhoneHubNotifierTextGroup>
-    kPhoneHubNotifierTextGroup;
-COMPONENT_EXPORT(ASH_CONSTANTS)
-extern const base::FeatureParam<base::TimeDelta> kPhoneHubNudgeDelay;
-COMPONENT_EXPORT(ASH_CONSTANTS)
-extern const base::FeatureParam<int> kPhoneHubNudgeTotalAppearancesAllowed;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kPhoneHubPingOnBubbleOpen);
 COMPONENT_EXPORT(ASH_CONSTANTS)
@@ -1351,8 +1332,6 @@ COMPONENT_EXPORT(ASH_CONSTANTS) bool IsPeripheralNotificationEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsPhoneHubCameraRollEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS)
 bool IsPhoneHubMonochromeNotificationIconsEnabled();
-COMPONENT_EXPORT(ASH_CONSTANTS)
-bool IsPhoneHubOnboardingNotifierRevampEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS)
 bool IsPhoneHubPingOnBubbleOpenEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS)
