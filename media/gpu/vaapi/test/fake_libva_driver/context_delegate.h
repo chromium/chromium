@@ -5,6 +5,8 @@
 #ifndef MEDIA_GPU_VAAPI_TEST_FAKE_LIBVA_DRIVER_CONTEXT_DELEGATE_H_
 #define MEDIA_GPU_VAAPI_TEST_FAKE_LIBVA_DRIVER_CONTEXT_DELEGATE_H_
 
+#include <vector>
+
 #include "base/memory/raw_ptr.h"
 
 namespace media::internal {

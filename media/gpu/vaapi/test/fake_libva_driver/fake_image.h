@@ -7,6 +7,8 @@
 
 #include <va/va.h>
 
+#include <vector>
+
 #include "base/memory/raw_ref.h"
 
 namespace media::internal {
