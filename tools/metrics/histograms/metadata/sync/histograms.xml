@@ -1860,6 +1860,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Sync.SearchEngine.FaviconOnlyUpdate" enum="Boolean"
+    expires_after="2026-05-26">
+  <owner>ankushkush@google.com</owner>
+  <owner>mahmadi@chromium.org</owner>
+  <summary>
+    Upon every search engine update, records whether the update only updates the
+    favicon url. If true, the update is not committed to the sync server.
+  </summary>
+</histogram>
+
 <histogram name="Sync.SearchEngine.HasLocalDataDuringStopSyncing2"
     enum="Boolean" expires_after="2026-03-07">
   <owner>ankushkush@google.com</owner>
