@@ -283,13 +283,12 @@ bool CanvasRenderingContext2D::WritePixels(const SkImageInfo& orig_info,
     host->FlushRecording(FlushReason::kWritePixels);
 
     // Short-circuit out if an error occurred while flushing the recording.
-    if (!host->ResourceProvider()->IsValid()) {
+    if (!provider->IsValid()) {
       return false;
     }
   }
 
-  return host->ResourceProvider()->WritePixels(orig_info, pixels, row_bytes, x,
-                                               y);
+  return provider->WritePixels(orig_info, pixels, row_bytes, x, y);
 }
 
 bool CanvasRenderingContext2D::ShouldAntialias() const {
