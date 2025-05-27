@@ -10203,6 +10203,7 @@ from previous Chrome versions.
   <int value="-1404072922"
       label="UserDisplayModeSyncBrowserMitigation:enabled"/>
   <int value="-1403427439" label="TabGroupEntryPointsAndroid:enabled"/>
+  <int value="-1402239887" label="DropInputEventsWhilePaintHolding:disabled"/>
   <int value="-1401308932" label="CaptureModeEducation:disabled"/>
   <int value="-1400745093" label="SystemEmojiPickerSearchExtension:enabled"/>
   <int value="-1400693146" label="LauncherImageSearchIca:enabled"/>
@@ -12045,6 +12046,7 @@ from previous Chrome versions.
   <int value="-705746939" label="ChromeDuet:enabled"/>
   <int value="-705464246" label="ChromeCartDomBasedHeuristics:enabled"/>
   <int value="-705212373" label="IncognitoNtpRevamp:disabled"/>
+  <int value="-705069685" label="DropInputEventsWhilePaintHolding:enabled"/>
   <int value="-704459022" label="ContinuousSearch:enabled"/>
   <int value="-704335590" label="TreesInViz:disabled"/>
   <int value="-704232562" label="UseMonitorColorSpace:enabled"/>

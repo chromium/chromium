@@ -433,6 +433,13 @@ const char kDisableFacilitatedPaymentsMerchantAllowlistDescription[] =
     "payments, so that merchants that are not on the allowlist can also be "
     "tested for the supported features.";
 
+const char kDropInputEventsWhilePaintHoldingName[] =
+    "Drop input events while paint-holding is active";
+const char kDropInputEventsWhilePaintHoldingDescription[] =
+    "Drop input events at the browser process until the process receives the "
+    "first signal that the renderer has sent a frame to GPU.  This prevents "
+    "accidental interaction with a page the user has not seen yet.";
+
 const char kHdrAgtmName[] = "Adaptive global tone mapping";
 const char kHdrAgtmDescription[] =
     "Enables parsing and rendering of adaptive global tone mapping (AGTM) aka "

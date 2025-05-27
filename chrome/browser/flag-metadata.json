@@ -2373,6 +2373,11 @@
     "expiry_milestone": 135
   },
   {
+    "name": "drop-input-events-while-paint-holding",
+    "owners": [ "mustaq@chromium.org", "blink-interactions-team@google.com" ],
+    "expiry_milestone": 150
+  },
+  {
     "name": "dse-preload2",
     "owners": ["kenoss@chromium.org", "chrome-prerendering@google.com"],
     "expiry_milestone": 145

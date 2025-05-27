@@ -12105,6 +12105,11 @@ const FeatureEntry kFeatureEntries[] = {
          payments::facilitated::kDisableFacilitatedPaymentsMerchantAllowlist)},
 #endif  // BUILDFLAF(IS_ANDROID)
 
+    {"drop-input-events-while-paint-holding",
+     flag_descriptions::kDropInputEventsWhilePaintHoldingName,
+     flag_descriptions::kDropInputEventsWhilePaintHoldingDescription, kOsAll,
+     FEATURE_VALUE_TYPE(blink::features::kDropInputEventsWhilePaintHolding)},
+
 #if !BUILDFLAG(IS_ANDROID)
     {"dbd-revamp-desktop", flag_descriptions::kDbdRevampDesktopName,
      flag_descriptions::kDbdRevampDesktopDescription, kOsDesktop,
