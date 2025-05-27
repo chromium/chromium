@@ -10,289 +10,203 @@
 #include "base/check.h"
 #include "base/memory/stack_allocated.h"
 #include "third_party/blink/renderer/core/layout/inline/inline_item.h"
+#include "third_party/blink/renderer/platform/wtf/text/code_point_iterator.h"
 
 namespace blink {
 
 namespace {
 
-// Check if the argument maybe "Ideographs" defined in CSS Text:
-// https://drafts.csswg.org/css-text-4/#text-spacing-classes
-// without getting Unicode properties, which is not slow but also not trivial.
 //
-// If this returns `false`, the text with the script does not contain
-// "Ideographs."
+// This class keeps track of the `InlineItem` in sync with the text offset, in
+// order to apply the East Asian Spacing as defined by the [UTR#59].
 //
-// Note, this doesn't cover all ideographs as defined in Unicode.
-inline bool MaybeIdeograph(UScriptCode script, StringView text) {
-  // `ScriptRunIterator` normalizes these scripts to `USCRIPT_HIRAGANA`.
-  DCHECK_NE(script, USCRIPT_KATAKANA);
-  DCHECK_NE(script, USCRIPT_KATAKANA_OR_HIRAGANA);
-  if (script == USCRIPT_HAN || script == USCRIPT_HIRAGANA) {
-    return true;
-  }
-  // The "Ideographs" definition contains `USCRIPT_COMMON` and
-  // `USCRIPT_INHERITED`, which can inherit scripts from its previous character.
-  // They will be, for example, `USCRIPT_LATIN` if the previous character is
-  // `USCRIPT_LATIN`. Check if we have any such characters.
-  CHECK(!text.Is8Bit());
-  return std::ranges::any_of(text.Span16(), [](const UChar ch) {
-    return ch >= TextAutoSpace::kNonHanIdeographMin &&
-           ch <= TextAutoSpace::kNonHanIdeographMax;
-  });
-}
-
-// `TextAutoSpace::ApplyIfNeeded` computes offsets to insert spacing *before*,
-// but `ShapeResult` can handle spacing *after* a glyph. Due to this difference,
-// when adding a spacing before the start offset of an item, the spacing
-// should be added to the end of the previous item. This class keeps the
-// previous item's `shape_result_` for this purpose.
+// The spacing is determined for each `InlineItem`. When the text offset
+// advances to the next `InlineItem`, this class finalizes the spacings for the
+// `InlineItem` and applies them.
+//
+// [UTR#59]: https://unicode.org/reports/tr59/
+//
 class SpacingApplier {
   STACK_ALLOCATED();
 
  public:
-  void SetSpacing(const Vector<wtf_size_t, 16>& offsets,
-                  const InlineItem* current_item,
-                  const ComputedStyle& style) {
-    DCHECK(current_item->TextShapeResult());
-    const float spacing = TextAutoSpace::GetSpacingWidth(style.GetFont());
-    auto offset = base::span(offsets).begin();
-    if (!offsets.empty() && *offset == current_item->StartOffset()) {
-      DCHECK(last_item_);
-      // If the previous item's direction is from the left to the right, it is
-      // clear that the last run is the rightest run, so it is safe to add
-      // spacing behind that.
-      if (last_item_->Direction() == TextDirection::kLtr) {
-        // There would be spacing added to the previous item due to its last
-        // glyph is next to `current_item`'s first glyph, since the two glyphs
-        // meet the condition of adding spacing.
-        // https://drafts.csswg.org/css-text-4/#propdef-text-autospace.
-        const ComputedStyle* last_style = last_item_->Style();
-        const float last_spacing =
-            last_style == &style
-                ? spacing
-                : TextAutoSpace::GetSpacingWidth(last_style->GetFont());
-        offsets_with_spacing_.emplace_back(
-            OffsetWithSpacing({.offset = *offset, .spacing = last_spacing}));
-        ++offset;
-      } else {
-        // This branch holds an assumption that RTL texts cannot be ideograph.
-        // The assumption might be wrong, but should work for almost all cases.
-        // Just do nothing in this case, and ShapeResult::ApplyTextAutoSpacing
-        // will insert spacing as an position offset to `offset`'s glyph,
-        // (instead of advance), to ensure spacing is always add to the correct
-        // position regardless of where the line is broken.
-      }
-    }
-    // Apply all pending spaces to the previous item.
-    ApplyIfNeeded();
-    offsets_with_spacing_.Shrink(0);
+  // Convert to `base::span` because its `iterator` is safe.
+  using InlineItemList = base::span<Member<InlineItem>>;
 
-    // Update the previous item in prepare for the next iteration.
-    last_item_ = current_item;
-    for (; offset != offsets.end(); ++offset) {
-      offsets_with_spacing_.emplace_back(
-          OffsetWithSpacing({.offset = *offset, .spacing = spacing}));
+  SpacingApplier(wtf_size_t offset,
+                 InlineItemList items,
+
+                 InlineTextAutoSpace::Callback* callback)
+      : item_iter_(items.begin()),
+        item_end_(items.end()),
+        callback_for_testing_(callback) {
+    item_ = *item_iter_;
+    DidChangeItem();
+    while (offset > item_end_offset_) {
+      AdvanceItem();
+    }
+    if (!is_disabled_ && !IsOffsetDisabled(offset)) {
+      InsertSpaceBefore(offset);
     }
   }
 
-  void ApplyIfNeeded() {
-    if (offsets_with_spacing_.empty()) {
-      return;  // Nothing to update.
-    }
-    DCHECK(last_item_);
+  wtf_size_t ItemEndOffset() const { return item_end_offset_; }
+  bool IsDisabled() const { return is_disabled_; }
+  bool IsOffsetDisabled(wtf_size_t offset) const {
+    return is_last_disabled_ && offset == item_->StartOffset();
+  }
 
-    InlineItem* item = const_cast<InlineItem*>(last_item_);
-    ShapeResult* shape_result = item->CloneTextShapeResult();
+  void InsertSpaceBefore(wtf_size_t offset) {
+    DCHECK(item_);
+    DCHECK_GE(offset, item_->StartOffset());
+    DCHECK(!(is_disabled_ && offset < item_end_offset_));
+    DCHECK(!IsOffsetDisabled(offset));
+
+    // If the `offset` is for `item_`, buffer the `offset` and done.
+    if (offset < item_end_offset_) {
+      offsets_with_spacing_.push_back(OffsetWithSpacing{offset, 0});
+      return;
+    }
+
+    // If the `offset` is at the boundary, add to the earlier item if it's LTR.
+    const bool is_offset_for_last_item =
+        offset == item_end_offset_ && IsLtr(item_->Direction());
+
+    // Advance the item before applying because the next item may affect the
+    // spacing.
+    InlineItem* last_item = item_;
+    const ComputedStyle* last_style = style_;
+    while (offset >= item_end_offset_) {
+      AdvanceItem();
+    }
+    if (is_disabled_ || IsOffsetDisabled(offset)) [[unlikely]] {
+      ApplyIfNeeded(last_style, last_item);
+    } else if (is_offset_for_last_item) {
+      offsets_with_spacing_.push_back(OffsetWithSpacing{offset, 0});
+      Apply(*last_style, *last_item);
+    } else {
+      ApplyIfNeeded(last_style, last_item);
+      offsets_with_spacing_.push_back(OffsetWithSpacing{offset, 0});
+    }
+  }
+
+  void ApplyIfNeeded() { ApplyIfNeeded(style_, item_); }
+
+  void ApplyIfNeeded(const ComputedStyle* style, InlineItem* item) {
+    if (!offsets_with_spacing_.empty()) [[unlikely]] {
+      Apply(*style, *item);
+    }
+  }
+
+  void Apply(const ComputedStyle& style, InlineItem& item) {
+    const float spacing = TextAutoSpace::GetSpacingWidth(style.GetFont());
+    for (OffsetWithSpacing& offset_with_spacing : offsets_with_spacing_) {
+      offset_with_spacing.spacing = spacing;
+    }
+
+    ShapeResult* shape_result = item.CloneTextShapeResult();
     DCHECK(shape_result);
     shape_result->ApplyTextAutoSpacing(offsets_with_spacing_);
-    item->SetUnsafeToReuseShapeResult();
+    item.SetUnsafeToReuseShapeResult();
     if (callback_for_testing_) [[unlikely]] {
       callback_for_testing_->DidApply(offsets_with_spacing_);
     }
-  }
-
-  void SetCallbackForTesting(InlineTextAutoSpace::Callback* callback) {
-    callback_for_testing_ = callback;
+    offsets_with_spacing_.Shrink(0);
   }
 
  private:
-  const InlineItem* last_item_ = nullptr;
-  // Stores the spacing (1/8 ic) and auto-space points's previous positions, for
-  // the previous item.
+  void AdvanceItem() {
+    is_last_disabled_ = is_disabled_;
+    item_ = *++item_iter_;
+    DidChangeItem();
+  }
+
+  void DidChangeItem() {
+    item_end_offset_ = item_->EndOffset();
+    if (!item_->Length()) [[unlikely]] {
+      return;
+    }
+    if (!item_->GetLayoutObject()) [[unlikely]] {
+      is_disabled_ = true;
+      return;
+    }
+    const ComputedStyle* style = item_->Style();
+    DCHECK(style);
+    if (style != style_) {
+      style_ = style;
+      is_disabled_by_style_ =
+          style->TextAutospace() != ETextAutospace::kNormal ||
+          // Upright non-ideographic characters are `kOther`.
+          // https://drafts.csswg.org/css-text-4/#non-ideographic-letters
+          style->GetFontDescription().Orientation() ==
+              FontOrientation::kVerticalUpright;
+    }
+    is_disabled_ = is_disabled_by_style_ || !item_->TextShapeResult();
+  }
+
+  wtf_size_t item_end_offset_ = 0;
+  bool is_disabled_ = false;
+  bool is_disabled_by_style_ = false;
+  bool is_last_disabled_ = false;
+  InlineItem* item_ = nullptr;
+  const ComputedStyle* style_ = nullptr;
+  InlineItemList::iterator item_iter_;
+  const InlineItemList::iterator item_end_;
   Vector<OffsetWithSpacing, 16> offsets_with_spacing_;
   InlineTextAutoSpace::Callback* callback_for_testing_ = nullptr;
 };
 
 }  // namespace
 
-void InlineTextAutoSpace::Initialize(const InlineItemsData& data) {
-  const InlineItems& items = data.items;
-  if (items.empty()) [[unlikely]] {
-    return;
-  }
-
-  // `RunSegmenterRange` is used to find where we can skip computing Unicode
-  // properties. Compute them for the whole text content. It's pre-computed, but
-  // packed in `InlineItemSegments` to save memory.
-  const String& text = data.text_content;
-  if (!data.segments) {
-    for (const Member<InlineItem>& item_ptr : items) {
-      const InlineItem& item = *item_ptr;
-      if (item.Type() != InlineItem::kText) {
-        // Only `kText` has the data, see `InlineItem::SetSegmentData`.
-        continue;
-      }
-      RunSegmenter::RunSegmenterRange range = item.CreateRunSegmenterRange();
-      if (!MaybeIdeograph(range.script, text)) {
-        return;
-      }
-      range.end = text.length();
-      ranges_.push_back(range);
-      break;
-    }
-  } else {
-    data.segments->ToRanges(ranges_);
-    if (std::none_of(ranges_.begin(), ranges_.end(),
-                     [&text](const RunSegmenter::RunSegmenterRange& range) {
-                       return MaybeIdeograph(
-                           range.script, StringView(text, range.start,
-                                                    range.end - range.start));
-                     })) {
-      ranges_.clear();
-      return;
-    }
-  }
-}
-
 void InlineTextAutoSpace::Apply(InlineItemsData& data) {
   const String& text = data.text_content;
   DCHECK(!text.Is8Bit());
-  DCHECK_EQ(text.length(), ranges_.back().end);
+  DCHECK_EQ(text.length(), data.items.back()->EndOffset());
+  DCHECK(MayApply());
 
-  Vector<wtf_size_t, 16> offsets;
-  CHECK(!ranges_.empty());
-  auto range = base::span(ranges_).begin();
-  std::optional<CharType> last_type = kOther;
+  EastAsianSpacingType last_type = EastAsianSpacingType::kOther;
+  bool is_last_wide = false;
+  std::optional<SpacingApplier> applier_opt;
 
-  // The initial value does not matter, as the value is used for determine
-  // whether to add spacing into the bound of two items.
-  TextDirection last_direction = TextDirection::kLtr;
-  SpacingApplier applier;
-  applier.SetCallbackForTesting(callback_for_testing_);
-  for (const Member<InlineItem>& item_ptr : data.items) {
-    const InlineItem& item = *item_ptr;
-    if (item.Type() != InlineItem::kText) {
-      if (item.Length()) {
-        // If `item` has a length, e.g., inline-block, set the `last_type`.
-        last_type = kOther;
-      }
-      continue;
-    }
-    if (!item.Length()) [[unlikely]] {
-      // Empty items may not have `ShapeResult`. Skip it.
-      continue;
-    }
-    DCHECK(offsets.empty());
-    const ComputedStyle* style = item.Style();
-    DCHECK(style);
-    if (style->TextAutospace() != ETextAutospace::kNormal) [[unlikely]] {
-      applier.SetSpacing(offsets, &item, *style);
-      last_type = kOther;
-      continue;
-    }
-    if (style->GetFontDescription().Orientation() ==
-        FontOrientation::kVerticalUpright) [[unlikely]] {
-      applier.SetSpacing(offsets, &item, *style);
-      // Upright non-ideographic characters are `kOther`.
-      // https://drafts.csswg.org/css-text-4/#non-ideographic-letters
-      last_type = GetPrevType(text, item.EndOffset());
-      if (last_type == kLetterOrNumeral) {
-        last_type = kOther;
-      }
-      continue;
-    }
-
-    wtf_size_t offset = item.StartOffset();
-    do {
-      // Find the `RunSegmenterRange` for `offset`.
-      while (offset >= range->end) {
-        ++range;
-        CHECK(range != base::span(ranges_).end());
-      }
-      DCHECK_GE(offset, range->start);
-      DCHECK_LT(offset, range->end);
-
-      // If the range is known not to contain any `kIdeograph` characters, check
-      // only the first and the last character.
-      const wtf_size_t end_offset = std::min(range->end, item.EndOffset());
-      DCHECK_LT(offset, end_offset);
-      if (!MaybeIdeograph(range->script,
-                          StringView(text, offset, end_offset - offset))) {
-        if (last_type == kIdeograph) {
-          const wtf_size_t saved_offset = offset;
-          const CharType type = GetTypeAndNext(text, offset);
-          DCHECK_NE(type, kIdeograph);
-          if (type == kLetterOrNumeral && [&] {
-                if (last_direction == item.Direction()) [[likely]] {
-                  return true;
-                }
-                return false;
-              }()) {
-            offsets.push_back(saved_offset);
-          } else if (last_direction == TextDirection::kLtr &&
-                     item.Direction() == TextDirection::kRtl) [[unlikely]] {
-            // (1) Fall into the first case of RTL-LTR mixing text.
-            // Given an index i which is the last character of item[a], add
-            // spacing to the end of the last item if: str[i] is ideograph &&
-            // item[a] is LTR && ItemOfCharIndex(i+1) is RTL.
-            offsets.push_back(saved_offset);
-          }
-          if (offset == end_offset) {
-            last_type = type;
-            last_direction = item.Direction();
-            continue;
-          }
+  const WTF::CodePointIterator::Utf16 char_begin{text.Span16()};
+  const auto char_end = char_begin.EndForThis();
+  for (auto char_iter = char_begin; char_iter != char_end;) {
+    const UChar32 ch = *char_iter;
+    const EastAsianSpacingType type = Character::GetEastAsianSpacingType(ch);
+    const bool is_wide = type == EastAsianSpacingType::kWide;
+    if (is_wide || is_last_wide) [[unlikely]] {
+      // TODO(crbug.com/40275399): Support `kConditional`.
+      const bool needs_space =
+          (is_last_wide && type == EastAsianSpacingType::kNarrow) ||
+          (is_wide && last_type == EastAsianSpacingType::kNarrow);
+      if (needs_space) [[unlikely]] {
+        const wtf_size_t offset = char_iter.DistanceByCodeUnits(char_begin);
+        if (!applier_opt) {
+          applier_opt.emplace(offset, data.items, callback_for_testing_);
+        } else {
+          applier_opt->InsertSpaceBefore(offset);
         }
-        // When moving the offset to the end of this range, also update the item
-        // direction as it is the last opportunity to know it.
-        offset = end_offset;
-        last_direction = item.Direction();
-        last_type.reset();
-        continue;
-      }
 
-      // Compute the `CharType` for each character and check if spacings should
-      // be inserted.
-      if (!last_type) {
-        DCHECK_GT(offset, 0u);
-        last_type = GetPrevType(text, offset);
-      }
-      while (offset < end_offset) {
-        const wtf_size_t saved_offset = offset;
-        const CharType type = GetTypeAndNext(text, offset);
-        if (((type == kIdeograph && last_type == kLetterOrNumeral) ||
-             (last_type == kIdeograph && type == kLetterOrNumeral))) {
-          if (last_direction == item.Direction()) {
-            offsets.push_back(saved_offset);
-          } else if (last_direction == TextDirection::kRtl &&
-                     item.Direction() == TextDirection::kLtr) [[unlikely]] {
-            // (2) Fall into the second case of RTL-LTR mixing text.
-            // Given an index i which is the first character of item[a], add
-            // spacing to the *offset* of i's glyph if: str[i] is ideograph &&
-            // item[a] is LTR && ItemOfCharIndex(i-1) is RTL.
-            offsets.push_back(saved_offset);
-          }
+        SpacingApplier& applier = *applier_opt;
+        if (applier.IsDisabled()) [[unlikely]] {
+          const wtf_size_t item_end_offset = applier.ItemEndOffset();
+          DCHECK_GE(item_end_offset, offset);
+          char_iter.AdvanceByCodeUnits(item_end_offset - offset);
+          last_type = EastAsianSpacingType::kOther;
+          is_last_wide = false;
+          continue;
         }
-        last_type = type;
-        last_direction = item.Direction();
       }
-    } while (offset < item.EndOffset());
-
-    applier.SetSpacing(offsets, &item, *style);
-    offsets.Shrink(0);
+    }
+    last_type = type;
+    is_last_wide = is_wide;
+    ++char_iter;
   }
+
   // Apply the pending spacing for the last item if needed.
-  applier.ApplyIfNeeded();
+  if (applier_opt) {
+    applier_opt->ApplyIfNeeded();
+  }
 }
 
 }  // namespace blink

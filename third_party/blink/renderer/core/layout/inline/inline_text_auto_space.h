@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_INLINE_INLINE_TEXT_AUTO_SPACE_H_
 
 #include <unicode/umachine.h>
+
 #include <ostream>
 
 #include "third_party/blink/renderer/core/core_export.h"
@@ -13,6 +14,7 @@
 #include "third_party/blink/renderer/core/layout/inline/inline_items_data.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/text_auto_space.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
+#include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
 
@@ -33,7 +35,7 @@ class CORE_EXPORT InlineTextAutoSpace : public TextAutoSpace {
 
   // True if this may apply auto-spacing. If this is false, it's safe to skip
   // calling `Apply()`.
-  bool MayApply() const { return !ranges_.empty(); }
+  bool MayApply() const { return may_apply_; }
 
   // Apply auto-spacing as per CSS Text:
   // https://drafts.csswg.org/css-text-4/#propdef-text-autospace
@@ -51,8 +53,7 @@ class CORE_EXPORT InlineTextAutoSpace : public TextAutoSpace {
   }
 
  private:
-  void Initialize(const InlineItemsData& data);
-
+  bool may_apply_ = false;
   InlineItemSegments::RunSegmenterRanges ranges_;
   Callback* callback_for_testing_ = nullptr;
 };
@@ -62,11 +63,14 @@ inline InlineTextAutoSpace::InlineTextAutoSpace(const InlineItemsData& data) {
     return;
   }
 
-  if (data.text_content.Is8Bit()) {
-    return;  // 8-bits never be `kIdeograph`. See `TextAutoSpaceTest`.
+  if (data.text_content.Is8Bit() ||
+      data.text_content.IsAllSpecialCharacters<[](UChar ch) {
+        return !Character::MayNeedEastAsianSpacing(ch);
+      }>()) {
+    return;
   }
 
-  Initialize(data);
+  may_apply_ = true;
 }
 
 }  // namespace blink

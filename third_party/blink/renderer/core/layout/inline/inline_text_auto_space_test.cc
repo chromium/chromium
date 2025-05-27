@@ -62,24 +62,36 @@ class InlineTextAutoSpaceTest : public RenderingTest,
   }
 };
 
-// Test the optimizations in `ApplyIfNeeded` don't affect results.
-TEST_F(InlineTextAutoSpaceTest, NonHanIdeograph) {
-  // For boundary-check, extend the range by 1 to lower and to upper.
-  for (UChar ch = TextAutoSpace::kNonHanIdeographMin - 1;
-       ch <= TextAutoSpace::kNonHanIdeographMax + 1; ++ch) {
-    StringBuilder builder;
-    builder.Append("X");
-    builder.Append(ch);
-    builder.Append("X");
-    const String html = builder.ToString();
-    Vector<wtf_size_t> offsets = AutoSpaceOffsets(html);
-    TextAutoSpace::CharType type = TextAutoSpace::GetType(ch);
-    if (type == TextAutoSpace::kIdeograph) {
-      EXPECT_THAT(offsets, ElementsAre(1, 2)) << String::Format("U+%04X", ch);
-    } else {
-      EXPECT_THAT(offsets, ElementsAre()) << String::Format("U+%04X", ch);
-    }
-  }
+// This tests: 1) how well the `MayApply` optimization can reject unapplicable
+// data early, and 2) if it doesn't miss cases where it must apply.
+struct MayApplyData {
+  String ToString() const { return str8 ? String(str8) : String(str16); }
+  const char* str8;
+  const UChar* str16;
+  bool may_apply;
+} g_may_apply_data[] = {
+    {"English", nullptr, false},
+    {nullptr, u"Caf\u00E9", false},
+    // Common characters > U+00FF: ZWSP, ORC.
+    {nullptr, u"\u200B\uFFFC", false},
+    // Curly quotation marks.
+    {nullptr, u"\u2018\u2019\u201C\u201D", false},
+    // CJK ideographic characters.
+    {nullptr, u"水", true},
+};
+class MayApplyTest : public InlineTextAutoSpaceTest,
+                     public testing::WithParamInterface<MayApplyData> {};
+INSTANTIATE_TEST_SUITE_P(InlineTextAutoSpaceTest,
+                         MayApplyTest,
+                         testing::ValuesIn(g_may_apply_data));
+
+TEST_P(MayApplyTest, MayApply) {
+  const auto& test = GetParam();
+  const String string = test.ToString();
+  LayoutBlockFlow* block_flow = PreparePageLayoutBlock(string);
+  const InlineNodeData* inline_node_data = block_flow->GetInlineNodeData();
+  InlineTextAutoSpace auto_space(*inline_node_data);
+  EXPECT_EQ(auto_space.MayApply(), test.may_apply);
 }
 
 // End to end test for text-autospace
