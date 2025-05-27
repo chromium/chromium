@@ -60,6 +60,10 @@ public:
 
   inline diplomat::result<std::unique_ptr<temporal_rs::Instant>, temporal_rs::TemporalError> round(temporal_rs::RoundingOptions options) const;
 
+  inline int8_t compare(const temporal_rs::Instant& other) const;
+
+  inline bool equals(const temporal_rs::Instant& other) const;
+
   inline int64_t epoch_milliseconds() const;
 
   inline temporal_rs::I128Nanoseconds epoch_nanoseconds() const;

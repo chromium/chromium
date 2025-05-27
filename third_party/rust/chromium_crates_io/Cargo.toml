@@ -36,7 +36,6 @@ rustc-demangle-capi = "0.1"
 skrifa = "0.29"
 small_ctor = "0.1"
 static_assertions = "1"
-temporal_capi = "0.0.7"
 
 [dependencies.crc32fast]
 version = "1.4.2"
@@ -101,6 +100,10 @@ features = ["core_hint_black_box"]
 [dependencies.syn]
 version = "2"
 features = ["full"]
+
+[dependencies.temporal_capi]
+version = "0.0.8"
+features = ["compiled_data"]
 
 [dependencies.bytemuck]
 version = "1"

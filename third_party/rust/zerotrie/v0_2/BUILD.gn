@@ -57,6 +57,7 @@ cargo_crate("lib") {
   ]
   features = [
     "alloc",
+    "default",
     "yoke",
     "zerofrom",
   ]

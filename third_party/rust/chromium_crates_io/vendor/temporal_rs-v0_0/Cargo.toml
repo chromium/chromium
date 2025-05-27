@@ -13,7 +13,7 @@
 edition = "2021"
 rust-version = "1.82.0"
 name = "temporal_rs"
-version = "0.0.7"
+version = "0.0.8"
 authors = ["boa-dev"]
 build = false
 exclude = [
@@ -86,7 +86,7 @@ version = "0.1.63"
 optional = true
 
 [dependencies.icu_calendar]
-version = "2.0.0"
+version = "2.0.1"
 features = ["compiled_data"]
 default-features = false
 
@@ -110,7 +110,7 @@ version = "0.2.19"
 default-features = false
 
 [dependencies.timezone_provider]
-version = "~0.0.7"
+version = "~0.0.8"
 optional = true
 
 [dependencies.tinystr]

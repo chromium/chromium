@@ -59,6 +59,10 @@ namespace capi {
     typedef struct temporal_rs_Instant_round_result {union {temporal_rs::capi::Instant* ok; temporal_rs::capi::TemporalError err;}; bool is_ok;} temporal_rs_Instant_round_result;
     temporal_rs_Instant_round_result temporal_rs_Instant_round(const temporal_rs::capi::Instant* self, temporal_rs::capi::RoundingOptions options);
 
+    int8_t temporal_rs_Instant_compare(const temporal_rs::capi::Instant* self, const temporal_rs::capi::Instant* other);
+
+    bool temporal_rs_Instant_equals(const temporal_rs::capi::Instant* self, const temporal_rs::capi::Instant* other);
+
     int64_t temporal_rs_Instant_epoch_milliseconds(const temporal_rs::capi::Instant* self);
 
     temporal_rs::capi::I128Nanoseconds temporal_rs_Instant_epoch_nanoseconds(const temporal_rs::capi::Instant* self);
@@ -134,6 +138,18 @@ inline diplomat::result<std::unique_ptr<temporal_rs::Instant>, temporal_rs::Temp
   auto result = temporal_rs::capi::temporal_rs_Instant_round(this->AsFFI(),
     options.AsFFI());
   return result.is_ok ? diplomat::result<std::unique_ptr<temporal_rs::Instant>, temporal_rs::TemporalError>(diplomat::Ok<std::unique_ptr<temporal_rs::Instant>>(std::unique_ptr<temporal_rs::Instant>(temporal_rs::Instant::FromFFI(result.ok)))) : diplomat::result<std::unique_ptr<temporal_rs::Instant>, temporal_rs::TemporalError>(diplomat::Err<temporal_rs::TemporalError>(temporal_rs::TemporalError::FromFFI(result.err)));
+}
+
+inline int8_t temporal_rs::Instant::compare(const temporal_rs::Instant& other) const {
+  auto result = temporal_rs::capi::temporal_rs_Instant_compare(this->AsFFI(),
+    other.AsFFI());
+  return result;
+}
+
+inline bool temporal_rs::Instant::equals(const temporal_rs::Instant& other) const {
+  auto result = temporal_rs::capi::temporal_rs_Instant_equals(this->AsFFI(),
+    other.AsFFI());
+  return result;
 }
 
 inline int64_t temporal_rs::Instant::epoch_milliseconds() const {

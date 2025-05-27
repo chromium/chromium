@@ -9,5 +9,5 @@
 # It is not mandatory to update this array every time temporal_capi updates; it
 # is just a convenient tool to use as needed.
 config("temporal_capi_versioning_defines") {
-  defines = [ "TEMPORAL_CAPI_VERSION_0_0_7" ]
+  defines = [ "TEMPORAL_CAPI_VERSION_0_0_8" ]
 }

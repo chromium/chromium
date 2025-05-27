@@ -1,0 +1,10 @@
+Name: timezone_provider
+URL: https://crates.io/crates/timezone_provider
+Version: 0.0.8
+Revision: 5c6539860782447769aeee83588e4a0d087a518c
+License: Apache-2.0
+License File: //third_party/rust/chromium_crates_io/vendor/timezone_provider-v0_0/LICENSE-MIT,//third_party/rust/chromium_crates_io/vendor/timezone_provider-v0_0/LICENSE-APACHE
+Shipped: yes
+Security Critical: yes
+
+Description: Time zone data providers

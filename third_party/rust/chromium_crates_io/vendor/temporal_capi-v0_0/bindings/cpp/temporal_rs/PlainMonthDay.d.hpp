@@ -56,7 +56,7 @@ public:
 
   inline std::string month_code() const;
 
-  inline diplomat::result<std::unique_ptr<temporal_rs::PlainDate>, temporal_rs::TemporalError> to_plain_date() const;
+  inline diplomat::result<std::unique_ptr<temporal_rs::PlainDate>, temporal_rs::TemporalError> to_plain_date(std::optional<temporal_rs::PartialDate> year) const;
 
   inline const temporal_rs::capi::PlainMonthDay* AsFFI() const;
   inline temporal_rs::capi::PlainMonthDay* AsFFI();

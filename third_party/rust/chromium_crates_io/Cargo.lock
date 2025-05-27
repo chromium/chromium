@@ -160,6 +160,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "combine"
+version = "4.6.7"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+dependencies = [
+ "bytes",
+ "memchr",
+]
+
+[[package]]
 name = "core_maths"
 version = "0.1.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -241,7 +250,7 @@ dependencies = [
 
 [[package]]
 name = "diplomat"
-version = "0.11.0"
+version = "0.12.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "diplomat_core",
@@ -252,12 +261,12 @@ dependencies = [
 
 [[package]]
 name = "diplomat-runtime"
-version = "0.11.0"
+version = "0.12.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [[package]]
 name = "diplomat_core"
-version = "0.11.0"
+version = "0.12.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "proc-macro2",
@@ -628,6 +637,11 @@ dependencies = [
 ]
 
 [[package]]
+name = "jiff-tzdb"
+version = "0.1.4"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+
+[[package]]
 name = "lazy_static"
 version = "1.5.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -968,7 +982,7 @@ dependencies = [
 
 [[package]]
 name = "temporal_capi"
-version = "0.0.7"
+version = "0.0.8"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "diplomat",
@@ -981,15 +995,19 @@ dependencies = [
 
 [[package]]
 name = "temporal_rs"
-version = "0.0.7"
+version = "0.0.8"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
+ "combine",
  "core_maths",
  "icu_calendar",
  "icu_locale",
  "ixdtf",
+ "jiff-tzdb",
  "num-traits",
+ "timezone_provider",
  "tinystr",
+ "tzif",
  "writeable",
 ]
 
@@ -999,6 +1017,15 @@ version = "1.4.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "winapi-util",
+]
+
+[[package]]
+name = "timezone_provider"
+version = "0.0.8"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+dependencies = [
+ "zerotrie",
+ "zerovec",
 ]
 
 [[package]]
@@ -1020,6 +1047,14 @@ dependencies = [
  "bytemuck_derive",
  "serde",
  "serde_json",
+]
+
+[[package]]
+name = "tzif"
+version = "0.3.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+dependencies = [
+ "combine",
 ]
 
 [[package]]

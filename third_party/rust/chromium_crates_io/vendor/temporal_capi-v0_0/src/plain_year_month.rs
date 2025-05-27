@@ -164,9 +164,12 @@ pub mod ffi {
         pub fn compare(one: &Self, two: &Self) -> core::cmp::Ordering {
             (one.iso_year(), one.iso_month()).cmp(&(two.iso_year(), two.iso_month()))
         }
-        pub fn to_plain_date(&self) -> Result<Box<PlainDate>, TemporalError> {
+        pub fn to_plain_date(
+            &self,
+            day: Option<PartialDate>,
+        ) -> Result<Box<PlainDate>, TemporalError> {
             self.0
-                .to_plain_date()
+                .to_plain_date(day.map(|d| d.try_into()).transpose()?)
                 .map(|x| Box::new(PlainDate(x)))
                 .map_err(Into::into)
         }

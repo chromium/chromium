@@ -129,7 +129,6 @@ allow_unsafe = true
 allow_unstable_features = ["portable_simd"]
 
 [crate.bytes]
-group = 'test'
 extra_kv = { allow_unsafe = true }
 
 [crate.calendrical_calculations.extra_kv]
@@ -157,6 +156,9 @@ extra_kv = { allow_unsafe = false }
 
 [crate.core_maths.extra_kv]
 allow_unsafe = false
+
+[crate.combine.extra_kv]
+allow_unsafe = true
 
 [crate.crc32fast.extra_kv]
 allow_unsafe = true
@@ -361,6 +363,9 @@ allow_unsafe = true
 [crate.ixdtf.extra_kv]
 allow_unsafe = false
 
+[crate.jiff-tzdb]
+extra_kv = { allow_unsafe = false }
+
 [crate.lazy_static.extra_kv]
 allow_unsafe = true
 
@@ -533,6 +538,14 @@ license_files = ["LICENSE-MIT", "LICENSE-APACHE"]
 [crate.temporal_rs]
 extra_kv = { allow_unsafe = true }
 license_files = ["LICENSE-MIT", "LICENSE-APACHE"]
+
+[crate.timezone_provider]
+license_files = ["LICENSE-MIT", "LICENSE-APACHE"]
+
+[crate.timezone_provider.extra_kv]
+allow_unsafe = true
+[crate.tzif.extra_kv]
+allow_unsafe = false
 
 [crate.termcolor.extra_kv]
 allow_unsafe = false
