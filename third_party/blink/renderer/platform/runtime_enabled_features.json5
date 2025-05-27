@@ -5201,6 +5201,10 @@
       status: "test",
     },
     {
+      name: "ViewTransitionUpdateLifecycleBeforeReady",
+      status: "stable",
+    },
+    {
       name: "VisibilityCollapseColumn",
     },
     {
