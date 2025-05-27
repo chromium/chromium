@@ -71,6 +71,10 @@
       ],
       "mirroring_builder_group_and_names": [
         {
+          "builder": "mac-rel",
+          "group": "tryserver.chromium.mac"
+        },
+        {
           "builder": "mac15-x64-rel-tests",
           "group": "tryserver.chromium.mac"
         },

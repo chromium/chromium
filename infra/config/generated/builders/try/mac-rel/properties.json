@@ -129,7 +129,7 @@
           {
             "builder_id": {
               "bucket": "ci",
-              "builder": "mac14-tests",
+              "builder": "mac15-x64-rel-tests",
               "project": "chromium"
             },
             "builder_spec": {
@@ -181,7 +181,7 @@
         },
         {
           "bucket": "ci",
-          "builder": "mac14-tests",
+          "builder": "mac15-x64-rel-tests",
           "project": "chromium"
         }
       ],
