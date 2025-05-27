@@ -15,6 +15,7 @@
 namespace autofill {
 
 class AutofillField;
+class FormFieldData;
 class FormStructure;
 struct Suggestion;
 
@@ -27,7 +28,7 @@ class AutofillAiDelegate {
   // Generates AutofillAi suggestions.
   virtual std::vector<autofill::Suggestion> GetSuggestions(
       autofill::FormGlobalId form_global_id,
-      autofill::FieldGlobalId field_global_id) = 0;
+      const FormFieldData& trigger_field) = 0;
 
   // Attempts to display an import bubble for `form` if Autofill AI is
   // interested in the form. Returns whether an import bubble will be shown.

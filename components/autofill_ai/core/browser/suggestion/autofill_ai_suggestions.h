@@ -11,6 +11,7 @@
 namespace autofill {
 
 class EntityInstance;
+class FormFieldData;
 class FormStructure;
 struct Suggestion;
 
@@ -21,7 +22,7 @@ namespace autofill_ai {
 // Creates filling suggestions using `autofill::EntityInstance`s.
 std::vector<autofill::Suggestion> CreateFillingSuggestions(
     const autofill::FormStructure& form,
-    autofill::FieldGlobalId field_global_id,
+    const autofill::FormFieldData& trigger_field,
     base::span<const autofill::EntityInstance> entities,
     const std::string& app_locale);
 

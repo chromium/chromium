@@ -365,7 +365,7 @@ void AutofillAiManager::HandleUpdatePromptResult(
 
 std::vector<autofill::Suggestion> AutofillAiManager::GetSuggestions(
     autofill::FormGlobalId form_global_id,
-    autofill::FieldGlobalId field_global_id) {
+    const autofill::FormFieldData& trigger_field) {
   const AutofillClient& autofill_client = client_->GetAutofillClient();
   if (!autofill::MayPerformAutofillAiAction(
           autofill_client, autofill::AutofillAiAction::kFilling)) {
@@ -390,13 +390,13 @@ std::vector<autofill::Suggestion> AutofillAiManager::GetSuggestions(
   }
 
   const AutofillField* autofill_field =
-      form_structure->GetFieldById(field_global_id);
+      form_structure->GetFieldById(trigger_field.global_id());
   if (!autofill_field ||
       !autofill_field->GetAutofillAiServerTypePredictions()) {
     return {};
   }
 
-  return CreateFillingSuggestions(*form_structure, field_global_id, entities,
+  return CreateFillingSuggestions(*form_structure, trigger_field, entities,
                                   autofill_client.GetAppLocale());
 }
 

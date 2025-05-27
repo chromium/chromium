@@ -23,7 +23,7 @@ class MockAutofillAiDelegate : public AutofillAiDelegate {
 
   MOCK_METHOD(std::vector<autofill::Suggestion>,
               GetSuggestions,
-              (autofill::FormGlobalId, autofill::FieldGlobalId),
+              (autofill::FormGlobalId, const autofill::FormFieldData&),
               (override));
   MOCK_METHOD(bool,
               OnFormSubmitted,
