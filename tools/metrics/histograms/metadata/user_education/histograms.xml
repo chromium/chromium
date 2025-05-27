@@ -95,8 +95,6 @@ chromium-metrics-reviews@google.com.
       summary="the module for Lens Overlay Full Page Translate"/>
   <variant name="Mobilepasswords"
       summary="the module for getting passwords on mobile"/>
-  <variant name="PdfSearchify"
-      summary="the module for making PDFs interactable"/>
   <variant name="PerformanceInterventionUI"
       summary="the module for Performance Intervention"/>
   <variant name="ReadAnythingReadAloud" summary="Read Anything Read Aloud"/>
