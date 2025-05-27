@@ -2823,6 +2823,12 @@ void WebGLRenderingContextWebGPUBase::InitializeContext() {
 
   // Initialize the EGL display using the device and the dawn wire client proc
   // table.
+  // Force-enable the avoidWaitAny feature because synchronous waiting is not
+  // possible yet in dawn wire client.
+  constexpr const char* display_enabled_features[] = {
+      "avoidWaitAny",
+      nullptr,
+  };
   const EGLAttrib display_attribs[] = {
       EGL_PLATFORM_ANGLE_TYPE_ANGLE,
       EGL_PLATFORM_ANGLE_TYPE_WEBGPU_ANGLE,
@@ -2830,6 +2836,8 @@ void WebGLRenderingContextWebGPUBase::InitializeContext() {
       reinterpret_cast<EGLAttrib>(device_.Get()),
       EGL_PLATFORM_ANGLE_DAWN_PROC_TABLE_ANGLE,
       reinterpret_cast<EGLAttrib>(GetDawnProcs()),
+      EGL_FEATURE_OVERRIDES_ENABLED_ANGLE,
+      reinterpret_cast<EGLAttrib>(display_enabled_features),
       EGL_NONE,
   };
   display_ = driver_egl_.fn.eglGetPlatformDisplayFn(EGL_PLATFORM_ANGLE_ANGLE,
