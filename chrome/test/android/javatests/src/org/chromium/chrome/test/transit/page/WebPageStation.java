@@ -22,21 +22,19 @@ import org.chromium.content_public.browser.test.util.JavaScriptUtils;
 
 import java.util.List;
 import java.util.concurrent.TimeoutException;
-import java.util.function.Function;
 
 /** The screen that shows a loaded webpage with the omnibox and the toolbar. */
 public class WebPageStation extends PageStation {
     public Element<WebContents> webContentsElement;
     public ViewElement<UrlBar> urlBarElement;
 
-    protected <T extends WebPageStation> WebPageStation(Builder<T> builder) {
-        super(builder);
+    protected WebPageStation(Config config) {
+        super(config);
 
         webContentsElement =
                 declareEnterConditionAsElement(new WebContentsPresentCondition(loadedTabElement));
         declareEnterCondition(new FrameInfoUpdatedCondition(webContentsElement));
 
-        // TODO(crbug.com/416558040): Do not add this if builder.mIgnoreUrlBar is set.
         // TODO(crbug.com/41497463): This should be shared, not unscoped, but the toolbar exists
         // in the tab switcher and it is not completely occluded.
         urlBarElement = declareView(URL_BAR, ViewElement.unscopedOption());
@@ -46,26 +44,8 @@ public class WebPageStation extends PageStation {
         declareEnterCondition(new PageUrlDoesNotMatchCondition(prohibitedUrls, loadedTabElement));
     }
 
-    public static class WebStationBuilder<T extends WebPageStation> extends PageStation.Builder<T> {
-        private boolean mIgnoreUrlBar;
-
-        public WebStationBuilder(Function<PageStation.Builder<T>, T> factoryMethod) {
-            super(factoryMethod);
-        }
-
-        /**
-         * Set whether URL is a required element for this webpage station. This is used for pages
-         * that doesn't show the URL bar (e.g. fullscreen page, or pages that scrolled off the
-         * browser controls).
-         */
-        public WebStationBuilder<T> ignoreUrlBar(boolean ignoreUrlBar) {
-            mIgnoreUrlBar = ignoreUrlBar;
-            return this;
-        }
-    }
-
-    public static WebStationBuilder<WebPageStation> newBuilder() {
-        return new WebStationBuilder<>(WebPageStation::new);
+    public static Builder<WebPageStation> newBuilder() {
+        return new Builder<>(WebPageStation::new);
     }
 
     /** Condition to check the page url does not match any of the prohibited urls. */

@@ -22,8 +22,8 @@ public class PopupOnClickPageStation extends WebPageStation {
     public HtmlElement linkToPopup;
     public HtmlElement linkToPopupWithBounds;
 
-    protected <T extends PopupOnClickPageStation> PopupOnClickPageStation(Builder<T> builder) {
-        super(builder);
+    protected PopupOnClickPageStation(Config config) {
+        super(config);
 
         linkToPopup =
                 declareElement(new HtmlElement(new HtmlElementSpec("link"), webContentsElement));

@@ -28,8 +28,8 @@ public class TopBottomLinksPageStation extends WebPageStation {
     private static final HtmlElementSpec TOP_LINK = new HtmlElementSpec("top_link");
     private static final HtmlElementSpec BOTTOM_LINK = new HtmlElementSpec("bottom_link");
 
-    protected <T extends TopBottomLinksPageStation> TopBottomLinksPageStation(Builder<T> builder) {
-        super(builder);
+    protected TopBottomLinksPageStation(Config config) {
+        super(config);
     }
 
     /** Load the page, land at the {@link TopFacility} of a {@link TopBottomLinksPageStation}. */

@@ -38,8 +38,8 @@ public class RegularNewTabPageStation extends PageStation {
     public ViewElement<View> logoElement;
     public Element<NewTabPage> nativePageElement;
 
-    protected <T extends RegularNewTabPageStation> RegularNewTabPageStation(Builder<T> builder) {
-        super(builder.withIncognito(false).withExpectedUrlSubstring(UrlConstants.NTP_URL));
+    public RegularNewTabPageStation(Config config) {
+        super(config.withIncognito(false).withExpectedUrlSubstring(UrlConstants.NTP_URL));
 
         declareElementFactory(
                 mActivityElement,
