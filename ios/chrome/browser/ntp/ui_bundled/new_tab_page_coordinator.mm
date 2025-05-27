@@ -360,9 +360,7 @@
   [self configureContentSuggestionsCoordinator];
   [self configureFeedMetricsRecorder];
   [self configureNTPViewController];
-  if (IsTabGroupInGridEnabled()) {
-    [self configureTabGroupIndicator];
-  }
+  [self configureTabGroupIndicator];
 
   self.started = YES;
 }

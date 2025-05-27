@@ -29,6 +29,7 @@ class WebStateList;
 // write down those changes to storage.
 class SessionRestorationServiceImpl final : public SessionRestorationService {
  public:
+  // TODO(crbug.com/420408187): Remove `enable_tab_groups` from constructor.
   SessionRestorationServiceImpl(
       base::TimeDelta save_delay,
       bool enable_pinned_web_states,

@@ -770,10 +770,6 @@ TEST_F(TabsCloserTest, UndoCloseTabs_Reentrancy) {
 // Checks that close all/undo is correctly updating the TabGroupSyncService,
 // both when it hasn't been modified and when it has been modified.
 TEST_F(TabsCloserTest, UndoCloseTabs_SavedTabs) {
-  if (!IsTabGroupInGridEnabled()) {
-    // Disabled on iPadOS 16.
-    return;
-  }
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures({kTabGroupSync}, {});
 

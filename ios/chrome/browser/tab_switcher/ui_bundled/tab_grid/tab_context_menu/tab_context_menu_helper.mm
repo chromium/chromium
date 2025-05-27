@@ -223,91 +223,66 @@ using tab_groups::SharingState;
 
   NSMutableArray<UIMenuElement*>* menuElements = [[NSMutableArray alloc] init];
 
-  if (IsTabGroupInGridEnabled()) {
-    std::set<const TabGroup*> groups = GetAllGroupsForProfile(_profile);
-
-    auto actionResult = ^(const TabGroup* group) {
-      [weakSelf handleAddWebState:tabID toGroup:group];
+  std::set<const TabGroup*> groups = GetAllGroupsForProfile(_profile);
+  auto actionResult = ^(const TabGroup* group) {
+    [weakSelf handleAddWebState:tabID toGroup:group];
+  };
+  const TabGroup* currentTabGroup = [self groupForWebState:tabID];
+  UIMenuElement* groupAction;
+  if (currentTabGroup) {
+    ProceduralBlock removeBlock = ^{
+      [weakSelf handleRemoveWebStateFromGroup:tabID];
     };
-
-    const TabGroup* currentTabGroup = [self groupForWebState:tabID];
-    UIMenuElement* groupAction;
-    if (currentTabGroup) {
-      ProceduralBlock removeBlock = ^{
-        [weakSelf handleRemoveWebStateFromGroup:tabID];
-      };
-      groupAction =
-          [actionFactory menuToMoveTabToGroupWithGroups:groups
-                                           currentGroup:currentTabGroup
-                                              moveBlock:actionResult
-                                            removeBlock:removeBlock];
-    } else {
-      groupAction = [actionFactory menuToAddTabToGroupWithGroups:groups
-                                                    numberOfTabs:1
-                                                           block:actionResult];
-    }
-
-    // Hide the `shareAction` for tabs in groups.
-    if (shareAction && !currentTabGroup) {
-      UIMenu* shareMenu = [UIMenu menuWithTitle:@""
-                                          image:nil
-                                     identifier:nil
-                                        options:UIMenuOptionsDisplayInline
-                                       children:@[ shareAction ]];
-      [menuElements addObject:shareMenu];
-    }
-    NSArray<UIMenuElement*>* tabActions =
-        pinAction ? @[ pinAction, groupAction ] : @[ groupAction ];
-    UIMenu* tabMenu = [UIMenu menuWithTitle:@""
-                                      image:nil
-                                 identifier:nil
-                                    options:UIMenuOptionsDisplayInline
-                                   children:tabActions];
-    [menuElements addObject:tabMenu];
-
-    NSMutableArray<UIMenuElement*>* collectionsActions = [NSMutableArray array];
-    if (addToReadingListAction) {
-      [collectionsActions addObject:addToReadingListAction];
-    }
-    if (bookmarkAction) {
-      [collectionsActions addObject:bookmarkAction];
-    }
-    // Hide the `selectAction` for tabs in groups.
-    if (selectAction && !currentTabGroup) {
-      [collectionsActions addObject:selectAction];
-    }
-    if (closeTabAction) {
-      [collectionsActions addObject:closeTabAction];
-    }
-
-    if (collectionsActions.count > 0) {
-      UIMenu* collectionsMenu = [UIMenu menuWithTitle:@""
-                                                image:nil
-                                           identifier:nil
-                                              options:UIMenuOptionsDisplayInline
-                                             children:collectionsActions];
-      [menuElements addObject:collectionsMenu];
-    }
-
+    groupAction = [actionFactory menuToMoveTabToGroupWithGroups:groups
+                                                   currentGroup:currentTabGroup
+                                                      moveBlock:actionResult
+                                                    removeBlock:removeBlock];
   } else {
-    if (pinAction) {
-      [menuElements addObject:pinAction];
-    }
-    if (shareAction) {
-      [menuElements addObject:shareAction];
-    }
-    if (addToReadingListAction) {
-      [menuElements addObject:addToReadingListAction];
-    }
-    if (bookmarkAction) {
-      [menuElements addObject:bookmarkAction];
-    }
-    if (selectAction) {
-      [menuElements addObject:selectAction];
-    }
-    if (closeTabAction) {
-      [menuElements addObject:closeTabAction];
-    }
+    groupAction = [actionFactory menuToAddTabToGroupWithGroups:groups
+                                                  numberOfTabs:1
+                                                         block:actionResult];
+  }
+
+  // Hide the `shareAction` for tabs in groups.
+  if (shareAction && !currentTabGroup) {
+    UIMenu* shareMenu = [UIMenu menuWithTitle:@""
+                                        image:nil
+                                   identifier:nil
+                                      options:UIMenuOptionsDisplayInline
+                                     children:@[ shareAction ]];
+    [menuElements addObject:shareMenu];
+  }
+  NSArray<UIMenuElement*>* tabActions =
+      pinAction ? @[ pinAction, groupAction ] : @[ groupAction ];
+  UIMenu* tabMenu = [UIMenu menuWithTitle:@""
+                                    image:nil
+                               identifier:nil
+                                  options:UIMenuOptionsDisplayInline
+                                 children:tabActions];
+  [menuElements addObject:tabMenu];
+
+  NSMutableArray<UIMenuElement*>* collectionsActions = [NSMutableArray array];
+  if (addToReadingListAction) {
+    [collectionsActions addObject:addToReadingListAction];
+  }
+  if (bookmarkAction) {
+    [collectionsActions addObject:bookmarkAction];
+  }
+  // Hide the `selectAction` for tabs in groups.
+  if (selectAction && !currentTabGroup) {
+    [collectionsActions addObject:selectAction];
+  }
+  if (closeTabAction) {
+    [collectionsActions addObject:closeTabAction];
+  }
+
+  if (collectionsActions.count > 0) {
+    UIMenu* collectionsMenu = [UIMenu menuWithTitle:@""
+                                              image:nil
+                                         identifier:nil
+                                            options:UIMenuOptionsDisplayInline
+                                           children:collectionsActions];
+    [menuElements addObject:collectionsMenu];
   }
 
   return menuElements;

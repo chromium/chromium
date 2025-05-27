@@ -97,9 +97,7 @@
                        status:(const WebStateListStatus&)status {
   // Update the Tab Grid button style, based on whether the active tab is
   // grouped or not.
-  if (IsTabGroupInGridEnabled()) {
-    [self.consumer updateTabGroupState:[self tabGroupStateToDisplay]];
-  }
+  [self.consumer updateTabGroupState:[self tabGroupStateToDisplay]];
 
   // Return early if the active web state is the same as before the change.
   if (!status.active_web_state_change()) {

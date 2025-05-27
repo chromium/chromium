@@ -247,9 +247,7 @@ const CGFloat kIdentityDiscMaxFontSize = 24;
                     safeAreaInsets:(UIEdgeInsets)safeAreaInsets
             animateScrollAnimation:(BOOL)animateScrollAnimation {
   if (self.isShowing) {
-    if (IsTabGroupInGridEnabled()) {
-      [self.headerView updateTabGroupIndicatorAvailabilityWithOffset:offset];
-    }
+    [self.headerView updateTabGroupIndicatorAvailabilityWithOffset:offset];
     CGFloat progress =
         self.logoIsShowing || !IsRegularXRegularSizeClass(self)
             ? [self.headerView searchFieldProgressForOffset:offset]

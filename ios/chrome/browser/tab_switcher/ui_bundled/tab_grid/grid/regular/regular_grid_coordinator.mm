@@ -73,11 +73,9 @@
 #pragma mark - Superclass overrides
 
 - (LegacyGridTransitionLayout*)transitionLayout {
-  if (IsTabGroupInGridEnabled()) {
-    if (self.tabGroupCoordinator) {
-      return [self.tabGroupCoordinator.viewController
-                  .gridViewController transitionLayout];
-    }
+  if (self.tabGroupCoordinator) {
+    return [self.tabGroupCoordinator.viewController
+                .gridViewController transitionLayout];
   }
 
   LegacyGridTransitionLayout* transitionLayout =
@@ -97,8 +95,7 @@
 - (BOOL)isSelectedCellVisible {
   BOOL isSelectedCellVisible = [super isSelectedCellVisible];
 
-  if (IsPinnedTabsEnabled() &&
-      !(IsTabGroupInGridEnabled() && self.tabGroupCoordinator)) {
+  if (IsPinnedTabsEnabled() && !self.tabGroupCoordinator) {
     isSelectedCellVisible |= self.pinnedTabsViewController.selectedCellVisible;
   }
 

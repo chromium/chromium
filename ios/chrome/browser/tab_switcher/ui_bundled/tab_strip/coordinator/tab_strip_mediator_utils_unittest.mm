@@ -139,10 +139,6 @@ TEST_F(TabStripMediatorUtilsTest, CreateGroupItemIdentifier) {
 // Test that calling `MoveGroupBeforeTabStripItem` in the same browser works as
 // expected.
 TEST_F(TabStripMediatorUtilsTest, MoveGroupBeforeItemSameBrowser) {
-  if (!IsTabGroupInGridEnabled()) {
-    // Disabled on iPadOS 16.
-    return;
-  }
   WebStateListBuilderFromDescription builder(web_state_list_.get());
   ASSERT_TRUE(builder.BuildWebStateListFromDescription(
       "| [ 0 a b* ] c [ 1 d e ]", base::BindRepeating(CreateWebState)));
@@ -217,10 +213,6 @@ TEST_F(TabStripMediatorUtilsTest, MoveGroupBeforeItemSameBrowser) {
 // Test that calling `MoveGroupBeforeTabStripItem` between browsers works as
 // expected.
 TEST_F(TabStripMediatorUtilsTest, MoveGroupBeforeItemDifferentBrowser) {
-  if (!IsTabGroupInGridEnabled()) {
-    // Disabled on iPadOS 16.
-    return;
-  }
   WebStateListBuilderFromDescription builder(web_state_list_.get());
   ASSERT_TRUE(builder.BuildWebStateListFromDescription(
       "| [ 0 a b* ] c", base::BindRepeating(CreateWebState)));

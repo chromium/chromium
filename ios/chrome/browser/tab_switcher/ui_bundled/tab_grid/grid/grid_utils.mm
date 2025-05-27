@@ -50,10 +50,6 @@ NSArray<GridItemIdentifier*>* CreateItems(WebStateList* web_state_list) {
 int WebStateIndexFromGridDropItemIndex(WebStateList* web_state_list,
                                        NSUInteger drop_item_index,
                                        int previous_web_state_index) {
-  if (!IsPinnedTabsEnabled() && !IsTabGroupInGridEnabled()) {
-    return drop_item_index;
-  }
-
   if (drop_item_index == NSNotFound) {
     return WebStateList::kInvalidIndex;
   }

@@ -81,7 +81,6 @@ source_set("utils") {
   ]
   deps = [
     "//base",
-    "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/common/ui/colors",
   ]
 }

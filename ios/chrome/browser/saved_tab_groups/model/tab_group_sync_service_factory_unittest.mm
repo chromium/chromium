@@ -33,10 +33,6 @@ class TabGroupSyncServiceFactoryTest : public PlatformTest {
 // Tests that TabGroupSyncServiceFactory does not create TabGroupSyncService
 // for TestProfileIOS.
 TEST_F(TabGroupSyncServiceFactoryTest, NoServiceForTests) {
-  if (!IsTabGroupInGridEnabled()) {
-    // Disabled on iPadOS 16.
-    return;
-  }
   TabGroupSyncService* service =
       TabGroupSyncServiceFactory::GetForProfile(profile_.get());
   EXPECT_FALSE(service);

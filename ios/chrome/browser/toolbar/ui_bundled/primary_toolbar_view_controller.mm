@@ -226,7 +226,6 @@ BASE_FEATURE(kPrimaryToolbarViewDidLoadUpdateViews,
 #pragma mark - Public
 
 - (void)setTabGroupIndicatorView:(TabGroupIndicatorView*)view {
-  CHECK(IsTabGroupInGridEnabled());
   self.view.tabGroupIndicatorView = view;
 }
 
@@ -413,9 +412,7 @@ BASE_FEATURE(kPrimaryToolbarViewDidLoadUpdateViews,
       [self verticalMarginForLocationBarForFullscreenProgress:
                 self.previousFullscreenProgress];
   self.view.topCornersRounded = NO;
-  if (IsTabGroupInGridEnabled()) {
-    [self.view updateTabGroupIndicatorAvailability];
-  }
+  [self.view updateTabGroupIndicatorAvailability];
   [self.delegate
       viewControllerTraitCollectionDidChange:previousTraitCollection];
 }

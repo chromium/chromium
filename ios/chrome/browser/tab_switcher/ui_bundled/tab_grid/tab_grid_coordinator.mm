@@ -1587,9 +1587,6 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
 
 - (void)createNewTabGroupWithIdentifier:(web::WebStateID)identifier
                               incognito:(BOOL)incognito {
-  CHECK(IsTabGroupInGridEnabled())
-      << "You should not be able to create a new tab group outside the Tab "
-         "Groups experiment.";
   std::set<web::WebStateID> webStateIDSet = {identifier};
   if (incognito) {
     [_incognitoGridCoordinator showTabGroupCreationForTabs:webStateIDSet];
@@ -1603,9 +1600,6 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
   if (!group) {
     return;
   }
-  CHECK(IsTabGroupInGridEnabled())
-      << "You should not be able to edit a tab group outside the Tab Groups "
-         "experiment.";
 
   BaseGridCoordinator* coordinator;
   if (incognito) {
@@ -1629,9 +1623,6 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
 - (void)deleteTabGroup:(base::WeakPtr<const TabGroup>)group
              incognito:(BOOL)incognito
             sourceView:(UIView*)sourceView {
-  CHECK(IsTabGroupInGridEnabled())
-      << "You should not be able to delete a tab group outside the Tab Groups "
-         "experiment.";
   if (incognito) {
     CHECK(!IsTabGroupSyncEnabled());
     [self.incognitoTabsMediator deleteTabGroup:group sourceView:sourceView];
@@ -1657,9 +1648,6 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
 
 - (void)closeTabGroup:(base::WeakPtr<const TabGroup>)group
             incognito:(BOOL)incognito {
-  CHECK(IsTabGroupInGridEnabled())
-      << "You should not be able to close a tab group outside the Tab Groups "
-         "experiment.";
   if (incognito) {
     [self.incognitoTabsMediator closeTabGroup:group];
     return;
@@ -1671,9 +1659,6 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
 - (void)ungroupTabGroup:(base::WeakPtr<const TabGroup>)group
               incognito:(BOOL)incognito
              sourceView:(UIView*)sourceView {
-  CHECK(IsTabGroupInGridEnabled())
-      << "You should not be able to ungroup a tab group outside the Tab Groups "
-         "experiment.";
   if (incognito) {
     [self.incognitoTabsMediator ungroupTabGroup:group sourceView:sourceView];
     return;

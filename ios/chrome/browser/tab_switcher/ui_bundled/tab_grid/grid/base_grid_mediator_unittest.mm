@@ -548,11 +548,6 @@ TEST_P(BaseGridMediatorTest, NoToolbarUpdateNotSelected) {
 // Tests selecting a NTP with no existing groups. The option to add to a group
 // should be presented, the others would be disabled.
 TEST_P(BaseGridMediatorTest, NTPSelectedWithoutGroup) {
-  if (!IsTabGroupInGridEnabled()) {
-    // Disabled on iPadOS 16.
-    return;
-  }
-
   ASSERT_EQ(3UL, consumer_.items.size());
   browser_->GetWebStateList()->InsertWebState(
       CreateFakeWebStateWithURL(GURL("about:newtab")));
@@ -608,11 +603,6 @@ TEST_P(BaseGridMediatorTest, NTPSelectedWithoutGroup) {
 
 // Tests selecting a tab with one existing group.
 TEST_P(BaseGridMediatorTest, SelectedTabWithGroup) {
-  if (!IsTabGroupInGridEnabled()) {
-    // Disabled on iPadOS 16.
-    return;
-  }
-
   EXPECT_EQ(3UL, consumer_.items.size());
 
   [mediator_ selectTabsButtonTapped:nil];
@@ -725,11 +715,6 @@ TEST_P(BaseGridMediatorTest, CloseAllThenAddWebState) {
 
 // Tests selecting a tab and a group with one existing group.
 TEST_P(BaseGridMediatorTest, SelectedTabAndGroupWithGroup) {
-  if (!IsTabGroupInGridEnabled()) {
-    // Disabled on iPadOS 16.
-    return;
-  }
-
   EXPECT_EQ(3UL, consumer_.items.size());
 
   [mediator_ selectTabsButtonTapped:nil];
@@ -797,11 +782,6 @@ TEST_P(BaseGridMediatorTest, SelectedTabAndGroupWithGroup) {
 // Tests that ungrouping a group correctly deletes the group.
 TEST_P(BaseGridMediatorTest, UnGroup) {
   scoped_feature_list_.InitWithFeatures({kTabGroupSync}, {});
-  if (!IsTabGroupInGridEnabled()) {
-    // Disabled on iPadOS 16.
-    return;
-  }
-
   WebStateList* web_state_list = browser_->GetWebStateList();
   TabGroupId tab_group_id = TabGroupId::GenerateNew();
   web_state_list->CreateGroup({1}, {}, tab_group_id);
@@ -826,10 +806,6 @@ TEST_P(BaseGridMediatorTest, UnGroup) {
 // correctly deletes the group.
 TEST_P(BaseGridMediatorTest, UnGroupFromAnotherBrowser) {
   scoped_feature_list_.InitWithFeatures({kTabGroupSync}, {});
-  if (!IsTabGroupInGridEnabled()) {
-    // Disabled on iPadOS 16.
-    return;
-  }
   mode_holder_.mode = TabGridMode::kSearch;
 
   WebStateList* other_web_state_list = other_browser_->GetWebStateList();
@@ -858,11 +834,6 @@ TEST_P(BaseGridMediatorTest, UnGroupFromAnotherBrowser) {
 // Tests that closing the last tab of a selected group clears the selection.
 TEST_P(BaseGridMediatorTest, CloseSelectedGroup) {
   scoped_feature_list_.InitWithFeatures({kTabGroupSync}, {});
-  if (!IsTabGroupInGridEnabled()) {
-    // Disabled on iPadOS 16.
-    return;
-  }
-
   TabGroupId tab_group_id = TabGroupId::GenerateNew();
   WebStateList* web_state_list = browser_->GetWebStateList();
   const TabGroup* group = web_state_list->CreateGroup({1}, {}, tab_group_id);
@@ -887,11 +858,6 @@ TEST_P(BaseGridMediatorTest, CloseSelectedGroup) {
 // Tests that closing a group locally removes the mapping from the sync service.
 TEST_P(BaseGridMediatorTest, CloseGroupLocally) {
   scoped_feature_list_.InitWithFeatures({kTabGroupSync}, {});
-  if (!IsTabGroupInGridEnabled()) {
-    // Disabled on iPadOS 16.
-    return;
-  }
-
   WebStateList* web_state_list = browser_->GetWebStateList();
   TabGroupId tab_group_id = TabGroupId::GenerateNew();
   web_state_list->CreateGroup({1}, {}, tab_group_id);
@@ -916,10 +882,6 @@ TEST_P(BaseGridMediatorTest, CloseGroupLocally) {
 // correctly closes the group and removes the mapping from the sync service.
 TEST_P(BaseGridMediatorTest, CloseGroupFromAnotherBrowser) {
   scoped_feature_list_.InitWithFeatures({kTabGroupSync}, {});
-  if (!IsTabGroupInGridEnabled()) {
-    // Disabled on iPadOS 16.
-    return;
-  }
   mode_holder_.mode = TabGridMode::kSearch;
 
   WebStateList* other_web_state_list = other_browser_->GetWebStateList();
@@ -949,11 +911,6 @@ TEST_P(BaseGridMediatorTest, CloseGroupFromAnotherBrowser) {
 // Tests that closing multiple selected items doesn't delete saved groups.
 TEST_P(BaseGridMediatorTest, CloseSelectedTabsAndGroups) {
   scoped_feature_list_.InitWithFeatures({kTabGroupSync}, {});
-  if (!IsTabGroupInGridEnabled()) {
-    // Disabled on iPadOS 16.
-    return;
-  }
-
   WebStateList* web_state_list = browser_->GetWebStateList();
   CloseAllWebStates(*web_state_list, WebStateList::CLOSE_NO_FLAGS);
   WebStateListBuilderFromDescription builder(web_state_list);
@@ -1027,11 +984,6 @@ TEST_P(BaseGridMediatorTest, CloseSelectedGroupInBatch) {
 // updates the selected element of the Grid, whether the tab itself is moving in
 // the web state list or not.
 TEST_P(BaseGridMediatorTest, SelectionAfterChangingGroup) {
-  if (!IsTabGroupInGridEnabled()) {
-    // Disabled on iPadOS 16.
-    return;
-  }
-
   WebStateList* web_state_list = browser_->GetWebStateList();
   CloseAllWebStates(*web_state_list, WebStateList::CLOSE_NO_FLAGS);
   WebStateListBuilderFromDescription builder(web_state_list);
@@ -1082,11 +1034,6 @@ TEST_P(BaseGridMediatorTest, DropLocalTab) {
 
 // Tests dropping a tabs from the tab group view in the grid.
 TEST_P(BaseGridMediatorTest, DropLocalTabFromTabGroup) {
-  if (!IsTabGroupInGridEnabled()) {
-    // Disabled on iPadOS 16.
-    return;
-  }
-
   WebStateList* web_state_list = browser_->GetWebStateList();
   CloseAllWebStates(*web_state_list, WebStateList::CLOSE_NO_FLAGS);
 
@@ -1160,11 +1107,6 @@ TEST_P(BaseGridMediatorTest, DropCrossWindowTab) {
 
 // Tests dropping a local Tab Group (i.e. from the same window).
 TEST_P(BaseGridMediatorTest, DropLocalTabGroup) {
-  if (!IsTabGroupInGridEnabled()) {
-    // Disabled on iPadOS 16.
-    return;
-  }
-
   WebStateList* web_state_list = browser_->GetWebStateList();
   CloseAllWebStates(*web_state_list, WebStateList::CLOSE_NO_FLAGS);
 
@@ -1190,11 +1132,6 @@ TEST_P(BaseGridMediatorTest, DropLocalTabGroup) {
 
 // Tests dropping a Tab Group from another browser (i.e. from the same window).
 TEST_P(BaseGridMediatorTest, DropCrossBrowserTabGroup) {
-  if (!IsTabGroupInGridEnabled()) {
-    // Disabled on iPadOS 16.
-    return;
-  }
-
   // Prepare the web state list in which the group will be dropped.
   WebStateList* web_state_list = browser_->GetWebStateList();
   CloseAllWebStates(*web_state_list, WebStateList::CLOSE_NO_FLAGS);

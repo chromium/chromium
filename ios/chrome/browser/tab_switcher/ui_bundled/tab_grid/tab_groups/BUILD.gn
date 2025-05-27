@@ -213,7 +213,6 @@ source_set("tab_group_creation_ui") {
     "//ios/chrome/browser/keyboard/ui_bundled",
     "//ios/chrome/browser/saved_tab_groups/ui:utils",
     "//ios/chrome/browser/shared/model/web_state_list",
-    "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/shared/ui/elements",
     "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/shared/ui/util",
@@ -235,7 +234,6 @@ source_set("snapshots_view") {
   deps = [
     ":tab_groups_constant",
     "//base",
-    "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/shared/ui/elements",
     "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/browser/tab_switcher/ui_bundled:items",

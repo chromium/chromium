@@ -121,29 +121,23 @@ using collaboration::CollaborationControllerDelegate;
 }
 
 - (BOOL)isSelectedCellVisible {
-  if (IsTabGroupInGridEnabled()) {
-    if (_tabGroupCoordinator) {
-      return _tabGroupCoordinator.viewController.gridViewController
-          .selectedCellVisible;
-    }
+  if (_tabGroupCoordinator) {
+    return _tabGroupCoordinator.viewController.gridViewController
+        .selectedCellVisible;
   }
   return self.gridViewController.selectedCellVisible;
 }
 
 - (UIView*)gridView {
-  if (IsTabGroupInGridEnabled()) {
-    if (_tabGroupCoordinator) {
-      return _tabGroupCoordinator.viewController.gridViewController.view;
-    }
+  if (_tabGroupCoordinator) {
+    return _tabGroupCoordinator.viewController.gridViewController.view;
   }
   return self.gridContainerViewController.view;
 }
 
 - (UIView*)gridContainerForAnimation {
-  if (IsTabGroupInGridEnabled()) {
-    if (_tabGroupCoordinator) {
-      return _tabGroupCoordinator.viewController.gridViewController.view;
-    }
+  if (_tabGroupCoordinator) {
+    return _tabGroupCoordinator.viewController.gridViewController.view;
   }
   return nil;
 }
@@ -263,9 +257,6 @@ using collaboration::CollaborationControllerDelegate;
 
 - (void)showTabGroupCreationForTabs:
     (const std::set<web::WebStateID>&)identifiers {
-  CHECK(IsTabGroupInGridEnabled())
-      << "You should not be able to create a tab group outside the Tab Groups "
-         "experiment.";
   CHECK(!_tabGroupCreator) << "There is an atemps to create a tab group when a "
                               "creation process is still running.";
 
@@ -285,9 +276,6 @@ using collaboration::CollaborationControllerDelegate;
 }
 
 - (void)showTabGroupEditionForGroup:(const TabGroup*)tabGroup {
-  CHECK(IsTabGroupInGridEnabled())
-      << "You should not be able to edit a tab group outside the Tab Groups "
-         "experiment.";
   CHECK(!_tabGroupCreator) << "There is an attempt to edit a tab group when a "
                               "creation process is still running.";
   CHECK(tabGroup) << "To edit a tab group you should pass a group.";
@@ -480,9 +468,6 @@ using collaboration::CollaborationControllerDelegate;
 // Shows the `tabGroup` with animations for `tabGridOpening` or not.
 - (void)showTabGroup:(const TabGroup*)tabGroup
     forTabGridOpening:(BOOL)tabGridOpening {
-  CHECK(IsTabGroupInGridEnabled())
-      << "You should not be able to show a tab group UI outside the "
-         "Tab Groups experiment.";
   if (_tabGroupCoordinator) {
     // There is an attempt to display a tab group when one is already presented.
     return;

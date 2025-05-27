@@ -182,9 +182,6 @@ UIButton* TopToolbarButton(NSString* symbol_name,
 - (instancetype)initWithHandler:(id<TabGroupsCommands>)handler
                       incognito:(BOOL)incognito
                        tabGroup:(const TabGroup*)tabGroup {
-  CHECK(IsTabGroupInGridEnabled())
-      << "You should not be able to create a tab group view controller outside "
-         "the Tab Groups experiment.";
   CHECK(tabGroup);
   if ((self = [super init])) {
     _handler = handler;

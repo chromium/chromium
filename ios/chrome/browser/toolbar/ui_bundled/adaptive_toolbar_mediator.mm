@@ -638,11 +638,9 @@ std::optional<tab_groups::LocalTabGroupID> LocalTabGroupID(
 
 // Returns the tab group of the active web state, if any.
 - (const TabGroup*)activeWebStateTabGroup {
-  if (IsTabGroupInGridEnabled()) {
-    const int active_index = _webStateList->active_index();
-    if (active_index != WebStateList::kInvalidIndex) {
-      return _webStateList->GetGroupOfWebStateAt(active_index);
-    }
+  const int active_index = _webStateList->active_index();
+  if (active_index != WebStateList::kInvalidIndex) {
+    return _webStateList->GetGroupOfWebStateAt(active_index);
   }
   return nullptr;
 }

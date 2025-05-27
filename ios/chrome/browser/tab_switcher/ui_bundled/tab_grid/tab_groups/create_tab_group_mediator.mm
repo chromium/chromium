@@ -23,7 +23,6 @@
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer_bridge.h"
-#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_groups/create_tab_group_mediator_delegate.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_groups/tab_group_creation_consumer.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_group_item.h"
@@ -68,9 +67,6 @@
                         selectedTabs:(std::set<web::WebStateID>&)identifiers
                              browser:(Browser*)browser
                        faviconLoader:(FaviconLoader*)faviconLoader {
-  CHECK(IsTabGroupInGridEnabled())
-      << "You should not be able to create a tab group outside the Tab Groups "
-         "experiment.";
   self = [super init];
   if (self) {
     CHECK(consumer);
@@ -133,9 +129,6 @@
                                        tabGroup:(const TabGroup*)tabGroup
                                    webStateList:(WebStateList*)webStateList
                                   faviconLoader:(FaviconLoader*)faviconLoader {
-  CHECK(IsTabGroupInGridEnabled())
-      << "You should not be able to create a tab group outside the Tab Groups "
-         "experiment.";
   self = [super init];
   if (self) {
     CHECK(consumer);

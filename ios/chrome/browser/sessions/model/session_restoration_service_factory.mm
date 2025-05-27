@@ -376,13 +376,13 @@ SessionRestorationServiceFactory::BuildServiceInstanceFor(
                                           taskRunner:task_runner];
 
     return std::make_unique<LegacySessionRestorationService>(
-        IsPinnedTabsEnabled(), IsTabGroupInGridEnabled(), storage_path,
+        IsPinnedTabsEnabled(), /*enable_tab_groups=*/true, storage_path,
         session_service_ios,
         WebSessionStateCacheFactory::GetForProfile(profile));
   }
 
   return std::make_unique<SessionRestorationServiceImpl>(
-      kSaveDelay, IsPinnedTabsEnabled(), IsTabGroupInGridEnabled(),
+      kSaveDelay, IsPinnedTabsEnabled(), /*enable_tab_groups=*/true,
       storage_path, task_runner);
 }
 

@@ -14,9 +14,6 @@
 // modern tab strip is dynamic.
 @property(class, nonatomic, readonly) BOOL isModernTabStripNewTabButtonDynamic;
 
-// Helper function to check if tab groups appear in the tab strip.
-@property(class, nonatomic, readonly) BOOL isModernTabStripWithTabGroups;
-
 // Whether the new tab button should be bigger and closer to the tab strip.
 @property(class, nonatomic, readonly) BOOL hasCloserNTB;
 

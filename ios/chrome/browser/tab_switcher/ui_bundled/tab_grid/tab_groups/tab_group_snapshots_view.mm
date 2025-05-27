@@ -4,8 +4,7 @@
 
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_groups/tab_group_snapshots_view.h"
 
-#import "base/check.h"
-#import "ios/chrome/browser/shared/public/features/features.h"
+#import "base/check_op.h"
 #import "ios/chrome/browser/shared/ui/elements/top_aligned_image_view.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_groups/group_tab_view.h"
@@ -34,9 +33,6 @@ constexpr CGFloat kFinalViewCornerRadius = 16;
                                            size:(NSUInteger)size
                                           light:(BOOL)isLight
                                            cell:(BOOL)isCell {
-  CHECK(IsTabGroupInGridEnabled())
-      << "You should not be able to create a tab group snapshot view outside "
-         "the Tab Groups experiment.";
   self = [super initWithFrame:CGRectZero];
   if (self) {
     CHECK_LE([tabSnapshotsAndFavicons count], size);
