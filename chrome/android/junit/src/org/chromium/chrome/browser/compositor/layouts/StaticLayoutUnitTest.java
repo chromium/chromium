@@ -174,7 +174,7 @@ public class StaticLayoutUnitTest {
                         mStaticTabSceneLayer,
                         true);
         mModel = mStaticLayout.getModelForTesting();
-        doReturn(true).when(mUpdateHost).isActiveLayout(mStaticLayout);
+        mStaticLayout.setIsActive(true);
 
         doReturn(BACKGROUND_COLOR).when(mTopUiThemeColorProvider).getBackgroundColor(any());
         doReturn(TOOLBAR_BACKGROUND_COLOR)
@@ -278,7 +278,7 @@ public class StaticLayoutUnitTest {
 
     @Test
     public void testTabSelectionInactive() {
-        doReturn(false).when(mUpdateHost).isActiveLayout(mStaticLayout);
+        mStaticLayout.setIsActive(false);
         assertNotEquals(mTab2.getId(), mModel.get(LayoutTab.TAB_ID));
 
         getTabModelSelectorTabModelObserverFromCaptor()

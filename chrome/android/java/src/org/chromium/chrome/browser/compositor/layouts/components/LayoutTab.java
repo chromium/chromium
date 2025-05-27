@@ -109,8 +109,8 @@ public class LayoutTab extends PropertyModel {
     public static final PropertyModel.WritableFloatPropertyKey CONTENT_OFFSET =
             new PropertyModel.WritableFloatPropertyKey();
 
-    public static final PropertyModel.WritableObjectPropertyKey<IsActiveLayoutSupplier>
-            IS_ACTIVE_LAYOUT_SUPPLIER = new WritableObjectPropertyKey<>();
+    public static final PropertyModel.WritableBooleanPropertyKey IS_ACTIVE_LAYOUT =
+            new WritableBooleanPropertyKey();
 
     /** The tag indicating that this layer should be moved by viz. */
     public static final PropertyModel.WritableObjectPropertyKey<OffsetTag> CONTENT_OFFSET_TAG =
@@ -143,7 +143,7 @@ public class LayoutTab extends PropertyModel {
                 TOOLBAR_BACKGROUND_COLOR,
                 TEXT_BOX_BACKGROUND_COLOR,
                 CONTENT_OFFSET,
-                IS_ACTIVE_LAYOUT_SUPPLIER,
+                IS_ACTIVE_LAYOUT,
                 CONTENT_OFFSET_TAG
             };
 
