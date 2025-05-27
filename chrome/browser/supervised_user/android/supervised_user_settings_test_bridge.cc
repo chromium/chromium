@@ -17,6 +17,7 @@
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/supervised_user/core/browser/kids_chrome_management_url_checker_client.h"
 #include "components/supervised_user/core/browser/proto/kidsmanagement_messages.pb.h"
+#include "components/supervised_user/core/browser/supervised_user_preferences.h"
 #include "components/supervised_user/core/browser/supervised_user_service.h"
 #include "components/supervised_user/core/browser/supervised_user_settings_service.h"
 #include "components/supervised_user/core/browser/supervised_user_url_filter.h"
@@ -108,7 +109,8 @@ void JNI_SupervisedUserSettingsTestBridge_SetKidsManagementResponseForTesting(  
   std::unique_ptr<safe_search_api::URLCheckerClient> url_checker_client =
       std::make_unique<supervised_user::KidsChromeManagementURLCheckerClient>(
           identity_manager, shared_url_loader_factory, /*country=*/"",
-          version_info::Channel::UNKNOWN);
+          version_info::Channel::UNKNOWN,
+          supervised_user::IsSubjectToParentalControls(*profile->GetPrefs()));
   supervised_user_service->GetURLFilter()->SetURLCheckerClient(
       std::move(url_checker_client));
 }

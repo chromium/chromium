@@ -91,7 +91,10 @@ struct FetcherConfig {
   // Policy for retrying patterns that will be applied to transient errors.
   std::optional<net::BackoffEntry::Policy> backoff_policy;
 
-  AccessTokenConfig access_token_config;
+  // When set, the fetcher will attach an access token to the request, using
+  // the specified configuration. When not set, no access token will be
+  // attached.
+  std::optional<AccessTokenConfig> access_token_config;
 
   net::RequestPriority request_priority;
 
@@ -127,11 +130,12 @@ inline constexpr FetcherConfig kClassifyUrlConfig = {
     .histogram_basename = "FamilyLinkUser.ClassifyUrlRequest",
     .traffic_annotation = annotations::ClassifyUrlTag,
     .access_token_config =
-        {
+        AccessTokenConfig{
             .credentials_requirement =
                 AccessTokenConfig::CredentialsRequirement::kStrict,
             .mode = signin::PrimaryAccountAccessTokenFetcher::Mode::kImmediate,
-            // TODO(b/284523446): Refer to GaiaConstants rather than literal.
+            // TODO(crbug.com/284523446): Refer to GaiaConstants rather than
+            // literal.
             .oauth2_scope = "https://www.googleapis.com/auth/kid.permission",
         },
     .request_priority = net::IDLE,
@@ -144,12 +148,12 @@ inline constexpr FetcherConfig kClassifyUrlConfigWaitUntilAccessTokenAvailable =
         .histogram_basename = "FamilyLinkUser.ClassifyUrlRequest",
         .traffic_annotation = annotations::ClassifyUrlTag,
         .access_token_config =
-            {
+            AccessTokenConfig{
                 .credentials_requirement =
                     AccessTokenConfig::CredentialsRequirement::kStrict,
                 .mode = signin::PrimaryAccountAccessTokenFetcher::Mode::
                     kWaitUntilAvailable,
-                // TODO(b/284523446): Refer to GaiaConstants rather than
+                // TODO(crbug.com/284523446): Refer to GaiaConstants rather than
                 // literal.
                 .oauth2_scope =
                     "https://www.googleapis.com/auth/kid.permission",
@@ -163,13 +167,22 @@ inline constexpr FetcherConfig kClassifyUrlConfigBestEffort = {
     .histogram_basename = "FamilyLinkUser.ClassifyUrlRequest",
     .traffic_annotation = annotations::ClassifyUrlTag,
     .access_token_config =
-        {
+        AccessTokenConfig{
             .credentials_requirement =
                 AccessTokenConfig::CredentialsRequirement::kBestEffort,
             .mode = signin::PrimaryAccountAccessTokenFetcher::Mode::kImmediate,
-            // TODO(b/284523446): Refer to GaiaConstants rather than literal.
+            // TODO(crbug.com/284523446): Refer to GaiaConstants rather than
+            // literal.
             .oauth2_scope = "https://www.googleapis.com/auth/kid.permission",
         },
+    .request_priority = net::IDLE,
+};
+
+inline constexpr FetcherConfig kClassifyUrlConfigWithoutCredentials = {
+    .service_path = "/kidsmanagement/v1/people/me:classifyUrl",
+    .method = FetcherConfig::Method::kPost,
+    .histogram_basename = "NonFamilyLinkUser.ClassifyUrlRequest",
+    .traffic_annotation = annotations::ClassifyUrlTag,
     .request_priority = net::IDLE,
 };
 
@@ -205,17 +218,21 @@ inline constexpr FetcherConfig kListFamilyMembersConfig{
             // Don't use initial delay unless the last request was an error.
             .always_use_initial_delay = false,
         },
-    .access_token_config{
-        .credentials_requirement =
-            AccessTokenConfig::CredentialsRequirement::kStrict,
-        // Wait for the token to be issued. This fetch is asynchronous and not
-        // latency sensitive.
-        .mode =
-            signin::PrimaryAccountAccessTokenFetcher::Mode::kWaitUntilAvailable,
+    .access_token_config =
+        AccessTokenConfig{
+            .credentials_requirement =
+                AccessTokenConfig::CredentialsRequirement::kStrict,
+            // Wait for the token to be issued. This fetch is asynchronous and
+            // not
+            // latency sensitive.
+            .mode = signin::PrimaryAccountAccessTokenFetcher::Mode::
+                kWaitUntilAvailable,
 
-        // TODO(b/284523446): Refer to GaiaConstants rather than literal.
-        .oauth2_scope = "https://www.googleapis.com/auth/kid.family.readonly",
-    },
+            // TODO(crbug.com/284523446): Refer to GaiaConstants rather than
+            // literal.
+            .oauth2_scope =
+                "https://www.googleapis.com/auth/kid.family.readonly",
+        },
     .request_priority = net::IDLE,
 };
 
@@ -224,15 +241,17 @@ inline constexpr FetcherConfig kCreatePermissionRequestConfig = {
     .method = FetcherConfig::Method::kPost,
     .histogram_basename = "FamilyLinkUser.CreatePermissionRequest",
     .traffic_annotation = annotations::CreatePermissionRequestTag,
-    .access_token_config{
-        .credentials_requirement =
-            AccessTokenConfig::CredentialsRequirement::kStrict,
-        // Fail the fetch right away when access token is not immediately
-        // available.
-        .mode = signin::PrimaryAccountAccessTokenFetcher::Mode::kImmediate,
-        // TODO(b/284523446): Refer to GaiaConstants rather than literal.
-        .oauth2_scope = "https://www.googleapis.com/auth/kid.permission",
-    },
+    .access_token_config =
+        AccessTokenConfig{
+            .credentials_requirement =
+                AccessTokenConfig::CredentialsRequirement::kStrict,
+            // Fail the fetch right away when access token is not immediately
+            // available.
+            .mode = signin::PrimaryAccountAccessTokenFetcher::Mode::kImmediate,
+            // TODO(crbug.com/284523446): Refer to GaiaConstants rather than
+            // literal.
+            .oauth2_scope = "https://www.googleapis.com/auth/kid.permission",
+        },
     .request_priority = net::IDLE,
 };
 

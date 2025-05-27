@@ -120,5 +120,10 @@ BASE_FEATURE(kAlignSafeSitesValueWithBrowserDefault,
 BASE_FEATURE(kDecoupleSafeSitesFromMainSwitch,
              "DecoupleSafeSitesFromMainSwitch",
              base::FEATURE_ENABLED_BY_DEFAULT);
+#if BUILDFLAG(IS_ANDROID)
+BASE_FEATURE(kAllowNonFamilyLinkUrlFilterMode,
+             "AllowNonFamilyLinkUrlFilterMode",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif
 
 }  // namespace supervised_user

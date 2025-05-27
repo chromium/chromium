@@ -90,12 +90,19 @@ class FetchProcess {
   void RecordMetrics(const ProtoFetcherStatus& status) const;
 
  private:
-  // First phase of fetching: the access token response is ready.
+  // First phase of fetching: the access token response is ready. Access token
+  // step is optional - empty access token means that access token procedure was
+  // not performed at all.
   void OnAccessTokenFetchComplete(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       base::expected<signin::AccessTokenInfo, GoogleServiceAuthError>
           access_token);
-  // Second phase of fetching: the remote service responded.
+  // Second phase of fetching: perform the request to the remote service. Access
+  // token is optional.
+  void StartUrlLoader(
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+      const std::optional<signin::AccessTokenInfo> access_token_info);
+  // Third phase of fetching: the remote service responded
   void OnSimpleUrlLoaderComplete(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       std::unique_ptr<std::string> response_body);
@@ -106,17 +113,19 @@ class FetchProcess {
   virtual void OnError(const ProtoFetcherStatus& status) = 0;
 
   const raw_ref<signin::IdentityManager> identity_manager_;
-  std::unique_ptr<network::SimpleURLLoader> simple_url_loader_;
   const Payload payload_;
   const raw_ref<const FetcherConfig> config_;
   const FetcherConfig::PathArgs args_;
   std::optional<version_info::Channel> channel_;
   std::optional<ProtoFetcherMetrics> metrics_;
 
-  // Entrypoint of the fetch process, which starts with ApiAccessToken access
-  // followed by a request made with SimpleURLLoader. Purposely made last field
-  // should it depend on other members of this class.
-  ApiAccessTokenFetcher fetcher_;
+  // Entrypoint of the fetch process with end-user-credentials, which starts
+  // with ApiAccessToken access followed by a request made with SimpleURLLoader.
+  std::unique_ptr<ApiAccessTokenFetcher> fetcher_;
+
+  // Alternative entrypoint of the fetch process without end-user-credentials,
+  // or next stage when end-user-credentials are resolved.
+  std::unique_ptr<network::SimpleURLLoader> simple_url_loader_;
 
   // If an auth error was encountered when fetching the access token, it is
   // stored here (whether or not it was fatal).
@@ -291,6 +300,11 @@ class ProtoFetcher final {
   const std::optional<CumulativeProtoFetcherMetrics> metrics_;
 };
 
+// Tells if the FetcherConfig allows requests without end user credentials at
+// any stage.
+bool ConfiguresFetcherWithoutEndUserCredentials(
+    const FetcherConfig& fetcher_config);
+
 // Constructs a launched fetcher. The fetcher will be either one shot or
 // retryable, depending on the FetcherConfig::backoff_policy setting.
 // `identity_manager` and `fetcher_config` must outlive this call.
@@ -309,9 +323,7 @@ std::unique_ptr<ProtoFetcher<Response>> CreateFetcher(
     const FetcherConfig& fetcher_config,
     const FetcherConfig::PathArgs& args = {},
     const std::optional<version_info::Channel> channel = std::nullopt) {
-  CHECK((fetcher_config.access_token_config.credentials_requirement !=
-         AccessTokenConfig::CredentialsRequirement::kBestEffort) ||
-        channel)
+  CHECK(!ConfiguresFetcherWithoutEndUserCredentials(fetcher_config) || channel)
       << "The Chrome channel must be specified for fetchers which can send "
          "requests without user credentials.";
   return std::make_unique<ProtoFetcher<Response>>(

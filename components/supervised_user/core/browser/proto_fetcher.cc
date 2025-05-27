@@ -157,13 +157,20 @@ FetchProcess::FetchProcess(
       config_(fetcher_config),
       args_(args),
       channel_(channel),
-      metrics_(ProtoFetcherMetrics::FromConfig(fetcher_config)),
-      fetcher_(identity_manager, fetcher_config.access_token_config) {
+      metrics_(ProtoFetcherMetrics::FromConfig(fetcher_config)) {
   // GET requests can't contain request body.
   CHECK(fetcher_config.method != FetcherConfig::Method::kGet ||
         payload.request_body.empty())
       << "GET requests cannot set request_body in payload.";
-  fetcher_.GetToken(
+  if (!fetcher_config.access_token_config.has_value()) {
+    // Starts the url loading without credentials.
+    StartUrlLoader(url_loader_factory, std::nullopt);
+    return;
+  }
+
+  fetcher_ = std::make_unique<ApiAccessTokenFetcher>(
+      identity_manager, *fetcher_config.access_token_config);
+  fetcher_->GetToken(
       base::BindOnce(&FetchProcess::OnAccessTokenFetchComplete,
                      base::Unretained(this),  // Unretained(.) is safe because
                                               // `this` owns `fetcher_`.
@@ -187,7 +194,9 @@ void FetchProcess::OnAccessTokenFetchComplete(
     access_token_auth_error_ = access_token.error();
     ProtoFetcherStatus auth_error_status =
         ProtoFetcherStatus::GoogleServiceAuthError(access_token.error());
-    if (config_->access_token_config.credentials_requirement ==
+    CHECK(config_->access_token_config.has_value())
+        << "Access token fetch underway, config is implied";
+    if (config_->access_token_config->credentials_requirement ==
         AccessTokenConfig::CredentialsRequirement::kStrict) {
       // We've failed to fetch an access token and require one; fail with error.
       OnError(auth_error_status);
@@ -195,10 +204,14 @@ void FetchProcess::OnAccessTokenFetchComplete(
     }
     RecordMetrics(auth_error_status);
   }
+  StartUrlLoader(url_loader_factory, base::OptionalFromExpected(access_token));
+}
 
-  simple_url_loader_ =
-      InitializeSimpleUrlLoader(base::OptionalFromExpected(access_token),
-                                config_.get(), args_, channel_, payload_);
+void FetchProcess::StartUrlLoader(
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+    const std::optional<signin::AccessTokenInfo> access_token_info) {
+  simple_url_loader_ = InitializeSimpleUrlLoader(
+      access_token_info, config_.get(), args_, channel_, payload_);
   simple_url_loader_->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
       url_loader_factory.get(),
       base::BindOnce(
@@ -213,15 +226,17 @@ void FetchProcess::OnSimpleUrlLoaderComplete(
     std::unique_ptr<std::string> response_body) {
   // In best-effort mode we must retry on auth error in order that the request
   // can proceed without credentials.
-  if (config_->access_token_config.credentials_requirement ==
+  if (config_->access_token_config.has_value() &&
+      config_->access_token_config->credentials_requirement ==
           AccessTokenConfig::CredentialsRequirement::kBestEffort &&
       HasHttpAuthErrorResponse(*simple_url_loader_) &&
       !triggered_retry_on_http_auth_error_) {
     // The server has rejected our credentials.
     // Mark the access token as invalid, and retry the request.
-    fetcher_.InvalidateToken();
+    CHECK(fetcher_) << "Retrying means that the was access token fetch";
+    fetcher_->InvalidateToken();
 
-    // Retry the request.
+    // Trigger a single retry (another retry is impossible).
     triggered_retry_on_http_auth_error_ = true;
     // Url loader initialized without access token on retry.
     simple_url_loader_ =
@@ -246,4 +261,12 @@ void FetchProcess::OnSimpleUrlLoaderComplete(
 
   OnResponse(std::move(response_body));
 }
+
+bool ConfiguresFetcherWithoutEndUserCredentials(
+    const FetcherConfig& fetcher_config) {
+  return !fetcher_config.access_token_config.has_value() ||
+         fetcher_config.access_token_config->credentials_requirement ==
+             AccessTokenConfig::CredentialsRequirement::kBestEffort;
+}
+
 }  // namespace supervised_user

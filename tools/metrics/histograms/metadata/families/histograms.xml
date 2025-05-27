@@ -39,6 +39,8 @@ Current expiration date for histograms owned by cros-families-eng@google.com:
       summary="Kids Management API::ClassifyUrl"/>
   <variant name="FamilyLinkUser.CreatePermissionRequest"
       summary="Kids Management API::CreatePermissionRequest"/>
+  <variant name="NonFamilyLinkUser.ClassifyUrlRequest"
+      summary="Kids Management API::ClassifyUrl"/>
   <variant name="Signin.ListFamilyMembersRequest"
       summary="Kids Management API::ListMembers"/>
 </variants>
