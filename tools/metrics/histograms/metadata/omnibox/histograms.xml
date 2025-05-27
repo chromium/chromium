@@ -2223,6 +2223,21 @@ Keep consistent with active providers. Doesn't need to include every provider in
   </summary>
 </histogram>
 
+<histogram
+    name="Omnibox.SearchPrefetch.Within1sDuplicateSearchTermsRelationship"
+    enum="DuplicateNavigationServingResult" expires_after="2025-09-14">
+  <owner>lingqi@chromium.org</owner>
+  <owner>nhiroki@chromium.org</owner>
+  <owner>chrome-prerendering@google.com</owner>
+  <summary>
+    Tracks the prefetch serving statuses of two search terms that are the same
+    and are visited within 1s.
+
+    Recorded at SearchPrefetchService::RecordInterceptionMetrics when the same
+    search terms are visited again within 1s.
+  </summary>
+</histogram>
+
 <histogram name="Omnibox.SearchPreload.ForwardingResult.NotServedToPrerender"
     enum="SearchPreloadForwardingResult" expires_after="2025-11-16">
   <owner>lingqi@chromium.org</owner>
