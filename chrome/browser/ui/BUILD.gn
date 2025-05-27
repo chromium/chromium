@@ -762,6 +762,7 @@ static_library("ui") {
 
   if (is_android) {
     sources += [
+      "android/accelerator_utils_android.cc",
       "android/android_about_app_info.cc",
       "android/android_about_app_info.h",
       "android/autofill/authenticator_selection_dialog_view_android.cc",

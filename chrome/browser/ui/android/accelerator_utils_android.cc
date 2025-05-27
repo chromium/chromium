@@ -2,9 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/android/keyboard_shortcuts.h"
-
-#include <jni.h>
+#include "chrome/browser/ui/accelerator_utils.h"
 
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/events/android/events_android_utils.h"
@@ -14,7 +12,7 @@
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/android/chrome_jni_headers/KeyboardShortcuts_jni.h"
 
-namespace chrome::android {
+namespace chrome {
 
 bool IsChromeAccelerator(const ui::Accelerator& accelerator) {
   ui::KeyEvent key_event = accelerator.ToKeyEvent();
@@ -25,4 +23,4 @@ bool IsChromeAccelerator(const ui::Accelerator& accelerator) {
       env, platform_event.AsKeyboardEventAndroid()->GetJavaObject());
 }
 
-}  // namespace chrome::android
+}  // namespace chrome

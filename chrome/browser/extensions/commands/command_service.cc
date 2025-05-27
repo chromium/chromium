@@ -34,11 +34,6 @@
 #include "extensions/common/permissions/permissions_data.h"
 #include "ui/base/accelerators/command.h"
 
-#if BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/android/keyboard_shortcuts.h"
-#include "ui/events/android/key_event_android.h"
-#endif  // BUILDFLAG(IS_ANDROID)
-
 namespace extensions {
 namespace {
 
@@ -523,11 +518,7 @@ bool CommandService::CanAutoAssign(const ui::Command& command,
   }
 
   // Not a global command, check if the command is a Chrome shortcut.
-#if BUILDFLAG(IS_ANDROID)
-  return !chrome::android::IsChromeAccelerator(command.accelerator());
-#else
   return !chrome::IsChromeAccelerator(command.accelerator());
-#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 void CommandService::UpdateExtensionSuggestedCommandPrefs(
