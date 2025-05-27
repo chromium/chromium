@@ -14,6 +14,10 @@
 class ContentsWebView;
 struct TabRendererData;
 
+namespace tabs {
+enum class TabAlert;
+}
+
 namespace ui {
 class MenuModel;
 }
@@ -51,6 +55,9 @@ class MultiContentsViewMiniToolbar : public views::View,
   void OnPaint(gfx::Canvas* canvas) override;
   void OnThemeChanged() override;
 
+  void RegisterTabAlertSubscription();
+  void OnAlertStatusIndicatorChanged(std::optional<tabs::TabAlert> new_alert);
+
   std::optional<TabRendererData> GetTabData();
   // Updates the favicon and domain based on the provided |tab_data|.
   void UpdateContents(TabRendererData tab_data);
@@ -70,6 +77,7 @@ class MultiContentsViewMiniToolbar : public views::View,
   raw_ptr<content::WebContents> web_contents_;
   base::CallbackListSubscription web_contents_attached_subscription_;
   base::CallbackListSubscription web_contents_detached_subscription_;
+  std::optional<base::CallbackListSubscription> tab_alert_status_subscription_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_FRAME_MULTI_CONTENTS_VIEW_MINI_TOOLBAR_H_

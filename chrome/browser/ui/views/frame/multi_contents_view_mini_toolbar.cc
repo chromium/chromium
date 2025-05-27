@@ -9,6 +9,10 @@
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/favicon/favicon_utils.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
+#include "chrome/browser/ui/tabs/alert/tab_alert.h"
+#include "chrome/browser/ui/tabs/alert/tab_alert_controller.h"
+#include "chrome/browser/ui/tabs/alert/tab_alert_icon.h"
+#include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/split_tab_menu_model.h"
 #include "chrome/browser/ui/tabs/tab_renderer_data.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -16,7 +20,6 @@
 #include "chrome/browser/ui/views/frame/top_container_background.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/url_formatter/url_formatter.h"
-#include "multi_contents_view_mini_toolbar.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
@@ -42,6 +45,38 @@ namespace {
 constexpr int kContentOutlineThickness = 1;
 constexpr int kMiniToolbarContentPadding = 4;
 constexpr int kMiniToolbarOutlineCornerRadius = 8;
+
+tabs::TabInterface* GetTabInterface(content::WebContents* web_contents) {
+  return web_contents ? tabs::TabInterface::GetFromContents(web_contents)
+                      : nullptr;
+}
+
+ui::ColorId GetAlertStatusColor(tabs::TabAlert alert,
+                                const ui::ColorProvider* color_provider) {
+  if (color_provider) {
+    switch (alert) {
+      case tabs::TabAlert::MEDIA_RECORDING:
+      case tabs::TabAlert::AUDIO_RECORDING:
+      case tabs::TabAlert::VIDEO_RECORDING:
+      case tabs::TabAlert::DESKTOP_CAPTURING:
+        return kColorTabAlertMediaRecordingActiveFrameActive;
+      case tabs::TabAlert::TAB_CAPTURING:
+      case tabs::TabAlert::PIP_PLAYING:
+      case tabs::TabAlert::GLIC_ACCESSING:
+        return kColorTabAlertPipPlayingActiveFrameActive;
+      case tabs::TabAlert::AUDIO_PLAYING:
+      case tabs::TabAlert::AUDIO_MUTING:
+      case tabs::TabAlert::BLUETOOTH_CONNECTED:
+      case tabs::TabAlert::BLUETOOTH_SCAN_ACTIVE:
+      case tabs::TabAlert::USB_CONNECTED:
+      case tabs::TabAlert::HID_CONNECTED:
+      case tabs::TabAlert::SERIAL_CONNECTED:
+      case tabs::TabAlert::VR_PRESENTING_IN_HEADSET:
+        return kColorTabAlertAudioPlayingActiveFrameActive;
+    }
+  }
+  return gfx::kPlaceholderColor;
+}
 }  // namespace
 
 MultiContentsViewMiniToolbar::MultiContentsViewMiniToolbar(
@@ -50,7 +85,7 @@ MultiContentsViewMiniToolbar::MultiContentsViewMiniToolbar(
     : menu_model_(std::make_unique<SplitTabMenuModel>(
           browser_view->browser()->tab_strip_model())),
       browser_view_(browser_view),
-      web_contents_(web_view->GetWebContents()) {
+      web_contents_(web_view->web_contents()) {
   SetLayoutManager(std::make_unique<views::FlexLayout>())
       ->SetOrientation(views::LayoutOrientation::kHorizontal)
       .SetMainAxisAlignment(views::LayoutAlignment::kCenter)
@@ -119,6 +154,9 @@ MultiContentsViewMiniToolbar::MultiContentsViewMiniToolbar(
       web_view->AddWebContentsDetachedCallback(
           base::BindRepeating(&MultiContentsViewMiniToolbar::ClearWebContents,
                               base::Unretained(this)));
+
+  RegisterTabAlertSubscription();
+
   browser_view_->browser()->tab_strip_model()->AddObserver(this);
 }
 
@@ -127,7 +165,9 @@ MultiContentsViewMiniToolbar::~MultiContentsViewMiniToolbar() {
 }
 
 void MultiContentsViewMiniToolbar::UpdateWebContents(views::WebView* web_view) {
-  web_contents_ = web_view->GetWebContents();
+  tab_alert_status_subscription_.reset();
+  web_contents_ = web_view->web_contents();
+  RegisterTabAlertSubscription();
   std::optional<TabRendererData> tab_data = GetTabData();
   if (tab_data.has_value()) {
     UpdateContents(tab_data.value());
@@ -135,6 +175,8 @@ void MultiContentsViewMiniToolbar::UpdateWebContents(views::WebView* web_view) {
 }
 
 void MultiContentsViewMiniToolbar::ClearWebContents(views::WebView*) {
+  tab_alert_status_subscription_.reset();
+  OnAlertStatusIndicatorChanged(std::nullopt);
   web_contents_ = nullptr;
 }
 
@@ -205,6 +247,35 @@ void MultiContentsViewMiniToolbar::OnThemeChanged() {
   std::optional<TabRendererData> tab_data = GetTabData();
   if (tab_data.has_value()) {
     UpdateFavicon(tab_data.value());
+  }
+  if (auto* interface = GetTabInterface(web_contents_)) {
+    auto* tab_alert_controller =
+        interface->GetTabFeatures()->tab_alert_controller();
+    OnAlertStatusIndicatorChanged(tab_alert_controller->GetAlertToShow());
+  }
+}
+
+void MultiContentsViewMiniToolbar::RegisterTabAlertSubscription() {
+  if (auto* interface = GetTabInterface(web_contents_)) {
+    auto* tab_alert_controller =
+        interface->GetTabFeatures()->tab_alert_controller();
+    OnAlertStatusIndicatorChanged(tab_alert_controller->GetAlertToShow());
+    tab_alert_status_subscription_ =
+        tab_alert_controller->AddAlertToShowChangedCallback(base::BindRepeating(
+            &MultiContentsViewMiniToolbar::OnAlertStatusIndicatorChanged,
+            base::Unretained(this)));
+  }
+}
+
+void MultiContentsViewMiniToolbar::OnAlertStatusIndicatorChanged(
+    std::optional<tabs::TabAlert> new_alert) {
+  if (new_alert.has_value()) {
+    ui::ColorId color =
+        GetAlertStatusColor(new_alert.value(), GetColorProvider());
+    alert_state_indicator_->SetImage(
+        tabs::GetAlertImageModel(new_alert.value(), color));
+  } else {
+    alert_state_indicator_->SetImage(ui::ImageModel());
   }
 }
 
