@@ -16,9 +16,17 @@
 // one). To resolve this, use the types/functions from the C++ header only and
 // block inclusion of the C header by defining its include guard. See
 // crbug.com/391750836.
+// This solution does not work with clang modules, as header guards are unused.
+// However, if we never attempt to include atomic in the first place, modules
+// correctly seperate them.
+// Note that we can't use #if !defined(__cpp_module) due to it not actually
+// being defined - see https://github.com/llvm/llvm-project/issues/71364 and
+// https://github.com/llvm/llvm-project/blob/b251c29af45d3440374f53bb4c1645e5968593f7/clang/lib/Frontend/InitPreprocessor.cpp#L747
+#ifndef USE_LIBCXX_MODULES
 #include <atomic>
 #define _LIBCPP_STDATOMIC_H
 using namespace std;
+#endif
 
 // Configuration header.
 #include "threadpool-common.h"

@@ -618,6 +618,10 @@ foreach(_target_type,
       if (is_clang && _use_libcxx_modules) {
         # This is necessary for Clang modules builds.
         deps += DEFAULT_MODULE_DEPS
+        if (!defined(defines)) {
+          defines = []
+        }
+        defines +=  [ "USE_LIBCXX_MODULES" ]
       } else if (filter_include(configs,
                                 [ "//build/config/compiler:libcxx_module" ]) !=
                  []) {
@@ -730,6 +734,10 @@ foreach(_target_type,
       if (is_clang && _use_libcxx_modules) {
         # These are necessary for Clang modules builds.
         deps += DEFAULT_MODULE_DEPS
+        if (!defined(defines)) {
+          defines = []
+        }
+        defines +=  [ "USE_LIBCXX_MODULES" ]
       } else if (filter_include(configs,
                                 [ "//build/config/compiler:libcxx_module" ]) !=
                  []) {
