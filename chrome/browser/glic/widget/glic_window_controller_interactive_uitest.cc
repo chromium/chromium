@@ -122,15 +122,14 @@ IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest, DoNotCrashWhenReopening) {
                   OpenGlicWindow(GlicWindowMode::kAttached));
 }
 
-// Disabled due to flakes Mac; see https://crbug.com/394350688.
-IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest,
-                       DISABLED_OpenDetachedAndThenOpenAttached) {
+IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest, ButtonTogglesGlicWindow) {
   RunTestSequence(OpenGlicWindow(GlicWindowMode::kDetached),
                   PressButton(kGlicButtonElementId),
-                  WaitForEvent(kGlicButtonElementId, kGlicWidgetAttached),
+                  InAnyContext(WaitForHide(kGlicViewElementId)),
+                  CheckControllerHasWidget(false),
+                  PressButton(kGlicButtonElementId),
                   CheckControllerHasWidget(true),
-                  CheckControllerWidgetMode(GlicWindowMode::kAttached),
-                  CloseGlicWindow(), CheckControllerHasWidget(false));
+                  CheckControllerWidgetMode(GlicWindowMode::kDetached));
 }
 
 constexpr char kActivateSurfaceIncompatibilityNotice[] =
