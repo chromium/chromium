@@ -742,6 +742,7 @@ class CONTENT_EXPORT PrefetchContainer {
   // `PrefetchMatchResolver`s.
   void OnUnregisterCandidate(const GURL& navigated_url,
                              bool is_served,
+                             bool is_nav_prerender,
                              std::optional<base::TimeDelta> blocked_duration);
 
   // TODO(crbug.com/372186548): Revisit the semantics of
@@ -875,12 +876,13 @@ class CONTENT_EXPORT PrefetchContainer {
   // Records `Prefetch.PrefetchContainer.DurationAdded*` UMAs.
   void RecordDurationFromAdded();
   // Records `Prefetch.PrefetchMatchingBlockedNavigationWithPrefetch.*` UMAs.
-  void RecordPrefetchMatchingBlockedNavigationHistogram(
-      bool blocked_until_head);
+  void RecordPrefetchMatchingBlockedNavigationHistogram(bool blocked_until_head,
+                                                        bool is_nav_prerender);
   // Records `Prefetch.BlockUntilHeadDuration.*` UMAs.
   void RecordBlockUntilHeadDurationHistogram(
       const std::optional<base::TimeDelta>& blocked_duration,
-      bool served);
+      bool served,
+      bool is_nav_prerender);
 
   // The ID of the RenderFrameHost/Document that triggered the prefetch.
   // This will be empty when browser-initiated prefetch.

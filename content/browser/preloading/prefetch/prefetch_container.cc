@@ -2013,6 +2013,7 @@ bool PrefetchContainer::ShouldWaitForNoVarySearchHeader(const GURL& url) const {
 void PrefetchContainer::OnUnregisterCandidate(
     const GURL& navigated_url,
     bool is_served,
+    bool is_nav_prerender,
     std::optional<base::TimeDelta> blocked_duration) {
   // Note that this method can be called with `is_in_dtor_` true.
   //
@@ -2026,10 +2027,11 @@ void PrefetchContainer::OnUnregisterCandidate(
                              redirect_chain_.size());
   }
 
-  RecordPrefetchMatchingBlockedNavigationHistogram(
-      blocked_duration.has_value());
+  RecordPrefetchMatchingBlockedNavigationHistogram(blocked_duration.has_value(),
+                                                   is_nav_prerender);
 
-  RecordBlockUntilHeadDurationHistogram(blocked_duration, is_served);
+  RecordBlockUntilHeadDurationHistogram(blocked_duration, is_served,
+                                        is_nav_prerender);
 
   // Note that `PreloadingAttemptImpl::SetIsAccurateTriggering()` is called for
   // prefetch in
@@ -2268,10 +2270,18 @@ void PrefetchContainer::RecordDurationFromAdded() {
 }
 
 void PrefetchContainer::RecordPrefetchMatchingBlockedNavigationHistogram(
-    bool blocked_until_head) {
+    bool blocked_until_head,
+    bool is_nav_prerender) {
   base::UmaHistogramBoolean(
       base::StrCat(
           {"Prefetch.PrefetchMatchingBlockedNavigation.PerMatchingCandidate.",
+           GetMetricsSuffixTriggerTypeAndEagerness(
+               prefetch_type_, embedder_histogram_suffix_)}),
+      blocked_until_head);
+  base::UmaHistogramBoolean(
+      base::StrCat(
+          {"Prefetch.PrefetchMatchingBlockedNavigation.PerMatchingCandidate.",
+           is_nav_prerender ? "Prerender." : "NonPrerender.",
            GetMetricsSuffixTriggerTypeAndEagerness(
                prefetch_type_, embedder_histogram_suffix_)}),
       blocked_until_head);
@@ -2279,12 +2289,21 @@ void PrefetchContainer::RecordPrefetchMatchingBlockedNavigationHistogram(
 
 void PrefetchContainer::RecordBlockUntilHeadDurationHistogram(
     const std::optional<base::TimeDelta>& blocked_duration,
-    bool served) {
+    bool served,
+    bool is_nav_prerender) {
   base::UmaHistogramTimes(
       base::StrCat({"Prefetch.BlockUntilHeadDuration.PerMatchingCandidate.",
                     served ? "Served." : "NotServed.",
                     GetMetricsSuffixTriggerTypeAndEagerness(
                         prefetch_type_, embedder_histogram_suffix_)}),
       blocked_duration.value_or(base::Seconds(0)));
+  base::UmaHistogramTimes(
+      base::StrCat({"Prefetch.BlockUntilHeadDuration.PerMatchingCandidate.",
+                    is_nav_prerender ? "Prerender." : "NonPrerender.",
+                    served ? "Served." : "NotServed.",
+                    GetMetricsSuffixTriggerTypeAndEagerness(
+                        prefetch_type_, embedder_histogram_suffix_)}),
+      blocked_duration.value_or(base::Seconds(0)));
 }
+
 }  // namespace content

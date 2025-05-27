@@ -243,8 +243,8 @@ void PrefetchMatchResolver::UnregisterCandidate(
   CHECK(candidate_data->prefetch_container);
   PrefetchContainer& prefetch_container = *candidate_data->prefetch_container;
 
-  prefetch_container.OnUnregisterCandidate(navigated_key_.url(), is_served,
-                                           GetBlockedDuration());
+  prefetch_container.OnUnregisterCandidate(
+      navigated_key_.url(), is_served, is_nav_prerender_, GetBlockedDuration());
   prefetch_container.RemoveObserver(this);
   candidates_.erase(prefetch_key);
 }
