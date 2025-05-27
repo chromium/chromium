@@ -58,6 +58,7 @@
 #include "chrome/browser/predictors/loading_predictor_config.h"
 #include "chrome/browser/preloading/prefetch/search_prefetch/field_trial_settings.h"
 #include "chrome/browser/preloading/preloading_features.h"
+#include "chrome/browser/preloading/search_preload/search_preload_features.h"
 #include "chrome/browser/resource_coordinator/tab_manager_features.h"
 #include "chrome/browser/sharing_hub/sharing_hub_features.h"
 #include "chrome/browser/site_isolation/about_flags.h"
@@ -9635,6 +9636,13 @@ const FeatureEntry kFeatureEntries[] = {
 
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) ||
         // BUILDFLAG(IS_CHROMEOS)
+
+    {"dse-preload2", flag_descriptions::kDsePreload2Name,
+     flag_descriptions::kDsePreload2Description, kOsAll,
+     FEATURE_VALUE_TYPE(features::kDsePreload2)},
+    {"dse-preload2-on-press", flag_descriptions::kDsePreload2OnPressName,
+     flag_descriptions::kDsePreload2OnPressDescription, kOsAll,
+     FEATURE_VALUE_TYPE(features::kDsePreload2OnPress)},
 
 #if !BUILDFLAG(IS_ANDROID)
     {"audio-ducking", flag_descriptions::kAudioDuckingName,

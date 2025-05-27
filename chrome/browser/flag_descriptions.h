@@ -853,6 +853,12 @@ extern const char kAudioDuckingDescription[];
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) ||
         // BUILDFLAG(IS_CHROMEOS)
 
+extern const char kDsePreload2Name[];
+extern const char kDsePreload2Description[];
+
+extern const char kDsePreload2OnPressName[];
+extern const char kDsePreload2OnPressDescription[];
+
 extern const char kEnableTLS13EarlyDataName[];
 extern const char kEnableTLS13EarlyDataDescription[];
 

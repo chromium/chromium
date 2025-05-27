@@ -2373,6 +2373,16 @@
     "expiry_milestone": 135
   },
   {
+    "name": "dse-preload2",
+    "owners": ["kenoss@chromium.org", "chrome-prerendering@google.com"],
+    "expiry_milestone": 145
+  },
+  {
+    "name": "dse-preload2-on-press",
+    "owners": ["kenoss@chromium.org", "chrome-prerendering@google.com"],
+    "expiry_milestone": 145
+  },
+  {
     "name": "dynamic-color-gamut",
     "owners": [ "cblume@chromium.org", "ccameron@chromium.org" ],
     "expiry_milestone": 90

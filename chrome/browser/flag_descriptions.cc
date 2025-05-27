@@ -1130,6 +1130,16 @@ const char kAudioDuckingDescription[] =
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) ||
         // BUILDFLAG(IS_CHROMEOS)
 
+const char kDsePreload2Name[] = "Default Search Engine preload 2";
+const char kDsePreload2Description[] =
+    "Enables new DSE preload instead of existing one, which uses //content "
+    "prefetch";
+
+const char kDsePreload2OnPressName[] =
+    "Default Search Engine preload 2, on-press triggers";
+const char kDsePreload2OnPressDescription[] =
+    "Enables on-press triggers of DsePreload2";
+
 const char kViewportSegmentsName[] = "Viewport Segments API";
 const char kViewportSegmentsDescription[] =
     "Enable the viewport segment API, giving information about the logical "
