@@ -655,6 +655,7 @@ class AccountSelectionMediator {
         }
         setComponentShowTime(SystemClock.elapsedRealtime());
         updateHeaderIcon(idpMetadata.getBrandIconBitmap(), /* shouldCircleCrop= */ true);
+        updateHeader();
         return true;
     }
 
@@ -682,6 +683,7 @@ class AccountSelectionMediator {
                 return false;
             }
             updateHeaderIcon(idpMetadata.getBrandIconBitmap(), /* shouldCircleCrop= */ true);
+            updateHeader();
             return true;
         }
 
