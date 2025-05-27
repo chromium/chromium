@@ -42,6 +42,9 @@ const char kSeedFetchTimeHistogram[] = "IOS.Variations.FirstRun.SeedFetchTime";
 // Fake server url.
 const NSString* test_server = @"https://test.finch.server";
 
+// Fake value for "Date" header for testing.
+const NSString* test_date_header_value = @"Tue, 15 Nov 1994 12:45:26 GMT";
+
 // Type definition of a block that retrieves the value of an HTTP header from a
 // custom NSDictionary instead of actual NSURLHTTPRequest header.
 typedef void (^MockValueForHTTPHeaderField)(NSInvocation*);
@@ -324,6 +327,7 @@ TEST_F(IOSChromeVariationsSeedFetcherTest,
 TEST_F(IOSChromeVariationsSeedFetcherTest, testNoIMHeader) {
   // Set up.
   NSDictionary<NSString*, NSString*>* header = @{
+    @"Date" : [NSString stringWithFormat:@"%@", test_date_header_value],
     @"X-Seed-Signature" : [NSDate now].description,
     @"X-Country" : @"US",
   };
@@ -343,6 +347,7 @@ TEST_F(IOSChromeVariationsSeedFetcherTest, testNoIMHeader) {
 TEST_F(IOSChromeVariationsSeedFetcherTest, testBadIMHeader) {
   // Set up.
   NSDictionary<NSString*, NSString*>* header = @{
+    @"Date" : [NSString stringWithFormat:@"%@", test_date_header_value],
     @"X-Seed-Signature" : [NSDate now].description,
     @"X-Country" : @"US",
     @"IM" : @"not_gzip"
@@ -363,6 +368,7 @@ TEST_F(IOSChromeVariationsSeedFetcherTest, testBadIMHeader) {
 TEST_F(IOSChromeVariationsSeedFetcherTest, tesMoreThanOneIMHeaders) {
   // Set up.
   NSDictionary<NSString*, NSString*>* header = @{
+    @"Date" : [NSString stringWithFormat:@"%@", test_date_header_value],
     @"X-Seed-Signature" : [NSDate now].description,
     @"X-Country" : @"US",
     @"IM" : @"gzip,somethingelse"
@@ -387,6 +393,7 @@ TEST_F(IOSChromeVariationsSeedFetcherTest,
   NSString* signature = [NSDate now].description;
   NSString* country = @"US";
   NSDictionary<NSString*, NSString*>* headers = @{
+    @"Date" : [NSString stringWithFormat:@"%@", test_date_header_value],
     @"X-Seed-Signature" : signature,
     @"X-Country" : country,
     @"IM" : @" gzip"
@@ -417,6 +424,12 @@ TEST_F(IOSChromeVariationsSeedFetcherTest,
   EXPECT_EQ(seed->signature, base::SysNSStringToUTF8(signature));
   EXPECT_EQ(seed->country, base::SysNSStringToUTF8(country));
   EXPECT_EQ(seed->data, "");
+  base::Time::Exploded date_exploded;
+  seed->date.UTCExplode(&date_exploded);
+  EXPECT_EQ(date_exploded.year, 1994);
+  EXPECT_EQ(date_exploded.month, 11);
+  EXPECT_EQ(date_exploded.day_of_month, 15);
+  EXPECT_EQ(date_exploded.hour, 12);
   EXPECT_OCMOCK_VERIFY(delegate);
   histogram_tester.ExpectTotalCount(kSeedFetchTimeHistogram, 1);
   histogram_tester.ExpectUniqueSample(kSeedFetchResultHistogram, net::HTTP_OK,
