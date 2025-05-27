@@ -67,6 +67,9 @@ class DecorationTitle {
   bool is_rtl_;
 
   raw_ptr<ui::ResourceManager> resource_manager_;
+
+ private:
+  bool needs_refresh_ = true;
 };
 
 }  // namespace android

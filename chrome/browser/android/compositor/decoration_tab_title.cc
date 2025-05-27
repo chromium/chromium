@@ -75,6 +75,7 @@ void DecorationTabTitle::SetUIResourceIds() {
 void DecorationTabTitle::SetIsLoading(bool is_loading) {
   if (is_loading != is_loading_) {
     is_loading_ = is_loading;
+    icon_needs_refresh_ = true;
     SetUIResourceIds();
   }
 }

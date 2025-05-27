@@ -57,6 +57,7 @@ class DecorationIconTitle : public DecorationTitle {
   int icon_end_padding_;
   std::unique_ptr<gfx::Transform> transform_;
   gfx::PointF icon_position_;
+  bool icon_needs_refresh_ = true;
 };
 
 }  // namespace android

@@ -8295,6 +8295,11 @@
     "expiry_milestone": -1
   },
   {
+    "name": "reload-tab-ui-resources-if-changed",
+    "owners": [ "acondor@chromium.org" ],
+    "expiry_milestone": 139
+  },
+  {
     "name": "remote-playback-backend",
     "owners": [ "muyaoxu@google.com", "openscreen-eng@google.com" ],
     "expiry_milestone": 130

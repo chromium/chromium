@@ -19625,6 +19625,21 @@
             ]
         }
     ],
+    "ReloadTabUiResourcesIfChanged": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "ReloadTabUiResourcesIfChanged"
+                    ]
+                }
+            ]
+        }
+    ],
     "RemotePageMetadataAndroid": [
         {
             "platforms": [

@@ -12600,6 +12600,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kMvcUpdateViewWhenModelChangedName,
      flag_descriptions::kMvcUpdateViewWhenModelChangedDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kMvcUpdateViewWhenModelChanged)},
+
+    {"reload-tab-ui-resources-if-changed",
+     flag_descriptions::kReloadTabUiResourcesIfChangedName,
+     flag_descriptions::kReloadTabUiResourcesIfChangedDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kReloadTabUiResourcesIfChanged)},
 #endif  // BUILDFLAG(IS_ANDROID)
 
     {"page-actions-migration", flag_descriptions::kPageActionsMigrationName,

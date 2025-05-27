@@ -6,9 +6,10 @@
 
 #include <android/bitmap.h>
 
+#include "base/feature_list.h"
 #include "cc/slim/layer.h"
 #include "cc/slim/ui_resource_layer.h"
-#include "components/viz/common/features.h"
+#include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "ui/android/resources/resource_manager.h"
 #include "ui/base/l10n/l10n_util_android.h"
 
@@ -48,10 +49,12 @@ void DecorationIconTitle::Update(int title_resource_id,
   icon_resource_id_ = icon_resource_id;
   icon_start_padding_ = icon_start_padding;
   icon_end_padding_ = icon_end_padding;
+  icon_needs_refresh_ = true;
 }
 
 void DecorationIconTitle::SetIconResourceId(int icon_resource_id) {
   icon_resource_id_ = icon_resource_id;
+  icon_needs_refresh_ = true;
 }
 
 void DecorationIconTitle::SetUIResourceIds() {
@@ -67,6 +70,11 @@ gfx::Size DecorationIconTitle::calculateSize(int icon_width) {
 
 void DecorationIconTitle::handleIconResource(
     ui::AndroidResourceType resource_type) {
+  if (!icon_needs_refresh_ &&
+      base::FeatureList::IsEnabled(
+          chrome::android::kReloadTabUiResourcesIfChanged)) {
+    return;
+  }
   if (icon_resource_id_ != ui::Resource::kInvalidResourceId) {
     ui::Resource* icon_resource =
         resource_manager_->GetResource(resource_type, icon_resource_id_);
@@ -81,6 +89,7 @@ void DecorationIconTitle::handleIconResource(
     layer_icon_->SetUIResourceId(ui::Resource::kInvalidResourceId);
     icon_size_ = gfx::Size(0, 0);
   }
+  icon_needs_refresh_ = false;
 }
 
 void DecorationIconTitle::setOpacity(float opacity) {
