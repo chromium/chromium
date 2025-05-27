@@ -98,14 +98,12 @@ TestSharedStorageObserver::OperationFinishedInfo::OperationFinishedInfo(
     base::TimeDelta execution_time,
     AccessMethod method,
     int operation_id,
-    int worklet_ordinal_id,
     const base::UnguessableToken& worklet_devtools_token,
     GlobalRenderFrameHostId main_frame_id,
     std::string owner_origin)
     : execution_time(execution_time),
       method(method),
       operation_id(operation_id),
-      worklet_ordinal_id(worklet_ordinal_id),
       worklet_devtools_token(worklet_devtools_token),
       main_frame_id(std::move(main_frame_id)),
       owner_origin(std::move(owner_origin)) {}
@@ -161,13 +159,12 @@ void TestSharedStorageObserver::
         base::TimeDelta execution_time,
         AccessMethod method,
         int operation_id,
-        int worklet_ordinal_id,
         const base::UnguessableToken& worklet_devtools_token,
         GlobalRenderFrameHostId main_frame_id,
         const std::string& owner_origin) {
-  operation_finished_infos_.emplace_back(
-      execution_time, method, operation_id, worklet_ordinal_id,
-      worklet_devtools_token, main_frame_id, owner_origin);
+  operation_finished_infos_.emplace_back(execution_time, method, operation_id,
+                                         worklet_devtools_token, main_frame_id,
+                                         owner_origin);
 }
 
 void TestSharedStorageObserver::ExpectAccessObserved(
@@ -198,7 +195,6 @@ bool operator==(const TestSharedStorageObserver::OperationFinishedInfo& lhs,
                 const TestSharedStorageObserver::OperationFinishedInfo& rhs) {
   // Do not compare `execution_time` when checking for equality in tests.
   return lhs.method == rhs.method && lhs.operation_id == rhs.operation_id &&
-         lhs.worklet_ordinal_id == rhs.worklet_ordinal_id &&
          lhs.worklet_devtools_token == rhs.worklet_devtools_token &&
          lhs.main_frame_id == rhs.main_frame_id &&
          lhs.owner_origin == rhs.owner_origin;
@@ -210,7 +206,6 @@ std::ostream& operator<<(
   os << "{ Execution Time: " << info.execution_time.InMicroseconds()
      << "; Access Method: " << SerializeMethod(info.method)
      << "; Operation ID: " << info.operation_id
-     << "; Worklet Ordinal ID: " << info.worklet_ordinal_id
      << "; Worklet Devtools Token: " << info.worklet_devtools_token
      << "; Main Frame ID: " << info.main_frame_id
      << "; Owner Origin: " << info.owner_origin << " }";

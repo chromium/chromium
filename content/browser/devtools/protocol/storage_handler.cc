@@ -1667,7 +1667,6 @@ void StorageHandler::OnSharedStorageWorkletOperationExecutionFinished(
     SharedStorageRuntimeManager::SharedStorageObserverInterface::AccessMethod
         method,
     int operation_id,
-    int worklet_ordinal_id,
     const base::UnguessableToken& worklet_devtools_token,
     GlobalRenderFrameHostId main_frame_id,
     const std::string& owner_origin) {

@@ -727,8 +727,7 @@ IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest, RunOperation_Success) {
 
   ExpectOperationFinishedInfosObserved(
       {{base::TimeDelta(), AccessMethod::kRun, /*operation_id=*/0,
-        /*worklet_ordinal_id=*/0, GetFirstWorkletHostDevToolsToken(),
-        MainFrameId(), origin_str}});
+        GetFirstWorkletHostDevToolsToken(), MainFrameId(), origin_str}});
 }
 
 IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest,
@@ -1024,8 +1023,7 @@ IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest,
 
   ExpectOperationFinishedInfosObserved(
       {{base::TimeDelta(), AccessMethod::kRun, /*operation_id=*/0,
-        /*worklet_ordinal_id=*/0, GetFirstWorkletHostDevToolsToken(),
-        MainFrameId(), origin_str}});
+        GetFirstWorkletHostDevToolsToken(), MainFrameId(), origin_str}});
 }
 
 IN_PROC_BROWSER_TEST_P(
@@ -1122,11 +1120,9 @@ IN_PROC_BROWSER_TEST_P(
 
   ExpectOperationFinishedInfosObserved(
       {{base::TimeDelta(), AccessMethod::kRun, /*operation_id=*/0,
-        /*worklet_ordinal_id=*/0, GetFirstWorkletHostDevToolsToken(),
-        MainFrameId(), origin_str},
+        GetFirstWorkletHostDevToolsToken(), MainFrameId(), origin_str},
        {base::TimeDelta(), AccessMethod::kRun, /*operation_id=*/1,
-        /*worklet_ordinal_id=*/0, GetFirstWorkletHostDevToolsToken(),
-        MainFrameId(), origin_str}});
+        GetFirstWorkletHostDevToolsToken(), MainFrameId(), origin_str}});
 }
 
 IN_PROC_BROWSER_TEST_P(
@@ -1608,7 +1604,7 @@ IN_PROC_BROWSER_TEST_P(
 
   ExpectOperationFinishedInfosObserved(
       {{base::TimeDelta(), AccessMethod::kRun, /*operation_id=*/0,
-        /*worklet_ordinal_id=*/0, GetFirstWorkletHostDevToolsToken(),
+        GetFirstWorkletHostDevToolsToken(),
         /*main_frame_id=*/GlobalRenderFrameHostId(), origin_str}});
 }
 
@@ -1750,7 +1746,7 @@ IN_PROC_BROWSER_TEST_P(
 
   ExpectOperationFinishedInfosObserved(
       {{base::TimeDelta(), AccessMethod::kSelectURL, /*operation_id=*/0,
-        /*worklet_ordinal_id=*/0, GetFirstWorkletHostDevToolsToken(),
+        GetFirstWorkletHostDevToolsToken(),
         /*main_frame_id=*/GlobalRenderFrameHostId(), origin_str}});
 }
 
@@ -9800,11 +9796,9 @@ IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest,
 
   ExpectOperationFinishedInfosObserved(
       {{base::TimeDelta(), AccessMethod::kRun, /*operation_id=*/0,
-        /*worklet_ordinal_id=*/0, cached_worklet_devtools_tokens[0],
-        MainFrameId(), origin_str},
+        cached_worklet_devtools_tokens[0], MainFrameId(), origin_str},
        {base::TimeDelta(), AccessMethod::kRun, /*operation_id=*/0,
-        /*worklet_ordinal_id=*/1, cached_worklet_devtools_tokens[1],
-        MainFrameId(), origin_str}});
+        cached_worklet_devtools_tokens[1], MainFrameId(), origin_str}});
 }
 
 IN_PROC_BROWSER_TEST_P(

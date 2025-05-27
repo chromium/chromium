@@ -78,13 +78,11 @@ class CONTENT_EXPORT SharedStorageRuntimeManager {
     virtual void OnSharedStorageSelectUrlConfigPopulated(
         const std::optional<FencedFrameConfig>& config) = 0;
 
-    // TODO(crbug.com/401011862): Remove `worklet_ordinal_id` parameter.
     virtual void OnSharedStorageWorkletOperationExecutionFinished(
         base::Time finished_time,
         base::TimeDelta execution_time,
         AccessMethod method,
         int operation_id,
-        int worklet_ordinal_id,
         const base::UnguessableToken& worklet_devtools_token,
         GlobalRenderFrameHostId main_frame_id,
         const std::string& owner_origin) = 0;
@@ -123,12 +121,10 @@ class CONTENT_EXPORT SharedStorageRuntimeManager {
       const std::string& owner_origin,
       const SharedStorageEventParams& params);
 
-  // TODO(crbug.com/401011862): Remove `worklet_ordinal_id` parameter.
   void NotifyWorkletOperationExecutionFinished(
       base::TimeDelta execution_time,
       SharedStorageObserverInterface::AccessMethod method,
       int operation_id,
-      int worklet_ordinal_id,
       const base::UnguessableToken& worklet_devtools_token,
       GlobalRenderFrameHostId main_frame_id,
       const std::string& owner_origin);
@@ -190,10 +186,9 @@ class CONTENT_EXPORT SharedStorageRuntimeManager {
 
   base::ObserverList<SharedStorageObserverInterface> observers_;
 
-  // A monotonically increasing ID assigned to each SharedStorageWorkletHost.
-  // This ID is assigned during construction of the SharedStorageWorkletHost.
-  // TODO(crbug.com/401011862): Use the worklet IDs generated in DevTools
-  // reporting.
+  // A monotonically increasing number assigned to each
+  // SharedStorageWorkletHost. This ordinal is assigned during construction of
+  // the SharedStorageWorkletHost.
   int next_worklet_ordinal_id_ = 0;
 };
 

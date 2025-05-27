@@ -1423,8 +1423,8 @@ void SharedStorageWorkletHost::OnRunOperationOnWorkletFinished(
 
   shared_storage_runtime_manager_->NotifyWorkletOperationExecutionFinished(
       base::TimeTicks::Now() - run_start_time, AccessMethod::kRun, operation_id,
-      worklet_ordinal_id_, GetWorkletDevToolsToken(),
-      GetMainFrameIdIfAvailable(), shared_storage_origin_.Serialize());
+      GetWorkletDevToolsToken(), GetMainFrameIdIfAvailable(),
+      shared_storage_origin_.Serialize());
 
   base::UmaHistogramLongTimes(
       "Storage.SharedStorage.Document.Timing.Run.ExecutedInWorklet",
@@ -1557,8 +1557,8 @@ void SharedStorageWorkletHost::OnRunURLSelectionOperationOnWorkletFinished(
 
   shared_storage_runtime_manager_->NotifyWorkletOperationExecutionFinished(
       base::TimeTicks::Now() - select_url_start_time, AccessMethod::kSelectURL,
-      operation_id, worklet_ordinal_id_, GetWorkletDevToolsToken(),
-      GetMainFrameIdIfAvailable(), shared_storage_origin_.Serialize());
+      operation_id, GetWorkletDevToolsToken(), GetMainFrameIdIfAvailable(),
+      shared_storage_origin_.Serialize());
 
   base::UmaHistogramLongTimes(
       "Storage.SharedStorage.Document.Timing.SelectURL.ExecutedInWorklet",

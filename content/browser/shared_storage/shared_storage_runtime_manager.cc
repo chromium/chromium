@@ -153,7 +153,6 @@ void SharedStorageRuntimeManager::NotifyWorkletOperationExecutionFinished(
     base::TimeDelta execution_time,
     SharedStorageObserverInterface::AccessMethod method,
     int operation_id,
-    int worklet_ordinal_id,
     const base::UnguessableToken& worklet_devtools_token,
     GlobalRenderFrameHostId main_frame_id,
     const std::string& owner_origin) {
@@ -171,8 +170,8 @@ void SharedStorageRuntimeManager::NotifyWorkletOperationExecutionFinished(
     // however, that there may be a discrepancy between `execution_time` and
     // `finished_time - start-time`.
     observer.OnSharedStorageWorkletOperationExecutionFinished(
-        now, execution_time, method, operation_id, worklet_ordinal_id,
-        worklet_devtools_token, main_frame_id, owner_origin);
+        now, execution_time, method, operation_id, worklet_devtools_token,
+        main_frame_id, owner_origin);
   }
 }
 

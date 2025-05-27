@@ -3096,8 +3096,7 @@ IN_PROC_BROWSER_TEST_F(SharedStorageSelectURLSavedQueryBrowserTest,
              GetFirstWorkletHostDevToolsToken())});
     expected_finished_infos.push_back(
         {base::TimeDelta(), AccessMethod::kSelectURL, /*operation_id=*/call,
-         /*worklet_ordinal_id=*/0, GetFirstWorkletHostDevToolsToken(),
-         MainFrameId(), origin_str});
+         GetFirstWorkletHostDevToolsToken(), MainFrameId(), origin_str});
   }
   expected_accesses.push_back(
       {AccessScope::kWindow, AccessMethod::kSelectURL, MainFrameId(),
@@ -3112,8 +3111,7 @@ IN_PROC_BROWSER_TEST_F(SharedStorageSelectURLSavedQueryBrowserTest,
            /*worklet_ordinal_id=*/0, GetFirstWorkletHostDevToolsToken())});
   expected_finished_infos.push_back(
       {base::TimeDelta(), AccessMethod::kSelectURL, /*operation_id=*/call_limit,
-       /*worklet_ordinal_id=*/0, GetFirstWorkletHostDevToolsToken(),
-       MainFrameId(), origin_str});
+       GetFirstWorkletHostDevToolsToken(), MainFrameId(), origin_str});
   for (int call = 0; call < call_limit; call++) {
     expected_accesses.push_back(
         {AccessScope::kWindow, AccessMethod::kSelectURL, MainFrameId(),
@@ -3131,7 +3129,7 @@ IN_PROC_BROWSER_TEST_F(SharedStorageSelectURLSavedQueryBrowserTest,
              /*worklet_ordinal_id=*/0, GetFirstWorkletHostDevToolsToken())});
     expected_finished_infos.push_back(
         {base::TimeDelta(), AccessMethod::kSelectURL,
-         /*operation_id=*/call_limit + 1 + call, /*worklet_ordinal_id=*/0,
+         /*operation_id=*/call_limit + 1 + call,
          GetFirstWorkletHostDevToolsToken(), MainFrameId(), origin_str});
   }
 
@@ -3263,8 +3261,7 @@ IN_PROC_BROWSER_TEST_F(
              cached_worklet_devtools_tokens[call])});
     expected_finished_infos.push_back(
         {base::TimeDelta(), AccessMethod::kSelectURL, /*operation_id=*/0,
-         /*worklet_ordinal_id=*/call, cached_worklet_devtools_tokens[call],
-         MainFrameId(), origin_str});
+         cached_worklet_devtools_tokens[call], MainFrameId(), origin_str});
   }
   origin_str = https_server()->GetOrigin("b.test").Serialize();
   expected_accesses.push_back(
@@ -3289,7 +3286,6 @@ IN_PROC_BROWSER_TEST_F(
            cached_worklet_devtools_tokens[call_limit])});
   expected_finished_infos.push_back(
       {base::TimeDelta(), AccessMethod::kSelectURL, /*operation_id=*/0,
-       /*worklet_ordinal_id=*/call_limit,
        cached_worklet_devtools_tokens[call_limit], MainFrameId(), origin_str});
   for (int call = 0; call < call_limit; call++) {
     host = base::StrCat({"subdomain", base::NumberToString(call), ".b.test"});
@@ -3318,7 +3314,6 @@ IN_PROC_BROWSER_TEST_F(
              cached_worklet_devtools_tokens[call_limit + 1 + call])});
     expected_finished_infos.push_back(
         {base::TimeDelta(), AccessMethod::kSelectURL, /*operation_id=*/0,
-         /*worklet_ordinal_id=*/call_limit + 1 + call,
          cached_worklet_devtools_tokens[call_limit + 1 + call], MainFrameId(),
          origin_str});
   }
