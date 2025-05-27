@@ -21,6 +21,7 @@
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/containers/span.h"
+#include "base/containers/to_vector.h"
 #include "base/dcheck_is_on.h"
 #include "base/location.h"
 #include "base/logging.h"
@@ -674,7 +675,7 @@ bool Statement::ColumnBlobAsString16(int column_index, std::u16string* result) {
 }
 
 bool Statement::ColumnBlobAsVector(int column_index,
-                                   std::vector<char>* result) {
+                                   std::vector<uint8_t>* result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
 #if DCHECK_IS_ON()
@@ -691,22 +692,12 @@ bool Statement::ColumnBlobAsVector(int column_index,
   const void* result_buffer = sqlite3_column_blob(ref_->stmt(), column_index);
   int size = sqlite3_column_bytes(ref_->stmt(), column_index);
   if (result_buffer && size > 0) {
-    // Unlike std::string, std::vector does not have an assign() overload that
-    // takes a buffer and a size.
-    result->assign(static_cast<const char*>(result_buffer),
-                   static_cast<const char*>(result_buffer) + size);
+    *result = base::ToVector(base::span(
+        static_cast<const uint8_t*>(result_buffer), static_cast<size_t>(size)));
   } else {
     result->clear();
   }
   return true;
-}
-
-bool Statement::ColumnBlobAsVector(int column_index,
-                                   std::vector<uint8_t>* result) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  return ColumnBlobAsVector(column_index,
-                            reinterpret_cast<std::vector<char>*>(result));
 }
 
 std::string Statement::GetSQLStatement() {
