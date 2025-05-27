@@ -767,7 +767,6 @@ void VideoResourceUpdater::CopyHardwareResource(
 
   viz::TransferableResource::MetadataOverride overrides = {
       .is_overlay_candidate = false,
-      .alpha_type = copy_alpha_type,
   };
   auto transferable_resource = viz::TransferableResource::Make(
       hardware_resource->shared_image(),
@@ -1245,12 +1244,10 @@ VideoFrameExternalResource VideoResourceUpdater::CreateForSoftwareFrame(
       frame_resource->SetUniqueId(video_frame->unique_id());
     }
 
-    viz::TransferableResource::MetadataOverride overrides;
-    overrides.alpha_type = output_alpha_type;
     auto transferable_resource = viz::TransferableResource::Make(
         frame_resource->shared_image(),
         viz::TransferableResource::ResourceSource::kVideo,
-        frame_resource->sync_token(), overrides);
+        frame_resource->sync_token());
     transferable_resource.hdr_metadata =
         video_frame->hdr_metadata().value_or(gfx::HDRMetadata());
     transferable_resource.needs_detiling =
@@ -1273,12 +1270,10 @@ VideoFrameExternalResource VideoResourceUpdater::CreateForSoftwareFrame(
     return VideoFrameExternalResource();
   }
 
-  viz::TransferableResource::MetadataOverride overrides;
-  overrides.alpha_type = kUnpremul_SkAlphaType;
   auto transferable_resource = viz::TransferableResource::Make(
       frame_resource->shared_image(),
       viz::TransferableResource::ResourceSource::kVideo,
-      frame_resource->sync_token(), overrides);
+      frame_resource->sync_token());
   transferable_resource.hdr_metadata =
       video_frame->hdr_metadata().value_or(gfx::HDRMetadata());
 
