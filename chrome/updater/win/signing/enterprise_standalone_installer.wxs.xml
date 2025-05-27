@@ -1,4 +1,4 @@
-﻿<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs">
+<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs">
   <?define Copyright = '$(var.ProductOriginalVersionString) Copyright $(var.ProductBuildYear) $(var.CompanyFullName)'?>
   <?define UpdateKeyPath = 'SOFTWARE\$(var.CompanyName)\Update'?>
   <?define InstallCommandBase='--silent --install="[ProductTag]" --installsource=enterprisemsi[OptOmahaArgs]'?>
@@ -78,7 +78,7 @@
     </Property>
     <Property Id="AllowDowngradeSubstitution" Value="false" />
 
-    <!-- Allows running the `updater` with a `--force-install` option. This
+    <!-- Allows running the `updater` with a `force-install` option. This
          force-installs the installer that is run with this switch and makes it
          the active `updater`. In addition, if the MSI is tagged, this also
          installs the application(s) that are implicitly specified in the tag.
