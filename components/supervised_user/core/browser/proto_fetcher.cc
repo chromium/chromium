@@ -211,9 +211,10 @@ void FetchProcess::OnAccessTokenFetchComplete(
 void FetchProcess::OnSimpleUrlLoaderComplete(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     std::unique_ptr<std::string> response_body) {
-  if (base::FeatureList::IsEnabled(
-          supervised_user::
-              kUncredentialedFilteringFallbackForSupervisedUsers) &&
+  // In best-effort mode we must retry on auth error in order that the request
+  // can proceed without credentials.
+  if (config_->access_token_config.credentials_requirement ==
+          AccessTokenConfig::CredentialsRequirement::kBestEffort &&
       HasHttpAuthErrorResponse(*simple_url_loader_) &&
       !triggered_retry_on_http_auth_error_) {
     // The server has rejected our credentials.
@@ -222,6 +223,7 @@ void FetchProcess::OnSimpleUrlLoaderComplete(
 
     // Retry the request.
     triggered_retry_on_http_auth_error_ = true;
+    // Url loader initialized without access token on retry.
     simple_url_loader_ =
         InitializeSimpleUrlLoader(/*access_token_info=*/std::nullopt,
                                   config_.get(), args_, channel_, payload_);

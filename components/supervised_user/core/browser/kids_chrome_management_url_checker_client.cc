@@ -17,6 +17,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/version_info/channel.h"
+#include "build/build_config.h"
 #include "components/safe_search_api/url_checker_client.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/supervised_user/core/browser/fetcher_config.h"
@@ -79,18 +80,23 @@ std::unique_ptr<ClassifyUrlFetcher> ClassifyURL(
 }
 
 FetcherConfig GetFetcherConfig() {
-  // Currently we only support 3 of the 4 possible combinations of the flags
-  // below. We don't anticipate a need for having BestEffort and
-  // WaitUntilAvailable at this time.
-  if (base::FeatureList::IsEnabled(
-          kUncredentialedFilteringFallbackForSupervisedUsers)) {
-    return kClassifyUrlConfigBestEffort;
-  }
-  if (base::FeatureList::IsEnabled(
-          kWaitUntilAccessTokenAvailableForClassifyUrl)) {
-    return kClassifyUrlConfigWaitUntilAccessTokenAvailable;
-  }
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+  // Supervised users on these platforms might get into a state where their
+  // credentials are not available, so best-effort access mode is a graceful
+  // fallback here.
+  return kClassifyUrlConfigBestEffort;
+#elif BUILDFLAG(IS_ANDROID)
+  // Android enforces at the OS level that supervised users must have
+  // valid sign in credentials (and triggers a reauth if not). We can
+  // therefore wait for a valid access token to be available before
+  // calling ClassifyUrl, to avoid window conditions where the access
+  // token is not yet available (eg. during startup).
+  return kClassifyUrlConfigWaitUntilAccessTokenAvailable;
+#else
+  // Other platforms don't enforce this, and we therefore cannot
+  // wait for access tokens in Chrome.
   return kClassifyUrlConfig;
+#endif
 }
 
 }  // namespace

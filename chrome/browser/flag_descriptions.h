@@ -5045,9 +5045,6 @@ extern const char kSupervisedProfileReauthForBlockedSiteDescription[];
 extern const char kSupervisedProfileSubframeReauthName[];
 extern const char kSupervisedProfileSubframeReauthDescription[];
 
-extern const char kSupervisedProfileFilteringFallbackName[];
-extern const char kSupervisedProfileFilteringFallbackDescription[];
-
 extern const char kSupervisedProfileCustomStringsName[];
 extern const char kSupervisedProfileCustomStringsDescription[];
 
