@@ -8042,8 +8042,6 @@ data/prerender/page_with_trigger_function.html
 data/prerender/prerender-no-crash.html
 data/prerender/prerender_with_opt_in_header.html
 data/prerender/prerender_with_opt_in_header.html.mock-http-headers
-data/prerender/purpose_prefetch_header.html
-data/prerender/purpose_prefetch_header_iframe.html
 data/prerender/restriction-gamepad.html
 data/prerender/restriction_file_system.html
 data/prerender/session_storage.html

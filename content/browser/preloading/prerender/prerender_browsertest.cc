@@ -12634,23 +12634,6 @@ class PrerenderRequestHeadersBrowserTest : public PrerenderBrowserTest {
 };
 
 // Tests that a request for the initial prerender navigation has the
-// Purpose, Sec-Purpose, and Sec-Speculation-Tags headers.
-// TODO(nhiroki): Move this test to WPT.
-IN_PROC_BROWSER_TEST_F(PrerenderRequestHeadersBrowserTest, InitialNavigation) {
-  // Navigate to an initial page.
-  ASSERT_TRUE(NavigateToURL(shell(), GetUrl("/empty.html")));
-
-  // Start prerendering.
-  const GURL kPrerenderingUrl = GetUrl("/empty.html?prerender");
-  AddPrerender(kPrerenderingUrl);
-
-  // The prerender request should have the headers.
-  EXPECT_TRUE(TestPurposePrefetchHeader(kPrerenderingUrl));
-  EXPECT_TRUE(HasSecSpeculationTagsHeader(kPrerenderingUrl));
-  EXPECT_EQ(GetSecSpeculationTagsHeader(kPrerenderingUrl), "null");
-}
-
-// Tests that a request for the initial prerender navigation has the
 // Purpose and Sec-Purpose headers, but not the Sec-Speculation-Tags header.
 IN_PROC_BROWSER_TEST_F(PrerenderRequestHeadersBrowserTest,
                        InitialNavigation_Embedder) {
@@ -12671,7 +12654,9 @@ IN_PROC_BROWSER_TEST_F(PrerenderRequestHeadersBrowserTest,
 
 // Tests that a redirected request for the initial prerender navigation has the
 // Purpose, Sec-Purpose, and Sec-Speculation-Tags headers.
-// TODO(nhiroki): Move this test to WPT.
+//
+// TODO(nhiroki/domenic): Move this test to WPT.
+// speculation-rules/prerender/headers.https.html is a good starting point.
 IN_PROC_BROWSER_TEST_F(PrerenderRequestHeadersBrowserTest,
                        RedirectionOnInitialNavigation) {
   // Navigate to an initial page.
@@ -12696,116 +12681,6 @@ IN_PROC_BROWSER_TEST_F(PrerenderRequestHeadersBrowserTest,
   EXPECT_TRUE(TestPurposePrefetchHeader(kRedirectedUrl));
   EXPECT_TRUE(HasSecSpeculationTagsHeader(kRedirectedUrl));
   EXPECT_EQ(GetSecSpeculationTagsHeader(kRedirectedUrl), "null");
-}
-
-// Tests that requests from a prerendered page have the Purpose and
-// Sec-Purpose headers, but not the Sec-Speculation-Tags header.
-// TODO(nhiroki): Move this test to WPT.
-IN_PROC_BROWSER_TEST_F(PrerenderRequestHeadersBrowserTest, ResourceRequests) {
-  // Navigate to an initial page.
-  ASSERT_TRUE(NavigateToURL(shell(), GetUrl("/empty.html")));
-
-  // Start prerendering.
-  const GURL kPrerenderingUrl =
-      GetUrl("/prerender/purpose_prefetch_header.html");
-  FrameTreeNodeId host_id = AddPrerender(kPrerenderingUrl);
-  RenderFrameHostWrapper prerender_main_frame(
-      GetPrerenderedMainFrameHost(host_id));
-
-  // The prerender request should have the "Purpose: prefetch" header.
-  TestPurposePrefetchHeader(kPrerenderingUrl);
-  EXPECT_TRUE(HasSecSpeculationTagsHeader(kPrerenderingUrl));
-  EXPECT_EQ(GetSecSpeculationTagsHeader(kPrerenderingUrl), "null");
-
-  // Issue iframe and subresource requests in the prerendered page.
-  EXPECT_TRUE(ExecJs(prerender_main_frame.get(), "run('before');",
-                     EvalJsOptions::EXECUTE_SCRIPT_NO_USER_GESTURE));
-
-  // Requests from the prerendered page should have the purpose headers, but not
-  // the Sec-Speculation-Tags header.
-  std::vector<GURL> request_urls1 = {
-      GetUrl("/prerender/purpose_prefetch_header_iframe.html?before"),
-      GetUrl("/prerender/missing.jpg?before"),
-      GetUrl("/prerender/missing.txt?before"),
-      GetUrl("/empty.html?before"),
-      GetUrl("/prerender/iframe-missing.jpg?before"),
-      GetUrl("/prerender/iframe-missing.txt?before")};
-  for (const GURL& url : request_urls1) {
-    EXPECT_TRUE(TestPurposePrefetchHeader(url));
-    EXPECT_FALSE(HasSecSpeculationTagsHeader(url));
-  }
-
-  // Issue a cross-origin subresource request in the prerendered page. The
-  // request should have the purpose headers, but not the Sec-Speculation-Tags
-  // headers.
-  GURL cross_origin_url1 =
-      GetCrossSiteUrl("/prerender/cors-missing.txt?before");
-  EXPECT_TRUE(ExecJs(prerender_main_frame.get(),
-                     "request('" + cross_origin_url1.spec() + "');",
-                     EvalJsOptions::EXECUTE_SCRIPT_NO_USER_GESTURE));
-  EXPECT_TRUE(TestPurposePrefetchHeader(cross_origin_url1));
-  EXPECT_FALSE(HasSecSpeculationTagsHeader(cross_origin_url1));
-
-  // Activate the prerendered page.
-  test::PrerenderHostObserver host_observer(*web_contents(), kPrerenderingUrl);
-  NavigatePrimaryPage(kPrerenderingUrl);
-  EXPECT_TRUE(host_observer.was_activated());
-
-  // Issue iframe and subresource requests in the activated page.
-  EXPECT_TRUE(ExecJs(prerender_main_frame.get(), "run('after');",
-                     EvalJsOptions::EXECUTE_SCRIPT_NO_USER_GESTURE));
-
-  // Requests from the activated page should not have the headers.
-  std::vector<GURL> request_urls2 = {
-      GetUrl("/prerender/purpose_prefetch_header_iframe.html?after"),
-      GetUrl("/prerender/missing.jpg?after"),
-      GetUrl("/prerender/missing.txt?after"),
-      GetUrl("/empty.html?after"),
-      GetUrl("/prerender/iframe-missing.jpg?after"),
-      GetUrl("/prerender/iframe-missing.txt?after")};
-  for (const GURL& url : request_urls2) {
-    EXPECT_FALSE(TestPurposePrefetchHeader(url));
-    EXPECT_FALSE(HasSecSpeculationTagsHeader(url));
-  }
-
-  // Issue a cross-origin subresource request in the activated page. The request
-  // should not have the headers.
-  GURL cross_origin_url2 = GetCrossSiteUrl("/prerender/cors-missing.txt?after");
-  EXPECT_TRUE(ExecJs(prerender_main_frame.get(),
-                     "request('" + cross_origin_url2.spec() + "');",
-                     EvalJsOptions::EXECUTE_SCRIPT_NO_USER_GESTURE));
-  EXPECT_FALSE(TestPurposePrefetchHeader(cross_origin_url2));
-  EXPECT_FALSE(HasSecSpeculationTagsHeader(cross_origin_url2));
-}
-
-// Tests that a request for main frame navigation in a prerendered page has the
-// Purpose and Sec-Purpose headers, but not the Sec-Speculation-Tags header.
-IN_PROC_BROWSER_TEST_F(PrerenderRequestHeadersBrowserTest,
-                       MainFrameNavigation) {
-  // Navigate to an initial page.
-  ASSERT_TRUE(NavigateToURL(shell(), GetUrl("/empty.html")));
-
-  // Start prerendering.
-  const GURL prerender_url = GetUrl("/empty.html?prerender");
-  FrameTreeNodeId host_id = AddPrerender(prerender_url);
-  ASSERT_TRUE(host_id);
-
-  // The prerender request should have the headers.
-  EXPECT_TRUE(TestPurposePrefetchHeader(prerender_url));
-  EXPECT_TRUE(HasSecSpeculationTagsHeader(prerender_url));
-  EXPECT_EQ(GetSecSpeculationTagsHeader(prerender_url), "null");
-
-  // Navigate the main frame in the prerendered page.
-  const GURL next_url = GetUrl("/empty.html?next");
-  TestNavigationManager navigation_observer(web_contents(), next_url);
-  NavigatePrerenderedPage(host_id, next_url);
-  ASSERT_TRUE(navigation_observer.WaitForNavigationFinished());
-  EXPECT_TRUE(navigation_observer.was_successful());
-
-  // The main frame navigation request should have the purpose headers, but not
-  // the Sec-Speculation-Tags header.
-  EXPECT_TRUE(TestPurposePrefetchHeader(next_url));
-  EXPECT_FALSE(HasSecSpeculationTagsHeader(next_url));
 }
 
 IN_PROC_BROWSER_TEST_F(PrerenderRequestHeadersBrowserTest,
