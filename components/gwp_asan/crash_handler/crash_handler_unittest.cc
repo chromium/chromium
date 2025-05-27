@@ -54,7 +54,9 @@ namespace {
 
 constexpr size_t kAllocationSize = 902;
 constexpr int kSuccess = 0;
-constexpr size_t kTotalPages = AllocatorState::kMaxRequestedSlots;
+
+static constexpr size_t kMaxMetadata = 2048;
+static constexpr size_t kTotalPages = 8192;
 
 #if !BUILDFLAG(IS_ANDROID)
 int HandlerMainAdaptor(int argc, char* argv[]) {
@@ -118,14 +120,14 @@ MULTIPROCESS_TEST_MAIN(CrashingProcess) {
   }
 
   base::NoDestructor<GuardedPageAllocator> gpa;
-  gpa->Init(
+  CHECK(gpa->Init(
       AllocatorSettings{
-          .max_allocated_pages = AllocatorState::kMaxMetadata,
-          .num_metadata = AllocatorState::kMaxMetadata,
+          .max_allocated_pages = kMaxMetadata,
+          .num_metadata = kMaxMetadata,
           .total_pages = kTotalPages,
           .sampling_frequency = 0u,
       },
-      base::DoNothing(), allocator == "partitionalloc");
+      base::DoNothing(), allocator == "partitionalloc"));
 
   static crashpad::StringAnnotation<24> gpa_annotation(annotation_name);
   gpa_annotation.Set(gpa->GetCrashKey());
@@ -259,9 +261,10 @@ MULTIPROCESS_TEST_MAIN(CrashingProcess) {
     gpa->Deallocate(reinterpret_cast<void*>(bad_address));
   } else if (test_name == "MissingMetadata") {
     // Consume all allocations/metadata
-    std::array<void*, AllocatorState::kMaxMetadata> ptrs;
-    for (size_t i = 0; i < AllocatorState::kMaxMetadata; i++)
+    std::array<void*, kMaxMetadata> ptrs;
+    for (size_t i = 0; i < kMaxMetadata; i++) {
       ptrs[i] = gpa->Allocate(1);
+    }
 
     gpa->Deallocate(ptrs[0]);
 
@@ -461,9 +464,11 @@ class BaseCrashHandlerTest : public base::MultiProcessTest,
       // depends on the PartitionAlloc metadata layout.
       EXPECT_GE(proto_.region_size(),
                 base::GetPageSize() * (2 * kTotalPages + 1));
-      EXPECT_LE(
-          proto_.region_size(),
-          base::GetPageSize() * (2 * AllocatorState::kMaxReservedSlots + 1));
+      // Upper bound for number of pages reserved when requesting kTotalPages
+      // worth of allocatable slots.
+      constexpr size_t kTotalPagesReserved = 2 * kTotalPages;
+      EXPECT_LE(proto_.region_size(),
+                base::GetPageSize() * (2 * kTotalPagesReserved + 1));
     }
 
     EXPECT_TRUE(proto_.has_missing_metadata());

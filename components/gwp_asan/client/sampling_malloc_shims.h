@@ -17,7 +17,7 @@ namespace internal {
 
 // Initialize the guarded allocator with the given parameters, and install the
 // sampling malloc shims with the provided sampling frequency.
-GWP_ASAN_EXPORT void InstallMallocHooks(
+[[nodiscard]] GWP_ASAN_EXPORT bool  InstallMallocHooks(
     const AllocatorSettings& settings,
     GuardedPageAllocator::OutOfMemoryCallback callback);
 

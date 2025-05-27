@@ -109,6 +109,8 @@ namespace partition_alloc {
 // they are never used for anything other that storing the metadata.
 class PA_COMPONENT_EXPORT(PARTITION_ALLOC) GwpAsanSupport {
  public:
+  // This can fail if the PA pool is too small or too fragmented to fit the
+  // requested slot count.
   static void* MapRegion(size_t slot_count, std::vector<uint16_t>& free_list);
   static bool CanReuse(uintptr_t slot_start);
   static void DestructForTesting();

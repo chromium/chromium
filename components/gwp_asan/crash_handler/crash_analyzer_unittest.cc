@@ -103,19 +103,20 @@ class BaseCrashAnalyzerTest : public testing::Test {
   BaseCrashAnalyzerTest(bool is_partition_alloc,
                         LightweightDetectorMode lightweight_detector_mode)
       : is_partition_alloc_(is_partition_alloc),
-        lightweight_detector_enabled_(lightweight_detector_mode !=
-                                      LightweightDetectorMode::kOff) {
-    gpa_.Init(
+        lightweight_detector_mode_(lightweight_detector_mode) {}
+
+  void SetUp() override {
+    ASSERT_TRUE(gpa_.Init(
         AllocatorSettings{
             .max_allocated_pages = 1u,
             .num_metadata = 1u,
             .total_pages = 1u,
             .sampling_frequency = 0u,
         },
-        base::DoNothing(), is_partition_alloc);
-    if (lightweight_detector_enabled_) {
+        base::DoNothing(), is_partition_alloc_));
+    if (lightweight_detector_mode_ != LightweightDetectorMode::kOff) {
       lud::PoisonMetadataRecorder::ResetForTesting();
-      lud::PoisonMetadataRecorder::Init(lightweight_detector_mode, 1);
+      lud::PoisonMetadataRecorder::Init(lightweight_detector_mode_, 1);
     }
   }
 
@@ -133,7 +134,7 @@ class BaseCrashAnalyzerTest : public testing::Test {
     append_annotation(
         is_partition_alloc_ ? kPartitionAllocCrashKey : kMallocCrashKey,
         gpa_.GetCrashKey());
-    if (lightweight_detector_enabled_) {
+    if (lightweight_detector_mode_ != LightweightDetectorMode::kOff) {
       append_annotation(kLightweightDetectorCrashKey,
                         lud::PoisonMetadataRecorder::Get()->GetCrashKey());
     }
@@ -173,7 +174,7 @@ class BaseCrashAnalyzerTest : public testing::Test {
 #endif
 
   bool is_partition_alloc_;
-  bool lightweight_detector_enabled_;
+  LightweightDetectorMode lightweight_detector_mode_;
 };
 
 class CrashAnalyzerTest : public BaseCrashAnalyzerTest {
