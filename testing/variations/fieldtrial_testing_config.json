@@ -15160,6 +15160,21 @@
             ]
         }
     ],
+    "OfferPinToTaskbarInFirstRunExperience": [
+        {
+            "platforms": [
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "OfferPinToTaskbarInFirstRunExperience"
+                    ]
+                }
+            ]
+        }
+    ],
     "OfferPinToTaskbarWhenSettingDefault": [
         {
             "platforms": [
