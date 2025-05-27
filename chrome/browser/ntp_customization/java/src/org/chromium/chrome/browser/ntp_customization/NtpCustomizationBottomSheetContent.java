@@ -49,7 +49,7 @@ public class NtpCustomizationBottomSheetContent implements BottomSheetContent {
 
     @Override
     public int getVerticalScrollOffset() {
-        return 0;
+        return mContentView.findViewById(R.id.bottom_sheet_container).getScrollY();
     }
 
     @Override
