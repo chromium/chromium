@@ -19342,7 +19342,11 @@ be describing additional metrics about the same event.
   </metric>
   <metric name="PermissionType">
     <summary>
-      An enum of type ContentSettingsType.
+      The type of permission, encoded through the mapping defined by
+      `kHistogramValue` in
+      https://source.chromium.org/chromium/chromium/src/+/main:components/content_settings/core/browser/content_settings_uma_util.cc;l=22;bpv=1;bpt=1.
+      Beware that this is not the same as the ContentSettingsType enum (casted
+      to int). An enum of type ContentSettingsType.
     </summary>
   </metric>
   <metric name="PredictionsApiResponse.GrantLikelihood"
@@ -19573,8 +19577,13 @@ be describing additional metrics about the same event.
   </metric>
   <metric name="PermissionType" enum="PermissionRequestType">
     <summary>
-      Represents the permission type that the prompt is for. An enum of type
-      ContentSettingsType.
+      Represents the permission type that the prompt is for. This can sometimes
+      differ from PermissionType when the PermissionType is Multiple, as some
+      screens are designed to only be shown for one permission at a time. This
+      is encoded via RequestTypeForUma in
+      https://source.chromium.org/chromium/chromium/src/+/main:components/permissions/permission_uma_util.h;bpv=1;bpt=1;l=73.
+      Beware that this is not the same as the ContentSettingsType enum (casted
+      to int).
     </summary>
   </metric>
   <metric name="PreviousScreens">
@@ -19587,10 +19596,11 @@ be describing additional metrics about the same event.
   </metric>
   <metric name="ScreenPermissionType" enum="PermissionRequestType">
     <summary>
-      Represents the permission type that current screen is for. This can
-      sometimes differ from PermissionType when the PermissionType is Multiple,
-      as some screens are designed to only be shown for one permission at a
-      time. An enum of type ContentSettingsType.
+      Represents the permission type that current screen is for. This is encoded
+      via RequestTypeForUma in
+      https://source.chromium.org/chromium/chromium/src/+/main:components/permissions/permission_uma_util.h;bpv=1;bpt=1;l=73.
+      Beware that this is not the same as the ContentSettingsType enum (casted
+      to int).
     </summary>
   </metric>
   <metric name="Variant" enum="ElementAnchoredBubbleVariant">
@@ -19629,7 +19639,11 @@ be describing additional metrics about the same event.
   </summary>
   <metric name="PermissionType">
     <summary>
-      An enum of type ContentSettingsType.
+      The type of permission used, encoded through the mapping defined by
+      `kHistogramValue` in
+      https://source.chromium.org/chromium/chromium/src/+/main:components/content_settings/core/browser/content_settings_uma_util.cc;l=22;bpv=1;bpt=1.
+      Beware that this is not the same as the ContentSettingsType enum (casted
+      to int).
     </summary>
   </metric>
 </event>
