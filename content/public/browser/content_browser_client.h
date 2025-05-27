@@ -1234,6 +1234,14 @@ class CONTENT_EXPORT ContentBrowserClient {
   virtual bool IsPrefetchWithServiceWorkerAllowed(
       content::BrowserContext* browser_context);
 
+  // Returns whether the synthetic response with service worker is allowed for
+  // the profile in a given context and URL. Not all URLs are actually invoke
+  // synthetic response. The opt-in from the server is required to invoke the
+  // feature.
+  virtual bool IsServiceWorkerSyntheticResponseAllowed(
+      content::BrowserContext* browser_context,
+      const GURL& url);
+
   // Temporarily allow `accessing_site` to access cookies when embedded on
   // `top_frame_site` when third-party cookies are otherwise blocked. After
   // `ttl` has passed, the access will be revoked. If `ignore_schemes` is true,

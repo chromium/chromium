@@ -724,6 +724,12 @@ bool ContentBrowserClient::IsPrefetchWithServiceWorkerAllowed(
   return true;
 }
 
+bool ContentBrowserClient::IsServiceWorkerSyntheticResponseAllowed(
+    content::BrowserContext* browser_context,
+    const GURL& url) {
+  return false;
+}
+
 void ContentBrowserClient::GrantCookieAccessDueToHeuristic(
     content::BrowserContext* browser_context,
     const net::SchemefulSite& top_frame_site,

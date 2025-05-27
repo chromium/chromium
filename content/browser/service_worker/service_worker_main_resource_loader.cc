@@ -1000,7 +1000,7 @@ bool ServiceWorkerMainResourceLoader::MaybeStartSyntheticNetworkRequest(
     scoped_refptr<ServiceWorkerVersion> version) {
   is_synthetic_response_used_ =
       service_worker_loader_helpers::IsEligibleForSyntheticResponse(
-          resource_request_.url) &&
+          context_wrapper->browser_context(), resource_request_.url) &&
       resource_request_.is_outermost_main_frame;
   if (!is_synthetic_response_used_) {
     return false;

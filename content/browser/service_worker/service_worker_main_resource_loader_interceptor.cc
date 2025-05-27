@@ -240,6 +240,7 @@ void ServiceWorkerMainResourceLoaderInterceptor::MaybeCreateLoader(
       !(handle_->context_wrapper()->MaybeHasRegistrationForStorageKey(
             handle_->service_worker_client()->key()) ||
         service_worker_loader_helpers::IsEligibleForSyntheticResponse(
+            handle_->context_wrapper()->browser_context(),
             tentative_resource_request.url));
 
   // Create and start the handler for this request. It will invoke the loader

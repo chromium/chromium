@@ -372,7 +372,7 @@ void ServiceWorkerRegistry::FindRegistrationForClientUrl(
     return;
   }
   if (service_worker_loader_helpers::IsEligibleForSyntheticResponse(
-          client_url)) {
+          context_->wrapper()->browser_context(), client_url)) {
     // If `client_url` is eligible for SyntheticResponse, create a fake
     // ServiceWorker registration so that the navigation is handled by
     // ServiceWorker main resource loader.

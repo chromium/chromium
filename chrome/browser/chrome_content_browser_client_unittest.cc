@@ -472,6 +472,39 @@ TEST_F(ChromeContentBrowserClientWindowTest,
   ASSERT_TRUE(future.Wait());
   EXPECT_FALSE(future.Get().has_value());
 }
+
+// TODO(crbug.com/352578800): Move this from
+// `ChromeContentBrowserClientWindowTest` to run the test on Android.
+TEST_F(ChromeContentBrowserClientWindowTest,
+       IsServiceWorkerSyntheticResponseAllowed) {
+  ChromeContentBrowserClient browser_client;
+
+  // Update the default search engine.
+  TemplateURLServiceFactory::GetInstance()->SetTestingFactoryAndUse(
+      profile(),
+      base::BindRepeating(&TemplateURLServiceFactory::BuildInstanceFor));
+  TemplateURLService* template_url_service =
+      TemplateURLServiceFactory::GetForProfile(browser()->profile());
+  search_test_utils::WaitForTemplateURLServiceToLoad(template_url_service);
+  TemplateURLData data;
+  data.SetShortName(u"example.com");
+  data.SetURL("http://example.com/test?q={searchTerms}");
+  data.new_tab_url = chrome::kChromeUINewTabURL;
+  TemplateURL* template_url =
+      template_url_service->Add(std::make_unique<TemplateURL>(data));
+  template_url_service->SetUserSelectedDefaultSearchProvider(template_url);
+
+  EXPECT_FALSE(browser_client.IsServiceWorkerSyntheticResponseAllowed(
+      browser()->profile(), GURL("https://foo.com/test")));
+  EXPECT_FALSE(browser_client.IsServiceWorkerSyntheticResponseAllowed(
+      browser()->profile(), GURL("https://example.com/")));
+  EXPECT_FALSE(browser_client.IsServiceWorkerSyntheticResponseAllowed(
+      browser()->profile(), GURL("https://example.com/test")));
+  EXPECT_FALSE(browser_client.IsServiceWorkerSyntheticResponseAllowed(
+      browser()->profile(), GURL("https://example.com/test?q=")));
+  EXPECT_TRUE(browser_client.IsServiceWorkerSyntheticResponseAllowed(
+      browser()->profile(), GURL("https://example.com/test?q=test")));
+}
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 // NOTE: Any updates to the expectations in these tests should also be done in

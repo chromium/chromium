@@ -3672,7 +3672,20 @@ bool ChromeContentBrowserClient::IsPrefetchWithServiceWorkerAllowed(
     content::BrowserContext* browser_context) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   Profile* profile = Profile::FromBrowserContext(browser_context);
-  return profile->GetPrefs()->GetBoolean(prefs::kPrefetchWithServiceWorkerEnabled);
+  return profile->GetPrefs()->GetBoolean(
+      prefs::kPrefetchWithServiceWorkerEnabled);
+}
+
+bool ChromeContentBrowserClient::IsServiceWorkerSyntheticResponseAllowed(
+    content::BrowserContext* browser_context,
+    const GURL& url) {
+  Profile* profile = Profile::FromBrowserContext(browser_context);
+  if (!profile || profile->IsSystemProfile()) {
+    // Exclude if the profile is a system profile.
+    return false;
+  }
+
+  return IsDefaultSearchEngine(profile, url);
 }
 
 void ChromeContentBrowserClient::GrantCookieAccessDueToHeuristic(
