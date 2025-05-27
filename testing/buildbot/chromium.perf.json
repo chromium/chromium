@@ -93,7 +93,9 @@
           "--browser=android-trichrome-chrome-google-64-32-bundle",
           "--upload-results",
           "--test-shard-map-filename=android-byra-perf_map.json",
-          "--ignore-benchmark-exit-code"
+          "--ignore-benchmark-exit-code",
+          "--device",
+          "variable_lab_dut_hostname"
         ],
         "merge": {
           "script": "//tools/perf/process_perf_results.py"

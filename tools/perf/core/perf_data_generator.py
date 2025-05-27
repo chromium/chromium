@@ -617,6 +617,10 @@ BUILDERS = {
         'tests': [{
             'isolate':
             'performance_test_suite_android_trichrome_chrome_google_64_32_bundle',
+            'extra_args': [
+                '--device',
+                'variable_lab_dut_hostname',
+            ],
         }],
         'platform':
         'android-trichrome-chrome-google-64-32-bundle',
