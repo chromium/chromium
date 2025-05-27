@@ -313,10 +313,6 @@ class IwaIwaKeyDistributionInfoProviderReadinessTest
   using ComponentRegistration = component_updater::ComponentRegistration;
 
   void SetUp() override {
-    web_app::IwaKeyDistributionInfoProvider::GetInstance()->SetUp(
-        base::BindRepeating(
-            &component_updater::IwaKeyDistributionComponentInstallerPolicy::
-                QueueOnDemandUpdate));
     auto cus = std::make_unique<
         testing::NiceMock<component_updater::MockComponentUpdateService>>();
     cus_ = cus.get();
@@ -332,8 +328,7 @@ class IwaIwaKeyDistributionInfoProviderReadinessTest
       auto matcher,
       IwaKeyDistributionInfoProvider* key_provider,
       base::OnceClosure task) {
-    bool register_first = GetParam();
-    if (register_first) {
+    if (register_first()) {
       ASSERT_THAT(test::RegisterIwaKeyDistributionComponentAndWaitForLoad(),
                   matcher);
       key_provider->OnMaybeDownloadedComponentDataReady().Post(FROM_HERE,
@@ -345,6 +340,8 @@ class IwaIwaKeyDistributionInfoProviderReadinessTest
                   matcher);
     }
   }
+
+  bool register_first() const { return GetParam(); }
 
   base::test::TaskEnvironment& task_environment() { return env_; }
 
@@ -471,6 +468,11 @@ class IwaIwaKeyDistributionInfoProviderReadinessTest
 
 TEST_P(IwaIwaKeyDistributionInfoProviderReadinessTest,
        PreloadedComponentAndOnMaybeReadyCalledUpdateSuccess) {
+  if (!register_first()) {
+    GTEST_SKIP() << "Disabled until IWA become available outside of "
+                    "non-initial profiles";
+  }
+
   WillRegisterAndLoadComponent(/*is_preloaded=*/true);
   WillRequestOnDemandUpdateWithSuccess();
 
@@ -501,6 +503,11 @@ TEST_P(IwaIwaKeyDistributionInfoProviderReadinessTest,
 
 TEST_P(IwaIwaKeyDistributionInfoProviderReadinessTest,
        PreloadedComponentAndOnMaybeReadyCalledUpdateFails) {
+  if (!register_first()) {
+    GTEST_SKIP() << "Disabled until IWA become available outside of "
+                    "non-initial profiles";
+  }
+
   WillRegisterAndLoadComponent(/*is_preloaded=*/true);
   WillRequestOnDemandUpdateWithoutSuccess();
 
@@ -523,6 +530,11 @@ TEST_P(IwaIwaKeyDistributionInfoProviderReadinessTest,
 
 TEST_P(IwaIwaKeyDistributionInfoProviderReadinessTest,
        PreloadedComponentAndOnMaybeReadyCalledUpdateDelayedSuccess) {
+  if (!register_first()) {
+    GTEST_SKIP() << "Disabled until IWA become available outside of "
+                    "non-initial profiles";
+  }
+
   WillRegisterAndLoadComponent(/*is_preloaded=*/true);
   WillRequestOnDemandUpdateWithSuccess(/*load_delay=*/base::Seconds(30));
 

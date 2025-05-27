@@ -201,7 +201,9 @@ bool IwaKeyDistributionInfoProvider::IsManagedInstallPermitted(
 }
 
 void IwaKeyDistributionInfoProvider::SetUp(
+    bool is_on_demand_supported,
     QueueOnDemandUpdateCallback callback) {
+  is_on_demand_supported_ = is_on_demand_supported;
   queue_on_demand_update_ = callback;
 }
 
@@ -299,7 +301,7 @@ void IwaKeyDistributionInfoProvider::RotateKeyForDevMode(
 
 base::OneShotEvent&
 IwaKeyDistributionInfoProvider::OnMaybeDownloadedComponentDataReady() {
-  if (!queue_on_demand_update_) {
+  if (!is_on_demand_supported_) {
     return AlreadySignalled();
   }
 
@@ -408,6 +410,7 @@ void IwaKeyDistributionInfoProvider::
 void IwaKeyDistributionInfoProvider::MaybeQueueComponentUpdate() {
   CHECK(maybe_queue_component_update_posted_);
   CHECK(any_data_ready_.is_signaled());
+  CHECK(is_on_demand_supported_);
   CHECK(queue_on_demand_update_);
 
   if (!data_ || data_->is_preloaded) {

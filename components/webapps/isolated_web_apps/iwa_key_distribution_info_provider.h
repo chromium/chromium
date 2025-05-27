@@ -111,7 +111,7 @@ class IwaKeyDistributionInfoProvider {
 
   // Sets up the `IwaKeyDistributionInfoProvider`, i.e. adds the capability to
   // schedule on demand callbacks.
-  void SetUp(QueueOnDemandUpdateCallback callback);
+  void SetUp(bool is_on_demand_supported, QueueOnDemandUpdateCallback callback);
 
   // Asynchronously loads new component data and replaces the current `data_`
   // upon success and if `component_version` is greater than the stored one, and
@@ -188,6 +188,7 @@ class IwaKeyDistributionInfoProvider {
   base::OneShotEvent maybe_downloaded_data_ready_;
 
   bool maybe_queue_component_update_posted_ = false;
+  bool is_on_demand_supported_ = false;
 
   QueueOnDemandUpdateCallback queue_on_demand_update_;
 
