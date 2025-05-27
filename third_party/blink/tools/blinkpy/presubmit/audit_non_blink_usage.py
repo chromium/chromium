@@ -1611,6 +1611,26 @@ _CONFIG = [
     },
     {
         'paths': [
+            'third_party/blink/renderer/modules/webgl/webgl_rendering_context_webgpu_base.cc',
+            'third_party/blink/renderer/modules/webgl/webgl_rendering_context_webgpu_base.h',
+        ],
+        # This class needs access to ui/gl classes for driver loading.
+        'allowed': [
+            'dawn::wire::client::GetProcs',
+            'gfx::ExtensionSet',
+            'gfx::MakeExtensionSet',
+            'gl::DriverEGL',
+            'gl::DriverGL',
+            'gl::GLVersionInfo',
+            'gl::GetDebugSeverityString',
+            'gl::GetDebugSourceString',
+            'gl::GetDebugTypeString',
+            'ui::LogEGLDebugMessage',
+            'ui::SetEGLDebugCallback',
+        ],
+    },
+    {
+        'paths': [
             'third_party/blink/renderer/modules/webgl/webgl_rendering_context_base.cc',
         ],
         # This class needs access to a GPU driver bug workaround entry.

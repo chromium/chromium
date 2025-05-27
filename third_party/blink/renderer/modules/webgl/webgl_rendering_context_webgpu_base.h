@@ -15,6 +15,9 @@
 #include "third_party/blink/renderer/platform/graphics/gpu/webgpu_swap_buffer_provider.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
+#define BINDINGS_GL_PROTOTYPES 0
+#include "ui/gl/gl_bindings.h"
+
 namespace blink {
 
 class ExceptionState;
@@ -1308,12 +1311,24 @@ class MODULES_EXPORT WebGLRenderingContextWebGPUBase
   // Drawing Buffer.
   void ShouldPresentToCompositor();
 
+  void InitializeContext();
+  void Destroy();
+
   scoped_refptr<DawnControlClientHolder> dawn_control_client_;
   wgpu::Adapter adapter_;
   wgpu::Device device_;
 
+  gl::DriverEGL driver_egl_;
+  gl::DriverGL driver_gl_;
+
+  EGLDisplay display_ = EGL_NO_DISPLAY;
+  EGLContext context_ = EGL_NO_CONTEXT;
+
   scoped_refptr<WebGPUSwapBufferProvider> swap_buffers_;
   wgpu::Texture current_swap_buffer_;
+  EGLImage default_framebuffer_color_image_ = EGL_NO_IMAGE;
+  GLuint default_framebuffer_color_texture_ = 0;
+  GLuint default_framebuffer_ = 0;
 };
 
 }  // namespace blink

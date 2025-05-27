@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 
+#include "ui/gl/gl_bindings.h"
 #include "ui/gl/gl_export.h"
 
 namespace ui {
@@ -15,6 +16,16 @@ GL_EXPORT const char* GetEGLErrorString(uint32_t error);
 
 // Returns the last EGL error as a string.
 GL_EXPORT const char* GetLastEGLErrorString();
+
+GL_EXPORT void EGLAPIENTRY LogEGLDebugMessage(EGLenum error,
+                                              const char* command,
+                                              EGLint message_type,
+                                              EGLLabelKHR thread_label,
+                                              EGLLabelKHR object_label,
+                                              const char* message);
+
+GL_EXPORT void SetEGLDebugCallback(const gl::DriverEGL& egl,
+                                   EGLDEBUGPROCKHR callback);
 
 }  // namespace ui
 

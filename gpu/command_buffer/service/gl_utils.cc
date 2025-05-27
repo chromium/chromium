@@ -20,6 +20,7 @@
 #include "gpu/command_buffer/service/gles2_cmd_copy_texture_chromium.h"
 #include "gpu/command_buffer/service/logger.h"
 #include "gpu/command_buffer/service/texture_manager.h"
+#include "ui/gl/gl_utils.h"
 #include "ui/gl/gl_version_info.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -73,61 +74,6 @@ bool IsValidS3TCSizeForWebGLAndANGLE(GLint level, GLsizei size) {
   // WebGL and ANGLE only allow multiple-of-4 sizes for the base level. See
   // WEBGL_compressed_texture_s3tc and ANGLE_compressed_texture_dxt*
   return (level > 0) || (size % kS3TCBlockWidth == 0);
-}
-
-const char* GetDebugSourceString(GLenum source) {
-  switch (source) {
-    case GL_DEBUG_SOURCE_API:
-      return "OpenGL";
-    case GL_DEBUG_SOURCE_WINDOW_SYSTEM:
-      return "Window System";
-    case GL_DEBUG_SOURCE_SHADER_COMPILER:
-      return "Shader Compiler";
-    case GL_DEBUG_SOURCE_THIRD_PARTY:
-      return "Third Party";
-    case GL_DEBUG_SOURCE_APPLICATION:
-      return "Application";
-    case GL_DEBUG_SOURCE_OTHER:
-      return "Other";
-    default:
-      return "UNKNOWN";
-  }
-}
-
-const char* GetDebugTypeString(GLenum type) {
-  switch (type) {
-    case GL_DEBUG_TYPE_ERROR:
-      return "Error";
-    case GL_DEBUG_TYPE_DEPRECATED_BEHAVIOR:
-      return "Deprecated behavior";
-    case GL_DEBUG_TYPE_UNDEFINED_BEHAVIOR:
-      return "Undefined behavior";
-    case GL_DEBUG_TYPE_PORTABILITY:
-      return "Portability";
-    case GL_DEBUG_TYPE_PERFORMANCE:
-      return "Performance";
-    case GL_DEBUG_TYPE_OTHER:
-      return "Other";
-    case GL_DEBUG_TYPE_MARKER:
-      return "Marker";
-    default:
-      return "UNKNOWN";
-  }
-}
-
-const char* GetDebugSeverityString(GLenum severity) {
-  switch (severity) {
-    case GL_DEBUG_SEVERITY_HIGH:
-      return "High";
-    case GL_DEBUG_SEVERITY_MEDIUM:
-      return "Medium";
-    case GL_DEBUG_SEVERITY_LOW:
-      return "Low";
-    case GL_DEBUG_SEVERITY_NOTIFICATION:
-      return "Notification";
-    default:
-      return "UNKNOWN";
-  }
 }
 }  // namespace
 
@@ -441,9 +387,9 @@ void LogGLDebugMessage(GLenum source,
   } else {
     error_logger->LogMessage(
         __FILE__, __LINE__,
-        std::string("GL Driver Message (") + GetDebugSourceString(source) +
-            ", " + GetDebugTypeString(type) + ", " + id_string + ", " +
-            GetDebugSeverityString(severity) + "): " + message);
+        std::string("GL Driver Message (") + gl::GetDebugSourceString(source) +
+            ", " + gl::GetDebugTypeString(type) + ", " + id_string + ", " +
+            gl::GetDebugSeverityString(severity) + "): " + message);
   }
 }
 

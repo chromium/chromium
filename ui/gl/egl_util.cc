@@ -6,16 +6,24 @@
 
 #include "build/build_config.h"
 
-#if BUILDFLAG(IS_ANDROID)
-#include <EGL/egl.h>
-#else
-#include "third_party/khronos/EGL/egl.h"
-#endif
-
-// This needs to be after the EGL includes
-#include "ui/gl/gl_bindings.h"
-
 namespace ui {
+
+namespace {
+const char* GetDebugMessageTypeString(EGLint source) {
+  switch (source) {
+    case EGL_DEBUG_MSG_CRITICAL_KHR:
+      return "Critical";
+    case EGL_DEBUG_MSG_ERROR_KHR:
+      return "Error";
+    case EGL_DEBUG_MSG_WARN_KHR:
+      return "Warning";
+    case EGL_DEBUG_MSG_INFO_KHR:
+      return "Info";
+    default:
+      return "UNKNOWN";
+  }
+}
+}  // namespace
 
 const char* GetEGLErrorString(uint32_t error) {
   switch (error) {
@@ -59,4 +67,52 @@ const char* GetLastEGLErrorString() {
   return GetEGLErrorString(eglGetError());
 }
 
+void EGLAPIENTRY LogEGLDebugMessage(EGLenum error,
+                                    const char* command,
+                                    EGLint message_type,
+                                    EGLLabelKHR thread_label,
+                                    EGLLabelKHR object_label,
+                                    const char* message) {
+  std::string formatted_message = std::string("EGL Driver message (") +
+                                  GetDebugMessageTypeString(message_type) +
+                                  ") " + command + ": " + message;
+
+  // Assume that all labels that have been set are strings
+  if (thread_label) {
+    formatted_message += " thread: ";
+    formatted_message += static_cast<const char*>(thread_label);
+  }
+  if (object_label) {
+    formatted_message += " object: ";
+    formatted_message += static_cast<const char*>(object_label);
+  }
+
+  if (message_type == EGL_DEBUG_MSG_CRITICAL_KHR ||
+      message_type == EGL_DEBUG_MSG_ERROR_KHR) {
+    LOG(ERROR) << formatted_message;
+  } else {
+    DVLOG(1) << formatted_message;
+  }
+}
+
+void SetEGLDebugCallback(const gl::DriverEGL& egl, EGLDEBUGPROCKHR callback) {
+  if (!egl.client_ext.b_EGL_KHR_debug) {
+    return;
+  }
+
+  constexpr EGLAttrib controls[] = {
+      EGL_DEBUG_MSG_CRITICAL_KHR,
+      EGL_TRUE,
+      EGL_DEBUG_MSG_ERROR_KHR,
+      EGL_TRUE,
+      EGL_DEBUG_MSG_WARN_KHR,
+      EGL_TRUE,
+      EGL_DEBUG_MSG_INFO_KHR,
+      EGL_TRUE,
+      EGL_NONE,
+      EGL_NONE,
+  };
+
+  egl.fn.eglDebugMessageControlKHRFn(callback, controls);
+}
 }  // namespace ui

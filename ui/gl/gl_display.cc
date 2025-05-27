@@ -367,70 +367,6 @@ const char* DisplayTypeString(DisplayType display_type) {
       NOTREACHED();
   }
 }
-
-const char* GetDebugMessageTypeString(EGLint source) {
-  switch (source) {
-    case EGL_DEBUG_MSG_CRITICAL_KHR:
-      return "Critical";
-    case EGL_DEBUG_MSG_ERROR_KHR:
-      return "Error";
-    case EGL_DEBUG_MSG_WARN_KHR:
-      return "Warning";
-    case EGL_DEBUG_MSG_INFO_KHR:
-      return "Info";
-    default:
-      return "UNKNOWN";
-  }
-}
-
-void EGLAPIENTRY LogEGLDebugMessage(EGLenum error,
-                                    const char* command,
-                                    EGLint message_type,
-                                    EGLLabelKHR thread_label,
-                                    EGLLabelKHR object_label,
-                                    const char* message) {
-  std::string formatted_message = std::string("EGL Driver message (") +
-                                  GetDebugMessageTypeString(message_type) +
-                                  ") " + command + ": " + message;
-
-  // Assume that all labels that have been set are strings
-  if (thread_label) {
-    formatted_message += " thread: ";
-    formatted_message += static_cast<const char*>(thread_label);
-  }
-  if (object_label) {
-    formatted_message += " object: ";
-    formatted_message += static_cast<const char*>(object_label);
-  }
-
-  if (message_type == EGL_DEBUG_MSG_CRITICAL_KHR ||
-      message_type == EGL_DEBUG_MSG_ERROR_KHR) {
-    LOG(ERROR) << formatted_message;
-  } else {
-    DVLOG(1) << formatted_message;
-  }
-}
-
-void SetEglDebugMessageControl() {
-  static bool egl_debug_message_control_is_set = false;
-  if (!egl_debug_message_control_is_set) {
-    EGLAttrib controls[] = {
-        EGL_DEBUG_MSG_CRITICAL_KHR,
-        EGL_TRUE,
-        EGL_DEBUG_MSG_ERROR_KHR,
-        EGL_TRUE,
-        EGL_DEBUG_MSG_WARN_KHR,
-        EGL_TRUE,
-        EGL_DEBUG_MSG_INFO_KHR,
-        EGL_TRUE,
-        EGL_NONE,
-        EGL_NONE,
-    };
-
-    eglDebugMessageControlKHR(&LogEGLDebugMessage, controls);
-  }
-}
-
 }  // namespace
 
 GLDisplay::GLDisplay(uint64_t system_device_id,
@@ -625,10 +561,7 @@ bool GLDisplayEGL::InitializeDisplay(bool supports_angle,
 
   native_display_ = native_display;
 
-  bool supports_egl_debug = g_driver_egl.client_ext.b_EGL_KHR_debug;
-  if (supports_egl_debug) {
-    SetEglDebugMessageControl();
-  }
+  ui::SetEGLDebugCallback(g_driver_egl, ui::LogEGLDebugMessage);
 
   if (g_driver_egl.client_ext.b_EGL_ANGLE_no_error &&
       !features::IsANGLEValidationEnabled()) {

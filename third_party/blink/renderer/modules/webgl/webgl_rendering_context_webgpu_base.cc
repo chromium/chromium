@@ -3,6 +3,9 @@
 
 #include "third_party/blink/renderer/modules/webgl/webgl_rendering_context_webgpu_base.h"
 
+#include <dawn/dawn_proc.h>
+#include <dawn/wire/WireClient.h>
+
 #include "base/notimplemented.h"
 #include "third_party/blink/public/platform/web_url.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
@@ -14,8 +17,144 @@
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
+#include "ui/gfx/extension_set.h"
+#include "ui/gl/egl_util.h"
+#include "ui/gl/gl_utils.h"
+#include "ui/gl/gl_version_info.h"
+
+#if BUILDFLAG(USE_STATIC_ANGLE)
+extern "C" {
+// The ANGLE internal eglGetProcAddress
+EGLAPI __eglMustCastToProperFunctionPointerType EGLAPIENTRY
+EGL_GetProcAddress(const char* procname);
+}
+namespace {
+GLGetProcAddressProc GetStaticANGLEGetProcAddressFunction() {
+  return EGL_GetProcAddress;
+}
+}  // namespace
+#else
+namespace {
+GLGetProcAddressProc GetStaticANGLEGetProcAddressFunction() {
+  LOG(ERROR) << "WebGLOnWebGPU requires use_static_angle.";
+  return nullptr;
+}
+}  // namespace
+#endif  // BUILDFLAG(USE_STATIC_ANGLE)
 
 namespace blink {
+namespace {
+
+const DawnProcTable* GetDawnProcs() {
+#if BUILDFLAG(USE_DAWN)
+  return &dawn::wire::client::GetProcs();
+#else
+  LOG(ERROR) << "WebGLOnWebGPU requires use_dawn";
+  return nullptr;
+#endif  // BUILDFLAG(USE_DAWN)
+}
+
+void GL_APIENTRY LogGLDebugMessage(GLenum source,
+                                   GLenum type,
+                                   GLuint id,
+                                   GLenum severity,
+                                   GLsizei length,
+                                   const GLchar* message,
+                                   const GLvoid* user_data) {
+  LOG(ERROR) << "GL Driver Message (" << gl::GetDebugSourceString(source)
+             << ", " << gl::GetDebugTypeString(type) << ", " << id << ", "
+             << gl::GetDebugSeverityString(severity) << "): " << message;
+}
+
+void InitializeGLDebugLogging(const gl::DriverGL& gl,
+                              bool log_non_errors,
+                              GLDEBUGPROC callback,
+                              const void* user_param) {
+  gl.fn.glEnableFn(GL_DEBUG_OUTPUT);
+  gl.fn.glEnableFn(GL_DEBUG_OUTPUT_SYNCHRONOUS);
+
+  gl.fn.glDebugMessageControlFn(GL_DEBUG_SOURCE_API, GL_DEBUG_TYPE_ERROR,
+                                GL_DONT_CARE, 0, nullptr, GL_TRUE);
+
+  if (log_non_errors) {
+    // Enable logging of medium and high severity messages
+    gl.fn.glDebugMessageControlFn(GL_DONT_CARE, GL_DONT_CARE,
+                                  GL_DEBUG_SEVERITY_HIGH, 0, nullptr, GL_TRUE);
+    gl.fn.glDebugMessageControlFn(GL_DONT_CARE, GL_DONT_CARE,
+                                  GL_DEBUG_SEVERITY_MEDIUM, 0, nullptr,
+                                  GL_TRUE);
+    gl.fn.glDebugMessageControlFn(GL_DONT_CARE, GL_DONT_CARE,
+                                  GL_DEBUG_SEVERITY_LOW, 0, nullptr, GL_FALSE);
+    gl.fn.glDebugMessageControlFn(GL_DONT_CARE, GL_DONT_CARE,
+                                  GL_DEBUG_SEVERITY_NOTIFICATION, 0, nullptr,
+                                  GL_FALSE);
+  }
+
+  gl.fn.glDebugMessageCallbackFn(callback, user_param);
+}
+
+class ScopedBindTexture {
+ public:
+  ScopedBindTexture(const gl::DriverGL& gl, GLenum target, GLuint texture)
+      : gl_(gl), target_(target) {
+    GLenum target_getter = 0;
+    switch (target_) {
+      case GL_TEXTURE_2D:
+        target_getter = GL_TEXTURE_BINDING_2D;
+        break;
+      default:
+        NOTIMPLEMENTED() << " Target not supported.";
+    }
+    gl_->fn.glGetIntegervFn(target_getter, &prev_texture_);
+    gl_->fn.glBindTextureFn(target_, texture);
+  }
+
+  ~ScopedBindTexture() { gl_->fn.glBindTextureFn(target_, prev_texture_); }
+
+  ScopedBindTexture(const ScopedBindTexture&) = delete;
+  ScopedBindTexture& operator=(const ScopedBindTexture&) = delete;
+
+ private:
+  raw_ref<const gl::DriverGL> gl_;
+  GLenum target_;
+  GLint prev_texture_ = 0;
+};
+
+class ScopedBindFramebuffer {
+ public:
+  ScopedBindFramebuffer(const gl::DriverGL& gl, GLenum target, GLuint fbo)
+      : gl_(gl) {
+    // TODO(): ES3+ also adds these binding points.
+    if (gl.ext.b_GL_ANGLE_framebuffer_blit) {
+      gl_->fn.glGetIntegervFn(GL_READ_FRAMEBUFFER_BINDING, &prev_read_fbo_);
+      gl_->fn.glGetIntegervFn(GL_DRAW_FRAMEBUFFER_BINDING, &prev_draw_fbo_);
+    } else {
+      DCHECK(target == GL_FRAMEBUFFER);
+      gl_->fn.glGetIntegervFn(GL_FRAMEBUFFER_BINDING, &prev_draw_fbo_);
+      prev_read_fbo_ = prev_draw_fbo_;
+    }
+    gl_->fn.glBindFramebufferEXTFn(target, fbo);
+  }
+
+  ~ScopedBindFramebuffer() {
+    if (prev_draw_fbo_ == prev_read_fbo_) {
+      gl_->fn.glBindFramebufferEXTFn(GL_FRAMEBUFFER, prev_draw_fbo_);
+    } else {
+      gl_->fn.glBindFramebufferEXTFn(GL_DRAW_FRAMEBUFFER, prev_draw_fbo_);
+      gl_->fn.glBindFramebufferEXTFn(GL_READ_FRAMEBUFFER, prev_read_fbo_);
+    }
+  }
+
+  ScopedBindFramebuffer(const ScopedBindFramebuffer&) = delete;
+  ScopedBindFramebuffer& operator=(const ScopedBindFramebuffer&) = delete;
+
+ private:
+  raw_ref<const gl::DriverGL> gl_;
+  GLint prev_draw_fbo_ = 0;
+  GLint prev_read_fbo_ = 0;
+};
+
+}  // namespace
 
 WebGLRenderingContextWebGPUBase::WebGLRenderingContextWebGPUBase(
     CanvasRenderingContextHost* host,
@@ -26,7 +165,9 @@ WebGLRenderingContextWebGPUBase::WebGLRenderingContextWebGPUBase(
           /* is_webgl2 */ api == CanvasRenderingAPI::kWebgl2),
       CanvasRenderingContext(host, requested_attributes, api) {}
 
-WebGLRenderingContextWebGPUBase::~WebGLRenderingContextWebGPUBase() {}
+WebGLRenderingContextWebGPUBase::~WebGLRenderingContextWebGPUBase() {
+  Destroy();
+}
 
 ScriptPromise<IDLUndefined> WebGLRenderingContextWebGPUBase::initAsync(
     ScriptState* script_state) {
@@ -115,28 +256,11 @@ void WebGLRenderingContextWebGPUBase::InitRequestDeviceCallback(
 
   device_ = std::move(device);
 
+  InitializeContext();
+
   // TODO(413078308): Fill in with a GLES2Interface that will be used by WebGL
   // objects.
   WebGLContextObjectSupport::OnContextRestored(nullptr);
-
-  // Create the underlying WebGPUSwapBufferProvider.
-  constexpr wgpu::TextureUsage kDefaultFBOUsages =
-      wgpu::TextureUsage::RenderAttachment | wgpu::TextureUsage::CopySrc |
-      wgpu::TextureUsage::CopySrc;
-#if BUILDFLAG(IS_ANDROID)
-  constexpr wgpu::TextureFormat kDefaultFBON32Format =
-      wgpu::TextureFormat::RGBA8Unorm;
-#else
-  constexpr wgpu::TextureFormat kDefaultFBON32Format =
-      wgpu::TextureFormat::BGRA8Unorm;
-#endif
-
-  // TODO(413078308): Add support for non-SRGB color spaces and HDR metadata.
-  // TODO(413078308): Add support for RGBA16Float drawing buffer.
-  swap_buffers_ = base::AdoptRef(new WebGPUSwapBufferProvider(
-      this, dawn_control_client_, device_, kDefaultFBOUsages,
-      wgpu::TextureUsage::None, kDefaultFBON32Format,
-      PredefinedColorSpace::kSRGB, gfx::HDRMetadata{}));
 
   // We are required to present to the compositor on context creation.
   ShouldPresentToCompositor();
@@ -449,7 +573,7 @@ void WebGLRenderingContextWebGPUBase::disableVertexAttribArray(GLuint index) {
 void WebGLRenderingContextWebGPUBase::drawArrays(GLenum mode,
                                                  GLint first,
                                                  GLsizei count) {
-  NOTIMPLEMENTED();
+  driver_gl_.fn.glDrawArraysFn(mode, first, count);
 }
 
 void WebGLRenderingContextWebGPUBase::drawElements(GLenum mode,
@@ -2604,6 +2728,18 @@ bool WebGLRenderingContextWebGPUBase::PushFrame() {
 // ****************************************************************************
 
 void WebGLRenderingContextWebGPUBase::OnTextureTransferred() {
+  driver_gl_.fn.glFlushFn();
+
+  {
+    ScopedBindFramebuffer bind_default_fbo(driver_gl_, GL_FRAMEBUFFER,
+                                           default_framebuffer_);
+    driver_gl_.fn.glFramebufferTexture2DEXTFn(
+        GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, 0, 0);
+  }
+  driver_gl_.fn.glDeleteTexturesFn(1, &default_framebuffer_color_texture_);
+  default_framebuffer_color_texture_ = 0;
+  driver_egl_.fn.eglDestroyImageKHRFn(display_,
+                                      default_framebuffer_color_image_);
   current_swap_buffer_ = nullptr;
 }
 
@@ -2644,6 +2780,152 @@ void WebGLRenderingContextWebGPUBase::ShouldPresentToCompositor() {
   mailbox_texture->SetNeedsPresent(true);
 
   current_swap_buffer_ = mailbox_texture->GetTexture();
+
+  // Create an EGL image of the swap buffer texture.
+  const EGLint image_attribs[] = {
+      EGL_NONE,
+  };
+  default_framebuffer_color_image_ = driver_egl_.fn.eglCreateImageKHRFn(
+      display_, EGL_NO_CONTEXT, EGL_WEBGPU_TEXTURE_ANGLE,
+      current_swap_buffer_.Get(), image_attribs);
+  CHECK(default_framebuffer_color_image_);
+
+  // Import the EGL image to a GL texture and bind it to the default framebuffer
+  // as color attachment 0.
+  driver_gl_.fn.glGenTexturesFn(1, &default_framebuffer_color_texture_);
+  {
+    ScopedBindTexture bind_color_texture(driver_gl_, GL_TEXTURE_2D,
+                                         default_framebuffer_color_texture_);
+    driver_gl_.fn.glEGLImageTargetTexture2DOESFn(
+        GL_TEXTURE_2D, default_framebuffer_color_image_);
+
+    {
+      ScopedBindFramebuffer bind_default_fbo(driver_gl_, GL_FRAMEBUFFER,
+                                             default_framebuffer_);
+      driver_gl_.fn.glFramebufferTexture2DEXTFn(
+          GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D,
+          default_framebuffer_color_texture_, 0);
+    }
+  }
+}
+
+// Do the full initialization of EGL Display and EGL context from the WebGPU
+// device.
+void WebGLRenderingContextWebGPUBase::InitializeContext() {
+  // Use the static ANGLE bindings. Loading the GL driver dynamically is not
+  // supported in the renderer process.
+  GLGetProcAddressProc get_proc_address =
+      GetStaticANGLEGetProcAddressFunction();
+  CHECK(get_proc_address != nullptr);
+  driver_egl_.InitializeStaticBindings(get_proc_address);
+
+  ui::SetEGLDebugCallback(driver_egl_, ui::LogEGLDebugMessage);
+
+  // Initialize the EGL display using the device and the dawn wire client proc
+  // table.
+  const EGLAttrib display_attribs[] = {
+      EGL_PLATFORM_ANGLE_TYPE_ANGLE,
+      EGL_PLATFORM_ANGLE_TYPE_WEBGPU_ANGLE,
+      EGL_PLATFORM_ANGLE_WEBGPU_DEVICE_ANGLE,
+      reinterpret_cast<EGLAttrib>(device_.Get()),
+      EGL_PLATFORM_ANGLE_DAWN_PROC_TABLE_ANGLE,
+      reinterpret_cast<EGLAttrib>(GetDawnProcs()),
+      EGL_NONE,
+  };
+  display_ = driver_egl_.fn.eglGetPlatformDisplayFn(EGL_PLATFORM_ANGLE_ANGLE,
+                                                    nullptr, display_attribs);
+  CHECK(display_ != EGL_NO_DISPLAY);
+
+  EGLint egl_version_major, egl_version_minor;
+  driver_egl_.fn.eglInitializeFn(display_, &egl_version_major,
+                                 &egl_version_minor);
+
+  // Create a GL Context.
+  // TODO(413078308): Request version 2 vs 3 depending on WebGL version.
+  // TODO(413078308): Request a WebGL compatibility context when requesting
+  // extensions is supported both for basic functionality and WebGL extensions.
+  const EGLint context_attribs[] = {
+      EGL_CONTEXT_MAJOR_VERSION,
+      2,
+      EGL_CONTEXT_MINOR_VERSION,
+      0,
+      EGL_CONTEXT_WEBGL_COMPATIBILITY_ANGLE,
+      EGL_FALSE,
+      EGL_CONTEXT_OPENGL_BACKWARDS_COMPATIBLE_ANGLE,
+      EGL_FALSE,
+      EGL_NONE,
+  };
+  context_ = driver_egl_.fn.eglCreateContextFn(display_, EGL_NO_CONFIG_KHR,
+                                               nullptr, context_attribs);
+  CHECK(context_ != EGL_NO_CONTEXT);
+
+  driver_egl_.fn.eglMakeCurrentFn(display_, EGL_NO_SURFACE, EGL_NO_SURFACE,
+                                  context_);
+
+  // With the context created, we can load the GL entry points
+  driver_gl_.InitializeStaticBindings(get_proc_address);
+
+  const char* extensions_string =
+      reinterpret_cast<const char*>(driver_gl_.fn.glGetStringFn(GL_EXTENSIONS));
+  gfx::ExtensionSet extensions = gfx::MakeExtensionSet(extensions_string);
+
+  gl::GLVersionInfo version(
+      reinterpret_cast<const char*>(driver_gl_.fn.glGetStringFn(GL_VERSION)),
+      reinterpret_cast<const char*>(driver_gl_.fn.glGetStringFn(GL_RENDERER)),
+      extensions);
+
+  // Load the extension entry points based on the version and extension string.
+  // TODO(413078308): Store the enabled extensions, update them after requesting
+  // new extensions.
+  driver_gl_.InitializeDynamicBindings(get_proc_address, &version, extensions);
+  LOG(ERROR) << "GL context extensions: " << extensions_string;
+
+  // Just log all GL debug messages.
+  // TODO(413078308): Forward debug messages to the JS console and use the
+  // callback for determining when GL calls generate errors without having to
+  // check glGetError
+  InitializeGLDebugLogging(driver_gl_, true, LogGLDebugMessage, nullptr);
+
+  // Create the underlying WebGPUSwapBufferProvider. Usages are based on what
+  // ANGLE needs to be able to use this for texturing and rendering.
+  constexpr wgpu::TextureUsage kDefaultFBOUsages =
+      wgpu::TextureUsage::TextureBinding |
+      wgpu::TextureUsage::RenderAttachment | wgpu::TextureUsage::CopySrc |
+      wgpu::TextureUsage::CopyDst;
+#if BUILDFLAG(IS_ANDROID)
+  constexpr wgpu::TextureFormat kDefaultFBON32Format =
+      wgpu::TextureFormat::RGBA8Unorm;
+#else
+  constexpr wgpu::TextureFormat kDefaultFBON32Format =
+      wgpu::TextureFormat::BGRA8Unorm;
+#endif
+
+  // TODO(413078308): Add support for non-SRGB color spaces and HDR metadata.
+  // TODO(413078308): Add support for RGBA16Float drawing buffer.
+  swap_buffers_ = base::AdoptRef(new WebGPUSwapBufferProvider(
+      this, dawn_control_client_, device_, kDefaultFBOUsages,
+      wgpu::TextureUsage::None, kDefaultFBON32Format,
+      PredefinedColorSpace::kSRGB, gfx::HDRMetadata{}));
+
+  // Create the default framebuffer and leave it as the bound framebuffer. It
+  // has no texture attached yet, that is done in ShouldPresentToCompositor
+  driver_gl_.fn.glGenFramebuffersEXTFn(1, &default_framebuffer_);
+  driver_gl_.fn.glBindFramebufferEXTFn(GL_FRAMEBUFFER, default_framebuffer_);
+}
+
+void WebGLRenderingContextWebGPUBase::Destroy() {
+  if (context_) {
+    DCHECK(display_ != EGL_NO_DISPLAY);
+    driver_egl_.fn.eglDestroyContextFn(display_, context_);
+    context_ = EGL_NO_CONTEXT;
+  }
+  driver_gl_.ClearBindings();
+
+  if (display_) {
+    driver_egl_.fn.eglTerminateFn(display_);
+    display_ = EGL_NO_DISPLAY;
+  }
+  driver_egl_.ClearBindings();
 }
 
 }  // namespace blink
