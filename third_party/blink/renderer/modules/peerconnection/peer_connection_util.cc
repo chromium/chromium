@@ -4,8 +4,6 @@
 
 #include "third_party/blink/renderer/modules/peerconnection/peer_connection_util.h"
 
-#include <cmath>
-
 #include "base/time/time.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/timing/dom_window_performance.h"
@@ -51,27 +49,6 @@ DOMHighResTimeStamp CalculateRTCEncodedFrameTimeDelta(
   return Performance::ClampTimeResolution(
       time_delta, GetPerformanceFromExecutionContext(context)
                       ->CrossOriginIsolatedCapability());
-}
-
-double ToLinearAudioLevel(uint8_t audio_level_dbov) {
-  if (audio_level_dbov >= 127u) {
-    return 0.0;
-  }
-  return std::pow(10.0, -static_cast<double>(audio_level_dbov) / 20.0);
-}
-
-uint8_t FromLinearAudioLevel(double linear_audio_level) {
-  if (linear_audio_level <= 0.0) {
-    return 127u;
-  }
-  double audio_level_dbov = -20.0 * std::log10(linear_audio_level);
-  if (audio_level_dbov >= 127.0) {
-    return 127u;
-  }
-  if (audio_level_dbov < 0.0) {
-    return 0u;
-  }
-  return static_cast<uint8_t>(std::round(audio_level_dbov));
 }
 
 }  // namespace blink

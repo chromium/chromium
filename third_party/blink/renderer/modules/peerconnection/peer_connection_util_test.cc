@@ -87,32 +87,4 @@ TEST(PeerConnectionUtilTest, CalculateRTCEncodedFrameTimeDeltaNegative) {
   EXPECT_LE(timestamp - -123.4, 0.2);
 }
 
-TEST(PeerConnectionUtilTest, AudioLevelConversionRangeEndpoints) {
-  EXPECT_EQ(ToLinearAudioLevel(0u), 1.0);
-  EXPECT_EQ(ToLinearAudioLevel(127u), 0.0);
-  EXPECT_EQ(FromLinearAudioLevel(1.0), 0u);
-  EXPECT_EQ(FromLinearAudioLevel(0.0), 127u);
-}
-
-TEST(PeerConnectionUtilTest, AudioLevelConversionOutsideRange) {
-  EXPECT_EQ(FromLinearAudioLevel(1.1), 0u);
-  EXPECT_EQ(int(FromLinearAudioLevel(-0.1)), 127);
-}
-
-TEST(PeerConnectionUtilTest, AudioLevelConversionFromLinearIsNotTooLossy) {
-  constexpr double linear_audio_level = 0.34;
-  double converted_linear_audio_level =
-      ToLinearAudioLevel(FromLinearAudioLevel(linear_audio_level));
-  EXPECT_LE(std::abs(linear_audio_level - converted_linear_audio_level) /
-                linear_audio_level,
-            0.1);
-}
-
-TEST(PeerConnectionUtilTest, AudioLevelConversionFromUintIsLossless) {
-  constexpr uint8_t audio_level_dbov = 34u;
-  double converted_audio_level_dbov =
-      FromLinearAudioLevel(ToLinearAudioLevel(audio_level_dbov));
-  EXPECT_EQ(audio_level_dbov, converted_audio_level_dbov);
-}
-
 }  // namespace blink

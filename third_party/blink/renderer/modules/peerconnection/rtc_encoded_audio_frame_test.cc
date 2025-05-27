@@ -50,7 +50,6 @@ constexpr uint32_t kSsrc = 7;
 constexpr std::array<uint32_t, 2> kCsrcs{6, 4};
 constexpr uint8_t kPayloadType = 13;
 constexpr uint16_t kSequenceNumber = 20;
-constexpr uint8_t kAudioLevel_dBov = 65;
 constexpr uint32_t kRtpTimestamp = 17;
 constexpr int kReceiveTimeMillis = 2000;
 constexpr int kCaptureTimeMillis = 2345;
@@ -69,10 +68,8 @@ void MockMetadata(MockTransformableAudioFrame* frame) {
   ON_CALL(*frame, GetDirection())
       .WillByDefault(
           Return(webrtc::TransformableAudioFrameInterface::Direction::kSender));
-  ON_CALL(*frame, AudioLevel()).WillByDefault(Return(kAudioLevel_dBov));
   ON_CALL(*frame, CanSetPayloadType()).WillByDefault(Return(true));
   ON_CALL(*frame, CanSetCaptureTime()).WillByDefault(Return(true));
-  ON_CALL(*frame, CanSetAudioLevel()).WillByDefault(Return(true));
 }
 
 void MockReceiverMetadata(MockTransformableAudioFrame* frame,
@@ -90,13 +87,11 @@ void MockReceiverMetadata(MockTransformableAudioFrame* frame,
   ON_CALL(*frame, ReceiveTime())
       .WillByDefault(Return(GetWebRTCTimeOrigin(&window) +
                             webrtc::TimeDelta::Millis(kReceiveTimeMillis)));
-  ON_CALL(*frame, AudioLevel()).WillByDefault(Return(kAudioLevel_dBov));
 }
 
 constexpr uint32_t kRtpTimestamp2 = 110;
 constexpr uint8_t kPayloadType2 = 19;
 constexpr int kCaptureTimeMillis2 = 5432;
-constexpr uint8_t kAudioLevel_dBov2 = 99;
 
 RTCEncodedAudioFrameMetadata* CreateAudioMetadata(
     ExecutionContext* execution_context = nullptr) {
@@ -109,7 +104,6 @@ RTCEncodedAudioFrameMetadata* CreateAudioMetadata(
   // Settable fields
   new_metadata->setRtpTimestamp(kRtpTimestamp2);
   new_metadata->setPayloadType(kPayloadType2);
-  new_metadata->setAudioLevel(ToLinearAudioLevel(kAudioLevel_dBov2));
   if (execution_context) {
     new_metadata->setCaptureTime(CalculateRTCEncodedFrameTimestamp(
         execution_context,
@@ -143,8 +137,6 @@ TEST_F(RTCEncodedAudioFrameTest, GetMetadataReturnsCorrectMetadata) {
   // sure the difference between expected and received  is less than 0.2ms.
   EXPECT_LT(std::abs(kReceiveTimeMillis - retrieved_metadata->receiveTime()),
             0.2);
-  EXPECT_EQ(ToLinearAudioLevel(kAudioLevel_dBov),
-            retrieved_metadata->audioLevel());
 }
 
 TEST_F(RTCEncodedAudioFrameTest, SetMetadataOnEmptyFrameFails) {
@@ -182,8 +174,6 @@ TEST_F(RTCEncodedAudioFrameTest, SetMetadataModifiesMetadata) {
   EXPECT_CALL(*frame, SetRTPTimestamp(kRtpTimestamp2)).Times(1);
   EXPECT_CALL(*frame, SetPayloadType(kPayloadType2)).Times(1);
   EXPECT_CALL(*frame, SetCaptureTime(_)).Times(1);
-  EXPECT_CALL(*frame, SetAudioLevel(std::make_optional(kAudioLevel_dBov2)))
-      .Times(1);
 
   RTCEncodedAudioFrame* encoded_frame =
       MakeGarbageCollected<RTCEncodedAudioFrame>(std::move(frame));
@@ -222,7 +212,6 @@ TEST_F(RTCEncodedAudioFrameTest, ConstructorOnEmptyFrameHasEmptyMetadata) {
   EXPECT_CALL(*frame, SetRTPTimestamp(_)).Times(0);
   EXPECT_CALL(*frame, SetPayloadType(_)).Times(0);
   EXPECT_CALL(*frame, SetCaptureTime(_)).Times(0);
-  EXPECT_CALL(*frame, SetAudioLevel(_)).Times(0);
 
   RTCEncodedAudioFrame* encoded_frame =
       MakeGarbageCollected<RTCEncodedAudioFrame>(std::move(frame));
@@ -257,7 +246,6 @@ TEST_F(RTCEncodedAudioFrameTest, ConstructorWithMetadataOnEmptyFrameFails) {
   EXPECT_CALL(*frame, SetRTPTimestamp(_)).Times(0);
   EXPECT_CALL(*frame, SetPayloadType(_)).Times(0);
   EXPECT_CALL(*frame, SetCaptureTime(_)).Times(0);
-  EXPECT_CALL(*frame, SetAudioLevel(_)).Times(0);
 
   RTCEncodedAudioFrame* encoded_frame =
       MakeGarbageCollected<RTCEncodedAudioFrame>(std::move(frame));
@@ -292,7 +280,6 @@ TEST_F(RTCEncodedAudioFrameTest,
   EXPECT_CALL(*frame, SetRTPTimestamp(_)).Times(0);
   EXPECT_CALL(*frame, SetPayloadType(_)).Times(0);
   EXPECT_CALL(*frame, SetCaptureTime(_)).Times(0);
-  EXPECT_CALL(*frame, SetAudioLevel(_)).Times(0);
 
   RTCEncodedAudioFrame* encoded_frame =
       MakeGarbageCollected<RTCEncodedAudioFrame>(std::move(frame));
@@ -335,7 +322,6 @@ TEST_F(RTCEncodedAudioFrameTest, ConstructorWithMetadataModifiesMetadata) {
   new_metadata->setRtpTimestamp(kRtpTimestamp2);
   new_metadata->setPayloadType(kPayloadType2);
   new_metadata->setCaptureTime(kCaptureTimeMillis2);
-  new_metadata->setAudioLevel(ToLinearAudioLevel(kAudioLevel_dBov2));
   RTCEncodedAudioFrameOptions* frame_options =
       RTCEncodedAudioFrameOptions::Create();
   frame_options->setMetadata(new_metadata);
@@ -351,17 +337,12 @@ TEST_F(RTCEncodedAudioFrameTest, ConstructorWithMetadataModifiesMetadata) {
   EXPECT_LE(std::abs(new_frame->getMetadata(execution_context)->captureTime() -
                      kCaptureTimeMillis2),
             1.0);
-  EXPECT_EQ(new_frame->getMetadata(execution_context)->audioLevel(),
-            ToLinearAudioLevel(kAudioLevel_dBov2));
-
   EXPECT_NE(encoded_frame->getMetadata(execution_context)->rtpTimestamp(),
             new_frame->getMetadata(execution_context)->rtpTimestamp());
   EXPECT_NE(encoded_frame->getMetadata(execution_context)->payloadType(),
             new_frame->getMetadata(execution_context)->payloadType());
   EXPECT_NE(encoded_frame->getMetadata(execution_context)->captureTime(),
             new_frame->getMetadata(execution_context)->captureTime());
-  EXPECT_NE(encoded_frame->getMetadata(execution_context)->audioLevel(),
-            new_frame->getMetadata(execution_context)->audioLevel());
 }
 
 double ToDOMHighResTimestamp(ExecutionContext* execution_context, int millis) {
@@ -398,8 +379,6 @@ TEST_F(RTCEncodedAudioFrameTest, ConstructorCopiesMetadata) {
   EXPECT_EQ(
       ToDOMHighResTimestamp(v8_scope.GetExecutionContext(), kCaptureTimeMillis),
       new_frame_metadata->captureTime());
-  EXPECT_EQ(ToLinearAudioLevel(kAudioLevel_dBov),
-            new_frame_metadata->audioLevel());
   EXPECT_FALSE(new_frame_metadata->hasReceiveTime());
 }
 
@@ -441,7 +420,6 @@ TEST_F(RTCEncodedAudioFrameTest, ConstructorWithMetadataCopiesMetadata) {
             new_frame_metadata->sequenceNumber());
   EXPECT_EQ(new_metadata->rtpTimestamp(), new_frame_metadata->rtpTimestamp());
   EXPECT_EQ(new_metadata->captureTime(), new_frame_metadata->captureTime());
-  EXPECT_EQ(new_metadata->audioLevel(), new_frame_metadata->audioLevel());
   EXPECT_FALSE(new_metadata->hasReceiveTime());
 }
 
@@ -528,20 +506,6 @@ TEST_F(RTCEncodedAudioFrameTest, FrameWithCaptureTime) {
     // The error is slightly more than 0.1; use 0.11 to avoid flakes.
     EXPECT_LE(std::abs(metadata->getCaptureTimeOr(0.0) - capture_time), 0.11);
   }
-}
-
-TEST_F(RTCEncodedAudioFrameTest, FrameWithAudioLevel) {
-  V8TestingScope v8_scope;
-  std::unique_ptr<MockTransformableAudioFrame> frame =
-      std::make_unique<NiceMock<MockTransformableAudioFrame>>();
-  ON_CALL(*frame, AudioLevel).WillByDefault(Return(kAudioLevel_dBov));
-
-  RTCEncodedAudioFrame* encoded_frame =
-      MakeGarbageCollected<RTCEncodedAudioFrame>(std::move(frame));
-  RTCEncodedAudioFrameMetadata* metadata =
-      encoded_frame->getMetadata(v8_scope.GetExecutionContext());
-  EXPECT_TRUE(metadata->hasAudioLevel());
-  EXPECT_EQ(metadata->audioLevel(), ToLinearAudioLevel(kAudioLevel_dBov));
 }
 
 }  // namespace blink

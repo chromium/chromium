@@ -185,9 +185,6 @@ RTCEncodedAudioFrameMetadata* RTCEncodedAudioFrame::getMetadata(
           execution_context, *sender_capture_time_offset));
     }
   }
-  if (std::optional<double> audio_level_dbov = delegate_->AudioLevel()) {
-    metadata->setAudioLevel(*audio_level_dbov);
-  }
   return metadata;
 }
 
@@ -216,13 +213,8 @@ base::expected<void, String> RTCEncodedAudioFrame::SetMetadata(
             .InMicroseconds());
   }
 
-  std::optional<double> linear_audio_level;
-  if (metadata->hasAudioLevel()) {
-    linear_audio_level = metadata->audioLevel();
-  }
-
-  return delegate_->SetWebRtcFrameMetadata(
-      metadata->rtpTimestamp(), payload_type, capture_time, linear_audio_level);
+  return delegate_->SetWebRtcFrameMetadata(metadata->rtpTimestamp(),
+                                           payload_type, capture_time);
 }
 
 void RTCEncodedAudioFrame::setMetadata(ExecutionContext* execution_context,

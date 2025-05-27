@@ -76,8 +76,7 @@ base::expected<void, String>
 RTCEncodedAudioFrameDelegate::SetWebRtcFrameMetadata(
     uint32_t rtp_timestamp,
     std::optional<uint8_t> payload_type,
-    std::optional<webrtc::Timestamp> capture_time,
-    std::optional<double> linear_audio_level) {
+    std::optional<webrtc::Timestamp> capture_time) {
   base::AutoLock lock(lock_);
   if (!webrtc_frame_) {
     return base::unexpected("Underlying webrtc frame doesn't exist.");
@@ -96,24 +95,12 @@ RTCEncodedAudioFrameDelegate::SetWebRtcFrameMetadata(
     return base::unexpected("captureTime cannot be modified");
   }
 
-  std::optional<uint8_t> audio_level_dbov;
-  if (linear_audio_level.has_value()) {
-    audio_level_dbov = FromLinearAudioLevel(*linear_audio_level);
-  }
-  if (audio_level_dbov != webrtc_frame_->AudioLevel() &&
-      !webrtc_frame_->CanSetAudioLevel()) {
-    return base::unexpected("audioLevel cannot be modified");
-  }
-
   webrtc_frame_->SetRTPTimestamp(rtp_timestamp);
   if (payload_type.has_value() && webrtc_frame_->CanSetPayloadType()) {
     webrtc_frame_->SetPayloadType(*payload_type);
   }
   if (webrtc_frame_->CanSetCaptureTime()) {
     webrtc_frame_->SetCaptureTime(capture_time);
-  }
-  if (webrtc_frame_->CanSetAudioLevel()) {
-    webrtc_frame_->SetAudioLevel(audio_level_dbov);
   }
 
   return base::ok();
@@ -174,14 +161,6 @@ RTCEncodedAudioFrameDelegate::SenderCaptureTimeOffset() const {
     return std::nullopt;
   }
   return ConvertToOptionalTimeDelta(webrtc_frame_->SenderCaptureTimeOffset());
-}
-
-std::optional<double> RTCEncodedAudioFrameDelegate::AudioLevel() const {
-  base::AutoLock lock(lock_);
-  return webrtc_frame_ && webrtc_frame_->AudioLevel()
-             ? std::make_optional(
-                   ToLinearAudioLevel(*webrtc_frame_->AudioLevel()))
-             : std::nullopt;
 }
 
 std::unique_ptr<webrtc::TransformableAudioFrameInterface>
