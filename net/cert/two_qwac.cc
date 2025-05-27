@@ -6,6 +6,7 @@
 
 #include "base/base64.h"
 #include "base/base64url.h"
+#include "base/containers/contains.h"
 #include "base/json/json_reader.h"
 #include "base/strings/string_split.h"
 #include "crypto/signature_verifier.h"
@@ -222,8 +223,7 @@ std::optional<Jades2QwacHeader> ParseJades2QwacHeader(
   if (*hash_m == "S256") {
     parsed_header.hash_alg = crypto::hash::kSha256;
   } else if (*hash_m == "S384") {
-    // TODO(crbug.com/392929826): add SHA-384 to crypto/hash.h.
-    return std::nullopt;
+    parsed_header.hash_alg = crypto::hash::kSha384;
   } else if (*hash_m == "S512") {
     parsed_header.hash_alg = crypto::hash::kSha512;
   } else {
@@ -498,6 +498,21 @@ bool TwoQwacCertBinding::VerifySignature() {
   // Step 10: In the JWS Compact Serialization case, the result can simply
   // indicate whether or not the JWS was successfully validated.
   return verifier.VerifyFinal();
+}
+
+bool TwoQwacCertBinding::BindsTlsCert(base::span<const uint8_t> tls_cert_der) {
+  // header.bound_cert_hashes contains a list of Digest(base64url(der)), where
+  // the digest algorithm is specified by header.hash_alg. Compute the digest of
+  // the base64url-encoded cert and search for that in the list of bound cert
+  // hashes.
+  std::string tls_cert_b64;
+  base::Base64UrlEncode(tls_cert_der, base::Base64UrlEncodePolicy::OMIT_PADDING,
+                        &tls_cert_b64);
+  std::vector<uint8_t> tls_cert_hash(
+      crypto::hash::DigestSizeForHashKind(header_.hash_alg));
+  crypto::hash::Hash(header_.hash_alg, tls_cert_b64, tls_cert_hash);
+
+  return base::Contains(header_.bound_cert_hashes, tls_cert_hash);
 }
 
 }  // namespace net

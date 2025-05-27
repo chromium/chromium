@@ -8,9 +8,11 @@
 
 #include "base/base64.h"
 #include "base/base64url.h"
+#include "base/containers/span.h"
 #include "base/functional/callback.h"
 #include "base/json/json_string_value_serializer.h"
 #include "base/values.h"
+#include "crypto/hash.h"
 #include "net/test/cert_builder.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/boringssl/src/include/openssl/rsa.h"
@@ -23,11 +25,23 @@ class TwoQwacCertBindingBuilder {
   TwoQwacCertBindingBuilder()
       : cert_chain_(net::CertBuilder::CreateSimpleChain(2)) {
     GenerateKeyForSigAlg();
+    // set bound_certs_ to two bogus values
+    bound_certs_ = {"one", "two"};
   }
 
   void SetJwsSigAlg(JwsSigAlg sig_alg) {
     sig_alg_ = sig_alg;
     GenerateKeyForSigAlg();
+  }
+
+  void SetHashAlg(crypto::hash::HashKind hash_alg) {
+    hash_alg_ = hash_alg;
+    Invalidate();
+  }
+
+  void SetBoundCerts(std::vector<std::string> bound_certs) {
+    bound_certs_ = bound_certs;
+    Invalidate();
   }
 
   // Set values to override in the JWS header.
@@ -77,31 +91,62 @@ class TwoQwacCertBindingBuilder {
     return "";
   }
 
-  void GenerateHeader() {
-    // Build the minimal JWS header needed for a 2-QWAC TLS certificate binding.
-    base::DictValue header =
-        base::DictValue()
-            .Set("alg", SigAlg())
-            .Set("cty", "TLS-Certificate-Binding-v1")
-            .Set("sigD",
-                 base::Value::Dict()
-                     .Set("mId", "http://uri.etsi.org/19182/ObjectIdByURIHash")
-                     .Set("pars", base::Value::List().Append("").Append(""))
-                     .Set("hashM", "S256")
-                     // These are hashes of the certs that this TLS certificate
-                     // binding binds, not hashes of the certs in the x5c cert
-                     // chain.
-                     //
-                     // TODO(crbug.com/392931070): Add support to set the bound
-                     // certs in this certificate binding.
-                     .Set("hashV", base::Value::List()
-                                       .Append("fakehash1A")
-                                       .Append("fakehash2A")));
+  std::string HashAlg() {
+    switch (hash_alg_) {
+      case crypto::hash::kSha256:
+        return "S256";
+      case crypto::hash::kSha384:
+        return "S384";
+      case crypto::hash::kSha512:
+        return "S512";
+      default:
+        return "";
+    }
+  }
+
+  base::ListValue GenerateX5cHeaderValue() {
     base::ListValue x5c_list;
     for (const auto& cert : cert_chain_) {
       x5c_list.Append(base::Base64Encode(cert->GetDER()));
     }
-    header.Set("x5c", std::move(x5c_list));
+    return x5c_list;
+  }
+
+  base::DictValue GenerateSigDHeaderValue() {
+    base::DictValue sig_d =
+        base::Value::Dict()
+            .Set("mId", "http://uri.etsi.org/19182/ObjectIdByURIHash")
+            .Set("hashM", HashAlg());
+    base::ListValue pars;
+    base::ListValue hash_v;
+    for (const auto& bound_cert : bound_certs_) {
+      // ETSI TS 119 182-1 clause 5.2.8.1: Each element of the "hashV" array
+      // shall contain the base64url-encoded digest value of the
+      // base64url-encoded data object.
+      std::string cert_b64;
+      base::Base64UrlEncode(
+          bound_cert, base::Base64UrlEncodePolicy::OMIT_PADDING, &cert_b64);
+      std::vector<uint8_t> cert_hash(
+          crypto::hash::DigestSizeForHashKind(hash_alg_));
+      crypto::hash::Hash(hash_alg_, cert_b64, cert_hash);
+      std::string hash_b64;
+      base::Base64UrlEncode(
+          cert_hash, base::Base64UrlEncodePolicy::OMIT_PADDING, &hash_b64);
+      hash_v.Append(hash_b64);
+      pars.Append("");
+    }
+    sig_d.Set("pars", std::move(pars));
+    sig_d.Set("hashV", std::move(hash_v));
+    return sig_d;
+  }
+
+  void GenerateHeader() {
+    // Build the minimal JWS header needed for a 2-QWAC TLS certificate binding.
+    base::DictValue header = base::DictValue()
+                                 .Set("alg", SigAlg())
+                                 .Set("cty", "TLS-Certificate-Binding-v1")
+                                 .Set("x5c", GenerateX5cHeaderValue())
+                                 .Set("sigD", GenerateSigDHeaderValue());
     // Add/override values in the header
     header.Merge(header_overrides_.Clone());
 
@@ -154,8 +199,10 @@ class TwoQwacCertBindingBuilder {
   }
 
   std::vector<std::unique_ptr<net::CertBuilder>> cert_chain_;
+  std::vector<std::string> bound_certs_;
   base::DictValue header_overrides_;
   JwsSigAlg sig_alg_ = JwsSigAlg::kEcdsaP256Sha256;
+  crypto::hash::HashKind hash_alg_ = crypto::hash::kSha256;
   // The header and signature are lazily built, and if any inputs to the builder
   // are possibly modified, then they are cleared.
   std::optional<std::string> header_b64_;
@@ -414,11 +461,10 @@ TEST(ParseTlsCertificateBinding, SigDHeaderParam) {
           true,
       },
       {
-          // TODO(crbug.com/392929826): Support SHA-384.
-          "SHA-384 not supported",
+          "SHA-384 supported",
           base::BindRepeating(
               [](base::DictValue* sig_d) { sig_d->Set("hashM", "S384"); }),
-          false,
+          true,
       },
       {
           "SHA-512 supported",
@@ -632,6 +678,78 @@ TEST(VerifyTwoQwacCertBinding, InvalidSignature) {
       TwoQwacCertBinding::Parse(jws_bad_sig);
   ASSERT_TRUE(cert_binding_bad_sig.has_value());
   EXPECT_FALSE(cert_binding_bad_sig->VerifySignature());
+}
+
+TEST(TwoQwacCertBinding, BoundCertPresent) {
+  auto [leaf, root] = net::CertBuilder::CreateSimpleChain2();
+  std::string bound_cert = leaf->GetDER();
+  TwoQwacCertBindingBuilder binding_builder;
+  binding_builder.SetBoundCerts({bound_cert});
+  std::string jws = binding_builder.GetJWS();
+  std::optional<TwoQwacCertBinding> cert_binding =
+      TwoQwacCertBinding::Parse(jws);
+  ASSERT_TRUE(cert_binding.has_value());
+
+  EXPECT_TRUE(cert_binding->BindsTlsCert(base::as_byte_span(bound_cert)));
+}
+
+TEST(TwoQwacCertBinding, MultipleBoundCerts) {
+  auto [leaf1, root1] = net::CertBuilder::CreateSimpleChain2();
+  std::string bound_cert1 = leaf1->GetDER();
+  auto [leaf2, root2] = net::CertBuilder::CreateSimpleChain2();
+  std::string bound_cert2 = leaf2->GetDER();
+  TwoQwacCertBindingBuilder binding_builder;
+  binding_builder.SetBoundCerts({bound_cert1, bound_cert2});
+  std::string jws = binding_builder.GetJWS();
+  std::optional<TwoQwacCertBinding> cert_binding =
+      TwoQwacCertBinding::Parse(jws);
+  ASSERT_TRUE(cert_binding.has_value());
+
+  EXPECT_TRUE(cert_binding->BindsTlsCert(base::as_byte_span(bound_cert1)));
+  EXPECT_TRUE(cert_binding->BindsTlsCert(base::as_byte_span(bound_cert2)));
+}
+
+TEST(TwoQwacCertBinding, UnboundCertNotFound) {
+  auto [leaf, root] = net::CertBuilder::CreateSimpleChain2();
+  std::string bound_cert = leaf->GetDER();
+  TwoQwacCertBindingBuilder binding_builder;
+  binding_builder.SetBoundCerts({bound_cert});
+  std::string jws = binding_builder.GetJWS();
+  std::optional<TwoQwacCertBinding> cert_binding =
+      TwoQwacCertBinding::Parse(jws);
+  ASSERT_TRUE(cert_binding.has_value());
+
+  auto [leaf2, root2] = net::CertBuilder::CreateSimpleChain2();
+  std::string unbound_cert = leaf2->GetDER();
+  EXPECT_FALSE(cert_binding->BindsTlsCert(base::as_byte_span(unbound_cert)));
+}
+
+TEST(TwoQwacCertBinding, BoundCertPresentSha384) {
+  auto [leaf, root] = net::CertBuilder::CreateSimpleChain2();
+  std::string bound_cert = leaf->GetDER();
+  TwoQwacCertBindingBuilder binding_builder;
+  binding_builder.SetBoundCerts({bound_cert});
+  binding_builder.SetHashAlg(crypto::hash::kSha384);
+  std::string jws = binding_builder.GetJWS();
+  std::optional<TwoQwacCertBinding> cert_binding =
+      TwoQwacCertBinding::Parse(jws);
+  ASSERT_TRUE(cert_binding.has_value());
+
+  EXPECT_TRUE(cert_binding->BindsTlsCert(base::as_byte_span(bound_cert)));
+}
+
+TEST(TwoQwacCertBinding, BoundCertPresentSha512) {
+  auto [leaf, root] = net::CertBuilder::CreateSimpleChain2();
+  std::string bound_cert = leaf->GetDER();
+  TwoQwacCertBindingBuilder binding_builder;
+  binding_builder.SetBoundCerts({bound_cert});
+  binding_builder.SetHashAlg(crypto::hash::kSha512);
+  std::string jws = binding_builder.GetJWS();
+  std::optional<TwoQwacCertBinding> cert_binding =
+      TwoQwacCertBinding::Parse(jws);
+  ASSERT_TRUE(cert_binding.has_value());
+
+  EXPECT_TRUE(cert_binding->BindsTlsCert(base::as_byte_span(bound_cert)));
 }
 
 }  // namespace
