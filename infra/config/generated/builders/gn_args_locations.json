@@ -536,8 +536,6 @@
     "linux-blink-rel": "try/linux-blink-rel/gn-args.json",
     "linux-wpt-chromium-rel": "try/linux-wpt-chromium-rel/gn-args.json",
     "mac-skia-alt-arm64-blink-rel": "try/mac-skia-alt-arm64-blink-rel/gn-args.json",
-    "mac11.0-blink-rel": "try/mac11.0-blink-rel/gn-args.json",
-    "mac11.0.arm64-blink-rel": "try/mac11.0.arm64-blink-rel/gn-args.json",
     "mac12.0-blink-rel": "try/mac12.0-blink-rel/gn-args.json",
     "mac12.0.arm64-blink-rel": "try/mac12.0.arm64-blink-rel/gn-args.json",
     "mac13-blink-rel": "try/mac13-blink-rel/gn-args.json",

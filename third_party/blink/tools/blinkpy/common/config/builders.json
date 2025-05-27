@@ -81,30 +81,6 @@
         },
         "is_try_builder": true
     },
-    "mac11.0-blink-rel": {
-        "main": "tryserver.blink",
-        "port_name": "mac-mac11",
-        "specifiers": ["Mac11", "Release"],
-        "steps": {
-            "blink_web_tests": {},
-            "blink_wpt_tests": {},
-            "chrome_wpt_tests": {},
-            "headless_shell_wpt_tests": {}
-        },
-        "is_try_builder": true
-    },
-    "mac11.0.arm64-blink-rel": {
-        "main": "tryserver.blink",
-        "port_name": "mac-mac11-arm64",
-        "specifiers": ["Mac11-arm64", "Release"],
-        "steps": {
-            "blink_web_tests": {},
-            "blink_wpt_tests": {},
-            "chrome_wpt_tests": {},
-            "headless_shell_wpt_tests": {}
-        },
-        "is_try_builder": true
-    },
     "mac12.0-blink-rel": {
         "main": "tryserver.blink",
         "port_name": "mac-mac12",
