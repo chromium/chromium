@@ -207,21 +207,16 @@ class CORE_EXPORT CanvasRenderingContext
   }
   void DidDraw(const SkIRect& dirty_rect, CanvasPerformanceMonitor::DrawType);
 
-  // Returns a CanvasResourceProvider containing the current content, or nullptr
-  // if it was not possible to obtain that content. Default implementation
-  // returns the host's CanvasResourceProvider, which is suitable for contexts
-  // that write directly to that resource provider. Other contexts will need to
-  // override this method as suitable.
-  virtual CanvasResourceProvider* PaintRenderingResultsToCanvas(
-      SourceDrawingBuffer) {
-    return Host()->ResourceProvider();
-  }
-
-  // Returns a StaticBitmapImage containing the current content, or nullptr
-  // if it was not possible to obtain that content.
+  // Returns a StaticBitmapImage containing the current content, or nullptr if
+  // it was not possible to obtain that content. For historical reasons, some
+  // clients need to know whether in the case of failure the
+  // CanvasResourceProvider being used internally was present; such clients can
+  // pass in `had_canvas_resource_provider`.
+  // TODO(crbug.com/352263194): Remove `had_canvas_resource_provider`.
   scoped_refptr<StaticBitmapImage> PaintRenderingResultsToSnapshot(
       SourceDrawingBuffer source_buffer,
-      FlushReason reason);
+      FlushReason reason,
+      bool* had_canvas_resource_provider = nullptr);
 
   // Copy the contents of the rendering context to a media::VideoFrame created
   // using `frame_pool`, with color space specified by `dst_color_space`. If
@@ -346,6 +341,16 @@ class CORE_EXPORT CanvasRenderingContext
                          CanvasRenderingAPI);
 
   virtual void Dispose();
+
+  // Returns a CanvasResourceProvider containing the current content, or nullptr
+  // if it was not possible to obtain that content. Default implementation
+  // returns the host's CanvasResourceProvider, which is suitable for contexts
+  // that write directly to that resource provider. Other contexts will need to
+  // override this method as suitable.
+  virtual CanvasResourceProvider* PaintRenderingResultsToCanvas(
+      SourceDrawingBuffer) {
+    return Host()->ResourceProvider();
+  }
 
  private:
   Member<CanvasRenderingContextHost> host_;
