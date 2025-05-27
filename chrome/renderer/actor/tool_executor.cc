@@ -25,12 +25,7 @@ using content::RenderFrame;
 
 namespace actor {
 
-ToolExecutor::ToolExecutor(RenderFrame* frame) : frame_(*frame) {
-  // TODO(crbug.com/398260855): Currently, this is created only for the main
-  // frame but eventually this will have to support all local roots in a page.
-  CHECK(frame->IsMainFrame());
-  CHECK(!frame->IsInFencedFrameTree());
-}
+ToolExecutor::ToolExecutor(RenderFrame* frame) : frame_(*frame) {}
 
 ToolExecutor::~ToolExecutor() = default;
 
