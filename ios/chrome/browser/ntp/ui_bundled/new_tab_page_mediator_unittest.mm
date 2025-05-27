@@ -12,10 +12,6 @@
 #import "base/test/scoped_feature_list.h"
 #import "components/feature_engagement/public/tracker.h"
 #import "components/feed/core/v2/public/common_enums.h"
-#import "components/regional_capabilities/regional_capabilities_switches.h"
-#import "components/search_engines/template_url.h"
-#import "components/search_engines/template_url_data.h"
-#import "components/search_engines/template_url_service.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "components/sync/test/test_sync_service.h"
 #import "ios/chrome/browser/browser_view/model/browser_view_visibility_audience.h"
@@ -179,24 +175,6 @@ class NewTabPageMediatorTest : public PlatformTest {
         heightAboveFeed];
     mediator_.consumer = ntp_consumer;
     return ntp_consumer;
-  }
-
-  void SetCustomSearchEngine() {
-    TemplateURLService* template_url_service =
-        ios::TemplateURLServiceFactory::GetForProfile(profile_.get());
-    // A custom search engine will have a `prepopulate_id` of 0.
-    const int kCustomSearchEnginePrepopulateId = 0;
-    TemplateURLData template_url_data;
-    template_url_data.prepopulate_id = kCustomSearchEnginePrepopulateId;
-    template_url_data.SetURL("https://www.example.com/?q={searchTerms}");
-    template_url_service->SetUserSelectedDefaultSearchProvider(
-        template_url_service->Add(
-            std::make_unique<TemplateURL>(template_url_data)));
-  }
-
-  void OverrideSearchEngineChoiceCountry(std::string_view country) {
-    base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
-        switches::kSearchEngineChoiceCountry, country);
   }
 
  protected:
