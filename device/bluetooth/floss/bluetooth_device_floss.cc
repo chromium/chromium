@@ -826,6 +826,30 @@ void BluetoothDeviceFloss::OnGetRemoteAddressType(
   std::move(callback).Run();
 }
 
+void BluetoothDeviceFloss::OnGetRemoteBondState(base::OnceClosure callback,
+                                                DBusResult<uint32_t> ret) {
+  if (!ret.has_value()) {
+    BLUETOOTH_LOG(ERROR) << "GetBondState() failed: " << ret.error();
+    return;
+  }
+  SetBondState(static_cast<FlossAdapterClient::BondState>(*ret), std::nullopt);
+  std::move(callback).Run();
+}
+
+void BluetoothDeviceFloss::OnGetRemoteConnectionState(
+    base::OnceClosure callback,
+    DBusResult<uint32_t> ret) {
+  if (!ret.has_value()) {
+    BLUETOOTH_LOG(ERROR) << "GetConnectionState() failed: " << ret.error();
+    return;
+  }
+  SetConnectionState(*ret);
+  if ((*ret >= 1) != IsConnected()) {
+    SetIsConnected(*ret >= 1);
+  }
+  std::move(callback).Run();
+}
+
 void BluetoothDeviceFloss::OnConnectAllEnabledProfiles(DBusResult<Void> ret) {
   if (!ret.has_value()) {
     BLUETOOTH_LOG(ERROR) << "Failed to connect all enabled profiles: "
@@ -1008,6 +1032,21 @@ void BluetoothDeviceFloss::FetchRemoteAddressType(base::OnceClosure callback) {
       AsFlossDeviceId());
 }
 
+void BluetoothDeviceFloss::FetchRemoteBondState(base::OnceClosure callback) {
+  FlossDBusManager::Get()->GetAdapterClient()->GetBondState(
+      base::BindOnce(&BluetoothDeviceFloss::OnGetRemoteBondState,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)),
+      AsFlossDeviceId());
+}
+
+void BluetoothDeviceFloss::FetchRemoteConnectionState(
+    base::OnceClosure callback) {
+  FlossDBusManager::Get()->GetAdapterClient()->GetConnectionState(
+      base::BindOnce(&BluetoothDeviceFloss::OnGetRemoteConnectionState,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)),
+      AsFlossDeviceId());
+}
+
 void BluetoothDeviceFloss::InitializeDeviceProperties(
     PropertiesState state,
     base::OnceClosure callback) {
@@ -1021,7 +1060,7 @@ void BluetoothDeviceFloss::InitializeDeviceProperties(
   // This must be incremented when adding more properties below
   // and followed up with a TriggerInitDevicePropertiesCallback()
   // in the callback.
-  num_pending_properties_ += 6;
+  num_pending_properties_ += 8;
   FetchRemoteType(
       base::BindOnce(&BluetoothDeviceFloss::TriggerInitDevicePropertiesCallback,
                      weak_ptr_factory_.GetWeakPtr()));
@@ -1038,6 +1077,12 @@ void BluetoothDeviceFloss::InitializeDeviceProperties(
       base::BindOnce(&BluetoothDeviceFloss::TriggerInitDevicePropertiesCallback,
                      weak_ptr_factory_.GetWeakPtr()));
   FetchRemoteAddressType(
+      base::BindOnce(&BluetoothDeviceFloss::TriggerInitDevicePropertiesCallback,
+                     weak_ptr_factory_.GetWeakPtr()));
+  FetchRemoteBondState(
+      base::BindOnce(&BluetoothDeviceFloss::TriggerInitDevicePropertiesCallback,
+                     weak_ptr_factory_.GetWeakPtr()));
+  FetchRemoteConnectionState(
       base::BindOnce(&BluetoothDeviceFloss::TriggerInitDevicePropertiesCallback,
                      weak_ptr_factory_.GetWeakPtr()));
 }
