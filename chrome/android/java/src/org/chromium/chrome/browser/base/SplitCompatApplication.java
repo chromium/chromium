@@ -206,10 +206,6 @@ public class SplitCompatApplication extends Application {
             performBrowserProcessPreloading(context);
         }
 
-        // Write installed modules to crash keys. This needs to be done as early as possible so
-        // that these values are set before any crashes are reported.
-        ModuleUtil.updateCrashKeys();
-
         AsyncTask.takeOverAndroidThreadPool();
         ResourceBundle.setAvailablePakLocales(ProductConfig.LOCALES);
         LibraryLoader.getInstance().setLinkerImplementation(ProductConfig.USE_CHROMIUM_LINKER);
@@ -254,6 +250,9 @@ public class SplitCompatApplication extends Application {
                 AppLocaleUtils.maybeMigrateOverrideLanguage();
             }
         }
+
+        // Write installed modules to crash keys.
+        ModuleUtil.updateCrashKeys();
 
         // WebView installs its own PureJavaExceptionHandler.
         // Incremental install disables process isolation, so things in this block will
