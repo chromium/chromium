@@ -522,8 +522,6 @@ class VIZ_SERVICE_EXPORT CompositorFrameSinkSupport
   // The set of surfaces owned by this frame sink that have pending frame.
   base::flat_set<raw_ptr<Surface, CtnExperimental>> pending_surfaces_;
 
-  base::TimeDelta preferred_frame_interval_ = BeginFrameArgs::MinInterval();
-
   // This is the last known frame interval for this sink used to decide
   // when to throttle begin frames.
   base::TimeDelta last_known_frame_interval_ = BeginFrameArgs::MinInterval();

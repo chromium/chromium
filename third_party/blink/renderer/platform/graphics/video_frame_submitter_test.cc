@@ -1028,9 +1028,6 @@ TEST_F(VideoFrameSubmitterTest, PreferredInterval) {
   OnBeginFrame(args, {}, WTF::Vector<viz::ReturnedResource>());
   task_environment_.RunUntilIdle();
 
-  EXPECT_EQ(sink_->last_submitted_compositor_frame()
-                .metadata.preferred_frame_interval,
-            video_frame_provider_->preferred_interval);
   const auto& frame_interval_inputs =
       sink_->last_submitted_compositor_frame().metadata.frame_interval_inputs;
   ASSERT_EQ(frame_interval_inputs.content_interval_info.size(), 1u);
