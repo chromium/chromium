@@ -1512,7 +1512,7 @@
     },
     {
       name: "CSSShapeFunctionDirectionAgnosticArc",
-      status: "test",
+      status: "stable",
     },
     {
       name: "CSSShapeFunctionOffsetPath",
