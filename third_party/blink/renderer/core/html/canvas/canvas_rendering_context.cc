@@ -38,13 +38,6 @@
 
 namespace blink {
 
-// static
-bool CanvasRenderingContext::
-    CheckProviderInCanvas2DRenderingContextIsPaintable() {
-  return base::FeatureList::IsEnabled(
-      features::kIsPaintableChecksResourceProviderInsteadOfBridge);
-}
-
 CanvasRenderingContext::CanvasRenderingContext(
     CanvasRenderingContextHost* host,
     const CanvasContextCreationAttributesCore& attrs,

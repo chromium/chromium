@@ -723,10 +723,6 @@ extern const char kUseDnsHttpsSvcbAlpnDescription[];
 extern const char kIsolatedSandboxedIframesName[];
 extern const char kIsolatedSandboxedIframesDescription[];
 
-extern const char kIsPaintableChecksResourceProviderInsteadOfBridgeName[];
-extern const char
-    kIsPaintableChecksResourceProviderInsteadOfBridgeDescription[];
-
 extern const char kExperimentalAccessibilityLanguageDetectionName[];
 extern const char kExperimentalAccessibilityLanguageDetectionDescription[];
 

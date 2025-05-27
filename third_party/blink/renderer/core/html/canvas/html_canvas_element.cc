@@ -1783,29 +1783,13 @@ void HTMLCanvasElement::SetResourceProviderForTesting(
 }
 
 void HTMLCanvasElement::DiscardResourceProvider() {
-  // Historically this method dropped `canvas2d_bridge_`. However, changing
-  // CanvasRenderingContext2D::IsPaintable() to check for the presence of the
-  // resource provider instead of the bridge has the intentional behavioral
-  // change that we no longer guard recreation of the resource provider in
-  // CanvasRenderingContext2D::Restore() by a check of IsPaintable() being true.
-  // In this case, it is necessary to preserve the bridge (and hibernation
-  // handler) to preserve the invariant that the hibernation handler is present
-  // whenever there is a valid resource provider for Canvas2D. We can simply
-  // clear hibernation rather than dropping the bridge entirely.
-  if (CanvasRenderingContext::
-          CheckProviderInCanvas2DRenderingContextIsPaintable()) {
-    if (IsHibernating()) {
-      // Ensure consistency of metrics reporting across the change from the
-      // previous code flow.
-      // TODO(crbug.com/40280152): Determine how we want to report metrics here
-      // in the long-term once the dust has settled on the killswitch removal.
-      CanvasHibernationHandler::ReportHibernationEvent(
-          CanvasHibernationHandler::HibernationEvent::
-              kHibernationEndedWithTeardown);
-      GetHibernationHandler()->Clear();
-    }
-  } else {
-    canvas2d_bridge_.reset();
+  if (IsHibernating()) {
+    // Ensure consistency of metrics reporting across the change from the
+    // previous code flow.
+    CanvasHibernationHandler::ReportHibernationEvent(
+        CanvasHibernationHandler::HibernationEvent::
+            kHibernationEndedWithTeardown);
+    GetHibernationHandler()->Clear();
   }
   ResetLayer();
   CanvasResourceHost::DiscardResourceProvider();
@@ -2249,14 +2233,6 @@ void HTMLCanvasElement::ReplaceExistingResourceProviderFor2DContext() {
 
 CanvasResourceProvider* HTMLCanvasElement::GetOrCreateCanvasResourceProvider() {
   if (IsRenderingContext2D()) {
-    if (!CanvasRenderingContext::
-            CheckProviderInCanvas2DRenderingContextIsPaintable()) {
-      Canvas2DLayerBridge* bridge = GetOrCreateCanvas2DLayerBridge();
-      if (bridge == nullptr) {
-        return nullptr;
-      }
-    }
-
     CanvasResourceProvider* resource_provider =
         GetResourceProviderForCanvas2D();
     if (context_->isContextLost() && !context_->IsContextBeingRestored()) {
@@ -2282,37 +2258,31 @@ CanvasResourceProvider* HTMLCanvasElement::GetOrCreateCanvasResourceProvider() {
       return resource_provider;
     }
 
-    if (CanvasRenderingContext::
-            CheckProviderInCanvas2DRenderingContextIsPaintable()) {
-      if (did_fail_to_create_resource_provider_) {
-        return nullptr;
-      }
+    if (did_fail_to_create_resource_provider_) {
+      return nullptr;
+    }
 
-      if (!IsValidImageSize(Size())) {
-        did_fail_to_create_resource_provider_ = true;
-        if (!Size().IsEmpty() && context_) {
-          context_->LoseContext(CanvasRenderingContext::kInvalidCanvasSize);
-        }
-        return nullptr;
+    if (!IsValidImageSize(Size())) {
+      did_fail_to_create_resource_provider_ = true;
+      if (!Size().IsEmpty() && context_) {
+        context_->LoseContext(CanvasRenderingContext::kInvalidCanvasSize);
       }
+      return nullptr;
+    }
 
-      UpdatePreferred2DRasterMode();
+    UpdatePreferred2DRasterMode();
 
-      if (!canvas2d_bridge_) {
-        canvas2d_bridge_ = std::make_unique<Canvas2DLayerBridge>(*this);
-      }
+    if (!canvas2d_bridge_) {
+      canvas2d_bridge_ = std::make_unique<Canvas2DLayerBridge>(*this);
     }
 
     resource_provider = RecreateCanvasResourceProviderFor2DContext(
         canvas2d_bridge_->GetHibernationHandler());
 
-    if (CanvasRenderingContext::
-            CheckProviderInCanvas2DRenderingContextIsPaintable()) {
-      UpdateMemoryUsage();
+    UpdateMemoryUsage();
 
-      if (context_) {
-        SetNeedsCompositingUpdate();
-      }
+    if (context_) {
+      SetNeedsCompositingUpdate();
     }
 
     return resource_provider;

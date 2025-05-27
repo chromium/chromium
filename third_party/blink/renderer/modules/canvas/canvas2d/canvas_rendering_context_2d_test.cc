@@ -2447,63 +2447,12 @@ TEST_P(CanvasRenderingContext2DTestAccelerated, TeardownEndsHibernation) {
   }
 }
 
-// Tests that when `kIsPaintableChecksResourceProviderInsteadOfBridge` is
-// disabled, tearing down the page causes a pending hibernation to be aborted
-// because the hibernation handler was torn down.
-TEST_P(CanvasRenderingContext2DTestAccelerated,
-       TeardownWhileHibernationIsPendingAbortsHibernationDueToBridgeTeardown) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      {features::kCanvas2DHibernation},
-      {features::kIsPaintableChecksResourceProviderInsteadOfBridge});
-
-  CreateContext(kNonOpaque);
-  CanvasElement().GetOrCreateCanvasResourceProvider();
-  EXPECT_EQ(CanvasElement().GetRasterMode(), RasterMode::kGPU);
-
-  auto& handler = CHECK_DEREF(CanvasElement().GetHibernationHandler());
-  EXPECT_FALSE(handler.IsHibernating());
-
-  // Verify that going to the background triggers hibernation asynchronously.
-  {
-    base::HistogramTester histogram_tester;
-    SetDocumentVisibility(GetDocument(), PageVisibilityState::kHidden);
-
-    histogram_tester.ExpectUniqueSample(
-        "Blink.Canvas.HibernationEvents",
-        CanvasHibernationHandler::HibernationEvent::kHibernationScheduled, 1);
-    EXPECT_FALSE(handler.IsHibernating());
-  }
-
-  // Tear down the page while hibernation is pending.
-  TearDownPage();
-
-  // Verify that running the hibernation task aborts hibernation (and doesn't
-  // crash by calling into the destroyed state).
-  {
-    base::HistogramTester histogram_tester;
-
-    // Run hibernation task.
-    RunIdleTasks();
-
-    histogram_tester.ExpectUniqueSample(
-        "Blink.Canvas.HibernationEvents",
-        CanvasHibernationHandler::HibernationEvent::
-            kHibernationAbortedDueToDestructionWhileHibernatePending,
-        1);
-  }
-}
-
-// Tests that when `kIsPaintableChecksResourceProviderInsteadOfBridge` is
-// enabled, tearing down the page causes a pending hibernation to be aborted
+// Tests that tearing down the page causes a pending hibernation to be aborted
 // because the page teardown causes the resource provider to be discarded.
 TEST_P(CanvasRenderingContext2DTestAccelerated,
        TeardownWhileHibernationIsPendingAbortsHibernationDueToSurfaceLoss) {
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      {features::kCanvas2DHibernation,
-       features::kIsPaintableChecksResourceProviderInsteadOfBridge},
-      {});
+  scoped_feature_list.InitWithFeatures({features::kCanvas2DHibernation}, {});
 
   CreateContext(kNonOpaque);
   CanvasElement().GetOrCreateCanvasResourceProvider();

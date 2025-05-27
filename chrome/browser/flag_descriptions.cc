@@ -637,12 +637,6 @@ const char kIsolatedSandboxedIframesDescription[] =
     "grouped into processes based on their URL's site or origin. The default "
     "grouping when enabled is per-site.";
 
-const char kIsPaintableChecksResourceProviderInsteadOfBridgeName[] =
-    "CanvasRenderingContext2D::IsPaintable() adjustment";
-const char kIsPaintableChecksResourceProviderInsteadOfBridgeDescription[] =
-    "Has CanvasRenderingContext2D::IsPaintable() check for the existence of "
-    "the resource provider rather than the bridge";
-
 #if BUILDFLAG(IS_ANDROID)
 const char kAutofillDeprecateAccessibilityApiName[] =
     "Suppress Autofill Using the Android Accessibility API";
