@@ -17117,6 +17117,24 @@
             ]
         }
     ],
+    "PinnedTabToastOnClose": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "PinnedTabToastOnClose"
+                    ]
+                }
+            ]
+        }
+    ],
     "PinweaverPasswords": [
         {
             "platforms": [
