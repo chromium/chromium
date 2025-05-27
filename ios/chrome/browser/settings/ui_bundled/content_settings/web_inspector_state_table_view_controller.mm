@@ -110,6 +110,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
 }
 
 #pragma mark - Properties
+
 - (TableViewSwitchItem*)webInspectorEnabledItem {
   if (!_webInspectorEnabledItem) {
     _webInspectorEnabledItem = [[TableViewSwitchItem alloc]
