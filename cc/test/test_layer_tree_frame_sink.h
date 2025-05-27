@@ -95,6 +95,7 @@ class TestLayerTreeFrameSink : public LayerTreeFrameSink,
                              bool hit_test_data_changed) override;
   void DidNotProduceFrame(const viz::BeginFrameAck& ack,
                           FrameSkippedReason reason) override;
+  void NotifyNewLocalSurfaceIdExpectedWhilePaused() override {}
 
   // mojom::CompositorFrameSinkClient implementation.
   void DidReceiveCompositorFrameAck(

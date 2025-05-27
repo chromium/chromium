@@ -46,6 +46,7 @@ class TestLayerTreeFrameSink : public cc::LayerTreeFrameSink {
                              bool hit_test_data_changed) override;
   void DidNotProduceFrame(const viz::BeginFrameAck& ack,
                           cc::FrameSkippedReason reason) override;
+  void NotifyNewLocalSurfaceIdExpectedWhilePaused() override {}
 
  private:
   std::vector<viz::TransferableResource> resources_in_use_;

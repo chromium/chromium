@@ -256,6 +256,7 @@ class StubCompositorFrameSink
       std::optional<viz::HitTestRegionList> hit_test_region_list,
       uint64_t submit_time,
       SubmitCompositorFrameSyncCallback callback) override {}
+  void NotifyNewLocalSurfaceIdExpectedWhilePaused() override {}
   void InitializeCompositorFrameSinkType(
       viz::mojom::CompositorFrameSinkType type) override {}
   void BindLayerContext(viz::mojom::PendingLayerContextPtr context,

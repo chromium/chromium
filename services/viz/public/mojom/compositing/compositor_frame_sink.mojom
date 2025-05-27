@@ -81,6 +81,12 @@ interface CompositorFrameSink {
   // CompositorFrame was produced as a result of it.
   DidNotProduceFrame(BeginFrameAck ack);
 
+  // Notifies the frame sink that although a frame may not come soon, we
+  // are expecting a new local surface id. This can be used to clean up
+  // copy requests that would have been cancelled by a compositor frame with a
+  // new local surface id.
+  NotifyNewLocalSurfaceIdExpectedWhilePaused();
+
   // This should be called at most once for the lifetime of this frame sink.
   // Once the value has been set to anything other than kUnspecified, subsequent
   // calls are silently ignored.

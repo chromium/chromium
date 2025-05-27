@@ -114,6 +114,7 @@ class LayerContextImpl : public cc::LayerTreeHostImplClient,
                              bool hit_test_data_changed) override;
   void DidNotProduceFrame(const BeginFrameAck& ack,
                           cc::FrameSkippedReason reason) override;
+  void NotifyNewLocalSurfaceIdExpectedWhilePaused() override;
 
   // mojom::LayerContext:
   void SetVisible(bool visible) override;

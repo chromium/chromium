@@ -62,6 +62,7 @@ class MockCompositorFrameSink : public viz::mojom::blink::CompositorFrameSink {
   }
   MOCK_METHOD1(SubmitCompositorFrameSync_, void(viz::CompositorFrame*));
   MOCK_METHOD1(DidNotProduceFrame, void(const viz::BeginFrameAck&));
+  MOCK_METHOD0(NotifyNewLocalSurfaceIdExpectedWhilePaused, void(void));
   MOCK_METHOD1(SetPreferredFrameInterval, void(base::TimeDelta));
   MOCK_METHOD1(InitializeCompositorFrameSinkType,
                void(viz::mojom::CompositorFrameSinkType));

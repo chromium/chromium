@@ -411,6 +411,12 @@ void SynchronousLayerTreeFrameSink::DidNotProduceFrame(
   // submission of frame depends on DemandDraw calls.
 }
 
+void SynchronousLayerTreeFrameSink::
+    NotifyNewLocalSurfaceIdExpectedWhilePaused() {
+  if (child_support_) {
+    child_support_->NotifyNewLocalSurfaceIdExpectedWhilePaused();
+  }
+}
 
 void SynchronousLayerTreeFrameSink::Invalidate(bool needs_draw) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);

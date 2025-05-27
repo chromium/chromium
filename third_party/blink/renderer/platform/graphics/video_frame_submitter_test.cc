@@ -94,6 +94,7 @@ class VideoMockCompositorFrameSink
   MOCK_METHOD0(SetWantsAnimateOnlyBeginFrames, void());
   MOCK_METHOD0(SetWantsBeginFrameAcks, void());
   MOCK_METHOD0(SetAutoNeedsBeginFrame, void());
+  MOCK_METHOD0(NotifyNewLocalSurfaceIdExpectedWhilePaused, void());
 
   MOCK_METHOD2(DoSubmitCompositorFrame,
                void(const viz::LocalSurfaceId&, viz::CompositorFrame*));

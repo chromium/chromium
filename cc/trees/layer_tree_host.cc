@@ -1611,6 +1611,14 @@ void LayerTreeHost::SetLocalSurfaceIdFromParent(
   pending_commit_state()->local_surface_id_from_parent =
       local_surface_id_from_parent;
 
+  // If rendering is currently paused, we need to notify that a new local
+  // surface id is expected. This is used to unblock pending copy output
+  // requests in viz that might not be satisfied due to the fact that we aren't
+  // producing new frames.
+  if (proxy()->IsRenderingPaused()) {
+    proxy()->NotifyNewLocalSurfaceIdExpectedWhilePaused();
+  }
+
   // If the parent sequence number has not advanced, then there is no need to
   // commit anything. This can occur when the child sequence number has
   // advanced. Which means that child has changed visual properties, and the

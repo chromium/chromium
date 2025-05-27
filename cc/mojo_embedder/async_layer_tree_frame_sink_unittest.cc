@@ -223,6 +223,7 @@ class MockCompositorFrameSink : public viz::mojom::CompositorFrameSink {
   MOCK_METHOD2(BindLayerContext,
                void(viz::mojom::PendingLayerContextPtr, bool));
   MOCK_METHOD1(SetThreads, void(const std::vector<viz::Thread>&));
+  MOCK_METHOD0(NotifyNewLocalSurfaceIdExpectedWhilePaused, void(void));
 
  private:
   mojo::Receiver<viz::mojom::CompositorFrameSink> receiver_{this};

@@ -962,4 +962,15 @@ double ProxyMain::GetPercentDroppedFrames() const {
   return 0.0;
 }
 
+bool ProxyMain::IsRenderingPaused() const {
+  return pause_rendering_;
+}
+
+void ProxyMain::NotifyNewLocalSurfaceIdExpectedWhilePaused() {
+  ImplThreadTaskRunner()->PostTask(
+      FROM_HERE,
+      base::BindOnce(&ProxyImpl::NotifyNewLocalSurfaceIdExpectedWhilePaused,
+                     base::Unretained(proxy_impl_.get())));
+}
+
 }  // namespace cc

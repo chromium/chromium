@@ -200,6 +200,7 @@ class VIZ_SERVICE_EXPORT CompositorFrameSinkSupport
     SubmitCompositorFrame(local_surface_id, std::move(frame),
                           std::move(hit_test_region_list), 0);
   }
+  void NotifyNewLocalSurfaceIdExpectedWhilePaused();
 
   // Mark |id| and all surfaces with smaller ids for destruction. Note that |id|
   // doesn't have to exist at the time of calling.

@@ -101,6 +101,7 @@ class FakeLayerTreeFrameSink : public LayerTreeFrameSink {
                           FrameSkippedReason reason) override;
   std::unique_ptr<LayerContext> CreateLayerContext(
       LayerTreeHostImpl& host_impl) override;
+  void NotifyNewLocalSurfaceIdExpectedWhilePaused() override {}
 
   viz::CompositorFrame* last_sent_frame() { return last_sent_frame_.get(); }
   size_t num_sent_frames() { return num_sent_frames_; }

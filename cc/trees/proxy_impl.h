@@ -125,6 +125,8 @@ class CC_EXPORT ProxyImpl : public LayerTreeHostImplClient,
   }
   void SetShouldThrottleFrameRate(bool flag);
 
+  void NotifyNewLocalSurfaceIdExpectedWhilePaused();
+
  private:
   // LayerTreeHostImplClient implementation
   void DidLoseLayerTreeFrameSinkOnImplThread() override;

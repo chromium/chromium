@@ -135,6 +135,10 @@ void DirectLayerTreeFrameSink::DidNotProduceFrame(
   support_->DidNotProduceFrame(ack);
 }
 
+void DirectLayerTreeFrameSink::NotifyNewLocalSurfaceIdExpectedWhilePaused() {
+  support_->NotifyNewLocalSurfaceIdExpectedWhilePaused();
+}
+
 void DirectLayerTreeFrameSink::DisplayOutputSurfaceLost() {
   is_lost_ = true;
   client_->DidLoseLayerTreeFrameSink();

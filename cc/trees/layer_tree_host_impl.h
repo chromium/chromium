@@ -913,6 +913,8 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
 
   void ReturnResource(viz::ReturnedResource returned_resource);
 
+  void NotifyNewLocalSurfaceIdExpectedWhilePaused();
+
  protected:
   LayerTreeHostImpl(
       const LayerTreeSettings& settings,
@@ -1365,6 +1367,10 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
   // if they cause no damage. This way their termination time can be properly
   // attributed to the end of frame production for the given VSync.
   const bool zero_scroll_metrics_update_enabled_;
+
+  // When true, we are expected to get a new local surface id with the next
+  // commit.
+  bool new_local_surface_id_expected_ = false;
 
   // Must be the last member to ensure this is destroyed first in the
   // destruction order and invalidates all weak pointers.

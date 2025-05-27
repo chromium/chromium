@@ -53,6 +53,7 @@ class DirectLayerTreeFrameSink : public cc::LayerTreeFrameSink,
                              bool hit_test_data_changed) override;
   void DidNotProduceFrame(const viz::BeginFrameAck& ack,
                           cc::FrameSkippedReason reason) override;
+  void NotifyNewLocalSurfaceIdExpectedWhilePaused() override;
 
   // viz::DisplayClient implementation.
   void DisplayOutputSurfaceLost() override;

@@ -970,6 +970,15 @@ SubmitResult CompositorFrameSinkSupport::MaybeSubmitCompositorFrame(
   return SubmitResult::ACCEPTED;
 }
 
+void CompositorFrameSinkSupport::NotifyNewLocalSurfaceIdExpectedWhilePaused() {
+  if (!last_activated_surface_id_.is_valid()) {
+    return;
+  }
+  Surface* previous_surface =
+      surface_manager_->GetSurfaceForId(last_activated_surface_id_);
+  previous_surface->ClearNonRootCopyRequests();
+}
+
 SurfaceReference CompositorFrameSinkSupport::MakeTopLevelRootReference(
     const SurfaceId& surface_id) {
   return SurfaceReference(surface_manager_->GetRootSurfaceId(), surface_id);

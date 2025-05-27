@@ -1390,6 +1390,10 @@ void LayerContextImpl::DidNotProduceFrame(const BeginFrameAck& ack,
   compositor_sink_->DidNotProduceFrame(ack);
 }
 
+void LayerContextImpl::NotifyNewLocalSurfaceIdExpectedWhilePaused() {
+  compositor_sink_->NotifyNewLocalSurfaceIdExpectedWhilePaused();
+}
+
 void LayerContextImpl::SetVisible(bool visible) {
   host_impl_->SetVisible(visible);
 }

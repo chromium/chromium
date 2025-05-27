@@ -453,6 +453,11 @@ void AsyncLayerTreeFrameSink::OnSurfaceEvicted(
   client_->OnSurfaceEvicted(local_surface_id);
 }
 
+void AsyncLayerTreeFrameSink::NotifyNewLocalSurfaceIdExpectedWhilePaused() {
+  DCHECK(compositor_frame_sink_ptr_);
+  compositor_frame_sink_ptr_->NotifyNewLocalSurfaceIdExpectedWhilePaused();
+}
+
 void AsyncLayerTreeFrameSink::OnNeedsBeginFrames(bool needs_begin_frames) {
   DCHECK(compositor_frame_sink_ptr_);
 

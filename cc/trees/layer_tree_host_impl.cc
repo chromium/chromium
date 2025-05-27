@@ -706,6 +706,8 @@ void LayerTreeHostImpl::FinishCommit(
   for (auto& benchmark : state.benchmarks)
     ScheduleMicroBenchmark(std::move(benchmark));
 
+  new_local_surface_id_expected_ = false;
+
   // Dump property trees and layers if VerboseLogEnabled().
   VERBOSE_LOG() << "After finishing commit on impl, the sync tree:"
                 << "\nproperty_trees:\n"
@@ -2916,6 +2918,18 @@ std::optional<SubmitInfo> LayerTreeHostImpl::DrawLayers(FrameData* frame) {
     layer_tree_frame_sink_->SubmitCompositorFrame(
         std::move(compositor_frame),
         /*hit_test_data_changed=*/false);
+
+    // After we submit a frame, if we're expecting a new local surface id, then
+    // notify about that immediately.
+    // TODO(vmpstr): When it comes to ViewTransitions, it is possible that we
+    // can just avoid sending the save directive/copy output requests until the
+    // next frame. However, because this frame submission might race with
+    // LayerTreeHostImpl::NotifyNewLocalSurfaceIdExpectedWhilePaused, this call
+    // is more consistent and 'resolves' the race as far as viz is concerned. If
+    // this is an issue in practice, we need to think of a different approach.
+    if (new_local_surface_id_expected_) {
+      layer_tree_frame_sink_->NotifyNewLocalSurfaceIdExpectedWhilePaused();
+    }
   }
 
 #if DCHECK_IS_ON()
@@ -4892,6 +4906,16 @@ void LayerTreeHostImpl::UpdateChildLocalSurfaceId() {
 void LayerTreeHostImpl::ReturnResource(
     viz::ReturnedResource returned_resource) {
   client_->ReturnResource(std::move(returned_resource));
+}
+
+void LayerTreeHostImpl::NotifyNewLocalSurfaceIdExpectedWhilePaused() {
+  if (new_local_surface_id_expected_) {
+    return;
+  }
+  new_local_surface_id_expected_ = true;
+  if (layer_tree_frame_sink_) {
+    layer_tree_frame_sink_->NotifyNewLocalSurfaceIdExpectedWhilePaused();
+  }
 }
 
 void LayerTreeHostImpl::CollectScrollbarUpdatesForCommit(

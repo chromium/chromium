@@ -139,6 +139,9 @@ class VideoFrameSubmitter::FrameSinkBundleProxy
     NOTREACHED();
   }
 
+  // Not used by VideoFrameSubmitter.
+  void NotifyNewLocalSurfaceIdExpectedWhilePaused() override { NOTREACHED(); }
+
   void DidNotProduceFrame(const viz::BeginFrameAck& ack) override {
     if (!bundle_) {
       return;

@@ -106,6 +106,7 @@ class SynchronousLayerTreeFrameSink
   void DidNotProduceFrame(const viz::BeginFrameAck& ack,
                           cc::FrameSkippedReason reason) override;
   void Invalidate(bool needs_draw) override;
+  void NotifyNewLocalSurfaceIdExpectedWhilePaused() override;
 
   // viz::mojom::CompositorFrameSinkClient implementation.
   void DidReceiveCompositorFrameAck(

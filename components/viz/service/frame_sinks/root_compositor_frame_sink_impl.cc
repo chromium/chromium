@@ -576,6 +576,10 @@ void RootCompositorFrameSinkImpl::SubmitCompositorFrameSync(
   NOTIMPLEMENTED();
 }
 
+void RootCompositorFrameSinkImpl::NotifyNewLocalSurfaceIdExpectedWhilePaused() {
+  support_->NotifyNewLocalSurfaceIdExpectedWhilePaused();
+}
+
 void RootCompositorFrameSinkImpl::DidNotProduceFrame(
     const BeginFrameAck& begin_frame_ack) {
   support_->DidNotProduceFrame(begin_frame_ack);

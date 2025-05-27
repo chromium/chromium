@@ -128,6 +128,7 @@ class VIZ_SERVICE_EXPORT RootCompositorFrameSinkImpl
       std::optional<HitTestRegionList> hit_test_region_list,
       uint64_t submit_time,
       SubmitCompositorFrameSyncCallback callback) override;
+  void NotifyNewLocalSurfaceIdExpectedWhilePaused() override;
   void InitializeCompositorFrameSinkType(
       mojom::CompositorFrameSinkType type) override;
   void BindLayerContext(mojom::PendingLayerContextPtr context,
