@@ -77,6 +77,10 @@ class HatsServiceAndroid : public HatsService {
     messages::MessageWrapper* GetMessageForTesting() { return message_.get(); }
 
    private:
+    // If true, survey has been launched. If the survey is launched, be mindful
+    // that Clank side can use this object, do not deallocate it.
+    bool survey_launched_ = false;
+
     raw_ptr<HatsServiceAndroid> hats_service_;
 
     std::unique_ptr<messages::MessageWrapper> message_;

@@ -86,6 +86,7 @@ void HatsServiceAndroid::DelayedSurveyTask::Launch() {
                                           supplied_trigger_id_, window_android);
   survey_client.LaunchSurvey(window_android, product_specific_bits_data_,
                              product_specific_string_data_);
+  survey_launched_ = true;
 }
 
 void HatsServiceAndroid::DelayedSurveyTask::DismissCallback(
@@ -140,6 +141,10 @@ void HatsServiceAndroid::DelayedSurveyTask::DismissCallback(
 
 void HatsServiceAndroid::DelayedSurveyTask::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
+  if (survey_launched_) {
+    return;
+  }
+
   if (hats_service_->IsNavigationAllowed(navigation_handle,
                                          navigation_behaviour_)) {
     return;
