@@ -399,7 +399,9 @@ def _ResolveThinArchivePaths(raw_symbols, thin_archives):
 
 
 def _DeduceObjectPathForSwitchTables(raw_symbols, object_paths_by_name):
-  strip_num_suffix_regexp = re.compile(r'\s+\(\.\d+\)$')
+  # Example: foo (.67.rel)
+  # Example: bar (.67)
+  strip_num_suffix_regexp = re.compile(r'\s+\(\.\d+.*?\)$')
   num_switch_tables = 0
   num_unassigned = 0
   num_deduced = 0
@@ -422,7 +424,8 @@ def _DeduceObjectPathForSwitchTables(raw_symbols, object_paths_by_name):
           if len(object_paths) > 1:
             num_arbitrations += 1
       else:
-        assert object_paths and s.object_path in object_paths
+        assert object_paths, 'Name was: ' + name
+        assert s.object_path in object_paths, s.object_path
   if num_switch_tables > 0:
     logging.info(
         'Found %d switch tables: Deduced %d object paths with ' +
@@ -636,29 +639,20 @@ def _AddUnattributedSectionSymbols(raw_symbols, section_ranges, source_path):
   return ret, other_symbols
 
 
-def _ParseNinjaFiles(output_directory, elf_path=None):
-  linker_elf_path = elf_path
-  if elf_path:
-    # For partitioned libraries, the actual link command outputs __combined.so.
-    partitioned_elf_path = elf_path.replace('.so', '__combined.so')
-    if os.path.exists(partitioned_elf_path):
-      linker_elf_path = partitioned_elf_path
+def ParseNinjaFiles(output_directory, elf_paths_to_find_inputs_for=None):
+  logging.info('Parsing ninja files')
+  ninja_source_mapper = ninja_parser.Parse(output_directory,
+                                           elf_paths_to_find_inputs_for)
+  logging.debug('Parsed %d .ninja files. Linker inputs=%d of %d',
+                ninja_source_mapper.parsed_file_count,
+                ninja_source_mapper.inputs_map_count,
+                len(elf_paths_to_find_inputs_for))
+  if elf_paths_to_find_inputs_for:
+    for path in elf_paths_to_find_inputs_for:
+      assert ninja_source_mapper.GetInputsForBinary(path), (
+          'Failed to find any link commands in ninja files for ' + path)
 
-  logging.info('Parsing ninja files, looking for %s.',
-               (linker_elf_path or 'source mapping only (elf_path=None)'))
-
-  source_mapper, ninja_elf_object_paths = ninja_parser.Parse(
-      output_directory, linker_elf_path)
-
-  logging.debug('Parsed %d .ninja files. Linker inputs=%d',
-                source_mapper.parsed_file_count,
-                len(ninja_elf_object_paths or []))
-  if elf_path:
-    assert ninja_elf_object_paths, (
-        'Failed to find link command in ninja files for ' +
-        os.path.relpath(linker_elf_path, output_directory))
-
-  return source_mapper, ninja_elf_object_paths
+  return ninja_source_mapper
 
 
 def _ElfInfoFromApk(apk_path, apk_so_path):
@@ -712,6 +706,7 @@ def CreateSymbols(*,
                   apk_spec,
                   native_spec,
                   output_directory=None,
+                  ninja_source_mapper=None,
                   pak_id_map=None):
   """Creates native symbols for the given native_spec.
 
@@ -720,6 +715,7 @@ def CreateSymbols(*,
     native_spec: Instance of NativeSpec.
     output_directory: Build output directory. If None, source_paths and symbol
         alias information will not be recorded.
+    ninja_source_mapper: From ninja_parser.Parse()
     pak_id_map: Instance of PakIdMap.
 
   Returns:
@@ -733,15 +729,16 @@ def CreateSymbols(*,
         _ElfInfoFromApk, (apk_spec.apk_path, native_spec.apk_so_path))
 
   raw_symbols = []
-  ninja_source_mapper = None
   dwarf_source_mapper = None
   section_ranges = {}
   ninja_elf_object_paths = None
   metrics_by_file = {}
-  if output_directory and native_spec.map_path:
+  if ninja_source_mapper and native_spec.map_path:
     # Finds all objects passed to the linker and creates a map of .o -> .cc.
-    ninja_source_mapper, ninja_elf_object_paths = _ParseNinjaFiles(
-        output_directory, native_spec.elf_path)
+    elf_path = native_spec.combined_elf_path or native_spec.elf_path
+    if elf_path:
+      ninja_elf_object_paths = ninja_source_mapper.GetInputsForBinary(elf_path)
+      assert ninja_elf_object_paths, 'Failed to find link step for ' + elf_path
   elif native_spec.elf_path:
     logging.info('Parsing source path info via dwarfdump')
     dwarf_source_mapper = dwarfdump.CreateAddressSourceMapper(
@@ -762,7 +759,7 @@ def CreateSymbols(*,
     known_inputs = None
     # When we don't know which elf file is used, just search all paths.
     # TODO(agrieve): Seems to be used only for tests. Remove?
-    if ninja_source_mapper:
+    if ninja_source_mapper and native_spec.map_path:
       thin_archives = set(
           p for p in ninja_source_mapper.IterAllPaths() if p.endswith('.a')
           and ar.IsThinArchive(os.path.join(output_directory, p)))

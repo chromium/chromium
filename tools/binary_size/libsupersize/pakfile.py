@@ -142,11 +142,10 @@ def _FinalizeSymbols(symbols_by_id, pak_id_map):
 
 
 def CreatePakSymbolsFromApk(section_ranges, apk_path, apk_pak_paths,
-                            size_info_prefix, pak_id_map):
+                            pak_info_path, pak_id_map):
   """Uses files in apk to find and add pak symbols."""
   with zipfile.ZipFile(apk_path) as z:
     pak_zip_infos = [z.getinfo(p) for p in apk_pak_paths]
-    pak_info_path = size_info_prefix + '.pak.info'
     res_info = _ParsePakInfoFile(pak_info_path)
     symbols_by_id = {}
     for zip_info in pak_zip_infos:

@@ -202,6 +202,7 @@ def _SaveSizeInfoToFile(size_info, file_obj):
   raw_symbols = size_info.raw_symbols
 
   num_containers = len(size_info.containers)
+  assert num_containers > 0, 'All containers were filtered out.'
   has_multi_containers = (num_containers > 1)
 
   file_obj.write(_COMMON_HEADER)

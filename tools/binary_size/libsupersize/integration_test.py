@@ -200,18 +200,12 @@ class IntegrationTest(unittest.TestCase):
       output_directory = _TEST_OUTPUT_DIR if use_output_directory else None
 
       def iter_specs():
-        pak_spec = None
-        if use_pak or use_apk or use_minimal_apks:
-          pak_spec = archive.PakSpec()
-          if use_pak:
-            pak_spec.pak_paths = [_TEST_APK_LOCALE_PAK_PATH, _TEST_APK_PAK_PATH]
-            pak_spec.pak_info_path = _TEST_PAK_INFO_PATH
-          else:
-            pak_spec.apk_pak_paths = [
-                _TEST_APK_LOCALE_PAK_SUBPATH, _TEST_APK_PAK_SUBPATH
-            ]
-
         native_spec = archive.NativeSpec()
+        pak_spec = None
+        if use_pak:
+          pak_spec = archive.PakSpec()
+          pak_spec.pak_paths = [_TEST_APK_LOCALE_PAK_PATH, _TEST_APK_PAK_PATH]
+          pak_spec.pak_info_path = _TEST_PAK_INFO_PATH
 
         # TODO(crbug.com/40757867): Remove when we implement string literal
         #     tracking without map files.
@@ -230,8 +224,6 @@ class IntegrationTest(unittest.TestCase):
           apk_spec.path_defaults = _TEST_PATH_DEFAULTS
           apk_spec.ignore_apk_paths.update(
               ['classes.dex', _TEST_APK_SO_PATH, _TEST_APK_SMALL_SO_PATH])
-          if pak_spec and pak_spec.apk_pak_paths:
-            apk_spec.ignore_apk_paths.update(pak_spec.apk_pak_paths)
           if output_directory:
             orig_path = _TEST_APK_PATH
             if use_minimal_apks:
@@ -239,6 +231,13 @@ class IntegrationTest(unittest.TestCase):
                   '.minimal.apks', '.aab')
             apk_spec.size_info_prefix = os.path.join(
                 output_directory, 'size-info', os.path.basename(orig_path))
+
+          pak_spec = archive.PakSpec()
+          pak_spec.apk_pak_paths = [
+              _TEST_APK_LOCALE_PAK_SUBPATH, _TEST_APK_PAK_SUBPATH
+          ]
+          pak_spec.pak_info_path = apk_spec.size_info_prefix + '.pak.info'
+          apk_spec.ignore_apk_paths.update(pak_spec.apk_pak_paths)
 
           native_spec.apk_so_path = _TEST_APK_SO_PATH
           small_native_spec = archive.NativeSpec(
