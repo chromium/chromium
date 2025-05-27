@@ -271,24 +271,48 @@ class JsonUtil:
         stories = []
         story_tags = []
         for diagnostic_type, guid in item[json_constants.DIAGNOSTICS].items():
-          # diagnostics_map[guid] = diagnostic_type
+          if not isinstance(guid, str) or not isinstance(
+              guid_to_values[guid], list):
+            # guid is expected to be a hashable string.
+            logging.warning(
+                'Expected string or list for diagnostic type "%s" in metric ' \
+                '"%s"but got type %s: %s. Skipping.',
+                diagnostic_type, item.get(json_constants.NAME, "UnknownMetric"),
+                type(guid).__name__,
+                str(guid)[:200])
+            continue
+          if guid not in guid_to_values:
+            logging.warning(
+                'Expected guid "%s" for diagnostic type "%s" in metric "%s", ' \
+                'but it is not in the guid_to_values. Skipping.', guid,
+                diagnostic_type, item.get(json_constants.NAME, "UnknownMetric"))
+            continue
+
           if diagnostic_type == json_constants.BOT_ID:
-            if guid in guid_to_values:
-              bot_ids.update(guid_to_values[guid])
+            bot_ids.update(guid_to_values[guid])
           elif diagnostic_type == json_constants.OS_DETAILED_VERSIONS:
-            if guid in guid_to_values:
-              os_versions.update(guid_to_values[guid])
+            os_versions.update(guid_to_values[guid])
           elif diagnostic_type == json_constants.BENCHMARKS:
             benchmark_key = str(guid_to_values[guid][0])
           elif diagnostic_type == json_constants.STORIES:
             stories.extend(guid_to_values[guid])
           elif diagnostic_type == json_constants.STORY_TAGS:
             story_tags.extend(guid_to_values[guid])
+
         subtest_1, subtest_2 = extract_subtest_from_stories_tags(
             stories, story_tags)
 
         try:
           if json_constants.SAMPLE_VALUES in item:
+            sample_values = item[json_constants.SAMPLE_VALUES]
+            if not isinstance(sample_values, list):
+              logging.warning(
+                  'Expected "sampleValues" to be a list for metric "%s", ' \
+                  'got %s. Skipping sample values.',
+                  item.get(json_constants.NAME, "UnknownMetric"),
+                  type(sample_values).__name__)
+              continue
+
             if subtest_1 or subtest_2:
               merged_results[(
                   test_name,
@@ -296,11 +320,10 @@ class JsonUtil:
                   improvement_direction,
                   subtest_1,
                   subtest_2,
-              )].extend(item["sampleValues"])
+              )].extend(sample_values)
             else:
               merged_results[(test_name, item[json_constants.UNIT],
-                              improvement_direction)].extend(
-                                  item["sampleValues"])
+                              improvement_direction)].extend(sample_values)
           elif json_constants.SUMMARY_OPTIONS in item:
             if (json_constants.COUNT in item[json_constants.SUMMARY_OPTIONS]
                 and item[json_constants.SUMMARY_OPTIONS][json_constants.COUNT]
