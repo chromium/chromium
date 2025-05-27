@@ -164,6 +164,10 @@ void GetComponents(
         policy_service->GetTargetChannel(id).policy_or(std::string()),
         policy_service->GetTargetVersionPrefix(id).policy_or(std::string()),
         policy_service->IsRollbackToTargetVersionAllowed(id).policy_or(false),
+        policy_service->GetMajorVersionRolloutPolicy(id)
+            .effective_policy_value(),
+        policy_service->GetMinorVersionRolloutPolicy(id)
+            .effective_policy_value(),
         [&policy_service, &id, &is_foreground, update_blocked] {
           if (update_blocked) {
             return true;

@@ -261,6 +261,26 @@ std::optional<bool> DMPolicyManager::IsRollbackToTargetVersionAllowed(
               ROLLBACK_TO_TARGET_VERSION_ENABLED);
 }
 
+std::optional<int> DMPolicyManager::GetMajorVersionRolloutPolicy(
+    const std::string& app_id) const {
+  const auto* app_settings = GetAppSettings(app_id);
+  if (!app_settings || !app_settings->has_major_version_rollout_policy()) {
+    return std::nullopt;
+  }
+
+  return app_settings->major_version_rollout_policy();
+}
+
+std::optional<int> DMPolicyManager::GetMinorVersionRolloutPolicy(
+    const std::string& app_id) const {
+  const auto* app_settings = GetAppSettings(app_id);
+  if (!app_settings || !app_settings->has_minor_version_rollout_policy()) {
+    return std::nullopt;
+  }
+
+  return app_settings->minor_version_rollout_policy();
+}
+
 std::optional<std::vector<std::string>> DMPolicyManager::GetForceInstallApps()
     const {
   std::vector<std::string> force_install_apps;

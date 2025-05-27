@@ -370,7 +370,64 @@ ADMX_APP_POLICY_TEMPLATE = '''\
       <supportedOn ref="Sup_GoogleUpdate1_3_34_3" />
       <enabledValue><decimal value="1" /></enabledValue>
       <disabledValue><decimal value="0" /></disabledValue>
-    </policy>'''
+    </policy>
+    <policy name="Pol_MajorVersionRollout%(AppLegalId)s" class="Machine"
+        displayName="$(string.Pol_MajorVersionRollout)"
+        explainText="$(string.Explain_MajorVersionRollout%(AppLegalId)s)"
+        presentation="$(presentation.Pol_MajorVersionRollout)"
+        key="%(RootPolicyKey)s">
+      <parentCategory ref="Cat_%(AppLegalId)s" />
+      <supportedOn ref="Sup_GoogleUpdate138_0_7200_0" />
+      <elements>
+        <enum id="Part_MajorVersion"
+             valueName="MajorVerionRollout%(AppGuid)s" required="true">
+          <item displayName="$(string.Name_RolloutDefault)">
+            <value>
+              <decimal value="0" />
+            </value>
+          </item>
+          <item displayName="$(string.Name_RolloutSlow)">
+            <value>
+              <decimal value="1" />
+            </value>
+          </item>
+          <item displayName="$(string.Name_RolloutFast)">
+            <value>
+              <decimal value="2" />
+            </value>
+          </item>
+        </enum>
+      </elements>
+    </policy>
+    <policy name="Pol_MinorVersionRollout%(AppLegalId)s" class="Machine"
+        displayName="$(string.Pol_MinorVersionRollout)"
+        explainText="$(string.Explain_MinorVersionRollout%(AppLegalId)s)"
+        presentation="$(presentation.Pol_MinorVersionRollout)"
+        key="%(RootPolicyKey)s">
+      <parentCategory ref="Cat_%(AppLegalId)s" />
+      <supportedOn ref="Sup_GoogleUpdate138_0_7200_0" />
+      <elements>
+        <enum id="Part_MinorVersion"
+             valueName="MinorVerionRollout%(AppGuid)s" required="true">
+          <item displayName="$(string.Name_RolloutDefault)">
+            <value>
+              <decimal value="0" />
+            </value>
+          </item>
+          <item displayName="$(string.Name_RolloutSlow)">
+            <value>
+              <decimal value="1" />
+            </value>
+          </item>
+          <item displayName="$(string.Name_RolloutFast)">
+            <value>
+              <decimal value="2" />
+            </value>
+          </item>
+        </enum>
+      </elements>
+    </policy>
+    '''
 
 ADMX_FOOTER = '</policyDefinitions>'
 
@@ -520,6 +577,7 @@ ADML_PREDEFINED_STRINGS_TABLE_EN = [
     ('Sup_GoogleUpdate1_3_34_3', 'At least Google Update 1.3.34.3'),
     ('Sup_GoogleUpdate1_3_35_441', 'At least Google Update 1.3.35.441'),
     ('Sup_GoogleUpdate1_3_35_453', 'At least Google Update 1.3.35.453'),
+    ('Sup_GoogleUpdate138_0_7200_0', 'At least GoogleUpdater 138.0.7200.0'),
     ('Cat_GoogleUpdate', 'Google Update'),
     ('Cat_Preferences', 'Preferences'),
     ('Cat_ProxyServer', 'Proxy Server'),
@@ -541,6 +599,8 @@ ADML_PREDEFINED_STRINGS_TABLE_EN = [
     ('Pol_TargetChannel', 'Target Channel override'),
     ('Pol_TargetVersionPrefix', 'Target version prefix override'),
     ('Pol_RollbackToTargetVersion', 'Rollback to Target version'),
+    ('Pol_MajorVersionRollout', 'Major version rollout'),
+    ('Pol_MinorVersionRollout', 'Major version rollout'),
     ('Part_AutoUpdateCheckPeriod', 'Minutes between update checks'),
     ('Part_UpdateCheckSuppressedStartHour',
      'Hour in a day that start to suppress update check'),
@@ -561,10 +621,15 @@ ADML_PREDEFINED_STRINGS_TABLE_EN = [
     ('Part_UpdatePolicy', 'Policy'),
     ('Part_TargetChannel', 'Target Channel'),
     ('Part_TargetVersionPrefix', 'Target version prefix'),
+    ('Part_MajorVersion', 'Rollout Policy'),
+    ('Part_MinorVersion', 'Rollout Policy'),
     ('Name_UpdatesEnabled', 'Always allow updates (recommended)'),
     ('Name_ManualUpdatesOnly', 'Manual updates only'),
     ('Name_AutomaticUpdatesOnly', 'Automatic silent updates only'),
     ('Name_UpdatesDisabled', 'Updates disabled'),
+    ('Name_RolloutDefault', 'Participate in gradual rollout (recommended)'),
+    ('Name_RolloutSlow', 'Update only after gradual rollout completes'),
+    ('Name_RolloutFast', 'Update immediately when gradual rollout starts'),
     ('ProxyDisabled_DropDown', 'Never use a proxy'),
     ('ProxyAutoDetect_DropDown', 'Auto detect proxy settings'),
     ('ProxyPacScript_DropDown', 'Use a .pac proxy script'),
@@ -728,6 +793,14 @@ ADML_PRESENTATIONS = '''\
         </textBox>
       </presentation>
       <presentation id="Pol_RollbackToTargetVersion" />
+      <presentation id="Pol_MajorVersionRollout">
+        <dropdownList refId="Part_MajorVersion"
+            defaultItem="0">Policy</dropdownList>
+      </presentation>
+      <presentation id="Pol_MinorVersionRollout">
+        <dropdownList refId="Part_MinorVersion"
+            defaultItem="0">Policy</dropdownList>
+      </presentation>
 '''
 
 ADML_RESOURCE_TABLE_TEMPLATE = '''
@@ -868,6 +941,20 @@ def GenerateGroupPolicyTemplateAdml(apps):
             '%s' % (app_name, rollback_disclaimer, ADML_DOMAIN_REQUIREMENT_EN))
         string_definition_list.append(
             app_rollback_to_target_version_explanation)
+
+        string_definition_list.append(
+            ('Explain_MajorVersionRollout' + app_legal_id,
+             'Specifies when to apply major %s updates that are gradually '
+             'rolling out. Major updates often have fixes, security patches, '
+             'and new features.\n\n'
+             '%s' % (app_name, ADML_DOMAIN_REQUIREMENT_EN)))
+
+        string_definition_list.append(
+            ('Explain_MinorVersionRollout' + app_legal_id,
+             'Specifies when to apply minor %s updates that are gradually '
+             'rolling out. Minor version updates often have fixes and '
+             'security patches, but rarely contain new features.\n\n'
+             '%s' % (app_name, ADML_DOMAIN_REQUIREMENT_EN)))
 
     app_resource_strings = []
     for entry in string_definition_list:

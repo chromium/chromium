@@ -104,6 +104,8 @@ class Installer final : public update_client::CrxInstaller {
             const std::string& target_channel,
             const std::string& target_version_prefix,
             bool rollback_allowed,
+            std::optional<int> major_version_rollout_policy,
+            std::optional<int> minor_version_rollout_policy,
             bool update_disabled,
             UpdateService::PolicySameVersionUpdate policy_same_version_update,
             scoped_refptr<PersistedData> persisted_data,
@@ -162,6 +164,8 @@ class Installer final : public update_client::CrxInstaller {
   const std::string install_data_index_;
   const std::string install_source_;
   const bool rollback_allowed_;
+  const std::optional<int> major_version_rollout_policy_;
+  const std::optional<int> minor_version_rollout_policy_;
   const std::string target_channel_;
   const std::string target_version_prefix_;
   const bool update_disabled_;

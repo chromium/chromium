@@ -61,6 +61,8 @@ using CRUUpdatePolicyDictionary =
 - (nullable NSString*)targetChannel:(nonnull NSString*)appid;
 - (nullable NSString*)targetVersionPrefix:(nonnull NSString*)appid;
 - (int)rollbackToTargetVersion:(nonnull NSString*)appid;
+- (int)majorVersionRolloutPolicy:(nonnull NSString*)appid;
+- (int)minorVersionRolloutPolicy:(nonnull NSString*)appid;
 
 - (nullable NSArray<NSString*>*)appsWithPolicy;
 

@@ -1004,6 +1004,9 @@ Enterprise policies can control the updates of applications:
   be disabled by policy.
 * If the update check period is set to zero, the updater is qualified without
   an update check.
+* Major/Minor version rollout policy values are sent to the update server to
+  indicate a preference for taking updates early or late in any gradual rollout
+  process.
 
 Refer to chrome/updater/protos/omaha\_settings.proto for more details.
 

@@ -309,6 +309,20 @@ PolicyStatus<bool> PolicyService::IsRollbackToTargetVersionAllowed(
       &PolicyManagerInterface::IsRollbackToTargetVersionAllowed, app_id);
 }
 
+PolicyStatus<int> PolicyService::GetMajorVersionRolloutPolicy(
+    const std::string& app_id) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return QueryAppPolicy(&PolicyManagerInterface::GetMajorVersionRolloutPolicy,
+                        app_id);
+}
+
+PolicyStatus<int> PolicyService::GetMinorVersionRolloutPolicy(
+    const std::string& app_id) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return QueryAppPolicy(&PolicyManagerInterface::GetMajorVersionRolloutPolicy,
+                        app_id);
+}
+
 PolicyStatus<std::string> PolicyService::GetProxyMode() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return QueryPolicy(
