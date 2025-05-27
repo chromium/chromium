@@ -81,11 +81,6 @@ class VectorBuffer {
   size_t capacity() const { return capacity_; }
 
   T& operator[](size_t i) {
-    // TODO(crbug.com/40565371): Some call sites (at least circular_deque.h) are
-    // calling this with `i == capacity_` as a way of getting `end()`. Therefore
-    // we have to allow this for now (`i <= capacity_`), until we fix those call
-    // sites to use real iterators. This comment applies here and to `const T&
-    // operator[]`, below.
     CHECK_LT(i, capacity_);
     // SAFETY: `capacity_` is the size of the array pointed to by `buffer_`,
     // which `i` is less than, so the dereference is inside the allocation.
