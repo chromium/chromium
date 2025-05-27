@@ -18,6 +18,7 @@ import static org.chromium.chrome.browser.flags.ChromeFeatureList.ANDROID_ELEGAN
 
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
+import android.os.Build;
 import android.widget.ImageView;
 
 import androidx.test.filters.MediumTest;
@@ -32,6 +33,7 @@ import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.transit.CarryOn;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.DisableFeatures;
@@ -263,6 +265,7 @@ public class TabSwitcherLayoutPTTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
+    @DisableIf.Build(sdk_equals = Build.VERSION_CODES.O, message = "crbug.com/419915694")
     public void testRenderGrid_1TabGroup_ColorIcon() throws IOException {
         ChromeTabbedActivity cta = mCtaTestRule.getActivity();
 
