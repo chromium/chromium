@@ -77,9 +77,10 @@ enum CalculationResultCategory {
   // (e.g. sign(1vw - 1px) returns a numerical value, but depends on
   // a length that cannot be resolved until layout).
   kCalcLengthFunction,
-  // kCalcIntrinsicSize is a special case of kCalcLengthFunction that is
-  // forbidden within most expression contexts.
-  kCalcIntrinsicSize,
+  // Represents intermediate result of typed arithmetic operation, e.g.
+  // 10px * 10em. It's not kCalcOther, since, once it becomes 10px * 10em /
+  // 10em, it's a valid kCalcLength.
+  kCalcIntermediate,
   kCalcAngle,
   kCalcTime,
   kCalcFrequency,
@@ -194,6 +195,7 @@ class CORE_EXPORT CSSMathExpressionNode
   virtual bool IsKeywordLiteral() const { return false; }
   virtual bool IsContainerFeature() const { return false; }
   virtual bool IsSiblingFunction() const { return false; }
+  virtual bool IsCalcSize() const { return false; }
 
   virtual bool IsMathFunction() const { return false; }
 
@@ -263,8 +265,7 @@ class CORE_EXPORT CSSMathExpressionNode
   // (such as the progress() function) that convert the result type of their
   // arguments into a number.
   virtual bool InvolvesLayout() const {
-    return Category() == kCalcPercent || Category() == kCalcLengthFunction ||
-           Category() == kCalcIntrinsicSize;
+    return Category() == kCalcPercent || Category() == kCalcLengthFunction;
   }
 
   // Returns the unit type of the math expression *without doing any type
@@ -724,7 +725,9 @@ class CORE_EXPORT CSSMathExpressionOperation final
     return operator_ == CSSMathOperator::kAbs ||
            operator_ == CSSMathOperator::kSign;
   }
-  bool IsCalcSize() const { return operator_ == CSSMathOperator::kCalcSize; }
+  bool IsCalcSize() const override {
+    return operator_ == CSSMathOperator::kCalcSize;
+  }
   bool IsProgressNotation() const {
     return operator_ == CSSMathOperator::kProgress ||
            operator_ == CSSMathOperator::kMediaProgress ||

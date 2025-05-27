@@ -281,7 +281,7 @@ CSSMathType::BaseType CSSMathType::CalculationCategoryToBaseType(
     case kCalcIdent:
     case kCalcOther:
     case kCalcLengthFunction:
-    case kCalcIntrinsicSize:
+    case kCalcIntermediate:
       NOTREACHED();
   }
 }
@@ -511,8 +511,7 @@ bool CheckProgressFunctionTypes(
     case CSSValueID::kProgress: {
       CalculationResultCategory first_category = nodes[0]->Category();
       if (first_category != nodes[1]->Category() ||
-          first_category != nodes[2]->Category() ||
-          first_category == CalculationResultCategory::kCalcIntrinsicSize) {
+          first_category != nodes[2]->Category() || nodes[0]->IsCalcSize()) {
         return false;
       }
       break;
@@ -1117,7 +1116,7 @@ double CSSMathExpressionNumericLiteral::ComputeDouble(
     case kCalcFrequency:
       return value_->ComputeInCanonicalUnit();
     case kCalcLengthFunction:
-    case kCalcIntrinsicSize:
+    case kCalcIntermediate:
     case kCalcOther:
     case kCalcIdent:
       NOTREACHED();
@@ -1135,7 +1134,7 @@ double CSSMathExpressionNumericLiteral::ComputeLengthPx(
     case kCalcAngle:
     case kCalcFrequency:
     case kCalcLengthFunction:
-    case kCalcIntrinsicSize:
+    case kCalcIntermediate:
     case kCalcTime:
     case kCalcResolution:
     case kCalcOther:
@@ -1207,7 +1206,7 @@ static constexpr std::array<std::array<CalculationResultCategory, kCalcOther>,
          {kCalcOther, kCalcLengthFunction, kCalcLengthFunction,
           kCalcLengthFunction, kCalcOther, kCalcOther, kCalcOther, kCalcOther,
           kCalcOther, kCalcOther},
-         /* CalcIntrinsicSize */
+         /* CalcIntermediate */
          {kCalcOther, kCalcOther, kCalcOther, kCalcOther, kCalcOther,
           kCalcOther, kCalcOther, kCalcOther, kCalcOther, kCalcOther},
          /* CalcAngle */
@@ -1237,8 +1236,7 @@ static CalculationResultCategory DetermineCategory(
     return kCalcOther;
   }
 
-  if (left_category == kCalcIntrinsicSize ||
-      right_category == kCalcIntrinsicSize) {
+  if (left_side.IsCalcSize() || right_side.IsCalcSize()) {
     return kCalcOther;
   }
 
@@ -1270,6 +1268,9 @@ static CalculationResultCategory DetermineComparisonCategory(
   bool is_first = true;
   CalculationResultCategory category = kCalcOther;
   for (const CSSMathExpressionNode* operand : operands) {
+    if (operand->IsCalcSize()) {
+      return kCalcOther;
+    }
     if (is_first) {
       category = operand->Category();
     } else {
@@ -1293,12 +1294,12 @@ static CalculationResultCategory DetermineCalcSizeCategory(
   CalculationResultCategory calculation_category = right_side.Category();
 
   if ((basis_category == kCalcLength || basis_category == kCalcPercent ||
-       basis_category == kCalcLengthFunction ||
-       basis_category == kCalcIntrinsicSize) &&
+       basis_category == kCalcLengthFunction || left_side.IsCalcSize()) &&
       (calculation_category == kCalcLength ||
        calculation_category == kCalcPercent ||
-       calculation_category == kCalcLengthFunction)) {
-    return kCalcIntrinsicSize;
+       calculation_category == kCalcLengthFunction) &&
+      !right_side.IsCalcSize()) {
+    return kCalcLengthFunction;
   }
   return kCalcOther;
 }
@@ -1743,6 +1744,9 @@ CSSMathExpressionNode* CSSMathExpressionOperation::CreateSteppedValueFunction(
       operands[1]->Category() == kCalcOther) {
     return nullptr;
   }
+  if (operands.front()->IsCalcSize() || operands.back()->IsCalcSize()) {
+    return nullptr;
+  }
   CalculationResultCategory category =
       kAddSubtractResult[operands[0]->Category()][operands[1]->Category()];
   if (category == kCalcOther) {
@@ -1767,6 +1771,10 @@ CSSMathExpressionNode* CSSMathExpressionOperation::CreateExponentialFunction(
     Operands&& operands,
     CSSValueID function_id) {
   if (!RuntimeEnabledFeatures::CSSExponentialFunctionsEnabled()) {
+    return nullptr;
+  }
+
+  if (operands.front()->IsCalcSize()) {
     return nullptr;
   }
 
@@ -1875,7 +1883,7 @@ CSSMathExpressionNode* CSSMathExpressionOperation::CreateSignRelatedFunction(
 
   const CSSMathExpressionNode* operand = operands.front();
 
-  if (operand->Category() == kCalcIntrinsicSize) {
+  if (operand->IsCalcSize()) {
     return nullptr;
   }
 
@@ -2368,7 +2376,7 @@ bool CSSMathExpressionOperation::HasPercentage() const {
   if (Category() == kCalcPercent) {
     return true;
   }
-  if (Category() != kCalcLengthFunction && Category() != kCalcIntrinsicSize) {
+  if (Category() != kCalcLengthFunction) {
     return false;
   }
   switch (operator_) {
@@ -3134,7 +3142,7 @@ CSSPrimitiveValue::UnitType CSSMathExpressionOperation::ResolvedUnitType()
           NOTREACHED();
       }
     case kCalcLengthFunction:
-    case kCalcIntrinsicSize:
+    case kCalcIntermediate:
     case kCalcOther:
       return CSSPrimitiveValue::UnitType::kUnknown;
     case kCalcIdent:
@@ -4310,7 +4318,7 @@ class CSSMathExpressionNodeParser {
       case CSSValueID::kCalc:
       case CSSValueID::kWebkitCalc: {
         const CSSMathExpressionNode* node = nodes.front();
-        if (node->Category() == kCalcIntrinsicSize) {
+        if (node->IsCalcSize()) {
           return nullptr;
         }
         return const_cast<CSSMathExpressionNode*>(node);
