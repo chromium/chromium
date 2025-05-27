@@ -136,12 +136,6 @@
 #include "chrome/grit/settings_shared_resources_map.h"
 #endif
 
-#if BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
-#include "chrome/browser/ui/webui/settings/incompatible_applications_handler_win.h"
-#include "chrome/browser/win/conflicts/incompatible_applications_updater.h"
-#include "chrome/browser/win/conflicts/token_util.h"
-#endif  // BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
-
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ui/webui/settings/languages_handler.h"
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
@@ -282,19 +276,6 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
 #if BUILDFLAG(IS_MAC)
   AddSettingsPageUIHandler(std::make_unique<MacSystemSettingsHandler>());
 #endif
-
-#if BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  bool has_incompatible_applications =
-      IncompatibleApplicationsUpdater::HasCachedApplications();
-  html_source->AddBoolean("showIncompatibleApplications",
-                          has_incompatible_applications);
-  html_source->AddBoolean("hasAdminRights", HasAdminRights());
-
-  if (has_incompatible_applications) {
-    AddSettingsPageUIHandler(
-        std::make_unique<IncompatibleApplicationsHandler>());
-  }
-#endif  // BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
   html_source->AddBoolean("signinAllowed", !profile->IsGuestSession() &&
                                                profile->GetPrefs()->GetBoolean(

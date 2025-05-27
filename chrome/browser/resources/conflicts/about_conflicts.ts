@@ -17,14 +17,11 @@ interface ModuleData {
   process_types: string;
   type_description: string;
   version: string;
-  third_party_module_status: string;
 }
 
 interface ModuleListData {
   moduleCount: number;
   moduleList: ModuleData[];
-  thirdPartyFeatureStatus: string;
-  thirdPartyFeatureEnabled: boolean;
   hasModules: boolean;
 }
 
