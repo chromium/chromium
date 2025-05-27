@@ -2485,7 +2485,7 @@ even if they fit the naming pattern. -->
 
 <histogram
     name="Accessibility.Performance.BrowserAccessibilityManager::OnLocationChanges"
-    units="microseconds" expires_after="2025-07-28">
+    units="microseconds" expires_after="2025-12-28">
   <owner>mschillaci@google.com</owner>
   <owner>aleventhal@chromium.org</owner>
   <owner>janewman@microsoft.com</owner>
@@ -2504,7 +2504,7 @@ even if they fit the naming pattern. -->
 </histogram>
 
 <histogram name="Accessibility.Performance.FinalizingTreeLifecycleStage"
-    units="microseconds" expires_after="2025-07-07">
+    units="microseconds" expires_after="2025-12-07">
   <owner>lucasradaelli@google.com</owner>
   <owner>mschillaci@google.com</owner>
   <owner>aleventhal@chromium.org</owner>
@@ -2555,7 +2555,7 @@ even if they fit the naming pattern. -->
 
 <histogram
     name="Accessibility.Performance.ProcessDeferredUpdatesLifecycleStage"
-    units="microseconds" expires_after="2025-07-07">
+    units="microseconds" expires_after="2025-12-07">
   <owner>lucasradaelli@google.com</owner>
   <owner>mschillaci@google.com</owner>
   <owner>aleventhal@chromium.org</owner>
@@ -2637,7 +2637,7 @@ even if they fit the naming pattern. -->
 </histogram>
 
 <histogram name="Accessibility.Performance.SerializeLocationChanges"
-    units="microseconds" expires_after="2025-07-06">
+    units="microseconds" expires_after="2025-12-06">
   <owner>mschillaci@google.com</owner>
   <owner>aleventhal@chromium.org</owner>
   <owner>janewman@microsoft.com</owner>
