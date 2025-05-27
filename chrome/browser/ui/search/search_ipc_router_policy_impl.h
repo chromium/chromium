@@ -29,7 +29,7 @@ class SearchIPCRouterPolicyImpl : public SearchIPCRouter::Policy {
   ~SearchIPCRouterPolicyImpl() override;
 
  private:
-  friend class SearchIPCRouterPolicyTest;
+  friend class SearchIPCRouterPolicyBrowserTest;
 
   // Overridden from SearchIPCRouter::Policy:
   bool ShouldProcessFocusOmnibox(bool is_active_tab) override;

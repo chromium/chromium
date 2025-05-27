@@ -141,7 +141,7 @@ class SearchIPCRouter : public search::mojom::EmbeddedSearch {
   }
 
  private:
-  friend class SearchIPCRouterPolicyTest;
+  friend class SearchIPCRouterPolicyBrowserTest;
   friend class SearchIPCRouterTest;
   FRIEND_TEST_ALL_PREFIXES(SearchIPCRouterTest, HandleTabChangedEvents);
 

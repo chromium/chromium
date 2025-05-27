@@ -75,6 +75,7 @@ source_set("browser_tests") {
     "instant_test_base.cc",
     "instant_test_base.h",
     "new_tab_page_navigation_throttle_browsertest.cc",
+    "search_ipc_router_policy_browsertest.cc",
     "third_party_ntp_browsertest.cc",
   ]
 
@@ -84,6 +85,7 @@ source_set("browser_tests") {
     "//chrome/browser/profiles:profile",
     "//chrome/browser/search",
     "//chrome/browser/search_engines",
+    "//chrome/browser/ui/search:search",
     "//chrome/browser/ui/tab_contents",
     "//chrome/browser/ui/tabs:tab_strip",
     "//chrome/common",
@@ -137,7 +139,6 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "ntp_user_data_logger_unittest.cc",
-    "search_ipc_router_policy_unittest.cc",
     "search_ipc_router_unittest.cc",
   ]
   deps = [

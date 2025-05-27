@@ -2,21 +2,31 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/search/search_ipc_router.h"
 #include "chrome/browser/ui/search/search_ipc_router_policy_impl.h"
 #include "chrome/browser/ui/search/search_tab_helper.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/url_constants.h"
-#include "chrome/test/base/browser_with_test_window_test.h"
+#include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "content/public/browser/page_navigator.h"
+#include "content/public/test/browser_test.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/window_open_disposition.h"
 #include "url/gurl.h"
 
-class SearchIPCRouterPolicyTest : public BrowserWithTestWindowTest {
+class SearchIPCRouterPolicyBrowserTest : public InProcessBrowserTest {
  public:
-  void SetUp() override {
-    BrowserWithTestWindowTest::SetUp();
-    AddTab(browser(), GURL("chrome://blank"));
+  void SetUpOnMainThread() override {
+    InProcessBrowserTest::SetUpOnMainThread();
+    ui_test_utils::NavigateToURLWithDisposition(
+        browser(), GURL("chrome://blank"),
+        WindowOpenDisposition::NEW_FOREGROUND_TAB,
+        ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+
     SearchTabHelper::CreateForWebContents(web_contents());
   }
 
@@ -40,21 +50,29 @@ class SearchIPCRouterPolicyTest : public BrowserWithTestWindowTest {
 
 // TODO(aee): ensure tests are added for public portions of the NTP API for
 // remote NTPs.
-TEST_F(SearchIPCRouterPolicyTest, DoNotProcessFocusOmnibox) {
+IN_PROC_BROWSER_TEST_F(SearchIPCRouterPolicyBrowserTest,
+                       DoNotProcessFocusOmnibox) {
   // Process message only if the underlying page is an InstantNTP.
-  NavigateAndCommitActiveTab(GURL("chrome-search://foo/bar"));
+  NavigateParams params(browser(), GURL("chrome-search://foo/bar"),
+                        ui::PAGE_TRANSITION_LINK);
+  ui_test_utils::NavigateToURL(&params);
   EXPECT_FALSE(GetSearchIPCRouterPolicy()->ShouldProcessFocusOmnibox(true));
 }
 
-TEST_F(SearchIPCRouterPolicyTest, DoNotSendMostVisitedInfo) {
+IN_PROC_BROWSER_TEST_F(SearchIPCRouterPolicyBrowserTest,
+                       DoNotSendMostVisitedInfo) {
   // Send most visited items only if the current tab is an Instant NTP.
-  NavigateAndCommitActiveTab(GURL("chrome-search://foo/bar"));
+  NavigateParams params(browser(), GURL("chrome-search://foo/bar"),
+                        ui::PAGE_TRANSITION_LINK);
+  ui_test_utils::NavigateToURL(&params);
   EXPECT_FALSE(GetSearchIPCRouterPolicy()->ShouldSendMostVisitedInfo());
 }
 
-TEST_F(SearchIPCRouterPolicyTest, DoNotSendNtpTheme) {
+IN_PROC_BROWSER_TEST_F(SearchIPCRouterPolicyBrowserTest, DoNotSendNtpTheme) {
   // Send theme background information only if the current tab is an
   // Instant NTP.
-  NavigateAndCommitActiveTab(GURL("chrome-search://foo/bar"));
+  NavigateParams params(browser(), GURL("chrome-search://foo/bar"),
+                        ui::PAGE_TRANSITION_LINK);
+  ui_test_utils::NavigateToURL(&params);
   EXPECT_FALSE(GetSearchIPCRouterPolicy()->ShouldSendNtpTheme());
 }
