@@ -1770,21 +1770,6 @@
       origin_trial_allows_third_party: true,
       base_feature: "none",
     },
-    // This feature will represent the extension of a deprecation trial that
-    // allows first parties to temporarily use unpartitioned storage in embeds
-    // loaded on their site. It replaces an old DT named
-    // DisableThirdPartyStoragePartitioning which expired in M126 and
-    // DisableThirdPartyStoragePartitioning2 which expired in M132.
-    {
-      name: "DisableThirdPartyStoragePartitioning3",
-      origin_trial_feature_name: "DisableThirdPartyStoragePartitioning3",
-      origin_trial_type: "deprecation",
-      origin_trial_allows_insecure: true,
-      origin_trial_allows_third_party: true,
-      status: "experimental",
-      base_feature: "none",
-      browser_process_read_write_access: true,
-    },
     {
       // `kHidden` and `kHiddenButPainting` visibility states are treated as
       // hidden in the sense of `document.visibilityState`.  However, they are
@@ -4775,6 +4760,15 @@
       depends_on: ["TestFeatureImplied"],
       base_feature: "none",
     },
+    // This is a feature used for testing what happens when an origin trial
+    // feature has browser-process read/write access. It should never be used
+    // in production code.
+    {
+      name: "TestFeatureForBrowserProcessReadWriteAccessOriginTrial",
+      origin_trial_feature_name: "TestFeatureForBrowserProcessReadWriteAccessOriginTrial",
+      base_feature: "none",
+      browser_process_read_write_access: true,
+    },
     // For unit tests.
     {
       name: "TestFeatureImplied",
@@ -4869,6 +4863,13 @@
       // crbug.com/396666438
       name: "TextOffsetMapCrashFix",
       status: "stable",
+    },
+    // This feature is used to inform the renderer of a user bypass from the
+    // browser process to disable third-party storage partitioning.
+    {
+      name: "ThirdPartyStoragePartitioningUserBypass",
+      browser_process_read_write_access: true,
+      base_feature: "none",
     },
     {
       name: "TimerThrottlingForBackgroundTabs",

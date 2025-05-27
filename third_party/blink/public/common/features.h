@@ -371,15 +371,6 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kDirectCompositorThreadIpc);
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
     kDisableArrayBufferSizeLimitsForTesting);
 
-// Kill-switch for a deprecation trial that unpartitions storage in third-party
-// contexts under the registered top-level site. If
-// `kDisableThirdPartyStoragePartitioning3DeprecationTrial` is enabled, the
-// deprecation trial information can be sent to and enabled in the browser
-// process (i.e. when the base::Feature is enabled, the deprecation trial
-// extension is enabled in the browser process too).
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
-    kDisableThirdPartyStoragePartitioning3DeprecationTrial);
-
 // These values are used to implement a browser intervention: if a cross-origin
 // iframe has moved more than {param:distance} device independent pixels
 // (manhattan distance) within its embedding page's viewport within the last

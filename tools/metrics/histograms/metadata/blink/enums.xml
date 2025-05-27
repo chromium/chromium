@@ -5802,7 +5802,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5201" label="GeolocationSucceeded"/>
   <int value="5202" label="GeolocationSucceededWithoutInjectionMitigation"/>
   <int value="5203" label="SharedWorkerScriptUnderServiceWorkerControlIsBlob"/>
-  <int value="5204" label="DisableThirdPartyStoragePartitioning3"/>
+  <int value="5204" label="OBSOLETE_DisableThirdPartyStoragePartitioning3"/>
   <int value="5205" label="ControlledFrameElement"/>
   <int value="5206" label="Canvas2DIsPointInPath"/>
   <int value="5207" label="Canvas2DIsPointInStroke"/>

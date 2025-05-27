@@ -20,8 +20,8 @@ class RenderFrameHost;
 void LeaveInPendingDeletionState(RenderFrameHost* rfh);
 
 // Runs a check to determine whether the runtime-enabled feature, third-party
-// storage partitioning, is disabled in the current frame.
-bool IsDisableThirdPartyStoragePartitioning3Enabled(RenderFrameHost* rfh);
+// storage partitioning user bypass, is enabled in the current frame.
+bool IsThirdPartyStoragePartitioningUserBypassEnabled(RenderFrameHost* rfh);
 
 // Create a permission service bound to the specified receiver.
 void CreatePermissionService(

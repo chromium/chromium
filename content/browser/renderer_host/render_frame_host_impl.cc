@@ -5215,33 +5215,13 @@ bool RenderFrameHostImpl::IsThirdPartyStoragePartitioningEnabled(
               GetSiteInstance()->GetBrowserContext(), new_rfh_origin.GetURL(),
               ComputeSiteForCookies(), ComputeTopFrameOrigin(new_rfh_origin));
 
-  // Ignore deprecation trials if only partitioned access is allowed. We'll
+  // Ignore user bypass if only partitioned access is allowed. We'll
   // still respect enterprise policies which take precedence over the user's 3P
   // cookie blocking preference.
-  if (rfs_document_data_for_storage_key && unpartitioned_key_allowed) {
-    // If the deprecation trial is enabled, we have directive to override the
-    // current value of net::features::ThirdPartyStoragePartitioning.
-    if (rfs_document_data_for_storage_key->runtime_feature_state_read_context()
-            .IsDisableThirdPartyStoragePartitioning3Enabled()) {
-      return false;
-    }
-    // Compile the list of third-party origins we need to check in addition to
-    // the main frame origin. Ensure that the `new_rfh_origin` is used for this
-    // frame, rather than its last-committed origin.
-    CHECK_EQ(ancestor_chain[0], this);
-    std::vector<url::Origin> third_party_origins = {new_rfh_origin};
-    for (size_t i = 1; i < ancestor_chain.size() - 1; ++i) {
-      third_party_origins.push_back(
-          ancestor_chain[i]->GetLastCommittedOrigin());
-    }
-    // If the deprecation trial is enabled for this third-party frame or parent
-    // frame we have directive to override the current value of
-    // net::features::ThirdPartyStoragePartitioning.
-    if (rfs_document_data_for_storage_key->runtime_feature_state_read_context()
-            .IsDisableThirdPartyStoragePartitioning3EnabledForThirdParty(
-                third_party_origins)) {
-      return false;
-    }
+  if (rfs_document_data_for_storage_key && unpartitioned_key_allowed &&
+      rfs_document_data_for_storage_key->runtime_feature_state_read_context()
+          .IsThirdPartyStoragePartitioningUserBypassEnabled()) {
+    return false;
   }
 
   // If the enterprise policy blocks, we have directive to override the

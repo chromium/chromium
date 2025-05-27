@@ -4505,7 +4505,7 @@ enum WebFeature {
   kGeolocationSucceeded = 5201,
   kGeolocationSucceededWithoutInjectionMitigation = 5202,
   kSharedWorkerScriptUnderServiceWorkerControlIsBlob = 5203,
-  kDisableThirdPartyStoragePartitioning3 = 5204,
+  kOBSOLETE_DisableThirdPartyStoragePartitioning3 = 5204,
   kControlledFrameElement = 5205,
   kCanvas2DIsPointInPath = 5206,
   kCanvas2DIsPointInStroke = 5207,

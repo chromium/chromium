@@ -768,7 +768,7 @@ TEST_F(NavigationRequestTest, RuntimeFeatureStateStorageKey) {
 
   // This lambda performs the navigation and compares the commit_params'
   // StorageKey against the passed in one. If `disable_sp` is true then it will
-  // also enable the deprecation trial feature in the RFSC. It returns
+  // also enable the user bypass feature in the RFSC. It returns
   // the new TestRenderFrameHost* to the navigated frame.
   auto NavigateAndCompareKeys =
       [](NavigationSimulator* navigation, const blink::StorageKey& key,
@@ -780,7 +780,7 @@ TEST_F(NavigationRequestTest, RuntimeFeatureStateStorageKey) {
 
     if (disable_sp) {
       request->GetMutableRuntimeFeatureStateContext()
-          .SetDisableThirdPartyStoragePartitioning3Enabled(true);
+          .SetThirdPartyStoragePartitioningUserBypassEnabled(true);
     }
 
     navigation->ReadyToCommit();
