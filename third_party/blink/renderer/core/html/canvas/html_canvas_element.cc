@@ -1971,13 +1971,10 @@ HTMLCanvasElement::GetSourceImageForCanvasInternal(FlushReason reason,
     if (IsWebGL() || IsWebGPU()) {
       // TODO(https://crbug.com/672299): Canvas should produce sRGB images.
       // Because WebGL/WebGPU sources always require copying the back buffer,
-      // we use PaintRenderingResultsToCanvas instead of GetImage in order to
+      // we use PaintRenderingResultsToSnapshot instead of GetImage in order to
       // keep a cached copy of the backing in the canvas's resource provider.
-      CanvasResourceProvider* provider =
-          RenderingContext()->PaintRenderingResultsToCanvas(kBackBuffer);
-      if (provider) {
-        image = provider->Snapshot(reason);
-      }
+      image = RenderingContext()->PaintRenderingResultsToSnapshot(kBackBuffer,
+                                                                  reason);
     } else if (RenderingContext()) {
       // This is either CanvasRenderingContext2D or ImageBitmapRenderingContext.
       image = RenderingContext()->GetImage(reason);
