@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "net/socket/socks_client_socket.h"
 
+#include <string_view>
 #include <utility>
 
 #include "base/compiler_specific.h"
@@ -24,10 +20,6 @@
 #include "net/traffic_annotation/network_traffic_annotation.h"
 
 namespace net {
-
-// Every SOCKS server requests a user-id from the client. It is optional
-// and we send an empty string.
-static const char kEmptyUserId[] = "";
 
 // For SOCKS4, the client sends 8 bytes  plus the size of the user-id.
 static const unsigned int kWriteHeaderSize = 8;
@@ -317,7 +309,7 @@ int SOCKSClientSocket::DoResolveHostComplete(int result) {
 }
 
 // Builds the buffer that is to be sent to the server.
-const std::string SOCKSClientSocket::BuildHandshakeWriteBuffer() const {
+std::vector<uint8_t> SOCKSClientSocket::BuildHandshakeWriteBuffer() const {
   SOCKS4ServerRequest request;
   request.version = kSOCKSVersion4;
   request.command = kSOCKSStreamRequest;
@@ -335,14 +327,17 @@ const std::string SOCKSClientSocket::BuildHandshakeWriteBuffer() const {
   //               failing the connect attempt.
   CHECK_EQ(ADDRESS_FAMILY_IPV4, endpoint.GetFamily());
   CHECK_LE(endpoint.address().size(), sizeof(request.ip));
-  memcpy(&request.ip, &endpoint.address().bytes()[0],
-         endpoint.address().size());
+  base::span(request.ip).copy_from(endpoint.address().bytes().span());
 
   DVLOG(1) << "Resolved Host is : " << endpoint.ToStringWithoutPort();
 
-  std::string handshake_data(reinterpret_cast<char*>(&request),
-                             sizeof(request));
-  handshake_data.append(kEmptyUserId, std::size(kEmptyUserId));
+  auto request_as_span = base::byte_span_from_ref(request);
+  std::vector<uint8_t> handshake_data;
+  handshake_data.reserve(request_as_span.size() + 1u);
+  handshake_data.insert(handshake_data.end(), request_as_span.begin(),
+                        request_as_span.end());
+  // Append an empty user ID, which is a nul-terminated string.
+  handshake_data.push_back(0);
 
   return handshake_data;
 }
@@ -351,18 +346,19 @@ const std::string SOCKSClientSocket::BuildHandshakeWriteBuffer() const {
 int SOCKSClientSocket::DoHandshakeWrite() {
   next_state_ = STATE_HANDSHAKE_WRITE_COMPLETE;
 
-  if (buffer_.empty()) {
-    buffer_ = BuildHandshakeWriteBuffer();
-    bytes_sent_ = 0;
+  if (!handshake_write_buf_) {
+    auto vector_buffer =
+        base::MakeRefCounted<VectorIOBuffer>(BuildHandshakeWriteBuffer());
+    int buffer_size = vector_buffer->size();
+    handshake_write_buf_ = base::MakeRefCounted<DrainableIOBuffer>(
+        std::move(vector_buffer), buffer_size);
   }
 
-  int handshake_buf_len = buffer_.size() - bytes_sent_;
-  DCHECK_GT(handshake_buf_len, 0);
-  handshake_buf_ = base::MakeRefCounted<IOBufferWithSize>(handshake_buf_len);
-  memcpy(handshake_buf_->data(), &buffer_[bytes_sent_],
-         handshake_buf_len);
+  // Should only end up here if there's still data left to write.
+  CHECK_GT(handshake_write_buf_->size(), 0);
+
   return transport_socket_->Write(
-      handshake_buf_.get(), handshake_buf_len,
+      handshake_write_buf_.get(), handshake_write_buf_->size(),
       base::BindOnce(&SOCKSClientSocket::OnIOComplete, base::Unretained(this)),
       traffic_annotation_);
 }
@@ -374,14 +370,12 @@ int SOCKSClientSocket::DoHandshakeWriteComplete(int result) {
   // We ignore the case when result is 0, since the underlying Write
   // may return spurious writes while waiting on the socket.
 
-  bytes_sent_ += result;
-  if (bytes_sent_ == buffer_.size()) {
+  handshake_write_buf_->DidConsume(result);
+  if (handshake_write_buf_->size() == 0) {
     next_state_ = STATE_HANDSHAKE_READ;
-    buffer_.clear();
-  } else if (bytes_sent_ < buffer_.size()) {
-    next_state_ = STATE_HANDSHAKE_WRITE;
+    handshake_write_buf_.reset();
   } else {
-    return ERR_UNEXPECTED;
+    next_state_ = STATE_HANDSHAKE_WRITE;
   }
 
   return OK;
@@ -390,14 +384,16 @@ int SOCKSClientSocket::DoHandshakeWriteComplete(int result) {
 int SOCKSClientSocket::DoHandshakeRead() {
   next_state_ = STATE_HANDSHAKE_READ_COMPLETE;
 
-  if (buffer_.empty()) {
-    bytes_received_ = 0;
+  if (!handshake_read_buf_) {
+    handshake_read_buf_ = base::MakeRefCounted<GrowableIOBuffer>();
+    handshake_read_buf_->SetCapacity(kReadHeaderSize);
   }
 
-  int handshake_buf_len = kReadHeaderSize - bytes_received_;
-  handshake_buf_ = base::MakeRefCounted<IOBufferWithSize>(handshake_buf_len);
+  // Should only end up here if there's still data left to read.
+  CHECK_GT(handshake_read_buf_->size(), 0);
+
   return transport_socket_->Read(
-      handshake_buf_.get(), handshake_buf_len,
+      handshake_read_buf_.get(), handshake_read_buf_->size(),
       base::BindOnce(&SOCKSClientSocket::OnIOComplete, base::Unretained(this)));
 }
 
@@ -409,27 +405,30 @@ int SOCKSClientSocket::DoHandshakeReadComplete(int result) {
   if (result == 0)
     return ERR_CONNECTION_CLOSED;
 
-  if (bytes_received_ + result > kReadHeaderSize) {
-    // TODO(eroman): Describe failure in NetLog.
-    return ERR_SOCKS_CONNECTION_FAILED;
-  }
+  handshake_read_buf_->DidConsume(result);
 
-  buffer_.append(handshake_buf_->data(), result);
-  bytes_received_ += result;
-  if (bytes_received_ < kReadHeaderSize) {
+  // If the entire buffer hasn't been written to, still need to read more bytes
+  // to get the full SOCKS4 handshake.
+  if (handshake_read_buf_->size() != 0) {
     next_state_ = STATE_HANDSHAKE_READ;
     return OK;
   }
 
-  const SOCKS4ServerResponse* response =
-      reinterpret_cast<const SOCKS4ServerResponse*>(buffer_.data());
+  // Technically, the behavior of
+  // reinterpret_cast<SOCKS4ServerResponse*>(uint8_t* data) is undefined, so
+  // copy the relatively small amount of data into a SOCKS4ServerResponse
+  // instead of casting. This approach also adds size checks.
+  SOCKS4ServerResponse response;
+  base::byte_span_from_ref(response).copy_from(
+      handshake_read_buf_->span_before_offset());
+  handshake_read_buf_.reset();
 
-  if (response->reserved_null != 0x00) {
+  if (response.reserved_null != 0x00) {
     DVLOG(1) << "Unknown response from SOCKS server.";
     return ERR_SOCKS_CONNECTION_FAILED;
   }
 
-  switch (response->code) {
+  switch (response.code) {
     case kServerResponseOk:
       completed_handshake_ = true;
       return OK;

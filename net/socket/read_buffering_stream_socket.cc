@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "net/socket/read_buffering_stream_socket.h"
 
 #include <algorithm>
@@ -133,8 +128,8 @@ int ReadBufferingStreamSocket::CopyToCaller(IOBuffer* buf, int buf_len) {
   DCHECK(buffer_full_);
 
   buf_len = std::min(buf_len, read_buffer_->RemainingCapacity());
-  memcpy(buf->data(), read_buffer_->data(), buf_len);
-  read_buffer_->set_offset(read_buffer_->offset() + buf_len);
+  buf->span().copy_prefix_from(read_buffer_->first(buf_len));
+  read_buffer_->DidConsume(buf_len);
   if (read_buffer_->RemainingCapacity() == 0) {
     read_buffer_ = nullptr;
     buffer_full_ = false;
