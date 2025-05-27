@@ -14,7 +14,6 @@ struct CALayerParams;
 }  // namespace gfx
 
 namespace viz {
-class FrameSinkId;
 
 class DisplayClient {
  public:
@@ -32,10 +31,6 @@ class DisplayClient {
   virtual void DisplayAddChildWindowToBrowser(
       gpu::SurfaceHandle child_window) = 0;
   virtual void SetWideColorEnabled(bool enabled) = 0;
-  virtual void SetPreferredFrameInterval(base::TimeDelta interval) = 0;
-  virtual base::TimeDelta GetPreferredFrameIntervalForFrameSinkId(
-      const FrameSinkId& id,
-      mojom::CompositorFrameSinkType* type) = 0;
 };
 
 }  // namespace viz

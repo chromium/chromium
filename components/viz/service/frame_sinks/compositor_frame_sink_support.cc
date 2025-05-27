@@ -637,13 +637,6 @@ void CompositorFrameSinkSupport::UpdateThreadIdsPostVerification(
   }
 }
 
-base::TimeDelta CompositorFrameSinkSupport::GetPreferredFrameInterval(
-    mojom::CompositorFrameSinkType* type) const {
-  if (type)
-    *type = frame_sink_type_;
-  return preferred_frame_interval_;
-}
-
 bool CompositorFrameSinkSupport::IsRoot() const {
   return is_root_;
 }

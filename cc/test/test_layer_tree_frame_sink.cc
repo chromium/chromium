@@ -414,10 +414,4 @@ void TestLayerTreeFrameSink::SendCompositorFrameAckToClient() {
   client_->DidReceiveCompositorFrameAck();
 }
 
-base::TimeDelta TestLayerTreeFrameSink::GetPreferredFrameIntervalForFrameSinkId(
-    const viz::FrameSinkId& id,
-    viz::mojom::CompositorFrameSinkType* type) {
-  return viz::BeginFrameArgs::MinInterval();
-}
-
 }  // namespace cc

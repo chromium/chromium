@@ -119,10 +119,6 @@ class TestLayerTreeFrameSink : public LayerTreeFrameSink,
   void DisplayDidCompleteSwapWithSize(const gfx::Size& pixel_size) override;
   void DisplayAddChildWindowToBrowser(gpu::SurfaceHandle child_window) override;
   void SetWideColorEnabled(bool enabled) override {}
-  void SetPreferredFrameInterval(base::TimeDelta interval) override {}
-  base::TimeDelta GetPreferredFrameIntervalForFrameSinkId(
-      const viz::FrameSinkId& id,
-      viz::mojom::CompositorFrameSinkType* type) override;
 
   gpu::SharedImageInterface* GetSharedImageInterface() {
     return shared_image_interface_provider_->GetSharedImageInterface();

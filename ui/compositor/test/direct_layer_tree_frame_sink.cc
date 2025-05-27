@@ -165,13 +165,6 @@ void DirectLayerTreeFrameSink::DisplayDidReceiveCALayerParams(
 #endif
 }
 
-base::TimeDelta
-DirectLayerTreeFrameSink::GetPreferredFrameIntervalForFrameSinkId(
-    const viz::FrameSinkId& id,
-    viz::mojom::CompositorFrameSinkType* type) {
-  return frame_sink_manager_->GetPreferredFrameIntervalForFrameSinkId(id, type);
-}
-
 void DirectLayerTreeFrameSink::DidReceiveCompositorFrameAck(
     std::vector<viz::ReturnedResource> resources) {
   // Submitting a CompositorFrame can synchronously draw and dispatch a frame

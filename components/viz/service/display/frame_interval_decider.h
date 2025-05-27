@@ -71,9 +71,8 @@ class VIZ_SERVICE_EXPORT FrameIntervalDecider {
   void UpdateSettings(
       Settings settings,
       std::vector<std::unique_ptr<FrameIntervalMatcher>> matchers);
-  std::unique_ptr<ScopedAggregate> WrapAggregate(
-      SurfaceManager& surface_manager,
-      base::TimeTicks frame_time);
+  ScopedAggregate WrapAggregate(SurfaceManager& surface_manager,
+                                base::TimeTicks frame_time);
 
  private:
   void Decide(base::TimeTicks frame_time,

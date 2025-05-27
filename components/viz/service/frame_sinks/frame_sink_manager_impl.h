@@ -328,10 +328,6 @@ class VIZ_SERVICE_EXPORT FrameSinkManagerImpl
   CompositorFrameSinkSupport* GetFrameSinkForId(
       const FrameSinkId& frame_sink_id) const;
 
-  base::TimeDelta GetPreferredFrameIntervalForFrameSinkId(
-      const FrameSinkId& id,
-      mojom::CompositorFrameSinkType* type) const;
-
   // This cancels pending output requests owned by the frame sinks associated
   // with the specified BeginFrameSource.
   // The requets callback will be fired as part of request destruction.

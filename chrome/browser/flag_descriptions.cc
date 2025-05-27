@@ -596,11 +596,6 @@ const char kUseAndroidStagingSmdsName[] = "Use Android staging SM-DS";
 const char kUseAndroidStagingSmdsDescription[] =
     "Use the Android staging address when fetching pending eSIM profiles.";
 
-const char kUseFrameIntervalDeciderName[] =
-    "Use rewritten display FrameIntervalDecider";
-const char kUseFrameIntervalDeciderDescription[] =
-    "Rewrite is meant to preserve existing behavior and enable new features.";
-
 const char kUseSharedImagesForPepperVideoName[] =
     "Use SharedImages for PPAPI Video";
 const char kUseSharedImagesForPepperVideoDescription[] =

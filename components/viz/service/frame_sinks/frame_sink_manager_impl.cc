@@ -926,18 +926,6 @@ CompositorFrameSinkSupport* FrameSinkManagerImpl::GetFrameSinkForId(
   return nullptr;
 }
 
-base::TimeDelta FrameSinkManagerImpl::GetPreferredFrameIntervalForFrameSinkId(
-    const FrameSinkId& id,
-    mojom::CompositorFrameSinkType* type) const {
-  auto it = support_map_.find(id);
-  if (it != support_map_.end())
-    return it->second->GetPreferredFrameInterval(type);
-
-  if (type)
-    *type = mojom::CompositorFrameSinkType::kUnspecified;
-  return BeginFrameArgs::MinInterval();
-}
-
 void FrameSinkManagerImpl::DiscardPendingCopyOfOutputRequests(
     const BeginFrameSource* source) {
   const auto& root_sink = registered_sources_.at(source);

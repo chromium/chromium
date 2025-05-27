@@ -26,7 +26,6 @@
 #include "components/viz/service/display/display_compositor_memory_and_task_controller.h"
 #include "components/viz/service/display/display_resource_provider.h"
 #include "components/viz/service/display/display_scheduler.h"
-#include "components/viz/service/display/frame_rate_decider.h"
 #include "components/viz/service/display/output_surface_client.h"
 #include "components/viz/service/display/overdraw_tracker.h"
 #include "components/viz/service/display/overlay_processor_interface.h"
@@ -82,8 +81,7 @@ class VIZ_SERVICE_EXPORT Display : public DisplaySchedulerClient,
                                    public OutputSurfaceClient,
                                    public ContextLostObserver,
                                    public LatestLocalSurfaceIdLookupDelegate,
-                                   public SoftwareOutputDeviceClient,
-                                   public FrameRateDecider::Client {
+                                   public SoftwareOutputDeviceClient {
  public:
   // The |begin_frame_source| and |scheduler| may be null (together). In that
   // case, DrawAndSwap must be called externally when needed.
@@ -112,11 +110,8 @@ class VIZ_SERVICE_EXPORT Display : public DisplaySchedulerClient,
   static constexpr base::TimeDelta kDrawToSwapMax = base::Milliseconds(50);
   static constexpr uint32_t kDrawToSwapUsBuckets = 50;
 
-  void Initialize(DisplayClient* client,
-                  SurfaceManager* surface_manager,
-                  bool hw_support_for_multiple_refresh_rates = false);
+  void Initialize(DisplayClient* client, SurfaceManager* surface_manager);
 
-  // May be null depending on if kUseFrameIntervalDecider is enabled.
   FrameIntervalDecider* frame_interval_decider() const {
     return frame_interval_decider_.get();
   }
@@ -184,12 +179,6 @@ class VIZ_SERVICE_EXPORT Display : public DisplaySchedulerClient,
   void SoftwareDeviceUpdatedCALayerParams(
       const gfx::CALayerParams& ca_layer_params) override;
 
-  // FrameRateDecider::Client implementation
-  void SetPreferredFrameInterval(base::TimeDelta interval) override;
-  base::TimeDelta GetPreferredFrameIntervalForFrameSinkId(
-      const FrameSinkId& id,
-      mojom::CompositorFrameSinkType* type) override;
-
   bool has_scheduler() const { return !!scheduler_; }
   bool visible() const { return visible_; }
   const RendererSettings& settings() const { return settings_; }
@@ -201,10 +190,6 @@ class VIZ_SERVICE_EXPORT Display : public DisplaySchedulerClient,
 
   void ForceImmediateDrawAndSwapIfPossible();
   void SetNeedsOneBeginFrame();
-
-  void SetSupportedFrameIntervals(base::flat_set<base::TimeDelta> intervals);
-
-  void SetHwSupportForMultipleRefreshRates(bool support);
 
 #if BUILDFLAG(IS_ANDROID)
   bool OutputSurfaceSupportsSetFrameRate();
@@ -330,9 +315,6 @@ class VIZ_SERVICE_EXPORT Display : public DisplaySchedulerClient,
   // destroyed first.
   std::unique_ptr<DisplaySchedulerBase> scheduler_;
   bool last_wide_color_enabled_ = false;
-  std::unique_ptr<FrameRateDecider> frame_rate_decider_;
-
-  // Replaces `frame_rate_decider_` behind a feature.
   std::unique_ptr<FrameIntervalDecider> frame_interval_decider_;
 
   // This may be null if the Display is on a thread without a MessageLoop.

@@ -53,7 +53,6 @@ VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kRemoveRedirectionBitmap);
 #endif
 VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kRecordSkPicture);
 VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kUseDrmBlackFullscreenOptimization);
-VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kUseFrameIntervalDecider);
 #if BUILDFLAG(IS_ANDROID)
 VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(
     kUseFrameIntervalDeciderAdaptiveFrameRate);
@@ -162,7 +161,6 @@ VIZ_COMMON_EXPORT bool IsComplexOccluderForQuadsWithRoundedCornersEnabled();
 VIZ_COMMON_EXPORT bool ShouldDrawImmediatelyWhenInteractive();
 VIZ_COMMON_EXPORT bool IsVSyncAlignedPresentEnabled();
 VIZ_COMMON_EXPORT bool ShouldLogFrameQuadInfo();
-VIZ_COMMON_EXPORT bool IsUsingFrameIntervalDecider();
 VIZ_COMMON_EXPORT std::optional<uint64_t>
 NumCooldownFramesForAckOnSurfaceActivationDuringInteraction();
 VIZ_COMMON_EXPORT extern const base::FeatureParam<int>

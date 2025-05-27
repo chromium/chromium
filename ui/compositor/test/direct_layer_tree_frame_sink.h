@@ -66,10 +66,6 @@ class DirectLayerTreeFrameSink : public cc::LayerTreeFrameSink,
   void DisplayAddChildWindowToBrowser(
       gpu::SurfaceHandle child_window) override {}
   void SetWideColorEnabled(bool enabled) override {}
-  void SetPreferredFrameInterval(base::TimeDelta interval) override {}
-  base::TimeDelta GetPreferredFrameIntervalForFrameSinkId(
-      const viz::FrameSinkId& id,
-      viz::mojom::CompositorFrameSinkType* type) override;
 
  private:
   // viz::mojom::CompositorFrameSinkClient implementation:

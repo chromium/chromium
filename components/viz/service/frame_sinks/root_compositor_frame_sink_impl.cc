@@ -207,7 +207,7 @@ RootCompositorFrameSinkImpl::Create(
       // ExternalBeginFrameSourceWin also uses the D3D11 device used by dcomp.
       if (output_surface->capabilities().dc_support_level !=
           OutputSurface::DCSupportLevel::kNone) {
-        // Vsync updates are required to update the FrameRateDecider with
+        // Vsync updates are required to update the FrameIntervalDecider with
         // supported refresh rates.
         wants_vsync_updates = true;
         external_begin_frame_source =
@@ -279,10 +279,6 @@ RootCompositorFrameSinkImpl::Create(
       hw_support_for_multiple_refresh_rates));
 
   // Set up the callback for updating VSyncParameters.
-  // The new VSyncParameters will be sent to viz FrameRateDecider through viz
-  // display_->SetSupportedFrameIntervals() in SetDisplayVSyncParameters().
-  // |FrameRateDecider| decides the preferred_frame_interval and calls
-  // RootCompositorFrameSinkImpl::SetPreferredFrameInterval().
 #if !BUILDFLAG(IS_APPLE)
   // On Mac vsync parameter updates does not come from OutputSurface.
   if (wants_vsync_updates || impl->synthetic_begin_frame_source_) {
@@ -386,19 +382,15 @@ void RootCompositorFrameSinkImpl::SetDisplayVSyncParameters(
   // to update the |supported_intervals_| and timebase here.
   // Otherwise, just update the display parameters (timebase & interval)
   if (use_preferred_interval_) {
-    // If the incoming display interval changes, we should update the
-    // |supported_intervals_| in FrameRateDecider
     if (display_frame_interval_ != interval) {
       display_frame_interval_ = interval;
-      display_->SetSupportedFrameIntervals(GetSupportedFrameIntervals());
       UpdateFrameIntervalDeciderSettings();
     }
 
     // If there is a meaningful |preferred_frame_interval_|, firstly
     // determine the delta of next tick time using the current timebase
     // and incoming timebase.
-    if (preferred_frame_interval_ !=
-        FrameRateDecider::UnspecifiedFrameInterval()) {
+    if (!preferred_frame_interval_.is_zero()) {
       auto time = base::TimeTicks();
       base::TimeDelta timebase_delta =
           (time.SnappedToNextTick(timebase, display_frame_interval_) -
@@ -451,9 +443,7 @@ void RootCompositorFrameSinkImpl::UpdateVSyncParameters() {
   // Overwrite the interval with a meaningful one here if
   // |use_preferred_interval_|
   base::TimeDelta interval =
-      use_preferred_interval_ &&
-              preferred_frame_interval_ !=
-                  FrameRateDecider::UnspecifiedFrameInterval()
+      use_preferred_interval_ && !preferred_frame_interval_.is_zero()
           ? preferred_frame_interval_
           : display_frame_interval_;
 
@@ -515,7 +505,6 @@ void RootCompositorFrameSinkImpl::SetSupportedRefreshRates(
     exact_supported_refresh_rates_[interval] = rate;
   }
 
-  display_->SetSupportedFrameIntervals(GetSupportedFrameIntervals());
   UpdateFrameIntervalDeciderSettings();
 }
 #endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS)
@@ -638,8 +627,7 @@ RootCompositorFrameSinkImpl::RootCompositorFrameSinkImpl(
   DCHECK(begin_frame_source());
   frame_sink_manager->RegisterBeginFrameSource(begin_frame_source(),
                                                support_->frame_sink_id());
-  display_->Initialize(this, support_->frame_sink_manager()->surface_manager(),
-                       hw_support_for_multiple_refresh_rates);
+  display_->Initialize(this, support_->frame_sink_manager()->surface_manager());
   support_->SetUpHitTest(display_.get());
 #if BUILDFLAG(IS_IOS)
   // iOS supports preferred refresh rate interval set as a hint how often a
@@ -650,7 +638,6 @@ RootCompositorFrameSinkImpl::RootCompositorFrameSinkImpl(
   use_preferred_interval_ = true;
 #else
   if (!hw_support_for_multiple_refresh_rates) {
-    display_->SetSupportedFrameIntervals(GetSupportedFrameIntervals());
     use_preferred_interval_ = true;
   }
 #endif
@@ -673,9 +660,6 @@ RootCompositorFrameSinkImpl::RootCompositorFrameSinkImpl(
 
 void RootCompositorFrameSinkImpl::UpdateFrameIntervalDeciderSettings() {
   FrameIntervalDecider* decider = display_->frame_interval_decider();
-  if (!decider) {
-    return;
-  }
 
   // Note that matcher order defines precedence.
   std::vector<std::unique_ptr<FrameIntervalMatcher>> matchers;
@@ -721,8 +705,7 @@ void RootCompositorFrameSinkImpl::UpdateFrameIntervalDeciderSettings() {
         *fixed_interval_settings.supported_intervals.begin();
 #else
     // Other platforms uses the special unspecified value for default.
-    fixed_interval_settings.default_interval =
-        FrameRateDecider::UnspecifiedFrameInterval();
+    fixed_interval_settings.default_interval = base::TimeDelta();
 #endif
     settings.interval_settings = fixed_interval_settings;
   } else if (max_vsync_interval_.has_value()) {
@@ -730,8 +713,7 @@ void RootCompositorFrameSinkImpl::UpdateFrameIntervalDeciderSettings() {
     continuous_range_settings.min_interval =
         *GetSupportedFrameIntervals().begin();
     continuous_range_settings.max_interval = max_vsync_interval_.value();
-    continuous_range_settings.default_interval =
-        FrameRateDecider::UnspecifiedFrameInterval();
+    continuous_range_settings.default_interval = base::TimeDelta();
     settings.interval_settings = continuous_range_settings;
   } else {
     settings.interval_settings = {};
@@ -791,9 +773,9 @@ void RootCompositorFrameSinkImpl::FrameIntervalDeciderResultCallback(
           [](FrameIntervalDecider::FrameIntervalClass frame_interval_class) {
             switch (frame_interval_class) {
               case FrameIntervalDecider::FrameIntervalClass::kBoost:
-                return FrameRateDecider::UnspecifiedFrameInterval();
+                return base::TimeDelta();
               case FrameIntervalDecider::FrameIntervalClass::kDefault:
-                return FrameRateDecider::UnspecifiedFrameInterval();
+                return base::TimeDelta();
             }
           },
           [](FrameIntervalDecider::ResultInterval interval) {
@@ -884,7 +866,6 @@ base::ScopedClosureRunner RootCompositorFrameSinkImpl::GetCacheBackBufferCb() {
 
 void RootCompositorFrameSinkImpl::SetHwSupportForMultipleRefreshRates(
     bool support) {
-  display_->SetHwSupportForMultipleRefreshRates(support);
   interval_decider_use_fixed_intervals_ = !support;
   UpdateFrameIntervalDeciderSettings();
 }
@@ -993,14 +974,6 @@ void RootCompositorFrameSinkImpl::SetPreferredFrameInterval(
   preferred_frame_interval_ = interval;
   UpdateVSyncParameters();
 #endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS)
-}
-
-base::TimeDelta
-RootCompositorFrameSinkImpl::GetPreferredFrameIntervalForFrameSinkId(
-    const FrameSinkId& id,
-    mojom::CompositorFrameSinkType* type) {
-  return support_->frame_sink_manager()
-      ->GetPreferredFrameIntervalForFrameSinkId(id, type);
 }
 
 void RootCompositorFrameSinkImpl::DisplayDidDrawAndSwap() {}

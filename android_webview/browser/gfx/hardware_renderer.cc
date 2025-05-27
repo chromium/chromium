@@ -193,10 +193,6 @@ class HardwareRenderer::OnViz : public viz::DisplayClient {
   void DisplayAddChildWindowToBrowser(
       gpu::SurfaceHandle child_window) override {}
   void SetWideColorEnabled(bool enabled) override {}
-  void SetPreferredFrameInterval(base::TimeDelta interval) override {}
-  base::TimeDelta GetPreferredFrameIntervalForFrameSinkId(
-      const viz::FrameSinkId& id,
-      viz::mojom::CompositorFrameSinkType* type) override;
 
  private:
   viz::FrameSinkManagerImpl* GetFrameSinkManager();
@@ -530,15 +526,6 @@ void HardwareRenderer::OnViz::DisplayWillDrawAndSwap(
     viz::AggregatedRenderPassList* render_passes) {
   DCHECK_CALLED_ON_VALID_THREAD(viz_thread_checker_);
   hit_test_aggregator_->Aggregate(child_surface_id_);
-}
-
-base::TimeDelta
-HardwareRenderer::OnViz::GetPreferredFrameIntervalForFrameSinkId(
-    const viz::FrameSinkId& id,
-    viz::mojom::CompositorFrameSinkType* type) {
-  DCHECK_CALLED_ON_VALID_THREAD(viz_thread_checker_);
-  return GetFrameSinkManager()->GetPreferredFrameIntervalForFrameSinkId(id,
-                                                                        type);
 }
 
 // static

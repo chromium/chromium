@@ -133,8 +133,6 @@ class VIZ_SERVICE_EXPORT CompositorFrameSinkSupport
   // client.
   void SetBundle(const FrameSinkBundleId& bundle_id);
 
-  base::TimeDelta GetPreferredFrameInterval(
-      mojom::CompositorFrameSinkType* type) const;
   void InitializeCompositorFrameSinkType(mojom::CompositorFrameSinkType type);
   void BindLayerContext(mojom::PendingLayerContext& context,
                         bool draw_mode_is_gpu);

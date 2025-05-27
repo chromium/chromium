@@ -382,9 +382,6 @@ extern const char kEnablePendingModePasswordsPromoDescription[];
 extern const char kUseAndroidStagingSmdsName[];
 extern const char kUseAndroidStagingSmdsDescription[];
 
-extern const char kUseFrameIntervalDeciderName[];
-extern const char kUseFrameIntervalDeciderDescription[];
-
 extern const char kUseSharedImagesForPepperVideoName[];
 extern const char kUseSharedImagesForPepperVideoDescription[];
 
