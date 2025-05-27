@@ -459,6 +459,10 @@ AtomicString ResourceResponse::HttpContentType() const {
 }
 
 AtomicString ResourceResponse::GetFilteredHttpContentEncoding() const {
+  DEFINE_THREAD_SAFE_STATIC_LOCAL(const AtomicString, multiple_value,
+                                  ("multiple"));
+  DEFINE_THREAD_SAFE_STATIC_LOCAL(const AtomicString, unknown_value,
+                                  ("@unknown"));
   String content_encoding =
       HttpHeaderField(http_names::kContentEncoding).LowerASCII();
   if (content_encoding.IsNull() || content_encoding.empty()) {
@@ -468,9 +472,9 @@ AtomicString ResourceResponse::GetFilteredHttpContentEncoding() const {
     return AtomicString(content_encoding);
   }
   if (content_encoding.find(',') != kNotFound) {
-    return AtomicString("multiple");
+    return multiple_value;
   }
-  return AtomicString("unknown");
+  return unknown_value;
 }
 
 bool ResourceResponse::WasCached() const {
