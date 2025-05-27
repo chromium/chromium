@@ -77,15 +77,8 @@ std::ostream& operator<<(std::ostream& out,
 }
 
 class AutofillStructuredAddress : public testing::Test {
- public:
-  AutofillStructuredAddress() {
-    features_.InitWithFeatures({features::kAutofillUseINAddressModel,
-                                features::kAutofillUseNLAddressModel},
-                               {});
-  }
-
  private:
-  base::test::ScopedFeatureList features_;
+  base::test::ScopedFeatureList features_{features::kAutofillUseINAddressModel};
 };
 
 void TestAddressLineParsing(const AddressLineParsingTestCase& test_case) {
@@ -2501,7 +2494,6 @@ TEST_F(AutofillStructuredAddress, ParseStreetAddressIT) {
 }
 
 TEST_F(AutofillStructuredAddress, ParseStreetLocationFR) {
-  base::test::ScopedFeatureList features_{features::kAutofillUseFRAddressModel};
   std::vector<AddressLineParsingTestCase> test_cases = {
       // Examples of street locations (building-location) for France.
       {.country_code = "FR",
@@ -2548,7 +2540,6 @@ TEST_F(AutofillStructuredAddress, ParseStreetLocationFR) {
 }
 
 TEST_F(AutofillStructuredAddress, ParseStreetAddressFR) {
-  base::test::ScopedFeatureList features_{features::kAutofillUseFRAddressModel};
   std::vector<AddressLineParsingTestCase> test_cases = {
       // Examples of street addresses for France.
       {.country_code = "FR",

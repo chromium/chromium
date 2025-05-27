@@ -498,7 +498,6 @@ void ApplyRationalizationEngineRules(
             .SetEnvironmentCondition(
                 EnvironmentConditionBuilder()
                     .SetCountryList({GeoIpCountryCode("NL")})
-                    .SetFeature(&features::kAutofillUseNLAddressModel)
                     .Build())
             .SetTriggerField(
                 FieldCondition{.possible_overall_types =

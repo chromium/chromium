@@ -26,19 +26,8 @@ using ::autofill::i18n_model_definition::kLegacyHierarchyCountryCode;
 using ::base::ASCIIToUTF16;
 
 class AddressTest : public testing::Test {
- public:
-  AddressTest() {
-    features_.InitWithFeatures(
-        {
-            features::kAutofillUseFRAddressModel,
-            features::kAutofillUseINAddressModel,
-            features::kAutofillUseNLAddressModel,
-        },
-        {});
-  }
-
  private:
-  base::test::ScopedFeatureList features_;
+  base::test::ScopedFeatureList features_{features::kAutofillUseINAddressModel};
 };
 
 // Test that country data can be properly returned as either a country code or a

@@ -116,16 +116,6 @@ class WindowedNetworkObserver {
 
 class AutofillServerTest : public InProcessBrowserTest {
  public:
-  AutofillServerTest() {
-    scoped_feature_list_.InitWithFeatures(
-        // Enabled.
-        {features::test::kAutofillServerCommunication,
-         features::kAutofillUseFRAddressModel,
-         features::kAutofillUseNLAddressModel},
-        // Disabled.
-        {});
-  }
-
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
 
@@ -181,7 +171,8 @@ class AutofillServerTest : public InProcessBrowserTest {
 
  private:
   test::AutofillBrowserTestEnvironment autofill_test_environment_;
-  base::test::ScopedFeatureList scoped_feature_list_;
+  base::test::ScopedFeatureList scoped_feature_list_{
+      features::test::kAutofillServerCommunication};
   content::ContentMockCertVerifier cert_verifier_;
   std::map<std::string, std::string> pages_;
 };

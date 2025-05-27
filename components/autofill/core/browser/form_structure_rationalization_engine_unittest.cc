@@ -605,11 +605,8 @@ TEST(FormStructureRationalizationEngine, TestITAddressLine1WithNoNext) {
 // Test that a house number field not followed by an apartment is treated
 // as a ADDRESS_HOME_HOUSE_NUMBER_AND_APT in the Netherlands.
 TEST(FormStructureRationalizationEngine, TestNLHouseNumberAndAptChanged) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      {kTestFeatureForFormStructureRationalizationEngine,
-       features::kAutofillUseNLAddressModel},
-      {});
+  base::test::ScopedFeatureList feature_list{
+      kTestFeatureForFormStructureRationalizationEngine};
 
   std::vector<std::unique_ptr<AutofillField>> fields = CreateFields({
       {u"Voornaam", u"voornaam", NAME_FIRST},
@@ -633,11 +630,8 @@ TEST(FormStructureRationalizationEngine, TestNLHouseNumberAndAptChanged) {
 // Test that the actions are not applied since there is apartment related field
 // after ADDRESS_HOME_HOUSE_NUMBER (for the Netherlands).
 TEST(FormStructureRationalizationEngine, TestNLHouseNumberAndAptNoChange) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      {kTestFeatureForFormStructureRationalizationEngine,
-       features::kAutofillUseNLAddressModel},
-      {});
+  base::test::ScopedFeatureList feature_list{
+      kTestFeatureForFormStructureRationalizationEngine};
 
   std::vector<std::unique_ptr<AutofillField>> fields = CreateFields({
       {u"Voornaam", u"voornaam", NAME_FIRST},
@@ -662,11 +656,8 @@ TEST(FormStructureRationalizationEngine, TestNLHouseNumberAndAptNoChange) {
 // Test that the actions are applied if there is no next field after
 // ADDRESS_HOME_HOUSE_NUMBER (for the Netherlands).
 TEST(FormStructureRationalizationEngine, TestNLHouseNumberAndAptWithNoNext) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      {kTestFeatureForFormStructureRationalizationEngine,
-       features::kAutofillUseNLAddressModel},
-      {});
+  base::test::ScopedFeatureList feature_list{
+      kTestFeatureForFormStructureRationalizationEngine};
 
   std::vector<std::unique_ptr<AutofillField>> fields = CreateFields({
       {u"Voornaam", u"voornaam", NAME_FIRST},

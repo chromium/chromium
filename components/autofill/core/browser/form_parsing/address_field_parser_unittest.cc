@@ -19,12 +19,7 @@ namespace autofill {
 class AddressFieldParserTest : public FormFieldParserTestBase,
                                public ::testing::Test {
  public:
-  AddressFieldParserTest() {
-    default_features.InitWithFeatures({features::kAutofillUseFRAddressModel,
-                                       features::kAutofillUseINAddressModel,
-                                       features::kAutofillUseNLAddressModel},
-                                      {});
-  }
+  AddressFieldParserTest() = default;
   AddressFieldParserTest(const AddressFieldParserTest&) = delete;
   AddressFieldParserTest& operator=(const AddressFieldParserTest&) = delete;
 
@@ -34,7 +29,8 @@ class AddressFieldParserTest : public FormFieldParserTestBase,
     return AddressFieldParser::Parse(context, scanner);
   }
 
-  base::test::ScopedFeatureList default_features;
+  base::test::ScopedFeatureList default_features{
+      features::kAutofillUseINAddressModel};
 };
 
 TEST_F(AddressFieldParserTest, Empty) {

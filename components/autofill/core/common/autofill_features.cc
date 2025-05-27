@@ -480,12 +480,6 @@ BASE_FEATURE(kAutofillReplaceCachedWebElementsByRendererIds,
              "AutofillReplaceCachedWebElementsByRendererIds",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables using a custom address model for France, overriding the legacy one.
-// TODO(crbug.com/347859030): Delete after M139.
-BASE_FEATURE(kAutofillUseFRAddressModel,
-             "AutofillUseFRAddressModel",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables using a custom address model for India, overriding the legacy one.
 BASE_FEATURE(kAutofillUseINAddressModel,
              "AutofillUseINAddressModel",
@@ -506,12 +500,6 @@ BASE_FEATURE(kAutofillSupportLastNamePrefix,
 // TODO(crbug.com/40284788): Clean up after M138 branch (26 May 2025).
 BASE_FEATURE(kAutofillThrottleAskForValuesToFill,
              "AutofillThrottleAskForValuesToFill",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Enables using a custom address model for the Netherlands, overriding the
-// legacy one.
-BASE_FEATURE(kAutofillUseNLAddressModel,
-             "AutofillUseNLAddressModel",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 // When enabled, the form field parser won't try to match other attributes if

@@ -154,9 +154,7 @@ class ProfileMatchingTypesTest
  public:
   ProfileMatchingTypesTest() {
     features_.InitWithFeatures(
-        {features::kAutofillUseFRAddressModel,
-         features::kAutofillUseNLAddressModel,
-         features::kAutofillUseNegativePatternForAllAttributes,
+        {features::kAutofillUseNegativePatternForAllAttributes,
          features::kAutofillSupportLastNamePrefix},
         {});
   }
