@@ -3435,6 +3435,25 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Net.MultiThreadedCertVerifier.RequestDuration{HostType}"
+    units="ms" expires_after="2025-10-26">
+  <owner>nidhijaju@chromium.org</owner>
+  <owner>chrome-network-stack@google.com</owner>
+  <summary>
+    Records the time taken to post a task to the worker thread pool, verify a
+    certificate for connections to {HostType}, and post a task back to the
+    browser main thread in the MultiThreadedCertVerifier. Recorded after
+    verifying the certificate and returning back to the browser main thread in
+    the MultiThreadedCertVerifier.
+  </summary>
+  <token key="HostType">
+    <variant name="" summary="any server"/>
+    <variant name=".Google" summary="Google hosted servers"/>
+    <variant name=".GoogleWithAlpnH3"
+        summary="Google hosted servers with ALPN h3"/>
+  </token>
+</histogram>
+
 <histogram name="Net.NeedsHWCAP2Workaround" enum="BooleanBroken"
     expires_after="2024-06-30">
   <owner>davidben@chromium.org</owner>
