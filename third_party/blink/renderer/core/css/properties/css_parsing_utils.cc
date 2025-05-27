@@ -1605,11 +1605,10 @@ CSSIdentifierValue* ConsumeIdentRange(CSSParserTokenStream& stream,
   return ConsumeIdent(stream);
 }
 
-namespace {
-
 // https://drafts.csswg.org/css-values-5/#ident
 CSSFunctionValue* ConsumeIdentFunction(CSSParserTokenStream& stream,
                                        const CSSParserContext& context) {
+  CHECK(RuntimeEnabledFeatures::CSSIdentFunctionEnabled());
   if (stream.Peek().FunctionId() != CSSValueID::kIdent) {
     return nullptr;
   }
@@ -1648,8 +1647,6 @@ CSSFunctionValue* ConsumeIdentFunction(CSSParserTokenStream& stream,
   return MakeGarbageCollected<CSSFunctionValue>(
       CSSValueID::kIdent, CSSValueList::kSpaceSeparator, std::move(values));
 }
-
-}  // namespace
 
 CSSCustomIdentValue* ConsumeCustomIdent(CSSParserTokenStream& stream,
                                         const CSSParserContext& context) {

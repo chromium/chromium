@@ -31,6 +31,8 @@ class CORE_EXPORT CSSCustomIdentValue : public CSSValue {
     return string_;
   }
   AtomicString ComputeIdent(const CSSLengthResolver&) const;
+  static AtomicString ComputeIdent(const CSSFunctionValue&,
+                                   const CSSLengthResolver&);
   // If `this` contains any ident() functions, resolves those functions
   // a returns a new literal CSSCustomIdentValue with the result.
   // Otherwise, returns `this`.
