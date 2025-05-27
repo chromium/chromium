@@ -24,6 +24,8 @@ extern const char kDisableVariationsSeedFetchThrottling[];
 COMPONENT_EXPORT(VARIATIONS)
 extern const char kEnableBenchmarking[];
 COMPONENT_EXPORT(VARIATIONS)
+extern const char kEnableBenchmarkingApi[];
+COMPONENT_EXPORT(VARIATIONS)
 extern const char kEnableFieldTrialTestingConfig[];
 COMPONENT_EXPORT(VARIATIONS)
 extern const char kFakeVariationsChannel[];

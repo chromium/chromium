@@ -2895,6 +2895,7 @@ void ChromeContentBrowserClient::AppendExtraCommandLineSwitches(
         switches::kAppsGalleryURL,
         switches::kDisableJavaScriptHarmonyShipping,
         variations::switches::kEnableBenchmarking,
+        variations::switches::kEnableBenchmarkingApi,
         switches::kEnableDistillabilityService,
         switches::kEnableNaCl,
 #if BUILDFLAG(ENABLE_NACL)
