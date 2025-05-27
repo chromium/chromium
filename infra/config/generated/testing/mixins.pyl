@@ -771,9 +771,9 @@
       'shards': 30,
     },
   },
-  'skylab-shards-50': {
+  'skylab-shards-45': {
     'skylab': {
-      'shards': 50,
+      'shards': 45,
     },
   },
   'swarming_containment_auto': {

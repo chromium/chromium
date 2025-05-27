@@ -294,7 +294,7 @@ targets.legacy_matrix_compound_suite(
         "chromeos_chrome_all_tast_tests": targets.legacy_matrix_config(
             mixins = [
                 # jacuzzi is slow. So that we use more number of shards.
-                "skylab-shards-50",
+                "skylab-shards-45",
             ],
             variants = [
                 "CROS_RELEASE_LKGM",
