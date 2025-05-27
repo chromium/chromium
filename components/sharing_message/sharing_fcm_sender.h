@@ -134,15 +134,6 @@ class SharingFCMSender : public SharingMessageSender::SendMessageDelegate,
                           gcm::GCMEncryptionResult result,
                           std::string message);
 
-  void DoSendMessageToVapidTarget(const std::string& fcm_token,
-                                  base::TimeDelta time_to_live,
-                                  std::string message,
-                                  SendMessageCallback callback);
-
-  void OnMessageSentToVapidTarget(SendMessageCallback callback,
-                                  SendWebPushMessageResult result,
-                                  std::optional<std::string> message_id);
-
   void DoSendMessageToSenderIdTarget(const std::string& fcm_token,
                                      base::TimeDelta time_to_live,
                                      const std::string& message_id,

@@ -148,9 +148,7 @@ void SharingDeviceRegistrationImpl::OnSharingTargetInfoRetrieved(
       std::move(enabled_features));
   sharing_sync_preference_->SetLocalSharingInfo(std::move(sharing_info));
   sharing_sync_preference_->SetFCMRegistration(
-      // Clears authorized_entity in preferences if it's not populated.
-      SharingSyncPreference::FCMRegistration(/*authorized_entity=*/std::nullopt,
-                                             base::Time::Now()));
+      SharingSyncPreference::FCMRegistration(base::Time::Now()));
   std::move(callback).Run(SharingDeviceRegistrationResult::kSuccess);
 }
 
@@ -165,35 +163,15 @@ void SharingDeviceRegistrationImpl::UnregisterDevice(
 
   sharing_sync_preference_->ClearLocalSharingInfo();
 
-  if (!registration->authorized_entity) {
-    OnVapidFCMTokenDeleted(std::move(callback),
-                           SharingDeviceRegistrationResult::kSuccess);
-    return;
-  }
-
-  DeleteFCMToken(
-      *registration->authorized_entity,
-      base::BindOnce(&SharingDeviceRegistrationImpl::OnVapidFCMTokenDeleted,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
-}
-
-void SharingDeviceRegistrationImpl::OnVapidFCMTokenDeleted(
-    RegistrationCallback callback,
-    SharingDeviceRegistrationResult result) {
-  if (result != SharingDeviceRegistrationResult::kSuccess) {
-    std::move(callback).Run(result);
-    return;
-  }
-
   DeleteFCMToken(kSharingSenderID, std::move(callback));
 }
 
 void SharingDeviceRegistrationImpl::DeleteFCMToken(
-    const std::string& authorized_entity,
+    const std::string& sender_id,
     RegistrationCallback callback) {
   instance_id_driver_->GetInstanceID(kSharingFCMAppID)
       ->DeleteToken(
-          authorized_entity, instance_id::kGCMScope,
+          sender_id, instance_id::kGCMScope,
           base::BindOnce(&SharingDeviceRegistrationImpl::OnFCMTokenDeleted,
                          weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }

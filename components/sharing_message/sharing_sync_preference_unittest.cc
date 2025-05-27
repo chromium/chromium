@@ -33,8 +33,6 @@ const char kDeviceSenderIdFcmToken[] = "test_sender_id_fcm_token";
 const char kDeviceSenderIdAuthToken[] = "test_sender_id_auth_token";
 const char kDeviceSenderIdP256dh[] = "test_sender_id_p256dh";
 
-const char kAuthorizedEntity[] = "authorized_entity";
-
 const char kSharingInfoEnabledFeatures[] = "enabled_features";
 
 }  // namespace
@@ -112,20 +110,10 @@ TEST_F(SharingSyncPreferenceTest, FCMRegistrationGetSet) {
 
   base::Time time_now = base::Time::Now();
   sharing_sync_preference_.SetFCMRegistration(
-      SharingSyncPreference::FCMRegistration(kAuthorizedEntity, time_now));
+      SharingSyncPreference::FCMRegistration(time_now));
 
   auto fcm_registration = sharing_sync_preference_.GetFCMRegistration();
   EXPECT_TRUE(fcm_registration);
-  EXPECT_EQ(kAuthorizedEntity, fcm_registration->authorized_entity);
-  EXPECT_EQ(time_now, fcm_registration->timestamp);
-
-  // Set FCM registration without authorized entity.
-  sharing_sync_preference_.SetFCMRegistration(
-      SharingSyncPreference::FCMRegistration(std::nullopt, time_now));
-
-  fcm_registration = sharing_sync_preference_.GetFCMRegistration();
-  EXPECT_TRUE(fcm_registration);
-  EXPECT_FALSE(fcm_registration->authorized_entity);
   EXPECT_EQ(time_now, fcm_registration->timestamp);
 
   sharing_sync_preference_.ClearFCMRegistration();

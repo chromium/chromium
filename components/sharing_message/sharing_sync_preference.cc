@@ -28,7 +28,9 @@ const char kDeviceFcmToken[] = "device_fcm_token";
 const char kDeviceP256dh[] = "device_p256dh";
 const char kDeviceAuthSecret[] = "device_auth_secret";
 
-const char kRegistrationAuthorizedEntity[] = "registration_authorized_entity";
+// Deprecated in M139.
+const char kDeprecatedRegistrationAuthorizedEntity[] =
+    "registration_authorized_entity";
 const char kRegistrationTimestamp[] = "registration_timestamp";
 
 const char kSharingInfoVapidTargetInfo[] = "vapid_target_info";
@@ -72,11 +74,8 @@ std::optional<syncer::DeviceInfo::SharingTargetInfo> ValueToTargetInfo(
 
 using sync_pb::SharingSpecificFields;
 
-// TODO(crbug.com/40253551): Remove `authorized_entity` field.
-SharingSyncPreference::FCMRegistration::FCMRegistration(
-    std::optional<std::string> authorized_entity,
-    base::Time timestamp)
-    : authorized_entity(std::move(authorized_entity)), timestamp(timestamp) {}
+SharingSyncPreference::FCMRegistration::FCMRegistration(base::Time timestamp)
+    : timestamp(timestamp) {}
 
 SharingSyncPreference::FCMRegistration::FCMRegistration(
     FCMRegistration&& other) = default;
@@ -152,17 +151,10 @@ std::optional<SharingSyncPreference::FCMRegistration>
 SharingSyncPreference::GetFCMRegistration() const {
   const base::Value::Dict& registration =
       prefs_->GetDict(prefs::kSharingFCMRegistration);
-  const std::string* authorized_entity_ptr =
-      registration.FindString(kRegistrationAuthorizedEntity);
   const base::Value* timestamp_value =
       registration.Find(kRegistrationTimestamp);
   if (!timestamp_value) {
     return std::nullopt;
-  }
-
-  std::optional<std::string> authorized_entity;
-  if (authorized_entity_ptr) {
-    authorized_entity = *authorized_entity_ptr;
   }
 
   std::optional<base::Time> timestamp = base::ValueToTime(timestamp_value);
@@ -170,17 +162,12 @@ SharingSyncPreference::GetFCMRegistration() const {
     return std::nullopt;
   }
 
-  return FCMRegistration(authorized_entity, *timestamp);
+  return FCMRegistration(*timestamp);
 }
 
 void SharingSyncPreference::SetFCMRegistration(FCMRegistration registration) {
   ScopedDictPrefUpdate update(prefs_, prefs::kSharingFCMRegistration);
-  if (registration.authorized_entity) {
-    update->Set(kRegistrationAuthorizedEntity,
-                std::move(*registration.authorized_entity));
-  } else {
-    update->Remove(kRegistrationAuthorizedEntity);
-  }
+  update->Remove(kDeprecatedRegistrationAuthorizedEntity);
   update->Set(kRegistrationTimestamp,
               base::TimeToValue(registration.timestamp));
 }

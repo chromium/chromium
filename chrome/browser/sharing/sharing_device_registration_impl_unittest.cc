@@ -419,7 +419,6 @@ TEST_F(SharingDeviceRegistrationImplTest, UnregisterDeviceTest_SenderIDonly) {
   EXPECT_EQ(SharingDeviceRegistrationResult::kSuccess, result_);
   EXPECT_TRUE(local_sharing_info_);
   EXPECT_TRUE(fcm_registration_);
-  EXPECT_FALSE(fcm_registration_->authorized_entity);
 
   // Then unregister the device.
   UnregisterDeviceSync();

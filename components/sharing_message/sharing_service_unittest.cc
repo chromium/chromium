@@ -54,7 +54,6 @@
 namespace {
 
 const char kDeviceName[] = "other_name";
-const char kAuthorizedEntity[] = "authorized_entity";
 constexpr base::TimeDelta kTimeout = base::Seconds(15);
 
 SharingTargetDeviceInfo CreateFakeSharingTargetDeviceInfo(
@@ -101,8 +100,8 @@ class MockSharingFCMHandler : public SharingFCMHandler {
  public:
   MockSharingFCMHandler()
       : SharingFCMHandler(/*gcm_driver=*/nullptr,
+                          /*device_info_tracker=*/nullptr,
                           /*sharing_fcm_sender=*/nullptr,
-                          /*sync_preference=*/nullptr,
                           /*handler_registry=*/nullptr) {}
   ~MockSharingFCMHandler() override = default;
 
@@ -646,8 +645,8 @@ TEST_F(SharingServiceTest, StartListeningToFCMAtConstructor) {
 
   // Create new SharingService instance with FCM already registered at
   // constructor.
-  sync_prefs_->SetFCMRegistration(SharingSyncPreference::FCMRegistration(
-      kAuthorizedEntity, base::Time::Now()));
+  sync_prefs_->SetFCMRegistration(
+      SharingSyncPreference::FCMRegistration(base::Time::Now()));
   EXPECT_CALL(*fcm_handler_, StartListening()).Times(1);
   GetSharingService();
 }

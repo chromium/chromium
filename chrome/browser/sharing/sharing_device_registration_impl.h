@@ -103,10 +103,7 @@ class SharingDeviceRegistrationImpl : public SharingDeviceRegistration {
       SharingDeviceRegistrationResult result,
       std::optional<syncer::DeviceInfo::SharingTargetInfo> sharing_target_info);
 
-  void OnVapidFCMTokenDeleted(RegistrationCallback callback,
-                              SharingDeviceRegistrationResult result);
-
-  void DeleteFCMToken(const std::string& authorized_entity,
+  void DeleteFCMToken(const std::string& sender_id,
                       RegistrationCallback callback);
 
   void OnFCMTokenDeleted(RegistrationCallback callback,

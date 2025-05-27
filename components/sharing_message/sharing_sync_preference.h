@@ -38,14 +38,10 @@ class SharingSyncPreference {
  public:
   // FCM registration status of current device. Not synced across devices.
   struct FCMRegistration {
-    FCMRegistration(std::optional<std::string> authorized_entity,
-                    base::Time timestamp);
+    explicit FCMRegistration(base::Time timestamp);
     FCMRegistration(FCMRegistration&& other);
     FCMRegistration& operator=(FCMRegistration&& other);
     ~FCMRegistration();
-
-    // Authorized entity registered with FCM.
-    std::optional<std::string> authorized_entity;
 
     // Timestamp of latest registration.
     base::Time timestamp;

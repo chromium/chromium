@@ -33,7 +33,6 @@ const char kReceiverDeviceName[] = "receiver_device";
 const char kP256dh[] = "p256dh";
 const char kAuthSecret[] = "auth_secret";
 const char kFCMToken[] = "vapid_fcm_token";
-const char kAuthorizedEntity[] = "authorized_entity";
 const char kSenderVapidFcmToken[] = "sender_vapid_fcm_token";
 const char kSenderVapidP256dh[] = "sender_vapid_p256dh";
 const char kSenderVapidAuthSecret[] = "sender_vapid_auth_secret";
@@ -165,8 +164,7 @@ class SharingMessageSenderTest : public testing::Test {
         SharingMessageSender::DelegateType::kIOSPush,
         std::move(mock_sharing_ios_push_sender));
     sharing_sync_preference_.SetFCMRegistration(
-        SharingSyncPreference::FCMRegistration(kAuthorizedEntity,
-                                               base::Time::Now()));
+        SharingSyncPreference::FCMRegistration(base::Time::Now()));
     fake_device_info_sync_service_.GetLocalDeviceInfoProvider()
         ->GetMutableDeviceInfo()
         ->set_sharing_info(CreateLocalSharingInfo());
