@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "pdf/pdfium/pdfium_font_helpers.h"
 
 #include <algorithm>
 #include <optional>
+#include <string_view>
 
 #include "base/i18n/encoding_detection.h"
 #include "base/i18n/icu_string_conversions.h"
@@ -43,7 +39,8 @@ std::optional<blink::WebFontDescription> PdfFontToBlinkFontMapping(
     const char* face) {
   // Pretend the system does not have the Symbol font to force a fallback to
   // the built in Symbol font in CFX_FontMapper::FindSubstFont().
-  if (strcmp(face, "Symbol") == 0) {
+  static constexpr std::string_view kSymbol("Symbol");
+  if (face == kSymbol) {
     return std::nullopt;
   }
 
@@ -57,8 +54,8 @@ std::optional<blink::WebFontDescription> PdfFontToBlinkFontMapping(
   }
 
   static constexpr struct {
-    const char* pdf_name;
-    const char* face;
+    std::string_view pdf_name;
+    std::string_view face;
     bool bold;
     bool italic;
   } kPdfFontSubstitutions[] = {
@@ -100,7 +97,7 @@ std::optional<blink::WebFontDescription> PdfFontToBlinkFontMapping(
   // Map from the standard PDF fonts to TrueType font names.
   bool found_substitution = false;
   for (const auto& substitution : kPdfFontSubstitutions) {
-    if (strcmp(face, substitution.pdf_name) == 0) {
+    if (face == substitution.pdf_name) {
       desc.family = blink::WebString::FromUTF8(substitution.face);
       if (substitution.bold) {
         desc.weight = blink::WebFontDescription::kWeightBold;
