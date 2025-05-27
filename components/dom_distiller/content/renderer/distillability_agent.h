@@ -7,6 +7,10 @@
 
 #include "content/public/renderer/render_frame_observer.h"
 
+namespace ukm {
+class UkmRecorder;
+}
+
 namespace dom_distiller {
 
 // DistillabilityAgent returns distillability result to DistillabilityDriver.
@@ -21,6 +25,9 @@ class DistillabilityAgent : public content::RenderFrameObserver {
 
  private:
   bool dump_info_;
+
+  // Recorder instance used for reporting UKMs.
+  std::unique_ptr<ukm::UkmRecorder> ukm_recorder_;
 };
 
 }  // namespace dom_distiller

@@ -48,6 +48,8 @@ import org.chromium.components.dom_distiller.core.DomDistillerUrlUtilsJni;
 import org.chromium.components.messages.MessageDispatcher;
 import org.chromium.components.messages.MessageScopeType;
 import org.chromium.components.prefs.PrefService;
+import org.chromium.components.ukm.UkmRecorder;
+import org.chromium.components.ukm.UkmRecorderJni;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.components.user_prefs.UserPrefsJni;
 import org.chromium.content_public.browser.NavigationController;
@@ -79,6 +81,7 @@ public class ReaderModeManagerTest {
     @Mock private MessageDispatcher mMessageDispatcher;
     @Mock private UserPrefs.Natives mUserPrefsJniMock;
     @Mock private PrefService mPrefService;
+    @Mock private UkmRecorder.Natives mUkmRecorderJniMock;
 
     @Captor private ArgumentCaptor<TabObserver> mTabObserverCaptor;
     private TabObserver mTabObserver;
@@ -99,6 +102,7 @@ public class ReaderModeManagerTest {
         DomDistillerUrlUtilsJni.setInstanceForTesting(mDistillerUrlUtilsJniMock);
         DomDistillerTabUtils.setDistillerHeuristicsForTesting(
                 DistillerHeuristicsType.ADABOOST_MODEL);
+        UkmRecorderJni.setInstanceForTesting(mUkmRecorderJniMock);
 
         mUserDataHost = new UserDataHost();
         mUserDataHost.setUserData(TabDistillabilityProvider.USER_DATA_KEY, mDistillabilityProvider);
@@ -339,6 +343,9 @@ public class ReaderModeManagerTest {
                 /* isLast= */ true,
                 /* isMobileOptimized= */ false);
         watcher.assertExpected();
+        verify(mUkmRecorderJniMock)
+                .recordEventWithMultipleMetrics(
+                        any(), eq("DomDistiller.Android.DistillabilityResult"), any());
     }
 
     @Test

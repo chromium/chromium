@@ -21,6 +21,7 @@ import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabHidingType;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonVariant;
+import org.chromium.components.ukm.UkmRecorder;
 import org.chromium.url.GURL;
 
 import java.util.Objects;
@@ -35,6 +36,10 @@ public class ReaderModeActionProvider implements ContextualPageActionController.
     /** Histogram name for if a positive distillation signal was in time for the CPA timeout. */
     public static final String SIGNAL_ACCUMULATOR_DISTILLABLE_WITHIN_TIMEOUT_HISTOGRAM =
             "DomDistiller.Android.DistillablePageSignalWithinTimeout";
+
+    /** Histogram name that records how long it takes to get a reader mode result. */
+    public static final String READER_MODE_SIGNAL_TIME_HISTOGRAM =
+            "DomDistiller.Time.TimeToProvideResultToAccumulator";
 
     // DistillabilityObserver which automatically un/registers itself as an observer when there is a
     // result.
@@ -105,7 +110,7 @@ public class ReaderModeActionProvider implements ContextualPageActionController.
                             tab, isDistillable, isMobileOptimized, /* isLast= */ true);
             if (result.first) {
                 notifyActionAvailable(
-                        result.second == DistillationStatus.POSSIBLE, mSignalAccumulator);
+                        tab, result.second == DistillationStatus.POSSIBLE, mSignalAccumulator);
                 destroy();
             }
         }
@@ -161,18 +166,26 @@ public class ReaderModeActionProvider implements ContextualPageActionController.
         }
     }
 
-    private void notifyActionAvailable(boolean isDistillable, SignalAccumulator signalAccumulator) {
+    private void notifyActionAvailable(
+            Tab tab, boolean isDistillable, SignalAccumulator signalAccumulator) {
         // TODO(shaktisahu): Can we merge these into a single method call?
         signalAccumulator.setHasReaderMode(isDistillable);
         signalAccumulator.notifySignalAvailable();
 
+        long latency = System.currentTimeMillis() - signalAccumulator.getSignalStartTimeMs();
         boolean signalAvailable = !signalAccumulator.hasTimedOut();
         RecordHistogram.recordBooleanHistogram(
                 SIGNAL_ACCUMULATOR_WITHIN_TIMEOUT_HISTOGRAM, signalAvailable);
+        RecordHistogram.recordLongTimesHistogram(READER_MODE_SIGNAL_TIME_HISTOGRAM, latency);
         // Record if the signal counted when a page was distillable.
         if (isDistillable) {
             RecordHistogram.recordBooleanHistogram(
                     SIGNAL_ACCUMULATOR_DISTILLABLE_WITHIN_TIMEOUT_HISTOGRAM, signalAvailable);
+        }
+        if (tab.getWebContents() != null) {
+            new UkmRecorder(tab.getWebContents(), "DomDistiller.Android.DistillabilityLatency")
+                    .addMetric("Latency", (int) latency)
+                    .record();
         }
     }
 }

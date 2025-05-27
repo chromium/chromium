@@ -13,7 +13,12 @@
 #include "components/dom_distiller/core/page_features.h"
 #include "components/dom_distiller/core/url_utils.h"
 #include "content/public/renderer/render_frame.h"
+#include "content/public/renderer/render_thread.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "services/metrics/public/cpp/mojo_ukm_recorder.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
+#include "services/metrics/public/cpp/ukm_recorder.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
 #include "third_party/blink/public/platform/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/platform/web_distillability.h"
 #include "third_party/blink/public/web/web_document.h"
@@ -115,7 +120,9 @@ void DumpDistillability(content::RenderFrame* render_frame,
 
 void RecordDistillabilityMetrics(int score,
                                  int long_score,
-                                 bool is_disitillable) {
+                                 bool is_disitillable,
+                                 ukm::UkmRecorder* ukm_recorder,
+                                 ukm::SourceId source_id) {
   int adj_score = std::abs(score * 100);
   if (score > 0) {
     base::UmaHistogramCounts100("DomDistiller.AdaBoostModel.PositiveScore",
@@ -135,6 +142,9 @@ void RecordDistillabilityMetrics(int score,
   }
 
   base::UmaHistogramBoolean("DomDistiller.IsDistillable", is_disitillable);
+  ukm::builders::DomDistiller_ModelResult_Distillable(source_id)
+      .SetDistillable(is_disitillable)
+      .Record(ukm_recorder);
 }
 
 bool IsDistillablePageAdaboost(blink::WebDocument& doc,
@@ -144,7 +154,8 @@ bool IsDistillablePageAdaboost(blink::WebDocument& doc,
                                bool& is_long_article,
                                bool& is_mobile_friendly,
                                content::RenderFrame* render_frame,
-                               bool dump_info) {
+                               bool dump_info,
+                               ukm::UkmRecorder* ukm_recorder) {
   GURL parsed_url(doc.Url());
   if (!parsed_url.is_valid()) {
     return false;
@@ -162,7 +173,8 @@ bool IsDistillablePageAdaboost(blink::WebDocument& doc,
   bool filtered = IsFiltered(parsed_url);
 
   bool is_distillable = distillable && is_long_article;
-  RecordDistillabilityMetrics(score, long_score, is_distillable);
+  RecordDistillabilityMetrics(score, long_score, is_distillable, ukm_recorder,
+                              doc.GetUkmSourceId());
 
   if (dump_info) {
     DumpDistillability(render_frame, features, derived, score, distillable,
@@ -181,7 +193,8 @@ bool IsDistillablePage(blink::WebDocument& doc,
                        bool& is_long_article,
                        bool& is_mobile_friendly,
                        content::RenderFrame* render_frame,
-                       bool dump_info) {
+                       bool dump_info,
+                       ukm::UkmRecorder* ukm_recorder) {
   switch (GetDistillerHeuristicsType()) {
     case DistillerHeuristicsType::ALWAYS_TRUE:
       return true;
@@ -192,7 +205,7 @@ bool IsDistillablePage(blink::WebDocument& doc,
       return IsDistillablePageAdaboost(
           doc, DistillablePageDetector::GetNewModel(),
           DistillablePageDetector::GetLongPageModel(), is_last, is_long_article,
-          is_mobile_friendly, render_frame, dump_info);
+          is_mobile_friendly, render_frame, dump_info, ukm_recorder);
     case DistillerHeuristicsType::NONE:
     default:
       return false;
@@ -203,7 +216,12 @@ bool IsDistillablePage(blink::WebDocument& doc,
 
 DistillabilityAgent::DistillabilityAgent(content::RenderFrame* render_frame,
                                          bool dump_info)
-    : RenderFrameObserver(render_frame), dump_info_(dump_info) {}
+    : RenderFrameObserver(render_frame), dump_info_(dump_info) {
+  mojo::Remote<ukm::mojom::UkmRecorderFactory> factory;
+  content::RenderThread::Get()->BindHostReceiver(
+      factory.BindNewPipeAndPassReceiver());
+  ukm_recorder_ = ukm::MojoUkmRecorder::Create(*factory);
+}
 
 void DistillabilityAgent::DidMeaningfulLayout(
     blink::WebMeaningfulLayout layout_type) {
@@ -237,7 +255,7 @@ void DistillabilityAgent::DidMeaningfulLayout(
   bool is_mobile_friendly = false;
   bool is_distillable =
       IsDistillablePage(doc, is_last, is_long_article, is_mobile_friendly,
-                        render_frame(), dump_info_);
+                        render_frame(), dump_info_, ukm_recorder_.get());
   distillability_service->NotifyIsDistillable(
       is_distillable, is_last, is_long_article, is_mobile_friendly);
 }

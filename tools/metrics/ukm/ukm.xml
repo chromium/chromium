@@ -8286,6 +8286,97 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="DomDistiller.Android.DistillabilityLatency" singular="true">
+  <owner>wylieb@google.com</owner>
+  <owner>chrome-reader-mode@google.com</owner>
+  <summary>
+    Recorded for a subset of page loads (default: 1/1000 page loads). Records
+    the result of the triggering model which determines if the current page is
+    considered distillable. Recorded for the android-specific code which uses
+    the results.
+  </summary>
+  <metric name="Latency">
+    <summary>
+      The duration (in milliseconds) for how long it took from the time the
+      distillability result to be returned.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+</event>
+
+<event name="DomDistiller.Android.DistillabilityResult" singular="true">
+  <owner>wylieb@google.com</owner>
+  <owner>chrome-reader-mode@google.com</owner>
+  <summary>
+    Recorded for a subset of page loads (default: 1/1000 page loads). Records
+    the result of the triggering model which determines if the current page is
+    considered distillable. Recorded for the android-specific code which uses
+    the result.
+  </summary>
+  <metric name="Result" enum="DistillationResult">
+    <summary>
+      The distillation result from the current page.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+</event>
+
+<event name="DomDistiller.Android.ReaderModeShown" singular="true">
+  <owner>wylieb@google.com</owner>
+  <owner>chrome-reader-mode@google.com</owner>
+  <summary>
+    Recorded for a subset of page loads (default: 1/1000 page loads). Records
+    when the user interacts with reader mode directly, after it's been offered.
+    Recorded for the android-specific code which uses the results.
+  </summary>
+  <metric name="Shown" enum="Boolean">
+    <summary>
+      Whether reader mode is shown for the current page.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+</event>
+
+<event name="DomDistiller.ModelResult.Distillable" singular="true">
+  <owner>wylieb@google.com</owner>
+  <owner>chrome-reader-mode@google.com</owner>
+  <summary>
+    Recorded for a subset of page loads (default: 1/1000 page loads). Records
+    the result of the triggering model which determines if the current page is
+    considered distillable.
+  </summary>
+  <metric name="Distillable" enum="Boolean">
+    <summary>
+      Whether the current page is distillable.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+</event>
+
 <event name="Download.Completed">
   <owner>clank-downloads@google.com</owner>
   <summary>

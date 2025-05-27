@@ -56,6 +56,7 @@ import org.chromium.components.messages.MessageIdentifier;
 import org.chromium.components.messages.MessageScopeType;
 import org.chromium.components.messages.PrimaryActionClickBehavior;
 import org.chromium.components.navigation_interception.InterceptNavigationDelegate;
+import org.chromium.components.ukm.UkmRecorder;
 import org.chromium.content_public.browser.LoadCommittedDetails;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.NavigationController;
@@ -357,6 +358,10 @@ public class ReaderModeManager extends EmptyTabObserver implements UserData {
     private void onStartedReaderMode() {
         mIsViewingReaderModePage = true;
         mViewStartTimeMs = SystemClock.elapsedRealtime();
+
+        new UkmRecorder(mTab.getWebContents(), "DomDistiller.Android.ReaderModeShown")
+                .addBooleanMetric("Shown")
+                .record();
     }
 
     /**
@@ -748,6 +753,7 @@ public class ReaderModeManager extends EmptyTabObserver implements UserData {
                     ACCESSIBILITY_SETTING_HISTOGRAM,
                     DomDistillerTabUtils.isReaderModeAccessibilitySettingEnabled(tab.getProfile()));
             recordDistillationResult(
+                    tab,
                     distillationStatus,
                     isDistillable,
                     excludeCurrentMobilePage,
@@ -844,6 +850,7 @@ public class ReaderModeManager extends EmptyTabObserver implements UserData {
     // LINT.ThenChange(/tools/metrics/histograms/metadata/accessibility/enums.xml:DistillationResult)
 
     private static void recordDistillationResult(
+            Tab tab,
             @DistillationStatus int status,
             boolean isDistillable,
             boolean excludeMobileFriendly,
@@ -866,5 +873,10 @@ public class ReaderModeManager extends EmptyTabObserver implements UserData {
         }
         RecordHistogram.recordEnumeratedHistogram(
                 PAGE_DISTILLATION_RESULT_HISTOGRAM, result, DistillationResult.MAX);
+        if (tab.getWebContents() != null) {
+            new UkmRecorder(tab.getWebContents(), "DomDistiller.Android.DistillabilityResult")
+                    .addMetric("Result", result)
+                    .record();
+        }
     }
 }

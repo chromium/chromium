@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.segmentation_platform;
 
 import android.os.Handler;
 
-import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.segmentation_platform.ContextualPageActionController.ActionProvider;
@@ -21,10 +20,6 @@ import java.util.List;
  */
 @NullMarked
 public class SignalAccumulator {
-    /** Histogram name that records how long it takes to get a reader mode result. */
-    public static final String READER_MODE_SIGNAL_TIME_HISTOGRAM =
-            "DomDistiller.Time.TimeToProvideResultToAccumulator";
-
     private static final long DEFAULT_ACTION_PROVIDER_TIMEOUT_MS = 100;
 
     // List of signals to query. Modify hasAllSignals() when adding signals to this list.
@@ -119,8 +114,6 @@ public class SignalAccumulator {
     /** Called to set whether the page can be viewed in reader mode. */
     public void setHasReaderMode(Boolean hasReaderMode) {
         mHasReaderMode = hasReaderMode;
-        RecordHistogram.recordLongTimesHistogram(
-                READER_MODE_SIGNAL_TIME_HISTOGRAM, System.currentTimeMillis() - mGetSignalsStartMs);
     }
 
     /**
@@ -145,6 +138,11 @@ public class SignalAccumulator {
     /** Called to set whether the page is discounts eligible. */
     public void setHasDiscounts(Boolean hasDiscounts) {
         mHasDiscounts = hasDiscounts;
+    }
+
+    /** Returns the time when the signal timeout started in milliseconds. */
+    public long getSignalStartTimeMs() {
+        return mGetSignalsStartMs;
     }
 
     /** Central method invoked whenever a backend responds or time out happens. */
