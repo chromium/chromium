@@ -15,14 +15,23 @@
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/types/expected.h"
+#include "content/browser/indexed_db/indexed_db_value.h"
+#include "content/browser/indexed_db/instance/backing_store.h"
 #include "content/browser/indexed_db/instance/sqlite/backing_store_transaction_impl.h"
 #include "content/browser/indexed_db/status.h"
 #include "sql/database.h"
 #include "sql/meta_table.h"
 #include "sql/statement.h"
 #include "sql/transaction.h"
+#include "third_party/blink/public/common/indexeddb/indexeddb_key.h"
+#include "third_party/blink/public/common/indexeddb/indexeddb_key_path.h"
 #include "third_party/blink/public/common/indexeddb/indexeddb_metadata.h"
 #include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom.h"
+
+// TODO(crbug.com/40253999): Rename the file to indicate that it contains
+// backend-agnostic utils to encode/decode IDB types, and potentially move the
+// (Encode/Decode)KeyPath methods below to this file.
+#include "content/browser/indexed_db/indexed_db_leveldb_coding.h"
 
 // TODO(crbug.com/40253999): Remove after handling all error cases.
 #define TRANSIENT_CHECK(condition) CHECK(condition)
@@ -50,12 +59,12 @@ std::u16string EncodeKeyPath(const blink::IndexedDBKeyPath& key_path) {
       NOTREACHED();
   }
 }
-blink::IndexedDBKeyPath DecodeKeyPath(const std::u16string& key_path) {
-  if (key_path.empty()) {
+blink::IndexedDBKeyPath DecodeKeyPath(const std::u16string& encoded) {
+  if (encoded.empty()) {
     return blink::IndexedDBKeyPath();
   }
   std::vector<std::u16string> parts = base::SplitString(
-      key_path, kKeyPathSeparator, base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
+      encoded, kKeyPathSeparator, base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
   if (parts.size() > 1) {
     return blink::IndexedDBKeyPath(std::move(parts));
   }
@@ -85,28 +94,37 @@ void InitializeNewDatabase(sql::Database* db,
   // (https://www.w3.org/TR/IndexedDB/#name) of the database, object stores and
   // indexes as an arbitrary sequence of 16-bit code units, which implies that
   // the application-supplied name strings need not be valid UTF-16.
-  // However, "key_path"s are always valid UTF-16 since they contain only
-  // identifiers (required to be valid UTF-16) and periods.
-  // TODO(crbug.com/40253999): Appropriately handle invalid UTF-16 names.
+  // "key_path"s are always valid UTF-16 since they contain only identifiers
+  // (required to be valid UTF-16) and periods.
+  // However, to avoid unnecessary conversion from UTF-16 to UTF-8 and back, we
+  // store all application-supplied strings as BLOBs.
   //
   // Stores a single row containing the properties of
   // `IndexedDBDatabaseMetadata` for this database.
   TRANSIENT_CHECK(
       db->Execute("CREATE TABLE indexed_db_metadata "
-                  "(name TEXT NOT NULL UNIQUE,"
+                  "(name BLOB NOT NULL,"
                   " version INTEGER NOT NULL)"));
   TRANSIENT_CHECK(
       db->Execute("CREATE TABLE object_stores "
                   "(id INTEGER PRIMARY KEY,"
-                  " name TEXT NOT NULL UNIQUE,"
-                  " key_path TEXT,"
-                  " auto_increment INTEGER NOT NULL)"));
+                  " name BLOB NOT NULL UNIQUE,"
+                  " key_path BLOB,"
+                  " auto_increment INTEGER NOT NULL,"
+                  " key_generator_current_number INTEGER NOT NULL)"));
+  TRANSIENT_CHECK(
+      db->Execute("CREATE TABLE records "
+                  "(row_id INTEGER PRIMARY KEY AUTOINCREMENT,"
+                  " object_store_id INTEGER NOT NULL,"
+                  " key BLOB NOT NULL,"
+                  " value BLOB NOT NULL,"
+                  " UNIQUE (object_store_id, key))"));
 
   // Insert the initial metadata entry.
   sql::Statement statement(
       db->GetUniqueStatement("INSERT INTO indexed_db_metadata "
                              "(name, version) VALUES (?, ?)"));
-  statement.BindString16(0, name);
+  statement.BindBlob(0, name);
   statement.BindInt64(1, blink::IndexedDBDatabaseMetadata::NO_VERSION);
   TRANSIENT_CHECK(statement.Run());
 
@@ -124,7 +142,7 @@ blink::IndexedDBDatabaseMetadata GenerateIndexedDbMetadata(sql::Database* db) {
     sql::Statement statement(db->GetReadonlyStatement(
         "SELECT name, version FROM indexed_db_metadata"));
     TRANSIENT_CHECK(statement.Step());
-    metadata.name = statement.ColumnString16(0);
+    TRANSIENT_CHECK(statement.ColumnBlobAsString16(0, &metadata.name));
     metadata.version = statement.ColumnInt64(1);
   }
 
@@ -136,8 +154,10 @@ blink::IndexedDBDatabaseMetadata GenerateIndexedDbMetadata(sql::Database* db) {
     while (statement.Step()) {
       blink::IndexedDBObjectStoreMetadata store_metadata;
       store_metadata.id = statement.ColumnInt64(0);
-      store_metadata.name = statement.ColumnString16(1);
-      store_metadata.key_path = DecodeKeyPath(statement.ColumnString16(2));
+      TRANSIENT_CHECK(statement.ColumnBlobAsString16(1, &store_metadata.name));
+      std::u16string encoded_key_path;
+      TRANSIENT_CHECK(statement.ColumnBlobAsString16(2, &encoded_key_path));
+      store_metadata.key_path = DecodeKeyPath(encoded_key_path);
       store_metadata.auto_increment = statement.ColumnBool(3);
       max_object_store_id = std::max(max_object_store_id, store_metadata.id);
       metadata.object_stores[store_metadata.id] = std::move(store_metadata);
@@ -291,16 +311,106 @@ Status DatabaseConnection::CreateObjectStore(
   sql::Statement statement(db_->GetCachedStatement(
       SQL_FROM_HERE,
       "INSERT INTO object_stores "
-      "(id, name, key_path, auto_increment) VALUES (?, ?, ?, ?)"));
+      "(id, name, key_path, auto_increment, key_generator_current_number) "
+      "VALUES (?, ?, ?, ?, ?)"));
   statement.BindInt64(0, metadata.id);
-  statement.BindString16(1, metadata.name);
-  statement.BindString16(2, EncodeKeyPath(metadata.key_path));
+  statement.BindBlob(1, metadata.name);
+  statement.BindBlob(2, EncodeKeyPath(metadata.key_path));
   statement.BindBool(3, metadata.auto_increment);
+  statement.BindInt64(4, ObjectStoreMetaDataKey::kKeyGeneratorInitialNumber);
   TRANSIENT_CHECK(statement.Run());
 
   metadata_.object_stores[object_store_id] = std::move(metadata);
   metadata_.max_object_store_id = object_store_id;
   return Status::OK();
+}
+
+StatusOr<int64_t> DatabaseConnection::GetKeyGeneratorCurrentNumber(
+    base::PassKey<BackingStoreTransactionImpl>,
+    int64_t object_store_id) {
+  sql::Statement statement(
+      db_->GetCachedStatement(SQL_FROM_HERE,
+                              "SELECT key_generator_current_number "
+                              "FROM object_stores WHERE id = ?"));
+  statement.BindInt64(0, object_store_id);
+  TRANSIENT_CHECK(statement.Step());
+  return statement.ColumnInt64(0);
+}
+
+Status DatabaseConnection::MaybeUpdateKeyGeneratorCurrentNumber(
+    base::PassKey<BackingStoreTransactionImpl>,
+    int64_t object_store_id,
+    int64_t new_number) {
+  sql::Statement statement(db_->GetCachedStatement(
+      SQL_FROM_HERE,
+      "UPDATE object_stores SET key_generator_current_number = ? "
+      "WHERE id = ? AND key_generator_current_number < ?"));
+  statement.BindInt64(0, new_number);
+  statement.BindInt64(1, object_store_id);
+  statement.BindInt64(2, new_number);
+  TRANSIENT_CHECK(statement.Run());
+  return Status::OK();
+}
+
+StatusOr<std::optional<BackingStore::RecordIdentifier>>
+DatabaseConnection::GetRecordIdentifierIfExists(
+    base::PassKey<BackingStoreTransactionImpl>,
+    int64_t object_store_id,
+    const blink::IndexedDBKey& key) {
+  sql::Statement statement(
+      db_->GetCachedStatement(SQL_FROM_HERE,
+                              "SELECT row_id FROM records "
+                              "WHERE object_store_id = ? AND key = ?"));
+  std::string encoded_key;
+  EncodeSortableIDBKey(key, &encoded_key);
+  statement.BindInt64(0, object_store_id);
+  statement.BindBlob(1, encoded_key);
+  if (statement.Step()) {
+    return BackingStore::RecordIdentifier{statement.ColumnInt64(0)};
+  }
+  TRANSIENT_CHECK(statement.Succeeded());
+  return std::nullopt;
+}
+
+StatusOr<IndexedDBValue> DatabaseConnection::GetValue(
+    base::PassKey<BackingStoreTransactionImpl>,
+    int64_t object_store_id,
+    const blink::IndexedDBKey& key) {
+  sql::Statement statement(
+      db_->GetCachedStatement(SQL_FROM_HERE,
+                              "SELECT value FROM records "
+                              "WHERE object_store_id = ? AND key = ?"));
+  std::string encoded_key;
+  EncodeSortableIDBKey(key, &encoded_key);
+  statement.BindInt64(0, object_store_id);
+  statement.BindBlob(1, encoded_key);
+  if (statement.Step()) {
+    IndexedDBValue value;
+    TRANSIENT_CHECK(statement.ColumnBlobAsVector(0, &value.bits));
+    return value;
+  }
+  TRANSIENT_CHECK(statement.Succeeded());
+  return IndexedDBValue();
+}
+
+StatusOr<BackingStore::RecordIdentifier> DatabaseConnection::PutRecord(
+    base::PassKey<BackingStoreTransactionImpl>,
+    int64_t object_store_id,
+    const blink::IndexedDBKey& key,
+    IndexedDBValue value) {
+  sql::Statement statement(db_->GetCachedStatement(
+      SQL_FROM_HERE,
+      "INSERT OR REPLACE INTO records "
+      "(object_store_id, key, value) VALUES (?, ?, ?)"));
+  statement.BindInt64(0, object_store_id);
+  std::string encoded_key;
+  EncodeSortableIDBKey(key, &encoded_key);
+  // TODO(crbug.com/40253999): `move` these into `statement` when
+  // crbug.com/419806592 is fixed.
+  statement.BindBlob(1, encoded_key);
+  statement.BindBlob(2, value.bits);
+  TRANSIENT_CHECK(statement.Run());
+  return BackingStore::RecordIdentifier{db_->GetLastInsertRowId()};
 }
 
 }  // namespace content::indexed_db::sqlite

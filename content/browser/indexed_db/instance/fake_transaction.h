@@ -54,8 +54,8 @@ class FakeTransaction : public BackingStore::Transaction {
   StatusOr<int64_t> GetKeyGeneratorCurrentNumber(
       int64_t object_store_id) override;
   Status MaybeUpdateKeyGeneratorCurrentNumber(int64_t object_store_id,
-                                              int64_t new_state,
-                                              bool check_current) override;
+                                              int64_t new_number,
+                                              bool was_generated) override;
   StatusOr<std::optional<BackingStore::RecordIdentifier>>
   KeyExistsInObjectStore(int64_t object_store_id,
                          const blink::IndexedDBKey& key) override;

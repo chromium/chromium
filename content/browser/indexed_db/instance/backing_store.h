@@ -146,10 +146,13 @@ class BackingStore {
         const blink::IndexedDBKeyRange&) = 0;
     [[nodiscard]] virtual StatusOr<int64_t> GetKeyGeneratorCurrentNumber(
         int64_t object_store_id) = 0;
+    // Sets the key generator current number for `object_store_id` to
+    // max(`new_number`, current number). `was_generated` is a hint that can be
+    // used by implementations to skip reading the current number.
     [[nodiscard]] virtual Status MaybeUpdateKeyGeneratorCurrentNumber(
         int64_t object_store_id,
-        int64_t new_state,
-        bool check_current) = 0;
+        int64_t new_number,
+        bool was_generated) = 0;
     // Returns the `RecordIdentifier` for the record if the primary key exists
     // in the given object store. Returns `Status` on error. Returns nullopt if
     // no record exists with the given key.

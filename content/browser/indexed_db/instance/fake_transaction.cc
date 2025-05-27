@@ -111,10 +111,10 @@ StatusOr<int64_t> FakeTransaction::GetKeyGeneratorCurrentNumber(
 
 Status FakeTransaction::MaybeUpdateKeyGeneratorCurrentNumber(
     int64_t object_store_id,
-    int64_t new_state,
-    bool check_current) {
+    int64_t new_number,
+    bool was_generated) {
   return wrapped_transaction_->MaybeUpdateKeyGeneratorCurrentNumber(
-      object_store_id, new_state, check_current);
+      object_store_id, new_number, was_generated);
 }
 
 StatusOr<std::optional<BackingStore::RecordIdentifier>>

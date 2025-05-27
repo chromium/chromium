@@ -2440,12 +2440,14 @@ StatusOr<int64_t> BackingStore::Transaction::GetKeyGeneratorCurrentNumber(
 Status BackingStore::Transaction::MaybeUpdateKeyGeneratorCurrentNumber(
     int64_t object_store_id,
     int64_t new_number,
-    bool check_current) {
+    bool was_generated) {
   if (!KeyPrefix::ValidIds(database_id(), object_store_id)) {
     return InvalidDBKeyStatus();
   }
 
-  if (check_current) {
+  if (!was_generated) {
+    // We only need to check the current number if the new number was not
+    // generated (through an earlier call to `GetKeyGeneratorCurrentNumber()`).
     ASSIGN_OR_RETURN(int64_t current_number,
                      GetKeyGeneratorCurrentNumber(object_store_id));
     if (new_number <= current_number) {
