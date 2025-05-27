@@ -180,6 +180,24 @@ class CookieSettingsBase {
   static ThirdPartyCookieAllowMechanism TpcdMetadataSourceToAllowMechanism(
       const mojom::TpcdMetadataRuleSource& source);
 
+  // MetadataSourceType exposes 3PCD metadata rule sources in UKM. It should
+  // match FirstPartyMetadataSource in tools/metrics/histograms/enums.xml.
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  enum class MetadataSourceType {
+    None = 0,
+    FirstPartyDt = 1,
+    ThirdPartyDt = 2,
+    CriticalSector = 3,
+    CriticalSectorTld = 4,
+    Cuj = 5,
+    OtherMetadata = 6,
+    Heuristics = 7,
+  };
+
+  static MetadataSourceType AllowMechanismToMetadataSourceType(
+      const ThirdPartyCookieAllowMechanism& allow_mechanism);
+
   class CookieSettingWithMetadata {
    public:
     CookieSettingWithMetadata() = default;

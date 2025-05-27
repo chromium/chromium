@@ -269,6 +269,43 @@ bool CookieSettingsBase::Is1PDtRelatedAllowMechanism(
 }
 
 // static
+CookieSettingsBase::MetadataSourceType
+CookieSettingsBase::AllowMechanismToMetadataSourceType(
+    const ThirdPartyCookieAllowMechanism& allow_mechanism) {
+  using AllowMechanism = ThirdPartyCookieAllowMechanism;
+  switch (allow_mechanism) {
+    case AllowMechanism::kAllowByTopLevel3PCD:
+    case AllowMechanism::kAllowBy3PCDMetadataSource1pDt:
+      return MetadataSourceType::FirstPartyDt;
+    case AllowMechanism::kAllowBy3PCD:
+    case AllowMechanism::kAllowBy3PCDMetadataSource3pDt:
+      return MetadataSourceType::ThirdPartyDt;
+    case AllowMechanism::kAllowBy3PCDMetadataSourceCriticalSector:
+      return MetadataSourceType::CriticalSector;
+    case AllowMechanism::kAllowBy3PCDMetadataSourceGovEduTld:
+      return MetadataSourceType::CriticalSectorTld;
+    case AllowMechanism::kAllowBy3PCDMetadataSourceCuj:
+      return MetadataSourceType::Cuj;
+    case AllowMechanism::kAllowBy3PCDMetadataSourceUnspecified:
+    case AllowMechanism::kAllowBy3PCDMetadataSourceTest:
+    case AllowMechanism::kAllowBy3PCDMetadataSourceDogFood:
+      return MetadataSourceType::OtherMetadata;
+    case AllowMechanism::kAllowBy3PCDHeuristics:
+      return MetadataSourceType::Heuristics;
+    case AllowMechanism::kNone:
+    case AllowMechanism::kAllowByExplicitSetting:
+    case AllowMechanism::kAllowByTrackingProtectionException:
+    case AllowMechanism::kAllowByGlobalSetting:
+    case AllowMechanism::kAllowByStorageAccess:
+    case AllowMechanism::kAllowByTopLevelStorageAccess:
+    case AllowMechanism::kAllowByEnterprisePolicyCookieAllowedForUrls:
+    case AllowMechanism::kAllowByScheme:
+    case AllowMechanism::kAllowBySandboxValue:
+      return MetadataSourceType::None;
+  }
+}
+
+// static
 ThirdPartyCookieAllowMechanism
 CookieSettingsBase::TpcdMetadataSourceToAllowMechanism(
     const mojom::TpcdMetadataRuleSource& source) {
