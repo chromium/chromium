@@ -554,6 +554,7 @@ public class RuntimePermissionTest {
     @MediumTest
     @Feature({"RuntimePermissions", "MediaPermissions"})
     @CommandLineFlags.Add(ContentSwitches.USE_FAKE_DEVICE_FOR_MEDIA_STREAM)
+    @DisabledTest(message = "crbug.com/325085976")
     public void testRuntimeMediaPromptHistogramSystemDeny() throws Exception {
         String[] requestablePermission = new String[] {Manifest.permission.CAMERA};
         mTestAndroidPermissionDelegate =
