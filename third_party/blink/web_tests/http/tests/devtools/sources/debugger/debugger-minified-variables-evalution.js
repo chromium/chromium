@@ -9,6 +9,7 @@ import * as SourceMapScopesModule from 'devtools/models/source_map_scopes/source
 import * as SourcesModule from 'devtools/panels/sources/sources.js';
 import * as UIModule from 'devtools/ui/legacy/legacy.js';
 import * as SDK from 'devtools/core/sdk/sdk.js';
+import * as Formatter from 'devtools/models/formatter/formatter.js';
 
 (async function() {
   TestRunner.addResult(`Tests evaluation in minified scripts.\n`);
@@ -27,31 +28,20 @@ import * as SDK from 'devtools/core/sdk/sdk.js';
     SourcesTestRunner.waitForScriptSource('resolve-expressions-origin.js', step3);
   }
 
-  function step3(uiSourceCode) {
-    var positions = [
-      new Position(7, 11, 23, 'object.prop1'), new Position(4, 4, 14, 'this.prop2'),
-      new Position(5, 4, 19, 'object["prop3"]'), new Position(2, 8, 14, 'object'),  //object
-    ];
-    var promise = Promise.resolve();
-    for (var position of positions)
-      promise = promise.then(testAtPosition.bind(null, uiSourceCode, position));
+  async function step3() {
+    const expressions = ['object.prop1', 'this.prop2', 'object["prop3"]', 'object'];
+    for (const expression of expressions) {
+      await testWithExpression(expression);
+    }
 
-    promise.then(() => SourcesTestRunner.completeDebuggerTest());
+    SourcesTestRunner.completeDebuggerTest();
   }
 
-  function Position(line, startColumn, endColumn, originText) {
-    this.line = line;
-    this.startColumn = startColumn;
-    this.endColumn = endColumn;
-    this.originText = originText;
-  }
-
-  function testAtPosition(uiSourceCode, position) {
+  function testWithExpression(expression) {
     return SourceMapScopesModule.NamesResolver
-        .resolveExpression(
-            UIModule.Context.Context.instance().flavor(SDK.DebuggerModel.CallFrame), position.originText, uiSourceCode, position.line,
-            position.startColumn, position.endColumn)
-        .then(SourcesTestRunner.evaluateOnCurrentCallFrame)
-        .then(result => TestRunner.addResult(result.object.description));
+      .allVariablesInCallFrame(UIModule.Context.Context.instance().flavor(SDK.DebuggerModel.CallFrame))
+      .then(map => Formatter.FormatterWorkerPool.formatterWorkerPool().javaScriptSubstitute(expression, map))
+      .then(SourcesTestRunner.evaluateOnCurrentCallFrame)
+      .then(result => TestRunner.addResult(result.object.description));
   }
 })();
