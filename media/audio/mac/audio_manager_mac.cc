@@ -670,13 +670,9 @@ AudioParameters AudioManagerMac::GetInputStreamParameters(
   DCHECK(GetTaskRunner()->BelongsToCurrentThread());
   if (AudioDeviceDescription::IsLoopbackDevice(device_id)) {
     if (IsMacCatapSystemAudioLoopbackCaptureEnabled()) {
-      AudioDeviceID default_output_device;
-      GetDefaultOutputDevice(&default_output_device);
-      const int loopback_sample_rate =
-          HardwareSampleRateForDevice(default_output_device);
-      return AudioParameters(
-          AudioParameters::AUDIO_PCM_LOW_LATENCY, ChannelLayoutConfig::Stereo(),
-          loopback_sample_rate, kCatapLoopbackFramesPerBuffer);
+      return AudioParameters(AudioParameters::AUDIO_PCM_LOW_LATENCY,
+                             ChannelLayoutConfig::Stereo(), kLoopbackSampleRate,
+                             kCatapLoopbackDefaultFramesPerBuffer);
 
     } else {
       return AudioParameters(AudioParameters::AUDIO_PCM_LOW_LATENCY,

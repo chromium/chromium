@@ -19,6 +19,12 @@
 namespace media {
 
 namespace {
+bool AudioObjectPropertyAddressEq(const AudioObjectPropertyAddress& x,
+                                  const AudioObjectPropertyAddress& y) {
+  return x.mSelector == y.mSelector && x.mScope == y.mScope &&
+         x.mElement == y.mElement;
+}
+
 // A function pointer to this function is used as an identifier for the tap IO
 // process ID.
 OSStatus AudioDeviceIoProcIdFunction(AudioDeviceID,
@@ -133,7 +139,7 @@ class CatapAudioInputStreamTest : public testing::Test {
       stream_ = CreateCatapAudioInputStreamForTesting(
           AudioParameters(AudioParameters::AUDIO_PCM_LOW_LATENCY,
                           ChannelLayoutConfig::Stereo(), kLoopbackSampleRate,
-                          kCatapLoopbackFramesPerBuffer),
+                          kCatapLoopbackDefaultFramesPerBuffer),
           media::AudioDeviceDescription::kLoopbackInputDeviceId,
           base::DoNothing(), base::DoNothing(),
           media::AudioDeviceDescription::kDefaultDeviceId,
@@ -167,14 +173,62 @@ class CatapAudioInputStreamTest : public testing::Test {
           });
 
       // The following two calls are done when probing the tap, which is
-      // enabled by default.
+      // enabled by default. The set property function is also used to set the
+      // sample rate and frames per buffer.
+      AudioObjectPropertyAddress kSampleRatePropertyAddress = {
+          kAudioDevicePropertyNominalSampleRate,
+          kAudioObjectPropertyScopeGlobal, kAudioObjectPropertyElementMain};
+      AudioObjectPropertyAddress kFramesPerBufferPropertyAddress = {
+          kAudioDevicePropertyBufferFrameSize, kAudioObjectPropertyScopeGlobal,
+          kAudioObjectPropertyElementMain};
+      AudioObjectPropertyAddress kTapDescriptionPropertyAddress = {
+          kAudioTapPropertyDescription, kAudioObjectPropertyScopeGlobal,
+          kAudioObjectPropertyElementMain};
+      int set_sample_rate_count = 0;
+      int set_frames_per_buffer_count = 0;
+      int set_tap_description_count = 0;
+
       EXPECT_CALL(mock_catap_api(), AudioObjectGetPropertyData)
           .WillOnce(testing::Return(noErr));
       EXPECT_CALL(mock_catap_api(), AudioObjectSetPropertyData)
-          .WillOnce(testing::Return(with_permissions ? noErr : -1));
+          .WillRepeatedly(
+              [&](AudioObjectID in_object_id,
+                  const AudioObjectPropertyAddress* in_address,
+                  UInt32 in_qualifier_data_size, const void* in_qualifier_data,
+                  UInt32 in_data_size, const void* in_data) -> OSStatus {
+                if (AudioObjectPropertyAddressEq(*in_address,
+                                                 kSampleRatePropertyAddress)) {
+                  EXPECT_EQ(in_object_id, kAggregateDeviceId);
+                  EXPECT_EQ(in_data_size, 8u);
+                  EXPECT_FLOAT_EQ(*static_cast<const Float64*>(in_data),
+                                  kLoopbackSampleRate);
+                  ++set_sample_rate_count;
+                  return noErr;
+                } else if (AudioObjectPropertyAddressEq(
+                               *in_address, kFramesPerBufferPropertyAddress)) {
+                  EXPECT_EQ(in_object_id, kAggregateDeviceId);
+                  EXPECT_EQ(in_data_size, 4u);
+                  EXPECT_FLOAT_EQ(*static_cast<const UInt32*>(in_data),
+                                  kCatapLoopbackDefaultFramesPerBuffer);
+                  ++set_frames_per_buffer_count;
+                  return noErr;
+                } else if (AudioObjectPropertyAddressEq(
+                               *in_address, kTapDescriptionPropertyAddress)) {
+                  // Called from ProbeAudioTapPermissions.
+                  EXPECT_EQ(in_object_id, kTap);
+                  EXPECT_EQ(in_data_size, sizeof(CATapDescription*));
+                  ++set_tap_description_count;
+                  return with_permissions ? noErr : -1;
+                }
+                return -1;
+              });
 
       // Initialize the stream.
-      return stream_->Open();
+      AudioInputStream::OpenOutcome result = stream_->Open();
+      EXPECT_EQ(set_sample_rate_count, 1);
+      EXPECT_EQ(set_frames_per_buffer_count, 1);
+      EXPECT_EQ(set_tap_description_count, 1);
+      return result;
     }
     return AudioInputStream::OpenOutcome::kFailed;
   }
@@ -251,7 +305,7 @@ TEST_F(CatapAudioInputStreamTest, CaptureSomeAudioData) {
     // Simulate a call to `audio_proc_` with some data.
     const AudioTimeStamp* in_now = nullptr;
     const uint32_t data_byte_size =
-        kCatapLoopbackFramesPerBuffer * sizeof(Float32) * 2;
+        kCatapLoopbackDefaultFramesPerBuffer * sizeof(Float32) * 2;
     std::vector<uint8_t> data_buffer(data_byte_size);
 
     AudioBufferList input_data;
@@ -289,7 +343,7 @@ TEST_F(CatapAudioInputStreamTest, LoopbackWithoutChromeId) {
     stream_ = CreateCatapAudioInputStreamForTesting(
         AudioParameters(AudioParameters::AUDIO_PCM_LOW_LATENCY,
                         ChannelLayoutConfig::Stereo(), kLoopbackSampleRate,
-                        kCatapLoopbackFramesPerBuffer),
+                        kCatapLoopbackDefaultFramesPerBuffer),
         media::AudioDeviceDescription::kLoopbackWithoutChromeId,
         base::DoNothing(), base::DoNothing(),
         media::AudioDeviceDescription::kDefaultDeviceId,
