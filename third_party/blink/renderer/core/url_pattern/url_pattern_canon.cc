@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/core/url_pattern/url_pattern_canon.h"
 
 #include "third_party/blink/renderer/core/url_pattern/url_pattern_component.h"
@@ -197,10 +192,17 @@ String CanonicalizePathname(const String& protocol,
     standard = true;
   } else if (protocol.Is8Bit()) {
     StringUTF8Adaptor utf8(protocol);
-    standard = url::IsStandard(utf8.data(), url::Component(0, utf8.size()));
+    // TODO(crbug.com/351564777, crbug.com/420421613): Remove the UNSAFE_TODO
+    // after we finish transition in `url::IsStandard` to use
+    // `std::string_view`.
+    standard = UNSAFE_TODO(
+        url::IsStandard(utf8.data(), url::Component(0, utf8.size())));
   } else {
-    standard = url::IsStandard(protocol.Characters16(),
-                               url::Component(0, protocol.length()));
+    // TODO(crbug.com/351564777, crbug.com/420421613): Remove the UNSAFE_TODO
+    // after we finish transition in `url::IsStandard` to use
+    // `std::u16string_view`.
+    standard = UNSAFE_TODO(url::IsStandard(
+        protocol.Characters16(), url::Component(0, protocol.length())));
   }
 
   // Do not enforce absolute pathnames here since we can't enforce it
@@ -214,21 +216,32 @@ String CanonicalizePathname(const String& protocol,
   url::RawCanonOutputT<char> canon_output;
   url::Component component;
 
-  const auto canonicalize_path = [&](const auto* data, int length) {
-    if (standard) {
-      return url::CanonicalizePartialPath(data, url::Component(0, length),
-                                          &canon_output, &component);
-    }
-    url::CanonicalizePathURLPath(data, url::Component(0, length), &canon_output,
-                                 &component);
-    return true;
-  };
+  const auto canonicalize_path =
+      [&]<typename CharType>(std::basic_string_view<CharType> data) {
+        if (standard) {
+          // TODO(crbug.com/351564777, crbug.com/420421613): Remove the
+          // UNSAFE_TODO after we finish transition in
+          // `url::CanonicalizePartialPath` to use
+          // `std::basic_string_view<CharType>`.
+          return UNSAFE_TODO(url::CanonicalizePartialPath(
+              data.data(), url::Component(0, data.size()), &canon_output,
+              &component));
+        }
+        // TODO(crbug.com/351564777, crbug.com/420421613): Remove the
+        // UNSAFE_TODO after we finish transition in
+        // `url::CanonicalizePathURLPath` to use
+        // `std::basic_string_view<CharType>`.
+        UNSAFE_TODO(url::CanonicalizePathURLPath(data.data(),
+                                                 url::Component(0, data.size()),
+                                                 &canon_output, &component));
+        return true;
+      };
 
   if (input.Is8Bit()) {
     StringUTF8Adaptor utf8(input);
-    result = canonicalize_path(utf8.data(), utf8.size());
+    result = canonicalize_path(utf8.AsStringView());
   } else {
-    result = canonicalize_path(input.Characters16(), input.length());
+    result = canonicalize_path(input.View16());
   }
 
   if (!result) {
