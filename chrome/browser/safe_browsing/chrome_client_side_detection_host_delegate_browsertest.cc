@@ -11,20 +11,23 @@
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/safe_browsing_navigation_observer_manager_factory.h"
+#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/test/base/browser_with_test_window_test.h"
+#include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "components/safe_browsing/content/browser/safe_browsing_navigation_observer.h"
 #include "components/safe_browsing/content/browser/safe_browsing_navigation_observer_manager.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "content/public/browser/global_routing_id.h"
+#include "content/public/browser/web_contents.h"
+#include "content/public/test/browser_test.h"
 #include "content/public/test/navigation_simulator.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace safe_browsing {
 
-class ChromeClientSideDetectionHostDelegateTest
-    : public BrowserWithTestWindowTest {
+class ChromeClientSideDetectionHostDelegateTest : public InProcessBrowserTest {
  public:
   ChromeClientSideDetectionHostDelegateTest() = default;
 
@@ -33,23 +36,26 @@ class ChromeClientSideDetectionHostDelegateTest
   ChromeClientSideDetectionHostDelegateTest& operator=(
       const ChromeClientSideDetectionHostDelegateTest&) = delete;
 
-  void SetUp() override {
-    BrowserWithTestWindowTest::SetUp();
-    AddTab(browser(), GURL("http://foo/0"));
-    Profile* profile = Profile::FromBrowserContext(
-        browser()->tab_strip_model()->GetWebContentsAt(0)->GetBrowserContext());
+  void SetUpOnMainThread() override {
+    InProcessBrowserTest::SetUpOnMainThread();
+    ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
+        browser(), GURL("http://foo/0"),
+        WindowOpenDisposition::NEW_FOREGROUND_TAB,
+        ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
+    Profile* profile = browser()->profile();
     navigation_observer_manager_ =
         SafeBrowsingNavigationObserverManagerFactory::GetForBrowserContext(
             profile);
+    ASSERT_TRUE(browser()->tab_strip_model()->GetActiveWebContents());
     navigation_observer_ = std::make_unique<SafeBrowsingNavigationObserver>(
-        browser()->tab_strip_model()->GetWebContentsAt(0),
+        browser()->tab_strip_model()->GetActiveWebContents(),
         HostContentSettingsMapFactory::GetForProfile(profile),
         navigation_observer_manager_);
   }
 
-  void TearDown() override {
+  void TearDownOnMainThread() override {
     navigation_observer_.reset();
-    BrowserWithTestWindowTest::TearDown();
+    InProcessBrowserTest::TearDownOnMainThread();
   }
 
   NavigationEventList* navigation_event_list() {
@@ -62,7 +68,8 @@ class ChromeClientSideDetectionHostDelegateTest
   std::unique_ptr<SafeBrowsingNavigationObserver> navigation_observer_;
 };
 
-TEST_F(ChromeClientSideDetectionHostDelegateTest, GetReferrerChain) {
+IN_PROC_BROWSER_TEST_F(ChromeClientSideDetectionHostDelegateTest,
+                       GetReferrerChain) {
   base::Time now = base::Time::Now();
   base::Time one_second_ago = base::Time::FromSecondsSinceUnixEpoch(
       now.InSecondsFSinceUnixEpoch() - 1.0);
@@ -86,7 +93,7 @@ TEST_F(ChromeClientSideDetectionHostDelegateTest, GetReferrerChain) {
 
   std::unique_ptr<ChromeClientSideDetectionHostDelegate> csd_host_delegate =
       std::make_unique<ChromeClientSideDetectionHostDelegate>(
-          browser()->tab_strip_model()->GetWebContentsAt(0));
+          browser()->tab_strip_model()->GetActiveWebContents());
   csd_host_delegate->SetNavigationObserverManagerForTesting(
       navigation_observer_manager_);
   std::unique_ptr<ClientPhishingRequest> verdict(new ClientPhishingRequest);
@@ -100,7 +107,8 @@ TEST_F(ChromeClientSideDetectionHostDelegateTest, GetReferrerChain) {
   EXPECT_EQ("http://a.com/", referrer_chain[0].referrer_url());
 }
 
-TEST_F(ChromeClientSideDetectionHostDelegateTest, NoNavigationObserverManager) {
+IN_PROC_BROWSER_TEST_F(ChromeClientSideDetectionHostDelegateTest,
+                       NoNavigationObserverManager) {
   base::Time now = base::Time::Now();
   base::Time one_second_ago = base::Time::FromSecondsSinceUnixEpoch(
       now.InSecondsFSinceUnixEpoch() - 1.0);
@@ -115,7 +123,7 @@ TEST_F(ChromeClientSideDetectionHostDelegateTest, NoNavigationObserverManager) {
 
   std::unique_ptr<ChromeClientSideDetectionHostDelegate> csd_host_delegate =
       std::make_unique<ChromeClientSideDetectionHostDelegate>(
-          browser()->tab_strip_model()->GetWebContentsAt(0));
+          browser()->tab_strip_model()->GetActiveWebContents());
   std::unique_ptr<ClientPhishingRequest> verdict(new ClientPhishingRequest);
   csd_host_delegate->AddReferrerChain(verdict.get(), GURL("http://b.com/"),
                                       content::GlobalRenderFrameHostId());

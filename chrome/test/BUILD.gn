@@ -5452,6 +5452,7 @@ if (!is_android) {
     }
     if (safe_browsing_mode == 1) {
       sources += [
+        "../browser/safe_browsing/chrome_client_side_detection_host_delegate_browsertest.cc",
         "../browser/safe_browsing/chrome_password_protection_service_browsertest.cc",
         "../browser/safe_browsing/chrome_password_protection_service_sync_browsertest.cc",
         "../browser/safe_browsing/client_side_detection_host_browsertest.cc",
@@ -9601,7 +9602,6 @@ test("unit_tests") {
     # TODO(sgurun): enable tests for safe_browsing==2.
     sources += [
       "../browser/safe_browsing/advanced_protection_status_manager_desktop_unittest.cc",
-      "../browser/safe_browsing/chrome_client_side_detection_host_delegate_unittest.cc",
       "../browser/safe_browsing/chrome_password_reuse_detection_manager_client_unittest.cc",
       "../browser/safe_browsing/chrome_ping_manager_factory_unittest.cc",
       "../browser/safe_browsing/client_side_detection_host_unittest.cc",
