@@ -981,7 +981,7 @@ void HTMLCanvasElement::Reset() {
 
   // If the size of an existing buffer matches, we can reuse that buffer.
   // This optimization is only done for 2D canvases for now.
-  if (IsRenderingContext2D() && ResourceProvider() != nullptr &&
+  if (IsRenderingContext2D() && GetResourceProviderForCanvas2D() != nullptr &&
       old_size == new_size) {
     return;
   }
@@ -1200,8 +1200,9 @@ void HTMLCanvasElement::PaintInternal(GraphicsContext& context,
   // Note: Test coverage for this is assured by manual (non-automated)
   // web test printing/manual/canvas2d-vector-text.html
   // That test should be run manually against CLs that touch this code.
-  if (IsPrinting() && IsRenderingContext2D() && ResourceProvider()) {
-    auto* provider = ResourceProvider();
+  if (IsPrinting() && IsRenderingContext2D() &&
+      GetResourceProviderForCanvas2D()) {
+    auto* provider = GetResourceProviderForCanvas2D();
     FlushRecording(FlushReason::kPrinting);
     // `FlushRecording` might be a no-op if a flush already happened before.
     // Fortunately, the last flush recording was kept by the provider.
@@ -2256,7 +2257,8 @@ CanvasResourceProvider* HTMLCanvasElement::GetOrCreateCanvasResourceProvider() {
       }
     }
 
-    CanvasResourceProvider* resource_provider = ResourceProvider();
+    CanvasResourceProvider* resource_provider =
+        GetResourceProviderForCanvas2D();
     if (context_->isContextLost() && !context_->IsContextBeingRestored()) {
       DCHECK(!resource_provider);
       return nullptr;

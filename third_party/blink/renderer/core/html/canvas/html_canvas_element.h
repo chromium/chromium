@@ -363,6 +363,12 @@ class CORE_EXPORT HTMLCanvasElement final
     kNotWebExposed,
   };
 
+  // Can be called only when the context is 2D.
+  CanvasResourceProvider* GetResourceProviderForCanvas2D() {
+    CHECK(IsRenderingContext2D());
+    return ResourceProvider();
+  }
+
   void Dispose();
 
   // Updates the preferred 2D raster mode based on the state of the context and
