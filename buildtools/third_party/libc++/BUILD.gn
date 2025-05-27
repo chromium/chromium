@@ -563,7 +563,10 @@ target(libcxx_target_type, "libc++") {
     # doesn't support modules build itself.
     use_libcxx_modules = false
 
-    deps += [ ":copy_custom_headers" ]
+    deps += [
+      ":copy_custom_headers",
+      ":copy_libcxx_headers",
+    ]
   }
   if ((is_android || is_apple) && libcxx_is_shared) {
     # Use libc++_chrome to avoid conflicting with system libc++
