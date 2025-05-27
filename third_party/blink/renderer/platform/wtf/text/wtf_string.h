@@ -20,11 +20,6 @@
  *
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_TEXT_WTF_STRING_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_TEXT_WTF_STRING_H_
 
@@ -93,7 +88,8 @@ class WTF_EXPORT String {
   explicit String(const LChar* characters)
       : String(reinterpret_cast<const char*>(characters)) {}
   String(const char* characters)  // NOLINT(google-explicit-constructor)
-      : String(base::span(characters, characters ? strlen(characters) : 0)) {}
+      : String(characters ? base::span(std::string_view(characters))
+                          : base::span<const char>()) {}
 
   // Construct a string referencing an existing StringImpl.
   String(StringImpl* impl) : impl_(impl) {}
@@ -636,18 +632,6 @@ inline void swap(String& a, String& b) {
 template <wtf_size_t inlineCapacity>
 String::String(const Vector<UChar, inlineCapacity>& vector)
     : impl_(vector.size() ? StringImpl::Create(vector) : StringImpl::empty_) {}
-
-template <>
-inline const LChar* String::GetCharacters<LChar>() const {
-  DCHECK(Is8Bit());
-  return Characters8();
-}
-
-template <>
-inline const UChar* String::GetCharacters<UChar>() const {
-  DCHECK(!Is8Bit());
-  return Characters16();
-}
 
 inline bool String::ContainsOnlyLatin1OrEmpty() const {
   if (empty())
