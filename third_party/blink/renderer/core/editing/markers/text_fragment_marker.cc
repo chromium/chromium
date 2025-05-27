@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/core/editing/markers/text_fragment_marker.h"
 
+#include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
+
 namespace blink {
 
 TextFragmentMarker::TextFragmentMarker(unsigned start_offset,

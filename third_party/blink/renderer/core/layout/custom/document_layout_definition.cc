@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/core/layout/custom/document_layout_definition.h"
 
+#include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
+
 namespace blink {
 
 DocumentLayoutDefinition::DocumentLayoutDefinition(

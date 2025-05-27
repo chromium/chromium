@@ -7,6 +7,7 @@
 
 #include "third_party/blink/renderer/bindings/core/v8/js_event_handler.h"
 #include "third_party/blink/renderer/platform/bindings/dom_wrapper_world.h"
+#include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_position.h"
 
 namespace blink {

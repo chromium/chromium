@@ -49,6 +49,7 @@
 #include "base/numerics/checked_math.h"
 #include "media/base/video_color_space.h"
 #include "skia/ext/cicp.h"
+#include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
 #include "third_party/skia/modules/skcms/skcms.h"
 

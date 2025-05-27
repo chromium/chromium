@@ -13,6 +13,7 @@
 #include "third_party/blink/renderer/platform/network/header_field_tokenizer.h"
 #include "third_party/blink/renderer/platform/network/parsed_content_disposition.h"
 #include "third_party/blink/renderer/platform/network/parsed_content_type.h"
+#include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 #include "third_party/blink/renderer/platform/wtf/text/case_map.h"
 
 namespace blink {

@@ -52,6 +52,7 @@
 #include "build/build_config.h"
 #include "skia/ext/skia_utils_base.h"
 #include "third_party/blink/renderer/platform/graphics/bitmap_image_metrics.h"
+#include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
 #include "third_party/skia/include/private/SkJpegMetadataDecoder.h"
 

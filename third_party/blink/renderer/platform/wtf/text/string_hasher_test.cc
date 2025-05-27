@@ -31,6 +31,7 @@
 #include "third_party/blink/renderer/platform/wtf/text/string_hasher.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 #include "third_party/blink/renderer/platform/wtf/text/case_folding_hash.h"
 #include "third_party/blink/renderer/platform/wtf/text/convert_to_8bit_hash_reader.h"
 

@@ -29,6 +29,7 @@
 
 // Case-insensitive hash lookups, using the Unicode case folding algorithm.
 
+#include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_hash.h"
 #include "third_party/blink/renderer/platform/wtf/text/unicode.h"
 

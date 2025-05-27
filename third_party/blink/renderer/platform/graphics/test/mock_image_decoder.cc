@@ -25,6 +25,8 @@
 
 #include "third_party/blink/renderer/platform/graphics/test/mock_image_decoder.h"
 
+#include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
+
 namespace blink {
 
 const AtomicString& MockImageDecoder::MimeType() const {
