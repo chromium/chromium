@@ -4,7 +4,11 @@
 
 #include "chrome/browser/web_applications/policy/pre_redirection_url_observer.h"
 
-#include "chrome/test/base/browser_with_test_window_test.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/test/base/in_process_browser_test.h"
+#include "content/public/test/browser_test.h"
 #include "content/public/test/mock_navigation_handle.h"
 #include "content/public/test/web_contents_tester.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -20,7 +24,7 @@ const char kURL3[] = "https://gurl3.example.test";
 
 namespace webapps {
 
-class PreRedirectionURLObserverTest : public BrowserWithTestWindowTest {
+class PreRedirectionURLObserverTest : public InProcessBrowserTest {
  public:
   content::WebContents* web_contents() const {
     return browser()->tab_strip_model()->GetActiveWebContents();
@@ -34,25 +38,19 @@ class PreRedirectionURLObserverTest : public BrowserWithTestWindowTest {
     return PreRedirectionURLObserver::FromWebContents(web_contents());
   }
 
-  void SetUp() override {
-    BrowserWithTestWindowTest::SetUp();
-
-    // Create a test `WebContents`. This does not use `AddTab` as that creates a
-    // real `WebContents` (with an observer) and navigate it. That will
-    // interfere with this test's mock navigations.
-    browser()->tab_strip_model()->AppendWebContents(
-        content::WebContentsTester::CreateTestWebContents(profile(),
-                                                          /*instance=*/nullptr),
-        /*foreground=*/true);
+  void SetUpOnMainThread() override {
+    InProcessBrowserTest::SetUpOnMainThread();
     PreRedirectionURLObserver::CreateForWebContents(web_contents());
   }
 };
 
-TEST_F(PreRedirectionURLObserverTest, NoNavigation) {
-  EXPECT_TRUE(observer()->last_url().is_empty());
+IN_PROC_BROWSER_TEST_F(PreRedirectionURLObserverTest, NoNavigation) {
+  // The InProcessBrowserTest fixture performs an initial navigation,
+  // so the observer will have a URL at the start of the test.
+  EXPECT_FALSE(observer()->last_url().is_empty());
 }
 
-TEST_F(PreRedirectionURLObserverTest, ThreeNavigations) {
+IN_PROC_BROWSER_TEST_F(PreRedirectionURLObserverTest, ThreeNavigations) {
   GURL url1(kURL1);
   content::MockNavigationHandle handle(url1, main_frame());
   handle.set_redirect_chain(std::vector<GURL>{url1});
@@ -72,7 +70,8 @@ TEST_F(PreRedirectionURLObserverTest, ThreeNavigations) {
   EXPECT_EQ(observer()->last_url(), url3);
 }
 
-TEST_F(PreRedirectionURLObserverTest, OneNavigationTwoRedirects) {
+IN_PROC_BROWSER_TEST_F(PreRedirectionURLObserverTest,
+                       OneNavigationTwoRedirects) {
   GURL url1(kURL1);
   GURL url2(kURL2);
   GURL url3(kURL3);
@@ -94,7 +93,8 @@ TEST_F(PreRedirectionURLObserverTest, OneNavigationTwoRedirects) {
   EXPECT_EQ(observer()->last_url(), url1);
 }
 
-TEST_F(PreRedirectionURLObserverTest, OneNavigationTwoSubframeNavigations) {
+IN_PROC_BROWSER_TEST_F(PreRedirectionURLObserverTest,
+                       OneNavigationTwoSubframeNavigations) {
   GURL url1(kURL1);
   GURL url2(kURL2);
   GURL url3(kURL3);
@@ -118,7 +118,8 @@ TEST_F(PreRedirectionURLObserverTest, OneNavigationTwoSubframeNavigations) {
   EXPECT_EQ(observer()->last_url(), url1);
 }
 
-TEST_F(PreRedirectionURLObserverTest, OneNavigationTwoSameDocumentNavigations) {
+IN_PROC_BROWSER_TEST_F(PreRedirectionURLObserverTest,
+                       OneNavigationTwoSameDocumentNavigations) {
   GURL url1(kURL1);
   GURL url2(kURL2);
   GURL url3(kURL3);
@@ -142,7 +143,7 @@ TEST_F(PreRedirectionURLObserverTest, OneNavigationTwoSameDocumentNavigations) {
   EXPECT_EQ(observer()->last_url(), url1);
 }
 
-TEST_F(PreRedirectionURLObserverTest, ManyMixedNavigations) {
+IN_PROC_BROWSER_TEST_F(PreRedirectionURLObserverTest, ManyMixedNavigations) {
   GURL url1(kURL1);
   GURL url2(kURL2);
   GURL url3(kURL3);
