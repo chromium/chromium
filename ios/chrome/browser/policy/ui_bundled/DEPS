@@ -6,3 +6,11 @@ include_rules = [
   "+ios/chrome/browser/authentication/ui_bundled/signin/signin_utils.h",
   "+ios/chrome/browser/authentication/ui_bundled/authentication_ui_util.h",
 ]
+
+specific_include_rules = {
+  "^signin_policy_scene_agent.mm": [
+    "+ios/chrome/browser/authentication/ui_bundled/continuation.h",
+    "+ios/chrome/browser/authentication/ui_bundled/signin/fullscreen_signin/coordinator/fullscreen_signin_coordinator.h",
+    "+ios/chrome/browser/authentication/ui_bundled/signin/signin_screen_provider.h",
+  ],
+}
