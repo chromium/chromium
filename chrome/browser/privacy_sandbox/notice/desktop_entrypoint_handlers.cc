@@ -7,10 +7,12 @@
 #include "chrome/browser/privacy_sandbox/notice/desktop_entrypoint_handlers_helper.h"
 #include "chrome/browser/privacy_sandbox/notice/desktop_view_manager.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/profiles/profile_customization_bubble_sync_controller.h"
 #include "chrome/common/webui_url_constants.h"
+#include "components/sync/service/sync_service.h"
 #include "components/tabs/public/tab_interface.h"
 #include "components/web_modal/web_contents_modal_dialog_host.h"
 #include "content/public/browser/navigation_handle.h"
@@ -93,6 +95,13 @@ void NavigationHandler::HandleNewNavigation(
 #endif  // !BUILDFLAG(IS_CHROMEOS)
   if (signin_dialog_showing) {
     return;
+  }
+
+  // If a Sync setup is in progress, the prompt should not be shown.
+  if (auto* sync_service = SyncServiceFactory::GetForProfile(profile)) {
+    if (sync_service->IsSetupInProgress()) {
+      return;
+    }
   }
 
   // TODO(crbug.com/408016824):  Add error-event histograms.
