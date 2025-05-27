@@ -164,11 +164,11 @@ class BackingStore {
         int64_t index_id,
         const blink::IndexedDBKey& key,
         const RecordIdentifier& record) = 0;
-    // The returned key will be invalid if it was not found.
-    [[nodiscard]] virtual StatusOr<blink::IndexedDBKey> GetPrimaryKeyViaIndex(
+    [[nodiscard]] virtual Status GetPrimaryKeyViaIndex(
         int64_t object_store_id,
         int64_t index_id,
-        const blink::IndexedDBKey& key) = 0;
+        const blink::IndexedDBKey& key,
+        std::unique_ptr<blink::IndexedDBKey>* primary_key) = 0;
     [[nodiscard]] virtual Status KeyExistsInIndex(
         int64_t object_store_id,
         int64_t index_id,

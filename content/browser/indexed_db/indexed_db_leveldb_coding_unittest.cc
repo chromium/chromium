@@ -513,6 +513,7 @@ TEST(IndexedDBLevelDBCodingTest, DecodeDouble) {
 
 TEST(IndexedDBLevelDBCodingTest, EncodeDecodeIDBKey) {
   IndexedDBKey expected_key;
+  std::unique_ptr<IndexedDBKey> decoded_key;
   std::string v;
   std::string_view slice;
 
@@ -534,16 +535,15 @@ TEST(IndexedDBLevelDBCodingTest, EncodeDecodeIDBKey) {
     v.clear();
     EncodeIDBKey(expected_key, &v);
     slice = std::string_view(&*v.begin(), v.size());
-    IndexedDBKey decoded_key = DecodeIDBKey(&slice);
-    EXPECT_TRUE(decoded_key.IsValid());
-    EXPECT_TRUE(decoded_key.Equals(expected_key));
+    EXPECT_TRUE(DecodeIDBKey(&slice, &decoded_key));
+    EXPECT_TRUE(decoded_key->Equals(expected_key));
     EXPECT_TRUE(slice.empty());
 
     slice = std::string_view(&*v.begin(), v.size() - 1);
-    EXPECT_FALSE(DecodeIDBKey(&slice).IsValid());
+    EXPECT_FALSE(DecodeIDBKey(&slice, &decoded_key));
 
     slice = std::string_view(&*v.begin(), static_cast<size_t>(0));
-    EXPECT_FALSE(DecodeIDBKey(&slice).IsValid());
+    EXPECT_FALSE(DecodeIDBKey(&slice, &decoded_key));
   }
 }
 
@@ -878,8 +878,8 @@ TEST(IndexedDBLevelDBCodingTest, EncodeAndCompareIDBKeysWithSentinels) {
   const IndexedDBKey all_keys_key(std::move(keys_vec));
   std::string encoded;
   EncodeSortableIDBKey(all_keys_key, &encoded);
-  IndexedDBKey decoded_value = DecodeSortableIDBKey(encoded);
-  ASSERT_TRUE(decoded_value.IsValid());
+  IndexedDBKey decoded_value;
+  ASSERT_TRUE(DecodeSortableIDBKey(encoded, &decoded_value));
   EXPECT_TRUE(all_keys_key.Equals(decoded_value))
       << "Original is\n"
       << all_keys_key.DebugString() << "\nwhereas depickled version is\n"
@@ -903,7 +903,8 @@ TEST(IndexedDBLevelDBCodingTest, DecodeSortableWithCorruption) {
   };
 
   for (const auto& test_case : cases) {
-    EXPECT_FALSE(DecodeSortableIDBKey(test_case).IsValid());
+    blink::IndexedDBKey value;
+    EXPECT_FALSE(DecodeSortableIDBKey(test_case, &value));
   }
 }
 
@@ -966,8 +967,8 @@ TEST(IndexedDBLevelDBCodingTest, EncodeSortableDoubles) {
     const IndexedDBKey key(value, blink::mojom::IDBKeyType::Number);
     std::string encoded;
     EncodeSortableIDBKey(key, &encoded);
-    IndexedDBKey decoded_value = DecodeSortableIDBKey(encoded);
-    ASSERT_TRUE(decoded_value.IsValid());
+    IndexedDBKey decoded_value;
+    ASSERT_TRUE(DecodeSortableIDBKey(encoded, &decoded_value));
     EXPECT_TRUE(key.Equals(decoded_value))
         << "Original is\n"
         << key.DebugString() << "\nwhereas depickled version is\n"

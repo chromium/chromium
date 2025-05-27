@@ -441,33 +441,31 @@ Status Database::GetOperation(int64_t object_store_id,
   }
 
   // From here we are dealing only with indexes.
-  ASSIGN_OR_RETURN(
-      IndexedDBKey primary_key,
-      transaction->BackingStoreTransaction()->GetPrimaryKeyViaIndex(
-          object_store_id, index_id, key),
-      [&callback, transaction](const Status& status) {
-        std::move(callback).Run(
-            blink::mojom::IDBDatabaseGetResult::NewErrorResult(
-                CreateIDBErrorPtr(blink::mojom::IDBException::kUnknownError,
-                                  "Unknown error", transaction)));
-        return status;
-      });
+  std::unique_ptr<IndexedDBKey> primary_key;
+  Status s = transaction->BackingStoreTransaction()->GetPrimaryKeyViaIndex(
+      object_store_id, index_id, key, &primary_key);
+  if (!s.ok()) {
+    std::move(callback).Run(blink::mojom::IDBDatabaseGetResult::NewErrorResult(
+        CreateIDBErrorPtr(blink::mojom::IDBException::kUnknownError,
+                          "Unknown error", transaction)));
+    return s;
+  }
 
-  if (!primary_key.IsValid()) {
+  if (!primary_key) {
     std::move(callback).Run(blink::mojom::IDBDatabaseGetResult::NewEmpty(true));
-    return Status::OK();
+    return s;
   }
   if (cursor_type == CursorType::kKeyOnly) {
     // Index Value Retrieval Operation
     std::move(callback).Run(
-        blink::mojom::IDBDatabaseGetResult::NewKey(std::move(primary_key)));
-    return Status::OK();
+        blink::mojom::IDBDatabaseGetResult::NewKey(std::move(*primary_key)));
+    return s;
   }
 
   // Index Referenced Value Retrieval Operation
   IndexedDBReturnValue value;
-  Status s = transaction->BackingStoreTransaction()->GetRecord(
-      object_store_id, primary_key, &value);
+  s = transaction->BackingStoreTransaction()->GetRecord(object_store_id,
+                                                        *primary_key, &value);
   if (!s.ok()) {
     std::move(callback).Run(blink::mojom::IDBDatabaseGetResult::NewErrorResult(
         CreateIDBErrorPtr(blink::mojom::IDBException::kUnknownError,
@@ -481,7 +479,7 @@ Status Database::GetOperation(int64_t object_store_id,
   }
   if (object_store_metadata.auto_increment &&
       !object_store_metadata.key_path.IsNull()) {
-    value.primary_key = std::move(primary_key);
+    value.primary_key = std::move(*primary_key);
     value.key_path = object_store_metadata.key_path;
   }
 

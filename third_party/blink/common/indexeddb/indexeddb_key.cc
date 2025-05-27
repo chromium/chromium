@@ -37,11 +37,13 @@ int Compare(const T& a, const T& b) {
 
 }  // namespace
 
-IndexedDBKey::IndexedDBKey() : IndexedDBKey(mojom::IDBKeyType::None) {}
+IndexedDBKey::IndexedDBKey()
+    : type_(mojom::IDBKeyType::None), size_estimate_(kOverheadSize) {}
 
 IndexedDBKey::IndexedDBKey(mojom::IDBKeyType type)
     : type_(type), size_estimate_(kOverheadSize) {
-  DCHECK(!IsValid());
+  DCHECK(type == mojom::IDBKeyType::None ||
+         type == mojom::IDBKeyType::Invalid || type == mojom::IDBKeyType::Min);
 }
 
 IndexedDBKey::IndexedDBKey(double number, mojom::IDBKeyType type)

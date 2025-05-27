@@ -79,10 +79,11 @@ class BackingStoreTransactionImpl : public BackingStore::Transaction {
       int64_t index_id,
       const blink::IndexedDBKey& key,
       const BackingStore::RecordIdentifier& record) override;
-  StatusOr<blink::IndexedDBKey> GetPrimaryKeyViaIndex(
+  Status GetPrimaryKeyViaIndex(
       int64_t object_store_id,
       int64_t index_id,
-      const blink::IndexedDBKey& key) override;
+      const blink::IndexedDBKey& key,
+      std::unique_ptr<blink::IndexedDBKey>* primary_key) override;
   Status KeyExistsInIndex(
       int64_t object_store_id,
       int64_t index_id,

@@ -90,7 +90,6 @@
 using blink::IndexedDBDatabaseMetadata;
 using blink::IndexedDBKey;
 using blink::IndexedDBKeyRange;
-using blink::mojom::IDBKeyType;
 
 namespace content::indexed_db::level_db {
 
@@ -2419,9 +2418,9 @@ StatusOr<int64_t> BackingStore::Transaction::GetKeyGeneratorCurrentNumber(
       INTERNAL_READ_ERROR(GET_KEY_GENERATOR_CURRENT_NUMBER);
       return base::unexpected(InternalInconsistencyStatus());
     }
-    IndexedDBKey user_key = data_key.DecodeUserKey();
-    if (user_key.type() == IDBKeyType::Number) {
-      int64_t n = static_cast<int64_t>(user_key.number());
+    std::unique_ptr<IndexedDBKey> user_key = data_key.user_key();
+    if (user_key->type() == blink::mojom::IDBKeyType::Number) {
+      int64_t n = static_cast<int64_t>(user_key->number());
       if (n > max_numeric_key) {
         max_numeric_key = n;
       }
@@ -2911,14 +2910,15 @@ Status BackingStore::Transaction::FindKeyInIndex(
   }
 }
 
-StatusOr<IndexedDBKey> BackingStore::Transaction::GetPrimaryKeyViaIndex(
+Status BackingStore::Transaction::GetPrimaryKeyViaIndex(
     int64_t object_store_id,
     int64_t index_id,
-    const IndexedDBKey& key) {
+    const IndexedDBKey& key,
+    std::unique_ptr<IndexedDBKey>* primary_key) {
   TRACE_EVENT0("IndexedDB", "BackingStore::GetPrimaryKeyViaIndex");
 
   if (!KeyPrefix::ValidIds(database_id(), object_store_id, index_id)) {
-    return base::unexpected(InvalidDBKeyStatus());
+    return InvalidDBKeyStatus();
   }
 
   bool found = false;
@@ -2927,23 +2927,22 @@ StatusOr<IndexedDBKey> BackingStore::Transaction::GetPrimaryKeyViaIndex(
                             &found_encoded_primary_key, &found);
   if (!s.ok()) {
     INTERNAL_READ_ERROR(GET_PRIMARY_KEY_VIA_INDEX);
-    return base::unexpected(s);
+    return s;
   }
   if (!found) {
-    return IndexedDBKey();
+    return s;
   }
   if (found_encoded_primary_key.empty()) {
     INTERNAL_READ_ERROR(GET_PRIMARY_KEY_VIA_INDEX);
-    return base::unexpected(InvalidDBKeyStatus());
+    return InvalidDBKeyStatus();
   }
 
   std::string_view slice(found_encoded_primary_key);
-  if (IndexedDBKey primary_key = DecodeIDBKey(&slice);
-      primary_key.IsValid() && slice.empty()) {
-    return primary_key;
+  if (DecodeIDBKey(&slice, primary_key) && slice.empty()) {
+    return s;
   }
 
-  return base::unexpected(InvalidDBKeyStatus());
+  return InvalidDBKeyStatus();
 }
 
 Status BackingStore::Transaction::KeyExistsInIndex(
@@ -2975,10 +2974,8 @@ Status BackingStore::Transaction::KeyExistsInIndex(
   }
 
   std::string_view slice(found_encoded_primary_key);
-  if (IndexedDBKey primary_key = DecodeIDBKey(&slice);
-      primary_key.IsValid() && slice.empty()) {
-    *found_primary_key = std::make_unique<IndexedDBKey>(std::move(primary_key));
-    return Status::OK();
+  if (DecodeIDBKey(&slice, found_primary_key) && slice.empty()) {
+    return s;
   }
 
   return InvalidDBKeyStatus();
@@ -3131,7 +3128,8 @@ BackingStore::Cursor::Cursor(
       database_id_(other->database_id_),
       cursor_options_(other->cursor_options_),
       iterator_(std::move(iterator)),
-      current_key_(other->current_key_.Clone()) {
+      current_key_(
+          std::make_unique<IndexedDBKey>(other->current_key_->Clone())) {
   DCHECK(transaction_);
   DCHECK(iterator_);
 }
@@ -3152,11 +3150,11 @@ BackingStore::Cursor::~Cursor() {
 }
 
 const blink::IndexedDBKey& BackingStore::Cursor::GetKey() const {
-  return current_key_;
+  return *current_key_;
 }
 
 blink::IndexedDBKey BackingStore::Cursor::TakeKey() && {
-  return std::move(current_key_);
+  return std::move(*current_key_);
 }
 
 // static
@@ -3247,8 +3245,8 @@ BackingStore::Cursor::ContinueResult BackingStore::Cursor::ContinueNext(
 
   // TODO(alecflett): avoid a copy here?
   std::optional<IndexedDBKey> previous_key;
-  if (current_key_.IsValid()) {
-    previous_key.emplace(current_key_.Clone());
+  if (current_key_) {
+    previous_key.emplace(current_key_->Clone());
   }
 
   // If seeking to a particular key (or key and primary key), skip the cursor
@@ -3301,7 +3299,7 @@ BackingStore::Cursor::ContinueResult BackingStore::Cursor::ContinueNext(
 
     // "Unique" cursors should continue seeking until a new key value is seen.
     if (cursor_options_.unique && previous_key && previous_key->IsValid() &&
-        current_key_.Equals(*previous_key)) {
+        current_key_->Equals(*previous_key)) {
       continue;
     }
 
@@ -3321,8 +3319,8 @@ BackingStore::Cursor::ContinueResult BackingStore::Cursor::ContinuePrevious(
 
   // TODO(alecflett): avoid a copy here?
   std::optional<IndexedDBKey> previous_key;
-  if (current_key_.IsValid()) {
-    previous_key.emplace(current_key_.Clone());
+  if (current_key_) {
+    previous_key.emplace(current_key_->Clone());
   }
 
   // When iterating with PrevNoDuplicate, spec requires that the value we
@@ -3374,11 +3372,11 @@ BackingStore::Cursor::ContinueResult BackingStore::Cursor::ContinuePrevious(
     // If seeking to a key (or key and primary key), continue until found.
     // TODO(jsbell): If Seek() optimization is added above, remove this.
     if (key.IsValid()) {
-      if (primary_key.IsValid() && key.Equals(current_key_) &&
+      if (primary_key.IsValid() && key.Equals(*current_key_) &&
           primary_key.IsLessThan(this->GetPrimaryKey())) {
         continue;
       }
-      if (key.IsLessThan(current_key_)) {
+      if (key.IsLessThan(*current_key_)) {
         continue;
       }
     }
@@ -3391,19 +3389,19 @@ BackingStore::Cursor::ContinueResult BackingStore::Cursor::ContinuePrevious(
       // duplicates may have been inserted since the cursor was last iterated,
       // and should be skipped to maintain "unique" iteration.
       if (previous_key && previous_key->IsValid() &&
-          current_key_.Equals(*previous_key)) {
+          current_key_->Equals(*previous_key)) {
         continue;
       }
 
       // If we've found a new key, remember it and keep going.
       if (!duplicate_key.IsValid()) {
-        duplicate_key = current_key_.Clone();
+        duplicate_key = current_key_->Clone();
         earliest_duplicate = std::string(iterator_->Key());
         continue;
       }
 
       // If we're still seeing duplicates, keep going.
-      if (duplicate_key.Equals(current_key_)) {
+      if (duplicate_key.Equals(*current_key_)) {
         earliest_duplicate = std::string(iterator_->Key());
         continue;
       }
@@ -3468,7 +3466,7 @@ void BackingStore::Cursor::RemoveTombstoneOrIncrementCount(Status* s) {
 }
 
 const IndexedDBKey& BackingStore::Cursor::GetPrimaryKey() const {
-  return current_key_;
+  return *current_key_;
 }
 
 class ObjectStoreKeyCursorImpl : public BackingStore::Cursor {
@@ -3530,7 +3528,7 @@ bool ObjectStoreKeyCursorImpl::LoadCurrentRow(Status* s) {
     return false;
   }
 
-  current_key_ = object_store_data_key.DecodeUserKey();
+  current_key_ = object_store_data_key.user_key();
 
   int64_t version;
   slice = std::string_view(iterator_->Value());
@@ -3601,7 +3599,7 @@ bool ObjectStoreCursorImpl::LoadCurrentRow(Status* s) {
     return false;
   }
 
-  current_key_ = object_store_data_key.DecodeUserKey();
+  current_key_ = object_store_data_key.user_key();
 
   int64_t version;
   std::string_view value_slice = std::string_view(iterator_->Value());
@@ -3645,7 +3643,7 @@ class IndexKeyCursorImpl : public BackingStore::Cursor {
 
   // BackingStore::Cursor
   IndexedDBValue& GetValue() override { NOTREACHED(); }
-  const IndexedDBKey& GetPrimaryKey() const override { return primary_key_; }
+  const IndexedDBKey& GetPrimaryKey() const override { return *primary_key_; }
   bool LoadCurrentRow(Status* s) override;
 
  protected:
@@ -3666,9 +3664,10 @@ class IndexKeyCursorImpl : public BackingStore::Cursor {
       const IndexKeyCursorImpl* other,
       std::unique_ptr<TransactionalLevelDBIterator> iterator)
       : BackingStore::Cursor(other, std::move(iterator)),
-        primary_key_(other->primary_key_.Clone()) {}
+        primary_key_(
+            std::make_unique<IndexedDBKey>(other->primary_key_->Clone())) {}
 
-  IndexedDBKey primary_key_;
+  std::unique_ptr<IndexedDBKey> primary_key_;
 };
 
 bool IndexKeyCursorImpl::LoadCurrentRow(Status* s) {
@@ -3682,8 +3681,8 @@ bool IndexKeyCursorImpl::LoadCurrentRow(Status* s) {
     return false;
   }
 
-  current_key_ = index_data_key.DecodeUserKey();
-  DCHECK(current_key_.IsValid());
+  current_key_ = index_data_key.user_key();
+  DCHECK(current_key_);
 
   slice = std::string_view(iterator_->Value());
   int64_t index_data_version;
@@ -3693,8 +3692,7 @@ bool IndexKeyCursorImpl::LoadCurrentRow(Status* s) {
     return false;
   }
 
-  primary_key_ = DecodeIDBKey(&slice);
-  if (!primary_key_.IsValid() || !slice.empty()) {
+  if (!DecodeIDBKey(&slice, &primary_key_) || !slice.empty()) {
     INTERNAL_READ_ERROR(LOAD_CURRENT_ROW);
     *s = InternalInconsistencyStatus();
     return false;
@@ -3702,7 +3700,7 @@ bool IndexKeyCursorImpl::LoadCurrentRow(Status* s) {
 
   std::string primary_leveldb_key =
       ObjectStoreDataKey::Encode(index_data_key.DatabaseId(),
-                                 index_data_key.ObjectStoreId(), primary_key_);
+                                 index_data_key.ObjectStoreId(), *primary_key_);
 
   std::string result;
   bool found = false;
@@ -3760,7 +3758,7 @@ class IndexCursorImpl : public BackingStore::Cursor {
 
   // BackingStore::Cursor
   IndexedDBValue& GetValue() override { return current_value_; }
-  const IndexedDBKey& GetPrimaryKey() const override { return primary_key_; }
+  const IndexedDBKey& GetPrimaryKey() const override { return *primary_key_; }
   bool LoadCurrentRow(Status* s) override;
 
  protected:
@@ -3780,11 +3778,12 @@ class IndexCursorImpl : public BackingStore::Cursor {
   IndexCursorImpl(const IndexCursorImpl* other,
                   std::unique_ptr<TransactionalLevelDBIterator> iterator)
       : BackingStore::Cursor(other, std::move(iterator)),
-        primary_key_(other->primary_key_.Clone()),
+        primary_key_(
+            std::make_unique<IndexedDBKey>(other->primary_key_->Clone())),
         current_value_(other->current_value_.Clone()),
         primary_leveldb_key_(other->primary_leveldb_key_) {}
 
-  IndexedDBKey primary_key_;
+  std::unique_ptr<IndexedDBKey> primary_key_;
   IndexedDBValue current_value_;
   std::string primary_leveldb_key_;
 };
@@ -3800,8 +3799,8 @@ bool IndexCursorImpl::LoadCurrentRow(Status* s) {
     return false;
   }
 
-  current_key_ = index_data_key.DecodeUserKey();
-  DCHECK(current_key_.IsValid());
+  current_key_ = index_data_key.user_key();
+  DCHECK(current_key_);
 
   slice = std::string_view(iterator_->Value());
   int64_t index_data_version;
@@ -3810,8 +3809,7 @@ bool IndexCursorImpl::LoadCurrentRow(Status* s) {
     *s = InternalInconsistencyStatus();
     return false;
   }
-  primary_key_ = DecodeIDBKey(&slice);
-  if (!primary_key_.IsValid()) {
+  if (!DecodeIDBKey(&slice, &primary_key_)) {
     INTERNAL_READ_ERROR(LOAD_CURRENT_ROW);
     *s = InvalidDBKeyStatus();
     return false;
@@ -3820,7 +3818,7 @@ bool IndexCursorImpl::LoadCurrentRow(Status* s) {
   DCHECK_EQ(index_data_key.DatabaseId(), database_id_);
   primary_leveldb_key_ =
       ObjectStoreDataKey::Encode(index_data_key.DatabaseId(),
-                                 index_data_key.ObjectStoreId(), primary_key_);
+                                 index_data_key.ObjectStoreId(), *primary_key_);
 
   std::string result;
   bool found = false;

@@ -100,12 +100,12 @@ CONTENT_EXPORT void EncodeBlobJournal(const BlobJournalType& journal,
     base::span<const uint8_t>* value);
 [[nodiscard]] CONTENT_EXPORT bool DecodeDouble(std::string_view* slice,
                                                double* value);
-// Will return an invalid key if deserialization fails.
-[[nodiscard]] CONTENT_EXPORT blink::IndexedDBKey DecodeIDBKey(
-    std::string_view* slice);
-// Will return an invalid key if deserialization fails.
-[[nodiscard]] CONTENT_EXPORT blink::IndexedDBKey DecodeSortableIDBKey(
-    std::string_view serialized);
+[[nodiscard]] CONTENT_EXPORT bool DecodeIDBKey(
+    std::string_view* slice,
+    std::unique_ptr<blink::IndexedDBKey>* value);
+[[nodiscard]] CONTENT_EXPORT bool DecodeSortableIDBKey(
+    std::string_view serialized,
+    blink::IndexedDBKey* value);
 [[nodiscard]] CONTENT_EXPORT bool DecodeIDBKeyPath(
     std::string_view* slice,
     blink::IndexedDBKeyPath* value);
@@ -481,7 +481,7 @@ class ObjectStoreDataKey {
                                            const blink::IndexedDBKey& user_key);
   std::string DebugString() const;
 
-  blink::IndexedDBKey DecodeUserKey() const;
+  std::unique_ptr<blink::IndexedDBKey> user_key() const;
 
  private:
   std::string encoded_user_key_;
@@ -505,7 +505,7 @@ class ExistsEntryKey {
                             const blink::IndexedDBKey& user_key);
   std::string DebugString() const;
 
-  blink::IndexedDBKey DecodeUserKey() const;
+  std::unique_ptr<blink::IndexedDBKey> user_key() const;
 
  private:
   static const int64_t kSpecialIndexNumber;
@@ -585,8 +585,8 @@ class IndexDataKey {
   int64_t DatabaseId() const;
   int64_t ObjectStoreId() const;
   int64_t IndexId() const;
-  blink::IndexedDBKey DecodeUserKey() const;
-  blink::IndexedDBKey DecodePrimaryKey() const;
+  std::unique_ptr<blink::IndexedDBKey> user_key() const;
+  std::unique_ptr<blink::IndexedDBKey> primary_key() const;
 
   CONTENT_EXPORT std::string Encode() const;
 
