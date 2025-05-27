@@ -28,6 +28,8 @@ public class SafeBrowsingPasswordReuseDialogBridge {
     private final PasswordManagerDialogCoordinator mDialogCoordinator;
     // Used to initialize the custom view of the dialog.
     private final WindowAndroid mWindowAndroid;
+    // Primarily used in tests to validate fields of PasswordManagerDialogContents.
+    private PasswordManagerDialogContents mPasswordManagerDialogContents;
 
     private SafeBrowsingPasswordReuseDialogBridge(
             WindowAndroid windowAndroid, long nativePasswordReuseDialogViewAndroid) {
@@ -38,6 +40,29 @@ public class SafeBrowsingPasswordReuseDialogBridge {
                         mWindowAndroid.getModalDialogManager(),
                         mWindowAndroid.getActivity().get().findViewById(android.R.id.content),
                         BrowserControlsManagerSupplier.getValueOrNullFrom(mWindowAndroid));
+        mPasswordManagerDialogContents = null;
+    }
+
+    private SafeBrowsingPasswordReuseDialogBridge(
+            WindowAndroid windowAndroid,
+            long nativePasswordReuseDialogViewAndroid,
+            PasswordManagerDialogCoordinator dialogCoordinator) {
+        mNativePasswordReuseDialogViewAndroid = nativePasswordReuseDialogViewAndroid;
+        mWindowAndroid = windowAndroid;
+        mDialogCoordinator = dialogCoordinator;
+        mPasswordManagerDialogContents = null;
+    }
+
+    public static SafeBrowsingPasswordReuseDialogBridge createForTests(
+            WindowAndroid windowAndroid,
+            long nativePasswordReuseDialogViewAndroid,
+            PasswordManagerDialogCoordinator dialogCoordinator) {
+        return new SafeBrowsingPasswordReuseDialogBridge(
+                windowAndroid, nativePasswordReuseDialogViewAndroid, dialogCoordinator);
+    }
+
+    public PasswordManagerDialogContents getPasswordManagerDialogContentsForTests() {
+        return mPasswordManagerDialogContents;
     }
 
     @CalledByNative
@@ -77,13 +102,15 @@ public class SafeBrowsingPasswordReuseDialogBridge {
                         ? this::onClickWithNegativeButtonEnabled
                         : this::onClickWithNegativeButtonDisabled;
 
-        return new PasswordManagerDialogContents(
-                credentialLeakTitle,
-                credentialLeakDetails,
-                R.drawable.password_checkup_warning,
-                positiveButton,
-                negativeButton,
-                onClick);
+        mPasswordManagerDialogContents =
+                new PasswordManagerDialogContents(
+                        credentialLeakTitle,
+                        credentialLeakDetails,
+                        R.drawable.password_checkup_warning,
+                        positiveButton,
+                        negativeButton,
+                        onClick);
+        return mPasswordManagerDialogContents;
     }
 
     @CalledByNative

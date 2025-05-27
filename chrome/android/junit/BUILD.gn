@@ -1272,6 +1272,7 @@ if (is_android) {
       "src/org/chromium/chrome/browser/read_later/ReadLaterIphControllerUnitTest.java",
       "src/org/chromium/chrome/browser/reengagement/ReengagementNotificationControllerTest.java",
       "src/org/chromium/chrome/browser/safe_browsing/PasswordProtectionBroadcastReceiverTest.java",
+      "src/org/chromium/chrome/browser/safe_browsing/SafeBrowsingPasswordReuseDialogBridgeTest.java",
       "src/org/chromium/chrome/browser/safe_browsing/SafeBrowsingReferringAppBridgeTest.java",
       "src/org/chromium/chrome/browser/settings/SettingsActivityUnitTest.java",
       "src/org/chromium/chrome/browser/sharing/click_to_call/ClickToCallMessageHandlerTest.java",
