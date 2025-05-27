@@ -8,6 +8,7 @@
 
 #include "base/functional/bind.h"
 #include "base/task/default_delayed_task_handle_delegate.h"
+#include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/time/time.h"
 
 namespace base {
@@ -123,6 +124,11 @@ bool SequencedTaskRunner::DeleteOrReleaseSoonInternal(
     const Location& from_here,
     void (*deleter)(const void*),
     const void* object) {
+  // Allow memory to leak on shutdown. ScopedFizzleBlockShutdownTasks avoids a
+  // DCHECK about posting a task to a potentially BLOCK_SHUTDOWN task runner
+  // after shut down in cleanups that happen as things are reaped in the final
+  // phases of shutdown (ref. crbug.com/420259698; and other instances).
+  ThreadPoolInstance::ScopedFizzleBlockShutdownTasks fizzler;
   return PostNonNestableTask(from_here, BindOnce(deleter, object));
 }
 
