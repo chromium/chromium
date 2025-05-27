@@ -13,6 +13,7 @@ import android.text.format.DateUtils;
 import android.text.format.Formatter;
 import android.view.View;
 
+import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.app.AlertDialog;
 import androidx.preference.Preference;
 
@@ -235,37 +236,35 @@ public class PageInfoCookiesSettings extends BaseSiteSettingsFragment {
             @CookieControlsState int controlsState,
             @CookieControlsEnforcement int enforcement,
             long expiration) {
-        if (controlsState == CookieControlsState.ACTIVE_TP
-                || controlsState == CookieControlsState.PAUSED_TP) {
-            updateTrackingProtectionState();
-        } else {
-            update3pcState(controlsState, enforcement, expiration);
-        }
-    }
-
-    public void updateTrackingProtectionState() {
-        // TODO(crbug.com/388294499): Add support for TP UI.
-        mCookieSwitch.setVisible(false);
-    }
-
-    public void update3pcState(
-            @CookieControlsState int controlsState,
-            @CookieControlsEnforcement int enforcement,
-            long expiration) {
         if (enforcement == CookieControlsEnforcement.ENFORCED_BY_TPCD_GRANT) {
             setTpcdGrantState();
             updateContentDescriptionsForA11y();
             return;
         }
+
         boolean visible = controlsState != CookieControlsState.HIDDEN;
         mCookieSwitch.setVisible(visible);
         mThirdPartyCookiesTitle.setVisible(visible);
         mThirdPartyCookiesSummary.setVisible(visible);
-
         if (!visible) return;
 
-        updateCookieSwitch(controlsState == CookieControlsState.ALLOWED3PC, enforcement);
-        updateTitleAndSummary(controlsState, expiration);
+        switch (controlsState) {
+            case CookieControlsState.ACTIVE_TP:
+            case CookieControlsState.PAUSED_TP:
+                // TODO(crbug.com/388294499): Add support for TP UI.
+                mCookieSwitch.setVisible(false);
+                break;
+            case CookieControlsState.BLOCKED3PC:
+                setBlocked3pcTitleAndSummary();
+                updateCookieSwitch(/*cookiesAllowed*/ false, enforcement);
+                break;
+            case CookieControlsState.ALLOWED3PC:
+                setAllowed3pcTitleAndSummary(expiration);
+                updateCookieSwitch(/*cookiesAllowed*/ true, enforcement);
+                break;
+            default:
+                assert false : "Should not be reached.";
+        }
         updateContentDescriptionsForA11y();
     }
 
@@ -286,6 +285,74 @@ public class PageInfoCookiesSettings extends BaseSiteSettingsFragment {
                                             mOnCookieSettingsLinkClicked.run();
                                         }))));
         mThirdPartyCookiesSummary.setDividerAllowedAbove(true);
+    }
+
+    private void setBlocked3pcTitleAndSummary() {
+        mThirdPartyCookiesTitle.setTitle(
+                getString(R.string.page_info_cookies_site_not_working_title));
+        int resId = R.string.page_info_cookies_site_not_working_description_tracking_protection;
+        mThirdPartyCookiesSummary.setSummary(getString(resId));
+    }
+
+    private void setAllowed3pcTitleAndSummary(long expiration) {
+        String title;
+        if (expiration == 0) {
+            title = getString(R.string.page_info_cookies_permanent_allowed_title);
+        } else {
+            int days = daysUntilExpiration(TimeUtils.currentTimeMillis(), expiration);
+            boolean limit3pcs = mIsModeBUi && !mBlockAll3pc;
+            if (days == 0) {
+                title =
+                        getString(
+                                limit3pcs
+                                        ? R.string.page_info_cookies_limiting_restart_today_title
+                                        : R.string.page_info_cookies_blocking_restart_today_title);
+            } else {
+                int resId;
+                if (limit3pcs) {
+                    resId = R.plurals.page_info_cookies_limiting_restart_title;
+                } else {
+                    resId = R.plurals.page_info_cookies_blocking_restart_tracking_protection_title;
+                }
+                title = getContext().getResources().getQuantityString(resId, days, days);
+            }
+        }
+        mThirdPartyCookiesTitle.setTitle(title);
+
+        int resId;
+        if (expiration == 0) {
+            resId = R.string.page_info_cookies_tracking_protection_permanent_allowed_description;
+        } else if (mIsModeBUi) {
+            resId = R.string.page_info_cookies_tracking_protection_description;
+        } else {
+            resId = R.string.page_info_cookies_send_feedback_description;
+        }
+        mThirdPartyCookiesSummary.setSummary(
+                SpanApplier.applySpans(
+                        getString(resId),
+                        new SpanApplier.SpanInfo(
+                                "<link>",
+                                "</link>",
+                                new ChromeClickableSpan(
+                                        getContext(),
+                                        (view) -> {
+                                            mOnFeedbackClicked.onResult(this.getActivity());
+                                        }))));
+    }
+
+    /**
+     * Returns the number of days left until the exception expiration.
+     *
+     * @param currentTime Current timestamps (can be obtained using TimeUtils.currentTimeMillis())
+     * @param expiration A timestamp for the expiration.
+     * @return Number of days until expiration. Day boundary is considered to be the local midnight.
+     */
+    @VisibleForTesting
+    public int daysUntilExpiration(long currentTime, long expiration) {
+        if (mFixedExpirationForTesting) return mDaysUntilExpirationForTesting;
+        long currentMidnight = CalendarUtils.getStartOfDay(currentTime).getTime().getTime();
+        long expirationMidnight = CalendarUtils.getStartOfDay(expiration).getTime().getTime();
+        return (int) ((expirationMidnight - currentMidnight) / DateUtils.DAY_IN_MILLIS);
     }
 
     private void updateCookieSwitch(
@@ -315,75 +382,6 @@ public class PageInfoCookiesSettings extends BaseSiteSettingsFragment {
             resId = R.string.page_info_tracking_protection_toggle_blocked;
         }
         mCookieSwitch.setSummary(getString(resId));
-    }
-
-    private void updateTitleAndSummary(@CookieControlsState int controlsState, long expiration) {
-        int resId;
-        if (controlsState == CookieControlsState.BLOCKED3PC) {
-            mThirdPartyCookiesTitle.setTitle(
-                    getString(R.string.page_info_cookies_site_not_working_title));
-            resId = R.string.page_info_cookies_site_not_working_description_tracking_protection;
-            mThirdPartyCookiesSummary.setSummary(getString(resId));
-            return;
-        }
-
-        mThirdPartyCookiesTitle.setTitle(getThirdPartyCookiesAllowedTitle(expiration));
-        if (expiration == 0) {
-            resId = R.string.page_info_cookies_tracking_protection_permanent_allowed_description;
-        } else if (mIsModeBUi) {
-            resId = R.string.page_info_cookies_tracking_protection_description;
-        } else {
-            resId = R.string.page_info_cookies_send_feedback_description;
-        }
-        mThirdPartyCookiesSummary.setSummary(
-                SpanApplier.applySpans(
-                        getString(resId),
-                        new SpanApplier.SpanInfo(
-                                "<link>",
-                                "</link>",
-                                new ChromeClickableSpan(
-                                        getContext(),
-                                        (view) -> {
-                                            mOnFeedbackClicked.onResult(this.getActivity());
-                                        }))));
-    }
-
-    /**
-     * Returns the number of days left until the exception expiration.
-     *
-     * @param currentTime Current timestamps (can be obtained using TimeUtils.currentTimeMillis())
-     * @param expiration A timestamp for the expiration.
-     * @return Number of days until expiration. Day boundary is considered to be the local midnight.
-     */
-    public static int calculateDaysUntilExpiration(long currentTime, long expiration) {
-        long currentMidnight = CalendarUtils.getStartOfDay(currentTime).getTime().getTime();
-        long expirationMidnight = CalendarUtils.getStartOfDay(expiration).getTime().getTime();
-        return (int) ((expirationMidnight - currentMidnight) / DateUtils.DAY_IN_MILLIS);
-    }
-
-    private String getThirdPartyCookiesAllowedTitle(long expiration) {
-        if (expiration == 0) {
-            return getString(R.string.page_info_cookies_permanent_allowed_title);
-        }
-        int days =
-                mFixedExpirationForTesting
-                        ? mDaysUntilExpirationForTesting
-                        : calculateDaysUntilExpiration(TimeUtils.currentTimeMillis(), expiration);
-        if (mIsModeBUi && !mBlockAll3pc) {
-            if (days == 0) {
-                return getString(R.string.page_info_cookies_limiting_restart_today_title);
-            }
-            return getQuantityString(R.plurals.page_info_cookies_limiting_restart_title, days);
-        }
-        if (days == 0) {
-            return getString(R.string.page_info_cookies_blocking_restart_today_title);
-        }
-        return getQuantityString(
-                R.plurals.page_info_cookies_blocking_restart_tracking_protection_title, days);
-    }
-
-    private String getQuantityString(int resId, int count) {
-        return getContext().getResources().getQuantityString(resId, count, count);
     }
 
     // TODO(crbug.com/388844792): Revert back to two live regions once that's supported.

@@ -23,20 +23,20 @@ public class PageInfoCookiesSettingsUnitTest {
     @Test
     public void testDaysToExpirationCalculations() {
         long currentTime = new Date(70, Calendar.JANUARY, 1).getTime();
+        PageInfoCookiesSettings settings = new PageInfoCookiesSettings();
         // Same day before midnight.
         assertEquals(
                 0,
-                PageInfoCookiesSettings.calculateDaysUntilExpiration(
+                settings.daysUntilExpiration(
                         currentTime, currentTime + DateUtils.DAY_IN_MILLIS - 1));
         // Midnight of the next day.
         assertEquals(
                 1,
-                PageInfoCookiesSettings.calculateDaysUntilExpiration(
-                        currentTime, currentTime + DateUtils.DAY_IN_MILLIS));
+                settings.daysUntilExpiration(currentTime, currentTime + DateUtils.DAY_IN_MILLIS));
         // A little after midnight on the 3rd day.
         assertEquals(
                 3,
-                PageInfoCookiesSettings.calculateDaysUntilExpiration(
+                settings.daysUntilExpiration(
                         currentTime, currentTime + 3 * DateUtils.DAY_IN_MILLIS + 1));
     }
 }
