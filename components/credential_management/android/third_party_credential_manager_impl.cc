@@ -37,7 +37,6 @@ void ThirdPartyCredentialManagerImpl::Store(
 void ThirdPartyCredentialManagerImpl::PreventSilentAccess(
     PreventSilentAccessCallback callback) {
   // TODO(crbug.com/374710839): Implement.
-  NOTIMPLEMENTED();
 }
 
 // This method decides if credential picker should be shown.
