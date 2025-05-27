@@ -1,3 +1,14 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+import {html} from '//resources/lit/v3_0/lit.rollup.js';
+
+import type {DestinationDialogElement} from './destination_dialog.js';
+
+export function getHtml(this: DestinationDialogElement) {
+  // clang-format off
+  return html`<!--_html_template_start_-->
 <cr-dialog id="dialog" @close="${this.onCloseOrCancel_}">
   <div slot="title" id="header">$i18n{destinationSearchTitle}</div>
   <div slot="body">
@@ -22,3 +33,6 @@
     </cr-button>
   </div>
 </cr-dialog>
+<!--_html_template_end_-->`;
+  // clang-format on
+}

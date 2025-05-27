@@ -1,3 +1,14 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+import {html} from '//resources/lit/v3_0/lit.rollup.js';
+
+import type {CopiesSettingsElement} from './copies_settings.js';
+
+export function getHtml(this: CopiesSettingsElement) {
+  // clang-format off
+  return html`<!--_html_template_start_-->
 <print-preview-number-settings-section max-value="${this.copiesMax_}"
     min-value="1" default-value="1" input-label="$i18n{copiesLabel}"
     input-aria-label="$i18n{copiesLabel}"
@@ -14,3 +25,6 @@
     </cr-checkbox>
   </div>
 </print-preview-number-settings-section>
+<!--_html_template_end_-->`;
+  // clang-format on
+}

@@ -1,6 +1,15 @@
-<!-- #html_wrapper_imports_start
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+import {html} from '//resources/lit/v3_0/lit.rollup.js';
+
+import type {PagesSettingsElement} from './pages_settings.js';
 import {PagesValue} from './pages_settings.js';
-#html_wrapper_imports_end -->
+
+export function getHtml(this: PagesSettingsElement) {
+  // clang-format off
+  return html`<!--_html_template_start_-->
 <print-preview-settings-section>
   <span slot="title" id="pages-label">$i18n{pagesLabel}</span>
   <div slot="controls">
@@ -38,4 +47,6 @@ import {PagesValue} from './pages_settings.js';
       </cr-input>
     </div>
   </print-preview-settings-section>
-</cr-collapse>
+</cr-collapse><!--_html_template_end_-->`;
+  // clang-format on
+}

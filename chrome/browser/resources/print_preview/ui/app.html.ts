@@ -1,3 +1,14 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+import {html} from '//resources/lit/v3_0/lit.rollup.js';
+
+import type {AppElement} from './app.js';
+
+export function getHtml(this: AppElement) {
+  // clang-format off
+  return html`<!--_html_template_start_-->
 <print-preview-state id="state"
     @state-changed="${this.onStateChanged_}" error="${this.error_}"
     @error-changed="${this.onErrorChanged_}">
@@ -36,10 +47,10 @@
     @focus="${this.onSidebarFocus_}"
     @destination-changed="${this.onDestinationChanged_}"
     @destination-capabilities-changed="${this.onDestinationCapabilitiesChanged_}"
-<if expr="is_macosx">
-    @open-pdf-in-preview="${this.onOpenPdfInPreview_}"
-</if>
     @print-with-system-dialog="${this.onPrintWithSystemDialog_}"
     @print-requested="${this.onPrintRequested_}"
     @cancel-requested="${this.onCancelRequested_}">
 </print-preview-sidebar>
+<!--_html_template_end_-->`;
+  // clang-format on
+}

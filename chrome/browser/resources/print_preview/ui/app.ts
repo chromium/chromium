@@ -119,6 +119,11 @@ export class PrintPreviewAppElement extends PrintPreviewAppElementBase {
 
   override firstUpdated() {
     FocusOutlineManager.forDocument(document);
+
+    // <if expr="is_macosx">
+    this.$.sidebar.addEventListener(
+        'open-pdf-in-preview', this.onOpenPdfInPreview_.bind(this));
+    // </if>
   }
 
   override connectedCallback() {

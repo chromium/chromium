@@ -1,6 +1,16 @@
-<!-- #html_wrapper_imports_start
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+import {html} from '//resources/lit/v3_0/lit.rollup.js';
+
 import {MarginsType} from '../data/margins.js';
-#html_wrapper_imports_end -->
+
+import type {MarginsSettingsElement} from './margins_settings.js';
+
+export function getHtml(this: MarginsSettingsElement) {
+  // clang-format off
+  return html`<!--_html_template_start_-->
 <print-preview-settings-section>
   <span id="margins-label" slot="title">$i18n{marginsLabel}</span>
   <div slot="controls">
@@ -23,4 +33,6 @@ import {MarginsType} from '../data/margins.js';
       </option>
     </select>
   </div>
-</print-preview-settings-section>
+</print-preview-settings-section><!--_html_template_end_-->`;
+  // clang-format on
+}

@@ -1,6 +1,16 @@
-<!-- #html_wrapper_imports_start
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+import {html} from '//resources/lit/v3_0/lit.rollup.js';
+
 import {ScalingType} from '../data/scaling.js';
-#html_wrapper_imports_end -->
+
+import type {ScalingSettingsElement} from './scaling_settings.js';
+
+export function getHtml(this: ScalingSettingsElement) {
+  // clang-format off
+  return html`<!--_html_template_start_-->
 <print-preview-settings-section>
   <span slot="title" id="scaling-label">$i18n{scalingLabel}</span>
   <div slot="controls">
@@ -39,4 +49,6 @@ import {ScalingType} from '../data/scaling.js';
       @input-valid-changed="${this.onInputValidChanged_}"
       hint-message="$i18n{scalingInstruction}">
   </print-preview-number-settings-section>
-</cr-collapse>
+</cr-collapse><!--_html_template_end_-->`;
+  // clang-format on
+}

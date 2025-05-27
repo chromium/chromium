@@ -1,3 +1,14 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+import {html} from '//resources/lit/v3_0/lit.rollup.js';
+
+import type {DestinationListItemElement} from './destination_list_item.js';
+
+export function getHtml(this: DestinationListItemElement) {
+  // clang-format off
+  return html`<!--_html_template_start_-->
 ${this.destination !== null ? html`
   <cr-icon icon="${this.destination.icon}"></cr-icon>
   <span class="name searchable">${this.destination.displayName}</span>
@@ -13,3 +24,6 @@ ${this.destination !== null ? html`
         title="${this.getExtensionPrinterTooltip_()}"></span>
   </span>
 ` : ''}
+<!--_html_template_end_-->`;
+  // clang-format on
+}

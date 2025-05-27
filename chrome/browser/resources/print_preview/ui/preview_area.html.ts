@@ -1,3 +1,14 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+import {html} from '//resources/lit/v3_0/lit.rollup.js';
+
+import type {PreviewAreaElement} from './preview_area.js';
+
+export function getHtml(this: PreviewAreaElement) {
+  // clang-format off
+  return html`<!--_html_template_start_-->
 <div class="preview-area-overlay-layer ${this.getInvisible_()}"
     aria-hidden="${this.isInDisplayPreviewState_()}">
   <div class="preview-area-message">
@@ -18,3 +29,6 @@
     @text-focus-position="${this.onTextFocusPosition_}"
     @margin-drag-changed="${this.onMarginDragChanged_}">
 </print-preview-margin-control-container>
+<!--_html_template_end_-->`;
+  // clang-format on
+}
