@@ -190,7 +190,7 @@ TEST_F(AntiFingerprintingBlockedDomainListComponentInstallerTest,
   auto service =
       std::make_unique<component_updater::MockComponentUpdateService>();
 
-  EXPECT_CALL(*service, RegisterComponent(_)).Times(1);
+  EXPECT_CALL(*service, RegisterComponent(_));
   RegisterAntiFingerprintingBlockedDomainListComponent(service.get());
 
   task_env().RunUntilIdle();

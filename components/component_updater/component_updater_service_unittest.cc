@@ -230,7 +230,7 @@ std::unique_ptr<ComponentUpdateService> TestComponentUpdateServiceFactory(
 }
 
 ComponentUpdaterTest::ComponentUpdaterTest() {
-  EXPECT_CALL(update_client(), AddObserver(_)).Times(1);
+  EXPECT_CALL(update_client(), AddObserver(_));
   auto scheduler = std::make_unique<MockUpdateScheduler>();
   scheduler_ = scheduler.get();
   ON_CALL(*scheduler_, Schedule(_, _, _, _))
@@ -243,7 +243,7 @@ ComponentUpdaterTest::ComponentUpdaterTest() {
 }
 
 ComponentUpdaterTest::~ComponentUpdaterTest() {
-  EXPECT_CALL(update_client(), RemoveObserver(_)).Times(1);
+  EXPECT_CALL(update_client(), RemoveObserver(_));
 }
 
 void ComponentUpdaterTest::RunThreads() {
@@ -276,17 +276,17 @@ void ComponentUpdaterTest::Schedule(
 
 TEST_F(ComponentUpdaterTest, AddObserver) {
   MockServiceObserver observer;
-  EXPECT_CALL(update_client(), AddObserver(&observer)).Times(1);
-  EXPECT_CALL(update_client(), Stop()).Times(1);
-  EXPECT_CALL(scheduler(), Stop()).Times(1);
+  EXPECT_CALL(update_client(), AddObserver(&observer));
+  EXPECT_CALL(update_client(), Stop());
+  EXPECT_CALL(scheduler(), Stop());
   component_updater().AddObserver(&observer);
 }
 
 TEST_F(ComponentUpdaterTest, RemoveObserver) {
   MockServiceObserver observer;
-  EXPECT_CALL(update_client(), RemoveObserver(&observer)).Times(1);
-  EXPECT_CALL(update_client(), Stop()).Times(1);
-  EXPECT_CALL(scheduler(), Stop()).Times(1);
+  EXPECT_CALL(update_client(), RemoveObserver(&observer));
+  EXPECT_CALL(update_client(), Stop());
+  EXPECT_CALL(scheduler(), Stop());
   component_updater().RemoveObserver(&observer);
 }
 
@@ -336,10 +336,10 @@ TEST_F(ComponentUpdaterTest, RegisterComponent) {
   EXPECT_CALL(update_client(), Update(_, _, _, _, _))
       .WillRepeatedly(Invoke(&loop_handler, &LoopHandler::OnUpdate));
 
-  EXPECT_CALL(update_client(), IsUpdating(id1)).Times(1);
-  EXPECT_CALL(update_client(), Stop()).Times(1);
-  EXPECT_CALL(scheduler(), Schedule(_, _, _, _)).Times(1);
-  EXPECT_CALL(scheduler(), Stop()).Times(1);
+  EXPECT_CALL(update_client(), IsUpdating(id1));
+  EXPECT_CALL(update_client(), Stop());
+  EXPECT_CALL(scheduler(), Schedule(_, _, _, _));
+  EXPECT_CALL(scheduler(), Stop());
 
   EXPECT_TRUE(component_updater().RegisterComponent(component1));
   EXPECT_TRUE(component_updater().RegisterComponent(component2));
@@ -375,13 +375,13 @@ TEST_F(ComponentUpdaterTest, OnDemandUpdate) {
   // to each |OnDemand| invocation, and calls to |Stop| when the mocks are
   // torn down.
   LoopHandler loop_handler(2, quit_closure());
-  EXPECT_CALL(scheduler(), Schedule(_, _, _, _)).Times(1);
+  EXPECT_CALL(scheduler(), Schedule(_, _, _, _));
   EXPECT_CALL(update_client(), Install(_, _, _, _))
       .WillOnce(Invoke(&loop_handler, &LoopHandler::OnInstall));
   EXPECT_CALL(update_client(), Update(_, _, _, _, _))
       .WillOnce(Invoke(&loop_handler, &LoopHandler::OnUpdate));
-  EXPECT_CALL(update_client(), Stop()).Times(1);
-  EXPECT_CALL(scheduler(), Stop()).Times(1);
+  EXPECT_CALL(update_client(), Stop());
+  EXPECT_CALL(scheduler(), Stop());
 
   {
     using update_client::jebg_hash;
@@ -443,9 +443,9 @@ TEST_F(ComponentUpdaterTest, MaybeThrottle) {
   LoopHandler loop_handler(1, quit_closure());
   EXPECT_CALL(update_client(), Install(_, _, _, _))
       .WillOnce(Invoke(&loop_handler, &LoopHandler::OnInstall));
-  EXPECT_CALL(update_client(), Stop()).Times(1);
-  EXPECT_CALL(scheduler(), Schedule(_, _, _, _)).Times(1);
-  EXPECT_CALL(scheduler(), Stop()).Times(1);
+  EXPECT_CALL(update_client(), Stop());
+  EXPECT_CALL(scheduler(), Schedule(_, _, _, _));
+  EXPECT_CALL(scheduler(), Stop());
 
   EXPECT_TRUE(component_updater().RegisterComponent(ComponentRegistration(
       "jebgalgnebhfojomionfpkfelancnnkf", /*name=*/{}, hash,

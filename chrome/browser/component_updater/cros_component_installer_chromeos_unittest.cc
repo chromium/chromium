@@ -448,7 +448,7 @@ TEST_F(CrOSComponentInstallerTest, RegisterComponent) {
   ComponentConfig config{
       "star-cups-driver", ComponentConfig::PolicyType::kEnvVersion, "1.1",
       "6d24de30f671da5aee6d463d9e446cafe9ddac672800a9defe86877dcde6c466"};
-  EXPECT_CALL(*cus, RegisterComponent(testing::_)).Times(1);
+  EXPECT_CALL(*cus, RegisterComponent(testing::_));
   scoped_refptr<CrOSComponentInstaller> cros_component_manager =
       base::MakeRefCounted<CrOSComponentInstaller>(nullptr, cus.get());
   cros_component_manager->Register(config, base::OnceClosure());

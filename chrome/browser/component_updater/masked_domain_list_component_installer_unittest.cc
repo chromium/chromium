@@ -94,7 +94,7 @@ TEST_F(MaskedDomainListComponentInstallerTest, FeatureEnabled_NoFileExists) {
   auto service =
       std::make_unique<component_updater::MockComponentUpdateService>();
 
-  EXPECT_CALL(*service, RegisterComponent(_)).Times(1);
+  EXPECT_CALL(*service, RegisterComponent(_));
   RegisterMaskedDomainListComponent(service.get());
   env_.RunUntilIdle();
 

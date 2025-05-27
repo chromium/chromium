@@ -74,7 +74,7 @@ TEST_F(PlusAddressBlocklistInstallerPolicyTest,
 TEST_F(PlusAddressBlocklistInstallerPolicyTest,
        ComponentRegistrationWhenFeatureEnabled) {
   EXPECT_CALL(cus_, RegisterComponent(testing::_))
-      .Times(1)
+
       .WillOnce(testing::Return(true));
   RegisterPlusAddressBlocklistComponent(&cus_);
   RunUntilIdle();

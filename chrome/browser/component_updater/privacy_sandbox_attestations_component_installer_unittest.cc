@@ -126,7 +126,7 @@ TEST_F(PrivacySandboxAttestationsInstallerFeatureEnabledTest, OnCustomInstall) {
 TEST_F(PrivacySandboxAttestationsInstallerFeatureEnabledTest,
        RegisterIfFeatureEnabled) {
   component_updater::MockComponentUpdateService mock_update_service;
-  EXPECT_CALL(mock_update_service, RegisterComponent(testing::_)).Times(1);
+  EXPECT_CALL(mock_update_service, RegisterComponent(testing::_));
   RegisterPrivacySandboxAttestationsComponent(&mock_update_service);
 
   env_.RunUntilIdle();

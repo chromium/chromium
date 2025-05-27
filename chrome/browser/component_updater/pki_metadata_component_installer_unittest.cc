@@ -270,7 +270,7 @@ TEST_F(PKIMetadataComponentInstallerTest, VerifyInstallation) {
 // enabled.
 TEST_F(PKIMetadataComponentInstallerTest, RegisterComponent) {
   EXPECT_CALL(mock_component_update_, RegisterComponent)
-      .Times(1)
+
       .WillOnce(testing::Return(true));
   component_updater::MaybeRegisterPKIMetadataComponent(&mock_component_update_);
   task_environment_.RunUntilIdle();
@@ -658,7 +658,7 @@ TEST_F(PKIMetadataComponentInstallerDisabledTest,
   // component will always be registered even if the other feature flags are
   // disabled.
   EXPECT_CALL(mock_component_update_, RegisterComponent)
-      .Times(1)
+
       .WillOnce(testing::Return(true));
 #else
   EXPECT_CALL(mock_component_update_, RegisterComponent).Times(0);

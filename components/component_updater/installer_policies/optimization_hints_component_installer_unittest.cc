@@ -101,7 +101,7 @@ TEST_F(OptimizationHintsComponentInstallerTest,
   std::unique_ptr<OptimizationHintsMockComponentUpdateService> cus(
       new OptimizationHintsMockComponentUpdateService());
   EXPECT_CALL(*cus, RegisterComponent(testing::_))
-      .Times(1)
+
       .WillOnce(testing::Return(true));
   RegisterOptimizationHintsComponent(cus.get());
   RunUntilIdle();

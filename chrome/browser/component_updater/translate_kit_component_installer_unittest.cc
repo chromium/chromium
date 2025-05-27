@@ -110,8 +110,8 @@ TEST_F(RegisterTranslateKitComponentTest,
       std::make_unique<TranslateKitComponentMockComponentUpdateService>();
 
   pref_service()->SetBoolean(prefs::kTranslateKitPreviouslyRegistered, true);
-  EXPECT_CALL(*service, RegisterComponent(_)).Times(1);
-  EXPECT_CALL(*service, GetComponentIDs()).Times(1);
+  EXPECT_CALL(*service, RegisterComponent(_));
+  EXPECT_CALL(*service, GetComponentIDs());
   base::RunLoop run_loop;
   RegisterTranslateKitComponent(service.get(), pref_service(),
                                 /*force_install=*/false,
@@ -125,8 +125,8 @@ TEST_F(RegisterTranslateKitComponentTest, ComponentRegistrationForceInstall) {
   auto service =
       std::make_unique<TranslateKitComponentMockComponentUpdateService>();
 
-  EXPECT_CALL(*service, RegisterComponent(_)).Times(1);
-  EXPECT_CALL(*service, GetComponentIDs()).Times(1);
+  EXPECT_CALL(*service, RegisterComponent(_));
+  EXPECT_CALL(*service, GetComponentIDs());
   base::RunLoop run_loop;
   RegisterTranslateKitComponent(service.get(), pref_service(),
                                 /*force_install=*/true,

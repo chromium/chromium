@@ -109,9 +109,9 @@ TEST_F(AppServerTestCase, SelfUninstall) {
 
   // Expect the app to ActiveDutyInternal then SelfUninstall.
   EXPECT_CALL(*app, ActiveDuty).Times(0);
-  EXPECT_CALL(*app, ActiveDutyInternal).Times(1);
+  EXPECT_CALL(*app, ActiveDutyInternal);
   EXPECT_CALL(*app, SwapInNewVersion).Times(0);
-  EXPECT_CALL(*app, UninstallSelf).Times(1);
+  EXPECT_CALL(*app, UninstallSelf);
   EXPECT_EQ(app->Run(), 0);
   EXPECT_TRUE(CreateLocalPrefs(GetUpdaterScopeForTesting())->GetQualified());
 }
@@ -128,7 +128,7 @@ TEST_F(AppServerTestCase, SelfPromote) {
 
     // Expect the app to SwapInNewVersion and then ActiveDuty then
     // Shutdown(0).
-    EXPECT_CALL(*app, ActiveDuty).Times(1);
+    EXPECT_CALL(*app, ActiveDuty);
     EXPECT_CALL(*app, SwapInNewVersion).WillOnce(Return(true));
     EXPECT_CALL(*app, UninstallSelf).Times(0);
     EXPECT_EQ(app->Run(), 0);
@@ -145,7 +145,7 @@ TEST_F(AppServerTestCase, InstallAutoPromotes) {
 
     // Expect the app to SwapInNewVersion and then ActiveDuty then
     // Shutdown(0). In this case it bypasses qualification.
-    EXPECT_CALL(*app, ActiveDuty).Times(1);
+    EXPECT_CALL(*app, ActiveDuty);
     EXPECT_CALL(*app, SwapInNewVersion).WillOnce(Return(true));
     EXPECT_CALL(*app, UninstallSelf).Times(0);
     EXPECT_EQ(app->Run(), 0);
@@ -194,7 +194,7 @@ TEST_F(AppServerTestCase, ActiveDutyAlready) {
     auto app = base::MakeRefCounted<AppServerTest>();
 
     // Expect the app to ActiveDuty and then Shutdown(0).
-    EXPECT_CALL(*app, ActiveDuty).Times(1);
+    EXPECT_CALL(*app, ActiveDuty);
     EXPECT_CALL(*app, SwapInNewVersion).Times(0);
     EXPECT_CALL(*app, UninstallSelf).Times(0);
     EXPECT_EQ(app->Run(), 0);
@@ -222,7 +222,7 @@ TEST_F(AppServerTestCase, StateDirty) {
 
     // Expect the app to SwapInNewVersion and then ActiveDuty and then
     // Shutdown(0).
-    EXPECT_CALL(*app, ActiveDuty).Times(1);
+    EXPECT_CALL(*app, ActiveDuty);
     EXPECT_CALL(*app, SwapInNewVersion).WillOnce(Return(true));
     EXPECT_CALL(*app, UninstallSelf).Times(0);
     EXPECT_EQ(app->Run(), 0);

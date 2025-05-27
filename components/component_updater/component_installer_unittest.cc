@@ -236,7 +236,7 @@ class ComponentInstallerTest : public testing::Test {
 };
 
 ComponentInstallerTest::ComponentInstallerTest() {
-  EXPECT_CALL(update_client(), AddObserver(_)).Times(1);
+  EXPECT_CALL(update_client(), AddObserver(_));
   auto scheduler = std::make_unique<MockUpdateScheduler>();
   scheduler_ = scheduler.get();
   ON_CALL(*scheduler_, Schedule(_, _, _, _))
@@ -249,7 +249,7 @@ ComponentInstallerTest::ComponentInstallerTest() {
 }
 
 ComponentInstallerTest::~ComponentInstallerTest() {
-  EXPECT_CALL(update_client(), RemoveObserver(_)).Times(1);
+  EXPECT_CALL(update_client(), RemoveObserver(_));
 }
 
 void ComponentInstallerTest::RunThreads() {
@@ -329,10 +329,10 @@ TEST_F(ComponentInstallerTest, RegisterComponent) {
             barrier_callback.Run();
           });
 
-  EXPECT_CALL(update_client(), GetCrxUpdateState(id, _)).Times(1);
-  EXPECT_CALL(update_client(), Stop()).Times(1);
-  EXPECT_CALL(scheduler(), Schedule(_, _, _, _)).Times(1);
-  EXPECT_CALL(scheduler(), Stop()).Times(1);
+  EXPECT_CALL(update_client(), GetCrxUpdateState(id, _));
+  EXPECT_CALL(update_client(), Stop());
+  EXPECT_CALL(scheduler(), Schedule(_, _, _, _));
+  EXPECT_CALL(scheduler(), Stop());
 
   auto installer = base::MakeRefCounted<ComponentInstaller>(
       std::make_unique<MockInstallerPolicy>());
@@ -430,15 +430,15 @@ TEST_F(ComponentInstallerTest, InstallerRegister_CheckSequence) {
 
   // Set up expectations for uninteresting calls on the mocks due to component
   // updater waking up after the component is registered.
-  EXPECT_CALL(scheduler(), Schedule(_, _, _, _)).Times(1);
-  EXPECT_CALL(scheduler(), Stop()).Times(1);
-  EXPECT_CALL(update_client(), Stop()).Times(1);
+  EXPECT_CALL(scheduler(), Schedule(_, _, _, _));
+  EXPECT_CALL(scheduler(), Stop());
+  EXPECT_CALL(update_client(), Stop());
 
   MockRegisterHandler mock_register_handler;
   {
     ::testing::InSequence seq;
-    EXPECT_CALL(mock_register_handler, ComponentReady()).Times(1);
-    EXPECT_CALL(mock_register_handler, RegisterComplete()).Times(1);
+    EXPECT_CALL(mock_register_handler, ComponentReady());
+    EXPECT_CALL(mock_register_handler, RegisterComplete());
   }
 
   auto installer_policy =
@@ -484,8 +484,8 @@ TEST_F(ComponentInstallerTest, UnpackPathInstallSuccess) {
   task_environment_.RunUntilIdle();
 
   EXPECT_FALSE(base::PathExists(unpack_path));
-  EXPECT_CALL(update_client(), Stop()).Times(1);
-  EXPECT_CALL(scheduler(), Stop()).Times(1);
+  EXPECT_CALL(update_client(), Stop());
+  EXPECT_CALL(scheduler(), Stop());
 }
 
 // Tests that the unpack path is removed when the install failed.
@@ -518,8 +518,8 @@ TEST_F(ComponentInstallerTest, UnpackPathInstallError) {
   task_environment_.RunUntilIdle();
 
   EXPECT_FALSE(base::PathExists(unpack_path));
-  EXPECT_CALL(update_client(), Stop()).Times(1);
-  EXPECT_CALL(scheduler(), Stop()).Times(1);
+  EXPECT_CALL(update_client(), Stop());
+  EXPECT_CALL(scheduler(), Stop());
 }
 
 TEST_F(ComponentInstallerTest, GetInstalledFile) {
@@ -553,8 +553,8 @@ TEST_F(ComponentInstallerTest, GetInstalledFile) {
             base_dir.AppendASCII("1.0").AppendASCII("a"));
   EXPECT_EQ(installer->GetInstalledFile("../a"), std::nullopt);
 
-  EXPECT_CALL(update_client(), Stop()).Times(1);
-  EXPECT_CALL(scheduler(), Stop()).Times(1);
+  EXPECT_CALL(update_client(), Stop());
+  EXPECT_CALL(scheduler(), Stop());
 }
 
 TEST_F(ComponentInstallerTest, SelectComponentVersion) {
