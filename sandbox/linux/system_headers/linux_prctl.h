@@ -45,4 +45,12 @@
 #define PR_SVE_GET_VL 51
 #endif
 
+#if defined(ARCH_CPU_ARM64)
+
+#if !defined(PR_SME_GET_VL)
+#define PR_SME_GET_VL 64
+#endif
+
+#endif
+
 #endif  // SANDBOX_LINUX_SYSTEM_HEADERS_LINUX_PRCTL_H_

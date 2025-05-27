@@ -219,6 +219,10 @@ ResultExpr RestrictPrctl() {
              Allow())
       .Cases({PR_SET_VMA},
              If(arg == PR_SET_VMA_ANON_NAME, Allow()).Else(CrashSIGSYSPrctl()))
+#if defined(ARCH_CPU_ARM64)
+      // This is required by TFLite. EINVAL means that it is not supported.
+      .Cases({PR_SME_GET_VL}, Error(EINVAL))
+#endif
       .Default(
           If(option == PR_SET_PTRACER, Error(EPERM)).Else(CrashSIGSYSPrctl()));
 }
