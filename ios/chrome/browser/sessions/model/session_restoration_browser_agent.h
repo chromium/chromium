@@ -13,7 +13,6 @@
 
 #import "base/memory/raw_ptr.h"
 #import "base/observer_list.h"
-#import "ios/chrome/browser/shared/model/browser/browser_observer.h"
 #import "ios/chrome/browser/shared/model/browser/browser_user_data.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer.h"
 #import "ios/web/public/web_state_observer.h"
@@ -31,8 +30,7 @@ class WebStateList;
 // save sessions when the active webState changes, and when each web state
 // completes a navigation.
 class SessionRestorationBrowserAgent
-    : public BrowserObserver,
-      public BrowserUserData<SessionRestorationBrowserAgent>,
+    : public BrowserUserData<SessionRestorationBrowserAgent>,
       public WebStateListObserver,
       public web::WebStateObserver {
  public:
@@ -84,9 +82,6 @@ class SessionRestorationBrowserAgent
   // Returns true if the current session can be saved.
   bool CanSaveSession();
 
-  // BrowserObserver methods
-  void BrowserDestroyed(Browser* browser) override;
-
   // WebStateListObserver methods.
   void WebStateListWillChange(WebStateList* web_state_list,
                               const WebStateListChangeDetach& detach_change,
@@ -103,9 +98,6 @@ class SessionRestorationBrowserAgent
 
   // The service object which handles the actual saving of sessions.
   SessionServiceIOS* session_service_ = nullptr;
-
-  // The Browser containing the WebStates to be saved.
-  raw_ptr<Browser> browser_ = nullptr;
 
   // List of registered observers.
   base::ObserverList<SessionRestorationObserver, true> observers_;
