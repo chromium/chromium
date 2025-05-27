@@ -558,8 +558,6 @@ class ProfilePickerCreationFlowBrowserTest
     profile_manager->CreateProfileAsync(
         path, base::BindLambdaForTesting([&run_loop](Profile* profile) {
           ASSERT_TRUE(profile);
-          // Avoid showing the welcome page.
-          profile->GetPrefs()->SetBoolean(prefs::kHasSeenWelcomePage, true);
           run_loop.Quit();
         }));
     run_loop.Run();

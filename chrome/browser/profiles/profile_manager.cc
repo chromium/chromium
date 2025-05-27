@@ -1191,11 +1191,6 @@ void ProfileManager::InitProfileUserPrefs(Profile* profile) {
     profile->GetPrefs()->SetString(prefs::kSupervisedUserId,
                                    supervised_user_id);
   }
-#if !BUILDFLAG(IS_ANDROID)
-  if (profile->IsNewProfile()) {
-    profile->GetPrefs()->SetBoolean(prefs::kHasSeenWelcomePage, false);
-  }
-#endif  // !BUILDFLAG(IS_ANDROID)
 }
 
 void ProfileManager::RegisterTestingProfile(std::unique_ptr<Profile> profile,

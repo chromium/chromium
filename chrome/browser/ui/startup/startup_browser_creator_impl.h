@@ -118,12 +118,6 @@ class StartupBrowserCreatorImpl {
     LaunchResult launch_result;
   };
 
-  enum class WelcomeRunType {
-    NONE,                // Do not inject the welcome page for this run.
-    FIRST_TAB,           // Inject the welcome page as the first tab.
-    FIRST_RUN_LAST_TAB,  // Inject the welcome page as the last first-run tab.
-  };
-
   // Window behaviors possible when opening Chrome.
   enum class BrowserOpenBehavior {
     NEW,                  // Open in a new browser.

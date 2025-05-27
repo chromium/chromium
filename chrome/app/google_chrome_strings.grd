@@ -2002,13 +2002,6 @@ Google Chrome is unable to recover your settings.
         </if>
       </if>
 
-      <!-- Welcome page (chrome://welcome) strings -->
-      <if expr="not is_chromeos">
-        <message name="IDS_WELCOME_HEADER" desc="A message which will appear as the header on the Welcome UI if the user has never run Chrome before.">
-          Welcome to Chrome
-        </message>
-      </if>
-
       <!-- Native notifications for Windows 10 -->
       <if expr="is_win">
         <message name="IDS_WIN_NOTIFICATION_SETTINGS_CONTEXT_MENU_ITEM_NAME" desc="The name of the button in Windows Notification Center which leads to Chrome notification settings.">

@@ -1869,9 +1869,6 @@ inline constexpr char kFirstRunFinished[] = "browser.first_run_finished";
 #endif
 
 #if !BUILDFLAG(IS_ANDROID)
-// Whether or not this profile has been shown the Welcome page.
-inline constexpr char kHasSeenWelcomePage[] = "browser.has_seen_welcome_page";
-
 // The restriction imposed on managed accounts.
 inline constexpr char kManagedAccountsSigninRestriction[] =
     "profile.managed_accounts.restriction.value";

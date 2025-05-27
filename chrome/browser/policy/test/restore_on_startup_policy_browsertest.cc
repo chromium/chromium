@@ -181,10 +181,6 @@ class RestoreOnStartupPolicyTest : public UrlBlockingPolicyTest,
 };
 
 IN_PROC_BROWSER_TEST_P(RestoreOnStartupPolicyTest, PRE_RunTest) {
-  // Do not show Welcome Page.
-  browser()->profile()->GetPrefs()->SetBoolean(prefs::kHasSeenWelcomePage,
-                                               true);
-
   // If policy urls are set, those might be opened at startup. Because
   // some tabs are already opened, we don't need to navigate or open more tabs
   // for verification of tab restoration.

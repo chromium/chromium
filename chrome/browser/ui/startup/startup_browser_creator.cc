@@ -950,10 +950,6 @@ void StartupBrowserCreator::RegisterLocalStatePrefs(
 
 // static
 void StartupBrowserCreator::RegisterProfilePrefs(PrefRegistrySimple* registry) {
-  // Default to true so that existing users are not shown the Welcome page.
-  // ProfileManager handles setting this to false for new profiles upon
-  // creation.
-  registry->RegisterBooleanPref(prefs::kHasSeenWelcomePage, true);
 #if BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
   // This will be set for newly created profiles, and is used to indicate which
   // users went through onboarding with the current experiment group.

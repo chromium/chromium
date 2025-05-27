@@ -475,9 +475,6 @@ void ProfilePickerView::OnLocalProfileInitialized(
     theme_service->UseDefaultTheme();
   }
 
-  // TODO(crbug.com/40209493): Add shortcut creation.
-  // Skip the FRE for this profile as sign-in was offered as part of the flow.
-  profile->GetPrefs()->SetBoolean(prefs::kHasSeenWelcomePage, true);
   GetProfilePickerFlowController()->SwitchToSignedOutPostIdentityFlow(
       profile, std::move(switch_finished_callback));
 }

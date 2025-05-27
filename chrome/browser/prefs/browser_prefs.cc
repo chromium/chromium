@@ -1109,6 +1109,7 @@ inline constexpr char kSyncBagOfChips[] = "sync.bag_of_chips";
 inline constexpr char kSyncLastSyncedTime[] = "sync.last_synced_time";
 inline constexpr char kSyncLastPollTime[] = "sync.last_poll_time";
 inline constexpr char kSyncPollInterval[] = "sync.short_poll_interval";
+inline constexpr char kHasSeenWelcomePage[] = "browser.has_seen_welcome_page";
 
 #if BUILDFLAG(IS_WIN)
 // Deprecated 05/2025.
@@ -1588,6 +1589,7 @@ void RegisterProfilePrefsForMigration(
   registry->RegisterTimePref(kSyncLastSyncedTime, base::Time());
   registry->RegisterTimePref(kSyncLastPollTime, base::Time());
   registry->RegisterTimeDeltaPref(kSyncPollInterval, base::TimeDelta());
+  registry->RegisterBooleanPref(kHasSeenWelcomePage, false);
 }
 
 }  // namespace
@@ -2901,6 +2903,7 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs,
   profile_prefs->ClearPref(kSyncLastSyncedTime);
   profile_prefs->ClearPref(kSyncLastPollTime);
   profile_prefs->ClearPref(kSyncPollInterval);
+  profile_prefs->ClearPref(kHasSeenWelcomePage);
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_PROFILE_PREFS

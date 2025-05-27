@@ -376,7 +376,6 @@
       "chrome://sync-confirmation/*",
       "chrome://tab-search.top-chrome/*",
       "chrome://tab-strip.top-chrome/*",
-      "chrome://welcome/*",
       "chrome://vc-background/*",
       "chrome://app-settings/*",
       "chrome://search-engine-choice/*"
