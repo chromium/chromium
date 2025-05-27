@@ -53,9 +53,6 @@
 #include "remoting/signaling/delegating_signal_strategy.h"
 #include "remoting/signaling/ftl_signal_strategy.h"
 #include "remoting/signaling/ftl_support_host_device_id_provider.h"
-#include "remoting/signaling/remoting_log_to_server.h"
-#include "remoting/signaling/server_log_entry.h"
-#include "remoting/signaling/xmpp_log_to_server.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 #if BUILDFLAG(IS_WIN)
@@ -115,9 +112,6 @@ CreateDelegatedSignalingDeferredConnectContext(
       std::make_unique<It2MeHost::DeferredConnectContext>();
   connection_context->register_request =
       std::make_unique<XmppRegisterSupportHostRequest>(kDirectoryBotJidValue);
-  connection_context->log_to_server = std::make_unique<XmppLogToServer>(
-      ServerLogEntry::IT2ME, signal_strategy.get(), kDirectoryBotJidValue,
-      context->network_task_runner());
   connection_context->signal_strategy = std::move(signal_strategy);
   return connection_context;
 }
@@ -158,11 +152,6 @@ CreateNativeSignalingDeferredConnectContext(
                 api_token_getter, oauth_token_getter_task_runner),
             host_context->url_loader_factory());
   }
-  connection_context->log_to_server = std::make_unique<RemotingLogToServer>(
-      ServerLogEntry::IT2ME,
-      std::make_unique<OAuthTokenGetterProxy>(api_token_getter,
-                                              oauth_token_getter_task_runner),
-      host_context->url_loader_factory());
   connection_context->signaling_token_getter =
       std::make_unique<OAuthTokenGetterProxy>(signaling_token_getter,
                                               oauth_token_getter_task_runner);

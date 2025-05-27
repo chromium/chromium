@@ -30,10 +30,6 @@ static_library("signaling") {
     "message_tracker.h",
     "messaging_client.h",
     "registration_manager.h",
-    "remoting_log_to_server.cc",
-    "remoting_log_to_server.h",
-    "server_log_entry.cc",
-    "server_log_entry.h",
     "signal_strategy.cc",
     "signal_strategy.h",
     "signaling_address.cc",
@@ -43,8 +39,6 @@ static_library("signaling") {
     "signaling_tracker.h",
     "xmpp_constants.cc",
     "xmpp_constants.h",
-    "xmpp_log_to_server.cc",
-    "xmpp_log_to_server.h",
   ]
 
   configs += [
@@ -103,12 +97,8 @@ source_set("unit_tests") {
     "ftl_signal_strategy_unittest.cc",
     "iq_sender_unittest.cc",
     "message_tracker_unittest.cc",
-    "remoting_log_to_server_unittest.cc",
-    "server_log_entry_unittest.cc",
-    "server_log_entry_unittest.h",
     "signaling_address_unittest.cc",
     "signaling_id_util_unittest.cc",
-    "xmpp_log_to_server_unittest.cc",
   ]
 
   deps = [

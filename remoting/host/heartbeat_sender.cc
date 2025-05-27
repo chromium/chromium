@@ -25,7 +25,6 @@
 #include "remoting/base/protobuf_http_request_config.h"
 #include "remoting/base/service_urls.h"
 #include "remoting/host/host_config.h"
-#include "remoting/host/server_log_entry_host.h"
 #include "remoting/signaling/ftl_signal_strategy.h"
 #include "remoting/signaling/signaling_address.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
