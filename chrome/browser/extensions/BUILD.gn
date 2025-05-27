@@ -812,6 +812,7 @@ source_set("extensions") {
 
       "//chrome/browser/feedback",
       "//chrome/browser/ui/views/toolbar",
+      "//chrome/browser/ui/toolbar",
     ]
 
     # Since browser and browser_extensions actually depend on each other,
@@ -882,6 +883,7 @@ source_set("extensions") {
       "//chrome/browser/ui/tabs",
       "//chrome/browser/ui/tabs:tab_group",
       "//chrome/browser/ui/tabs:tab_model",
+      "//chrome/browser/ui/toolbar",
       "//chrome/browser/ui/views/side_panel",
       "//chrome/browser/ui/views/toolbar",
       "//chrome/browser/ui/window_sizer",

@@ -9,3 +9,8 @@ assert(enable_extensions)
 source_set("extension_enable_flow_delegate") {
   sources = [ "extension_enable_flow_delegate.h" ]
 }
+
+source_set("extension_popup_types") {
+  sources = [ "extension_popup_types.h" ]
+  public_deps = [ "//base" ]
+}

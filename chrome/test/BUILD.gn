@@ -3724,6 +3724,7 @@ if (!is_android) {
       "//chrome/browser/contextual_cueing:impl",
       "//chrome/browser/infobars:test_support",
       "//chrome/browser/ui/search",
+      "//chrome/browser/ui/toolbar",
       "//chrome/browser/ui/web_applications:app_service_browser_tests",
       "//chrome/browser/web_applications:app_service_browser_tests",
       "//components/live_caption:live_translate",
@@ -10082,6 +10083,7 @@ test("unit_tests") {
       "//chrome/browser/ui/tab_contents",
       "//chrome/browser/ui/tabs:tab_enums",
       "//chrome/browser/ui/toasts:toasts",
+      "//chrome/browser/ui/toolbar",
       "//chrome/browser/ui/toolbar/cast",
       "//chrome/browser/ui/views",
       "//chrome/browser/ui/views/frame:immersive_mode_controller",
@@ -11054,6 +11056,7 @@ if (!is_android && !is_chromeos_device) {
       "//chrome/browser/prefs:util",
       "//chrome/browser/privacy_sandbox:interactive_ui_tests",
       "//chrome/browser/profiles/keep_alive",
+      "//chrome/browser/ui/toolbar",
       "//chrome/browser/ui/views/new_tab_footer:new_tab_footer",
       "//chrome/browser/ui/webui/access_code_cast:interactive_ui_tests",
 

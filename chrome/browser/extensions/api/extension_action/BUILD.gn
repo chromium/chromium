@@ -12,10 +12,13 @@ source_set("extension_action") {
     "extension_action_api.h",
   ]
 
+  deps = []
+
   if (is_android) {
     sources += [ "extension_action_api_android.cc" ]
   } else {
     sources += [ "extension_action_api_non_android.cc" ]
+    deps += [ "//chrome/browser/ui/extensions:extension_popup_types" ]
   }
 
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
@@ -26,7 +29,7 @@ source_set("extension_action") {
     "//extensions/common",
   ]
 
-  deps = [
+  deps += [
     "//chrome/browser/extensions",
     "//chrome/browser/profiles",
     "//chrome/browser/ui",

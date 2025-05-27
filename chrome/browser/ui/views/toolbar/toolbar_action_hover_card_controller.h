@@ -13,7 +13,6 @@
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
-#include "chrome/browser/ui/toolbar/toolbar_action_hover_card_types.h"
 #include "ui/views/animation/bubble_slide_animator.h"
 #include "ui/views/animation/widget_fade_animator.h"
 #include "ui/views/view.h"
@@ -22,6 +21,7 @@
 class ToolbarActionHoverCardBubbleView;
 class ExtensionsToolbarContainer;
 class ToolbarActionView;
+enum class ToolbarActionHoverCardUpdateType;
 
 // Controls how hover cards are shown and hidden for toolbar actions.
 class ToolbarActionHoverCardController : public views::ViewObserver {
