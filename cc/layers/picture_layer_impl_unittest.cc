@@ -805,20 +805,18 @@ TEST_F(NoLowResPictureLayerImplTest, PinchGestureTilings) {
       4.0f, active_layer()->tilings()->tiling_at(0)->contents_scale_key());
 }
 
-TEST_F(LegacySWPictureLayerImplTest, SnappedTilingDuringZoom) {
+TEST_F(NoLowResPictureLayerImplTest, SnappedTilingDuringZoom) {
   gfx::Size layer_bounds(2600, 3800);
   SetupDefaultTrees(layer_bounds);
 
   ResetTilingsAndRasterScales();
   EXPECT_EQ(0u, active_layer()->tilings()->num_tilings());
 
-  // Set up the high and low res tilings before pinch zoom.
+  // Set up the tiling before pinch zoom.
   SetContentsScaleOnBothLayers(0.24f, 1.0f, 0.24f);
-  ASSERT_EQ(2u, active_layer()->tilings()->num_tilings());
+  ASSERT_EQ(1u, active_layer()->tilings()->num_tilings());
   EXPECT_FLOAT_EQ(
       0.24f, active_layer()->tilings()->tiling_at(0)->contents_scale_key());
-  EXPECT_FLOAT_EQ(
-      0.06f, active_layer()->tilings()->tiling_at(1)->contents_scale_key());
 
   // Ensure UpdateTiles won't remove any tilings.
   active_layer()->MarkAllTilingsUsed();
@@ -835,19 +833,17 @@ TEST_F(LegacySWPictureLayerImplTest, SnappedTilingDuringZoom) {
   // Zoom out by a small amount. We should create a tiling at half
   // the scale (1/kMaxScaleRatioDuringPinch).
   SetContentsScaleOnBothLayers(0.2f, 1.0f, 0.2f);
-  ASSERT_EQ(3u, active_layer()->tilings()->num_tilings());
+  ASSERT_EQ(2u, active_layer()->tilings()->num_tilings());
   EXPECT_FLOAT_EQ(
       0.24f, active_layer()->tilings()->tiling_at(0)->contents_scale_key());
   EXPECT_FLOAT_EQ(
       0.12f, active_layer()->tilings()->tiling_at(1)->contents_scale_key());
-  EXPECT_FLOAT_EQ(
-      0.06f, active_layer()->tilings()->tiling_at(2)->contents_scale_key());
 
   // Ensure UpdateTiles won't remove any tilings.
   active_layer()->MarkAllTilingsUsed();
 
   // Zoom out further, close to our low-res scale factor. We should
-  // use that tiling as high-res, and not create a new tiling.
+  // create a new tiling.
   SetContentsScaleOnBothLayers(0.1f, 1.0f, 0.1f);
   ASSERT_EQ(3u, active_layer()->tilings()->num_tilings());
 
@@ -859,9 +855,11 @@ TEST_F(LegacySWPictureLayerImplTest, SnappedTilingDuringZoom) {
       0.24f, active_layer()->tilings()->tiling_at(0)->contents_scale_key());
 
   // Zoom in a lot. Since we move in factors of two, we should get a scale that
-  // is a power of 2 times 0.24.
+  // is a power of 2 times 0.24. The tile at the lowest scale factor is now out
+  // of range and should be cleaned up as a result, leaving the number of tiles
+  // still at 3 due to the addition and removal.
   SetContentsScaleOnBothLayers(1.f, 1.0f, 1.f);
-  ASSERT_EQ(4u, active_layer()->tilings()->num_tilings());
+  ASSERT_EQ(3u, active_layer()->tilings()->num_tilings());
   EXPECT_FLOAT_EQ(
       1.92f, active_layer()->tilings()->tiling_at(0)->contents_scale_key());
 }
