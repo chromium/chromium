@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #ifndef NET_SOCKET_SOCKET_TEST_UTIL_H_
 #define NET_SOCKET_SOCKET_TEST_UTIL_H_
 
@@ -171,20 +166,48 @@ struct MockConfirm {
 // MockRead and MockWrite shares the same interface and members, but we'd like
 // to have distinct types because we don't want to have them used
 // interchangably. To do this, a struct template is defined, and MockRead and
-// MockWrite are instantiated by using this template. Template parameter |type|
+// MockWrite are instantiated by using this template. Template parameter `type`
 // is not used in the struct definition (it purely exists for creating a new
 // type).
 //
-// |data| in MockRead and MockWrite has different meanings: |data| in MockRead
+// `data` in MockRead and MockWrite has different meanings: `data` in MockRead
 // is the data returned from the socket when MockTCPClientSocket::Read() is
-// attempted, while |data| in MockWrite is the expected data that should be
+// attempted, while `data` in MockWrite is the expected data that should be
 // given in MockTCPClientSocket::Write().
+//
+// A `result` of 0 means to return the length of `data_` for the read, if
+// non-empty, rather than to actually return 0 bytes read.
 enum MockReadWriteType { MOCK_READ, MOCK_WRITE };
 
 template <MockReadWriteType type>
 struct MockReadWrite {
   // Flag to indicate that the message loop should be terminated.
   enum { STOPLOOP = 1 << 31 };
+
+  // Helper to automatically convert various different arguments to
+  // string_views.
+  class ToStringView {
+   public:
+    ToStringView(std::string_view data) : data_(data) {}
+    ToStringView(const char* data) : data_(data) {}
+
+    // The template parameter is not strictly necessary, but it allows
+    // `MockReadWrite(base::span(array))` to work, instead of having to use
+    // `MockReadWrite(base::span<const uint8_t>(array))`.
+    template <size_t Extent>
+    ToStringView(base::span<const char, Extent> data)
+        : data_(base::as_string_view(data)) {}
+    template <size_t Extent>
+    ToStringView(base::span<const uint8_t, Extent> data)
+        : data_(base::as_string_view(data)) {}
+
+    ~ToStringView() = default;
+
+    explicit operator std::string_view() const { return data_; }
+
+   private:
+    const std::string_view data_;
+  };
 
   // Default
   MockReadWrite()
@@ -207,23 +230,12 @@ struct MockReadWrite {
         sequence_number(seq),
         tos(0) {}
 
-  // Asynchronous read/write success (inferred data length).
-  explicit MockReadWrite(const char* data)
-      : mode(ASYNC),
-        result(0),
-        data(data, strlen(data)),
-        sequence_number(0),
-        tos(0) {}
+  // Asynchronous read/write success.
+  explicit MockReadWrite(ToStringView data)
+      : mode(ASYNC), result(0), data(data), sequence_number(0), tos(0) {}
 
-  // Read/write success (inferred data length).
-  MockReadWrite(IoMode io_mode, const char* data)
-      : mode(io_mode),
-        result(0),
-        data(data, strlen(data)),
-        sequence_number(0),
-        tos(0) {}
-
-  // Read/write success.
+  // Read/write success. Doesn't take a string_view so that it can be used with
+  // c-strings with embedded nulls.
   MockReadWrite(IoMode io_mode, const char* data, int data_len)
       : mode(io_mode),
         result(0),
@@ -231,13 +243,9 @@ struct MockReadWrite {
         sequence_number(0),
         tos(0) {}
 
-  // Read/write success (inferred data length) with sequence information.
-  MockReadWrite(IoMode io_mode, int seq, const char* data)
-      : mode(io_mode),
-        result(0),
-        data(data, strlen(data)),
-        sequence_number(seq),
-        tos(0) {}
+  // Read/write success with sequence information.
+  MockReadWrite(IoMode io_mode, int seq, ToStringView data)
+      : mode(io_mode), result(0), data(data), sequence_number(seq), tos(0) {}
 
   // Read/write success with sequence information.
   MockReadWrite(IoMode io_mode, const char* data, int data_len, int seq)
@@ -259,9 +267,10 @@ struct MockReadWrite {
         sequence_number(seq),
         tos(tos_byte) {}
 
-  // Read/write with std::string_view.
+  // Read/write that defaults to success, with optional sequence and TOS
+  // information.
   MockReadWrite(IoMode io_mode,
-                std::string_view data,
+                ToStringView data,
                 int result = 0,
                 int seq = 0,
                 uint8_t tos_byte = 0)
