@@ -23,19 +23,18 @@ class NewTabFooterWebView : public views::WebView,
   METADATA_HEADER(NewTabFooterWebView, views::WebView)
 
  public:
-  explicit NewTabFooterWebView(BrowserWindowInterface* browser_window);
+  explicit NewTabFooterWebView(BrowserWindowInterface* browser);
   NewTabFooterWebView(const NewTabFooterWebView&) = delete;
   NewTabFooterWebView& operator=(const NewTabFooterWebView&) = delete;
   ~NewTabFooterWebView() override;
-
-  void Reposition();
 
   // WebUIContentsWrapper::Host:
   void ShowUI() override;
   void CloseUI() override;
 
  private:
-  std::unique_ptr<WebUIContentsWrapper> contents_wrapper_ = nullptr;
+  raw_ptr<BrowserWindowInterface> browser_;
+  std::unique_ptr<WebUIContentsWrapper> contents_wrapper_;
 
   base::WeakPtrFactory<NewTabFooterWebView> weak_factory_{this};
 };

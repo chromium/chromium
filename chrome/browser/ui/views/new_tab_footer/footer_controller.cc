@@ -59,20 +59,20 @@ NewTabFooterController::NewTabFooterController(BrowserWindowInterface* browser,
                           weak_factory_.GetWeakPtr()));
 #endif
 
-  tab_activation_subscription_subscription_ =
-      browser_->RegisterActiveTabDidChange(
-          base::BindRepeating(&NewTabFooterController::OnActiveTabChanged,
-                              weak_factory_.GetWeakPtr()));
+  tab_activation_subscription_ = browser_->RegisterActiveTabDidChange(
+      base::BindRepeating(&NewTabFooterController::OnActiveTabChanged,
+                          weak_factory_.GetWeakPtr()));
 }
 
 NewTabFooterController::~NewTabFooterController() = default;
 
 void NewTabFooterController::TearDown() {
+  tab_activation_subscription_ = base::CallbackListSubscription();
   pref_change_registrar_.Reset();
-  tab_activation_subscription_subscription_ = base::CallbackListSubscription();
+  local_state_pref_change_registrar_.Reset();
+  profile_ = nullptr;
   footer_ = nullptr;
   browser_ = nullptr;
-  profile_ = nullptr;
 }
 
 void NewTabFooterController::DidFinishNavigation(
