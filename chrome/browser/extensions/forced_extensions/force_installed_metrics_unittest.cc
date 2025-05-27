@@ -159,13 +159,9 @@ constexpr char kCrxHeaderInvalidFailureIsCWS[] =
     "Extensions.ForceInstalledFailureWithCrxHeaderInvalidIsCWS";
 constexpr char kCrxHeaderInvalidFailureFromCache[] =
     "Extensions.ForceInstalledFailureWithCrxHeaderInvalidIsFromCache";
-// TODO(crbug.com/394876083): Need investigation once ExtensionService is fully
-// implemented for Android for Desktop.
-#if BUILDFLAG(ENABLE_EXTENSIONS)
 constexpr char kStuckInCreatedStageAreExtensionsEnabled[] =
     "Extensions."
     "ForceInstalledFailureStuckInInitialCreationStageAreExtensionsEnabled";
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 }  // namespace
 
 namespace extensions {
@@ -500,9 +496,6 @@ TEST_F(ForceInstalledMetricsTest,
       kDisableReason, disable_reason::DisableReason::DISABLE_NONE, 1);
 }
 
-// TODO(crbug.com/394876083): Need investigation once ExtensionService is fully
-// implemented for Android for Desktop.
-#if BUILDFLAG(ENABLE_EXTENSIONS)
 // Verifies if the metrics related to whether the extensions are enabled or not
 // are recorded correctly for extensions stuck in
 // NOTIFIED_FROM_MANAGEMENT_INITIAL_CREATION_FORCED stage.
@@ -533,7 +526,6 @@ TEST_F(ForceInstalledMetricsTest,
   histogram_tester_.ExpectUniqueSample(kStuckInCreatedStageAreExtensionsEnabled,
                                        false, 1);
 }
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 TEST_F(ForceInstalledMetricsTest, ExtensionForceInstalledAndBlocklisted) {
   SetupForceList(ExtensionOrigin::kWebStore);

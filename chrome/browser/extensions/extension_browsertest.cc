@@ -14,6 +14,7 @@
 #include "chrome/browser/extensions/crx_installer.h"
 #include "chrome/browser/extensions/extension_browser_test_util.h"
 #include "chrome/browser/extensions/extension_install_prompt.h"
+#include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/load_error_reporter.h"
 #include "chrome/browser/extensions/updater/extension_updater.h"
 #include "chrome/browser/extensions/window_controller.h"
@@ -46,7 +47,6 @@
 #include "extensions/test/extension_test_notification_observer.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-#include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -1107,10 +1107,8 @@ content::WebContents* ExtensionBrowserTest::web_contents() {
   return web_contents_.get();
 }
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
 ExtensionService* ExtensionBrowserTest::extension_service() {
   return ExtensionSystem::Get(profile())->extension_service();
 }
-#endif
 
 }  // namespace extensions
