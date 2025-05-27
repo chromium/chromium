@@ -622,23 +622,22 @@ std::vector<std::string> BackgroundTracingManagerImpl::AddPresetScenariosImpl(
 }
 
 std::vector<trace_report::mojom::ScenarioPtr>
-BackgroundTracingManagerImpl::GetAllFieldScenarios() const {
+BackgroundTracingManagerImpl::GetAllScenarios() const {
   std::vector<trace_report::mojom::ScenarioPtr> result;
-  for (const auto& scenario : field_scenarios_) {
+  auto toMojoScenario = [this](TracingScenario* scenario) {
     auto new_scenario = trace_report::mojom::Scenario::New();
     new_scenario->scenario_name = scenario->scenario_name();
-    result.push_back(std::move(new_scenario));
-  }
-  return result;
-}
-
-std::vector<trace_report::mojom::ScenarioPtr>
-BackgroundTracingManagerImpl::GetAllPresetScenarios() const {
-  std::vector<trace_report::mojom::ScenarioPtr> result;
+    new_scenario->description = scenario->description();
+    new_scenario->is_local_scenario = scenario->is_local_scenario();
+    new_scenario->is_enabled = base::Contains(enabled_scenarios_, scenario);
+    new_scenario->current_state = scenario->current_state();
+    return new_scenario;
+  };
   for (const auto& scenario : preset_scenarios_) {
-    auto new_scenario = trace_report::mojom::Scenario::New();
-    new_scenario->scenario_name = scenario.second->scenario_name();
-    result.push_back(std::move(new_scenario));
+    result.push_back(toMojoScenario(scenario.second.get()));
+  }
+  for (const auto& scenario : field_scenarios_) {
+    result.push_back(toMojoScenario(scenario.get()));
   }
   return result;
 }

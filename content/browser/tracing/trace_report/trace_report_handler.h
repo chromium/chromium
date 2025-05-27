@@ -48,9 +48,7 @@ class CONTENT_EXPORT TraceReportHandler
                              UserUploadSingleTraceCallback callback) override;
   void DownloadTrace(const base::Token& uuid,
                      DownloadTraceCallback callback) override;
-  void GetAllPresetScenarios(GetAllPresetScenariosCallback callback) override;
-  void GetAllFieldScenarios(GetAllFieldScenariosCallback callback) override;
-  void GetEnabledScenarios(GetEnabledScenariosCallback callback) override;
+  void GetAllScenarios(GetAllScenariosCallback callback) override;
   void SetEnabledScenarios(const std::vector<std::string>& new_config,
                            SetEnabledScenariosCallback callback) override;
   void GetPrivacyFilterEnabled(

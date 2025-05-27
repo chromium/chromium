@@ -8,17 +8,20 @@ import type {TracingScenariosConfigElement} from './tracing_scenarios_config.js'
 
 function getPresetConfigHtml(this: TracingScenariosConfigElement) {
   // clang-format off
-  if (this.presetConfig_ === null || this.presetConfig_.length <= 0) {
+  if (this.localConfig_ === null || this.localConfig_.length <= 0) {
     return nothing;
   }
 
-  return this.presetConfig_.map((item, index) => html`
-    <div class="config-row">
-      <cr-checkbox ?checked="${item.selected}" data-index="${index}"
-          @checked-changed="${this.valueDidChange_}">
-        <div class="label">${item.scenarioName}</div>
-      </cr-checkbox>
-    </div>`);
+  return html`
+    <h2>Local Scenarios</h2>
+  <div class="scenario-list-container">
+  ${this.localConfig_.map((item, index) => html`
+    <tracing-scenario
+        .scenario="${item}"
+        @value-changed="${this.valueDidChange_}"
+        data-index="${index}">
+      </tracing-scenario>`)}
+    </div>`;
   // clang-format on
 }
 
@@ -31,14 +34,13 @@ function getFieldConfigHtml(this: TracingScenariosConfigElement) {
   // Field scenario checkboxes are always disabled because the can't be modified
   // individually.
   return html`
-    <h2>Field Scenarios</h2>
-    <div class="config-container">
+    <div class="scenario-list-container">
     ${this.fieldConfig_.map((item, index) => html`
-      <div class="config-row">
-        <cr-checkbox ?checked="${item.selected}" data-index="${index}" disabled>
-          <div class="label">${item.scenarioName}</div>
-        </cr-checkbox>
-      </div>`)}
+      <tracing-scenario
+          .scenario=${item}
+          data-index="${index}>
+      </tracing-scenario>
+    `)}
     </div>`;
   // clang-format on
 }
@@ -100,6 +102,8 @@ export function getHtml(this: TracingScenariosConfigElement) {
     This configuration is designed for local trace collection, enabling you to
     capture detailed information about application execution on your machine.
   </h3>
+  ${getPrivacyFilterHtml.bind(this)()}
+  ${getSystemTracingHtml.bind(this)()}
   <h2>Scenarios Config</h2>
   <h3>
     You can select a proto (.pb) or base64 encoded (.txt) file that contains
@@ -112,14 +116,18 @@ export function getHtml(this: TracingScenariosConfigElement) {
       @change="${this.onAddConfig_}">
   </input>
   ${this.isLoading_ ? html`<div class="spinner"></div>` : html`
-  ${getFieldConfigHtml.bind(this)()}
-  <h2>Local Scenarios</h2>
-  <div class="config-container">
-    ${getPresetConfigHtml.bind(this)()}
+    <div class="action-panel">
+    <cr-button class="tonal-button" ?disabled="${this.isEdited_}"
+        @click="${this.loadScenariosConfig_}">
+      <cr-icon icon="cr:sync" slot="prefix-icon"></cr-icon>
+      Refresh
+    </cr-button>
   </div>
+  ${getPresetConfigHtml.bind(this)()}
+  ${getFieldConfigHtml.bind(this)()}
   <div class="action-panel">
     <cr-button class="cancel-button" ?disabled="${!this.isEdited_}"
-        @click="${this.onCancelClick_}">
+        @click="${this.loadScenariosConfig_}">
       Cancel
     </cr-button>
     <cr-button class="action-button"}"
@@ -130,9 +138,7 @@ export function getHtml(this: TracingScenariosConfigElement) {
         @click="${this.onConfirmClick_}">
       Confirm
     </cr-button>
-  </div>
-  ${getPrivacyFilterHtml.bind(this)()}
-  ${getSystemTracingHtml.bind(this)()}`
+  </div>`
   }
   <cr-toast id="toast" duration="5000">${this.toastMessage_}</cr-toast>
   `;

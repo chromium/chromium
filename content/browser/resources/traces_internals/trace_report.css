@@ -14,8 +14,7 @@
   display: grid;
   grid-template-columns: repeat(3, 1fr) 3fr auto auto auto;
   grid-auto-flow: column;
-  grid-column-gap: 12px;
-  grid-row-gap: 0;
+  gap: 0 12px;
   padding: 8px 16px;
   margin-bottom: 12px;
   background-color: var(--cr-card-background-color);

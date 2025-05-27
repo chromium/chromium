@@ -144,14 +144,10 @@ class BackgroundTracingManagerImpl
   void RemoveNamedTriggerObserver(const std::string& trigger_name,
                                   BackgroundTracingRule* observer);
 
-  // Returns the list of preset scenario hashes and names that were saved,
+  // Returns the list of scenario hashes and names that were saved,
   // whether or not enabled.
-  CONTENT_EXPORT std::vector<trace_report::mojom::ScenarioPtr>
-  GetAllFieldScenarios() const;
-  // Returns the list of field scenario hashes and names that were saved,
-  // whether or not enabled.
-  CONTENT_EXPORT std::vector<trace_report::mojom::ScenarioPtr>
-  GetAllPresetScenarios() const;
+  CONTENT_EXPORT std::vector<trace_report::mojom::ScenarioPtr> GetAllScenarios()
+      const;
 
   std::vector<std::string> OverwritePresetScenarios(
       const perfetto::protos::gen::ChromeFieldTracingConfig& config,

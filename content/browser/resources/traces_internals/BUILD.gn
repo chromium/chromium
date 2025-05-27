@@ -66,6 +66,8 @@ build_webui("build") {
     "trace_report_list.ts",
     "tracing_scenarios_config.html.ts",
     "tracing_scenarios_config.ts",
+    "tracing_scenario.html.ts",
+    "tracing_scenario.ts",
     "trace_recorder.html.ts",
     "trace_recorder.ts",
   ]
@@ -76,6 +78,7 @@ build_webui("build") {
     "trace_report_list.css",
     "trace_report.css",
     "tracing_scenarios_config.css",
+    "tracing_scenario.css",
   ]
 
   icons_html_files = [ "icons.html" ]

@@ -87,4 +87,60 @@ bool EnumTraits<SkipUploadReason, content::SkipUploadReason>::FromMojom(
   return false;
 }
 
+TracingScenarioState
+EnumTraits<TracingScenarioState, content::TracingScenario::State>::ToMojom(
+    content::TracingScenario::State input) {
+  switch (input) {
+    case content::TracingScenario::State::kDisabled:
+      return TracingScenarioState::kDisabled;
+    case content::TracingScenario::State::kEnabled:
+      return TracingScenarioState::kEnabled;
+    case content::TracingScenario::State::kSetup:
+      return TracingScenarioState::kSetup;
+    case content::TracingScenario::State::kStarting:
+      return TracingScenarioState::kStarting;
+    case content::TracingScenario::State::kRecording:
+      return TracingScenarioState::kRecording;
+    case content::TracingScenario::State::kStopping:
+      return TracingScenarioState::kStopping;
+    case content::TracingScenario::State::kFinalizing:
+      return TracingScenarioState::kFinalizing;
+    case content::TracingScenario::State::kCloning:
+      return TracingScenarioState::kCloning;
+  }
+  NOTREACHED();
+}
+
+bool EnumTraits<TracingScenarioState, content::TracingScenario::State>::
+    FromMojom(TracingScenarioState input,
+              content::TracingScenario::State* output) {
+  switch (input) {
+    case TracingScenarioState::kDisabled:
+      *output = content::TracingScenario::State::kDisabled;
+      return true;
+    case TracingScenarioState::kEnabled:
+      *output = content::TracingScenario::State::kEnabled;
+      return true;
+    case TracingScenarioState::kSetup:
+      *output = content::TracingScenario::State::kSetup;
+      return true;
+    case TracingScenarioState::kStarting:
+      *output = content::TracingScenario::State::kStarting;
+      return true;
+    case TracingScenarioState::kRecording:
+      *output = content::TracingScenario::State::kRecording;
+      return true;
+    case TracingScenarioState::kStopping:
+      *output = content::TracingScenario::State::kStopping;
+      return true;
+    case TracingScenarioState::kFinalizing:
+      *output = content::TracingScenario::State::kFinalizing;
+      return true;
+    case TracingScenarioState::kCloning:
+      *output = content::TracingScenario::State::kCloning;
+      return true;
+  }
+  return false;
+}
+
 }  // namespace mojo

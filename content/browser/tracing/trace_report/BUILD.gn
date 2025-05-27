@@ -24,10 +24,15 @@ mojom("mojo_bindings") {
           mojom = "trace_report.mojom.SkipUploadReason"
           cpp = "::content::SkipUploadReason"
         },
+        {
+          mojom = "trace_report.mojom.TracingScenarioState"
+          cpp = "::content::TracingScenario::State"
+        },
       ]
       traits_headers = [
         "//content/browser/tracing/trace_report/trace_report_mojom_traits.h",
         "//content/browser/tracing/trace_report/trace_report_database.h",
+        "//content/browser/tracing/tracing_scenario.h",
       ]
       traits_sources = [
         "//content/browser/tracing/trace_report/trace_report_mojom_traits.cc",
