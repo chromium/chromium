@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 // The eviction policy is a very simple pure LRU, so the elements at the end of
 // the list are evicted until kCleanUpMargin free space is available. There is
 // only one list in use (Rankings::NO_USE), and elements are sent to the front
@@ -305,8 +300,7 @@ void Eviction::TrimCacheV2(bool empty) {
   trimming_ = true;
   TimeTicks start = TimeTicks::Now();
 
-  const int kListsToSearch = 3;
-  Rankings::ScopedRankingsBlock next[kListsToSearch];
+  std::array<Rankings::ScopedRankingsBlock, kListsToSearch> next;
   int list = Rankings::LAST_ELEMENT;
 
   // Get a node from each list.
@@ -525,7 +519,8 @@ bool Eviction::NodeIsOldEnough(CacheRankingsBlock* node, int list) {
   return (Time::Now() - used).InHours() > kTargetTime * multiplier;
 }
 
-int Eviction::SelectListByLength(Rankings::ScopedRankingsBlock* next) {
+int Eviction::SelectListByLength(
+    std::array<Rankings::ScopedRankingsBlock, kListsToSearch>& next) {
   int data_entries = header_->num_entries -
                      header_->lru.sizes[Rankings::DELETED];
   // Start by having each list to be roughly the same size.
