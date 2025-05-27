@@ -559,6 +559,10 @@ DEFAULT_MODULE_DEPS = [
   "//buildtools/third_party/libc++:std_string_h",
   "//buildtools/third_party/libc++:std_uchar_h",
   "//buildtools/third_party/libc++:std_wctype_h",
+  "//buildtools/third_party/libc++:sysroot_bits",
+  "//buildtools/third_party/libc++:sysroot_features",
+  "//buildtools/third_party/libc++:sysroot_time",
+  "//buildtools/third_party/libc++:sysroot_types",
 ]
 
 # A helper for forwarding testonly and visibility.
