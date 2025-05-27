@@ -69,4 +69,8 @@
   // NO-OP
 }
 
+- (void)requestShowOverflowMenuTooltip {
+  // NO-OP
+}
+
 @end

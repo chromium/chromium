@@ -84,6 +84,10 @@
   // NO-OP
 }
 
+- (void)requestShowOverflowMenuTooltip {
+  // NO-OP
+}
+
 - (CGRect)selectionRect {
   return CGRectZero;
 }

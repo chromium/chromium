@@ -982,11 +982,8 @@ const base::TimeDelta kSearchWithCameraTooltipHintDelay = base::Seconds(2.0);
 
   BOOL hadInteraction = self.isResultsBottomSheetCreated;
   if (!hadInteraction) {
-    if ([_selectionViewController
-            respondsToSelector:@selector(requestShowOverflowMenuTooltip)]) {
-      [_selectionViewController requestShowOverflowMenuTooltip];
-      [self didShowTooltipHint];
-    }
+    [_selectionViewController requestShowOverflowMenuTooltip];
+    [self didShowTooltipHint];
   }
 }
 
