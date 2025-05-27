@@ -1178,11 +1178,12 @@ TEST_F(HttpStreamPoolAttemptManagerTest, RequestCanceledBeforeAttemptSuccess) {
       ServiceEndpointBuilder().add_v4("192.0.2.1").endpoint());
   endpoint_request->CallOnServiceEndpointRequestFinished(OK);
 
+  // Reset the request to cancel. Associated AttemptManager and Group should
+  // complete.
   requester.ResetRequest();
-  RunUntilIdle();
-
-  Group& group = pool().GetOrCreateGroupForTesting(requester.GetStreamKey());
-  ASSERT_EQ(group.IdleStreamSocketCount(), 1u);
+  ASSERT_TRUE(requester.associated_attempt_manager()->is_shutting_down());
+  WaitForAttemptManagerComplete(requester.associated_attempt_manager().get());
+  ASSERT_FALSE(pool().GetGroupForTesting(requester.GetStreamKey()));
 }
 
 // Tests that canceling a limit ignoring request doesn't result in hitting a
@@ -2378,8 +2379,10 @@ TEST_F(HttpStreamPoolAttemptManagerTest, CancelAttemptOnSSLConfigChangeNoJobs) {
     raw_requester->RequestStream(pool());
     ASSERT_FALSE(raw_requester->result().has_value());
   }
-  AttemptManager* manager =
-      pool().GetGroupForTesting(stream_key)->attempt_manager();
+  base::WeakPtr<AttemptManager> manager = pool()
+                                              .GetGroupForTesting(stream_key)
+                                              ->attempt_manager()
+                                              ->GetWeakPtrForTesting();
   ASSERT_EQ(manager->RequestJobCount(), 2u);
   ASSERT_EQ(manager->NotifiedRequestJobCount(), 0u);
   ASSERT_EQ(manager->TcpBasedAttemptCount(), 2u);
@@ -2390,12 +2393,13 @@ TEST_F(HttpStreamPoolAttemptManagerTest, CancelAttemptOnSSLConfigChangeNoJobs) {
   // Cancel requests. This should remove all jobs from the corresponding group.
   // Ensure that the job and attempt manager are still alive since there are
   // in-flight attempts.
-  requesters.clear();
-  manager = pool().GetGroupForTesting(stream_key)->attempt_manager();
-  ASSERT_TRUE(manager);
+  for (const auto& requester : requesters) {
+    requester->ResetRequest();
+  }
+  ASSERT_TRUE(manager->is_shutting_down());
   ASSERT_EQ(manager->RequestJobCount(), 0u);
   ASSERT_EQ(manager->NotifiedRequestJobCount(), 0u);
-  ASSERT_EQ(manager->TcpBasedAttemptCount(), 2u);
+  ASSERT_EQ(manager->TcpBasedAttemptCount(), 0u);
 
   // Trigger an SSLConfig change. This should cancel in-flight attempts.
   ssl_config_service()->NotifySSLContextConfigChange();
@@ -4771,14 +4775,14 @@ TEST_F(HttpStreamPoolAttemptManagerTest, AlternativeSerivcesDisabled) {
 TEST_F(HttpStreamPoolAttemptManagerTest,
        AlternativeServicesDisabledThenEnabled) {
   resolver()
-      ->AddFakeRequest()
-      ->add_endpoint(ServiceEndpointBuilder().add_v4("192.0.2.1").endpoint())
+      ->ConfigureDefaultResolution()
+      .add_endpoint(ServiceEndpointBuilder().add_v4("192.0.2.1").endpoint())
       .CompleteStartSynchronously(OK);
 
-  SequencedSocketData tcp_data;
-  // Stall forever.
-  tcp_data.set_connect_data(MockConnect(SYNCHRONOUS, ERR_IO_PENDING));
-  socket_factory()->AddSocketDataProvider(&tcp_data);
+  // TCP attempt stall forever.
+  SequencedSocketData tcp_data1;
+  tcp_data1.set_connect_data(MockConnect(SYNCHRONOUS, ERR_IO_PENDING));
+  socket_factory()->AddSocketDataProvider(&tcp_data1);
 
   // Start a request that disables alternative services and cancel it
   // immediately.
@@ -4789,6 +4793,11 @@ TEST_F(HttpStreamPoolAttemptManagerTest,
   requester1.ResetRequest();
 
   AddQuicData();
+
+  // TCP attempt stall forever.
+  SequencedSocketData tcp_data2;
+  tcp_data2.set_connect_data(MockConnect(SYNCHRONOUS, ERR_IO_PENDING));
+  socket_factory()->AddSocketDataProvider(&tcp_data2);
 
   // Start another request that enables alternative services. It should complete
   // with a new QUIC session.

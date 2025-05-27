@@ -570,6 +570,7 @@ void HttpStreamPool::AttemptManager::OnJobComplete(Job* job) {
          pointer = request_jobs_.GetNextTowardsLastMin(pointer)) {
       if (pointer.value() == job) {
         RemoveJobFromQueue(pointer);
+        MaybeStartDraining();
         break;
       }
     }
@@ -1522,12 +1523,11 @@ bool HttpStreamPool::AttemptManager::HasAvailableSpdySession() const {
 }
 
 void HttpStreamPool::AttemptManager::MaybeStartDraining() {
-  if (!request_jobs_.empty() || !preconnect_jobs_.empty()) {
+  if (!request_jobs_.empty() || !preconnect_jobs_.empty() ||
+      availability_state_ != AvailabilityState::kAvailable) {
     return;
   }
 
-  CHECK_EQ(availability_state_, AvailabilityState::kAvailable);
-  CHECK(!CanComplete());
   availability_state_ = AvailabilityState::kDraining;
   service_endpoint_request_.reset();
 
