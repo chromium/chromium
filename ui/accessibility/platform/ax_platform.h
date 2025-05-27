@@ -75,7 +75,7 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXPlatform {
     virtual void OnExtendedPropertiesUsedInWebContent() {}
     // HTML properties were used. Enable AXMode::kHTML.
     virtual void OnHTMLAttributesUsed() {}
-    // An a11y action was used in web content. Enable AXMode::kNativeAPIs.
+    // An a11y action was used in web content.
     virtual void OnActionFromAssistiveTech() {}
 
    protected:
@@ -174,7 +174,7 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXPlatform {
   void OnExtendedPropertiesUsedInWebContent();
   // HTML properties were used. Enable AXMode::kHTML.
   void OnHTMLAttributesUsed();
-  // An a11y action was used in web content. Enable AXMode::kNativeAPIs.
+  // An a11y action was used in web content.
   void OnActionFromAssistiveTech();
 #if BUILDFLAG(IS_WIN)
   // The honeypot is a fake alert object that is created, with a fake alert

@@ -691,9 +691,8 @@ void BrowserAccessibilityStateImpl::OnHTMLAttributesUsed() {
 }
 
 void BrowserAccessibilityStateImpl::OnActionFromAssistiveTech() {
-  // Ensure that auto-disable is turned off, e.g. if screen reader scrolls
-  // content into view.
-  EnableAXModeFromPlatform(ui::AXMode::kNativeAPIs);
+  // See OnUserInputEvent for how this is used to disable accessibility.
+  user_input_event_count_ = 0;
 }
 
 void BrowserAccessibilityStateImpl::OnPageNavigationComplete() {
