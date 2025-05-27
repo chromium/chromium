@@ -216,8 +216,7 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
             loadingStateChanged(isCurrentTabNotNull && currentTab.isLoading());
 
             MenuItem bookmarkMenuItemShortcut = actionBar.findItem(R.id.bookmark_this_page_id);
-            updateBookmarkMenuItemShortcut(
-                    bookmarkMenuItemShortcut, currentTab, /* fromCct= */ false);
+            updateBookmarkMenuItemShortcut(bookmarkMenuItemShortcut, null, currentTab);
 
             MenuItem offlineMenuItem = actionBar.findItem(R.id.offline_page_id);
             offlineMenuItem.setEnabled(isCurrentTabNotNull && shouldEnableDownloadPage(currentTab));
@@ -232,7 +231,7 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
         mUpdateMenuItemVisible = shouldShowUpdateMenuItem();
         menu.findItem(R.id.update_menu_id).setVisible(mUpdateMenuItemVisible);
         if (mUpdateMenuItemVisible) {
-            mAppMenuInvalidator = () -> handler.invalidateAppMenu();
+            mAppMenuInvalidator = handler::invalidateAppMenu;
             UpdateMenuItemHelper.getInstance(mTabModelSelector.getModel(false).getProfile())
                     .registerObserver(mAppMenuInvalidator);
         }

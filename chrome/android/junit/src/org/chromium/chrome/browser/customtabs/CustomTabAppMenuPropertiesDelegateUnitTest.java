@@ -15,9 +15,9 @@ import static org.mockito.Mockito.when;
 
 import android.content.Context;
 import android.view.ContextThemeWrapper;
-import android.view.Menu;
 import android.view.View;
-import android.widget.PopupMenu;
+
+import androidx.annotation.IdRes;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -53,6 +53,8 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.toolbar.ToolbarManager;
 import org.chromium.chrome.browser.translate.TranslateBridge;
 import org.chromium.chrome.browser.translate.TranslateBridgeJni;
+import org.chromium.chrome.browser.ui.appmenu.AppMenuHandler;
+import org.chromium.chrome.browser.ui.appmenu.AppMenuItemProperties;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.commerce.core.CommerceFeatureUtils;
 import org.chromium.components.commerce.core.CommerceFeatureUtilsJni;
@@ -62,6 +64,7 @@ import org.chromium.components.power_bookmarks.ShoppingSpecifics;
 import org.chromium.content_public.browser.ContentFeatureList;
 import org.chromium.content_public.browser.NavigationController;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.ui.modelutil.MVCListAdapter;
 import org.chromium.url.GURL;
 
 import java.util.ArrayList;
@@ -90,6 +93,7 @@ public class CustomTabAppMenuPropertiesDelegateUnitTest {
     @Mock private TranslateBridge.Natives mTranslateBridgeJniMock;
     @Mock private ShoppingService mShoppingService;
     @Mock private ShoppingServiceFactory.Natives mShoppingServiceFactoryJniMock;
+    @Mock private AppMenuHandler mAppMenuHandler;
 
     @Mock private Verifier mVerifier;
 
@@ -105,17 +109,9 @@ public class CustomTabAppMenuPropertiesDelegateUnitTest {
         when(mTab.isNativePage()).thenReturn(false);
     }
 
-    private Menu createMenu(Context context, int menuResourceId) {
-        PopupMenu tempMenu = new PopupMenu(context, mDecorView);
-        tempMenu.inflate(menuResourceId);
-        return tempMenu.getMenu();
-    }
-
-    private boolean isMenuVisible(Menu menu, int itemId) {
-        for (int i = 0; i < menu.size(); i++) {
-            if (menu.getItem(i).getItemId() == itemId) {
-                return menu.getItem(i).isVisible();
-            }
+    private boolean isMenuItemPresent(MVCListAdapter.ModelList modelList, @IdRes int itemId) {
+        for (MVCListAdapter.ListItem item : modelList) {
+            if (item.model.get(AppMenuItemProperties.MENU_ITEM_ID) == itemId) return true;
         }
         return false;
     }
@@ -168,10 +164,9 @@ public class CustomTabAppMenuPropertiesDelegateUnitTest {
                         mReadAloudControllerSupplier,
                         /* contextualPageActionControllerSupplier */ () -> null,
                         /* hasClientPackage= */ false);
-        Menu menu = createMenu(context, delegate.getAppMenuLayoutId());
-        delegate.prepareMenu(menu, null);
-        assertTrue(isMenuVisible(menu, R.id.enable_price_tracking_menu_id));
-        assertFalse(isMenuVisible(menu, R.id.disable_price_tracking_menu_id));
+        MVCListAdapter.ModelList modelList = delegate.getMenuItems(mAppMenuHandler);
+        assertTrue(isMenuItemPresent(modelList, R.id.enable_price_tracking_menu_id));
+        assertFalse(isMenuItemPresent(modelList, R.id.disable_price_tracking_menu_id));
     }
 
     @Test
@@ -205,9 +200,8 @@ public class CustomTabAppMenuPropertiesDelegateUnitTest {
                         mReadAloudControllerSupplier,
                         () -> cpac,
                         /* hasClientPackage= */ false);
-        Menu menu = createMenu(context, delegate.getAppMenuLayoutId());
-        delegate.prepareMenu(menu, null);
-        assertTrue(isMenuVisible(menu, R.id.price_insights_menu_id));
+        MVCListAdapter.ModelList modelList = delegate.getMenuItems(mAppMenuHandler);
+        assertTrue(isMenuItemPresent(modelList, R.id.price_insights_menu_id));
     }
 
     @Test
@@ -237,17 +231,16 @@ public class CustomTabAppMenuPropertiesDelegateUnitTest {
                         mReadAloudControllerSupplier,
                         /* contextualPageActionControllerSupplier */ () -> null,
                         /* hasClientPackage= */ false);
-        Menu menu = createMenu(context, delegate.getAppMenuLayoutId());
-        delegate.prepareMenu(menu, null);
+        MVCListAdapter.ModelList modelList = delegate.getMenuItems(mAppMenuHandler);
 
-        assertTrue(isMenuVisible(menu, R.id.find_in_page_id));
+        assertTrue(isMenuItemPresent(modelList, R.id.find_in_page_id));
 
         // Verify the following 5 menu items are hidden.
-        assertFalse(isMenuVisible(menu, R.id.bookmark_this_page_id));
-        assertFalse(isMenuVisible(menu, R.id.offline_page_id));
-        assertFalse(isMenuVisible(menu, R.id.share_row_menu_id));
-        assertFalse(isMenuVisible(menu, R.id.universal_install));
-        assertFalse(isMenuVisible(menu, R.id.open_in_browser_id));
+        assertFalse(isMenuItemPresent(modelList, R.id.bookmark_this_page_id));
+        assertFalse(isMenuItemPresent(modelList, R.id.offline_page_id));
+        assertFalse(isMenuItemPresent(modelList, R.id.share_row_menu_id));
+        assertFalse(isMenuItemPresent(modelList, R.id.universal_install));
+        assertFalse(isMenuItemPresent(modelList, R.id.open_in_browser_id));
     }
 
     @Test
@@ -277,17 +270,16 @@ public class CustomTabAppMenuPropertiesDelegateUnitTest {
                         mReadAloudControllerSupplier,
                         /* contextualPageActionControllerSupplier */ () -> null,
                         /* hasClientPackage= */ false);
-        Menu menu = createMenu(context, delegate.getAppMenuLayoutId());
-        delegate.prepareMenu(menu, null);
+        MVCListAdapter.ModelList modelList = delegate.getMenuItems(mAppMenuHandler);
 
-        assertTrue(isMenuVisible(menu, R.id.find_in_page_id));
+        assertTrue(isMenuItemPresent(modelList, R.id.find_in_page_id));
 
         // Verify the following 6 menu items are hidden.
-        assertFalse(isMenuVisible(menu, R.id.open_in_browser_id));
-        assertFalse(isMenuVisible(menu, R.id.bookmark_this_page_id));
-        assertFalse(isMenuVisible(menu, R.id.offline_page_id));
-        assertFalse(isMenuVisible(menu, R.id.universal_install));
-        assertFalse(isMenuVisible(menu, R.id.request_desktop_site_row_menu_id));
-        assertFalse(isMenuVisible(menu, R.id.readaloud_menu_id));
+        assertFalse(isMenuItemPresent(modelList, R.id.open_in_browser_id));
+        assertFalse(isMenuItemPresent(modelList, R.id.bookmark_this_page_id));
+        assertFalse(isMenuItemPresent(modelList, R.id.offline_page_id));
+        assertFalse(isMenuItemPresent(modelList, R.id.universal_install));
+        assertFalse(isMenuItemPresent(modelList, R.id.request_desktop_site_row_menu_id));
+        assertFalse(isMenuItemPresent(modelList, R.id.readaloud_menu_id));
     }
 }

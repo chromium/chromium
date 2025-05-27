@@ -450,7 +450,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
 
         assertEquals(MenuGroup.PAGE_MENU, mTabbedAppMenuPropertiesDelegate.getMenuGroup());
         Menu menu = createTestMenu();
-        mTabbedAppMenuPropertiesDelegate.prepareMenu(menu, null);
+        mTabbedAppMenuPropertiesDelegate.prepareMenu(menu, mAppMenuHandler);
 
         Integer[] expectedItems = {
             R.id.icon_row_menu_id,
@@ -484,7 +484,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
 
         assertEquals(MenuGroup.PAGE_MENU, mTabbedAppMenuPropertiesDelegate.getMenuGroup());
         Menu menu = createTestMenu();
-        mTabbedAppMenuPropertiesDelegate.prepareMenu(menu, null);
+        mTabbedAppMenuPropertiesDelegate.prepareMenu(menu, mAppMenuHandler);
 
         Integer[] expectedItems = {
             R.id.icon_row_menu_id,
@@ -520,7 +520,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
 
         assertEquals(MenuGroup.PAGE_MENU, mTabbedAppMenuPropertiesDelegate.getMenuGroup());
         Menu menu = createTestMenu();
-        mTabbedAppMenuPropertiesDelegate.prepareMenu(menu, null);
+        mTabbedAppMenuPropertiesDelegate.prepareMenu(menu, mAppMenuHandler);
 
         List<Integer> expectedItems = new ArrayList<>();
         List<Integer> expectedTitles = new ArrayList<>();
@@ -592,7 +592,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
 
         assertEquals(MenuGroup.PAGE_MENU, mTabbedAppMenuPropertiesDelegate.getMenuGroup());
         Menu menu = createTestMenu();
-        mTabbedAppMenuPropertiesDelegate.prepareMenu(menu, null);
+        mTabbedAppMenuPropertiesDelegate.prepareMenu(menu, mAppMenuHandler);
 
         List<Integer> expectedItems = new ArrayList<>();
         List<Integer> expectedTitles = new ArrayList<>();
@@ -665,7 +665,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
 
         assertEquals(MenuGroup.PAGE_MENU, mTabbedAppMenuPropertiesDelegate.getMenuGroup());
         Menu menu = createTestMenu();
-        mTabbedAppMenuPropertiesDelegate.prepareMenu(menu, null);
+        mTabbedAppMenuPropertiesDelegate.prepareMenu(menu, mAppMenuHandler);
 
         Integer[] expectedItems = {
             R.id.icon_row_menu_id,
@@ -701,7 +701,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
 
         assertEquals(MenuGroup.PAGE_MENU, mTabbedAppMenuPropertiesDelegate.getMenuGroup());
         Menu menu = createTestMenu();
-        mTabbedAppMenuPropertiesDelegate.prepareMenu(menu, null);
+        mTabbedAppMenuPropertiesDelegate.prepareMenu(menu, mAppMenuHandler);
 
         Integer[] expectedItems = {R.id.update_menu_id, R.id.reader_mode_prefs_id};
         assertMenuItemsHaveIcons(menu, expectedItems);
@@ -721,7 +721,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
 
         assertEquals(MenuGroup.PAGE_MENU, mTabbedAppMenuPropertiesDelegate.getMenuGroup());
         Menu menu = createTestMenu();
-        mTabbedAppMenuPropertiesDelegate.prepareMenu(menu, null);
+        mTabbedAppMenuPropertiesDelegate.prepareMenu(menu, mAppMenuHandler);
 
         Integer[] expectedItems = {
             R.id.update_menu_id,
@@ -752,7 +752,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
         assertEquals(MenuGroup.OVERVIEW_MODE_MENU, mTabbedAppMenuPropertiesDelegate.getMenuGroup());
 
         Menu menu = createTestMenu();
-        mTabbedAppMenuPropertiesDelegate.prepareMenu(menu, null);
+        mTabbedAppMenuPropertiesDelegate.prepareMenu(menu, mAppMenuHandler);
 
         Integer[] expectedItems = {
             R.id.new_tab_menu_id,
@@ -775,7 +775,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
         assertEquals(MenuGroup.OVERVIEW_MODE_MENU, mTabbedAppMenuPropertiesDelegate.getMenuGroup());
 
         Menu menu = createTestMenu();
-        mTabbedAppMenuPropertiesDelegate.prepareMenu(menu, null);
+        mTabbedAppMenuPropertiesDelegate.prepareMenu(menu, mAppMenuHandler);
 
         Integer[] expectedItems = {
             R.id.new_tab_menu_id,
@@ -801,7 +801,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
         Assert.assertFalse(mTabbedAppMenuPropertiesDelegate.shouldShowPageMenu());
 
         Menu menu = createTestMenu();
-        mTabbedAppMenuPropertiesDelegate.prepareMenu(menu, null);
+        mTabbedAppMenuPropertiesDelegate.prepareMenu(menu, mAppMenuHandler);
 
         Integer[] expectedItems = {
             R.id.new_tab_menu_id,
@@ -833,7 +833,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
         AccessibilityState.setIsKnownScreenReaderEnabledForTesting(true);
 
         Menu menu = createTestMenu();
-        mTabbedAppMenuPropertiesDelegate.prepareMenu(menu, null);
+        mTabbedAppMenuPropertiesDelegate.prepareMenu(menu, mAppMenuHandler);
 
         ArrayList<Integer> expectedItems =
                 new ArrayList<>(
@@ -871,7 +871,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
         when(mPrefService.getBoolean(Pref.ACCESSIBILITY_IMAGE_LABELS_ENABLED_ANDROID))
                 .thenReturn(true);
 
-        mTabbedAppMenuPropertiesDelegate.prepareMenu(menu, null);
+        mTabbedAppMenuPropertiesDelegate.prepareMenu(menu, mAppMenuHandler);
         assertEquals(
                 "Stop image descriptions",
                 menu.findItem(R.id.get_image_descriptions_id).getTitle());
@@ -883,7 +883,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
         when(mPrefService.getBoolean(Pref.ACCESSIBILITY_IMAGE_LABELS_ONLY_ON_WIFI))
                 .thenReturn(true);
 
-        mTabbedAppMenuPropertiesDelegate.prepareMenu(menu, null);
+        mTabbedAppMenuPropertiesDelegate.prepareMenu(menu, mAppMenuHandler);
         assertEquals(
                 "Get image descriptions", menu.findItem(R.id.get_image_descriptions_id).getTitle());
     }
@@ -899,7 +899,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
                 .shouldShowManagedByMenuItem(any(Tab.class));
 
         Menu menu = createTestMenu();
-        mTabbedAppMenuPropertiesDelegate.prepareMenu(menu, null);
+        mTabbedAppMenuPropertiesDelegate.prepareMenu(menu, mAppMenuHandler);
 
         ArrayList<Integer> expectedItems =
                 new ArrayList<>(
@@ -1054,7 +1054,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
 
         Assert.assertEquals(MenuGroup.PAGE_MENU, mTabbedAppMenuPropertiesDelegate.getMenuGroup());
         Menu menu = createTestMenu();
-        mTabbedAppMenuPropertiesDelegate.prepareMenu(menu, null);
+        mTabbedAppMenuPropertiesDelegate.prepareMenu(menu, mAppMenuHandler);
 
         MenuItem managedByMenuItem = menu.findItem(R.id.managed_by_menu_id);
 
@@ -1075,7 +1075,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
         doReturn(mIncognitoTabModel).when(mTabModelSelector).getCurrentModel();
 
         Menu menu = createTestMenu();
-        mTabbedAppMenuPropertiesDelegate.prepareMenu(menu, null);
+        mTabbedAppMenuPropertiesDelegate.prepareMenu(menu, mAppMenuHandler);
         verify(mIncognitoReauthControllerMock, times(1)).isReauthPageShowing();
 
         MenuItem item = menu.findItem(R.id.new_incognito_tab_menu_id);
@@ -1093,7 +1093,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
 
         doReturn(mTabModel).when(mTabModelSelector).getCurrentModel();
         Menu menu = createTestMenu();
-        mTabbedAppMenuPropertiesDelegate.prepareMenu(menu, null);
+        mTabbedAppMenuPropertiesDelegate.prepareMenu(menu, mAppMenuHandler);
         verifyNoMoreInteractions(mIncognitoReauthControllerMock);
 
         MenuItem item = menu.findItem(R.id.new_incognito_tab_menu_id);
@@ -1108,7 +1108,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
         doReturn(mTabModel).when(mTabModelSelector).getCurrentModel();
 
         Menu menu = createTestMenu();
-        mTabbedAppMenuPropertiesDelegate.prepareMenu(menu, null);
+        mTabbedAppMenuPropertiesDelegate.prepareMenu(menu, mAppMenuHandler);
 
         MenuItem item = menu.findItem(R.id.reader_mode_menu_id);
         assertFalse(item.isVisible());
@@ -1122,7 +1122,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
         doReturn(mTabModel).when(mTabModelSelector).getCurrentModel();
 
         Menu menu = createTestMenu();
-        mTabbedAppMenuPropertiesDelegate.prepareMenu(menu, null);
+        mTabbedAppMenuPropertiesDelegate.prepareMenu(menu, mAppMenuHandler);
 
         MenuItem item = menu.findItem(R.id.reader_mode_menu_id);
         assertTrue(item.isVisible());
@@ -1135,7 +1135,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
         doReturn(isShowing).when(mIncognitoReauthControllerMock).isReauthPageShowing();
 
         Menu menu = createTestMenu();
-        mTabbedAppMenuPropertiesDelegate.prepareMenu(menu, null);
+        mTabbedAppMenuPropertiesDelegate.prepareMenu(menu, mAppMenuHandler);
         verify(mIncognitoReauthControllerMock, times(1)).isReauthPageShowing();
         return menu;
     }
@@ -1161,7 +1161,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
         prepareMocksForGroupTabsOnTabModel(mTabModel);
 
         Menu menu = createTestMenu();
-        mTabbedAppMenuPropertiesDelegate.prepareMenu(menu, null);
+        mTabbedAppMenuPropertiesDelegate.prepareMenu(menu, mAppMenuHandler);
         // Check group tabs enabled decision in regular mode doesn't depend on re-auth.
         verify(mIncognitoReauthControllerMock, times(0)).isReauthPageShowing();
 
@@ -1178,7 +1178,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
         when(mTabModelSelector.isTabStateInitialized()).thenReturn(false);
 
         Menu menu = createTestMenu();
-        mTabbedAppMenuPropertiesDelegate.prepareMenu(menu, null);
+        mTabbedAppMenuPropertiesDelegate.prepareMenu(menu, mAppMenuHandler);
         // Check group tabs enabled decision in regular mode doesn't depend on re-auth.
         verify(mIncognitoReauthControllerMock, times(0)).isReauthPageShowing();
 
@@ -1195,7 +1195,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
         when(mTabModel.getTabAt(0)).thenReturn(mockTab1);
 
         Menu menu = createTestMenu();
-        mTabbedAppMenuPropertiesDelegate.prepareMenu(menu, null);
+        mTabbedAppMenuPropertiesDelegate.prepareMenu(menu, mAppMenuHandler);
         // Check group tabs enabled decision in regular mode doesn't depend on re-auth.
         verify(mIncognitoReauthControllerMock, times(0)).isReauthPageShowing();
 
@@ -1209,7 +1209,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
         when(mTabModelSelector.getCurrentModel()).thenReturn(mTabModel);
 
         Menu menu = createTestMenu();
-        mTabbedAppMenuPropertiesDelegate.prepareMenu(menu, null);
+        mTabbedAppMenuPropertiesDelegate.prepareMenu(menu, mAppMenuHandler);
         // Check group tabs enabled decision in regular mode doesn't depend on re-auth.
         verify(mIncognitoReauthControllerMock, times(0)).isReauthPageShowing();
 
@@ -1225,7 +1225,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
         doReturn(mTabModel).when(mTabModelSelector).getCurrentModel();
 
         Menu menu = createTestMenu();
-        mTabbedAppMenuPropertiesDelegate.prepareMenu(menu, null);
+        mTabbedAppMenuPropertiesDelegate.prepareMenu(menu, mAppMenuHandler);
 
         MenuItem item = menu.findItem(R.id.ntp_customization_id);
         assertTrue(item.isEnabled());
@@ -1513,7 +1513,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
         when(mTab.getUrl()).thenReturn(JUnitTestGURLs.EXAMPLE_URL);
         setUpMocksForPageMenu();
         Menu menu = createTestMenu();
-        mTabbedAppMenuPropertiesDelegate.prepareMenu(menu, null);
+        mTabbedAppMenuPropertiesDelegate.prepareMenu(menu, mAppMenuHandler);
         assertFalse(menu.findItem(R.id.readaloud_menu_id).isVisible());
     }
 
@@ -1523,7 +1523,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
         when(mReadAloudController.isReadable(any())).thenReturn(false);
         setUpMocksForPageMenu();
         Menu menu = createTestMenu();
-        mTabbedAppMenuPropertiesDelegate.prepareMenu(menu, null);
+        mTabbedAppMenuPropertiesDelegate.prepareMenu(menu, mAppMenuHandler);
         assertFalse(menu.findItem(R.id.readaloud_menu_id).isVisible());
     }
 
@@ -1533,7 +1533,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
         when(mReadAloudController.isReadable(any())).thenReturn(true);
         setUpMocksForPageMenu();
         Menu menu = createTestMenu();
-        mTabbedAppMenuPropertiesDelegate.prepareMenu(menu, null);
+        mTabbedAppMenuPropertiesDelegate.prepareMenu(menu, mAppMenuHandler);
         assertTrue(menu.findItem(R.id.readaloud_menu_id).isVisible());
     }
 
@@ -1547,7 +1547,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
         setUpMocksForPageMenu();
 
         Menu menu = createTestMenu();
-        mTabbedAppMenuPropertiesDelegate.prepareMenu(menu, null);
+        mTabbedAppMenuPropertiesDelegate.prepareMenu(menu, mAppMenuHandler);
 
         assertTrue(
                 "AI Web menu item should be visible",
@@ -1571,7 +1571,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
         when(mTab.isNativePage()).thenReturn(true);
 
         Menu menu = createTestMenu();
-        mTabbedAppMenuPropertiesDelegate.prepareMenu(menu, null);
+        mTabbedAppMenuPropertiesDelegate.prepareMenu(menu, mAppMenuHandler);
 
         assertFalse(
                 "AI Web menu item should not be visible",
@@ -1588,7 +1588,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
         setUpMocksForPageMenu();
 
         Menu menu = createTestMenu();
-        mTabbedAppMenuPropertiesDelegate.prepareMenu(menu, null);
+        mTabbedAppMenuPropertiesDelegate.prepareMenu(menu, mAppMenuHandler);
 
         assertFalse(
                 "AI Web menu item should not be visible",
@@ -1622,8 +1622,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
         when(mTab.getUrl()).thenReturn(JUnitTestGURLs.EXAMPLE_URL);
         when(mReadAloudController.isReadable(mTab)).thenReturn(initiallyReadable);
         setUpMocksForPageMenu();
-        Menu menu = createTestMenu();
-        mTabbedAppMenuPropertiesDelegate.getMenuItemsForMenu(menu, mAppMenuHandler);
+        mTabbedAppMenuPropertiesDelegate.getMenuItems(mAppMenuHandler);
         // When menu is created, the visibility should match readability state at that time
         assertEquals(initiallyReadable, hasReadAloudInMenu());
 
@@ -1796,7 +1795,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
                 .when(mMultiWindowModeStateDispatcher)
                 .isMoveToOtherWindowSupported(mTabModelSelector);
         Menu menu = createTestMenu();
-        mTabbedAppMenuPropertiesDelegate.prepareMenu(menu, null);
+        mTabbedAppMenuPropertiesDelegate.prepareMenu(menu, mAppMenuHandler);
         return menu;
     }
 
