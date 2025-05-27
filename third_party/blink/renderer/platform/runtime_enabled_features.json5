@@ -1960,7 +1960,7 @@
       // by escaping "<" and ">" in attribute values.
       // See: crbug.com/1175016
       name: "EscapeLtGtInAttributes",
-      status: "experimental",
+      status: "stable",
     },
     {
       name: "EventTimingHandleKeyboardEventSimulatedClick",
