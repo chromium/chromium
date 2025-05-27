@@ -6,9 +6,11 @@ package org.chromium.chrome.browser.history;
 
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.profile_metrics.BrowserProfileType;
 
 /** UMA/Histogram recorder for history UI. */
+@NullMarked
 public class HistoryUmaRecorder {
     private static final String METRICS_PREFIX = "Android.HistoryPage.";
 
