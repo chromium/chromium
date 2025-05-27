@@ -123,6 +123,7 @@ public class TabbedNavigationBarColorControllerTest {
 
     @Test
     @SmallTest
+    @DisabledTest(message = "crbug.com/419391905")
     @DisableFeatures(ChromeFeatureList.EDGE_TO_EDGE_BOTTOM_CHIN)
     public void testToggleOverview() {
         assertEquals(
