@@ -697,8 +697,8 @@ def CreateMetadata(*, native_spec, elf_info, shorten_path):
   if native_spec.elf_path:
     native_metadata[models.METADATA_ELF_FILENAME] = shorten_path(
         native_spec.elf_path)
-    timestamp_obj = datetime.datetime.utcfromtimestamp(
-        os.path.getmtime(native_spec.elf_path))
+    timestamp_obj = datetime.datetime.fromtimestamp(
+        os.path.getmtime(native_spec.elf_path), datetime.timezone.utc)
     timestamp = calendar.timegm(timestamp_obj.timetuple())
     native_metadata[models.METADATA_ELF_MTIME] = timestamp
 
