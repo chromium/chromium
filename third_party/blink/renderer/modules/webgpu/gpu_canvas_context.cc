@@ -722,8 +722,7 @@ GPUCanvasContext::GetFrontBufferMailboxTexture() {
 }
 
 void GPUCanvasContext::ReplaceDrawingBuffer(bool destroy_swap_buffers) {
-  if (swap_texture_) {
-    DCHECK(swap_buffers_);
+  if (swap_buffers_) {
     swap_buffers_->DiscardCurrentSwapBuffer();
     swap_texture_ = nullptr;
   }
