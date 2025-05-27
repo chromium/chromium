@@ -9,7 +9,6 @@ import '../data/state.js';
 import './preview_area.js';
 import './sidebar.js';
 
-import type {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import {WebUiListenerMixinLit} from 'chrome://resources/cr_elements/web_ui_listener_mixin_lit.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.js';
@@ -103,7 +102,6 @@ export class PrintPreviewAppElement extends PrintPreviewAppElementBase {
   private openPdfInPreview_: boolean = false;
   private isInKioskAutoPrintMode_: boolean = false;
   private whenReady_: Promise<void>|null = null;
-  private openDialogs_: CrDialogElement[] = [];
 
   constructor() {
     super();
@@ -131,8 +129,6 @@ export class PrintPreviewAppElement extends PrintPreviewAppElementBase {
 
     document.documentElement.classList.remove('loading');
     this.nativeLayer_ = NativeLayerImpl.getInstance();
-    this.addWebUiListener('cr-dialog-open', this.onCrDialogOpen_.bind(this));
-    this.addWebUiListener('close', this.onCrDialogClose_.bind(this));
     this.addWebUiListener(
         'print-preset-options', this.onPrintPresetOptions_.bind(this));
     this.tracker_.add(window, 'keydown', this.onKeyDown_.bind(this));
@@ -189,20 +185,7 @@ export class PrintPreviewAppElement extends PrintPreviewAppElementBase {
    * everything else to the preview area.
    */
   private onKeyDown_(e: KeyboardEvent) {
-    // Escape key closes the topmost dialog that is currently open within
-    // Print Preview. If no such dialog exists, then the Print Preview dialog
-    // itself is closed.
     if (e.key === 'Escape' && !hasKeyModifiers(e)) {
-      // Don't close the Print Preview dialog if there is a child dialog open.
-      if (this.openDialogs_.length > 0) {
-        // Manually cancel the dialog, since we call preventDefault() to prevent
-        // views from closing the Print Preview dialog.
-        const dialogToClose = this.openDialogs_[this.openDialogs_.length - 1]!;
-        dialogToClose.cancel();
-        e.preventDefault();
-        return;
-      }
-
       // On non-mac with toolkit-views, ESC key is handled by C++-side instead
       // of JS-side.
       if (isMac) {
@@ -244,7 +227,7 @@ export class PrintPreviewAppElement extends PrintPreviewAppElementBase {
     }
 
     if ((e.key === 'Enter' || e.key === 'NumpadEnter') &&
-        this.state === State.READY && this.openDialogs_.length === 0) {
+        this.state === State.READY) {
       const activeElementTag = (e.composedPath()[0] as HTMLElement).tagName;
       if (['CR-BUTTON', 'BUTTON', 'SELECT', 'A', 'CR-CHECKBOX'].includes(
               activeElementTag)) {
@@ -258,21 +241,6 @@ export class PrintPreviewAppElement extends PrintPreviewAppElementBase {
 
     // Pass certain directional keyboard events to the PDF viewer.
     this.$.previewArea.handleDirectionalKeyEvent(e);
-  }
-
-  private onCrDialogOpen_(e: Event) {
-    this.openDialogs_.push(e.composedPath()[0] as CrDialogElement);
-  }
-
-  private onCrDialogClose_(e: Event) {
-    // Note: due to event re-firing in cr_dialog.js, this event will always
-    // appear to be coming from the outermost child dialog.
-    // TODO(rbpotter): Fix event re-firing so that the event comes from the
-    // dialog that has been closed, and add an assertion that the removed
-    // dialog matches e.composedPath()[0].
-    if ((e.composedPath()[0] as HTMLElement).nodeName === 'CR-DIALOG') {
-      this.openDialogs_.pop();
-    }
   }
 
   private onInitialSettingsSet_(settings: NativeInitialSettings) {
