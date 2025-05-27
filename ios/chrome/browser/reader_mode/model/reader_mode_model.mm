@@ -27,7 +27,8 @@ void PerformReaderModeCustomEntrypointAction(
     return;
   }
   if (reader_mode_tab_helper->IsReaderModeWebStateAvailable()) {
-    reader_mode_tab_helper->ShowReaderModeOptions();
+    // TODO(crbug.com/409941529): Show options instead when the UI is ready.
+    reader_mode_tab_helper->SetActive(false);
   } else {
     reader_mode_tab_helper->SetActive(true);
   }
