@@ -140,12 +140,6 @@ CanvasRenderingContextHost::GetOrCreateCanvasResourceProviderImpl() {
     if (!provider) {
       did_fail_to_create_resource_provider_ = true;
     }
-    if (provider->IsValid()) {
-      base::UmaHistogramBoolean("Blink.Canvas.ResourceProviderIsAccelerated",
-                                provider->IsAccelerated());
-      base::UmaHistogramEnumeration("Blink.Canvas.ResourceProviderType",
-                                    provider->GetType());
-    }
   }
   return provider;
 }
@@ -160,6 +154,12 @@ CanvasRenderingContextHost::CreateCanvasResourceProviderWebGPU() {
   }
   auto* raw_provider = provider.get();
   ReplaceResourceProvider(std::move(provider));
+  if (raw_provider && raw_provider->IsValid()) {
+    base::UmaHistogramBoolean("Blink.Canvas.ResourceProviderIsAccelerated",
+                              ResourceProvider()->IsAccelerated());
+    base::UmaHistogramEnumeration("Blink.Canvas.ResourceProviderType",
+                                  ResourceProvider()->GetType());
+  }
   return raw_provider;
 }
 
@@ -247,6 +247,12 @@ CanvasRenderingContextHost::CreateCanvasResourceProviderWebGL() {
 
   auto* raw_provider = provider.get();
   ReplaceResourceProvider(std::move(provider));
+  if (raw_provider && raw_provider->IsValid()) {
+    base::UmaHistogramBoolean("Blink.Canvas.ResourceProviderIsAccelerated",
+                              ResourceProvider()->IsAccelerated());
+    base::UmaHistogramEnumeration("Blink.Canvas.ResourceProviderType",
+                                  ResourceProvider()->GetType());
+  }
   return raw_provider;
 }
 
@@ -350,6 +356,12 @@ CanvasRenderingContextHost::CreateCanvasResourceProvider2D() {
   ReplaceResourceProvider(std::move(provider));
 
   if (raw_provider) {
+    if (raw_provider->IsValid()) {
+      base::UmaHistogramBoolean("Blink.Canvas.ResourceProviderIsAccelerated",
+                                ResourceProvider()->IsAccelerated());
+      base::UmaHistogramEnumeration("Blink.Canvas.ResourceProviderType",
+                                    ResourceProvider()->GetType());
+    }
     raw_provider->SetResourceRecyclingEnabled(true);
   }
   return raw_provider;
