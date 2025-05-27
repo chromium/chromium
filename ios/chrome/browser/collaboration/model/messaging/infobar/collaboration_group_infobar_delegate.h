@@ -36,6 +36,14 @@ class CollaborationGroupInfoBarDelegate : public ConfirmInfoBarDelegate {
   static bool Create(ProfileIOS* profile,
                      collaboration::messaging::InstantMessage instant_message);
 
+  // Removes any queued infobars whose message IDs are present in `message_ids`.
+  static void ClearCollaborationGroupInfobars(
+      ProfileIOS* profile,
+      const std::set<base::Uuid>& message_ids);
+
+  // Returns the first identifier, if any, of `instant_message_`.
+  std::optional<base::Uuid> GetInstantMessageIdentifier() const;
+
   // InfoBarDelegate implementation.
   InfoBarIdentifier GetIdentifier() const override;
 
@@ -46,6 +54,7 @@ class CollaborationGroupInfoBarDelegate : public ConfirmInfoBarDelegate {
   std::u16string GetButtonLabel(InfoBarButton button) const override;
   bool Accept() override;
   void InfoBarDismissed() override;
+  bool EqualsDelegate(infobars::InfoBarDelegate* delegate) const override;
 
   // Returns an avatar primitive if there is only one affected user in
   // `instant_message_`, otherwise return nil.
