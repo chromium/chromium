@@ -428,8 +428,9 @@ TEST(DemographicMetricsProviderTest,
 
 TEST(
     DemographicMetricsProviderTest,
-    ProvideSyncedUserNoisedBirthYearAndGender_PreferencesSyncNotSelected_WithAlwaysSyncingFeature) {
-  base::test::ScopedFeatureList feature_list(
+    ProvideSyncedUserNoisedBirthYearAndGender_PreferencesSyncNotSelected_WithoutAlwaysSyncingFeature) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
       syncer::kSyncSupportAlwaysSyncingPriorityPreferences);
   base::HistogramTester histogram;
 
@@ -451,6 +452,40 @@ TEST(
   // Verify histograms.
   histogram.ExpectUniqueSample("UMA.UserDemographics.Status",
                                UserDemographicsStatus::kSyncNotEnabled, 1);
+}
+
+TEST(
+    DemographicMetricsProviderTest,
+    ProvideSyncedUserNoisedBirthYearAndGender_PreferencesSyncNotSelected_WithAlwaysSyncingFeature) {
+  base::test::ScopedFeatureList feature_list(
+      syncer::kSyncSupportAlwaysSyncingPriorityPreferences);
+  base::HistogramTester histogram;
+
+  auto client = std::make_unique<TestProfileClient>(
+      /*number_of_profiles=*/1,
+      SYNC_FEATURE_ENABLED_BUT_PREFERENCES_NOT_SELECTED);
+  client->SetDemographicsInPrefs(kTestBirthYear, kTestGender);
+
+  // Set birth year noise offset to not have it randomized.
+  const int kBirthYearOffset = 3;
+  client->GetLocalState()->SetInteger(kUserDemographicsBirthYearOffsetPrefName,
+                                      kBirthYearOffset);
+
+  // Run demographics provider.
+  DemographicMetricsProvider provider(
+      std::move(client), MetricsLogUploader::MetricServiceType::UMA);
+  ChromeUserMetricsExtension uma_proto;
+  provider.ProvideSyncedUserNoisedBirthYearAndGender(&uma_proto);
+
+  // Expect the proto fields to be set, since allowlisted priority preferences
+  // are always synced.
+  EXPECT_EQ(kTestBirthYear + kBirthYearOffset,
+            uma_proto.user_demographics().birth_year());
+  EXPECT_EQ(kTestGender, uma_proto.user_demographics().gender());
+
+  // Verify histograms.
+  histogram.ExpectUniqueSample("UMA.UserDemographics.Status",
+                               UserDemographicsStatus::kSuccess, 1);
 }
 
 }  // namespace

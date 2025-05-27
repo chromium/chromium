@@ -193,7 +193,8 @@ constexpr auto kCommonSyncablePrefsAllowlist =
           PrefSensitivity::kNone, MergeBehavior::kNone}},
         {metrics::kSyncDemographicsPrefName,
          {syncable_prefs_ids::kSyncDemographicsPrefName,
-          syncer::PRIORITY_PREFERENCES, PrefSensitivity::kNone,
+          syncer::PRIORITY_PREFERENCES,
+          PrefSensitivity::kExemptFromUserControlWhileSignedIn,
           MergeBehavior::kNone}},
         {ntp_tiles::prefs::kCustomLinksInitialized,
          {syncable_prefs_ids::kCustomLinksInitialized, syncer::PREFERENCES,
@@ -290,7 +291,8 @@ constexpr auto kCommonSyncablePrefsAllowlist =
 #if !BUILDFLAG(IS_CHROMEOS)
         {variations::kDogfoodGroupsSyncPrefName,
          {syncable_prefs_ids::kDogfoodGroupsSyncPrefName,
-          syncer::PRIORITY_PREFERENCES, PrefSensitivity::kNone,
+          syncer::PRIORITY_PREFERENCES,
+          PrefSensitivity::kExemptFromUserControlWhileSignedIn,
           MergeBehavior::kNone}},
 #endif
         {kSyncablePrefForTesting,
