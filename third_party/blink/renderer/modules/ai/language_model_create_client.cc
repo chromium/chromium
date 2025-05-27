@@ -112,7 +112,7 @@ void LanguageModelCreateClient::Create() {
         "`initialPrompts: [{role: 'system', content: ... }, ...]` instead.");
   }
 
-  if (!options_->hasInitialPrompts()) {
+  if (!options_->hasInitialPrompts() || options_->initialPrompts().empty()) {
     OnInitialPromptsResolved(std::move(sampling_params), std::move(expected_in),
                              std::move(expected_out), /*initial_prompts=*/{});
     return;
