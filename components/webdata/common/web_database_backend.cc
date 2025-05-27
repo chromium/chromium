@@ -177,7 +177,14 @@ void WebDatabaseBackend::DatabaseErrorCallback(int error,
   // We ignore any further error callbacks after the first catastrophic error.
   if (!catastrophic_error_occurred_ && sql::IsErrorCatastrophic(error)) {
     catastrophic_error_occurred_ = true;
-    diagnostics_ = db_->GetDiagnosticInfo(error, statement);
+    diagnostics_.clear();
+    // If the error is triggered during the call to Database::Open(...), it is
+    // possible that the database is not opened (https://crbug.com/420369590).
+    // The call to GetDiagnosticInfo(...) will execute sql statements; which is
+    // invalid on a closed database.
+    if (db_->GetSQLConnection()->is_open()) {
+      diagnostics_ += db_->GetDiagnosticInfo(error, statement);
+    }
     diagnostics_ += sql::GetCorruptFileDiagnosticsInfo(db_path_);
 
     db_->GetSQLConnection()->RazeAndPoison();
