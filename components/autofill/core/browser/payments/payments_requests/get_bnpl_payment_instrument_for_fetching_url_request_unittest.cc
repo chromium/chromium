@@ -4,6 +4,7 @@
 
 #include "components/autofill/core/browser/payments/payments_requests/get_bnpl_payment_instrument_for_fetching_url_request.h"
 
+#include "base/strings/string_number_conversions.h"
 #include "base/test/mock_callback.h"
 #include "base/test/values_test_util.h"
 #include "testing/gtest/include/gtest/gtest.h"

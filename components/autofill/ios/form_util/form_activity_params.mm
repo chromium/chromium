@@ -4,6 +4,7 @@
 
 #import "components/autofill/ios/form_util/form_activity_params.h"
 
+#import "base/strings/string_number_conversions.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/autofill/ios/browser/autofill_util.h"
 #import "ios/web/public/js_messaging/script_message.h"
