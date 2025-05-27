@@ -132,6 +132,7 @@ public class BasicListMenu implements ListMenu, OnItemClickListener {
             Delegate delegate,
             @ColorRes int backgroundTintColor) {
         mAdapter = new ListMenuItemAdapter(data);
+        registerListItemTypes();
         mContentView = contentView;
         mListView = listView;
         mListView.setAdapter(mAdapter);
@@ -139,7 +140,6 @@ public class BasicListMenu implements ListMenu, OnItemClickListener {
         mListView.setOnItemClickListener(this);
         mDelegate = delegate;
         mClickRunnables = new LinkedList<>();
-        registerListItemTypes();
 
         if (backgroundTintColor != 0) {
             ViewCompat.setBackgroundTintList(

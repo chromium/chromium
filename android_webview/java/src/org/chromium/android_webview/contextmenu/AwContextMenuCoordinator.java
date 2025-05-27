@@ -37,11 +37,10 @@ import java.util.List;
 /** The main coordinator for the context menu, responsible for creating the context menu */
 public class AwContextMenuCoordinator implements ContextMenuUi {
     @Retention(RetentionPolicy.SOURCE)
-    @IntDef({ListItemType.DIVIDER, ListItemType.HEADER, ListItemType.CONTEXT_MENU_ITEM})
+    @IntDef({ListItemType.HEADER, ListItemType.CONTEXT_MENU_ITEM})
     public @interface ListItemType {
-        int DIVIDER = 0;
-        int HEADER = 1;
-        int CONTEXT_MENU_ITEM = 2;
+        int HEADER = 0;
+        int CONTEXT_MENU_ITEM = 1;
     }
 
     private static final int INVALID_ITEM_ID = -1;
