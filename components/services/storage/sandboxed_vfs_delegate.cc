@@ -12,6 +12,7 @@
 #include "base/files/file_error_or.h"
 #include "base/files/file_path.h"
 #include "components/services/storage/public/cpp/filesystem/filesystem_proxy.h"
+#include "sql/sandboxed_vfs_file_impl.h"
 
 namespace storage {
 
@@ -20,6 +21,15 @@ SandboxedVfsDelegate::SandboxedVfsDelegate(
     : filesystem_(std::move(filesystem)) {}
 
 SandboxedVfsDelegate::~SandboxedVfsDelegate() = default;
+
+sql::SandboxedVfsFile* SandboxedVfsDelegate::RetrieveSandboxedVfsFile(
+    base::File file,
+    base::FilePath file_path,
+    sql::SandboxedVfsFileType file_type,
+    sql::SandboxedVfs* vfs) {
+  return new sql::SandboxedVfsFileImpl(std::move(file), std::move(file_path),
+                                       file_type, vfs);
+}
 
 base::File SandboxedVfsDelegate::OpenFile(const base::FilePath& file_path,
                                           int sqlite_requested_flags) {

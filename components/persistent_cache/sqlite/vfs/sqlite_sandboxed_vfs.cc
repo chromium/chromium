@@ -12,6 +12,8 @@
 #include "base/files/file_util.h"
 #include "base/synchronization/lock.h"
 #include "sql/sandboxed_vfs.h"
+#include "sql/sandboxed_vfs_file.h"
+#include "sql/sandboxed_vfs_file_impl.h"
 #include "third_party/sqlite/sqlite3.h"
 
 namespace persistent_cache {
@@ -43,6 +45,17 @@ SqliteSandboxedVfsDelegate* SqliteSandboxedVfsDelegate::GetInstance() {
                                 /*make_default=*/false);
   });
   return g_instance;
+}
+
+sql::SandboxedVfsFile* SqliteSandboxedVfsDelegate::RetrieveSandboxedVfsFile(
+    base::File file,
+    base::FilePath file_path,
+    sql::SandboxedVfsFileType file_type,
+    sql::SandboxedVfs* vfs) {
+  // TODO(crbug.com/377475540): Specialize the sql::SandboxedVfsFile for the
+  // needs of persistent cache.
+  return new sql::SandboxedVfsFileImpl(std::move(file), std::move(file_path),
+                                       file_type, vfs);
 }
 
 base::File SqliteSandboxedVfsDelegate::OpenFile(

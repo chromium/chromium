@@ -178,9 +178,20 @@ int SandboxedVfs::Open(const char* full_path,
     return Open(full_path, result_file, new_flags, granted_flags);
   }
 
-  SandboxedVfsFile::Create(std::move(file), std::move(file_path),
-                           VfsFileTypeFromPath(full_path),
-                           this, result_file);
+  SandboxedVfsFile* vfs_file =
+      delegate_->RetrieveSandboxedVfsFile(std::move(file), std::move(file_path),
+                                          VfsFileTypeFromPath(full_path), this);
+  if (!vfs_file) {
+    return SQLITE_CANTOPEN;
+  }
+
+  // Bind the sandboxed file pointer with the sqlite_file structure. This
+  // pointer can later be unboxed (retrieved from the vfs_file structure after
+  // an upcast from sqlite_file* to a SandboxedVfsFileSqliteBridge*) and use
+  // this pointer to redirect the calls (from the sqlite io_methods calls) to
+  // their corresponding sandboxed implementation.
+  SandboxedVfsFile::BindSandboxedFile(vfs_file, result_file);
+
   if (granted_flags)
     *granted_flags = requested_flags;
   return SQLITE_OK;
