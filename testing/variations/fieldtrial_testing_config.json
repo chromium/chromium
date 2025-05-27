@@ -3023,7 +3023,10 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled_20250327",
+                    "name": "PrioritizeUnlessShouldClearAllAndNoEviction_20250520",
+                    "params": {
+                        "level": "prioritize-unless-should-clear-all-and-no-eviction"
+                    },
                     "enable_features": [
                         "BackForwardCachePrioritizedEntry"
                     ]
