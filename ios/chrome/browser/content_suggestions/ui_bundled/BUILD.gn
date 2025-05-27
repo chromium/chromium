@@ -99,7 +99,6 @@ source_set("coordinator") {
     "//ios/chrome/browser/push_notification/model:push_notification_service_header",
     "//ios/chrome/browser/push_notification/model:push_notification_settings_util_header",
     "//ios/chrome/browser/push_notification/model:push_notification_util",
-    "//ios/chrome/browser/push_notification/ui_bundled:notifications_opt_in",
     "//ios/chrome/browser/push_notification/ui_bundled:opt_in_alert_coordinator",
     "//ios/chrome/browser/push_notification/ui_bundled:presenters",
     "//ios/chrome/browser/reading_list/model",

@@ -197,6 +197,8 @@ source_set("ui_bundled") {
     "//ios/chrome/browser/print/coordinator",
     "//ios/chrome/browser/promos_manager/model:features",
     "//ios/chrome/browser/promos_manager/ui_bundled",
+    "//ios/chrome/browser/push_notification/model:constants",
+    "//ios/chrome/browser/push_notification/ui_bundled:notifications_opt_in",
     "//ios/chrome/browser/qr_scanner/ui_bundled:coordinator",
     "//ios/chrome/browser/reader_mode/coordinator",
     "//ios/chrome/browser/reader_mode/model",

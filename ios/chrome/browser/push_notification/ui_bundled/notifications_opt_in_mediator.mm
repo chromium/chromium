@@ -38,7 +38,8 @@
     _authenticationService = authenticationService;
     _selected = {{NotificationsOptInItemIdentifier::kContent, NO},
                  {NotificationsOptInItemIdentifier::kTips, NO},
-                 {NotificationsOptInItemIdentifier::kPriceTracking, NO}};
+                 {NotificationsOptInItemIdentifier::kPriceTracking, NO},
+                 {NotificationsOptInItemIdentifier::kSafetyCheck, NO}};
   }
   return self;
 }
@@ -130,6 +131,8 @@
       return {PushNotificationClientId::kTips};
     case kPriceTracking:
       return {PushNotificationClientId::kCommerce};
+    case kSafetyCheck:
+      return {PushNotificationClientId::kSafetyCheck};
   }
 }
 

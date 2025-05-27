@@ -165,6 +165,9 @@
 #import "ios/chrome/browser/print/coordinator/print_coordinator.h"
 #import "ios/chrome/browser/promos_manager/model/features.h"
 #import "ios/chrome/browser/promos_manager/ui_bundled/promos_manager_coordinator.h"
+#import "ios/chrome/browser/push_notification/model/constants.h"
+#import "ios/chrome/browser/push_notification/ui_bundled/notifications_opt_in_coordinator.h"
+#import "ios/chrome/browser/push_notification/ui_bundled/notifications_opt_in_coordinator_delegate.h"
 #import "ios/chrome/browser/qr_scanner/ui_bundled/qr_scanner_legacy_coordinator.h"
 #import "ios/chrome/browser/reader_mode/coordinator/reader_mode_coordinator.h"
 #import "ios/chrome/browser/reader_mode/model/reader_mode_browser_agent.h"
@@ -366,6 +369,7 @@ enum class ToolbarKind {
     NetExportTabHelperDelegate,
     NewTabPageCommands,
     NonModalSignInPromoCommands,
+    NotificationsOptInCoordinatorDelegate,
     OverscrollActionsControllerDelegate,
     PageActionMenuCommands,
     PageInfoCommands,
@@ -701,6 +705,9 @@ enum class ToolbarKind {
 
   // The coordinator for the Search What You See promo.
   SearchWhatYouSeePromoCoordinator* _searchWhatYouSeePromoCoordinator;
+
+  // The coordinator for the notifications opt-in screen.
+  NotificationsOptInCoordinator* _notificationsOptInCoordinator;
 }
 
 #pragma mark - ChromeCoordinator
@@ -907,6 +914,7 @@ enum class ToolbarKind {
   [self dismissEnhancedSafeBrowsingPromo];
   [self dismissAutoDeletionActionSheet];
   [self dismissSearchWhatYouSeePromo];
+  [self dismissNotificationsOptIn];
 
   [self cancelCollaborationFlows];
   [self.NTPCoordinator clearPresentedState];
@@ -1721,6 +1729,7 @@ enum class ToolbarKind {
   [self hideGoogleOne];
   [self stopTrustedVaultReauthentication];
   [self dismissSearchWhatYouSeePromo];
+  [self dismissNotificationsOptIn];
 }
 
 // Starts independent mediators owned by this coordinator.
@@ -2452,6 +2461,26 @@ enum class ToolbarKind {
 - (void)dismissSearchWhatYouSeePromo {
   [_searchWhatYouSeePromoCoordinator stop];
   _searchWhatYouSeePromoCoordinator = nil;
+}
+
+- (void)showNotificationsOptInFromAccessPoint:
+            (NotificationOptInAccessPoint)accessPoint
+                           baseViewController:
+                               (UIViewController*)baseViewController {
+  [_notificationsOptInCoordinator stop];
+
+  _notificationsOptInCoordinator = [[NotificationsOptInCoordinator alloc]
+      initWithBaseViewController:baseViewController
+                         browser:self.browser];
+  _notificationsOptInCoordinator.accessPoint = accessPoint;
+  _notificationsOptInCoordinator.delegate = self;
+
+  [_notificationsOptInCoordinator start];
+}
+
+- (void)dismissNotificationsOptIn {
+  [_notificationsOptInCoordinator stop];
+  _notificationsOptInCoordinator = nil;
 }
 
 #pragma mark - ContextualPanelEntrypointIPHCommands
@@ -4407,6 +4436,14 @@ enum class ToolbarKind {
 - (void)showWhatsNewIPH {
   [HandlerForProtocol(_dispatcher, HelpCommands)
       presentInProductHelpWithType:InProductHelpType::kWhatsNew];
+}
+
+#pragma mark - NotificationsOptInCoordinatorDelegate
+
+- (void)notificationsOptInScreenDidFinish:
+    (NotificationsOptInCoordinator*)coordinator {
+  CHECK_EQ(coordinator, _notificationsOptInCoordinator);
+  [self dismissNotificationsOptIn];
 }
 
 #pragma mark - GoogleOneCommands

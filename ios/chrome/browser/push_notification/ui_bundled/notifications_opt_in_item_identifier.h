@@ -11,7 +11,8 @@ enum NotificationsOptInItemIdentifier {
   kContent,
   kTips,
   kPriceTracking,
-  kMaxValue = kPriceTracking,
+  kSafetyCheck,
+  kMaxValue = kSafetyCheck,
 };
 
 #endif  // IOS_CHROME_BROWSER_PUSH_NOTIFICATION_UI_BUNDLED_NOTIFICATIONS_OPT_IN_ITEM_IDENTIFIER_H_
