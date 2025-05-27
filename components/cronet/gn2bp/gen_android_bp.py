@@ -798,7 +798,6 @@ class Module:
     self.libs = set()
     self.stem = None
     self.compile_multilib = None
-    self.aidl = dict()
     self.plugins = set()
     self.processor_class = None
     self.sdk_version = None
@@ -828,6 +827,8 @@ class Module:
     self.handle_static_inline = None
     self.static_inline_library = ""
     self.jni_zero_target_type = None
+    self.unstable = ""
+    self.path = ""
     # In the case of Java "top-level" modules, this points to the corresponding
     # "unfiltered" module. The top-level module is just a dependency holder;
     # it's the unfiltered module that does the actual compiling. For more
@@ -877,10 +878,11 @@ class Module:
     self._output_field(output, 'linker_scripts')
     self._output_field(output, 'ldflags')
     self._output_field(output, 'cppflags')
+    self._output_field(output, 'unstable')
+    self._output_field(output, 'path')
     self._output_field(output, 'libs')
     self._output_field(output, 'stem')
     self._output_field(output, 'compile_multilib')
-    self._output_field(output, 'aidl')
     self._output_field(output, 'plugins')
     self._output_field(output, 'processor_class')
     self._output_field(output, 'sdk_version')
@@ -2291,12 +2293,6 @@ def create_java_module(bp_module_name, target, blueprint):
     unfiltered_module.jars = [
         gn_utils.label_to_path(source) for source in sources
     ]
-  if gn_utils.contains_aidl(sources):
-    # frameworks/base/core/java includes the source files that are used to compile framework.aidl.
-    # framework.aidl is added implicitly as a dependency to every AIDL GN action, this can be
-    # identified by third_party/android_sdk/public/platforms/android-34/framework.aidl.
-    unfiltered_module.aidl["include_dirs"] = {"frameworks/base/core/java/"}
-    unfiltered_module.aidl["local_include_dirs"] = target.local_aidl_includes
   blueprint.add_module(unfiltered_module)
 
   # Potential optimization opportunity: we could skip the filtered module if
@@ -2569,6 +2565,14 @@ def set_module_include_dirs(module, cflags, include_dirs):
       module.include_dirs.add(
           f"external/cronet/{IMPORT_CHANNEL}/{flag[len('-isystem../../'):]}")
 
+  depends_on_binder_ndk = any("libbinder_ndk_cpp" in include_dir
+                              for include_dir in include_dirs)
+  if depends_on_binder_ndk:
+    module.shared_libs.add("libbinder_ndk")
+    include_dirs = [
+        include_dir for include_dir in include_dirs
+        if "libbinder_ndk_cpp" not in include_dir
+    ]
   # Adding include_dirs is necessary due to source_sets / filegroups
   # which do not properly propagate include directories.
   # Filter any directory inside //out as a) this directory does not exist for
@@ -2586,6 +2590,40 @@ def set_module_include_dirs(module, cflags, include_dirs):
       d for d in module.include_dirs if d not in include_dirs_denylist
   ]
 
+
+def create_aidl_module(bp_module_name, target, blueprint):
+  module = Module("aidl_interface", bp_module_name, target.name)
+  module.unstable = True
+  module.include_dirs = [
+      f"external/cronet/{IMPORT_CHANNEL}/{path}"
+      for path in sorted(target.aidl_includes)
+  ]
+  # This is necessary as Soong adds a dependency behind the scenes ;(
+  # https://cs.android.com/android/platform/superproject/main/+/main:system/tools/aidl/build/aidl_interface_backends.go;l=162
+  module.visibility.add("//system/tools/aidl/build")
+  filegroup_module_name = f"{bp_module_name}_filegroup"
+  module.srcs = {f":{filegroup_module_name}"}
+  # Filegroup exists here because Soong's genrule for AIDL contains a bug where there's
+  # a discrepancy between the expected generated file path and the actual path.
+  # See crbug.com/418726870 for more information.
+  filegroup_module = Module("filegroup", filegroup_module_name, target.name)
+  filegroup_module.srcs = [
+      gn_utils.label_to_path(src) for src in sorted(target.sources)
+  ]
+  filegroup_module.build_file_path = target.build_file_path
+  # The following lines will trim an absolute path to the path
+  # of the java package. There's an assumption here that AIDL files
+  # live in java-kind packages.
+  # e.g. A/B/C/src/package/path/path.aidl -> A/B/C
+  source_file_path = list(filegroup_module.srcs)[0]
+  path_to_package = source_file_path[:source_file_path.find("src/") +
+                                     len("src/")]
+  assert all(
+      src.startswith(path_to_package) for src in filegroup_module.srcs
+  ), f"AIDL module {target.name} has sources from different packages which is not supported."
+  filegroup_module.path = path_to_package
+  blueprint.add_module(filegroup_module)
+  return (module, )
 
 def create_modules_from_target(blueprint, gn, gn_target_name, parent_gn_type,
                                is_test_target):
@@ -2683,6 +2721,8 @@ def create_modules_from_target(blueprint, gn, gn_target_name, parent_gn_type,
     return ()
   elif target.type == 'java_library':
     modules = (create_java_module(bp_module_name, target, blueprint), )
+  elif target.type == 'aidl_interface':
+    modules = create_aidl_module(bp_module_name, target, blueprint)
   else:
     # Note we don't have to handle `group` targets because parse_gn_desc() never
     # returns any; it just recurses through them and bubbles their dependencies
@@ -2691,7 +2731,7 @@ def create_modules_from_target(blueprint, gn, gn_target_name, parent_gn_type,
 
   for module in modules:
     blueprint.add_module(module)
-    if target.type not in ['action', 'action_foreach']:
+    if target.type not in ['action', 'action_foreach', 'aidl_interface']:
       # Actions should get their srcs from their corresponding ActionSanitizer as actionSanitizer
       # filters srcs differently according to the type of the action.
       module.srcs.update(
@@ -2738,7 +2778,7 @@ def create_modules_from_target(blueprint, gn, gn_target_name, parent_gn_type,
     module.build_file_path = target.build_file_path
     # Chromium does not use visibility at all, in order to avoid visibility issues
     # in AOSP. Make every module visible to any module in external/cronet.
-    module.visibility = {"//external/cronet:__subpackages__"}
+    module.visibility.add("//external/cronet:__subpackages__")
 
     if module.type in ["rust_proc_macro", "rust_binary", "rust_ffi_static"]:
       module.crate_name = target.crate_name
@@ -2907,6 +2947,17 @@ def create_modules_from_target(blueprint, gn, gn_target_name, parent_gn_type,
             module_target.rustlibs.add(dep_module.name)
         elif dep_module.type == "rust_proc_macro":
           module_target.proc_macros.add(dep_module.name)
+        elif dep_module.type == "aidl_interface":
+          # See https://cs.android.com/android/platform/superproject/main/+/main:system/tools/aidl/build/aidl_interface_backends.go
+          # for how those modules "-lang-source" is generated.
+          if module.type.startswith("cc_"):
+            module.srcs.add(f":{dep_module.name}-ndk-source")
+            module.generated_headers.add(f"{dep_module.name}-ndk-source")
+            module.export_generated_headers.add(f"{dep_module.name}-ndk-source")
+          elif module.type.startswith("java_"):
+            module.srcs.add(f":{dep_module.name}-java-source")
+          elif module.type.startswith("rust_"):
+            module.srcs.add(f":{dep_module.name}-rust-source")
         elif dep_module.type == 'cc_genrule':
           if dep_module.genrule_headers:
             if module.type == "rust_ffi_static":
@@ -3250,6 +3301,11 @@ def _rebase_module(module: Module, blueprint_path: str) -> Union[Module, None]:
     module_copy.crate_root = _rebase_file(module_copy.crate_root,
                                           blueprint_path)
     if module_copy.crate_root is None:
+      return None
+
+  if module_copy.path:
+    module_copy.path = _rebase_file(module_copy.path, blueprint_path)
+    if module_copy.path is None:
       return None
 
   if module_copy.wrapper_src:

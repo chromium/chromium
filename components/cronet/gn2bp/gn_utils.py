@@ -18,7 +18,6 @@ LINKER_UNIT_TYPES = ('executable', 'shared_library', 'static_library',
 RESPONSE_FILE = '{{response_file_name}}'
 TESTING_SUFFIX = "__testing"
 AIDL_INCLUDE_DIRS_REGEX = r'--includes=\[(.*)\]'
-AIDL_IMPORT_DIRS_REGEX = r'--imports=\[(.*)\]'
 PROTO_IMPORT_DIRS_REGEX = r'--import-dir=(.*)'
 
 
@@ -37,36 +36,13 @@ def _clean_string(string):
   return string.replace('\\', '').replace('../../', '').replace('"', '').strip()
 
 
-def _clean_aidl_import(orig_str):
-  new_str = _clean_string(orig_str)
-  src_idx = new_str.find("src/")
-  if src_idx == -1:
-    raise ValueError(f"Unable to clean aidl import {orig_str}")
-  return new_str[:src_idx + len("src")]
-
-
 def _extract_includes_from_aidl_args(args):
-  ret = []
   for arg in args:
     is_match = re.match(AIDL_INCLUDE_DIRS_REGEX, arg)
     if is_match:
       local_includes = is_match.group(1).split(",")
-      ret += [_clean_string(local_include) for local_include in local_includes]
-    # Treat imports like include for aidl by removing the package suffix.
-    is_match = re.match(AIDL_IMPORT_DIRS_REGEX, arg)
-    if is_match:
-      local_imports = is_match.group(1).split(",")
-      # Skip "third_party/android_sdk/public/platforms/android-34/framework.aidl" because Soong
-      # already links against the AIDL framework implicitly.
-      ret += [
-          _clean_aidl_import(local_import) for local_import in local_imports
-          if "framework.aidl" not in local_import
-      ]
-  return ret
-
-
-def contains_aidl(sources):
-  return any(src.endswith(".aidl") for src in sources)
+      return [_clean_string(local_include) for local_include in local_includes]
+  return []
 
 
 def _get_jni_registration_deps(gn_target_name, gn_desc):
@@ -189,7 +165,7 @@ class GnParser:
       # This is used to get the name/version of libcronet
       self.output_name = None
       # Local Includes used for AIDL
-      self.local_aidl_includes = set()
+      self.aidl_includes = set()
       # Each java_target will contain the transitive java sources found
       # in generate_jni gn_type target.
       self.transitive_jni_java_sources = set()
@@ -497,9 +473,11 @@ class GnParser:
                                        for source in desc.get('sources', [])
                                        if not source.startswith("//out"))
     elif target.script == "//build/android/gyp/aidl.py":
-      turn_into_java_library(target)
+      target.type = "aidl_interface"
+      # It's assumed that all of AIDLs' attributes are not arch-specific.
       target.sources.update(desc.get('sources', {}))
-      target.local_aidl_includes = _extract_includes_from_aidl_args(
+      target.outputs.update([_remove_out_prefix(x) for x in desc['outputs']])
+      target.aidl_includes = _extract_includes_from_aidl_args(
           desc.get('args', ''))
     elif target.type == "java_library":
       log.info('Found Java Target %s', target.name)
