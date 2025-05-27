@@ -18,6 +18,7 @@ import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.FrameLayout;
 
+import androidx.annotation.ColorInt;
 import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
 
@@ -35,6 +36,7 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent.HeightMode;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
+import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.animation.CancelAwareAnimatorListener;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.accessibility.AccessibilityState;
@@ -168,6 +170,7 @@ class BottomSheet extends FrameLayout
     private int mAppHeaderHeight;
 
     private int mBottomMargin;
+    private final @ColorInt int mSheetBgColor;
 
     /**
      * A view used to render a shadow behind the sheet and extends outside the bounds of its parent
@@ -230,7 +233,7 @@ class BottomSheet extends FrameLayout
 
         mMinHalfFullDistance =
                 getResources().getDimensionPixelSize(R.dimen.bottom_sheet_min_full_half_distance);
-
+        mSheetBgColor = SemanticColorUtils.getSheetBgColor(context);
         mGestureDetector = new BottomSheetSwipeDetector(context, this);
         mIsTouchEnabled = true;
     }
@@ -909,6 +912,12 @@ class BottomSheet extends FrameLayout
      */
     public float getSheetContainerWidth() {
         return mContainerWidth;
+    }
+
+    /** Return the background color of the sheet. */
+    @ColorInt
+    int getSheetBackgroundColor() {
+        return mSheetBgColor;
     }
 
     /**

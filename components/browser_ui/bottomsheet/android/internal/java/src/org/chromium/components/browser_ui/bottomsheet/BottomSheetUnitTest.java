@@ -44,6 +44,7 @@ public class BottomSheetUnitTest {
     public void setUp() {
         MockitoAnnotations.openMocks(this);
         Activity activity = buildActivity(Activity.class).setup().get();
+        activity.setTheme(R.style.Theme_BrowserUI_DayNight);
         mBottomSheet =
                 (BottomSheet) LayoutInflater.from(activity).inflate(R.layout.bottom_sheet, null);
         mBottomSheet.setSheetContainerForTesting(mSheetContainer);

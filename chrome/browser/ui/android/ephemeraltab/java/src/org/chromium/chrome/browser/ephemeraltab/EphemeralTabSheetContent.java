@@ -287,8 +287,8 @@ public class EphemeralTabSheetContent implements BottomSheetContent {
     }
 
     @Override
-    public @Nullable Integer getBackgroundColor() {
-        return null;
+    public boolean hasSolidBackgroundColor() {
+        return false;
     }
 
     @Nullable

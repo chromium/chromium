@@ -7,14 +7,12 @@ package org.chromium.components.browser_ui.bottomsheet;
 import android.content.Context;
 import android.view.View;
 
-import androidx.annotation.ColorInt;
 import androidx.annotation.IntDef;
 import androidx.annotation.StringRes;
 
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -65,25 +63,16 @@ public interface BottomSheetContent {
     View getContentView();
 
     /**
-     * Gets the background color for the bottom sheet content, defaulting to the semantic default
-     * background color if no background color is specified by the content. This should return null
-     * if the sheet content is showing tab content / a page preview.
-     */
-    @ColorInt
-    default @Nullable Integer getBackgroundColor() {
-        return SemanticColorUtils.getDefaultBgColor(getContentView().getContext());
-    }
-
-    /**
      * Get the {@link View} that contains the toolbar specific to the content being displayed. If
      * null is returned, the omnibox is used.
      *
      * @return The toolbar view.
      */
-    @Nullable
-    View getToolbarView();
+    @Nullable View getToolbarView();
 
-    /** @return The vertical scroll offset of the content view. */
+    /**
+     * @return The vertical scroll offset of the content view.
+     */
     int getVerticalScrollOffset();
 
     /**
@@ -137,6 +126,14 @@ public interface BottomSheetContent {
      */
     default boolean hasCustomScrimLifecycle() {
         return false;
+    }
+
+    /**
+     * Returns whether this sheet content has a solid background color. Return false when the sheet
+     * is showing complex content like tab content / a page preview.
+     */
+    default boolean hasSolidBackgroundColor() {
+        return true;
     }
 
     /**

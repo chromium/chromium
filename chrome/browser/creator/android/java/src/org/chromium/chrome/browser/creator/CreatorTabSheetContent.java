@@ -278,8 +278,8 @@ public class CreatorTabSheetContent implements BottomSheetContent {
     }
 
     @Override
-    public @Nullable Integer getBackgroundColor() {
-        return null;
+    public boolean hasSolidBackgroundColor() {
+        return false;
     }
 
     @Override

@@ -552,7 +552,7 @@ public class BottomAttachedUiObserver
     @Override
     public void onSheetContentChanged(BottomSheetContent newContent) {
         if (newContent != null) {
-            mBottomSheetColor = newContent.getBackgroundColor();
+            mBottomSheetColor = mBottomSheetController.getSheetBackgroundColor();
         }
         updateBottomAttachedColor();
     }
