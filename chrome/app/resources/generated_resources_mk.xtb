@@ -9964,6 +9964,7 @@
 <translation id="8037801708772278989">Тукушто проверено</translation>
 <translation id="8038111231936746805">(стандардно)</translation>
 <translation id="8039151841428107077">{NUM_OF_FILES,plural, =1{Се копира 1 датотека во <ph name="CLOUD_PROVIDER" />}one{Се копираат {NUM_OF_FILES} датотека во <ph name="CLOUD_PROVIDER" />}other{Се копираат {NUM_OF_FILES} датотеки во <ph name="CLOUD_PROVIDER" />}}</translation>
+<translation id="8039525676147630657">Оваа апликација на Chrome веќе нема да функционира откако ќе се ажурира верзијата на ChromeOS. Зачувајте ги податоци од апликацијата што сакате да ги задржите. За да дознаете повеќе за вашите опции, контактирајте со програмерот на апликацијата или тимот за IT-поддршка.</translation>
 <translation id="8041089156583427627">Испратете повратни информации</translation>
 <translation id="8041093619605951337">Среќно</translation>
 <translation id="8041267120753677077">Стримувајте ги апликациите на телефонот</translation>

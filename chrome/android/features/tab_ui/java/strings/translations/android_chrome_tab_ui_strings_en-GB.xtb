@@ -119,6 +119,7 @@
 <translation id="6051432659151380973">Your tab groups automatically save</translation>
 <translation id="6054741997831917303">The price of this item recently dropped from <ph name="PREVIOUS_PRICE" /> to <ph name="NEW_PRICE" /></translation>
 <translation id="6109251075362363230">All duplicate tabs will now also be archived, with the exception of the most recently used copy.</translation>
+<translation id="61924696525243173">{WINDOW_COUNT,plural, =1{Move group to new window}other{Move group to another window}}</translation>
 <translation id="6193448654517602979">Select tabs</translation>
 <translation id="6220820548421939212">Yes. I'm in</translation>
 <translation id="6228793724645064692">(store rating)</translation>
@@ -174,6 +175,7 @@
 <translation id="7942349550061667556">Red</translation>
 <translation id="7961015016161918242">Never</translation>
 <translation id="7966321538264951561">Dismiss the suggestions.</translation>
+<translation id="796696298310625748">{WINDOW_COUNT,plural, =1{Move tab to new window}other{Move tab to another window}}</translation>
 <translation id="799469866974412355">New group from your other device</translation>
 <translation id="8029301326595421733">Information about this shop opened at full height</translation>
 <translation id="8053770993984522566">Tab group list, opened at half height</translation>
@@ -195,6 +197,7 @@
 <translation id="8730621377337864115">Done</translation>
 <translation id="8730999928494395583">Your activity in these Incognito tabs will be removed from this device</translation>
 <translation id="875848103419578654">{NUM_MONTHS,plural, =1{Created <ph name="NUM_MONTHS_ONE" /> month ago}other{Created <ph name="NUM_MONTHS_MANY" /> months ago}}</translation>
+<translation id="8813708480179818649">Remove tab from group</translation>
 <translation id="8820741577754260431">See price drops on your tabs</translation>
 <translation id="883379923675618699">Chrome automatically closes items in the inactive section that you haven't used in three months. You can turn this off now or at any time in Settings.</translation>
 <translation id="8887921976452567404">Your closed tabs and groups can be reopened from the Recent tabs section and the Tab groups section.</translation>

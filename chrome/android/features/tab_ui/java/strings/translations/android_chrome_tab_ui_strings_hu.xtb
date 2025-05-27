@@ -175,6 +175,7 @@
 <translation id="7942349550061667556">Piros</translation>
 <translation id="7961015016161918242">Soha</translation>
 <translation id="7966321538264951561">Javaslatok elvetése.</translation>
+<translation id="796696298310625748">{WINDOW_COUNT,plural, =1{Lap áthelyezése új ablakba}other{Lap áthelyezése másik ablakba}}</translation>
 <translation id="799469866974412355">Új csoport a másik eszközéről</translation>
 <translation id="8029301326595421733">Az üzlettel kapcsolatos információs panel teljes magasságban meg van nyitva</translation>
 <translation id="8053770993984522566">Lapcsoportlista, félmagasságban megnyitva</translation>
@@ -196,6 +197,7 @@
 <translation id="8730621377337864115">Kész</translation>
 <translation id="8730999928494395583">Az ezeken az inkognitó lapokon végzett tevékenységei el lesznek távolítva erről az eszközről.</translation>
 <translation id="875848103419578654">{NUM_MONTHS,plural, =1{<ph name="NUM_MONTHS_ONE" /> hónapja létrehozva}other{<ph name="NUM_MONTHS_MANY" /> hónapja létrehozva}}</translation>
+<translation id="8813708480179818649">Lap eltávolítása a csoportból</translation>
 <translation id="8820741577754260431">Láthatja az árcsökkenéseket a megnyitott lapokon</translation>
 <translation id="883379923675618699">A Chrome automatikusan bezárja az inaktív szakaszban található olyan elemeket, amelyeket Ön három hónapja nem használt. Ezt most vagy bármikor kikapcsolhatja a Beállításokban.</translation>
 <translation id="8887921976452567404">A bezárt lapok és csoportok újra megnyithatók a Nemrég megnyitott lapok és a Lapcsoportok szakaszban.</translation>

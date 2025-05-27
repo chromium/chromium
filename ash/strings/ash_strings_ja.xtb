@@ -761,6 +761,7 @@
 <translation id="3552189655002856821">Wi-Fi はオフです</translation>
 <translation id="3554215588514239132">デベロッパー ツール パネルの表示と非表示を切り替える</translation>
 <translation id="3554637740840164787"><ph name="ITEM_TITLE" /> を固定しました</translation>
+<translation id="3554928024630051016">他の USB デバイスを追加するには、1 つ取り外してから新しいデバイスを接続してください</translation>
 <translation id="3558768885091059911">カメラとマイクへのアクセスをオンにしますか？</translation>
 <translation id="3560174576767922131">動画を撮影</translation>
 <translation id="3563775809269155755">アクセス ポイントを有効にする</translation>
@@ -868,6 +869,7 @@
 <translation id="3861651314799684201">全画面を録画するには Enter キーを押してください</translation>
 <translation id="3870197372373144624">デバイスをシャットダウンしてみてください。</translation>
 <translation id="3879748587602334249">ダウンロード マネージャ</translation>
+<translation id="3884007280698606545">USB の上限に達しました</translation>
 <translation id="3886872229787704059">今日開いたファイル</translation>
 <translation id="3891340733213178823">ログアウトするには、Ctrl+Shift+Q を 2 回押します。</translation>
 <translation id="3892148308691398805">テキストをコピー</translation>

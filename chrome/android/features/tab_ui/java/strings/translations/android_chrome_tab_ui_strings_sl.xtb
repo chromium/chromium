@@ -175,6 +175,7 @@
 <translation id="7942349550061667556">Rdeča</translation>
 <translation id="7961015016161918242">Nikoli</translation>
 <translation id="7966321538264951561">Opustitev predlogov.</translation>
+<translation id="796696298310625748">{WINDOW_COUNT,plural, =1{Premakni zavihek v novo okno}one{Premakni zavihek v drugo okno}two{Premakni zavihek v drugo okno}few{Premakni zavihek v drugo okno}other{Premakni zavihek v drugo okno}}</translation>
 <translation id="799469866974412355">Nova skupina iz druge naprave</translation>
 <translation id="8029301326595421733">Informacije o tej trgovini, odprte pri polni višini.</translation>
 <translation id="8053770993984522566">Seznam skupin zavihkov, odprt pri polovični višini</translation>
@@ -196,6 +197,7 @@
 <translation id="8730621377337864115">Končano</translation>
 <translation id="8730999928494395583">Vaša dejavnost na teh anonimnih zavihkih bo odstranjena iz te naprave</translation>
 <translation id="875848103419578654">{NUM_MONTHS,plural, =1{Ustvarjeno pred <ph name="NUM_MONTHS_ONE" /> mesecem}one{Ustvarjeno pred <ph name="NUM_MONTHS_MANY" /> mesecem}two{Ustvarjeno pred <ph name="NUM_MONTHS_MANY" /> mesecema}few{Ustvarjeno pred <ph name="NUM_MONTHS_MANY" /> meseci}other{Ustvarjeno pred <ph name="NUM_MONTHS_MANY" /> meseci}}</translation>
+<translation id="8813708480179818649">Odstrani zavihek iz skupine</translation>
 <translation id="8820741577754260431">Oglejte si znižanja cen na zavihkih.</translation>
 <translation id="883379923675618699">Chrome samodejno zapre elemente v neaktivnem razdelku, ki jih niste uporabljali 3 mesece. To lahko izklopite zdaj ali kadar koli v nastavitvah.</translation>
 <translation id="8887921976452567404">Zaprte zavihke in skupine je mogoče znova odpreti v razdelku Nedavni zavihki in razdelku Skupine zavihkov.</translation>

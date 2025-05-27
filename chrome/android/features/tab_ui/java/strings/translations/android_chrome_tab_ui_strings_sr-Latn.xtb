@@ -175,6 +175,7 @@
 <translation id="7942349550061667556">Crvena</translation>
 <translation id="7961015016161918242">Nikad</translation>
 <translation id="7966321538264951561">Odbacite predloge.</translation>
+<translation id="796696298310625748">{WINDOW_COUNT,plural, =1{Premestite karticu u nov prozor}one{Premestite karticu u drugi prozor}few{Premestite karticu u drugi prozor}other{Premestite karticu u drugi prozor}}</translation>
 <translation id="799469866974412355">Nova grupa sa drugog uređaja</translation>
 <translation id="8029301326595421733">Informacije o ovoj prodavnici su otvorene na celom ekranu</translation>
 <translation id="8053770993984522566">Lista grupa kartica, otvorena do polovine ekrana</translation>
@@ -196,6 +197,7 @@
 <translation id="8730621377337864115">Gotovo</translation>
 <translation id="8730999928494395583">Vaše aktivnosti na ovim karticama bez arhiviranja će biti uklonjene sa ovog uređaja</translation>
 <translation id="875848103419578654">{NUM_MONTHS,plural, =1{Napravljeno je pre <ph name="NUM_MONTHS_ONE" /> mesec}one{Napravljeno je pre <ph name="NUM_MONTHS_MANY" /> mesec}few{Napravljeno je pre <ph name="NUM_MONTHS_MANY" /> meseca}other{Napravljeno je pre <ph name="NUM_MONTHS_MANY" /> meseca}}</translation>
+<translation id="8813708480179818649">Uklonite karticu iz grupe</translation>
 <translation id="8820741577754260431">Pregledajte sniženja na karticama</translation>
 <translation id="883379923675618699">Chrome automatski zatvara stavke u odeljku Neaktivno koje niste koristili 3 meseca. To možete da isključite odmah ili bilo kada u Podešavanjima.</translation>
 <translation id="8887921976452567404">Zatvorene kartice i grupe možete ponovo da otvorite u odeljku Nedavne kartice i odeljku Grupe kartica.</translation>

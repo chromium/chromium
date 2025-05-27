@@ -9947,6 +9947,7 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="8037801708772278989">A comprobación realizouse agora mesmo</translation>
 <translation id="8038111231936746805">(predeterminado)</translation>
 <translation id="8039151841428107077">{NUM_OF_FILES,plural, =1{Copiando 1 ficheiro en <ph name="CLOUD_PROVIDER" />}other{Copiando {NUM_OF_FILES} ficheiros en <ph name="CLOUD_PROVIDER" />}}</translation>
+<translation id="8039525676147630657">Esta aplicación de Chrome deixará de funcionar cando se actualice a versión de ChromeOS. Garda os datos da aplicación que queiras conservar. Para obter máis información sobre as opcións dispoñibles, ponte en contacto con quen programou a aplicación ou co teu equipo do servizo de asistencia de TI.</translation>
 <translation id="8041089156583427627">Enviar comentarios</translation>
 <translation id="8041093619605951337">Feliz</translation>
 <translation id="8041267120753677077">Emite as aplicacións do teu teléfono</translation>

@@ -80,6 +80,7 @@
 <translation id="1049743911850919806">Инкогнито</translation>
 <translation id="1049795001945932310">&amp;Язык</translation>
 <translation id="1050693411695664090">низкое</translation>
+<translation id="1053226848101751430">Запись удалена</translation>
 <translation id="1053898984916097744">Находите то, что вам нужно, не закрывая клавиатуру.</translation>
 <translation id="1054048317165655285">Завершите настройку на телефоне</translation>
 <translation id="1054153489933238809">Открыть оригинальное изображение в новой вкладке</translation>
@@ -2228,6 +2229,7 @@
 <translation id="2519250377986324805">Подробнее</translation>
 <translation id="2519517390894391510">Название сертификата</translation>
 <translation id="2520644704042891903">Ожидание доступного сокета...</translation>
+<translation id="2520961587246779103">Ещё настройки режима Split View</translation>
 <translation id="2521427645491031107">Параметры синхронизации приложений задаются в системных настройках</translation>
 <translation id="2521835766824839541">предыдущий трек</translation>
 <translation id="2521854691574443804">Проверка файла <ph name="FILE_NAME" /> на соответствие правилам безопасности вашей организации…</translation>
@@ -3173,6 +3175,7 @@
 <translation id="3202578601642193415">Последние</translation>
 <translation id="3204648577100496185">Данные, связанные с этим приложением, могут быть удалены с устройства.</translation>
 <translation id="3204717934117444051">Данные, которые хранятся только на этом устройстве, останутся в существующем профиле. Они не будут синхронизированы с аккаунтом <ph name="EMAIL" />.</translation>
+<translation id="3206289903841621620">Пользовательский словарь <ph name="NUMBER" /></translation>
 <translation id="3207344462385471911">На основании ваших недавних действий мы показываем варианты поисковых запросов и скидки, которые могут вас заинтересовать.
         <ph name="BREAK" />
         <ph name="BREAK" />
@@ -10009,6 +10012,7 @@
 <translation id="8073499153683482226"><ph name="BEGIN_PARAGRAPH1" />Данные приложений – это любая информация, которую приложения сохраняют в соответствии с настройками разработчика. Она может включать контакты, сообщения, фотографии и многое другое.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Данные резервных копий не занимают место в хранилище Google Диска.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />Вы можете отключить эту функцию в настройках.<ph name="END_PARAGRAPH3" /></translation>
+<translation id="8075044377771022666">Нижний колонтитул</translation>
 <translation id="8076835018653442223">Доступ к локальным файлам на вашем устройстве отключен администратором.</translation>
 <translation id="8077120325605624147">Реклама может показываться на любом посещаемом сайте</translation>
 <translation id="8077579734294125741">Другие профили Chrome</translation>
@@ -10944,6 +10948,7 @@
 <translation id="8729133765463465108">Использовать камеру для сканирования QR-кода</translation>
 <translation id="8730621377337864115">Готово</translation>
 <translation id="8731029916209785242">Разрешения (<ph name="FORMATTED_ORIGIN" />)</translation>
+<translation id="8731258351357994801">Запись <ph name="NUMBER" /></translation>
 <translation id="8731268612289859741">CVC-код</translation>
 <translation id="8731629443331803108">Сайт <ph name="SITE_NAME" /> запрашивает следующее разрешение: <ph name="PERMISSION" /></translation>
 <translation id="8731787661154643562">Номер порта</translation>

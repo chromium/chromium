@@ -9961,6 +9961,7 @@
 <translation id="8037801708772278989">अभी-अभी जांच की गई</translation>
 <translation id="8038111231936746805">(डिफ़ॉल्ट)</translation>
 <translation id="8039151841428107077">{NUM_OF_FILES,plural, =1{<ph name="CLOUD_PROVIDER" /> में 1 फ़ाइल कॉपी की जा रही है}one{<ph name="CLOUD_PROVIDER" /> में {NUM_OF_FILES} फ़ाइल कॉपी की जा रही है}other{<ph name="CLOUD_PROVIDER" /> में {NUM_OF_FILES} फ़ाइलें कॉपी की जा रही हैं}}</translation>
+<translation id="8039525676147630657">ChromeOS का वर्शन अपडेट होने के बाद, यह Chrome ऐप्लिकेशन काम करना बंद कर देगा. इसलिए, ऐप्लिकेशन का ज़रूरी डेटा सेव कर लें. आपके लिए उपलब्ध विकल्पों के बारे में जानने के लिए, ऐप्लिकेशन डेवलपर या अपनी आईटी सहायता टीम से संपर्क करें.</translation>
 <translation id="8041089156583427627">सुझाव भेजें</translation>
 <translation id="8041093619605951337">खुशी</translation>
 <translation id="8041267120753677077">अपने फ़ोन के ऐप्लिकेशन स्ट्रीम करें</translation>
@@ -10013,6 +10014,7 @@
 <translation id="8073499153683482226"><ph name="BEGIN_PARAGRAPH1" />ऐप्लिकेशन डेटा ऐसा कोई भी डेटा हो सकता है जिसे किसी ऐप्लिकेशन ने (डेवलपर सेटिंग के हिसाब से) सेव किया है, इसमें संपर्क, मैसेज और फ़ोटो जैसा डेटा शामिल है.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />बैकअप डेटा को आपके बच्चे के 'डिस्क' के स्टोरेज कोटा में शामिल नहीं किया जाएगा.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />आप सेटिंग में जाकर इस सेवा को बंद कर सकते हैं.<ph name="END_PARAGRAPH3" /></translation>
+<translation id="8075044377771022666">फ़ुटर</translation>
 <translation id="8076835018653442223">आपके एडमिन ने आपके डिवाइस की स्थानीय फ़ाइलों का एक्सेस बंद कर दिया है</translation>
 <translation id="8077120325605624147">किसी भी साइट को देखने पर, आपको कोई भी विज्ञापन दिख सकता है</translation>
 <translation id="8077579734294125741">Chrome की अन्य प्रोफ़ाइलें</translation>

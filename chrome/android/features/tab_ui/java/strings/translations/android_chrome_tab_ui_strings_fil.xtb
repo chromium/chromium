@@ -175,6 +175,7 @@
 <translation id="7942349550061667556">Pula</translation>
 <translation id="7961015016161918242">Hindi Kailanman</translation>
 <translation id="7966321538264951561">I-dismiss ang mga suhestyon.</translation>
+<translation id="796696298310625748">{WINDOW_COUNT,plural, =1{Ilipat ang tab sa bagong window}one{Ilipat ang tab sa ibang window}other{Ilipat ang tab sa ibang window}}</translation>
 <translation id="799469866974412355">Bagong grupo mula sa isa mo pang device</translation>
 <translation id="8029301326595421733">Binuksan ang impormasyon tungkol sa store na ito nang buo ang taas</translation>
 <translation id="8053770993984522566">Listahan ng grupo ng tab, na binuksan nang kalahati</translation>
@@ -196,6 +197,7 @@
 <translation id="8730621377337864115">Tapos na</translation>
 <translation id="8730999928494395583">Maaalis sa device na ito ang iyong aktibidad sa mga tab na Incognito na ito</translation>
 <translation id="875848103419578654">{NUM_MONTHS,plural, =1{Ginawa <ph name="NUM_MONTHS_ONE" /> buwan ang nakalipas}one{Ginawa <ph name="NUM_MONTHS_MANY" /> buwan ang nakalipas}other{Ginawa <ph name="NUM_MONTHS_MANY" /> na buwan ang nakalipas}}</translation>
+<translation id="8813708480179818649">Alisin ang tab sa grupo</translation>
 <translation id="8820741577754260431">Tingnan ang mga pagbaba ng presyo sa iyong mga tab</translation>
 <translation id="883379923675618699">Awtomatikong isinasara ng Chrome ang mga item sa seksyon ng mga hindi aktibong item na hindi mo nagamit sa loob ng 3 buwan. Puwede mo itong i-off ngayon o anumang oras sa Mga Setting.</translation>
 <translation id="8887921976452567404">Puwedeng mabuksan ulit ang mga isinara mong tab at grupo mula sa seksyong Mga kamakailang tab at sa seksyong Mga grupo ng tab.</translation>

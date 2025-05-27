@@ -119,6 +119,7 @@
 <translation id="6051432659151380973">Қойындылар топтары автоматты түрде сақталады.</translation>
 <translation id="6054741997831917303">Бұл тауардың бағасы жақында түсті. Ескі бағасы: <ph name="PREVIOUS_PRICE" />, жаңа бағасы: <ph name="NEW_PRICE" /></translation>
 <translation id="6109251075362363230">Ең соңғы қолданылған көшірмені есепке алмағанда, барлық қайталанатын қойынды да мұрағатталады.</translation>
+<translation id="61924696525243173">{WINDOW_COUNT,plural, =1{Топты жаңа терезеге тасымалдау}other{Топты басқа терезеге тасымалдау}}</translation>
 <translation id="6193448654517602979">Қойындыларды таңдау</translation>
 <translation id="6220820548421939212">Иә. Жарайды</translation>
 <translation id="6228793724645064692">(дүкен рейтингісі)</translation>

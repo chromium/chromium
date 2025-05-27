@@ -175,6 +175,7 @@
 <translation id="7942349550061667556">Vermelho</translation>
 <translation id="7961015016161918242">Nunca</translation>
 <translation id="7966321538264951561">Ignore as sugestões.</translation>
+<translation id="796696298310625748">{WINDOW_COUNT,plural, =1{Mover separador para nova janela}other{Mover separador para outra janela}}</translation>
 <translation id="799469866974412355">Novo grupo do seu outro dispositivo</translation>
 <translation id="8029301326595421733">Informações acerca desta loja abertas à altura total</translation>
 <translation id="8053770993984522566">Lista de grupos de separadores, aberta a meia altura</translation>
@@ -196,6 +197,7 @@
 <translation id="8730621377337864115">Concluído</translation>
 <translation id="8730999928494395583">A sua atividade nestes separadores de navegação anónima vai ser removida deste dispositivo</translation>
 <translation id="875848103419578654">{NUM_MONTHS,plural, =1{Criado há <ph name="NUM_MONTHS_ONE" /> mês}other{Criado há <ph name="NUM_MONTHS_MANY" /> meses}}</translation>
+<translation id="8813708480179818649">Remover separador do grupo</translation>
 <translation id="8820741577754260431">Veja as descidas de preços nos seus separadores.</translation>
 <translation id="883379923675618699">O Chrome fecha automaticamente os itens na secção inativa que não usa há 3 meses. Pode desativar esta funcionalidade agora ou em qualquer altura nas Definições.</translation>
 <translation id="8887921976452567404">É possível reabrir os separadores e os grupos fechados a partir das secções Separadores recentes e Grupos de separadores.</translation>

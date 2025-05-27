@@ -119,6 +119,7 @@
 <translation id="6051432659151380973">Tus grupos de pestañas se guardan automáticamente</translation>
 <translation id="6054741997831917303">El precio de este artículo recientemente bajó de <ph name="PREVIOUS_PRICE" /> a <ph name="NEW_PRICE" /></translation>
 <translation id="6109251075362363230">Ahora también se archivarán todas las pestañas duplicadas, excepto la copia más reciente.</translation>
+<translation id="61924696525243173">{WINDOW_COUNT,plural, =1{Mover grupo a ventana nueva}other{Mover grupo a otra ventana}}</translation>
 <translation id="6193448654517602979">Seleccionar pestañas</translation>
 <translation id="6220820548421939212">Sí. Acepto</translation>
 <translation id="6228793724645064692">(calificación de la tienda)</translation>

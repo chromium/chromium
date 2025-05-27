@@ -175,6 +175,7 @@
 <translation id="7942349550061667556">Nyekundu</translation>
 <translation id="7961015016161918242">Katu</translation>
 <translation id="7966321538264951561">Ondoa mapendekezo.</translation>
+<translation id="796696298310625748">{WINDOW_COUNT,plural, =1{Hamishia kichupo kwenye dirisha jipya}other{Hamishia kichupo kwenye dirisha lingine}}</translation>
 <translation id="799469866974412355">Kikundi kipya kutoka kwenye kifaa chako kingine</translation>
 <translation id="8029301326595421733">Maelezo kuhusu duka hili yamefunguliwa kwenye skrini nzima</translation>
 <translation id="8053770993984522566">Orodha ya kikundi cha vichupo imefunguliwa katika skrini nusu</translation>
@@ -196,6 +197,7 @@
 <translation id="8730621377337864115">Nimemaliza</translation>
 <translation id="8730999928494395583">Shughuli yako katika vichupo fiche hivi itaondolewa kwenye kifaa hiki</translation>
 <translation id="875848103419578654">{NUM_MONTHS,plural, =1{Kiliundwa mwezi <ph name="NUM_MONTHS_ONE" /> uliopita}other{Kiliundwa miezi <ph name="NUM_MONTHS_MANY" /> iliyopita}}</translation>
+<translation id="8813708480179818649">Ondoa kichupo kwenye kikundi</translation>
 <translation id="8820741577754260431">Angalia puzungo la bei kwenye vichupo vyako</translation>
 <translation id="883379923675618699">Chrome hufunga vipengee kiotomatiki katika sehemu ya vipengee visivyotumika ambavyo hujatumia kwa miezi 3. Unaweza kuzima hali hii sasa au wakati wowote kwenye Mipangilio.</translation>
 <translation id="8887921976452567404">Vichupo na vikundi ulivyofunga vinaweza kufunguliwa upya katika sehemu ya Vichupo vya hivi karibuni na sehemu ya Vikundi vya vichupo.</translation>

@@ -761,6 +761,7 @@ Jika tidak, touchpad bawaan akan diaktifkan kembali dalam <ph name="TIMEOUT_SECO
 <translation id="3552189655002856821">Wi-Fi dinonaktifkan</translation>
 <translation id="3554215588514239132">Tampilkan atau sembunyikan panel Developer Tools</translation>
 <translation id="3554637740840164787"><ph name="ITEM_TITLE" /> telah dipasangi pin</translation>
+<translation id="3554928024630051016">Untuk menambahkan perangkat USB tambahan, coba lepaskan salah satu perangkat lebih dulu, lalu colokkan perangkat baru</translation>
 <translation id="3558768885091059911">Aktifkan akses kamera dan mikrofon?</translation>
 <translation id="3560174576767922131">Rekam video</translation>
 <translation id="3563775809269155755">Aktifkan hotspot</translation>
@@ -868,6 +869,7 @@ Hubungkan perangkat ke sumber listrik.</translation>
 <translation id="3861651314799684201">Tekan Enter untuk merekam dalam layar penuh</translation>
 <translation id="3870197372373144624">Coba matikan perangkat.</translation>
 <translation id="3879748587602334249">Pengelola download</translation>
+<translation id="3884007280698606545">Batas USB tercapai</translation>
 <translation id="3886872229787704059">Dibuka hari ini</translation>
 <translation id="3891340733213178823">Tekan Ctrl+Shift+Q dua kali untuk keluar.</translation>
 <translation id="3892148308691398805">Salin teks</translation>

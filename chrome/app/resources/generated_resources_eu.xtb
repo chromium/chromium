@@ -9940,6 +9940,7 @@ Gorde gakoen fitxategia leku seguru batean. Zure luzapenaren bertsio berriak sor
 <translation id="8037801708772278989">Oraintxe bertan egiaztatu da</translation>
 <translation id="8038111231936746805">(lehenetsia)</translation>
 <translation id="8039151841428107077">{NUM_OF_FILES,plural, =1{1 fitxategi <ph name="CLOUD_PROVIDER" />-n kopiatzen}other{{NUM_OF_FILES} fitxategi <ph name="CLOUD_PROVIDER" />-n kopiatzen}}</translation>
+<translation id="8039525676147630657">Chrome-ren aplikazio honek funtzionatzeari utziko dio ChromeOS-en bertsioa eguneratzen denean. Gorde mantendu nahi dituzun aplikazioko datuak. Dauzkazun aukerak ezagutzeko, jarri aplikazioaren garatzailearekin edo zure IKT saileko laguntza-taldearekin harremanetan.</translation>
 <translation id="8041089156583427627">Bidali oharrak</translation>
 <translation id="8041093619605951337">Pozik</translation>
 <translation id="8041267120753677077">Igorri zuzenean telefonoko aplikazioak</translation>

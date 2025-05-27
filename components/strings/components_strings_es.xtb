@@ -636,6 +636,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="2088913896151127116">Añadir texto</translation>
 <translation id="2090451897496479509">Ponte en contacto con el proveedor para obtener más información</translation>
 <translation id="2091887806945687916">Sonido</translation>
+<translation id="2093184051799735948">Busca en <ph name="ENGINE_NAME" /> o escribe una URL</translation>
 <translation id="2093982008204312032">Google Chrome está intentando desactivar Windows Hello para completar contraseñas.</translation>
 <translation id="2094505752054353250">El dominio no coincide</translation>
 <translation id="2094704029599359040">Información de la versión</translation>
@@ -703,7 +704,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="2188375229972301266">Perforado múltiple en la parte inferior</translation>
 <translation id="2194856509914051091">Notas importantes</translation>
 <translation id="2200678913752027654">Botón No me gusta. Pulsa Intro para abrir un formulario y enviar comentarios detallados sobre por qué no te gusta esta sugerencia.</translation>
-<translation id="2202627062836089804">reverso de tu tarjeta</translation>
+<translation id="2202627062836089804">reverso</translation>
 <translation id="2204482073374652408">La actualización ha finalizado.</translation>
 <translation id="2207770355672215546">Permitir siempre con cualquier tarjeta</translation>
 <translation id="2208053750671792556">¿No has recibido tu código? <ph name="IDS_AUTOFILL_CARD_UNMASK_OTP_INPUT_DIALOG_NEW_CODE_MESSAGE" /></translation>
@@ -4420,7 +4421,7 @@ Más información:
 <translation id="8590264442799989746"><ph name="HOST_NAME" /> y más</translation>
 <translation id="8597726363542221027">Vehículos de segunda mano</translation>
 <translation id="8600271352425265729">Solo esta vez</translation>
-<translation id="860043288473659153">Nombre del titular de la tarjeta</translation>
+<translation id="860043288473659153">Titular de la tarjeta</translation>
 <translation id="8601027005147870853"><ph name="BEGIN_BOLD" />Qué datos se usan:<ph name="END_BOLD" /> tu actividad en un sitio que visites usando Chrome en este dispositivo.</translation>
 <translation id="8601456038554914806">Equipamiento de deportes náuticos</translation>
 <translation id="8601782593888534566">Ciencia ficción y fantasía</translation>

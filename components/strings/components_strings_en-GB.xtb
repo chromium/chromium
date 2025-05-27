@@ -636,6 +636,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2088913896151127116">Add text</translation>
 <translation id="2090451897496479509">Contact the provider for more information</translation>
 <translation id="2091887806945687916">Sound</translation>
+<translation id="2093184051799735948">Search <ph name="ENGINE_NAME" /> or type URL</translation>
 <translation id="2093982008204312032">Google Chrome is trying to turn off Windows Hello for filling passwords.</translation>
 <translation id="2094505752054353250">Domain mismatch</translation>
 <translation id="2094704029599359040">Version information</translation>
@@ -770,6 +771,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2296331629987861142">Pay in easy instalments (subject to eligibility, fees apply)</translation>
 <translation id="2300306941146563769">Not uploaded</translation>
 <translation id="2301098101308036335">Which websites are visited and when.</translation>
+<translation id="2302571905116831849">Autofill loyalty card</translation>
 <translation id="230286397113210245">Open Incognito window button, activate to open a new Incognito window to browse privately</translation>
 <translation id="2305294852062272447">Save driving licence?</translation>
 <translation id="2306124309679506798">Allow an immersive experience?</translation>
@@ -2446,6 +2448,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="519422657042045905">Annotation not available</translation>
 <translation id="5200063972779787617">Save address in account</translation>
 <translation id="5201306358585911203">An embedded page on this page says</translation>
+<translation id="5203716867500274632">Your administrator enabled the following to be synced between your previous and current sessions across your ChromeOS devices:</translation>
 <translation id="5205114269877707377"><ph name="OMNIBOX_ACTION_FOCUSED_FRIENDLY_MATCH_TEXT" />, press Tab to browse available actions, then Enter to execute selected action.</translation>
 <translation id="5205222826937269299">Name required</translation>
 <translation id="5206392433295093945">Bedroom</translation>
@@ -2605,6 +2608,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="5472588168895083535">Hand tracking blocked</translation>
 <translation id="547963486735802022">Try transferring your files again</translation>
 <translation id="5481076368049295676">This content might try to install dangerous software on your device that steals or deletes your information. <ph name="BEGIN_LINK" />Show anyway<ph name="END_LINK" /></translation>
+<translation id="5481604577800516617">Windows and tabs arrangement</translation>
 <translation id="5481682542063333508">Offer writing help</translation>
 <translation id="54817484435770891">Add valid address</translation>
 <translation id="5483838506518938965">You're all set</translation>
@@ -4279,6 +4283,7 @@ Additional details:
 <translation id="8352849934814541340">The administrator of this device has installed applications for additional functions. Applications have access to some of your data.</translation>
 <translation id="8355270400102541638">Local crash context:</translation>
 <translation id="8363502534493474904">Turning off aeroplane mode</translation>
+<translation id="8363929499301563123">Website cookies (signed-in state on recently visited websites will be preserved)</translation>
 <translation id="8364627913115013041">Not set.</translation>
 <translation id="8366057325711477500">World news</translation>
 <translation id="836616551641291797">Learn more about how your browser is managed</translation>

@@ -175,6 +175,7 @@
 <translation id="7942349550061667556">Rød</translation>
 <translation id="7961015016161918242">Aldri</translation>
 <translation id="7966321538264951561">Avvis forslagene.</translation>
+<translation id="796696298310625748">{WINDOW_COUNT,plural, =1{Flytt fanen til et nytt vindu}other{Flytt fanen til et annet vindu}}</translation>
 <translation id="799469866974412355">Ny gruppe fra den andre enheten</translation>
 <translation id="8029301326595421733">Informasjon om denne butikken er åpnet i full høyde</translation>
 <translation id="8053770993984522566">Liste over fanegrupper, åpnet i halv høyde</translation>
@@ -196,6 +197,7 @@
 <translation id="8730621377337864115">Ferdig</translation>
 <translation id="8730999928494395583">Aktiviteten din på disse inkognitofanene blir fjernet fra denne enheten</translation>
 <translation id="875848103419578654">{NUM_MONTHS,plural, =1{Opprettet for <ph name="NUM_MONTHS_ONE" /> måned siden}other{Opprettet for <ph name="NUM_MONTHS_MANY" /> måneder siden}}</translation>
+<translation id="8813708480179818649">Fjern fanen fra gruppe</translation>
 <translation id="8820741577754260431">Se avslag på fanene dine</translation>
 <translation id="883379923675618699">Chrome lukker automatisk elementer i den inaktive delen som du ikke har brukt på tre måneder. Du kan slå dette av nå eller når som helst i innstillingene.</translation>
 <translation id="8887921976452567404">Du kan gjenåpne de lukkede fanene og gruppene dine via Nylige faner-delen og Fanegrupper-delen.</translation>

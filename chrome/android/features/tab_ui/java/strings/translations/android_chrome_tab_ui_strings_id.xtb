@@ -119,6 +119,7 @@
 <translation id="6051432659151380973">Grup tab Anda otomatis disimpan</translation>
 <translation id="6054741997831917303">Harga item ini baru-baru ini turun dari <ph name="PREVIOUS_PRICE" /> ke <ph name="NEW_PRICE" /></translation>
 <translation id="6109251075362363230">Semua tab duplikat kini juga akan diarsipkan, kecuali salinan yang terakhir digunakan.</translation>
+<translation id="61924696525243173">{WINDOW_COUNT,plural, =1{Pindahkan grup ke jendela baru}other{Pindahkan grup ke jendela lain}}</translation>
 <translation id="6193448654517602979">Pilih tab</translation>
 <translation id="6220820548421939212">Ya. Izinkan</translation>
 <translation id="6228793724645064692">(rating toko)</translation>
@@ -174,6 +175,7 @@
 <translation id="7942349550061667556">Merah</translation>
 <translation id="7961015016161918242">Jangan pernah</translation>
 <translation id="7966321538264951561">Tutup saran.</translation>
+<translation id="796696298310625748">{WINDOW_COUNT,plural, =1{Pindahkan tab ke jendela baru}other{Pindahkan tab ke jendela lain}}</translation>
 <translation id="799469866974412355">Grup baru dari perangkat Anda yang lain</translation>
 <translation id="8029301326595421733">Informasi tentang toko ini terbuka sepenuhnya</translation>
 <translation id="8053770993984522566">Daftar grup tab, terbuka setengah</translation>
@@ -195,6 +197,7 @@
 <translation id="8730621377337864115">Selesai</translation>
 <translation id="8730999928494395583">Aktivitas Anda di tab Samaran ini akan dihapus dari perangkat ini</translation>
 <translation id="875848103419578654">{NUM_MONTHS,plural, =1{Dibuat <ph name="NUM_MONTHS_ONE" /> bulan lalu}other{Dibuat <ph name="NUM_MONTHS_MANY" /> bulan lalu}}</translation>
+<translation id="8813708480179818649">Hapus tab dari grup</translation>
 <translation id="8820741577754260431">Lihat diskon di tab</translation>
 <translation id="883379923675618699">Chrome otomatis menutup item di tab tidak aktif yang tidak Anda gunakan selama 3 bulan. Anda dapat menonaktifkannya sekarang atau kapan saja di Setelan.</translation>
 <translation id="8887921976452567404">Tab dan grup yang ditutup dapat dibuka kembali dari bagian Tab terbaru dan bagian Grup tab.</translation>

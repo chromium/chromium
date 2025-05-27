@@ -761,6 +761,7 @@ U suprotnom će ugrađeni tačped biti ponovo omogućen za <ph name="TIMEOUT_S
 <translation id="3552189655002856821">WiFi je isključen</translation>
 <translation id="3554215588514239132">Prikaži ili sakrij okno Alatke za programere</translation>
 <translation id="3554637740840164787">Stavka <ph name="ITEM_TITLE" /> je zakačena</translation>
+<translation id="3554928024630051016">Da biste dodali još USB uređaja, probajte da uklonite neki, pa priključite novi uređaj</translation>
 <translation id="3558768885091059911">Želite da uključite pristup kameri i mikrofonu?</translation>
 <translation id="3560174576767922131">Snimi video</translation>
 <translation id="3563775809269155755">Omogući hotspot</translation>
@@ -868,6 +869,7 @@ Priključite uređaj na napajanje.</translation>
 <translation id="3861651314799684201">Pritisnite Enter da biste snimili ceo ekran</translation>
 <translation id="3870197372373144624">Probajte da isključite uređaj.</translation>
 <translation id="3879748587602334249">Menadžer preuzimanja</translation>
+<translation id="3884007280698606545">Ograničenje za USB je dostignuto</translation>
 <translation id="3886872229787704059">Otvarano danas</translation>
 <translation id="3891340733213178823">Dvaput pritisnite Ctrl+Shift+Q da biste se odjavili.</translation>
 <translation id="3892148308691398805">Kopiraj tekst</translation>

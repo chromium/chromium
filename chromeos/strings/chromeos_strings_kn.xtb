@@ -221,6 +221,7 @@
 <translation id="181434555916624618">ಸದ್ಯಕ್ಕೆ, ಜನರನ್ನು ಹೊಂದಿರುವ ಫಲಿತಾಂಶಗಳನ್ನು ತೋರಿಸಲಾಗುವುದಿಲ್ಲ. ಬೇರೆ ಪ್ರಾಂಪ್ಟ್‌ ಅನ್ನು ಬಳಸಿ ನೋಡಿ.</translation>
 <translation id="1815850098929213707">ಆಯ್ಕೆಮಾಡಿರುವ ಕೀ <ph name="KEYS" /> ಆಗಿದೆ. ನಿಯಂತ್ರಣವನ್ನು ಎಡಿಟ್ ಮಾಡಲು ಬಟನ್ ಮೇಲೆ ಟ್ಯಾಪ್ ಮಾಡಿ</translation>
 <translation id="1818174214124933000">ನೀವು ಕಳುಹಿಸಿ ಅನ್ನು ಆಯ್ಕೆಮಾಡಿದಾಗ, ನಿಮ್ಮ ಫೀಡ್‌ಬ್ಯಾಕ್ ಮತ್ತು ಕಂಟೆಂಟ್ ಅನ್ನು (ಕೆಳಗೆ ತೋರಿಸಲಾಗಿದೆ) Google ಗೆ ಕಳುಹಿಸಲಾಗುತ್ತದೆ, ಮಾನವರಿಂದ ಪರಿಶೀಲಿಸಲಾಗುತ್ತದೆ ಮತ್ತು <ph name="LINK_POLICY_BEGIN" />ಗೌಪ್ಯತೆ ನೀತಿ<ph name="LINK_POLICY_END" /> ಮತ್ತು <ph name="LINK_TERMS_OF_SERVICE_BEGIN" />Google ಸೇವಾ ನಿಯಮಗಳಿಗೆ<ph name="LINK_TERMS_OF_SERVICE_END" /> ಒಳಪಟ್ಟು ನಮ್ಮ ಉತ್ಪನ್ನಗಳು ಮತ್ತು ಸೇವೆಗಳನ್ನು ತರಬೇತಿಗೊಳಿಸಲು ಅಥವಾ ಸುಧಾರಿಸಲು ಬಳಸಲಾಗುತ್ತದೆ.</translation>
+<translation id="1821075635029692203">ನಿಮ್ಮ ಶಿಕ್ಷಕರು ಬೆಂಬಲಿತವಲ್ಲದ ಮಾಹಿತಿಯ ಮೂಲನ್ನು ಕಳುಹಿಸಿದ್ದಾರೆ. ಅವರಿಗೆ ತಿಳಿಸಿ.</translation>
 <translation id="1823120442877418684">ಪಾತ್ರಗಳು</translation>
 <translation id="1827738518074806965">ಆರ್ಟ್ ಗ್ಯಾಲರಿ</translation>
 <translation id="183287940576828840">ಆಕ್ಷೇಪಾರ್ಹ/ಅಸುರಕ್ಷಿತವಾಗಿದೆ</translation>
@@ -477,6 +478,7 @@
 <translation id="3091839911843451378">ವಿಫಲವಾಗಿದೆ - ನಿಲ್ಲಿಸಲಾಗಿದೆ</translation>
 <translation id="3102119246920354026">ಸಂಗ್ರಹ</translation>
 <translation id="3103783611481501187">ಅತಿವಾಸ್ತವಿಕವಾದ</translation>
+<translation id="3119672627216736407">ಅನುವಾದವು ಲಭ್ಯವಿದೆ</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3122614491980756867">ಪೂಲ್‌ಗಳು</translation>
 <translation id="3122883569442693641">ಇನ್ನಷ್ಟು ವಿವರಗಳು</translation>
@@ -1137,6 +1139,7 @@
 <translation id="6058625436358447366">ಪೂರ್ಣಗೊಳಿಸಲು, ನಿಮ್ಮ ಹಳೆಯ ಹಾಗೂ ಹೊಸ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ನಮೂದಿಸಿ</translation>
 <translation id="6061772781719867950">HTTP ವಿನಂತಿಗಳು ವಿಫಲವಾಗಿವೆ</translation>
 <translation id="6073292342939316679">ಕೀಬೋರ್ಡ್ ಪ್ರಖರತೆಯನ್ನು ಕಡಿಮೆ ಮಾಡಿ</translation>
+<translation id="6074608334942655098">ಅನುವಾದಿಸುವುದನ್ನು ನಿಲ್ಲಿಸಿ</translation>
 <translation id="6074752328838739425">ಸಾರಾಂಶವನ್ನು ಮರೆಮಾಡಿ</translation>
 <translation id="6075872808778243331">(Android) HTTP ವಿಳಂಬ</translation>
 <translation id="6078323886959318429">ಶಾರ್ಟ್‌ಕಟ್ ಸೇರಿಸಿ</translation>

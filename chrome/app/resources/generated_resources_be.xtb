@@ -80,6 +80,7 @@
 <translation id="1049743911850919806">Інкогніта</translation>
 <translation id="1049795001945932310">&amp;Налады мовы</translation>
 <translation id="1050693411695664090">Дрэнная</translation>
+<translation id="1053226848101751430">Артыкул выдалены</translation>
 <translation id="1053898984916097744">Атрымаць дапамогу можна, як пачаўшы новую задачу, так і ў працэсе выканання існуючай.</translation>
 <translation id="1054048317165655285">Завяршыце наладжванне на тэлефоне</translation>
 <translation id="1054153489933238809">Адкрыць зыходны &amp;відарыс у новай укладцы</translation>
@@ -2227,6 +2228,7 @@
 <translation id="2519250377986324805">Паглядзець як</translation>
 <translation id="2519517390894391510">Назва профілю сертыфіката</translation>
 <translation id="2520644704042891903">Чакаецца даступны сокет...</translation>
+<translation id="2520961587246779103">Дадатковыя параметры раздзялення экрана</translation>
 <translation id="2521427645491031107">Сінхранізацыя праграм зададзена ў наладах прылады</translation>
 <translation id="2521835766824839541">папярэдні трэк</translation>
 <translation id="2521854691574443804">Файл "<ph name="FILE_NAME" />" правяраецца на адпаведнасць палітыкам бяспекі вашай арганізацыі...</translation>
@@ -3172,6 +3174,7 @@
 <translation id="3202578601642193415">самыя новыя</translation>
 <translation id="3204648577100496185">Даныя, звязаныя з дадзенай праграмай, могуць быць выдалены з гэтай прылады</translation>
 <translation id="3204717934117444051">Даныя, захаваныя толькі на гэтай прыладзе, застануцца ў існуючым профілі. Яны не будуць сінхранізавацца з уліковым запісам <ph name="EMAIL" />.</translation>
+<translation id="3206289903841621620">Карыстальніцкі слоўнік <ph name="NUMBER" /></translation>
 <translation id="3207344462385471911">Вы бачыце рэкамендацыі пошукавых запытаў і скідкі, якія могуць быць вам цікавыя (на падставе вашых нядаўніх дзеянняў).
         <ph name="BREAK" />
         <ph name="BREAK" />
@@ -10005,6 +10008,7 @@
 <translation id="8073499153683482226"><ph name="BEGIN_PARAGRAPH1" />Даныя праграм – гэта любыя даныя, якія захоўваюцца праграмай (у залежнасці ад налад распрацоўшчыка), у тым ліку кантакты, паведамленні і фота.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Даныя рэзервовай копіі не будуць улічвацца ў квоце сховішча вашага дзіцяці на Дыску.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />Гэты сэрвіс можна выключыць у Наладах.<ph name="END_PARAGRAPH3" /></translation>
+<translation id="8075044377771022666">Ніжні калонтытул</translation>
 <translation id="8076835018653442223">Доступ да лакальных файлаў на прыладзе адключаны адміністратарам</translation>
 <translation id="8077120325605624147">Любы наведаны вамі сайт будзе паказваць вам рэкламу</translation>
 <translation id="8077579734294125741">Іншыя профілі Chrome</translation>
@@ -10940,6 +10944,7 @@
 <translation id="8729133765463465108">Адсканіраваць QR-код з дапамогай камеры</translation>
 <translation id="8730621377337864115">Гатова</translation>
 <translation id="8731029916209785242">Дазволы (<ph name="FORMATTED_ORIGIN" />)</translation>
+<translation id="8731258351357994801">Артыкул <ph name="NUMBER" /></translation>
 <translation id="8731268612289859741">Код бяспекі</translation>
 <translation id="8731629443331803108">Сайт <ph name="SITE_NAME" /> запытвае наступны дазвол: <ph name="PERMISSION" /></translation>
 <translation id="8731787661154643562">Нумар порта</translation>

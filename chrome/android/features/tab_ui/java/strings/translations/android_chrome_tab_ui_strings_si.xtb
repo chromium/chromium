@@ -119,6 +119,7 @@
 <translation id="6051432659151380973">ඔබේ පටිති සමූහ ස්වයංක්‍රීයව සුරකියි</translation>
 <translation id="6054741997831917303">මෙම අයිතමයෙහි මිල මෑතකදී <ph name="PREVIOUS_PRICE" /> සිට <ph name="NEW_PRICE" /> දක්වා පහත වැටී ඇත</translation>
 <translation id="6109251075362363230">මෑතක දී භාවිතා කළ පිටපත ව්‍යතිරේකය හැර, සියලු ම අනුපත් පටිති දැන් ලේඛනාරක්ෂණය කරනු ලැබේ.</translation>
+<translation id="61924696525243173">{WINDOW_COUNT,plural, =1{සමූහය නව කවුළුවට ගෙන යන්න}one{සමූහය තව කවුළුවකට ගෙන යන්න}other{සමූහය තව කවුළුවකට ගෙන යන්න}}</translation>
 <translation id="6193448654517602979">පටිති තෝරන්න</translation>
 <translation id="6220820548421939212">ඔව්. මම සහභාගි වෙමි</translation>
 <translation id="6228793724645064692">(වෙළඳසැල් ඇගයීම)</translation>

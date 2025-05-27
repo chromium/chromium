@@ -761,6 +761,7 @@ Ellenkező esetben a beépített érintőpad <ph name="TIMEOUT_SECONDS" /> múlv
 <translation id="3552189655002856821">A Wi-Fi ki van kapcsolva</translation>
 <translation id="3554215588514239132">A Fejlesztői eszközök panel megjelenítése vagy elrejtése</translation>
 <translation id="3554637740840164787"><ph name="ITEM_TITLE" /> rögzítve</translation>
+<translation id="3554928024630051016">Ha további USB-eszközöket szeretne hozzáadni, próbálja meg eltávolítani az egyiket, majd csatlakoztasson egy újat</translation>
 <translation id="3558768885091059911">Bekapcsolja a kamerához és a mikrofonhoz való hozzáférést?</translation>
 <translation id="3560174576767922131">Videó rögzítése</translation>
 <translation id="3563775809269155755">Hotspot engedélyezése</translation>
@@ -869,6 +870,7 @@ Az összes felhasználónak ki kell jelentkeznie a folytatáshoz.</translation>
 <translation id="3861651314799684201">Nyomja le az Entert a teljes képernyő tartalmának rögzítéséhez</translation>
 <translation id="3870197372373144624">Próbálja meg kikapcsolni az eszközt.</translation>
 <translation id="3879748587602334249">Letöltéskezelő</translation>
+<translation id="3884007280698606545">Elérte az USB-re vonatkozó korlátot</translation>
 <translation id="3886872229787704059">Ma nyitotta meg</translation>
 <translation id="3891340733213178823">Nyomja meg a Ctrl+Shift+Q billentyűkombinációt kétszer a kijelentkezéshez.</translation>
 <translation id="3892148308691398805">Szöveg másolása</translation>
