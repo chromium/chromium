@@ -342,7 +342,7 @@
         Tracking protections enabled
       </message>
       <!-- Page Info -->
-      <message name="IDS_PAGE_INFO_PRIVACY_SITE_DATA_HEADER" desc="" translateable="false">
+      <message name="IDS_PAGE_INFO_PRIVACY_SITE_DATA_HEADER" desc="" formatter_data="android_java" translateable="false">
         Privacy and site data
       </message>
       <message name="IDS_PAGE_INFO_PRIVACY_SITE_DATA_TOOLTIP" desc="" translateable="false">

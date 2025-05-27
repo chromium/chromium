@@ -121,6 +121,7 @@ import org.chromium.components.content_settings.ContentSettingValues;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.content_settings.CookieControlsEnforcement;
 import org.chromium.components.content_settings.CookieControlsMode;
+import org.chromium.components.content_settings.CookieControlsState;
 import org.chromium.components.location.LocationUtils;
 import org.chromium.components.page_info.PageInfoAdPersonalizationController;
 import org.chromium.components.page_info.PageInfoController;
@@ -226,6 +227,19 @@ public class PageInfoViewTest {
                                                     new Date(TIMESTAMPE_APRIL_4))))
                             .name("ExactDay"));
             return parameters;
+        }
+    }
+
+    public static class CookieControlsStateParams implements ParameterProvider {
+        @Override
+        public Iterable<ParameterSet> getParameters() {
+            return Arrays.asList(
+                    new ParameterSet()
+                            .value(CookieControlsState.ACTIVE_TP)
+                            .name("ProtectionsActive"),
+                    new ParameterSet()
+                            .value(CookieControlsState.PAUSED_TP)
+                            .name("ProtectionsPaused"));
         }
     }
 
@@ -1058,6 +1072,50 @@ public class PageInfoViewTest {
         onView(withText(containsString("Third-party cookies blocked")))
                 .check(matches(isDisplayed()));
         mRenderTestRule.render(getPageInfoView(), "PageInfo_CookiesSubpage_Subtitle_Blocked_ModeB");
+    }
+
+    /** Tests the "Privacy and site data" entrypoint title in the PageInfo UI. */
+    @Test
+    @MediumTest
+    @Feature({"RenderTest"})
+    @ParameterAnnotations.UseMethodParameter(CookieControlsStateParams.class)
+    public void displaysPageInfoMainView_showsPrivacySiteDataRow_withState(int state)
+            throws IOException {
+        loadUrlAndOpenPageInfo(mTestServerRule.getServer().getURL(sSimpleHtml));
+        // Manually call `onStatusChanged` to correctly set the value of CookieControlsState when
+        // rendering the title.
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    getCookiesController().onStatusChanged(state, 0, 0, 0L);
+                });
+
+        onView(withText(R.string.page_info_privacy_site_data_header)).check(matches(isDisplayed()));
+        mRenderTestRule.render(getPageInfoView(), "PageInfo_MainView_PrivacySiteDataRow");
+    }
+
+    /**
+     * Tests the "Privacy and site data" subpage title of the PageInfo UI when protections are
+     * enabled.
+     *
+     * TODO(crbug.com/388294499): Add render tests for other states (paused protections,
+     * different enforcements).
+     */
+    @Test
+    @MediumTest
+    @Feature({"RenderTest"})
+    public void displaysPrivacySiteDataSubpage_protectionsActive() throws IOException {
+        loadUrlAndOpenPageInfo(mTestServerRule.getServer().getURL(sSimpleHtml));
+        // Manually call `onStatusChanged` to correctly set the value of CookieControlsState when
+        // rendering the title.
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    getCookiesController().onStatusChanged(CookieControlsState.ACTIVE_TP, 0, 0, 0L);
+                });
+
+        onView(withId(R.id.page_info_cookies_row)).perform(click());
+        onView(withText(R.string.page_info_privacy_site_data_header)).check(matches(isDisplayed()));
+        mRenderTestRule.render(
+                getPageInfoView(), "PageInfo_PrivacySiteDataSubpage_ProtectionsActive");
     }
 
     /**
