@@ -1,6 +1,9 @@
 # Copyright 2014 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
+if (is_android) {
+  import("//build/config/android/rules.gni")
+}
 
 # Includes default args like 'enable_js_protobuf'.
 import("proto_library.gni")
@@ -340,6 +343,14 @@ group("py_proto") {
     ":copy_google_protobuf",
     ":copy_google_protobuf_internal",
   ]
+}
+
+# Note: This exists for Cronet in AOSP where we can't import prebuilts. We import
+# the raw sources and compile them using a specialized pipeline. See crbug.com/419480317.
+if (is_android && is_cronet_build) {
+  android_library("proto_runtime_lite_java") {
+    sources = javaproto_sources
+  }
 }
 
 # Runtime dependency if the target needs the python scripts.

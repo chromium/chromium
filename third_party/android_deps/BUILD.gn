@@ -87,6 +87,12 @@ if (!limit_android_deps) {
     preferred_dep = true
     if (defined(android_proto_runtime)) {
       deps = [ android_proto_runtime ]
+    } else if (is_cronet_build) {
+      # Note: This exists for Cronet in AOSP where we can't import prebuilts. We import
+      # the raw sources and compile them using a specialized pipeline. See crbug.com/419480317.
+      # In order to stay consistent, Cronet in Chromium is also built against the raw sources
+      # of protobuf instead of prebuilts.
+      deps = [ "//third_party/protobuf:proto_runtime_lite_java" ]
     } else {
       deps = [ ":com_google_protobuf_protobuf_javalite_java" ]
     }

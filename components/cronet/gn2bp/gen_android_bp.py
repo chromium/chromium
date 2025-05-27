@@ -195,6 +195,30 @@ def initialize_globals(import_channel: str):
       [('export_include_dirs', {
           "base/allocator/partition_allocator/src/",
       })],
+      # Protobuf depends on Unsafe class which is used to perform unsafe native methods. This class is not
+      # available in the public API provided by the android platform. It's only available by compiling
+      # against `core_current` and adding `libcore_private.stubs` as a dependency.
+      # defaults have to be removed to prevent sdk_version collision.
+      f'{MODULE_PREFIX}third_party_protobuf_proto_runtime_lite_java__testing__unfiltered':
+      [
+          ('libs', {
+              "libcore_private.stubs",
+          }),
+          ('defaults', None),
+          ('sdk_version', 'core_current'),
+      ],
+      # Protobuf depends on Unsafe class which is used to perform unsafe native methods. This class is not
+      # available in the public API provided by the android platform. It's only available by compiling
+      # against `core_current` and adding `libcore_private.stubs` as a dependency.
+      # defaults have to be removed to prevent sdk_version collision.
+      f'{MODULE_PREFIX}third_party_protobuf_proto_runtime_lite_java__unfiltered':
+      [
+          ('libs', {
+              "libcore_private.stubs",
+          }),
+          ('defaults', None),
+          ('sdk_version', 'core_current'),
+      ],
       f'{MODULE_PREFIX}base_base_java_test_support__testing': [
           ('errorprone', ('javacflags', {
               "-Xep:ReturnValueIgnored:WARN",
@@ -376,14 +400,6 @@ def add_androidx_annotation_java_deps(module, _):
   module.libs.add("androidx.annotation_annotation")
 
 
-def add_protobuf_lite_runtime_java_deps(module, _):
-  # TODO: this seems wrong - we are using Chromium's protoc, not AOSP's, so we
-  # should use the Chromium Java protobuf library as well. Otherwise protoc
-  # may generate Java code that is not compatible with AOSP's protobuf Java
-  # runtime library.
-  module.static_libs.add("libprotobuf-java-lite")
-
-
 def add_androidx_core_java_deps(module, _):
   module.libs.add("androidx.core_core")
 
@@ -508,8 +524,6 @@ _builtin_deps = {
     enable_zlib,
     '//third_party/androidx:androidx_annotation_annotation_java':
     add_androidx_annotation_java_deps,
-    '//third_party/android_deps:protobuf_lite_runtime_java':
-    add_protobuf_lite_runtime_java_deps,
     '//third_party/androidx:androidx_annotation_annotation_experimental_java':
     add_androidx_experimental_java_deps,
     '//third_party/androidx:androidx_core_core_java':
@@ -3224,6 +3238,8 @@ def create_blueprint_for_targets(gn, targets, test_targets):
         setattr(module, key, add_val)
       elif isinstance(add_val, dict) and isinstance(curr, dict):
         curr.update(add_val)
+      elif add_val is None:
+        setattr(module, key, None)
       elif isinstance(add_val[1], dict) and isinstance(curr[add_val[0]],
                                                        Module.Target):
         curr[add_val[0]].__dict__.update(add_val[1])
@@ -3497,6 +3513,12 @@ def _break_down_blueprint(top_level_blueprint: Blueprint):
       continue
 
     android_bp_path = _locate_android_bp_destination(module)
+    # third_party/android_deps is not imported which means that copybara will not
+    # pick up the Android.bp in there. Instead direct the modules to the top-level
+    # Android.bp
+    if android_bp_path.startswith("third_party/android_deps"):
+      blueprints[""].add_module(module)
+      continue
     if android_bp_path is None:
       # Raise an exception if the module does not specify a BUILD file path.
       raise Exception(f"Found module {module_name} without a build file path.")
