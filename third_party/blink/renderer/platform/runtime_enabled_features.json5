@@ -5116,6 +5116,10 @@
       status: "stable",
     },
     {
+      name: "UsePositionIfIsVisuallyEquivalentCandidate",
+      status: "stable",
+    },
+    {
       name: "UserDefinedEntryPointTiming",
       status: "experimental",
     },

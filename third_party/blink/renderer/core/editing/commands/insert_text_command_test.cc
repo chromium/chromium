@@ -231,10 +231,9 @@ TEST_F(InsertTextCommandTest, NoVisibleSelectionAfterDeletingSelection) {
   // This is only for recording the current behavior, which can be changed.
   EXPECT_EQ(
       "<div contenteditable>"
-      "  <ruby><strike>"
-      "    <navi></navi>"
-      "    ^</strike></ruby>"
-      "|</div>",
+      "  <ruby><strike>x|<navi></navi>"
+      "    </strike></ruby>"
+      "</div>",
       GetSelectionTextFromBody());
 }
 

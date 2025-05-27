@@ -1,0 +1,51 @@
+<!doctype html>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="../assert_selection.js"></script>
+<script>
+function click(x, y) {
+  return new Promise((resolve, reject) => {
+    assert_own_property(window, 'chrome');
+    assert_own_property(window.chrome, 'gpuBenchmarking');
+    chrome.gpuBenchmarking.pointerActionSequence([{
+      source: 'mouse',
+      actions: [
+        { name: 'pointerMove', x, y },
+        { name: "pointerDown", x, y },
+        { name: 'pointerUp' },
+      ],
+    }], resolve);
+  });
+}
+
+async function handler(selection) {
+  const target = selection.document.querySelector('pre[contenteditable]');
+  await click(selection.computeLeft(target), selection.computeTop(target));
+}
+
+selection_test(
+  [
+    '<pre contenteditable style="white-space: nowrap;">',
+      '<span style="height: 10px; display:inline-block;"></span>',
+    '</pre>',
+  ],
+  handler,
+  [
+    '<pre contenteditable style="white-space: nowrap;">',
+      '<span style="height: 10px; display:inline-block;">|</span>',
+    '</pre>',
+  ], 'The caret at the first position of the inline-block span');
+
+selection_test(
+  [
+    '<pre contenteditable style="white-space: nowrap;">',
+      '<span style="height: 10px; display:inline-block;"><span></span></span>',
+    '</pre></div>',
+  ],
+  handler,
+  [
+    '<pre contenteditable style="white-space: nowrap;">',
+      '<span style="height: 10px; display:inline-block;">|<span></span></span>',
+    '</pre>',
+  ], 'With a nested empty span, the caret at the first position of the inline-block span');
+</script>

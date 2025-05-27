@@ -206,6 +206,15 @@ static PositionType CanonicalPosition(const PositionType& position) {
       } else if (editing_root->contains(prev_editing_root)) {
         return prev;
       }
+      // If `prev/next_editing_root` is not in the same block as `editing_root`,
+      // but the `position` is editable and visually equivalent position,
+      // directly return the `position`.
+      // See https://issues.chromium.org/issues/40890187 for more details.
+      if (RuntimeEnabledFeatures::
+              UsePositionIfIsVisuallyEquivalentCandidateEnabled() &&
+          IsVisuallyEquivalentCandidate(position)) {
+        return position;
+      }
     }
     return PositionType();
   }

@@ -177,8 +177,14 @@ void InsertTextCommand::DoApply(EditingState* editing_state) {
 
   GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kEditing);
 
-  // Reached by InsertTextCommandTest.NoVisibleSelectionAfterDeletingSelection
-  ABORT_EDITING_COMMAND_IF(EndingVisibleSelection().IsNone());
+  // When the flag is turned on, `CanonicalPosition` directly returns the
+  // visually equivalent position, no need for this check.
+  // See https://issues.chromium.org/issues/40547104 for more details.
+  if (!RuntimeEnabledFeatures::
+          UsePositionIfIsVisuallyEquivalentCandidateEnabled()) {
+    // Reached by InsertTextCommandTest.NoVisibleSelectionAfterDeletingSelection
+    ABORT_EDITING_COMMAND_IF(EndingVisibleSelection().IsNone());
+  }
 
   Position start_position(EndingVisibleSelection().Start());
 
