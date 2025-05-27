@@ -41,10 +41,6 @@
   text-decoration: underline;
 }
 
-[role="link"]:hover {
-  background: var(--color-new-tab-page-button-background-hovered);
-}
-
 /* Add a vertical divider after each centerContainer item in the footer
  * except the last one. */
 #centerContainer > div:not(:last-child):after {
