@@ -527,6 +527,10 @@ void Animation::setCurrentTime(const V8CSSNumberish* current_time,
       exception_state.ThrowTypeError(
           "currentTime may not be changed from resolved to unresolved");
     }
+    // We clear paused_for_trigger_ whenever there an explicit Animation API,
+    // e.g. play(), pause() is invoked. However we make sure to do so only if
+    // the API invocation was successful, i.e. did not throw an exception.
+    SetPausedForTrigger(false);
     return;
   }
 
@@ -537,6 +541,8 @@ void Animation::setCurrentTime(const V8CSSNumberish* current_time,
   if (!ConvertCSSNumberishToTime(current_time, new_current_time, "currentTime",
                                  exception_state))
     return;
+
+  SetPausedForTrigger(false);
 
   DCHECK(new_current_time);
   SetCurrentTimeInternal(new_current_time.value());
@@ -1179,6 +1185,8 @@ void Animation::setStartTime(const V8CSSNumberish* start_time,
                                  exception_state))
     return;
 
+  SetPausedForTrigger(false);
+
   auto_align_start_time_ = false;
 
   const bool had_start_time = start_time_.has_value();
@@ -1460,6 +1468,7 @@ void Animation::pause(ExceptionState& exception_state) {
   // 2. If the play state of animation is paused, abort these steps.
   if (pending_pause_ ||
       CalculateAnimationPlayState() == V8AnimationPlayState::Enum::kPaused) {
+    SetPausedForTrigger(false);
     return;
   }
 
@@ -1494,6 +1503,8 @@ void Animation::pause(ExceptionState& exception_state) {
       seek_time = EffectEnd();
     }
   }
+
+  SetPausedForTrigger(false);
 
   // 6. If seek time is resolved,
   //        If has finite timeline is true,
@@ -1564,6 +1575,9 @@ void Animation::play(ExceptionState& exception_state) {
   // Begin or resume playback of the animation by running the procedure to
   // play an animation passing true as the value of the auto-rewind flag.
   PlayInternal(AutoRewind::kEnabled, exception_state);
+  if (!exception_state.HadException()) {
+    SetPausedForTrigger(false);
+  }
 }
 
 // https://www.w3.org/TR/web-animations-2/#playing-an-animation-section
@@ -1754,6 +1768,8 @@ void Animation::reverse(ExceptionState& exception_state) {
     return;
   }
 
+  SetPausedForTrigger(false);
+
   // 2. Let original pending playback rate be animation’s pending playback rate.
   // 3. Let animation’s pending playback rate be the additive inverse of its
   //    effective playback rate (i.e. -effective playback rate).
@@ -1792,6 +1808,8 @@ void Animation::finish(ExceptionState& exception_state) {
         "Cannot finish Animation with an infinite target effect end.");
     return;
   }
+
+  SetPausedForTrigger(false);
 
   auto_align_start_time_ = false;
 
@@ -3032,7 +3050,7 @@ void Animation::EffectInvalidated() {
 }
 
 bool Animation::IsEventDispatchAllowed() const {
-  return Paused() || start_time_;
+  return (Paused() || start_time_) && !PausedForTrigger();
 }
 
 std::optional<AnimationTimeDelta> Animation::TimeToEffectChange() {
@@ -3064,6 +3082,7 @@ std::optional<AnimationTimeDelta> Animation::TimeToEffectChange() {
 void Animation::cancel() {
   AnimationTimeDelta current_time_before_cancel =
       CurrentTimeInternal().value_or(AnimationTimeDelta());
+  SetPausedForTrigger(false);
   V8AnimationPlayState::Enum initial_play_state = CalculateAnimationPlayState();
   if (initial_play_state != V8AnimationPlayState::Enum::kIdle) {
     ResetPendingTasks();
@@ -3661,6 +3680,20 @@ void Animation::setTrigger(AnimationTrigger* trigger) {
       trigger_->GetTimelineInternal()->AddAnimationForTriggering(this);
     }
   }
+}
+
+void Animation::ResetPlayback() {
+  bool advances_backwards = playbackRate() < 0;
+
+  AnimationTimeDelta reset_time =
+      advances_backwards ? EffectEnd() : AnimationTimeDelta();
+
+  setCurrentTime(ConvertTimeToCSSNumberish(reset_time), ASSERT_NO_EXCEPTION);
+
+  // We must pause the animation, otherwise it will just continue playing.
+  pause();
+
+  SetPausedForTrigger(true);
 }
 
 }  // namespace blink
