@@ -199,6 +199,7 @@ source_set("tests") {
 
   if (chrome_wide_echo_cancellation_supported) {
     sources += [
+      "loopback_reference_manager_unittest.cc",
       "mixing_graph_impl_unittest.cc",
       "mixing_graph_input_unittest.cc",
       "output_device_mixer_impl_unittest.cc",
