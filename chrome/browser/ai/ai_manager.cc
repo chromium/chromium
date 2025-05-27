@@ -524,12 +524,12 @@ void AIManager::CreateLanguageModelInternal(
         language_model_params->default_sampling_params->temperature;
   }
 
+  auto* service = OptimizationGuideKeyedServiceFactory::GetForProfile(
+      Profile::FromBrowserContext(browser_context_));
   params->capabilities = GetExpectedCapabilities(options->expected_inputs);
   on_device_model::Capabilities output_capabilities =
       GetExpectedCapabilities(options->expected_outputs);
   if (!params->capabilities.empty() || !output_capabilities.empty()) {
-    auto* service = OptimizationGuideKeyedServiceFactory::GetForProfile(
-        Profile::FromBrowserContext(browser_context_));
     if (!output_capabilities.empty() ||
         !base::FeatureList::IsEnabled(
             blink::features::kAIPromptAPIMultimodalInput) ||
@@ -549,7 +549,10 @@ void AIManager::CreateLanguageModelInternal(
 
   auto model = std::make_unique<AILanguageModel>(
       context_bound_object_set_, std::move(params), std::move(model_client),
-      std::move(session));
+      std::move(session),
+      service->GetOptimizationGuideLogger()
+          ? service->GetOptimizationGuideLogger()->GetWeakPtr()
+          : nullptr);
   model->Initialize(std::move(options->initial_prompts), std::move(client));
 
   context_bound_object_set_.AddContextBoundObject(std::move(model));

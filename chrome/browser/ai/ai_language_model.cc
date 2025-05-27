@@ -141,11 +141,13 @@ class AILanguageModel::PromptState
       on_device_model::mojom::InputPtr input,
       on_device_model::mojom::ResponseConstraintPtr constraint,
       optimization_guide::SafetyChecker& safety_checker,
+      base::WeakPtr<OptimizationGuideLogger> logger,
       Mode mode)
       : responder_(std::move(responder)),
         input_(std::move(input)),
         constraint_(std::move(constraint)),
         safety_checker_(safety_checker),
+        logger_(std::move(logger)),
         mode_(mode) {
     responder_.set_disconnect_handler(
         base::BindOnce(&PromptState::OnDisconnect, base::Unretained(this)));
@@ -224,6 +226,14 @@ class AILanguageModel::PromptState
                                   tokens_processed);
     base::UmaHistogramMediumTimes("AI.Session.LanguageModel.ContextTime",
                                   base::TimeTicks::Now() - start_);
+    if (logger_ && logger_->ShouldEnableDebugLogs()) {
+      OPTIMIZATION_GUIDE_LOGGER(
+          optimization_guide_common::mojom::LogSource::MODEL_EXECUTION,
+          logger_.get())
+          << "Executing model with input context of "
+          << base::NumberToString(tokens_processed) << " tokens:\n"
+          << optimization_guide::OnDeviceInputToString(*input_);
+    }
     generate_start_ = base::TimeTicks::Now();
     context_receiver_.reset();
     token_count_ = tokens_processed;
@@ -316,6 +326,14 @@ class AILanguageModel::PromptState
         base::TimeTicks::Now() - generate_start_);
     base::UmaHistogramCounts10000("AI.Session.LanguageModel.ResponseTokens",
                                   summary->output_token_count);
+
+    if (logger_ && logger_->ShouldEnableDebugLogs()) {
+      OPTIMIZATION_GUIDE_LOGGER(
+          optimization_guide_common::mojom::LogSource::MODEL_EXECUTION,
+          logger_.get())
+          << "Model generates raw response with PromptApi:\n"
+          << full_response_;
+    }
     std::move(callback_).Run();
     // `this` may be deleted.
   }
@@ -363,6 +381,7 @@ class AILanguageModel::PromptState
   // Number of tokens since safety check was last run.
   uint32_t unchecked_output_tokens_ = 0;
 
+  base::WeakPtr<OptimizationGuideLogger> logger_;
   Mode mode_;
 
   base::TimeTicks start_;
@@ -435,12 +454,14 @@ AILanguageModel::AILanguageModel(
     AIContextBoundObjectSet& context_bound_object_set,
     on_device_model::mojom::SessionParamsPtr session_params,
     base::WeakPtr<optimization_guide::ModelClient> model_client,
-    mojo::PendingRemote<on_device_model::mojom::Session> session)
+    mojo::PendingRemote<on_device_model::mojom::Session> session,
+    base::WeakPtr<OptimizationGuideLogger> logger)
     : AIContextBoundObject(context_bound_object_set),
       initial_session_(std::move(session)),
       session_params_(std::move(session_params)),
       context_bound_object_set_(context_bound_object_set),
-      model_client_(std::move(model_client)) {
+      model_client_(std::move(model_client)),
+      logger_(std::move(logger)) {
   context_ = std::make_unique<Context>(
       model_client_->feature_adapter().GetTokenLimits().max_context_tokens);
   // TODO(crbug.com/415808003): Should we handle crashes?
@@ -449,6 +470,13 @@ AILanguageModel::AILanguageModel(
   safety_checker_ = std::make_unique<optimization_guide::SafetyChecker>(
       weak_ptr_factory_.GetWeakPtr(),
       optimization_guide::SafetyConfig(model_client_->safety_config()));
+
+  if (logger_ && logger_->ShouldEnableDebugLogs()) {
+    OPTIMIZATION_GUIDE_LOGGER(
+        optimization_guide_common::mojom::LogSource::MODEL_EXECUTION,
+        logger_.get())
+        << "Starting on-device session for PromptApi";
+  }
 }
 
 AILanguageModel::~AILanguageModel() {
@@ -626,6 +654,14 @@ void AILanguageModel::InitializeGetInputSizeComplete(
   context_ = std::make_unique<Context>(max_tokens - *token_count);
 
   if (input) {
+    if (logger_ && logger_->ShouldEnableDebugLogs()) {
+      OPTIMIZATION_GUIDE_LOGGER(
+          optimization_guide_common::mojom::LogSource::MODEL_EXECUTION,
+          logger_.get())
+          << "Adding initial context to the model of "
+          << base::NumberToString(*token_count) << " tokens:\n"
+          << optimization_guide::OnDeviceInputToString(*input);
+    }
     auto safety_input = CreateStringMessage(*input);
     safety_checker_->RunRequestChecks(
         safety_input,
@@ -681,7 +717,7 @@ void AILanguageModel::ForkInternal(
   initial_session_->Clone(session.InitWithNewPipeAndPassReceiver());
   auto clone = std::make_unique<AILanguageModel>(
       *context_bound_object_set_, session_params_.Clone(), model_client_,
-      std::move(session));
+      std::move(session), logger_);
   clone->context_ = std::make_unique<Context>(*context_);
   current_session_->Clone(clone->current_session_.BindNewPipeAndPassReceiver());
 
@@ -716,7 +752,7 @@ void AILanguageModel::PromptInternal(
   }
   prompt_state_ = std::make_unique<PromptState>(
       std::move(pending_responder), input.Clone(), std::move(constraint),
-      *safety_checker_, PromptState::Mode::kAppendAndGenerate);
+      *safety_checker_, logger_, PromptState::Mode::kAppendAndGenerate);
   GetSizeInTokens(
       std::move(input),
       base::BindOnce(&AILanguageModel::PromptGetInputSizeComplete,
@@ -833,7 +869,7 @@ void AILanguageModel::AppendInternal(
   }
   prompt_state_ = std::make_unique<PromptState>(
       std::move(pending_responder), input.Clone(), /*constraint=*/nullptr,
-      *safety_checker_, PromptState::Mode::kAppendOnly);
+      *safety_checker_, logger_, PromptState::Mode::kAppendOnly);
   // The rest of the logic can be shared with Prompt() since PromptState() will
   // handle correctly calling this for append mode.
   GetSizeInTokens(
