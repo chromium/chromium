@@ -9,10 +9,7 @@ import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
-
-import static org.chromium.ui.test.util.MockitoHelper.doCallback;
 
 import android.app.Activity;
 import android.app.Instrumentation;
@@ -23,7 +20,6 @@ import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Build;
-import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ProgressBar;
@@ -48,7 +44,6 @@ import org.mockito.junit.MockitoRule;
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.BuildInfo;
-import org.chromium.base.Callback;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.task.PostTask;
@@ -82,7 +77,6 @@ import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.search_engines.DefaultSearchEngineDialogHelperUtils;
 import org.chromium.chrome.browser.search_engines.SearchEnginePromoType;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
-import org.chromium.chrome.browser.signin.AppRestrictionSupplier;
 import org.chromium.chrome.browser.signin.SigninFirstRunFragment;
 import org.chromium.chrome.browser.ui.signin.DialogWhenLargeContentLayout;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -91,7 +85,7 @@ import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
 import org.chromium.components.browser_ui.edge_to_edge.EdgeToEdgeSystemBarColorHelper;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.externalauth.ExternalAuthUtils;
-import org.chromium.components.policy.AbstractAppRestrictionsProvider;
+import org.chromium.components.policy.test.annotations.Policies;
 import org.chromium.components.search_engines.TemplateUrl;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.test.util.FakeAccountManagerFacade;
@@ -124,7 +118,6 @@ public class FirstRunIntegrationTest {
     @Rule public SigninTestRule mSigninTestRule = new SigninTestRule();
 
     @Mock private ExternalAuthUtils mExternalAuthUtilsMock;
-    @Mock public AppRestrictionSupplier mMockAppRestrictionInfo;
 
     private final Set<Class> mSupportedActivities =
             Set.of(
@@ -210,28 +203,11 @@ public class FirstRunIntegrationTest {
         return (T) mLastActivity;
     }
 
-    private void setHasAppRestrictionForMock() {
-        doCallback((Callback<Boolean> callback) -> callback.onResult(true))
-                .when(mMockAppRestrictionInfo)
-                .getHasAppRestriction(any());
-        AppRestrictionSupplier.setInitializedInstanceForTest(mMockAppRestrictionInfo);
-    }
-
     private void skipTosDialogViaPolicy() {
-        setHasAppRestrictionForMock();
-        Bundle restrictions = new Bundle();
-        AbstractAppRestrictionsProvider.setTestRestrictions(restrictions);
 
         FakeEnterpriseInfo fakeEnterpriseInfo = new FakeEnterpriseInfo();
         fakeEnterpriseInfo.initialize(new EnterpriseInfo.OwnedState(true, false));
         EnterpriseInfo.setInstanceForTest(fakeEnterpriseInfo);
-    }
-
-    private void enableCloudManagementViaPolicy() {
-        setHasAppRestrictionForMock();
-        Bundle restrictions = new Bundle();
-        restrictions.putString("CloudManagementEnrollmentToken", TEST_ENROLLMENT_TOKEN);
-        AbstractAppRestrictionsProvider.setTestRestrictions(restrictions);
     }
 
     private void launchCustomTabs(String url) {
@@ -683,6 +659,9 @@ public class FirstRunIntegrationTest {
 
     @Test
     @MediumTest
+    // A fake AppRestriction is injected in order to trigger the corresponding code in
+    // AppRestrictionsProvider.
+    @Policies.Add(@Policies.Item(key = "NoncePolicy", string = "true"))
     // TODO(crbug.com/40142602): Change this test case when policy can handle cases when ToS
     // is accepted in Browser App.
     public void testSkipTosPage_WithCctPolicy() throws Exception {
@@ -836,12 +815,12 @@ public class FirstRunIntegrationTest {
 
     @Test
     @MediumTest
+    @Policies.Add(@Policies.Item(key = "ForceSafeSearch", string = "true"))
     // Child accounts are not supported on automotive devices.
     @Restriction({DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
     public void testSigninFirstRunPageShownBeforeChildStatusFetch() throws Exception {
         // ChildAccountStatusSupplier uses AppRestrictions to quickly detect non-supervised cases,
         // so pretend there are AppRestrictions set by FamilyLink.
-        setHasAppRestrictionForMock();
         var ignored = blockOnFlowIsKnown();
         initializePreferences(new FirstRunPagesTestCase());
 
@@ -887,6 +866,9 @@ public class FirstRunIntegrationTest {
 
     @Test
     @MediumTest
+    // A fake AppRestriction is injected in order to trigger the corresponding code in
+    // AppRestrictionsProvider.
+    @Policies.Add(@Policies.Item(key = "NoncePolicy", string = "true"))
     public void testNativeInitBeforeFragmentSkip() throws Exception {
         FirstRunPagesTestCase testCase = new FirstRunPagesTestCase().withoutSignIn();
         initializePreferences(testCase);
@@ -906,13 +888,16 @@ public class FirstRunIntegrationTest {
 
     @Test
     @MediumTest
+    @Policies.Add(
+            @Policies.Item(
+                    key = "CloudManagementEnrollmentToken",
+                    string = TEST_ENROLLMENT_TOKEN))
     // Sign-in is not supported on automotive devices.
     @Restriction({DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
     public void testCloudManagementDoesNotBlockFirstRun() throws Exception {
         // Ensures FRE is not blocked if cloud management is enabled.
         FirstRunPagesTestCase testCase = FirstRunPagesTestCase.createWithShowAllPromos();
         initializePreferences(testCase);
-        enableCloudManagementViaPolicy();
 
         launchViewIntent(TEST_URL);
         FirstRunActivity firstRunActivity = waitForFirstRunActivity();

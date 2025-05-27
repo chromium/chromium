@@ -32,7 +32,6 @@ public class TosDialogBehaviorSharedPrefInvalidator {
     private static final String TAG = "TosPolicyStatus";
 
     private final SkipTosDialogPolicyListener mPolicyListener;
-    private final AppRestrictionSupplier mAppRestrictionInfo;
     private final long mTimeObjectCreated;
 
     /**
@@ -43,25 +42,22 @@ public class TosDialogBehaviorSharedPrefInvalidator {
         ThreadUtils.assertOnUiThread();
         if (!FirstRunStatus.isFirstRunSkippedByPolicy()) return;
 
-        AppRestrictionSupplier appRestrictionInfo = AppRestrictionSupplier.takeMaybeInitialized();
         OneshotSupplierImpl<PolicyService> policyServiceSupplier = new OneshotSupplierImpl<>();
         policyServiceSupplier.set(PolicyServiceFactory.getGlobalPolicyService());
         SkipTosDialogPolicyListener policyListener =
                 new SkipTosDialogPolicyListener(
-                        appRestrictionInfo,
+                        new AppRestrictionSupplier(),
                         policyServiceSupplier,
                         EnterpriseInfo.getInstance(),
                         null);
 
-        new TosDialogBehaviorSharedPrefInvalidator(policyListener, appRestrictionInfo);
+        new TosDialogBehaviorSharedPrefInvalidator(policyListener);
     }
 
     @VisibleForTesting
-    TosDialogBehaviorSharedPrefInvalidator(
-            SkipTosDialogPolicyListener listener, AppRestrictionSupplier appRestrictionInfo) {
+    TosDialogBehaviorSharedPrefInvalidator(SkipTosDialogPolicyListener listener) {
         mTimeObjectCreated = SystemClock.elapsedRealtime();
 
-        mAppRestrictionInfo = appRestrictionInfo;
         mPolicyListener = listener;
         mPolicyListener.onAvailable(this::onPolicyAvailable);
     }
@@ -79,7 +75,6 @@ public class TosDialogBehaviorSharedPrefInvalidator {
     }
 
     private void destroy() {
-        mAppRestrictionInfo.destroy();
         mPolicyListener.destroy();
     }
 }

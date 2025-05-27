@@ -715,7 +715,10 @@ if (is_android) {
       "src/org/chromium/chrome/browser/firstrun/TosDialogBehaviorSharedPrefInvalidatorUnitTest.java",
     ]
 
-    deps = [ ":chrome_junit_tests_helper" ]
+    deps = [
+      ":chrome_junit_tests_helper",
+      "//components/policy/android:policy_java_test_support",
+    ]
   }
 
   robolectric_library(

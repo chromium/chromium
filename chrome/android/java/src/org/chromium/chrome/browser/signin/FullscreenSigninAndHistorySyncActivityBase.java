@@ -45,7 +45,7 @@ public abstract class FullscreenSigninAndHistorySyncActivityBase extends AsyncIn
     private ChildAccountStatusSupplier mChildAccountStatusSupplier;
 
     public FullscreenSigninAndHistorySyncActivityBase() {
-        mAppRestrictionSupplier = AppRestrictionSupplier.takeMaybeInitialized();
+        mAppRestrictionSupplier = new AppRestrictionSupplier();
         mPolicyServiceSupplier = new OneshotSupplierImpl<>();
         mPolicyLoadListener =
                 new PolicyLoadListener(mAppRestrictionSupplier, mPolicyServiceSupplier);
@@ -85,7 +85,6 @@ public abstract class FullscreenSigninAndHistorySyncActivityBase extends AsyncIn
         super.onDestroy();
 
         mPolicyLoadListener.destroy();
-        mAppRestrictionSupplier.destroy();
     }
 
     @Override
