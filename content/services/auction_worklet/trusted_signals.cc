@@ -326,7 +326,7 @@ v8::Local<v8::Value> TrustedSignals::Result::WrapCrossOriginSignals(
 
 TrustedSignals::Result::~Result() = default;
 
-std::unique_ptr<TrustedSignals> TrustedSignals::LoadBiddingSignals(
+scoped_refptr<TrustedSignals> TrustedSignals::LoadBiddingSignals(
     network::mojom::URLLoaderFactory* url_loader_factory,
     mojo::PendingRemote<auction_worklet::mojom::AuctionNetworkEventsHandler>
         devtools_pending_remote,
@@ -338,8 +338,8 @@ std::unique_ptr<TrustedSignals> TrustedSignals::LoadBiddingSignals(
     LoadSignalsCallback load_signals_callback) {
   DCHECK(!interest_group_names.empty());
 
-  std::unique_ptr<TrustedSignals> trusted_signals =
-      base::WrapUnique(new TrustedSignals(
+  scoped_refptr<TrustedSignals> trusted_signals =
+      base::WrapRefCounted(new TrustedSignals(
           std::move(interest_group_names), std::move(bidding_signals_keys),
           /*render_urls=*/std::nullopt,
           /*ad_component_render_urls=*/std::nullopt,
@@ -354,7 +354,7 @@ std::unique_ptr<TrustedSignals> TrustedSignals::LoadBiddingSignals(
   return trusted_signals;
 }
 
-std::unique_ptr<TrustedSignals> TrustedSignals::CreateFromBiddingSignalsLoad(
+scoped_refptr<TrustedSignals> TrustedSignals::CreateFromBiddingSignalsLoad(
     network::mojom::URLLoaderFactory* url_loader_factory,
     mojo::PendingRemote<auction_worklet::mojom::AuctionNetworkEventsHandler>
         auction_network_events_handler,
@@ -366,8 +366,8 @@ std::unique_ptr<TrustedSignals> TrustedSignals::CreateFromBiddingSignalsLoad(
     LoadSignalsCallback load_signals_callback) {
   DCHECK(!interest_group_names.empty());
 
-  std::unique_ptr<TrustedSignals> trusted_signals =
-      base::WrapUnique(new TrustedSignals(
+  scoped_refptr<TrustedSignals> trusted_signals =
+      base::WrapRefCounted(new TrustedSignals(
           std::move(interest_group_names), std::move(bidding_signals_keys),
           /*render_urls=*/std::nullopt,
           /*ad_component_render_urls=*/std::nullopt,
@@ -383,7 +383,7 @@ std::unique_ptr<TrustedSignals> TrustedSignals::CreateFromBiddingSignalsLoad(
   return trusted_signals;
 }
 
-std::unique_ptr<TrustedSignals> TrustedSignals::LoadScoringSignals(
+scoped_refptr<TrustedSignals> TrustedSignals::LoadScoringSignals(
     network::mojom::URLLoaderFactory* url_loader_factory,
     mojo::PendingRemote<auction_worklet::mojom::AuctionNetworkEventsHandler>
         auction_network_events_handler,
@@ -396,8 +396,8 @@ std::unique_ptr<TrustedSignals> TrustedSignals::LoadScoringSignals(
     LoadSignalsCallback load_signals_callback) {
   DCHECK(!ads.empty());
 
-  std::unique_ptr<TrustedSignals> trusted_signals =
-      base::WrapUnique(new TrustedSignals(
+  scoped_refptr<TrustedSignals> trusted_signals =
+      base::WrapRefCounted(new TrustedSignals(
           /*interest_group_names=*/std::nullopt,
           /*bidding_signals_keys=*/std::nullopt, std::move(ads),
           std::move(ad_components), trusted_scoring_signals_url,

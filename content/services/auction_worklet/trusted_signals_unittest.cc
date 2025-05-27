@@ -349,7 +349,7 @@ class TrustedBiddingSignalsTest : public TrustedSignalsTestBase,
   TrustedBiddingSignalsTest() = default;
 
   // Fetch bidding signals without waiting for completion.
-  std::unique_ptr<TrustedSignals> LoadBiddingSignals(
+  scoped_refptr<TrustedSignals> LoadBiddingSignals(
       std::set<std::string> interest_group_names,
       std::set<std::string> trusted_bidding_signals_keys) {
     if (GetParam()) {
@@ -398,7 +398,7 @@ class TrustedBiddingSignalsTest : public TrustedSignalsTestBase,
 
     DCHECK(!load_signals_result_);
 
-    std::unique_ptr<TrustedSignals> signals =
+    scoped_refptr<TrustedSignals> signals =
         LoadBiddingSignals(std::move(interest_group_names),
                            std::move(trusted_bidding_signals_keys));
 
