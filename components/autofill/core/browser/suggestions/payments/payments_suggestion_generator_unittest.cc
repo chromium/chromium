@@ -513,23 +513,6 @@ TEST_P(AutofillCreditCardBenefitsLabelTest,
             nullptr);
 }
 
-// Checks that `feature` is set to null when the card is not eligible
-// for the benefits.
-TEST_P(AutofillCreditCardBenefitsLabelTest,
-       BenefitSuggestionFeatureForIph_IsNullWhenCardNotEligibleForBenefits) {
-  ON_CALL(*static_cast<MockAutofillOptimizationGuide*>(
-              autofill_client()->GetAutofillOptimizationGuide()),
-          ShouldBlockBenefitSuggestionLabelsForCardAndUrl)
-      .WillByDefault(testing::Return(true));
-
-  EXPECT_EQ(CreateCreditCardSuggestionForTest(
-                card(), *autofill_client(), CREDIT_CARD_NUMBER,
-                /*virtual_card_option=*/false,
-                /*card_linked_offer_available=*/false)
-                .iph_metadata.feature,
-            nullptr);
-}
-
 // Checks that for virtual cards suggestion the benefit description is shown
 // as a label.
 TEST_P(AutofillCreditCardBenefitsLabelTest,
@@ -628,23 +611,6 @@ TEST_P(AutofillCreditCardBenefitsLabelTest,
       /*card_linked_offer_available=*/false);
 
   // Category benefit description is not returned.
-  EXPECT_TRUE(suggestion.labels.empty());
-}
-
-// Checks that the benefit description is not displayed when benefit suggestions
-// are disabled for the given card and url.
-TEST_P(AutofillCreditCardBenefitsLabelTest,
-       BenefitSuggestionLabelNotDisplayed_BlockedUrl) {
-  ON_CALL(*static_cast<MockAutofillOptimizationGuide*>(
-              autofill_client()->GetAutofillOptimizationGuide()),
-          ShouldBlockBenefitSuggestionLabelsForCardAndUrl)
-      .WillByDefault(testing::Return(true));
-  Suggestion suggestion = CreateCreditCardSuggestionForTest(
-      card(), *autofill_client(), CREDIT_CARD_NUMBER,
-      /*virtual_card_option=*/false,
-      /*card_linked_offer_available=*/false);
-
-  // Benefit description is not returned.
   EXPECT_TRUE(suggestion.labels.empty());
 }
 
@@ -796,29 +762,6 @@ TEST_P(
           CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR, /*app_locale=*/"en-US"))}));
 }
 
-// Checks that the benefit description is not displayed when benefit suggestions
-// are disabled for the given card and url.
-TEST_P(AutofillCreditCardBenefitsLabelTest,
-       BenefitSuggestionLabelNotDisplayed_BlockedUrl_NewFopDisplayOff) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(
-      features::kAutofillEnableNewFopDisplayDesktop);
-  ON_CALL(*static_cast<MockAutofillOptimizationGuide*>(
-              autofill_client()->GetAutofillOptimizationGuide()),
-          ShouldBlockBenefitSuggestionLabelsForCardAndUrl)
-      .WillByDefault(testing::Return(true));
-
-  // Benefit description is not returned.
-  EXPECT_THAT(
-      CreateCreditCardSuggestionForTest(card(), *autofill_client(),
-                                        CREDIT_CARD_NUMBER,
-                                        /*virtual_card_option=*/false,
-                                        /*card_linked_offer_available=*/false)
-          .labels,
-      ElementsAre(std::vector<Suggestion::Text>{Suggestion::Text(card().GetInfo(
-          CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR, /*app_locale=*/"en-US"))}));
-}
-
 #else
 
 TEST_P(AutofillCreditCardBenefitsLabelTest,
@@ -942,28 +885,6 @@ TEST_P(
       cards, *autofill_client(), *credit_card_form_event_logger_);
 
   // Category benefit description is not returned.
-  EXPECT_THAT(suggestions[0],
-              EqualLabels({{card().GetInfo(CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR,
-                                           app_locale())}}));
-  EXPECT_FALSE(suggestions[0]
-                   .GetPayload<Suggestion::PaymentsPayload>()
-                   .should_display_terms_available);
-}
-
-// Checks that the benefit description is not displayed when benefit suggestions
-// are disabled for the given card and url.
-TEST_P(AutofillCreditCardBenefitsLabelTest,
-       GetCreditCardSuggestionsForTouchToFill_BenefitsNotAdded_BlockedUrl) {
-  ON_CALL(*static_cast<MockAutofillOptimizationGuide*>(
-              autofill_client()->GetAutofillOptimizationGuide()),
-          ShouldBlockBenefitSuggestionLabelsForCardAndUrl)
-      .WillByDefault(testing::Return(true));
-  std::vector<CreditCard> cards = {card()};
-
-  std::vector<Suggestion> suggestions = GetCreditCardSuggestionsForTouchToFill(
-      cards, *autofill_client(), *credit_card_form_event_logger_);
-
-  // Benefit description is not returned.
   EXPECT_THAT(suggestions[0],
               EqualLabels({{card().GetInfo(CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR,
                                            app_locale())}}));

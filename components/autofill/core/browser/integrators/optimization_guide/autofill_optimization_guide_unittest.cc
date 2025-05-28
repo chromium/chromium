@@ -412,97 +412,6 @@ TEST_F(
   EXPECT_FALSE(guide().ShouldBlockFormFieldSuggestion(url, card));
 }
 
-// Test that we block benefits suggestions for Capital One cards on blocked
-// URLs.
-TEST_F(AutofillOptimizationGuideTest,
-       ShouldBlockBenefitSuggestionLabelsForCardAndUrl_CapitalOne_BlockedUrl) {
-  GURL url("https://example.com/");
-  CreditCard card = GetVcnEnrolledCard(
-      kVisaCard, CreditCard::VirtualCardEnrollmentType::kNetwork,
-      kCapitalOneCardIssuerId);
-  payments_data_manager().AddServerCreditCard(card);
-
-  MockCapitalOneCreditCardBenefitsBlockedDecisionForUrl(
-      url, optimization_guide::OptimizationGuideDecision::kFalse);
-
-  EXPECT_TRUE(
-      guide().ShouldBlockBenefitSuggestionLabelsForCardAndUrl(card, url));
-}
-
-// Test that we do not block benefits suggestions for Capital One cards on
-// unblocked URLs.
-TEST_F(
-    AutofillOptimizationGuideTest,
-    ShouldNotBlockBenefitSuggestionLabelsForCardAndUrl_CapitalOne_UnblockedUrl) {
-  GURL url("https://example.com/");
-  CreditCard card = GetVcnEnrolledCard(
-      kVisaCard, CreditCard::VirtualCardEnrollmentType::kNetwork,
-      kCapitalOneCardIssuerId);
-  payments_data_manager().AddServerCreditCard(card);
-
-  MockCapitalOneCreditCardBenefitsBlockedDecisionForUrl(
-      url, optimization_guide::OptimizationGuideDecision::kTrue);
-
-  EXPECT_FALSE(
-      guide().ShouldBlockBenefitSuggestionLabelsForCardAndUrl(card, url));
-}
-
-// Test that we do not block benefits suggestions when a `kUnknown` decision is
-// returned.
-TEST_F(
-    AutofillOptimizationGuideTest,
-    ShouldNotBlockBenefitSuggestionLabelsForCardAndUrl_CapitalOne_UnknownDecision) {
-  GURL url("https://example.com/");
-  CreditCard card = GetVcnEnrolledCard(
-      kVisaCard, CreditCard::VirtualCardEnrollmentType::kNetwork,
-      kCapitalOneCardIssuerId);
-  payments_data_manager().AddServerCreditCard(card);
-
-  MockCapitalOneCreditCardBenefitsBlockedDecisionForUrl(
-      url, optimization_guide::OptimizationGuideDecision::kUnknown);
-
-  EXPECT_FALSE(
-      guide().ShouldBlockBenefitSuggestionLabelsForCardAndUrl(card, url));
-}
-
-// Test that we do not block benefits suggestions for non-Capital One cards on
-// blocked URLs.
-TEST_F(
-    AutofillOptimizationGuideTest,
-    ShouldNotBlockBenefitSuggestionLabelsForCardAndUrl_NonCapitalOne_BlockedUrl) {
-  GURL url("https://example.com/");
-  CreditCard card = GetVcnEnrolledCard(
-      /*network=*/kAmericanExpressCard, /*virtual_card_enrollment_type=*/
-      CreditCard::VirtualCardEnrollmentType::kNetwork,
-      /*issuer_id=*/kAmexCardIssuerId);
-  payments_data_manager().AddServerCreditCard(card);
-
-  MockCapitalOneCreditCardBenefitsBlockedDecisionForUrl(
-      url, optimization_guide::OptimizationGuideDecision::kFalse);
-
-  EXPECT_FALSE(
-      guide().ShouldBlockBenefitSuggestionLabelsForCardAndUrl(card, url));
-}
-
-// Test that we do not block benefits suggestions for non-Capital One cards on
-// unblocked URLs.
-TEST_F(
-    AutofillOptimizationGuideTest,
-    ShouldNotBlockBenefitSuggestionLabelsForCardAndUrl_NonCapitalOne_UnblockedUrl) {
-  GURL url("https://example.com/");
-  CreditCard card = GetVcnEnrolledCard(
-      /*network=*/kAmericanExpressCard, /*virtual_card_enrollment_type=*/
-      CreditCard::VirtualCardEnrollmentType::kNetwork,
-      /*issuer_id=*/kAmexCardIssuerId);
-  payments_data_manager().AddServerCreditCard(card);
-
-  MockCapitalOneCreditCardBenefitsBlockedDecisionForUrl(
-      url, optimization_guide::OptimizationGuideDecision::kTrue);
-
-  EXPECT_FALSE(
-      guide().ShouldBlockBenefitSuggestionLabelsForCardAndUrl(card, url));
-}
-
 // Test that the Amex category-benefit optimization types are registered when we
 // have seen a credit card form and the user has an Amex card.
 TEST_F(AutofillOptimizationGuideTest,
@@ -571,38 +480,6 @@ TEST_F(AutofillOptimizationGuideTest, CreditCardFormFound_BmoCategoryBenefits) {
   guide().OnDidParseForm(form_structure, payments_data_manager());
 }
 
-// Test that the Capital One category-benefit optimization types are registered
-// when we have seen a credit card form and the user has a Capital One card.
-TEST_F(AutofillOptimizationGuideTest,
-       CreditCardFormFound_CapitalOneCategoryBenefits) {
-  base::test::ScopedFeatureList feature_list{
-      features::kAutofillEnableCardBenefitsSync};
-  FormStructure form_structure{
-      CreateTestCreditCardFormData(/*is_https=*/true,
-                                   /*use_month_type=*/true)};
-  test_api(form_structure)
-      .SetFieldTypes({CREDIT_CARD_NAME_FULL, CREDIT_CARD_NUMBER,
-                      CREDIT_CARD_EXP_MONTH, CREDIT_CARD_VERIFICATION_CODE});
-  payments_data_manager().AddServerCreditCard(GetVcnEnrolledCard(
-      /*network=*/kMasterCard,
-      /*virtual_card_enrollment_type=*/
-      CreditCard::VirtualCardEnrollmentType::kNetwork,
-      /*issuer_id=*/kCapitalOneCardIssuerId));
-
-  EXPECT_CALL(
-      decider(),
-      RegisterOptimizationTypes(UnorderedElementsAre(
-          optimization_guide::proto::CAPITAL_ONE_CREDIT_CARD_DINING_BENEFITS,
-          optimization_guide::proto::CAPITAL_ONE_CREDIT_CARD_GROCERY_BENEFITS,
-          optimization_guide::proto::
-              CAPITAL_ONE_CREDIT_CARD_ENTERTAINMENT_BENEFITS,
-          optimization_guide::proto::CAPITAL_ONE_CREDIT_CARD_STREAMING_BENEFITS,
-          optimization_guide::proto::CAPITAL_ONE_CREDIT_CARD_BENEFITS_BLOCKED,
-          optimization_guide::proto::VCN_MERCHANT_OPT_OUT_MASTERCARD)));
-
-  guide().OnDidParseForm(form_structure, payments_data_manager());
-}
-
 // Test that the Amex category-benefit optimization types are not registered
 // when the `kAutofillEnableCardBenefitsSync` experiment is disabled.
 TEST_F(AutofillOptimizationGuideTest,
@@ -651,33 +528,6 @@ TEST_F(AutofillOptimizationGuideTest,
       /*virtual_card_enrollment_type=*/
       CreditCard::VirtualCardEnrollmentType::kNetwork,
       /*issuer_id=*/kBmoCardIssuerId));
-
-  // Since the experiment is disabled, there should be no benefits-related
-  // optimization types registered.
-  EXPECT_CALL(decider(),
-              RegisterOptimizationTypes(UnorderedElementsAre(
-                  optimization_guide::proto::VCN_MERCHANT_OPT_OUT_MASTERCARD)));
-
-  guide().OnDidParseForm(form_structure, payments_data_manager());
-}
-
-// Test that the Capital One category-benefit optimization types are not
-// registered when the `kAutofillEnableCardBenefitsSync` experiment is disabled.
-TEST_F(AutofillOptimizationGuideTest,
-       CreditCardFormFound_CapitalOneCategoryBenefits_ExperimentDisabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(features::kAutofillEnableCardBenefitsSync);
-  FormStructure form_structure{
-      CreateTestCreditCardFormData(/*is_https=*/true,
-                                   /*use_month_type=*/true)};
-  test_api(form_structure)
-      .SetFieldTypes({CREDIT_CARD_NAME_FULL, CREDIT_CARD_NUMBER,
-                      CREDIT_CARD_EXP_MONTH, CREDIT_CARD_VERIFICATION_CODE});
-  payments_data_manager().AddServerCreditCard(GetVcnEnrolledCard(
-      /*network=*/kMasterCard,
-      /*virtual_card_enrollment_type=*/
-      CreditCard::VirtualCardEnrollmentType::kNetwork,
-      /*issuer_id=*/kCapitalOneCardIssuerId));
 
   // Since the experiment is disabled, there should be no benefits-related
   // optimization types registered.
@@ -1059,24 +909,6 @@ INSTANTIATE_TEST_SUITE_P(
         BenefitOptimizationToBenefitCategoryTestCase{
             "bmo",
             optimization_guide::proto::BMO_CREDIT_CARD_WHOLESALE_CLUB_BENEFITS,
-            CreditCardCategoryBenefit::BenefitCategory::kWholesaleClubs},
-        BenefitOptimizationToBenefitCategoryTestCase{
-            "capitalone",
-            optimization_guide::proto::CAPITAL_ONE_CREDIT_CARD_DINING_BENEFITS,
-            CreditCardCategoryBenefit::BenefitCategory::kDining},
-        BenefitOptimizationToBenefitCategoryTestCase{
-            "capitalone",
-            optimization_guide::proto::CAPITAL_ONE_CREDIT_CARD_GROCERY_BENEFITS,
-            CreditCardCategoryBenefit::BenefitCategory::kGroceryStores},
-        BenefitOptimizationToBenefitCategoryTestCase{
-            "capitalone",
-            optimization_guide::proto::
-                CAPITAL_ONE_CREDIT_CARD_ENTERTAINMENT_BENEFITS,
-            CreditCardCategoryBenefit::BenefitCategory::kEntertainment},
-        BenefitOptimizationToBenefitCategoryTestCase{
-            "capitalone",
-            optimization_guide::proto::
-                CAPITAL_ONE_CREDIT_CARD_STREAMING_BENEFITS,
-            CreditCardCategoryBenefit::BenefitCategory::kStreaming}));
+            CreditCardCategoryBenefit::BenefitCategory::kWholesaleClubs}));
 
 }  // namespace autofill

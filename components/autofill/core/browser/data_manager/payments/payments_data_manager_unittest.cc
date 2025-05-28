@@ -2840,38 +2840,9 @@ class PaymentsDataManagerShouldBlockBenefitsTest
 // Tests that card benefits should be blocked if the app locale is not en-US or
 // en-GB.
 TEST_P(PaymentsDataManagerShouldBlockBenefitsTest, NonSupportedAppLocale) {
-  const url::Origin origin =
-      url::Origin::Create(GURL("https://example-non-blocked-url.com/"));
-  ON_CALL(*static_cast<MockAutofillOptimizationGuide*>(
-              autofill_client()->GetAutofillOptimizationGuide()),
-          ShouldBlockBenefitSuggestionLabelsForCardAndUrl)
-      .WillByDefault(testing::Return(false));
-  if (app_locale() == "en-US" || app_locale() == "en-GB") {
-    EXPECT_FALSE(test_api(payments_data_manager())
-                     .ShouldBlockCardBenefitSuggestionLabels(
-                         test::GetMaskedServerCard(), origin,
-                         autofill_client()->GetAutofillOptimizationGuide()));
-  } else {
-    EXPECT_TRUE(test_api(payments_data_manager())
-                    .ShouldBlockCardBenefitSuggestionLabels(
-                        test::GetMaskedServerCard(), origin,
-                        autofill_client()->GetAutofillOptimizationGuide()));
-  }
-}
-
-// Tests that card benefits should be blocked when benefit suggestions are
-// disabled for the given card and url.
-TEST_P(PaymentsDataManagerShouldBlockBenefitsTest, BlockedUrl) {
-  const url::Origin origin =
-      url::Origin::Create(GURL("https://example-blocked-url.com/"));
-  ON_CALL(*static_cast<MockAutofillOptimizationGuide*>(
-              autofill_client()->GetAutofillOptimizationGuide()),
-          ShouldBlockBenefitSuggestionLabelsForCardAndUrl)
-      .WillByDefault(testing::Return(true));
-  EXPECT_TRUE(test_api(payments_data_manager())
-                  .ShouldBlockCardBenefitSuggestionLabels(
-                      test::GetMaskedServerCard(), origin,
-                      autofill_client()->GetAutofillOptimizationGuide()));
+  EXPECT_NE(test_api(payments_data_manager())
+                .ShouldBlockCardBenefitSuggestionLabels(),
+            app_locale() == "en-US" || app_locale() == "en-GB");
 }
 
 INSTANTIATE_TEST_SUITE_P(

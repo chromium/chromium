@@ -91,18 +91,6 @@ GetCardBenefitsOptimizationTypesForCard(const CreditCard& card) {
         optimization_guide::proto::BMO_CREDIT_CARD_TRAVEL_BENEFITS);
     optimization_types.push_back(
         optimization_guide::proto::BMO_CREDIT_CARD_WHOLESALE_CLUB_BENEFITS);
-  } else if (card.issuer_id() == kCapitalOneCardIssuerId) {
-    optimization_types.push_back(
-        optimization_guide::proto::CAPITAL_ONE_CREDIT_CARD_DINING_BENEFITS);
-    optimization_types.push_back(
-        optimization_guide::proto::CAPITAL_ONE_CREDIT_CARD_GROCERY_BENEFITS);
-    optimization_types.push_back(
-        optimization_guide::proto::
-            CAPITAL_ONE_CREDIT_CARD_ENTERTAINMENT_BENEFITS);
-    optimization_types.push_back(
-        optimization_guide::proto::CAPITAL_ONE_CREDIT_CARD_STREAMING_BENEFITS);
-    optimization_types.push_back(
-        optimization_guide::proto::CAPITAL_ONE_CREDIT_CARD_BENEFITS_BLOCKED);
   }
   return optimization_types;
 }
@@ -304,16 +292,6 @@ AutofillOptimizationGuide::AttemptToGetEligibleCreditCardBenefitCategory(
         optimization_guide::proto::BMO_CREDIT_CARD_TRAVEL_BENEFITS);
     issuer_optimization_types.push_back(
         optimization_guide::proto::BMO_CREDIT_CARD_WHOLESALE_CLUB_BENEFITS);
-  } else if (issuer_id == kCapitalOneCardIssuerId) {
-    issuer_optimization_types.push_back(
-        optimization_guide::proto::CAPITAL_ONE_CREDIT_CARD_DINING_BENEFITS);
-    issuer_optimization_types.push_back(
-        optimization_guide::proto::CAPITAL_ONE_CREDIT_CARD_GROCERY_BENEFITS);
-    issuer_optimization_types.push_back(
-        optimization_guide::proto::
-            CAPITAL_ONE_CREDIT_CARD_ENTERTAINMENT_BENEFITS);
-    issuer_optimization_types.push_back(
-        optimization_guide::proto::CAPITAL_ONE_CREDIT_CARD_STREAMING_BENEFITS);
   }
 
   for (auto& optimization_type : issuer_optimization_types) {
