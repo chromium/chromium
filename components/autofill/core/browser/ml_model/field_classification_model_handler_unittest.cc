@@ -11,6 +11,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/path_service.h"
+#include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
@@ -37,6 +38,9 @@ using optimization_guide::proto::AutofillFieldClassificationModelMetadata;
 using optimization_guide::proto::
     AutofillFieldClassificationPostprocessingParameters;
 
+using MockExecuteModelCallback = base::OnceCallback<void(
+    const std::optional<FieldClassificationModelEncoder::ModelOutput>&)>;
+
 // The matcher expects two arguments of types std::unique_ptr<AutofillField>
 // and FieldType respectively. It accesses `local_type_predictions_` directly
 // because heuristic_type() returns the post-processed prediction, after
@@ -45,6 +49,34 @@ MATCHER(MlTypeEq, "") {
   return std::get<0>(arg)->local_type_predictions()[static_cast<size_t>(
              HeuristicSource::kAutofillMachineLearning)] == std::get<1>(arg);
 }
+
+FieldClassificationModelEncoder::ModelOutput
+CreateMockExecutorOutputForOverfittedForm() {
+  return {{0.0f, 0.0f, 1.0f, 0.0f, 0.0f}, {1.0f, 0.0f, 0.0f, 0.0f, 0.0f},
+          {1.0f, 0.0f, 0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 0.0f, 0.0f, 1.0f},
+          {0.0f, 0.0f, 0.0f, 1.0f, 0.0f}, {1.0f, 0.0f, 0.0f, 0.0f, 0.0f},
+          {0.0f, 1.0f, 0.0f, 0.0f, 0.0f}};
+}
+
+// Mock class for FieldClassificationModelHandler to intercept
+// ExecuteModelWithInput.
+class MockFieldClassificationModelHandler
+    : public FieldClassificationModelHandler {
+ public:
+  MockFieldClassificationModelHandler(
+      optimization_guide::OptimizationGuideModelProvider* model_provider,
+      optimization_guide::proto::OptimizationTarget optimization_target)
+      : FieldClassificationModelHandler(model_provider, optimization_target) {}
+
+  MOCK_METHOD(
+      void,
+      ExecuteModelWithInput,
+      (base::OnceCallback<void(
+           const std::optional<FieldClassificationModelEncoder::ModelOutput>&)>
+           callback,
+       const FieldClassificationModelEncoder::ModelInput& input),
+      (override));
+};
 
 class FieldClassificationModelHandlerTest : public testing::Test {
  public:
@@ -58,19 +90,12 @@ class FieldClassificationModelHandlerTest : public testing::Test {
                          .AppendASCII("ml_model");
     model_provider_ = std::make_unique<
         optimization_guide::TestOptimizationGuideModelProvider>();
-    model_handler_ = std::make_unique<FieldClassificationModelHandler>(
-        model_provider_.get(),
-        optimization_guide::proto::OptimizationTarget::
-            OPTIMIZATION_TARGET_AUTOFILL_FIELD_CLASSIFICATION);
-    task_environment_.RunUntilIdle();
   }
 
-  void TearDown() override {
-    model_handler_.reset();
-    task_environment_.RunUntilIdle();
+  optimization_guide::TestOptimizationGuideModelProvider& model_provider() {
+    return *model_provider_;
   }
-
-  FieldClassificationModelHandler& model_handler() { return *model_handler_; }
+  base::test::TaskEnvironment& task_environment() { return task_environment_; }
   AutofillFieldClassificationModelMetadata& model_metadata() {
     return model_metadata_;
   }
@@ -100,13 +125,15 @@ class FieldClassificationModelHandlerTest : public testing::Test {
 
   // Simulates receiving the model from the server, with `model_metadata_`
   // attached.
-  void SimulateRetrieveModelFromServer(const std::string file_name) {
+  void SimulateRetrieveModelFromServer(
+      const std::string file_name,
+      FieldClassificationModelHandler& model_handler) {
     std::unique_ptr<optimization_guide::ModelInfo> model_info =
         optimization_guide::TestModelInfoBuilder()
             .SetModelFilePath(test_data_dir_.AppendASCII(file_name))
             .SetModelMetadata(AnyWrapProto(model_metadata_))
             .Build();
-    model_handler_->OnModelUpdated(
+    model_handler.OnModelUpdated(
         optimization_guide::proto::
             OPTIMIZATION_TARGET_AUTOFILL_FIELD_CLASSIFICATION,
         *model_info);
@@ -140,29 +167,55 @@ class FieldClassificationModelHandlerTest : public testing::Test {
     }
   }
 
-  base::test::ScopedFeatureList features_{features::kAutofillModelPredictions};
+  base::test::ScopedFeatureList features_{
+      autofill::features::kAutofillModelPredictions};
   std::unique_ptr<optimization_guide::TestOptimizationGuideModelProvider>
       model_provider_;
-  std::unique_ptr<FieldClassificationModelHandler> model_handler_;
   base::test::TaskEnvironment task_environment_;
   test::AutofillUnitTestEnvironment autofill_environment_;
   base::FilePath test_data_dir_;
   AutofillFieldClassificationModelMetadata model_metadata_;
 };
 
+class FieldClassificationModelHandlerTestWithRealModelExecution
+    : public FieldClassificationModelHandlerTest {
+ public:
+  void SetUp() override {
+    FieldClassificationModelHandlerTest::SetUp();
+    model_handler_ = std::make_unique<FieldClassificationModelHandler>(
+        &model_provider(),
+        optimization_guide::proto::OptimizationTarget::
+            OPTIMIZATION_TARGET_AUTOFILL_FIELD_CLASSIFICATION);
+    task_environment().RunUntilIdle();
+  }
+
+  void TearDown() override {
+    model_handler_.reset();
+    task_environment().RunUntilIdle();
+  }
+
+  FieldClassificationModelHandler& model_handler() { return *model_handler_; }
+
+ private:
+  std::unique_ptr<FieldClassificationModelHandler> model_handler_;
+};
+
 // Test that supported types are registered correctly when the model is loaded.
-TEST_F(FieldClassificationModelHandlerTest,
+TEST_F(FieldClassificationModelHandlerTestWithRealModelExecution,
        SupportedTypesSetCorrectlyOnModelUpdate) {
   ReadModelMetadata("autofill_model_metadata.binarypb");
-  SimulateRetrieveModelFromServer("autofill_model-fold-one.tflite");
+  SimulateRetrieveModelFromServer("autofill_model-fold-one.tflite",
+                                  model_handler());
   FieldTypeSet supported_types = model_handler().get_supported_types();
   ASSERT_TRUE(supported_types.contains(FieldType::ADDRESS_HOME_ZIP));
   ASSERT_FALSE(supported_types.contains(FieldType::IBAN_VALUE));
 }
 
-TEST_F(FieldClassificationModelHandlerTest, GetModelPredictionsForForm) {
+TEST_F(FieldClassificationModelHandlerTestWithRealModelExecution,
+       GetModelPredictionsForForm) {
   ReadModelMetadata("autofill_model_metadata.binarypb");
-  SimulateRetrieveModelFromServer("autofill_model-fold-one.tflite");
+  SimulateRetrieveModelFromServer("autofill_model-fold-one.tflite",
+                                  model_handler());
   std::unique_ptr<FormStructure> form_structure = CreateOverfittedForm();
   base::test::TestFuture<std::unique_ptr<FormStructure>> future;
   model_handler().GetModelPredictionsForForm(std::move(form_structure),
@@ -173,14 +226,15 @@ TEST_F(FieldClassificationModelHandlerTest, GetModelPredictionsForForm) {
 
 // Tests that predictions with a confidence below the threshold are reported as
 // NO_SERVER_DATA.
-TEST_F(FieldClassificationModelHandlerTest,
+TEST_F(FieldClassificationModelHandlerTestWithRealModelExecution,
        GetModelPredictionsForForm_Threshold) {
   // Set a really high threshold and expect that all predictions are suppressed.
   ReadModelMetadata("autofill_model_metadata.binarypb");
   model_metadata()
       .mutable_postprocessing_parameters()
       ->set_confidence_threshold_per_field(/*confidence_threshold=*/100);
-  SimulateRetrieveModelFromServer("autofill_model-fold-one.tflite");
+  SimulateRetrieveModelFromServer("autofill_model-fold-one.tflite",
+                                  model_handler());
   std::unique_ptr<FormStructure> form_structure = CreateOverfittedForm();
   base::test::TestFuture<std::unique_ptr<FormStructure>> future;
   model_handler().GetModelPredictionsForForm(std::move(form_structure),
@@ -191,9 +245,11 @@ TEST_F(FieldClassificationModelHandlerTest,
                                                  NO_SERVER_DATA)));
 }
 
-TEST_F(FieldClassificationModelHandlerTest, GetModelPredictionsForForms) {
+TEST_F(FieldClassificationModelHandlerTestWithRealModelExecution,
+       GetModelPredictionsForForms) {
   ReadModelMetadata("autofill_model_metadata.binarypb");
-  SimulateRetrieveModelFromServer("autofill_model-fold-one.tflite");
+  SimulateRetrieveModelFromServer("autofill_model-fold-one.tflite",
+                                  model_handler());
   std::vector<std::unique_ptr<FormStructure>> forms;
   forms.push_back(CreateOverfittedForm());
   forms.push_back(CreateOverfittedForm());
@@ -210,14 +266,15 @@ TEST_F(FieldClassificationModelHandlerTest, GetModelPredictionsForForms) {
 // Tests that if the form metadata allows returning empty predictions, and model
 // outputs do not reach the desired confidence level, empty predictions will be
 // emitted.
-TEST_F(FieldClassificationModelHandlerTest,
+TEST_F(FieldClassificationModelHandlerTestWithRealModelExecution,
        GetModelPredictionsForForm_NoPredictionsEmitted) {
   // Set min required confidence to be very high, even for the overfitted model.
   ReadModelMetadata("autofill_model_metadata.binarypb");
   model_metadata()
       .mutable_postprocessing_parameters()
       ->set_confidence_threshold_to_disable_all_predictions(0.999);
-  SimulateRetrieveModelFromServer("autofill_model-fold-one.tflite");
+  SimulateRetrieveModelFromServer("autofill_model-fold-one.tflite",
+                                  model_handler());
 
   std::unique_ptr<FormStructure> form_structure = CreateOverfittedForm();
   base::test::TestFuture<std::unique_ptr<FormStructure>> future;
@@ -233,13 +290,14 @@ TEST_F(FieldClassificationModelHandlerTest,
 
 // Tests that if the form metadata allows returning empty predictions, non-empty
 // predictions will still be emitted for predictions with high confidence.
-TEST_F(FieldClassificationModelHandlerTest,
+TEST_F(FieldClassificationModelHandlerTestWithRealModelExecution,
        GetModelPredictionsForForm_PredictionsEmittedWithMinConfidence) {
   ReadModelMetadata("autofill_model_metadata.binarypb");
   model_metadata()
       .mutable_postprocessing_parameters()
       ->set_confidence_threshold_to_disable_all_predictions(0.5);
-  SimulateRetrieveModelFromServer("autofill_model-fold-one.tflite");
+  SimulateRetrieveModelFromServer("autofill_model-fold-one.tflite",
+                                  model_handler());
 
   std::unique_ptr<FormStructure> form_structure = CreateOverfittedForm();
   base::test::TestFuture<std::unique_ptr<FormStructure>> future;
@@ -255,10 +313,11 @@ TEST_F(FieldClassificationModelHandlerTest,
 // Tests that if the form metadata does not allow assigning the same type to
 // multiple fields, NO_SERVER_DATA type will be assigned to a field with less
 // confidence.
-TEST_F(FieldClassificationModelHandlerTest,
+TEST_F(FieldClassificationModelHandlerTestWithRealModelExecution,
        GetModelPredictionsForForm_DisallowSameTypePredictions) {
   ReadModelMetadata("model_with_repeated_predicted_types.binarypb");
-  SimulateRetrieveModelFromServer("model_with_repeated_predicted_types.tflite");
+  SimulateRetrieveModelFromServer("model_with_repeated_predicted_types.tflite",
+                                  model_handler());
 
   std::unique_ptr<FormStructure> overfitted_form =
       std::make_unique<FormStructure>(
@@ -279,6 +338,117 @@ TEST_F(FieldClassificationModelHandlerTest,
                                CONFIRMATION_PASSWORD};
   EXPECT_THAT(future.Get()->fields(),
               testing::Pointwise(MlTypeEq(), expected_predictions));
+}
+
+class FieldClassificationModelHandlerTestWithMockedModelExecution
+    : public FieldClassificationModelHandlerTest {
+ public:
+  void SetUp() override {
+    FieldClassificationModelHandlerTest::SetUp();
+    // Create a mock model handler to allow mocking the actual model execution.
+    mocked_execution_handler_ =
+        std::make_unique<MockFieldClassificationModelHandler>(
+            &model_provider(),
+            optimization_guide::proto::OptimizationTarget::
+                OPTIMIZATION_TARGET_AUTOFILL_FIELD_CLASSIFICATION);
+    ReadModelMetadata("autofill_model_metadata.binarypb");
+    SimulateRetrieveModelFromServer("autofill_model-fold-one.tflite",
+                                    model_handler());
+  }
+
+ protected:
+  MockFieldClassificationModelHandler& model_handler() {
+    return *mocked_execution_handler_;
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list{
+      features::kFieldClassificationModelCaching};
+  std::unique_ptr<MockFieldClassificationModelHandler>
+      mocked_execution_handler_;
+};
+
+TEST_F(FieldClassificationModelHandlerTestWithMockedModelExecution,
+       CacheHitAndMiss) {
+  base::test::TestFuture<std::unique_ptr<FormStructure>> future1;
+  EXPECT_CALL(model_handler(), ExecuteModelWithInput)
+      .WillOnce([](MockExecuteModelCallback callback,
+                   const FieldClassificationModelEncoder::ModelInput& input) {
+        std::move(callback).Run(CreateMockExecutorOutputForOverfittedForm());
+      });
+  model_handler().GetModelPredictionsForForm(CreateOverfittedForm(),
+                                             future1.GetCallback());
+  // Wait for the first execution to complete and populate the cache.
+  FormStructure* result1 = future1.Get().get();
+  ASSERT_TRUE(result1);
+  // Ensure the model output was applied.
+  EXPECT_THAT(result1->fields(),
+              testing::Pointwise(MlTypeEq(), ExpectedTypesForOverfittedForm()));
+
+  // Second call should use the cached result and not execute the model again.
+  base::test::TestFuture<std::unique_ptr<FormStructure>> future2;
+  EXPECT_CALL(model_handler(), ExecuteModelWithInput).Times(0);
+  model_handler().GetModelPredictionsForForm(CreateOverfittedForm(),
+                                             future2.GetCallback());
+  // Wait for the second execution to complete.
+  FormStructure* result2 = future2.Get().get();
+  ASSERT_TRUE(result2);
+  // Check that the cached results are used.
+  EXPECT_THAT(result2->fields(),
+              testing::Pointwise(MlTypeEq(), ExpectedTypesForOverfittedForm()));
+
+  // Query predictions for a different form. Verify that the model is run again.
+  std::unique_ptr<FormStructure> different_form =
+      std::make_unique<FormStructure>(
+          test::GetFormData({.fields = {{.label = u"different label"},
+                                        {.label = u"another field"}}}));
+  FieldClassificationModelEncoder::ModelOutput mock_output_for_different_form =
+      {{0.0f, 0.0f, 1.0f, 0.0f, 0.0f}, {1.0f, 0.0f, 0.0f, 0.0f, 0.0f}};
+  base::test::TestFuture<std::unique_ptr<FormStructure>> future3;
+  EXPECT_CALL(model_handler(), ExecuteModelWithInput)
+      .WillOnce([mock_output_for_different_form](
+                    MockExecuteModelCallback callback,
+                    const FieldClassificationModelEncoder::ModelInput& input) {
+        std::move(callback).Run(mock_output_for_different_form);
+      });
+  model_handler().GetModelPredictionsForForm(std::move(different_form),
+                                             future3.GetCallback());
+  EXPECT_TRUE(future3.Get().get());
+}
+
+TEST_F(FieldClassificationModelHandlerTestWithMockedModelExecution,
+       CacheInvalidationOnModelUpdate) {
+  base::test::TestFuture<std::unique_ptr<FormStructure>> future1;
+  EXPECT_CALL(model_handler(), ExecuteModelWithInput)
+      .WillOnce([](MockExecuteModelCallback callback,
+                   const FieldClassificationModelEncoder::ModelInput& input) {
+        std::move(callback).Run(CreateMockExecutorOutputForOverfittedForm());
+      });
+  model_handler().GetModelPredictionsForForm(CreateOverfittedForm(),
+                                             future1.GetCallback());
+  FormStructure* result1 = future1.Get().get();
+  ASSERT_TRUE(result1);
+  EXPECT_THAT(result1->fields(),
+              testing::Pointwise(MlTypeEq(), ExpectedTypesForOverfittedForm()));
+
+  // Simulate a model update. This should clear the cache.
+  SimulateRetrieveModelFromServer("autofill_model-fold-one.tflite",
+                                  model_handler());
+
+  // Query predictions for the same form again and check that the model is
+  // executed again.
+  base::test::TestFuture<std::unique_ptr<FormStructure>> future2;
+  EXPECT_CALL(model_handler(), ExecuteModelWithInput)
+      .WillOnce([](MockExecuteModelCallback callback,
+                   const FieldClassificationModelEncoder::ModelInput& input) {
+        std::move(callback).Run(CreateMockExecutorOutputForOverfittedForm());
+      });
+  model_handler().GetModelPredictionsForForm(CreateOverfittedForm(),
+                                             future2.GetCallback());
+  FormStructure* result2 = future2.Get().get();
+  ASSERT_TRUE(result2);
+  EXPECT_THAT(result2->fields(),
+              testing::Pointwise(MlTypeEq(), ExpectedTypesForOverfittedForm()));
 }
 
 }  // namespace

@@ -8,13 +8,16 @@
 #include <vector>
 
 #include "base/barrier_callback.h"
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
+#include "base/hash/hash.h"
 #include "base/memory/weak_ptr.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/heuristic_source.h"
 #include "components/autofill/core/browser/ml_model/field_classification_model_encoder.h"
 #include "components/autofill/core/browser/ml_model/field_classification_model_executor.h"
+#include "components/autofill/core/common/autofill_features.h"
 #include "components/optimization_guide/core/model_handler.h"
 #include "components/optimization_guide/core/optimization_guide_model_provider.h"
 #include "components/optimization_guide/proto/autofill_field_classification_model_metadata.pb.h"
@@ -22,6 +25,10 @@
 namespace autofill {
 
 namespace {
+
+// Needed to not allow the predictions cache to grow unlimited during long
+// Desktop sessions.
+constexpr size_t kMaxPredictionsToCache = 100;
 
 // Creates the model metadata and specifies the model input version to
 // ensure client-server version compatibility while loading the model.
@@ -94,7 +101,8 @@ FieldClassificationModelHandler::FieldClassificationModelHandler(
           /*model_inference_timeout=*/std::nullopt,
           optimization_target,
           CreateModelMetadata()),
-      optimization_target_(optimization_target) {
+      optimization_target_(optimization_target),
+      predictions_cache_(kMaxPredictionsToCache) {
   // Store the model in memory as soon as it is available and keep it loaded for
   // the whole browser session since we query predictions very regularly.
   // TODO(crbug.com/40276177): Maybe change both back to default behavior if we
@@ -112,23 +120,54 @@ void FieldClassificationModelHandler::GetModelPredictionsForForm(
     std::move(callback).Run(std::move(form_structure));
     return;
   }
+
   FieldClassificationModelEncoder::ModelInput encoded_input =
       state_->encoder.EncodeForm(*form_structure);
+
+  std::optional<ModelInputHash> input_hash;
+  if (base::FeatureList::IsEnabled(
+          features::kFieldClassificationModelCaching)) {
+    // Check if the model has already ran for the same inputs.
+    input_hash = CalculateModelInputHash(encoded_input);
+    auto cached_result = predictions_cache_.Get(input_hash.value());
+    if (cached_result != predictions_cache_.end()) {
+      // Do not use cached results if the number of classified fields does not
+      // correspond the number of fields in the observed form % the max number
+      // of fields that the model is able to classify.
+      if (cached_result->second.size() ==
+          std::min(form_structure->field_count(),
+                   static_cast<size_t>(state_->metadata.encoding_parameters()
+                                           .maximum_number_of_fields()))) {
+        AssignPredictedFieldTypesToForm(cached_result->second, *form_structure);
+        std::move(callback).Run(std::move(form_structure));
+        return;
+      }
+    }
+  }
+
   ExecuteModelWithInput(
       base::BindOnce(
           [](base::WeakPtr<FieldClassificationModelHandler> self,
              std::unique_ptr<FormStructure> form_structure,
+             std::optional<ModelInputHash> model_input_hash,
              base::OnceCallback<void(std::unique_ptr<FormStructure>)> callback,
              const std::optional<FieldClassificationModelEncoder::ModelOutput>&
                  output) {
             if (self && output &&
                 self->ShouldEmitPredictions(form_structure.get(), *output)) {
-              self->AssignMostLikelyTypes(*form_structure, *output);
+              std::vector<FieldType> predicted_types =
+                  self->GetMostLikelyTypes(*form_structure, *output);
+              self->AssignPredictedFieldTypesToForm(predicted_types,
+                                                    *form_structure);
+              if (model_input_hash.has_value()) {
+                self->predictions_cache_.Put(model_input_hash.value(),
+                                             predicted_types);
+              }
             }
             std::move(callback).Run(std::move(form_structure));
           },
           weak_ptr_factory_.GetWeakPtr(), std::move(form_structure),
-          std::move(callback)),
+          std::move(input_hash), std::move(callback)),
       std::move(encoded_input));
 }
 
@@ -172,23 +211,25 @@ void FieldClassificationModelHandler::OnModelUpdated(
     supported_types_.insert(ToSafeFieldType(FieldType(type), NO_SERVER_DATA));
   }
   state_.emplace(std::move(state));
+
+  // Invalidate cached predictions, if any.
+  predictions_cache_.Clear();
 }
 
-void FieldClassificationModelHandler::AssignMostLikelyTypes(
+std::vector<FieldType> FieldClassificationModelHandler::GetMostLikelyTypes(
     FormStructure& form,
     const FieldClassificationModelEncoder::ModelOutput& output) const {
   // The ML model can process at most
   // `FieldClassificationModelEncoder::kModelMaxNumberOfFields`.
   size_t relevant_fields = std::min(form.field_count(), output.size());
-  HeuristicSource heuristic_source = GetHeuristicSource(optimization_target_);
 
   // Some field types and model metadata do not allow assigning the same type to
   // multiple fields. If the type requires to pick a single field, track which
   // field was assigned to the type, and with which confidence.
   std::map<FieldType, std::pair<size_t, float>> unique_types_assignment;
+  std::vector<FieldType> predicted_types;
 
   for (size_t i = 0; i < relevant_fields; i++) {
-    form.field(i)->set_ml_supported_types(supported_types_);
     auto [most_likely_type, current_confidence] = GetMostLikelyType(output[i]);
 
     if (state_->metadata.postprocessing_parameters()
@@ -198,19 +239,19 @@ void FieldClassificationModelHandler::AssignMostLikelyTypes(
       auto [previous_field_index, previous_field_confidence] =
           unique_types_assignment[most_likely_type];
       if (current_confidence > previous_field_confidence) {
-        // Remove the type assignment from the previously selected field.
-        form.field(previous_field_index)
-            ->set_heuristic_type(heuristic_source, NO_SERVER_DATA);
+        // Remove the type assignment for the previously selected field index.
+        predicted_types[previous_field_index] = NO_SERVER_DATA;
       } else {
         most_likely_type = NO_SERVER_DATA;
       }
     }
 
-    form.field(i)->set_heuristic_type(heuristic_source, most_likely_type);
     if (!ParsingSupportsMultipleFieldsOfType(most_likely_type)) {
       unique_types_assignment[most_likely_type] = {i, current_confidence};
     }
+    predicted_types.push_back(most_likely_type);
   }
+  return predicted_types;
 }
 
 std::pair<FieldType, float> FieldClassificationModelHandler::GetMostLikelyType(
@@ -229,6 +270,19 @@ std::pair<FieldType, float> FieldClassificationModelHandler::GetMostLikelyType(
   return {NO_SERVER_DATA, 0.0};
 }
 
+void FieldClassificationModelHandler::AssignPredictedFieldTypesToForm(
+    const std::vector<FieldType>& predicted_types,
+    FormStructure& form) {
+  size_t num_predicted_fields =
+      std::min(form.field_count(), predicted_types.size());
+  HeuristicSource heuristic_source = GetHeuristicSource(optimization_target_);
+
+  for (size_t i = 0; i < num_predicted_fields; i++) {
+    form.field(i)->set_ml_supported_types(supported_types_);
+    form.field(i)->set_heuristic_type(heuristic_source, predicted_types[i]);
+  }
+}
+
 bool FieldClassificationModelHandler::ShouldEmitPredictions(
     const FormStructure* form,
     const FieldClassificationModelEncoder::ModelOutput& output) {
@@ -238,6 +292,26 @@ bool FieldClassificationModelHandler::ShouldEmitPredictions(
              output, std::min(form->field_count(), output.size()),
              state_->metadata.postprocessing_parameters()
                  .confidence_threshold_to_disable_all_predictions());
+}
+
+FieldClassificationModelHandler::ModelInputHash
+FieldClassificationModelHandler::CalculateModelInputHash(
+    const FieldClassificationModelEncoder::ModelInput& input) {
+  // Flatten the data for hashing.
+  size_t flattened_data_size = 0;
+  for (const std::vector<FieldClassificationModelEncoder::TokenId>&
+           field_tokens : input) {
+    flattened_data_size += field_tokens.size();
+  }
+  std::vector<FieldClassificationModelEncoder::TokenId> flattened_data;
+  flattened_data.reserve(flattened_data_size);
+  for (const std::vector<FieldClassificationModelEncoder::TokenId>&
+           field_tokens : input) {
+    flattened_data.insert(flattened_data.end(), field_tokens.begin(),
+                          field_tokens.end());
+  }
+
+  return ModelInputHash(base::FastHash(base::as_byte_span(flattened_data)));
 }
 
 }  // namespace autofill

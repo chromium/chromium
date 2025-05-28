@@ -440,6 +440,12 @@ const char kDropInputEventsWhilePaintHoldingDescription[] =
     "first signal that the renderer has sent a frame to GPU.  This prevents "
     "accidental interaction with a page the user has not seen yet.";
 
+const char kFieldClassificationModelCachingName[] =
+    "Enable caching field classification predictions";
+const char kFieldClassificationModelCachingDescription[] =
+    "When enabled, the field classification model uses runtime caching to not "
+    "run models on the same inputs multiple times.";
+
 const char kHdrAgtmName[] = "Adaptive global tone mapping";
 const char kHdrAgtmDescription[] =
     "Enables parsing and rendering of adaptive global tone mapping (AGTM) aka "

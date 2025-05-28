@@ -706,6 +706,15 @@ BASE_FEATURE(kAutofillGreekRegexes,
              "AutofillGreekRegexes",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// When enabled, the field classification model uses runtime caching to not run
+// models on the same inputs multiple times.
+// TODO(crbug.com/371933424). Clean up when launched, if not used for Autofill
+// experiments.
+COMPONENT_EXPORT(AUTOFILL)
+BASE_FEATURE(kFieldClassificationModelCaching,
+             "FieldClassificationModelCaching",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // When enabled, a HaTS survey is shown after the successful first time creation
 // flow.
 COMPONENT_EXPORT(AUTOFILL)
