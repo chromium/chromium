@@ -6,15 +6,17 @@
 #define BASE_I18N_ENCODING_DETECTION_H_
 
 #include <string>
+#include <string_view>
 
 #include "base/i18n/base_i18n_export.h"
 
 namespace base {
 
-// Detect encoding of |text| and put the name of encoding in |encoding|.
+// Detect encoding of `text` and put the name of encoding in `encoding`.
 // Returns true on success.
-[[nodiscard]] BASE_I18N_EXPORT bool DetectEncoding(const std::string& text,
+[[nodiscard]] BASE_I18N_EXPORT bool DetectEncoding(std::string_view text,
                                                    std::string* encoding);
+
 }  // namespace base
 
 #endif  // BASE_I18N_ENCODING_DETECTION_H_

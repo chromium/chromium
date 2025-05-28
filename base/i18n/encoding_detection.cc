@@ -19,15 +19,29 @@
 
 namespace base {
 
-bool DetectEncoding(const std::string& text, std::string* encoding) {
+namespace {
+
+// Include 7-bit encodings
+constexpr bool kIgnore7bitEncodings = false;
+
+// Plain text
+constexpr CompactEncDet::TextCorpusType kPlainTextCorpus =
+    CompactEncDet::QUERY_CORPUS;
+
+}  // namespace
+
+bool DetectEncoding(std::string_view text, std::string* encoding) {
   int consumed_bytes;
   bool is_reliable;
   Encoding enc = CompactEncDet::DetectEncoding(
-      text.c_str(), text.length(), nullptr, nullptr, nullptr, UNKNOWN_ENCODING,
-      UNKNOWN_LANGUAGE,
-      CompactEncDet::QUERY_CORPUS,  // plain text
-      false,                        // Include 7-bit encodings
-      &consumed_bytes, &is_reliable);
+      /*text=*/text.data(), /*text_length=*/text.size(), /*url_hint=*/nullptr,
+      /*http_charset_hint=*/nullptr, /*meta_charset_hint=*/nullptr,
+      /*encoding_hint=*/UNKNOWN_ENCODING,
+      /*language_hint=*/UNKNOWN_LANGUAGE,
+      /*corpus_type=*/kPlainTextCorpus,
+      /*ignore_7bit_mail_encodings=*/kIgnore7bitEncodings,
+      /*bytes_consumed=*/&consumed_bytes,
+      /*is_reliable=*/&is_reliable);
 
   if (enc == UNKNOWN_ENCODING) {
     return false;
@@ -36,4 +50,5 @@ bool DetectEncoding(const std::string& text, std::string* encoding) {
   *encoding = MimeEncodingName(enc);
   return true;
 }
+
 }  // namespace base
