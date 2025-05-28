@@ -301,6 +301,8 @@ void WaylandInputMethodContext::CreateTextInput() {
 }
 
 void WaylandInputMethodContext::Init() {
+  desktop_environment_ =
+      base::nix::GetDesktopEnvironment(base::Environment::Create().get());
   bool use_ozone_wayland_ime = IsImeEnabled();
   // If text input instance is not created then all ime context operations
   // are noop. This option is because in some environments someone might not
