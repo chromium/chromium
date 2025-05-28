@@ -119,6 +119,9 @@ public class OmniboxFeatures {
     public static final BooleanCachedFeatureParam sOmniboxParityRetrieveTrueFavicon =
             newBooleanParam(sOmniboxMobileParityUpdate, "retrieve_true_favicon", false);
 
+    public static final BooleanCachedFeatureParam sOmniboxParityEnableFeedOnlyForGoogle =
+            newBooleanParam(sOmniboxMobileParityUpdate, "enable_feed_for_google_only", true);
+
     public static final BooleanCachedFeatureParam sAnswerActionsShowAboveKeyboard =
             newBooleanParam(sOmniboxAnswerActions, "AnswerActionsShowAboveKeyboard", false);
 

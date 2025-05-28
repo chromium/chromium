@@ -15585,6 +15585,9 @@
             "experiments": [
                 {
                     "name": "Enabled",
+                    "params": {
+                        "enable_feed_for_google_only": "true"
+                    },
                     "enable_features": [
                         "OmniboxMobileParityUpdate"
                     ]
