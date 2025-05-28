@@ -12,22 +12,19 @@ class FakePageHandler extends TestBrowserProxy implements
   // less confusing. See:
   // https://crrev.com/c/5577174/8/chrome/test/data/webui/cr_components/certificate_manager_v2_test_support.ts
   private getCertificatesCallback_: (source: CertificateSource) => {
-    certs:
-      SummaryCertInfo[],
+    certs: SummaryCertInfo[],
   } = (_) => {
     return {certs: []};
   };
 
   private importCertificateCallback_: (source: CertificateSource) => {
-    result:
-      ActionResult,
+    result: ActionResult,
   } = (_) => {
     return {result: {error: 'default implementation called'}};
   };
 
   private importAndBindCertificateCallback_: (source: CertificateSource) => {
-    result:
-      ActionResult,
+    result: ActionResult,
   } = (_) => {
     return {result: {error: 'default implementation called'}};
   };
@@ -35,8 +32,7 @@ class FakePageHandler extends TestBrowserProxy implements
   private deleteCertificateCallback_:
       (source: CertificateSource, displayName: string,
        sha256hashHex: string) => {
-        result:
-          ActionResult,
+        result: ActionResult,
       } = (_) => {
         return {result: {error: 'default implementation called'}};
       };
