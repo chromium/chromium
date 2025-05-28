@@ -91,8 +91,8 @@ VideoDecoderConfig* MakeVideoDecoderConfig(
     const wc_fuzzer::ConfigureVideoDecoder& proto) {
   auto* config = VideoDecoderConfig::Create();
   config->setCodec(proto.codec().c_str());
-  DOMArrayBuffer* data_copy = DOMArrayBuffer::Create(
-      proto.description().data(), proto.description().size());
+  DOMArrayBuffer* data_copy =
+      DOMArrayBuffer::Create(base::as_byte_span(proto.description()));
   config->setDescription(
       MakeGarbageCollected<AllowSharedBufferSource>(data_copy));
   return config;
@@ -105,8 +105,8 @@ AudioDecoderConfig* MakeAudioDecoderConfig(
   config->setSampleRate(proto.sample_rate());
   config->setNumberOfChannels(proto.number_of_channels());
 
-  DOMArrayBuffer* data_copy = DOMArrayBuffer::Create(
-      proto.description().data(), proto.description().size());
+  DOMArrayBuffer* data_copy =
+      DOMArrayBuffer::Create(base::as_byte_span(proto.description()));
   config->setDescription(
       MakeGarbageCollected<AllowSharedBufferSource>(data_copy));
 
@@ -358,7 +358,7 @@ EncodedVideoChunk* MakeEncodedVideoChunk(
     ScriptState* script_state,
     const wc_fuzzer::EncodedVideoChunk& proto) {
   auto* data = MakeGarbageCollected<AllowSharedBufferSource>(
-      DOMArrayBuffer::Create(proto.data().data(), proto.data().size()));
+      DOMArrayBuffer::Create(base::as_byte_span(proto.data())));
 
   auto* init = EncodedVideoChunkInit::Create();
   init->setTimestamp(proto.timestamp());
@@ -376,7 +376,7 @@ EncodedAudioChunk* MakeEncodedAudioChunk(
     ScriptState* script_state,
     const wc_fuzzer::EncodedAudioChunk& proto) {
   auto* data = MakeGarbageCollected<AllowSharedBufferSource>(
-      DOMArrayBuffer::Create(proto.data().data(), proto.data().size()));
+      DOMArrayBuffer::Create(base::as_byte_span(proto.data())));
 
   auto* init = EncodedAudioChunkInit::Create();
   init->setTimestamp(proto.timestamp());

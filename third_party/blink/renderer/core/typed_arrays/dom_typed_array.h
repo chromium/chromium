@@ -34,12 +34,11 @@ class DOMTypedArray final : public DOMArrayBufferView {
   static ThisType* Create(base::span<const ValueType> array)
     requires std::is_trivially_copyable_v<ValueType>
   {
-    // Intentionally avoids using `as_bytes`, since that requires
-    // `std::has_unique_object_representations_v<ValueType>`, which we neither
-    // need here nor can guarantee.
     DOMArrayBuffer* buffer =
-        DOMArrayBuffer::Create(array.data(), array.size_bytes());
-    return Create(buffer, 0, array.size());
+        DOMArrayBuffer::CreateUninitialized(array.size(), sizeof(ValueType));
+    ThisType* typed_array = Create(buffer, 0, array.size());
+    typed_array->AsSpan().copy_from(array);
+    return typed_array;
   }
 
   static ThisType* CreateOrNull(size_t length) {
@@ -51,12 +50,11 @@ class DOMTypedArray final : public DOMArrayBufferView {
   static ThisType* CreateOrNull(base::span<const ValueType> array)
     requires std::is_trivially_copyable_v<ValueType>
   {
-    // Intentionally avoids using `as_bytes`, since that requires
-    // `std::has_unique_object_representations_v<ValueType>`, which we neither
-    // need here nor can guarantee.
-    DOMArrayBuffer* buffer =
-        DOMArrayBuffer::CreateOrNull(array.data(), array.size_bytes());
-    return buffer ? Create(buffer, 0, array.size()) : nullptr;
+    ThisType* typed_array = CreateUninitializedOrNull(array.size());
+    if (typed_array) {
+      typed_array->AsSpan().copy_from(array);
+    }
+    return typed_array;
   }
 
   static ThisType* CreateUninitializedOrNull(size_t length) {
