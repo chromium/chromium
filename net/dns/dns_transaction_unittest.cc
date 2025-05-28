@@ -28,6 +28,7 @@
 #include "base/numerics/safe_math.h"
 #include "base/rand_util.h"
 #include "base/run_loop.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/sys_byteorder.h"
@@ -81,7 +82,7 @@ namespace {
 
 base::TimeDelta kFallbackPeriod = base::Seconds(1);
 
-const char kMockHostname[] = "mock.http";
+constexpr std::string_view kMockHostname = "mock.http";
 
 std::vector<uint8_t> DomainFromDot(std::string_view dotted_name) {
   std::optional<std::vector<uint8_t>> dns_name =
@@ -122,7 +123,7 @@ class DnsSocketData {
  public:
   // The ctor takes parameters for the DnsQuery.
   DnsSocketData(uint16_t id,
-                const char* dotted_name,
+                std::string_view dotted_name,
                 uint16_t qtype,
                 IoMode mode,
                 Transport transport,
@@ -491,12 +492,12 @@ class URLRequestMockDohJob : public URLRequestJob, public AsyncSocket {
     }
   }
 
-  static std::string GetMockHttpsUrl(const std::string& path) {
-    return "https://" + (kMockHostname + ("/" + path));
+  static std::string GetMockHttpsUrl(std::string_view path) {
+    return base::StrCat({"https://", kMockHostname, "/", path});
   }
 
-  static std::string GetMockHttpUrl(const std::string& path) {
-    return "http://" + (kMockHostname + ("/" + path));
+  static std::string GetMockHttpUrl(std::string_view path) {
+    return base::StrCat({"http://", kMockHostname, "/", path});
   }
 
   // URLRequestJob implementation:
@@ -681,7 +682,7 @@ class DnsTransactionTestBase : public testing::Test {
   }
 
   void AddQueryAndResponseNoWrite(uint16_t id,
-                                  const char* dotted_name,
+                                  std::string_view dotted_name,
                                   uint16_t qtype,
                                   IoMode mode,
                                   Transport transport,
@@ -699,7 +700,7 @@ class DnsTransactionTestBase : public testing::Test {
   // taken verbatim from |data| of |data_length| bytes. The transaction id in
   // |data| should equal |id|, unless testing mismatched response.
   void AddQueryAndResponse(uint16_t id,
-                           const char* dotted_name,
+                           std::string_view dotted_name,
                            uint16_t qtype,
                            base::span<const uint8_t> response_data,
                            IoMode mode,
@@ -716,7 +717,7 @@ class DnsTransactionTestBase : public testing::Test {
   }
 
   void AddQueryAndErrorResponse(uint16_t id,
-                                const char* dotted_name,
+                                std::string_view dotted_name,
                                 uint16_t qtype,
                                 int error,
                                 IoMode mode,
@@ -733,7 +734,7 @@ class DnsTransactionTestBase : public testing::Test {
   }
 
   void AddAsyncQueryAndResponse(uint16_t id,
-                                const char* dotted_name,
+                                std::string_view dotted_name,
                                 uint16_t qtype,
                                 base::span<const uint8_t> data,
                                 const OptRecordRdata* opt_rdata = nullptr) {
@@ -742,7 +743,7 @@ class DnsTransactionTestBase : public testing::Test {
   }
 
   void AddSyncQueryAndResponse(uint16_t id,
-                               const char* dotted_name,
+                               std::string_view dotted_name,
                                uint16_t qtype,
                                base::span<const uint8_t> data,
                                const OptRecordRdata* opt_rdata = nullptr) {
@@ -752,7 +753,7 @@ class DnsTransactionTestBase : public testing::Test {
 
   // Add expected query of |dotted_name| and |qtype| and no response.
   void AddHangingQuery(
-      const char* dotted_name,
+      std::string_view dotted_name,
       uint16_t qtype,
       DnsQuery::PaddingStrategy padding_strategy =
           DnsQuery::PaddingStrategy::NONE,
@@ -767,7 +768,7 @@ class DnsTransactionTestBase : public testing::Test {
   // Add expected query of |dotted_name| and |qtype| and matching response with
   // no answer and RCODE set to |rcode|. The id will be generated randomly.
   void AddQueryAndRcode(
-      const char* dotted_name,
+      std::string_view dotted_name,
       uint16_t qtype,
       int rcode,
       IoMode mode,
@@ -784,13 +785,13 @@ class DnsTransactionTestBase : public testing::Test {
     AddSocketData(std::move(data), enqueue_transaction_id);
   }
 
-  void AddAsyncQueryAndRcode(const char* dotted_name,
+  void AddAsyncQueryAndRcode(std::string_view dotted_name,
                              uint16_t qtype,
                              int rcode) {
     AddQueryAndRcode(dotted_name, qtype, rcode, ASYNC, Transport::UDP);
   }
 
-  void AddSyncQueryAndRcode(const char* dotted_name,
+  void AddSyncQueryAndRcode(std::string_view dotted_name,
                             uint16_t qtype,
                             int rcode) {
     AddQueryAndRcode(dotted_name, qtype, rcode, SYNCHRONOUS, Transport::UDP);
@@ -833,7 +834,7 @@ class DnsTransactionTestBase : public testing::Test {
           socket_factory_->remote_endpoints_.emplace_back(server);
         }
       } else if (!server.use_post() && request->method() == "GET") {
-        std::string prefix = url_base + "?dns=";
+        const std::string prefix = base::StrCat({url_base, "?dns="});
         auto mispair = std::ranges::mismatch(prefix, request->url().spec());
         if (mispair.in1 == prefix.end()) {
           server_found = true;
