@@ -116,6 +116,7 @@ class BrowserRunner:
                 '--remote-debugging-port=0',
                 '--enable-web-instance-tmp',
                 '--with-webui',
+                '--enable-protected-media-identifier',
                 'about:blank',
             ])
         else:  # if self.browser_type == CAST_STREAMING_SHELL:
