@@ -2191,6 +2191,13 @@ bool MediaSessionImpl::CouldEnterBrowserInitiatedAutomaticPictureInPicture()
     return false;
   }
 
+  // Ensure that browser initiated automatic picture-in-picture is only allowed
+  // for the primary main frame.
+  RenderFrameHost* frame = first.observer->render_frame_host();
+  if (!frame || !frame->IsInPrimaryMainFrame()) {
+    return false;
+  }
+
   return true;
 }
 
