@@ -263,16 +263,6 @@ void ActorCoordinator::TryStartNewTask(
     return;
   }
 
-  // Ensure that a navigate action was provided.
-  //   - Currently, only one action at a time is supported.
-  if (action.action_information_size() != 1 ||
-      action.action_information().at(0).action_info_case() !=
-          ActionInformation::kNavigate) {
-    VLOG(1) << "Cannot start new task: first action was not kNavigate";
-    PostTaskForStartCallback(std::move(callback), /*tab=*/nullptr);
-    return;
-  }
-
   initializing_new_task_ = true;
 
   // If a tab handle was provided, try to get the tab interface
