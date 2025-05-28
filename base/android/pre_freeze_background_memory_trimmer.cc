@@ -1112,4 +1112,23 @@ void PreFreezeBackgroundMemoryTrimmer::CompactionMetric::RecordTimeMetrics(
                           last_finished - last_cancelled);
 }
 
+void SelfCompactionManager::OnSelfFreeze() {
+  PreFreezeBackgroundMemoryTrimmer::OnSelfFreeze();
+}
+
+void SelfCompactionManager::OnRunningCompact() {
+  PreFreezeBackgroundMemoryTrimmer::OnRunningCompact();
+}
+
+void SelfCompactionManager::MaybeCancelCompaction(
+    base::android::CompactCancellationReason cancellation_reason) {
+  PreFreezeBackgroundMemoryTrimmer::MaybeCancelCompaction(cancellation_reason);
+}
+
+void SelfCompactionManager::SetOnStartSelfCompactionCallback(
+    base::RepeatingCallback<void()> callback) {
+  PreFreezeBackgroundMemoryTrimmer::SetOnStartSelfCompactionCallback(
+      std::move(callback));
+}
+
 }  // namespace base::android

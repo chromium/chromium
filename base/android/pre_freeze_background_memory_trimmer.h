@@ -24,6 +24,15 @@ class MemoryPurgeManagerAndroid;
 BASE_EXPORT BASE_DECLARE_FEATURE(kShouldFreezeSelf);
 BASE_EXPORT BASE_DECLARE_FEATURE(kUseRunningCompact);
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class CompactCancellationReason {
+  kAppFreezer,
+  kPageResumed,
+  kTimeout,
+  kMaxValue = kTimeout
+};
+
 // Starting from Android U, apps are frozen shortly after being backgrounded
 // (with some exceptions). This causes some background tasks for reclaiming
 // resources in Chrome to not be run until Chrome is foregrounded again (which
@@ -36,15 +45,6 @@ BASE_EXPORT BASE_DECLARE_FEATURE(kUseRunningCompact);
 // be frozen.
 class BASE_EXPORT PreFreezeBackgroundMemoryTrimmer {
  public:
-  // These values are persisted to logs. Entries should not be renumbered and
-  // numeric values should never be reused.
-  enum class CompactCancellationReason {
-    kAppFreezer,
-    kPageResumed,
-    kTimeout,
-    kMaxValue = kTimeout
-  };
-
   static PreFreezeBackgroundMemoryTrimmer& Instance();
   ~PreFreezeBackgroundMemoryTrimmer() = delete;
 
@@ -423,6 +423,23 @@ class BASE_EXPORT PreFreezeBackgroundMemoryTrimmer {
       GUARDED_BY(lock());
   base::RepeatingClosure on_self_compact_callback_ GUARDED_BY(lock());
   bool supports_modern_trim_;
+};
+
+class BASE_EXPORT SelfCompactionManager {
+ public:
+  using CompactCancellationReason = CompactCancellationReason;
+  static void OnSelfFreeze();
+  static void OnRunningCompact();
+
+  // If we are currently doing self compaction, cancel it. If it was running,
+  // record a metric with the reason for the cancellation.
+  static void MaybeCancelCompaction(
+      CompactCancellationReason cancellation_reason);
+
+  // The callback runs in the thread pool. The caller cannot make any thread
+  // safety assumptions for the callback execution (e.g. it could run
+  // concurrently with the thread that registered it).
+  static void SetOnStartSelfCompactionCallback(base::RepeatingClosure callback);
 };
 
 }  // namespace base::android

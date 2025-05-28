@@ -7,7 +7,7 @@
 #include "build/build_config.h"
 
 #if BUILDFLAG(IS_ANDROID)
-#include "base/android/pre_freeze_background_memory_trimmer.h"
+#include "base/android/self_compaction_manager.h"
 #endif
 #include "base/feature_list.h"
 #include "base/memory/memory_pressure_listener.h"
@@ -112,9 +112,9 @@ void MemoryPurgeManager::OnPageResumed() {
 #if BUILDFLAG(IS_ANDROID)
   // Cancel a pending compaction, since we are resuming now, and will
   // presumably touch most of that memory soon.
-  base::android::PreFreezeBackgroundMemoryTrimmer::MaybeCancelCompaction(
-      base::android::PreFreezeBackgroundMemoryTrimmer::
-          CompactCancellationReason::kPageResumed);
+  base::android::SelfCompactionManager::MaybeCancelCompaction(
+      base::android::SelfCompactionManager::CompactCancellationReason::
+          kPageResumed);
 #endif
 }
 
@@ -172,7 +172,7 @@ void MemoryPurgeManager::PerformMemoryPurge() {
   if (AreAllPagesFrozen()) {
     base::MemoryPressureListener::SetNotificationsSuppressed(true);
 #if BUILDFLAG(IS_ANDROID)
-    base::android::PreFreezeBackgroundMemoryTrimmer::OnRunningCompact();
+    base::android::SelfCompactionManager::OnRunningCompact();
 #endif
   }
 

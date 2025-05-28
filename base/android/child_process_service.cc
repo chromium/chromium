@@ -7,7 +7,7 @@
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
 #include "base/android/library_loader/library_loader_hooks.h"
-#include "base/android/pre_freeze_background_memory_trimmer.h"
+#include "base/android/self_compaction_manager.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/file_descriptor_store.h"
 #include "base/logging.h"
@@ -84,7 +84,7 @@ NOINLINE void JNI_ChildProcessService_DumpProcessStack(JNIEnv* env) {
 }
 
 void JNI_ChildProcessService_OnSelfFreeze(JNIEnv* env) {
-  PreFreezeBackgroundMemoryTrimmer::OnSelfFreeze();
+  SelfCompactionManager::OnSelfFreeze();
 }
 
 }  // namespace android

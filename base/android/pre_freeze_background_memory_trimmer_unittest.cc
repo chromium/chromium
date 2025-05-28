@@ -882,8 +882,7 @@ TEST_F(PreFreezeSelfCompactionTest, SimpleCancel) {
   EXPECT_TRUE(ShouldContinueCompaction(triggered_at));
 
   PreFreezeBackgroundMemoryTrimmer::MaybeCancelCompaction(
-      PreFreezeBackgroundMemoryTrimmer::CompactCancellationReason::
-          kPageResumed);
+      SelfCompactionManager::CompactCancellationReason::kPageResumed);
 
   EXPECT_FALSE(ShouldContinueCompaction(triggered_at));
 }
@@ -907,8 +906,7 @@ TEST_P(PreFreezeSelfCompactionTestWithParam, Cancel) {
   // We should not record the metric here, because we are not currently
   // running.
   PreFreezeBackgroundMemoryTrimmer::MaybeCancelCompaction(
-      PreFreezeBackgroundMemoryTrimmer::CompactCancellationReason::
-          kPageResumed);
+      SelfCompactionManager::CompactCancellationReason::kPageResumed);
 
   // This metric is used for both self compaction and running compaction, with
   // the same prefix for both.
@@ -940,8 +938,7 @@ TEST_P(PreFreezeSelfCompactionTestWithParam, Cancel) {
   EXPECT_EQ(task_environment_.GetPendingMainThreadTaskCount(), 1u);
 
   PreFreezeBackgroundMemoryTrimmer::MaybeCancelCompaction(
-      PreFreezeBackgroundMemoryTrimmer::CompactCancellationReason::
-          kPageResumed);
+      SelfCompactionManager::CompactCancellationReason::kPageResumed);
 
   task_environment_.FastForwardBy(
       task_environment_.NextMainThreadPendingTaskDelay());
@@ -962,8 +959,7 @@ TEST_P(PreFreezeSelfCompactionTestWithParam, Cancel) {
   // Still only expect it to be recorded once, because we were not running the
   // second time we tried to cancel.
   PreFreezeBackgroundMemoryTrimmer::MaybeCancelCompaction(
-      PreFreezeBackgroundMemoryTrimmer::CompactCancellationReason::
-          kPageResumed);
+      SelfCompactionManager::CompactCancellationReason::kPageResumed);
   histograms_.ExpectTotalCount(
       "Memory.RunningOrSelfCompact.Renderer.Cancellation.Reason", 1);
 
@@ -1181,8 +1177,7 @@ TEST_F(PreFreezeSelfCompactionTest, OnSelfFreezeCancel) {
   task_environment_.FastForwardBy(base::Seconds(1));
 
   PreFreezeBackgroundMemoryTrimmer::MaybeCancelCompaction(
-      PreFreezeBackgroundMemoryTrimmer::CompactCancellationReason::
-          kPageResumed);
+      SelfCompactionManager::CompactCancellationReason::kPageResumed);
   EXPECT_EQ(task_environment_.GetPendingMainThreadTaskCount(), 1u);
 
   task_environment_.FastForwardBy(
