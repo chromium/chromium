@@ -212,6 +212,9 @@ class CORE_EXPORT CanvasRenderingContext
       SourceDrawingBuffer source_buffer,
       FlushReason reason);
 
+  // WebGL-specific method
+  virtual void ClearMarkedCanvasDirty() {}
+
   // Copy the contents of the rendering context to a media::VideoFrame created
   // using `frame_pool`, with color space specified by `dst_color_space`. If
   // successful, take (using std::move) `callback` and issue it with the
@@ -329,13 +332,6 @@ class CORE_EXPORT CanvasRenderingContext
 
   bool did_print_in_current_task() const { return did_print_in_current_task_; }
 
- protected:
-  CanvasRenderingContext(CanvasRenderingContextHost*,
-                         const CanvasContextCreationAttributesCore&,
-                         CanvasRenderingAPI);
-
-  virtual void Dispose();
-
   // Returns a CanvasResourceProvider containing the current content, or nullptr
   // if it was not possible to obtain that content. Default implementation
   // returns the host's CanvasResourceProvider, which is suitable for contexts
@@ -345,6 +341,13 @@ class CORE_EXPORT CanvasRenderingContext
       SourceDrawingBuffer) {
     return Host()->ResourceProvider();
   }
+
+ protected:
+  CanvasRenderingContext(CanvasRenderingContextHost*,
+                         const CanvasContextCreationAttributesCore&,
+                         CanvasRenderingAPI);
+
+  virtual void Dispose();
 
  private:
   Member<CanvasRenderingContextHost> host_;

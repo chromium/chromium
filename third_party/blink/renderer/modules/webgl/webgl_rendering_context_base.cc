@@ -1710,15 +1710,6 @@ bool WebGLRenderingContextBase::PushFrameWithCopy() {
   return submitted_frame;
 }
 
-void WebGLRenderingContextBase::FinalizeFrame(FlushReason) {
-  if (Host()->LowLatencyEnabled()) {
-    // PaintRenderingResultsToCanvas will export drawing buffer if the resource
-    // provider is single buffered.  Otherwise it will copy the drawing buffer.
-    PaintRenderingResultsToCanvas(kBackBuffer);
-  }
-  marked_canvas_dirty_ = false;
-}
-
 void WebGLRenderingContextBase::OnErrorMessage(const char* message,
                                                int32_t id) {
   if (synthesized_errors_to_console_)

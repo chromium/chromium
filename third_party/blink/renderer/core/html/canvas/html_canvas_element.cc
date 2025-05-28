@@ -839,12 +839,21 @@ void HTMLCanvasElement::PreFinalizeFrame() {
   // buffered.
   // TODO(crbug.com/40280152): Analyze whether this call is redundant (i.e.,
   // whether the CRP is guaranteed to always be present).
-  if (LowLatencyEnabled() && !dirty_rect_.IsEmpty()) {
+  if (!IsWebGL() && LowLatencyEnabled() && !dirty_rect_.IsEmpty()) {
     GetOrCreateCanvasResourceProvider();
   }
 }
 
 void HTMLCanvasElement::PostFinalizeFrame(FlushReason reason) {
+  if (IsWebGL()) {
+    if (LowLatencyEnabled()) {
+      if (!dirty_rect_.IsEmpty()) {
+        GetOrCreateCanvasResourceProvider();
+      }
+      context_->PaintRenderingResultsToCanvas(kBackBuffer);
+    }
+    context_->ClearMarkedCanvasDirty();
+  }
   if (LowLatencyEnabled() && frame_dispatcher_ && !dirty_rect_.IsEmpty() &&
       GetOrCreateCanvasResourceProvider()) {
     const base::TimeTicks start_time = base::TimeTicks::Now();
