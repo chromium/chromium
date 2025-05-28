@@ -6,10 +6,12 @@
 
 DeviceAccountsProvider::AccountInfo::AccountInfo(GaiaId gaia,
                                                  std::string email,
-                                                 std::string hosted_domain)
+                                                 std::string hosted_domain,
+                                                 bool has_persistent_auth_error)
     : gaia_(std::move(gaia)),
       email_(std::move(email)),
-      hosted_domain_(std::move(hosted_domain)) {}
+      hosted_domain_(std::move(hosted_domain)),
+      has_persistent_auth_error_(has_persistent_auth_error) {}
 
 DeviceAccountsProvider::AccountInfo::AccountInfo(const AccountInfo& other) =
     default;
@@ -36,6 +38,10 @@ const std::string& DeviceAccountsProvider::AccountInfo::GetEmail() const {
 const std::string& DeviceAccountsProvider::AccountInfo::GetHostedDomain()
     const {
   return hosted_domain_;
+}
+
+bool DeviceAccountsProvider::AccountInfo::HasPersistentAuthError() const {
+  return has_persistent_auth_error_;
 }
 
 std::vector<DeviceAccountsProvider::AccountInfo>

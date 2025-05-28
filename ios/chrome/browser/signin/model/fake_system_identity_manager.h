@@ -13,6 +13,8 @@
 #include "base/observer_list.h"
 #include "base/sequence_checker.h"
 #include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
+#include "google_apis/gaia/core_account_id.h"
+#include "ios/chrome/browser/signin/model/fake_system_identity_details.h"
 #include "ios/chrome/browser/signin/model/system_identity_interaction_manager.h"
 #include "ios/chrome/browser/signin/model/system_identity_manager.h"
 #include "ios/chrome/browser/signin/model/system_identity_manager_observer.h"
@@ -95,6 +97,21 @@ class FakeSystemIdentityManager final : public SystemIdentityManager {
 
   // Returns YES if the identity was already added.
   bool ContainsIdentity(id<SystemIdentity> identity);
+
+  // Simulates a persistent authentication error for an account. After calling
+  // this method, token requests for the corresponding account will fail with an
+  // auth error.
+  void SetPersistentAuthErrorForAccount(const CoreAccountId& accountId);
+
+  // Simulates a persistent authentication error being resolved for an account.
+  // After calling this method, token requests for the corresponding account
+  // will succeed.
+  void ClearPersistentAuthErrorForAccount(const CoreAccountId& accountId);
+
+  // Sets a callback to be called whenever an access token the specified
+  // account is requested.
+  void SetGetAccessTokenCallback(const CoreAccountId& accountId,
+                                 GetAccessTokenCallback callback);
 
   // Simulates a failure next time the access token for `identity` would be
   // fetched and return the error that would be sent to the observers. The

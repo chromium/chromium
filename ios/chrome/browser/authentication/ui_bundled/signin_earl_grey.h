@@ -9,6 +9,7 @@
 
 #import "components/policy/core/browser/signin/profile_separation_policies.h"
 #import "components/sync/base/user_selectable_type.h"
+#import "google_apis/gaia/core_account_id.h"
 #import "ios/testing/earl_grey/base_eg_test_helper_impl.h"
 
 @class ExpectedSigninHistograms;
@@ -63,6 +64,9 @@ class GURL;
 
 // Returns YES if the identity was added to the fake identity service.
 - (BOOL)isIdentityAdded:(FakeSystemIdentity*)fakeIdentity;
+
+// Simulates a persistent authentication error for an account.
+- (void)setPersistentAuthErrorForAccount:(const CoreAccountId&)accountId;
 
 // Returns the gaia ID of the signed-in account.
 // If there is no signed-in account returns an empty string.

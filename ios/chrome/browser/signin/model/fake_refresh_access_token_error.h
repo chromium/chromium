@@ -16,10 +16,14 @@ using HandleMDMNotificationCallback =
 // Fake implementation of RefreshAccessTokenError.
 @interface FakeRefreshAccessTokenError : NSObject <RefreshAccessTokenError>
 
-- (instancetype)initWithCallback:(HandleMDMNotificationCallback)callback
+- (instancetype)initWithIdentity:(id<SystemIdentity>)identity
+                        callback:(HandleMDMNotificationCallback)callback
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;
+
+// Identity for which the error was produced.
+@property(nonatomic, readonly) id<SystemIdentity> identity;
 
 // Callback passed to the initializer.
 @property(nonatomic, readonly) HandleMDMNotificationCallback callback;

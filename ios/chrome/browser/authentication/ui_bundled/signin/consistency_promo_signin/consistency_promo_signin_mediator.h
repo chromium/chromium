@@ -38,6 +38,8 @@ typedef NS_ENUM(NSInteger, ConsistencyPromoSigninMediatorError) {
   ConsistencyPromoSigninMediatorErrorTimeout,
   // Generic error.
   ConsistencyPromoSigninMediatorErrorGeneric,
+  // Auth error.
+  ConsistencyPromoSigninMediatorErrorAuth,
 };
 
 // Delegate for ConsistencyPromoSigninMediator.
@@ -67,7 +69,8 @@ typedef NS_ENUM(NSInteger, ConsistencyPromoSigninMediatorError) {
 // Called if there is sign-in error.
 - (void)consistencyPromoSigninMediator:(ConsistencyPromoSigninMediator*)mediator
                         errorDidHappen:
-                            (ConsistencyPromoSigninMediatorError)error;
+                            (ConsistencyPromoSigninMediatorError)error
+                          withIdentity:(id<SystemIdentity>)identity;
 
 // Called to create a WebSigninTracker object during the web sign-in flow.
 - (std::unique_ptr<signin::WebSigninTracker>)

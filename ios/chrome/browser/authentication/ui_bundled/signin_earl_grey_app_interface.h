@@ -49,6 +49,9 @@ enum class UserSelectableType;
 // Returns YES if the identity was added to the fake identity service.
 + (BOOL)isIdentityAdded:(FakeSystemIdentity*)fakeIdentity;
 
+// Simulates a persistent authentication error for an account.
++ (void)setPersistentAuthErrorForAccount:(NSString*)accountGaiaId;
+
 // Returns the gaia ID of the primary account.
 // If there is no primary account returns an empty string.
 + (NSString*)primaryAccountGaiaID;

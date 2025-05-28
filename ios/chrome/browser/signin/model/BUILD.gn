@@ -294,6 +294,7 @@ source_set("fake_system_identity_manager") {
     "fake_system_identity_manager_storage.mm",
   ]
   public = [
+    "fake_refresh_access_token_error.h",
     "fake_system_identity_interaction_manager.h",
     "fake_system_identity_manager.h",
   ]
@@ -310,6 +311,7 @@ source_set("fake_system_identity_manager") {
     "//components/signin/public/identity_manager",
     "//components/signin/public/identity_manager:test_support",
     "//google_apis",
+    "//ios/chrome/browser/signin/model:constants",
     "//ios/public/provider/chrome/browser/signin:signin_error_api",
   ]
   frameworks = [ "Foundation.framework" ]
