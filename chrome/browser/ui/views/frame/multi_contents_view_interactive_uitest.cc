@@ -33,8 +33,39 @@
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/views/test/views_test_utils.h"
 
+namespace {
+class MultiContentsViewBoundsChangedObserver
+    : public views::ViewObserver,
+      public ui::test::StateObserver<int> {
+ public:
+  explicit MultiContentsViewBoundsChangedObserver(Browser* browser) {
+    auto* browser_view = BrowserView::GetBrowserViewForBrowser(browser);
+    CHECK(browser_view);
+    observation_.Observe(browser_view->multi_contents_view());
+  }
+
+  // ui::test::StateObserver:
+  int GetStateObserverInitialState() const override {
+    return bounds_changed_count_;
+  }
+
+  // views::ViewObserver:
+  void OnViewBoundsChanged(views::View* view) override {
+    bounds_changed_count_++;
+    OnStateObserverStateChanged(bounds_changed_count_);
+  }
+
+  void OnViewIsDeleting(views::View* view) override { observation_.Reset(); }
+
+ private:
+  raw_ptr<Browser> browser_;
+  int bounds_changed_count_ = 0;
+  base::ScopedObservation<views::View, views::ViewObserver> observation_{this};
+};
+
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNewTab);
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kSecondTab);
+}  // namespace
 
 class MultiContentsViewUiTest
     : public SplitTabsInteractiveTestMixin<InteractiveBrowserTest> {
@@ -150,6 +181,24 @@ IN_PROC_BROWSER_TEST_F(MultiContentsViewUiTest, EnterAndExitSplitViews) {
       CreateTabsAndEnterSplitView(), CheckTabIsActive(0), ExitSplitView(0),
       CheckTabIsActive(0),
       CheckResult([this]() { return tab_strip_model()->count(); }, 2u));
+}
+
+// Tests switching tabs with split views. This also adds coverage to ensuring
+// that there isn't any unnecessary re-layout during tab switching.
+IN_PROC_BROWSER_TEST_F(MultiContentsViewUiTest, TabSwitchWithSplitViews) {
+  DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(MultiContentsViewBoundsChangedObserver,
+                                      kMultiContentsViewBoundsChangedObserver);
+  RunTestSequence(
+      CreateTabsAndEnterSplitView(), CheckTabIsActive(0),
+      AddInstrumentedTab(kSecondTab, GURL(chrome::kChromeUISettingsURL), 2),
+      CheckTabIsActive(2), SelectTab(kTabStripElementId, 0, InputType::kMouse),
+      // Check if there is just one resizing event that happens when switching
+      // between a split view to a regular tab.
+      CheckTabIsActive(0),
+      ObserveState(kMultiContentsViewBoundsChangedObserver, browser()),
+      SelectTab(kTabStripElementId, 2, InputType::kMouse), CheckTabIsActive(2),
+      CheckState(kMultiContentsViewBoundsChangedObserver, 1),
+      StopObservingState(kMultiContentsViewBoundsChangedObserver));
 }
 
 // Check that MultiContentsView changes its active view when inactive view is

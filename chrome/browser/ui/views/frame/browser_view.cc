@@ -833,11 +833,18 @@ class BrowserViewLayoutDelegateImpl : public BrowserViewLayoutDelegate {
     // will enable BrowserViewLayout to hide the contents separator on its own
     // using the same logic used by normal BrowserViews.
     // The separator should not be shown when in split view.
-    return !browser_view_->browser()->app_controller() &&
-           !browser_view_->IsInSplitView();
+    return !browser_view_->browser()->app_controller() && !IsActiveTabSplit();
   }
 
-  bool IsInSplitView() const override { return browser_view_->IsInSplitView(); }
+  bool IsActiveTabSplit() const override {
+    // Use the model state as this can be called during active tab change
+    // when the multi contents view hasn't been fully setup and this
+    // inconsistency would cause unnecessary re-layout of content view during
+    // tab switch.
+    const tabs::TabInterface* active_tab =
+        browser_view_->browser()->GetActiveTabInterface();
+    return active_tab && active_tab->IsSplit();
+  }
 
   ExclusiveAccessBubbleViews* GetExclusiveAccessBubble() const override {
     return browser_view_->exclusive_access_bubble();
@@ -5694,9 +5701,18 @@ void BrowserView::UpdateDevToolsForContents(WebContents* web_contents,
 void BrowserView::UpdateUIForContents(WebContents* contents) {
   TRACE_EVENT0("ui", "BrowserView::UpdateUIForContents");
   bool needs_layout = MaybeShowBookmarkBar(contents);
+
   // TODO(jamescook): This function always returns true. Remove it and figure
   // out when layout is actually required.
   needs_layout |= MaybeShowInfoBar(contents);
+
+  if (multi_contents_view_) {
+    bool current_state = multi_contents_view_->IsInSplitView();
+    bool updated_state =
+        contents && tabs::TabInterface::GetFromContents(contents)->IsSplit();
+    needs_layout |= (current_state != updated_state);
+  }
+
   if (needs_layout) {
     DeprecatedLayoutImmediately();
   }

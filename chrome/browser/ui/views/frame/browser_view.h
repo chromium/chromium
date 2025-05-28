@@ -244,6 +244,8 @@ class BrowserView : public BrowserWindow,
 
   SidePanel* unified_side_panel() { return unified_side_panel_; }
 
+  MultiContentsView* multi_contents_view() { return multi_contents_view_; }
+
   void set_contents_border_widget(views::Widget* contents_border_widget) {
     GetBrowserViewLayout()->set_contents_border_widget(contents_border_widget);
   }
@@ -919,10 +921,6 @@ class BrowserView : public BrowserWindow,
 
   enterprise_watermark::WatermarkView* get_watermark_view_for_testing() {
     return watermark_view_;
-  }
-
-  MultiContentsView* multi_contents_view_for_testing() {
-    return multi_contents_view_;
   }
 
   // This value is used in a common calculation in NonClientFrameView

@@ -42,7 +42,7 @@ class SplitTabsInteractiveTestMixin : public T {
 
   MultiContentsView* multi_contents_view() {
     return BrowserView::GetBrowserViewForBrowser(T::browser())
-        ->multi_contents_view_for_testing();
+        ->multi_contents_view();
   }
 
   auto EnterSplitView(int active_tab, int other_tab) {

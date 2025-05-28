@@ -670,13 +670,13 @@ BrowserViewLayout::CalculateContentsContainerLayout(int top, int bottom) const {
   SidePanel* side_panel = views::AsViewClass<SidePanel>(unified_side_panel_);
 
   const bool side_panel_right_aligned = side_panel->IsRightAligned();
-  const bool is_in_split_view = delegate_->IsInSplitView();
+  const bool is_in_split = delegate_->IsActiveTabSplit();
   views::View* side_panel_separator =
       side_panel_right_aligned ? right_aligned_side_panel_separator_.get()
                                : left_aligned_side_panel_separator_.get();
   CHECK(side_panel_separator);
   const int separator_width =
-      is_in_split_view ? 0 : side_panel_separator->GetPreferredSize().width();
+      is_in_split ? 0 : side_panel_separator->GetPreferredSize().width();
 
   // Side panel occupies some of the container's space. The side panel should
   // never occupy more space than is available in the content window, and
@@ -760,7 +760,7 @@ void BrowserViewLayout::LayoutContentsContainerView(int top, int bottom) {
 
   BrowserViewLayout::ContentsContainerLayoutResult layout_result =
       CalculateContentsContainerLayout(top, bottom);
-  const bool is_in_split_view = delegate_->IsInSplitView();
+  const bool is_in_split = delegate_->IsActiveTabSplit();
 
   contents_container_->SetBoundsRect(layout_result.contents_container_bounds);
 
@@ -771,7 +771,7 @@ void BrowserViewLayout::LayoutContentsContainerView(int top, int bottom) {
     SetViewVisibility(right_aligned_side_panel_separator_,
                       layout_result.side_panel_visible &&
                           layout_result.side_panel_right_aligned &&
-                          !is_in_split_view);
+                          !is_in_split);
     right_aligned_side_panel_separator_->SetBoundsRect(
         layout_result.separator_bounds);
   }
@@ -779,14 +779,14 @@ void BrowserViewLayout::LayoutContentsContainerView(int top, int bottom) {
     SetViewVisibility(left_aligned_side_panel_separator_,
                       layout_result.side_panel_visible &&
                           !layout_result.side_panel_right_aligned &&
-                          !is_in_split_view);
+                          !is_in_split);
     left_aligned_side_panel_separator_->SetBoundsRect(
         layout_result.separator_bounds);
   }
 
   if (side_panel_rounded_corner_) {
     SetViewVisibility(side_panel_rounded_corner_,
-                      layout_result.side_panel_visible && !is_in_split_view);
+                      layout_result.side_panel_visible && !is_in_split);
     if (layout_result.side_panel_visible) {
       // This can return nullptr when there is no Widget (for context, see
       // http://crbug.com/40178332). The nullptr dereference does not always

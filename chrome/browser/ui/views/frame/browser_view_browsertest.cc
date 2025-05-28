@@ -528,29 +528,20 @@ IN_PROC_BROWSER_TEST_F(SideBySideBrowserViewTest, SplitViewActiveIndexTest) {
                                               split_tabs::SplitTabVisualData());
 
   browser()->tab_strip_model()->ActivateTabAt(0);
-  EXPECT_TRUE(browser_view()->multi_contents_view_for_testing());
-  EXPECT_EQ(browser_view()
-                ->multi_contents_view_for_testing()
-                ->GetActiveContentsView(),
-            browser_view()
-                ->multi_contents_view_for_testing()
-                ->start_contents_view_for_testing());
+  EXPECT_TRUE(browser_view()->multi_contents_view());
+  EXPECT_EQ(
+      browser_view()->multi_contents_view()->GetActiveContentsView(),
+      browser_view()->multi_contents_view()->start_contents_view_for_testing());
 
   browser()->tab_strip_model()->ActivateTabAt(2);
-  EXPECT_EQ(browser_view()
-                ->multi_contents_view_for_testing()
-                ->GetActiveContentsView(),
-            browser_view()
-                ->multi_contents_view_for_testing()
-                ->start_contents_view_for_testing());
+  EXPECT_EQ(
+      browser_view()->multi_contents_view()->GetActiveContentsView(),
+      browser_view()->multi_contents_view()->start_contents_view_for_testing());
 
   browser()->tab_strip_model()->ActivateTabAt(3);
-  EXPECT_EQ(browser_view()
-                ->multi_contents_view_for_testing()
-                ->GetActiveContentsView(),
-            browser_view()
-                ->multi_contents_view_for_testing()
-                ->end_contents_view_for_testing());
+  EXPECT_EQ(
+      browser_view()->multi_contents_view()->GetActiveContentsView(),
+      browser_view()->multi_contents_view()->end_contents_view_for_testing());
 }
 
 namespace {
