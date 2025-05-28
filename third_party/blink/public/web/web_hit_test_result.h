@@ -29,7 +29,6 @@
 #include "cc/paint/element_id.h"
 #include "third_party/blink/public/platform/web_common.h"
 #include "third_party/blink/public/platform/web_private_ptr.h"
-#include "ui/gfx/geometry/point_f.h"
 
 namespace blink {
 

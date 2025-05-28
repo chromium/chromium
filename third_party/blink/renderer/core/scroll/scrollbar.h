@@ -38,10 +38,9 @@
 #include "third_party/blink/renderer/platform/timer.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 #include "ui/events/types/scroll_types.h"
-
-namespace gfx {
-class Rect;
-}
+#include "ui/gfx/geometry/point_f.h"
+#include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/size.h"
 
 namespace ui {
 class ColorProvider;

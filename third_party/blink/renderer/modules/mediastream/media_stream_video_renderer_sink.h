@@ -15,7 +15,6 @@
 #include "third_party/blink/renderer/modules/mediastream/media_stream_video_renderer.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_component.h"
-#include "ui/gfx/geometry/size.h"
 
 namespace base {
 class SingleThreadTaskRunner;
