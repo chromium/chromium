@@ -387,7 +387,7 @@ int DisplayScheduler::MaxPendingSwaps() const {
   // here the 0.8 constant is chosen to bias rounding up.
   int deadline_max_pending_swaps =
       (total_time_nanos + 0.8 * interval_nanos) / interval_nanos;
-  return std::clamp(deadline_max_pending_swaps, 0, param_max_pending_swaps);
+  return std::clamp(deadline_max_pending_swaps, 1, param_max_pending_swaps);
 }
 
 void DisplayScheduler::SetNeedsOneBeginFrame(bool needs_draw) {
