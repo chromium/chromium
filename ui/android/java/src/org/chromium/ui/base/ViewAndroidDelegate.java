@@ -492,6 +492,7 @@ public class ViewAndroidDelegate {
      * @return container view that the anchor views are added to. May be null.
      */
     @CalledByNative
+    @Nullable
     public final View getContainerView() {
         return mContainerView;
     }

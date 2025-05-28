@@ -419,7 +419,7 @@ public class ImeAdapterImpl
     }
 
     private View getContainerView() {
-        return mViewDelegate.getContainerView();
+        return assumeNonNull(mViewDelegate.getContainerView());
     }
 
     /**
@@ -774,7 +774,7 @@ public class ImeAdapterImpl
         if (!isValid()) return;
         if (DEBUG_LOGS) Log.i(TAG, "hideKeyboard");
         View view = mViewDelegate.getContainerView();
-        if (mInputMethodManagerWrapper.isActive(view)) {
+        if (view != null && mInputMethodManagerWrapper.isActive(view)) {
             // NOTE: we should not set ResultReceiver here. Otherwise, IMM will own
             // ImeAdapter even after input method goes away and result gets received.
             mInputMethodManagerWrapper.hideSoftInputFromWindow(view.getWindowToken(), 0, null);
@@ -1267,7 +1267,7 @@ public class ImeAdapterImpl
                 .onFocusedNodeChanged(
                         editableNodeBounds,
                         isEditable,
-                        mViewDelegate.getContainerView(),
+                        assumeNonNull(mViewDelegate.getContainerView()),
                         deviceScale,
                         mWebContents.getRenderCoordinates().getContentOffsetYPixInt());
     }
