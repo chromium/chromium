@@ -13,7 +13,6 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.components.tab_group_sync.LocalTabGroupId;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
-import org.chromium.components.tab_group_sync.TabGroupSyncService.Observer;
 import org.chromium.components.tab_group_sync.TriggerSource;
 
 /**
@@ -34,8 +33,8 @@ public class ArchivedTabCountSupplier extends ObservableSupplierImpl<Integer>
     private @Nullable ObservableSupplier<Integer> mArchivedTabModelTabCountSupplier;
     private @Nullable TabGroupSyncService mTabGroupSyncService;
 
-    private final Observer mTabGroupSyncObserver =
-            new Observer() {
+    private final TabGroupSyncService.Observer mTabGroupSyncObserver =
+            new TabGroupSyncService.Observer() {
                 @Override
                 public void onInitialized() {
                     updateArchivedTabCount();
