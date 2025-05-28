@@ -94,6 +94,100 @@ bool HasConstantValues(float* values, int frames_to_process) {
 
 }  // namespace
 
+class BiquadDSPKernel;
+
+class BiquadProcessor final {
+ public:
+  BiquadProcessor(float sample_rate,
+                  uint32_t number_of_channels,
+                  unsigned render_quantum_frames,
+                  AudioParamHandler& frequency,
+                  AudioParamHandler& q,
+                  AudioParamHandler& gain,
+                  AudioParamHandler& detune);
+  ~BiquadProcessor();
+
+  std::unique_ptr<BiquadDSPKernel> CreateKernel();
+
+  void Initialize();
+  void Uninitialize();
+  void Process(const AudioBus* source,
+               AudioBus* destination,
+               uint32_t frames_to_process);
+  void ProcessOnlyAudioParams(uint32_t frames_to_process);
+  void Reset();
+
+  bool IsInitialized() const { return is_initialized_; }
+
+  float SampleRate() const { return sample_rate_; }
+
+  unsigned RenderQuantumFrames() const { return render_quantum_frames_; }
+
+  double TailTime() const;
+  double LatencyTime() const;
+  bool RequiresTailProcessing() const;
+
+  void SetNumberOfChannels(unsigned);
+  unsigned NumberOfChannels() const { return number_of_channels_; }
+
+  // Get the magnitude and phase response of the filter at the given
+  // set of frequencies (in Hz). The phase response is in radians.
+  void GetFrequencyResponse(int n_frequencies,
+                            const float* frequency_hz,
+                            float* mag_response,
+                            float* phase_response);
+
+  void CheckForDirtyCoefficients();
+
+  bool AreFilterCoefficientsDirty() const {
+    return are_filter_coefficients_dirty_;
+  }
+  bool HasSampleAccurateValues() const { return has_sample_accurate_values_; }
+  bool IsAudioRate() const { return is_audio_rate_; }
+
+  AudioParamHandler& Parameter1() { return *parameter1_; }
+  AudioParamHandler& Parameter2() { return *parameter2_; }
+  AudioParamHandler& Parameter3() { return *parameter3_; }
+  AudioParamHandler& Parameter4() { return *parameter4_; }
+
+  V8BiquadFilterType::Enum Type() const { return type_; }
+  void SetType(V8BiquadFilterType::Enum type);
+
+ private:
+  V8BiquadFilterType::Enum type_ = V8BiquadFilterType::Enum::kLowpass;
+
+  scoped_refptr<AudioParamHandler> parameter1_;
+  scoped_refptr<AudioParamHandler> parameter2_;
+  scoped_refptr<AudioParamHandler> parameter3_;
+  scoped_refptr<AudioParamHandler> parameter4_;
+
+  // so DSP kernels know when to re-compute coefficients
+  bool are_filter_coefficients_dirty_ = true;
+
+  // Set to true if any of the filter parameters are sample-accurate.
+  bool has_sample_accurate_values_ = false;
+
+  // Set to true if any of the filter parameters are a-rate.
+  bool is_audio_rate_;
+
+  bool has_just_reset_ = true;
+
+  // Cache previous parameter values to allow us to skip recomputing filter
+  // coefficients when parameters are not changing
+  float previous_parameter1_ = std::numeric_limits<float>::quiet_NaN();
+  float previous_parameter2_ = std::numeric_limits<float>::quiet_NaN();
+  float previous_parameter3_ = std::numeric_limits<float>::quiet_NaN();
+  float previous_parameter4_ = std::numeric_limits<float>::quiet_NaN();
+
+  bool is_initialized_ = false;
+  unsigned number_of_channels_;
+  float sample_rate_;
+  unsigned render_quantum_frames_;
+
+  Vector<std::unique_ptr<BiquadDSPKernel>> kernels_ GUARDED_BY(process_lock_);
+  mutable base::Lock process_lock_;
+};
+
 // BiquadDSPKernel is is responsible for filtering one channel of a
 // BiquadProcessor using a Biquad object.
 class BiquadDSPKernel final {
@@ -234,35 +328,35 @@ void BiquadDSPKernel::UpdateCoefficients(int number_of_frames,
     // Configure the biquad with the new filter parameters for the appropriate
     // type of filter.
     switch (GetBiquadProcessor()->Type()) {
-      case BiquadProcessor::FilterType::kLowPass:
+      case V8BiquadFilterType::Enum::kLowpass:
         biquad_.SetLowpassParams(k, normalized_frequency, q[k]);
         break;
 
-      case BiquadProcessor::FilterType::kHighPass:
+      case V8BiquadFilterType::Enum::kHighpass:
         biquad_.SetHighpassParams(k, normalized_frequency, q[k]);
         break;
 
-      case BiquadProcessor::FilterType::kBandPass:
+      case V8BiquadFilterType::Enum::kBandpass:
         biquad_.SetBandpassParams(k, normalized_frequency, q[k]);
         break;
 
-      case BiquadProcessor::FilterType::kLowShelf:
+      case V8BiquadFilterType::Enum::kLowshelf:
         biquad_.SetLowShelfParams(k, normalized_frequency, gain[k]);
         break;
 
-      case BiquadProcessor::FilterType::kHighShelf:
+      case V8BiquadFilterType::Enum::kHighshelf:
         biquad_.SetHighShelfParams(k, normalized_frequency, gain[k]);
         break;
 
-      case BiquadProcessor::FilterType::kPeaking:
+      case V8BiquadFilterType::Enum::kPeaking:
         biquad_.SetPeakingParams(k, normalized_frequency, q[k], gain[k]);
         break;
 
-      case BiquadProcessor::FilterType::kNotch:
+      case V8BiquadFilterType::Enum::kNotch:
         biquad_.SetNotchParams(k, normalized_frequency, q[k]);
         break;
 
-      case BiquadProcessor::FilterType::kAllPass:
+      case V8BiquadFilterType::Enum::kAllpass:
         biquad_.SetAllpassParams(k, normalized_frequency, q[k]);
         break;
     }
@@ -555,7 +649,7 @@ double BiquadProcessor::LatencyTime() const {
   return std::numeric_limits<double>::infinity();
 }
 
-void BiquadProcessor::SetType(FilterType type) {
+void BiquadProcessor::SetType(V8BiquadFilterType::Enum type) {
   if (type != type_) {
     type_ = type;
     Reset();  // The filter state must be reset only if the type has changed.
@@ -645,8 +739,8 @@ void BiquadFilterHandler::Initialize() {
     return;
   }
 
-  DCHECK(Processor());
-  Processor()->Initialize();
+  DCHECK(processor_);
+  processor_->Initialize();
 
   AudioHandler::Initialize();
 }
@@ -656,8 +750,8 @@ void BiquadFilterHandler::Uninitialize() {
     return;
   }
 
-  DCHECK(Processor());
-  Processor()->Uninitialize();
+  DCHECK(processor_);
+  processor_->Uninitialize();
 
   AudioHandler::Uninitialize();
 }
@@ -668,8 +762,8 @@ void BiquadFilterHandler::Process(uint32_t frames_to_process) {
 
   AudioBus* destination_bus = Output(0).Bus();
 
-  if (!IsInitialized() || !Processor() ||
-      Processor()->NumberOfChannels() != NumberOfChannels()) {
+  if (!IsInitialized() || !processor_ ||
+      processor_->NumberOfChannels() != NumberOfChannels()) {
     destination_bus->Zero();
   } else {
     scoped_refptr<AudioBus> source_bus = Input(0).Bus();
@@ -680,7 +774,7 @@ void BiquadFilterHandler::Process(uint32_t frames_to_process) {
       source_bus->Zero();
     }
 
-    Processor()->Process(source_bus.get(), destination_bus, frames_to_process);
+    processor_->Process(source_bus.get(), destination_bus, frames_to_process);
   }
 
   if (!did_warn_bad_filter_state_) {
@@ -699,11 +793,11 @@ void BiquadFilterHandler::Process(uint32_t frames_to_process) {
 }
 
 void BiquadFilterHandler::ProcessOnlyAudioParams(uint32_t frames_to_process) {
-  if (!IsInitialized() || !Processor()) {
+  if (!IsInitialized() || !processor_) {
     return;
   }
 
-  Processor()->ProcessOnlyAudioParams(frames_to_process);
+  processor_->ProcessOnlyAudioParams(frames_to_process);
 }
 
 // Nice optimization in the very common case allowing for "in-place" processing
@@ -722,7 +816,7 @@ void BiquadFilterHandler::CheckNumberOfChannelsForInput(AudioNodeInput* input) {
   Context()->AssertGraphOwner();
 
   DCHECK_EQ(input, &Input(0));
-  DCHECK(Processor());
+  DCHECK(processor_);
 
   unsigned number_of_channels = input->NumberOfChannels();
 
@@ -737,7 +831,7 @@ void BiquadFilterHandler::CheckNumberOfChannelsForInput(AudioNodeInput* input) {
     Output(0).SetNumberOfChannels(number_of_channels);
 
     // Re-initialize the processor with the new channel count.
-    Processor()->SetNumberOfChannels(number_of_channels);
+    processor_->SetNumberOfChannels(number_of_channels);
     Initialize();
   }
 
@@ -746,6 +840,22 @@ void BiquadFilterHandler::CheckNumberOfChannelsForInput(AudioNodeInput* input) {
 
 unsigned BiquadFilterHandler::NumberOfChannels() {
   return Output(0).NumberOfChannels();
+}
+
+void BiquadFilterHandler::GetFrequencyResponse(int n_frequencies,
+                                               const float* frequency_hz,
+                                               float* mag_response,
+                                               float* phase_response) {
+  processor_->GetFrequencyResponse(n_frequencies, frequency_hz, mag_response,
+                                   phase_response);
+}
+
+V8BiquadFilterType::Enum BiquadFilterHandler::Type() const {
+  return processor_->Type();
+}
+
+void BiquadFilterHandler::SetType(V8BiquadFilterType::Enum type) {
+  processor_->SetType(type);
 }
 
 bool BiquadFilterHandler::RequiresTailProcessing() const {

@@ -37,6 +37,19 @@
 namespace blink {
 
 namespace {
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class FilterType {
+  kLowPass = 0,
+  kHighPass = 1,
+  kBandPass = 2,
+  kLowShelf = 3,
+  kHighShelf = 4,
+  kPeaking = 5,
+  kNotch = 6,
+  kAllPass = 7,
+  kMaxValue = kAllPass,
+};
 
 constexpr double kDefaultFrequencyValue = 350.0;
 constexpr float kMinFrequencyValue = 0.0f;
@@ -44,6 +57,28 @@ constexpr double kDefaultQValue = 1.0;
 constexpr double kDefaultGainValue = 0.0;
 constexpr float kMinGainValue = std::numeric_limits<float>::lowest();
 constexpr double kDefaultDetuneValue = 0.0;
+
+FilterType FilterTypeFromV8(V8BiquadFilterType type) {
+  switch (type.AsEnum()) {
+    case V8BiquadFilterType::Enum::kLowpass:
+      return FilterType::kLowPass;
+    case V8BiquadFilterType::Enum::kHighpass:
+      return FilterType::kHighPass;
+    case V8BiquadFilterType::Enum::kBandpass:
+      return FilterType::kBandPass;
+    case V8BiquadFilterType::Enum::kLowshelf:
+      return FilterType::kLowShelf;
+    case V8BiquadFilterType::Enum::kHighshelf:
+      return FilterType::kHighShelf;
+    case V8BiquadFilterType::Enum::kPeaking:
+      return FilterType::kPeaking;
+    case V8BiquadFilterType::Enum::kNotch:
+      return FilterType::kNotch;
+    case V8BiquadFilterType::Enum::kAllpass:
+      return FilterType::kAllPass;
+  }
+  NOTREACHED();
+}
 
 }  // namespace
 
@@ -87,7 +122,7 @@ BiquadFilterNode::BiquadFilterNode(BaseAudioContext& context)
                                          frequency_->Handler(), q_->Handler(),
                                          gain_->Handler(), detune_->Handler()));
 
-  SetType(BiquadProcessor::FilterType::kLowPass);
+  setType(V8BiquadFilterType(V8BiquadFilterType::Enum::kLowpass));
 }
 
 BiquadFilterNode* BiquadFilterNode::Create(BaseAudioContext& context,
@@ -131,73 +166,18 @@ void BiquadFilterNode::Trace(Visitor* visitor) const {
   AudioNode::Trace(visitor);
 }
 
-BiquadProcessor* BiquadFilterNode::GetBiquadProcessor() const {
-  return static_cast<BiquadProcessor*>(
-      static_cast<BiquadFilterHandler&>(Handler()).Processor());
+BiquadFilterHandler& BiquadFilterNode::GetBiquadFilterHandler() const {
+  return static_cast<BiquadFilterHandler&>(Handler());
 }
 
 V8BiquadFilterType BiquadFilterNode::type() const {
-  switch (
-      const_cast<BiquadFilterNode*>(this)->GetBiquadProcessor()->Type()) {
-    case BiquadProcessor::FilterType::kLowPass:
-      return V8BiquadFilterType(V8BiquadFilterType::Enum::kLowpass);
-    case BiquadProcessor::FilterType::kHighPass:
-      return V8BiquadFilterType(V8BiquadFilterType::Enum::kHighpass);
-    case BiquadProcessor::FilterType::kBandPass:
-      return V8BiquadFilterType(V8BiquadFilterType::Enum::kBandpass);
-    case BiquadProcessor::FilterType::kLowShelf:
-      return V8BiquadFilterType(V8BiquadFilterType::Enum::kLowshelf);
-    case BiquadProcessor::FilterType::kHighShelf:
-      return V8BiquadFilterType(V8BiquadFilterType::Enum::kHighshelf);
-    case BiquadProcessor::FilterType::kPeaking:
-      return V8BiquadFilterType(V8BiquadFilterType::Enum::kPeaking);
-    case BiquadProcessor::FilterType::kNotch:
-      return V8BiquadFilterType(V8BiquadFilterType::Enum::kNotch);
-    case BiquadProcessor::FilterType::kAllPass:
-      return V8BiquadFilterType(V8BiquadFilterType::Enum::kAllpass);
-  }
-  NOTREACHED();
+  return V8BiquadFilterType(GetBiquadFilterHandler().Type());
 }
 
 void BiquadFilterNode::setType(const V8BiquadFilterType& type) {
-  switch (type.AsEnum()) {
-    case V8BiquadFilterType::Enum::kLowpass:
-      SetType(BiquadProcessor::FilterType::kLowPass);
-      return;
-    case V8BiquadFilterType::Enum::kHighpass:
-      SetType(BiquadProcessor::FilterType::kHighPass);
-      return;
-    case V8BiquadFilterType::Enum::kBandpass:
-      SetType(BiquadProcessor::FilterType::kBandPass);
-      return;
-    case V8BiquadFilterType::Enum::kLowshelf:
-      SetType(BiquadProcessor::FilterType::kLowShelf);
-      return;
-    case V8BiquadFilterType::Enum::kHighshelf:
-      SetType(BiquadProcessor::FilterType::kHighShelf);
-      return;
-    case V8BiquadFilterType::Enum::kPeaking:
-      SetType(BiquadProcessor::FilterType::kPeaking);
-      return;
-    case V8BiquadFilterType::Enum::kNotch:
-      SetType(BiquadProcessor::FilterType::kNotch);
-      return;
-    case V8BiquadFilterType::Enum::kAllpass:
-      SetType(BiquadProcessor::FilterType::kAllPass);
-      return;
-  }
-  NOTREACHED();
-}
-
-bool BiquadFilterNode::SetType(BiquadProcessor::FilterType type) {
-  if (type > BiquadProcessor::FilterType::kAllPass) {
-    return false;
-  }
-
-  base::UmaHistogramEnumeration("WebAudio.BiquadFilter.Type", type);
-
-  GetBiquadProcessor()->SetType(type);
-  return true;
+  base::UmaHistogramEnumeration("WebAudio.BiquadFilter.Type",
+                                FilterTypeFromV8(type));
+  GetBiquadFilterHandler().SetType(type.AsEnum());
 }
 
 void BiquadFilterNode::getFrequencyResponse(
@@ -237,7 +217,7 @@ void BiquadFilterNode::getFrequencyResponse(
 
   // If the length is 0, there's nothing to do.
   if (frequency_hz_length_as_int > 0) {
-    GetBiquadProcessor()->GetFrequencyResponse(
+    GetBiquadFilterHandler().GetFrequencyResponse(
         frequency_hz_length_as_int, frequency_hz->Data(), mag_response->Data(),
         phase_response->Data());
   }
