@@ -6,12 +6,14 @@ package org.chromium.chrome.browser.media;
 
 import org.jni_zero.NativeMethods;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.content_public.browser.WebContents;
 
 /**
  * Java access point for MediaCaptureDevicesDispatcher, allowing for querying and manipulation of
  * media capture state.
  */
+@NullMarked
 public class MediaCaptureDevicesDispatcherAndroid {
     public static boolean isCapturingAudio(WebContents webContents) {
         if (webContents == null) return false;

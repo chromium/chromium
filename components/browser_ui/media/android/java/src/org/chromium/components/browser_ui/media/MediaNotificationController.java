@@ -4,6 +4,7 @@
 
 package org.chromium.components.browser_ui.media;
 
+import static org.chromium.build.NullUtil.assertNonNull;
 import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.app.PendingIntent;
@@ -396,7 +397,7 @@ public class MediaNotificationController {
 
     @VisibleForTesting
     public PendingIntentProvider createPendingIntent(String action) {
-        Intent intent = mDelegate.createServiceIntent().setAction(action);
+        Intent intent = assumeNonNull(mDelegate.createServiceIntent()).setAction(action);
         return PendingIntentProvider.getService(
                 getContext(),
                 0,
@@ -434,7 +435,7 @@ public class MediaNotificationController {
     /** An interface for separating embedder-specific logic. */
     public interface Delegate {
         /** Returns an intent that will start a Service which listens to notification actions. */
-        Intent createServiceIntent();
+        @Nullable Intent createServiceIntent();
 
         /** Returns the name of the embedding app. */
         String getAppName();
@@ -531,7 +532,7 @@ public class MediaNotificationController {
         mService = null;
     }
 
-    public boolean processIntent(Service service, Intent intent) {
+    public boolean processIntent(Service service, @Nullable Intent intent) {
         if (intent == null || mMediaNotificationInfo == null) return false;
 
         if (intent.getAction() == null) {
@@ -639,7 +640,7 @@ public class MediaNotificationController {
             // catch the exception, and `mService` will remain null for us to try again later.
             try {
                 ForegroundServiceUtils.getInstance()
-                        .startForegroundService(mDelegate.createServiceIntent());
+                        .startForegroundService(assertNonNull(mDelegate.createServiceIntent()));
             } catch (RuntimeException e) {
             }
         } else {

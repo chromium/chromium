@@ -71,7 +71,7 @@ public class SplitCompatService extends Service {
     }
 
     @Override
-    public IBinder onBind(Intent intent) {
+    public @Nullable IBinder onBind(Intent intent) {
         return mImpl.onBind(intent);
     }
 
@@ -117,6 +117,6 @@ public class SplitCompatService extends Service {
             return mService.superOnUnbind(intent);
         }
 
-        public abstract IBinder onBind(Intent intent);
+        public abstract @Nullable IBinder onBind(Intent intent);
     }
 }
