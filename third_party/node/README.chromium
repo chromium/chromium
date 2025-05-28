@@ -390,7 +390,8 @@ License: MIT
 Security Critical: no
 Shipped: no
 Mitigated: CVE-2022-37620
-CVE-2022-37620: See "Local modifications" below for more context.
+CVE-2022-37620: Local patch was applied to completely remove affected code as
+there is no upstream fix.
 
 Description:
 HTMLMinifier is a highly configurable, well-tested, JavaScript-based HTML
