@@ -1110,8 +1110,6 @@ void ChromeDownloadManagerDelegate::ChooseSavePath(
     content::SavePackagePathPickedCallback callback) {
 #if BUILDFLAG(IS_ANDROID)
   if (!web_contents) {
-    std::move(callback).Run(content::SavePackagePathPickedParams(),
-                            base::DoNothing());
     return;
   }
 
@@ -2322,11 +2320,8 @@ void ChromeDownloadManagerDelegate::RequestIncognitoSavePackageConfirmationDone(
     content::SavePackagePathPickedCallback callback,
     bool accept) {
   if (!accept) {
-    std::move(callback).Run(content::SavePackagePathPickedParams(),
-                            base::DoNothing());
     return;
   }
-
   download::DetermineSavePackagePath(
       url, suggested_path,
       base::BindOnce(&OnDetermineSavePackagePathDone, std::move(callback)));
