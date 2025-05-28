@@ -12015,6 +12015,21 @@
             ]
         }
     ],
+    "IOSLensGestureTextSelectionDisabled": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "IOSLensGestureTextSelectionDisabled"
+                    ]
+                }
+            ]
+        }
+    ],
     "IOSLensUnification": [
         {
             "platforms": [
