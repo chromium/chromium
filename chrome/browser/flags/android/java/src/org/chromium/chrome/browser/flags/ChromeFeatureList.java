@@ -844,7 +844,10 @@ public abstract class ChromeFeatureList {
             newCachedFlag(PREFETCH_BROWSER_INITIATED_TRIGGERS, true);
     public static final CachedFlag sPriceChangeModule = newCachedFlag(PRICE_CHANGE_MODULE, true);
     public static final CachedFlag sReportNotificationContentDetectionData =
-            newCachedFlag(REPORT_NOTIFICATION_CONTENT_DETECTION_DATA, false);
+            newCachedFlag(
+                    REPORT_NOTIFICATION_CONTENT_DETECTION_DATA,
+                    /* defaultValue= */ false,
+                    /* defaultValueInTests= */ true);
     public static final CachedFlag sRightEdgeGoesForwardGestureNav =
             newCachedFlag(RIGHT_EDGE_GOES_FORWARD_GESTURE_NAV, false);
     public static final CachedFlag sSafetyHubMagicStack =
