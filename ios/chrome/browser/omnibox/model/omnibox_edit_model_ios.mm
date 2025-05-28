@@ -85,31 +85,6 @@ namespace {
 const char kOmniboxFocusResultedInNavigation[] =
     "Omnibox.FocusResultedInNavigation";
 
-// `executed_selection` indicates which OmniboxAction within `result`
-// was executed, and leaving this parameter as the default indicates
-// that no action was executed.
-void RecordActionShownForAllActions(
-    const AutocompleteResult& result,
-    OmniboxPopupSelection executed_selection =
-        OmniboxPopupSelection(OmniboxPopupSelection::kNoMatch)) {
-  // Record the presence of all actions in the result set.
-  for (size_t line_index = 0; line_index < result.size(); ++line_index) {
-    const AutocompleteMatch& match = result.match_at(line_index);
-    // Record the presence of the takeover action on this line, if any.
-    if (match.takeover_action) {
-      match.takeover_action->RecordActionShown(
-          line_index,
-          /*executed=*/line_index == executed_selection.line &&
-              executed_selection.state == OmniboxPopupSelection::NORMAL);
-    }
-    for (size_t action_index = 0; action_index < match.actions.size();
-         ++action_index) {
-      match.actions[action_index]->RecordActionShown(line_index,
-                                                     /*executed=*/false);
-    }
-  }
-}
-
 // Find the number of IPv4 parts if the user inputs a URL with an IP address
 // host. Returns 0 if the user does not manually types the full IP address.
 size_t CountNumberOfIPv4Parts(const std::u16string& text,
@@ -771,8 +746,8 @@ void OmniboxEditModelIOS::OpenMatch(OmniboxPopupSelection selection,
   // Save the result of the interaction, but do not record the histogram yet.
   focus_resulted_in_navigation_ = true;
 
-  RecordActionShownForAllActions(autocomplete_controller()->result(),
-                                 selection);
+  omnibox::RecordActionShownForAllActions(autocomplete_controller()->result(),
+                                          selection);
   HistoryFuzzyProvider::RecordOpenMatchMetrics(
       autocomplete_controller()->result(), match);
 

@@ -7,6 +7,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "components/omnibox/browser/autocomplete_match.h"
+#include "components/omnibox/browser/autocomplete_result.h"
 #include "components/omnibox/browser/omnibox_metrics_provider.h"
 
 namespace {
@@ -103,6 +104,29 @@ void LogFocusToOpenTime(
                       "BySummarizedResultType.",
                       summarized_result_type, ".ByPageContext.", page_context}),
         elapsed);
+  }
+}
+
+void RecordActionShownForAllActions(const AutocompleteResult& result,
+                                    OmniboxPopupSelection executed_selection) {
+  // Record the presence of all actions in the result set.
+  for (size_t line_index = 0; line_index < result.size(); ++line_index) {
+    const AutocompleteMatch& match = result.match_at(line_index);
+    // Record the presence of the takeover action on this line, if any.
+    if (match.takeover_action) {
+      match.takeover_action->RecordActionShown(
+          line_index,
+          /*executed=*/line_index == executed_selection.line &&
+              executed_selection.state == OmniboxPopupSelection::NORMAL);
+    }
+    for (size_t action_index = 0; action_index < match.actions.size();
+         ++action_index) {
+      match.actions[action_index]->RecordActionShown(
+          line_index, /*executed=*/line_index == executed_selection.line &&
+                          action_index == executed_selection.action_index &&
+                          executed_selection.state ==
+                              OmniboxPopupSelection::FOCUSED_BUTTON_ACTION);
+    }
   }
 }
 

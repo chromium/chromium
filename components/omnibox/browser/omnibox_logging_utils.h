@@ -6,9 +6,11 @@
 #define COMPONENTS_OMNIBOX_BROWSER_OMNIBOX_LOGGING_UTILS_H_
 
 #include "base/time/time.h"
+#include "components/omnibox/browser/omnibox_popup_selection.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
 
 struct AutocompleteMatch;
+class AutocompleteResult;
 
 namespace omnibox {
 
@@ -20,6 +22,14 @@ void LogFocusToOpenTime(
     ::metrics::OmniboxEventProto::PageClassification page_classification,
     const AutocompleteMatch& match,
     size_t action_index);
+
+// `executed_selection` indicates which OmniboxAction within `result`
+// was executed, and leaving this parameter as the default indicates
+// that no action was executed.
+void RecordActionShownForAllActions(
+    const AutocompleteResult& result,
+    OmniboxPopupSelection executed_selection =
+        OmniboxPopupSelection(OmniboxPopupSelection::kNoMatch));
 
 }  // namespace omnibox
 
