@@ -9,6 +9,7 @@
 #include <optional>
 
 #include "base/barrier_closure.h"
+#include "base/containers/fixed_flat_map.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -1151,20 +1152,29 @@ TEST_F(WatchHangsInScopeBlockingTest, MAYBE_NewScopeDoesNotBlockDuringCapture) {
 namespace internal {
 namespace {
 
-constexpr std::array<HangWatchDeadline::Flag, 3> kAllFlags{
-    {HangWatchDeadline::Flag::kMinValue,
-     HangWatchDeadline::Flag::kIgnoreCurrentWatchHangsInScope,
-     HangWatchDeadline::Flag::kShouldBlockOnHang}};
+// Matcher validating that the specified `HangWatchDeadline` has no flag set.
+MATCHER(HasNoFlagSet, /*description=*/"") {
+  static constexpr auto kAllFlags =
+      base::MakeFixedFlatMap<HangWatchDeadline::Flag, std::string_view>({
+          {HangWatchDeadline::Flag::kMinValue, "kMinValue"},
+          {HangWatchDeadline::Flag::kIgnoreCurrentWatchHangsInScope,
+           "kIgnoreCurrentWatchHangsInScope"},
+          {HangWatchDeadline::Flag::kShouldBlockOnHang, "kShouldBlockOnHang"},
+      });
+
+  for (const auto& [flag, description] : kAllFlags) {
+    if (arg.IsFlagSet(flag)) {
+      *result_listener << "where flag " << description << " is set";
+      return false;
+    }
+  }
+  return true;
+}
+
 }  // namespace
 
 class HangWatchDeadlineTest : public testing::Test {
  protected:
-  void AssertNoFlagsSet() const {
-    for (HangWatchDeadline::Flag flag : kAllFlags) {
-      ASSERT_FALSE(deadline_.IsFlagSet(flag));
-    }
-  }
-
   // Return a flag mask without one of the flags for test purposes. Use to
   // ignore that effect of setting a flag that was just set.
   uint64_t FlagsMinus(uint64_t flags, HangWatchDeadline::Flag flag) {
@@ -1186,7 +1196,7 @@ TEST_F(HangWatchDeadlineTest, BitsPreservedThroughExtract) {
 // side-effects. Neither the flags nor the deadline change concurrently in this
 // test.
 TEST_F(HangWatchDeadlineTest, SetAndClearPersistentFlag) {
-  AssertNoFlagsSet();
+  ASSERT_THAT(deadline_, HasNoFlagSet());
 
   // Grab the original values for flags and deadline.
   auto [old_flags, old_deadline] = deadline_.GetFlagsAndDeadline();
@@ -1227,7 +1237,7 @@ TEST_F(HangWatchDeadlineTest, SetAndClearPersistentFlag) {
 TEST_F(HangWatchDeadlineTest, SetDeadline) {
   TimeTicks ticks;
 
-  AssertNoFlagsSet();
+  ASSERT_THAT(deadline_, HasNoFlagSet());
   ASSERT_NE(deadline_.GetDeadline(), ticks);
 
   // Set the deadline and verify it stuck.
@@ -1235,14 +1245,14 @@ TEST_F(HangWatchDeadlineTest, SetDeadline) {
   EXPECT_EQ(deadline_.GetDeadline(), ticks);
 
   // Only the value was modified, no flags should be set.
-  AssertNoFlagsSet();
+  EXPECT_THAT(deadline_, HasNoFlagSet());
 }
 
 // Verify that setting a non-persistent flag (kShouldBlockOnHang)
 // when the TimeTicks value changed since calling the flag setting
 // function fails and has no side-effects.
 TEST_F(HangWatchDeadlineTest, SetShouldBlockOnHangDeadlineChanged) {
-  AssertNoFlagsSet();
+  ASSERT_THAT(deadline_, HasNoFlagSet());
 
   auto [flags, deadline] = deadline_.GetFlagsAndDeadline();
 
@@ -1267,7 +1277,7 @@ TEST_F(HangWatchDeadlineTest, SetShouldBlockOnHangDeadlineChanged) {
 // Verify that clearing a persistent (kIgnoreCurrentWatchHangsInScope) when
 // the value changed succeeds and has non side-effects.
 TEST_F(HangWatchDeadlineTest, ClearIgnoreHangsDeadlineChanged) {
-  AssertNoFlagsSet();
+  ASSERT_THAT(deadline_, HasNoFlagSet());
 
   auto [flags, deadline] = deadline_.GetFlagsAndDeadline();
 
@@ -1299,7 +1309,7 @@ TEST_F(HangWatchDeadlineTest, ClearIgnoreHangsDeadlineChanged) {
 // the deadline or flags changed succeeds and has non side-effects.
 TEST_F(HangWatchDeadlineTest,
        SetIgnoreCurrentHangWatchScopeEnableDeadlineChanged) {
-  AssertNoFlagsSet();
+  ASSERT_THAT(deadline_, HasNoFlagSet());
 
   auto [flags, deadline] = deadline_.GetFlagsAndDeadline();
 
