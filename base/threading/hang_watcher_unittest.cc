@@ -177,10 +177,6 @@ class ManualHangWatcher : public HangWatcher {
 };
 
 class HangWatcherTest : public testing::Test {
- public:
-  const base::TimeDelta kTimeout = base::Seconds(10);
-  const base::TimeDelta kHangTime = kTimeout + base::Seconds(1);
-
  protected:
   base::test::ScopedFeatureList feature_list_{base::kEnableHangWatcher};
 
@@ -201,7 +197,7 @@ TEST_F(HangWatcherTest, InvalidatingExpectationsPreventsCapture) {
 
   // Create a hang.
   WatchHangsInScope expires_instantly(base::TimeDelta{});
-  task_environment_.FastForwardBy(kHangTime);
+  task_environment_.FastForwardBy(base::Seconds(1));
 
   // de-activate hang watching,
   base::HangWatcher::InvalidateActiveExpectations();
@@ -221,7 +217,7 @@ TEST_F(HangWatcherTest, MultipleInvalidateExpectationsDoNotCancelOut) {
 
   // Create a hang.
   WatchHangsInScope expires_instantly(base::TimeDelta{});
-  task_environment_.FastForwardBy(kHangTime);
+  task_environment_.FastForwardBy(base::Seconds(1));
 
   // de-activate hang watching,
   base::HangWatcher::InvalidateActiveExpectations();
@@ -245,14 +241,14 @@ TEST_F(HangWatcherTest,
       HangWatcher::RegisterThread(base::HangWatcher::ThreadType::kMainThread);
 
   WatchHangsInScope expires_instantly(base::TimeDelta{});
-  task_environment_.FastForwardBy(kHangTime);
+  task_environment_.FastForwardBy(base::Seconds(1));
 
   // De-activate hang watching.
   base::HangWatcher::InvalidateActiveExpectations();
 
   {
     WatchHangsInScope also_expires_instantly(base::TimeDelta{});
-    task_environment_.FastForwardBy(kHangTime);
+    task_environment_.FastForwardBy(base::Seconds(1));
 
     // Trigger a monitoring on HangWatcher thread and verify results.
     hang_watcher.TriggerSynchronousMonitoring();
@@ -280,14 +276,14 @@ TEST_F(HangWatcherTest,
 
   {
     WatchHangsInScope expires_instantly(base::TimeDelta{});
-    task_environment_.FastForwardBy(kHangTime);
+    task_environment_.FastForwardBy(base::Seconds(1));
 
     // De-activate hang watching.
     base::HangWatcher::InvalidateActiveExpectations();
   }
 
   WatchHangsInScope also_expires_instantly(base::TimeDelta{});
-  task_environment_.FastForwardBy(kHangTime);
+  task_environment_.FastForwardBy(base::Seconds(1));
 
   // Trigger a monitoring on HangWatcher thread and verify results.
   hang_watcher.TriggerSynchronousMonitoring();
@@ -309,13 +305,13 @@ TEST_F(HangWatcherTest, ScopeDisabledObjectInnerScope) {
   // Start a WatchHangsInScope that expires right away. Then advance
   // time to make sure no hang is detected.
   WatchHangsInScope expires_instantly(base::TimeDelta{});
-  task_environment_.FastForwardBy(kHangTime);
+  task_environment_.FastForwardBy(base::Seconds(1));
   {
     WatchHangsInScope also_expires_instantly(base::TimeDelta{});
 
     // De-activate hang watching.
     base::HangWatcher::InvalidateActiveExpectations();
-    task_environment_.FastForwardBy(kHangTime);
+    task_environment_.FastForwardBy(base::Seconds(1));
   }
 
   // Trigger a monitoring on HangWatcher thread and verify results.
@@ -336,18 +332,18 @@ TEST_F(HangWatcherTest, NewScopeAfterDisabling) {
   // Start a WatchHangsInScope that expires right away. Then advance
   // time to make sure no hang is detected.
   WatchHangsInScope expires_instantly(base::TimeDelta{});
-  task_environment_.FastForwardBy(kHangTime);
+  task_environment_.FastForwardBy(base::Seconds(1));
   {
     WatchHangsInScope also_expires_instantly(base::TimeDelta{});
 
     // De-activate hang watching.
     base::HangWatcher::InvalidateActiveExpectations();
-    task_environment_.FastForwardBy(kHangTime);
+    task_environment_.FastForwardBy(base::Seconds(1));
   }
 
   // New scope for which expectations are never invalidated.
   WatchHangsInScope also_expires_instantly(base::TimeDelta{});
-  task_environment_.FastForwardBy(kHangTime);
+  task_environment_.FastForwardBy(base::Seconds(1));
 
   // Trigger a monitoring on HangWatcher thread and verify results.
   hang_watcher.TriggerSynchronousMonitoring();
