@@ -467,6 +467,8 @@ VerdictCacheManager::VerdictCacheManager(
   CacheArtificialUnsafeRealTimeUrlVerdictFromSwitch();
   CacheArtificialUnsafePhishGuardVerdictFromSwitch();
   CacheArtificialUnsafeHashRealTimeLookupVerdictFromSwitch();
+  CacheArtificialEnterpriseBlockedVerdictFromSwitch();
+  CacheArtificialEnterpriseWarnedVerdictFromSwitch();
 }
 
 void VerdictCacheManager::Shutdown() {
@@ -1217,6 +1219,24 @@ void VerdictCacheManager::
           switches::kArtificialCachedHashPrefixRealTimeVerdictFlag);
   CacheArtificialHashRealTimeLookupVerdict(phishing_url_string,
                                            /*is_unsafe=*/true);
+}
+
+void VerdictCacheManager::CacheArtificialEnterpriseBlockedVerdictFromSwitch() {
+  std::string blocked_url_string =
+      base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
+          switches::kArtificialCachedEnterpriseBlockedVerdictFlag);
+  CacheArtificialRealTimeUrlVerdict(
+      blocked_url_string, RTLookupResponse::ThreatInfo::DANGEROUS,
+      RTLookupResponse::ThreatInfo::MANAGED_POLICY);
+}
+
+void VerdictCacheManager::CacheArtificialEnterpriseWarnedVerdictFromSwitch() {
+  std::string flagged_url_string =
+      base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
+          switches::kArtificialCachedEnterpriseWarnedVerdictFlag);
+  CacheArtificialRealTimeUrlVerdict(
+      flagged_url_string, RTLookupResponse::ThreatInfo::WARN,
+      RTLookupResponse::ThreatInfo::MANAGED_POLICY);
 }
 
 void VerdictCacheManager::StopCleanUpTimerForTesting() {
