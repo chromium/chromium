@@ -958,7 +958,7 @@ void RendererBlinkPlatformImpl::CreateServiceWorkerSubresourceLoaderFactory(
     scoped_refptr<base::SequencedTaskRunner> task_runner) {
   // TODO(crbug.com/402806160): plumb `router_rules` with the function callers
   // if there is such use case. As of 2023-06-01, only
-  // `DedicatedOrSharedWorkerFetchContextImpl` calls the function, and
+  // `DedicatedOrSharedWorkerGlobalScopeContextImpl` calls the function, and
   // no need to allow it set the `router_rules`.
   ServiceWorkerSubresourceLoaderFactory::Create(
       base::MakeRefCounted<ControllerServiceWorkerConnector>(

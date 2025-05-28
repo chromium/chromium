@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef THIRD_PARTY_BLINK_PUBLIC_PLATFORM_WEB_DEDICATED_OR_SHARED_WORKER_FETCH_CONTEXT_H_
-#define THIRD_PARTY_BLINK_PUBLIC_PLATFORM_WEB_DEDICATED_OR_SHARED_WORKER_FETCH_CONTEXT_H_
+#ifndef THIRD_PARTY_BLINK_PUBLIC_PLATFORM_WEB_DEDICATED_OR_SHARED_WORKER_GLOBAL_SCOPE_CONTEXT_H_
+#define THIRD_PARTY_BLINK_PUBLIC_PLATFORM_WEB_DEDICATED_OR_SHARED_WORKER_GLOBAL_SCOPE_CONTEXT_H_
 
 #include <memory>
 #include <string_view>
@@ -26,11 +26,11 @@ namespace blink {
 class WebString;
 class WebServiceWorkerProviderContext;
 
-// Worker fetch context for dedicated worker or shared worker.
-class BLINK_PLATFORM_EXPORT WebDedicatedOrSharedWorkerFetchContext
+// Worker global scope context for dedicated worker or shared worker.
+class BLINK_PLATFORM_EXPORT WebDedicatedOrSharedWorkerGlobalScopeContext
     : public WebWorkerFetchContext {
  public:
-  // Creates a new fetch context for a worker.
+  // Creates a new global scope context for a worker.
   //
   // |provider_context| is used to set up information for using service workers.
   // It can be null if the worker is not allowed to use service workers due to
@@ -48,7 +48,7 @@ class BLINK_PLATFORM_EXPORT WebDedicatedOrSharedWorkerFetchContext
   // |pending_fallback_factory| might not be simply the direct network factory,
   // because it might additionally support non-NetworkService schemes (e.g.,
   // chrome-extension://).
-  static scoped_refptr<WebDedicatedOrSharedWorkerFetchContext> Create(
+  static scoped_refptr<WebDedicatedOrSharedWorkerGlobalScopeContext> Create(
       WebServiceWorkerProviderContext* provider_context,
       const RendererPreferences& renderer_preferences,
       CrossVariantMojoReceiver<mojom::RendererPreferenceWatcherInterfaceBase>
@@ -63,10 +63,10 @@ class BLINK_PLATFORM_EXPORT WebDedicatedOrSharedWorkerFetchContext
       mojo::PendingRemote<mojom::ResourceLoadInfoNotifier>
           pending_resource_load_info_notifier);
 
-  // The cloned fetch context does not inherit some fields (e.g.,
-  // blink::WebServiceWorkerProviderContext) from this fetch context, and
-  // instead that takes values passed from the browser process.
-  virtual scoped_refptr<WebDedicatedOrSharedWorkerFetchContext>
+  // The cloned global scope context does not inherit some fields (e.g.,
+  // blink::WebServiceWorkerProviderContext) from this global scope context,
+  // and instead that takes values passed from the browser process.
+  virtual scoped_refptr<WebDedicatedOrSharedWorkerGlobalScopeContext>
   CloneForNestedWorker(
       WebServiceWorkerProviderContext* service_worker_provider_context,
       std::unique_ptr<network::PendingSharedURLLoaderFactory>
@@ -101,4 +101,4 @@ class BLINK_PLATFORM_EXPORT WebDedicatedOrSharedWorkerFetchContext
 
 }  // namespace blink
 
-#endif  // THIRD_PARTY_BLINK_PUBLIC_PLATFORM_WEB_DEDICATED_OR_SHARED_WORKER_FETCH_CONTEXT_H_
+#endif  // THIRD_PARTY_BLINK_PUBLIC_PLATFORM_WEB_DEDICATED_OR_SHARED_WORKER_GLOBAL_SCOPE_CONTEXT_H_

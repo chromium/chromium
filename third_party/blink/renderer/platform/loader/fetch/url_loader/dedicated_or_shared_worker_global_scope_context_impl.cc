@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/platform/loader/fetch/url_loader/dedicated_or_shared_worker_fetch_context_impl.h"
+#include "third_party/blink/renderer/platform/loader/fetch/url_loader/dedicated_or_shared_worker_global_scope_context_impl.h"
 
 #include <algorithm>
 #include <utility>
@@ -35,8 +35,8 @@
 
 namespace blink {
 
-DedicatedOrSharedWorkerFetchContextImpl::RewriteURLFunction g_rewrite_url =
-    nullptr;
+DedicatedOrSharedWorkerGlobalScopeContextImpl::RewriteURLFunction
+    g_rewrite_url = nullptr;
 
 namespace {
 
@@ -57,10 +57,10 @@ void CreateServiceWorkerSubresourceLoaderFactory(
 
 // An implementation of URLLoaderFactory that is aware of service workers. In
 // the usual case, it creates a loader that uses |loader_factory_|. But if the
-// worker fetch context is controlled by a service worker, it creates a loader
-// that uses |service_worker_loader_factory_| for requests that should be
+// worker global scope context is controlled by a service worker, it creates a
+// loader that uses |service_worker_loader_factory_| for requests that should be
 // intercepted by the service worker.
-class DedicatedOrSharedWorkerFetchContextImpl::Factory
+class DedicatedOrSharedWorkerGlobalScopeContextImpl::Factory
     : public URLLoaderFactory {
  public:
   Factory(scoped_refptr<network::SharedURLLoaderFactory> loader_factory,
@@ -139,8 +139,9 @@ class DedicatedOrSharedWorkerFetchContextImpl::Factory
 
     // We need the service worker loader factory populated in order to create
     // our own URLLoader for subresource loading via a service worker.
-    if (!service_worker_loader_factory_)
+    if (!service_worker_loader_factory_) {
       return false;
+    }
 
     // If the URL is not http(s) or otherwise allowed, do not intercept the
     // request. Schemes like 'blob' and 'file' are not eligible to be
@@ -171,8 +172,8 @@ class DedicatedOrSharedWorkerFetchContextImpl::Factory
   base::WeakPtrFactory<Factory> weak_ptr_factory_{this};
 };
 
-DedicatedOrSharedWorkerFetchContextImpl::
-    DedicatedOrSharedWorkerFetchContextImpl(
+DedicatedOrSharedWorkerGlobalScopeContextImpl::
+    DedicatedOrSharedWorkerGlobalScopeContextImpl(
         const RendererPreferences& renderer_preferences,
         mojo::PendingReceiver<mojom::blink::RendererPreferenceWatcher>
             preference_watcher_receiver,
@@ -213,8 +214,8 @@ DedicatedOrSharedWorkerFetchContextImpl::
       pending_resource_load_info_notifier_(
           std::move(pending_resource_load_info_notifier)) {}
 
-scoped_refptr<WebDedicatedOrSharedWorkerFetchContext>
-DedicatedOrSharedWorkerFetchContextImpl::CloneForNestedWorker(
+scoped_refptr<WebDedicatedOrSharedWorkerGlobalScopeContext>
+DedicatedOrSharedWorkerGlobalScopeContextImpl::CloneForNestedWorker(
     WebServiceWorkerProviderContext* service_worker_provider_context,
     std::unique_ptr<network::PendingSharedURLLoaderFactory>
         pending_loader_factory,
@@ -256,7 +257,7 @@ DedicatedOrSharedWorkerFetchContextImpl::CloneForNestedWorker(
       service_worker_container_host =
           service_worker_provider_context->CloneRemoteContainerHost();
 
-  scoped_refptr<DedicatedOrSharedWorkerFetchContextImpl> new_context =
+  scoped_refptr<DedicatedOrSharedWorkerGlobalScopeContextImpl> new_context =
       CloneForNestedWorkerInternal(
           std::move(service_worker_client_receiver),
           std::move(service_worker_worker_client_registry),
@@ -271,33 +272,33 @@ DedicatedOrSharedWorkerFetchContextImpl::CloneForNestedWorker(
   return new_context;
 }
 
-void DedicatedOrSharedWorkerFetchContextImpl::SetAncestorFrameToken(
+void DedicatedOrSharedWorkerGlobalScopeContextImpl::SetAncestorFrameToken(
     const LocalFrameToken& token) {
   ancestor_frame_token_ = token;
 }
 
-void DedicatedOrSharedWorkerFetchContextImpl::set_site_for_cookies(
+void DedicatedOrSharedWorkerGlobalScopeContextImpl::set_site_for_cookies(
     const net::SiteForCookies& site_for_cookies) {
   site_for_cookies_ = site_for_cookies;
 }
 
-void DedicatedOrSharedWorkerFetchContextImpl::set_top_frame_origin(
+void DedicatedOrSharedWorkerGlobalScopeContextImpl::set_top_frame_origin(
     const WebSecurityOrigin& top_frame_origin) {
   top_frame_origin_ = top_frame_origin;
 }
 
-void DedicatedOrSharedWorkerFetchContextImpl::set_container_is_shared_worker(
-    bool is_sharedworker) {
+void DedicatedOrSharedWorkerGlobalScopeContextImpl::
+    set_container_is_shared_worker(bool is_sharedworker) {
   container_is_shared_worker_ = is_sharedworker;
 }
 
-void DedicatedOrSharedWorkerFetchContextImpl::SetTerminateSyncLoadEvent(
+void DedicatedOrSharedWorkerGlobalScopeContextImpl::SetTerminateSyncLoadEvent(
     base::WaitableEvent* terminate_sync_load_event) {
   DCHECK(!terminate_sync_load_event_);
   terminate_sync_load_event_ = terminate_sync_load_event;
 }
 
-void DedicatedOrSharedWorkerFetchContextImpl::InitializeOnWorkerThread(
+void DedicatedOrSharedWorkerGlobalScopeContextImpl::InitializeOnWorkerThread(
     AcceptLanguagesWatcher* watcher) {
   DCHECK(!receiver_.is_bound());
   DCHECK(!preference_watcher_receiver_.is_bound());
@@ -309,8 +310,9 @@ void DedicatedOrSharedWorkerFetchContextImpl::InitializeOnWorkerThread(
   subresource_loader_updater_.Bind(
       std::move(pending_subresource_loader_updater_));
 
-  if (service_worker_client_receiver_.is_valid())
+  if (service_worker_client_receiver_.is_valid()) {
     receiver_.Bind(std::move(service_worker_client_receiver_));
+  }
 
   if (pending_service_worker_worker_client_registry_) {
     service_worker_worker_client_registry_.Bind(
@@ -326,7 +328,7 @@ void DedicatedOrSharedWorkerFetchContextImpl::InitializeOnWorkerThread(
     resource_load_info_notifier_.Bind(
         std::move(pending_resource_load_info_notifier_));
     resource_load_info_notifier_.set_disconnect_handler(
-        base::BindOnce(&DedicatedOrSharedWorkerFetchContextImpl::
+        base::BindOnce(&DedicatedOrSharedWorkerGlobalScopeContextImpl::
                            ResetWeakWrapperResourceLoadInfoNotifier,
                        base::Unretained(this)));
   }
@@ -342,12 +344,12 @@ void DedicatedOrSharedWorkerFetchContextImpl::InitializeOnWorkerThread(
 }
 
 URLLoaderFactory*
-DedicatedOrSharedWorkerFetchContextImpl::GetURLLoaderFactory() {
+DedicatedOrSharedWorkerGlobalScopeContextImpl::GetURLLoaderFactory() {
   return web_loader_factory_.get();
 }
 
 std::unique_ptr<URLLoaderFactory>
-DedicatedOrSharedWorkerFetchContextImpl::WrapURLLoaderFactory(
+DedicatedOrSharedWorkerGlobalScopeContextImpl::WrapURLLoaderFactory(
     CrossVariantMojoRemote<network::mojom::URLLoaderFactoryInterfaceBase>
         url_loader_factory) {
   return std::make_unique<URLLoaderFactory>(
@@ -356,7 +358,8 @@ DedicatedOrSharedWorkerFetchContextImpl::WrapURLLoaderFactory(
       cors_exempt_header_list_, terminate_sync_load_event_);
 }
 
-std::optional<WebURL> DedicatedOrSharedWorkerFetchContextImpl::WillSendRequest(
+std::optional<WebURL>
+DedicatedOrSharedWorkerGlobalScopeContextImpl::WillSendRequest(
     const WebURL& url) {
   if (g_rewrite_url) {
     return g_rewrite_url(url.GetString().Utf8(), false);
@@ -364,7 +367,7 @@ std::optional<WebURL> DedicatedOrSharedWorkerFetchContextImpl::WillSendRequest(
   return std::nullopt;
 }
 
-void DedicatedOrSharedWorkerFetchContextImpl::FinalizeRequest(
+void DedicatedOrSharedWorkerGlobalScopeContextImpl::FinalizeRequest(
     WebURLRequest& request) {
   if (renderer_preferences_.enable_do_not_track) {
     request.SetHttpHeaderField(WebString::FromUTF8(kDoNotTrackHeader), "1");
@@ -380,7 +383,7 @@ void DedicatedOrSharedWorkerFetchContextImpl::FinalizeRequest(
 }
 
 std::vector<std::unique_ptr<URLLoaderThrottle>>
-DedicatedOrSharedWorkerFetchContextImpl::CreateThrottles(
+DedicatedOrSharedWorkerGlobalScopeContextImpl::CreateThrottles(
     const network::ResourceRequest& request) {
   if (throttle_provider_) {
     return throttle_provider_->CreateThrottles(ancestor_frame_token_, request);
@@ -389,78 +392,81 @@ DedicatedOrSharedWorkerFetchContextImpl::CreateThrottles(
 }
 
 mojom::ControllerServiceWorkerMode
-DedicatedOrSharedWorkerFetchContextImpl::GetControllerServiceWorkerMode()
+DedicatedOrSharedWorkerGlobalScopeContextImpl::GetControllerServiceWorkerMode()
     const {
   return controller_service_worker_mode_;
 }
 
-void DedicatedOrSharedWorkerFetchContextImpl::SetIsOnSubframe(
+void DedicatedOrSharedWorkerGlobalScopeContextImpl::SetIsOnSubframe(
     bool is_on_sub_frame) {
   is_on_sub_frame_ = is_on_sub_frame;
 }
 
-bool DedicatedOrSharedWorkerFetchContextImpl::IsOnSubframe() const {
+bool DedicatedOrSharedWorkerGlobalScopeContextImpl::IsOnSubframe() const {
   return is_on_sub_frame_;
 }
 
-net::SiteForCookies DedicatedOrSharedWorkerFetchContextImpl::SiteForCookies()
-    const {
+net::SiteForCookies
+DedicatedOrSharedWorkerGlobalScopeContextImpl::SiteForCookies() const {
   return site_for_cookies_;
 }
 
 std::optional<WebSecurityOrigin>
-DedicatedOrSharedWorkerFetchContextImpl::TopFrameOrigin() const {
+DedicatedOrSharedWorkerGlobalScopeContextImpl::TopFrameOrigin() const {
   // TODO(jkarlin): set_top_frame_origin is only called for dedicated workers.
   // Determine the top-frame-origin of a shared worker as well. See
   // https://crbug.com/918868.
   return top_frame_origin_;
 }
 
-void DedicatedOrSharedWorkerFetchContextImpl::SetSubresourceFilterBuilder(
+void DedicatedOrSharedWorkerGlobalScopeContextImpl::SetSubresourceFilterBuilder(
     std::unique_ptr<WebDocumentSubresourceFilter::Builder>
         subresource_filter_builder) {
   subresource_filter_builder_ = std::move(subresource_filter_builder);
 }
 
 std::unique_ptr<WebDocumentSubresourceFilter>
-DedicatedOrSharedWorkerFetchContextImpl::TakeSubresourceFilter() {
-  if (!subresource_filter_builder_)
+DedicatedOrSharedWorkerGlobalScopeContextImpl::TakeSubresourceFilter() {
+  if (!subresource_filter_builder_) {
     return nullptr;
+  }
   return std::move(subresource_filter_builder_)->Build();
 }
 
 std::unique_ptr<WebSocketHandshakeThrottle>
-DedicatedOrSharedWorkerFetchContextImpl::CreateWebSocketHandshakeThrottle(
+DedicatedOrSharedWorkerGlobalScopeContextImpl::CreateWebSocketHandshakeThrottle(
     scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
-  if (!websocket_handshake_throttle_provider_)
+  if (!websocket_handshake_throttle_provider_) {
     return nullptr;
+  }
   return websocket_handshake_throttle_provider_->CreateThrottle(
       ancestor_frame_token_, std::move(task_runner));
 }
 
-void DedicatedOrSharedWorkerFetchContextImpl::OnControllerChanged(
+void DedicatedOrSharedWorkerGlobalScopeContextImpl::OnControllerChanged(
     mojom::ControllerServiceWorkerMode mode) {
   set_controller_service_worker_mode(mode);
   ResetServiceWorkerURLLoaderFactory();
 }
 
-void DedicatedOrSharedWorkerFetchContextImpl::
+void DedicatedOrSharedWorkerGlobalScopeContextImpl::
     set_controller_service_worker_mode(
         mojom::ControllerServiceWorkerMode mode) {
   controller_service_worker_mode_ = mode;
 }
 
-void DedicatedOrSharedWorkerFetchContextImpl::set_client_id(
+void DedicatedOrSharedWorkerGlobalScopeContextImpl::set_client_id(
     const WebString& client_id) {
   client_id_ = client_id;
 }
 
-WebString DedicatedOrSharedWorkerFetchContextImpl::GetAcceptLanguages() const {
+WebString DedicatedOrSharedWorkerGlobalScopeContextImpl::GetAcceptLanguages()
+    const {
   return WebString::FromUTF8(renderer_preferences_.accept_languages);
 }
 
 std::unique_ptr<ResourceLoadInfoNotifierWrapper>
-DedicatedOrSharedWorkerFetchContextImpl::
+DedicatedOrSharedWorkerGlobalScopeContextImpl::
     CreateResourceLoadInfoNotifierWrapper() {
   // If |resource_load_info_notifier_| is unbound, we will create
   // ResourceLoadInfoNotifierWrapper without wrapping a ResourceLoadInfoNotifier
@@ -479,11 +485,11 @@ DedicatedOrSharedWorkerFetchContextImpl::
       weak_wrapper_resource_load_info_notifier_->AsWeakPtr());
 }
 
-DedicatedOrSharedWorkerFetchContextImpl::
-    ~DedicatedOrSharedWorkerFetchContextImpl() = default;
+DedicatedOrSharedWorkerGlobalScopeContextImpl::
+    ~DedicatedOrSharedWorkerGlobalScopeContextImpl() = default;
 
-scoped_refptr<DedicatedOrSharedWorkerFetchContextImpl>
-DedicatedOrSharedWorkerFetchContextImpl::CloneForNestedWorkerInternal(
+scoped_refptr<DedicatedOrSharedWorkerGlobalScopeContextImpl>
+DedicatedOrSharedWorkerGlobalScopeContextImpl::CloneForNestedWorkerInternal(
     mojo::PendingReceiver<mojom::blink::ServiceWorkerWorkerClient>
         service_worker_client_receiver,
     mojo::PendingRemote<mojom::blink::ServiceWorkerWorkerClientRegistry>
@@ -506,21 +512,23 @@ DedicatedOrSharedWorkerFetchContextImpl::CloneForNestedWorkerInternal(
 
   mojo::PendingRemote<mojom::blink::RendererPreferenceWatcher>
       preference_watcher;
-  auto new_context = base::AdoptRef(new DedicatedOrSharedWorkerFetchContextImpl(
-      renderer_preferences_,
-      preference_watcher.InitWithNewPipeAndPassReceiver(),
-      std::move(service_worker_client_receiver),
-      std::move(service_worker_worker_client_registry),
-      std::move(service_worker_container_host),
-      std::move(pending_loader_factory), std::move(pending_fallback_factory),
-      std::move(pending_subresource_loader_updater),
-      throttle_provider_ ? throttle_provider_->Clone() : nullptr,
-      websocket_handshake_throttle_provider_
-          ? websocket_handshake_throttle_provider_->Clone(
-                std::move(task_runner))
-          : nullptr,
-      cors_exempt_header_list_,
-      std::move(pending_resource_load_info_notifier)));
+  auto new_context =
+      base::AdoptRef(new DedicatedOrSharedWorkerGlobalScopeContextImpl(
+          renderer_preferences_,
+          preference_watcher.InitWithNewPipeAndPassReceiver(),
+          std::move(service_worker_client_receiver),
+          std::move(service_worker_worker_client_registry),
+          std::move(service_worker_container_host),
+          std::move(pending_loader_factory),
+          std::move(pending_fallback_factory),
+          std::move(pending_subresource_loader_updater),
+          throttle_provider_ ? throttle_provider_->Clone() : nullptr,
+          websocket_handshake_throttle_provider_
+              ? websocket_handshake_throttle_provider_->Clone(
+                    std::move(task_runner))
+              : nullptr,
+          cors_exempt_header_list_,
+          std::move(pending_resource_load_info_notifier)));
   new_context->is_on_sub_frame_ = is_on_sub_frame_;
   new_context->ancestor_frame_token_ = ancestor_frame_token_;
   new_context->site_for_cookies_ = site_for_cookies_;
@@ -529,17 +537,19 @@ DedicatedOrSharedWorkerFetchContextImpl::CloneForNestedWorkerInternal(
   return new_context;
 }
 
-void DedicatedOrSharedWorkerFetchContextImpl::
+void DedicatedOrSharedWorkerGlobalScopeContextImpl::
     ResetServiceWorkerURLLoaderFactory() {
-  if (!web_loader_factory_)
+  if (!web_loader_factory_) {
     return;
+  }
   if (GetControllerServiceWorkerMode() !=
       mojom::ControllerServiceWorkerMode::kControlled) {
     web_loader_factory_->SetServiceWorkerURLLoaderFactory(mojo::NullRemote());
     return;
   }
-  if (!service_worker_container_host_)
+  if (!service_worker_container_host_) {
     return;
+  }
 
   mojo::PendingRemote<network::mojom::URLLoaderFactory>
       service_worker_url_loader_factory;
@@ -570,9 +580,10 @@ void DedicatedOrSharedWorkerFetchContextImpl::
       container_is_shared_worker_);
 }
 
-void DedicatedOrSharedWorkerFetchContextImpl::UpdateSubresourceLoaderFactories(
-    std::unique_ptr<PendingURLLoaderFactoryBundle>
-        subresource_loader_factories) {
+void DedicatedOrSharedWorkerGlobalScopeContextImpl::
+    UpdateSubresourceLoaderFactories(
+        std::unique_ptr<PendingURLLoaderFactoryBundle>
+            subresource_loader_factories) {
   auto subresource_loader_factory_bundle =
       base::MakeRefCounted<ChildURLLoaderFactoryBundle>(
           std::make_unique<ChildPendingURLLoaderFactoryBundle>(
@@ -586,7 +597,7 @@ void DedicatedOrSharedWorkerFetchContextImpl::UpdateSubresourceLoaderFactories(
   ResetServiceWorkerURLLoaderFactory();
 }
 
-void DedicatedOrSharedWorkerFetchContextImpl::NotifyUpdate(
+void DedicatedOrSharedWorkerGlobalScopeContextImpl::NotifyUpdate(
     const RendererPreferences& new_prefs) {
   // Reserving `accept_languages_watcher` on the stack ensures it is not GC'd
   // within this scope.
@@ -596,18 +607,19 @@ void DedicatedOrSharedWorkerFetchContextImpl::NotifyUpdate(
     accept_languages_watcher->NotifyUpdate();
   }
   renderer_preferences_ = new_prefs;
-  for (auto& watcher : child_preference_watchers_)
+  for (auto& watcher : child_preference_watchers_) {
     watcher->NotifyUpdate(new_prefs);
+  }
 }
 
-void DedicatedOrSharedWorkerFetchContextImpl::
+void DedicatedOrSharedWorkerGlobalScopeContextImpl::
     ResetWeakWrapperResourceLoadInfoNotifier() {
   weak_wrapper_resource_load_info_notifier_.reset();
 }
 
 // static
-scoped_refptr<WebDedicatedOrSharedWorkerFetchContext>
-WebDedicatedOrSharedWorkerFetchContext::Create(
+scoped_refptr<WebDedicatedOrSharedWorkerGlobalScopeContext>
+WebDedicatedOrSharedWorkerGlobalScopeContext::Create(
     WebServiceWorkerProviderContext* provider_context,
     const RendererPreferences& renderer_preferences,
     CrossVariantMojoReceiver<mojom::RendererPreferenceWatcherInterfaceBase>
@@ -649,35 +661,36 @@ WebDedicatedOrSharedWorkerFetchContext::Create(
                          cors_exempt_header_list.begin(),
                          &WebString::operator WTF::String);
 
-  scoped_refptr<DedicatedOrSharedWorkerFetchContextImpl> worker_fetch_context =
-      base::AdoptRef(new DedicatedOrSharedWorkerFetchContextImpl(
-          renderer_preferences, std::move(watcher_receiver),
-          std::move(service_worker_client_receiver),
-          std::move(service_worker_worker_client_registry),
-          std::move(service_worker_container_host),
-          std::move(pending_loader_factory),
-          std::move(pending_fallback_factory),
-          std::move(pending_subresource_loader_updater),
-          Platform::Current()->CreateURLLoaderThrottleProviderForWorker(
-              URLLoaderThrottleProviderType::kWorker),
-          Platform::Current()->CreateWebSocketHandshakeThrottleProvider(),
-          std::move(cors_exempt_header_list),
-          std::move(pending_resource_load_info_notifier)));
+  scoped_refptr<DedicatedOrSharedWorkerGlobalScopeContextImpl>
+      worker_global_scope_context =
+          base::AdoptRef(new DedicatedOrSharedWorkerGlobalScopeContextImpl(
+              renderer_preferences, std::move(watcher_receiver),
+              std::move(service_worker_client_receiver),
+              std::move(service_worker_worker_client_registry),
+              std::move(service_worker_container_host),
+              std::move(pending_loader_factory),
+              std::move(pending_fallback_factory),
+              std::move(pending_subresource_loader_updater),
+              Platform::Current()->CreateURLLoaderThrottleProviderForWorker(
+                  URLLoaderThrottleProviderType::kWorker),
+              Platform::Current()->CreateWebSocketHandshakeThrottleProvider(),
+              std::move(cors_exempt_header_list),
+              std::move(pending_resource_load_info_notifier)));
   if (provider_context) {
-    worker_fetch_context->set_controller_service_worker_mode(
+    worker_global_scope_context->set_controller_service_worker_mode(
         provider_context->GetControllerServiceWorkerMode());
-    worker_fetch_context->set_client_id(provider_context->client_id());
-    worker_fetch_context->set_container_is_blob_url_shared_worker(
+    worker_global_scope_context->set_client_id(provider_context->client_id());
+    worker_global_scope_context->set_container_is_blob_url_shared_worker(
         provider_context->container_is_blob_url_shared_worker());
   } else {
-    worker_fetch_context->set_controller_service_worker_mode(
+    worker_global_scope_context->set_controller_service_worker_mode(
         mojom::ControllerServiceWorkerMode::kNoController);
   }
-  return worker_fetch_context;
+  return worker_global_scope_context;
 }
 
 // static
-void WebDedicatedOrSharedWorkerFetchContext::InstallRewriteURLFunction(
+void WebDedicatedOrSharedWorkerGlobalScopeContext::InstallRewriteURLFunction(
     RewriteURLFunction rewrite_url) {
   CHECK(!g_rewrite_url);
   g_rewrite_url = rewrite_url;

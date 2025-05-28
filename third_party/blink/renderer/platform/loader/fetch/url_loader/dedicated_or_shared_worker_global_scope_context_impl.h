@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_LOADER_FETCH_URL_LOADER_DEDICATED_OR_SHARED_WORKER_FETCH_CONTEXT_IMPL_H_
-#define THIRD_PARTY_BLINK_RENDERER_PLATFORM_LOADER_FETCH_URL_LOADER_DEDICATED_OR_SHARED_WORKER_FETCH_CONTEXT_IMPL_H_
+#ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_LOADER_FETCH_URL_LOADER_DEDICATED_OR_SHARED_WORKER_GLOBAL_SCOPE_CONTEXT_IMPL_H_
+#define THIRD_PARTY_BLINK_RENDERER_PLATFORM_LOADER_FETCH_URL_LOADER_DEDICATED_OR_SHARED_WORKER_GLOBAL_SCOPE_CONTEXT_IMPL_H_
 
 #include "base/memory/raw_ptr.h"
 #include "base/synchronization/waitable_event.h"
@@ -21,7 +21,7 @@
 #include "third_party/blink/public/mojom/service_worker/service_worker_worker_client_registry.mojom-blink.h"
 #include "third_party/blink/public/mojom/worker/subresource_loader_updater.mojom-blink.h"
 #include "third_party/blink/public/platform/web_common.h"
-#include "third_party/blink/public/platform/web_dedicated_or_shared_worker_fetch_context.h"
+#include "third_party/blink/public/platform/web_dedicated_or_shared_worker_global_scope_context.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
@@ -37,11 +37,12 @@ class WebServiceWorkerProviderContext;
 class WebSocketHandshakeThrottleProvider;
 
 // This class is used for fetching resource requests from workers (dedicated
-// worker and shared worker). This class is created on the main thread and
-// passed to the worker thread. This class is not used for service workers. For
-// service workers, ServiceWorkerFetchContextImpl class is used instead.
-class BLINK_PLATFORM_EXPORT DedicatedOrSharedWorkerFetchContextImpl final
-    : public WebDedicatedOrSharedWorkerFetchContext,
+// worker and shared worker) and for creating ServiceWorkerProvider. This
+// class is created on the main thread and passed to the worker thread.
+// This class is not used for service workers. For service workers,
+// ServiceWorkerFetchContextImpl class is used instead.
+class BLINK_PLATFORM_EXPORT DedicatedOrSharedWorkerGlobalScopeContextImpl final
+    : public WebDedicatedOrSharedWorkerGlobalScopeContext,
       public mojom::blink::SubresourceLoaderUpdater,
       public mojom::blink::ServiceWorkerWorkerClient,
       public mojom::blink::RendererPreferenceWatcher {
@@ -53,7 +54,7 @@ class BLINK_PLATFORM_EXPORT DedicatedOrSharedWorkerFetchContextImpl final
   //   nested worker.
   //
   // Regarding the rest of params, see the comments on Create().
-  DedicatedOrSharedWorkerFetchContextImpl(
+  DedicatedOrSharedWorkerGlobalScopeContextImpl(
       const RendererPreferences& renderer_preferences,
       mojo::PendingReceiver<mojom::blink::RendererPreferenceWatcher>
           preference_watcher_receiver,
@@ -76,11 +77,12 @@ class BLINK_PLATFORM_EXPORT DedicatedOrSharedWorkerFetchContextImpl final
       mojo::PendingRemote<mojom::ResourceLoadInfoNotifier>
           pending_resource_load_info_notifier);
 
-  // WebDedicatedOrSharedWorkerFetchContext implementation:
-  // The cloned fetch context does not inherit some fields (e.g.,
-  // blink::WebServiceWorkerProviderContext) from this fetch context, and
-  // instead that takes values passed from the browser process.
-  scoped_refptr<WebDedicatedOrSharedWorkerFetchContext> CloneForNestedWorker(
+  // WebDedicatedOrSharedWorkerGlobalScopeContext implementation:
+  // The cloned global scope context does not inherit some fields (e.g.,
+  // blink::WebServiceWorkerProviderContext) from this global scope context,
+  // and instead that takes values passed from the browser process.
+  scoped_refptr<WebDedicatedOrSharedWorkerGlobalScopeContext>
+  CloneForNestedWorker(
       WebServiceWorkerProviderContext* service_worker_provider_context,
       std::unique_ptr<network::PendingSharedURLLoaderFactory>
           pending_loader_factory,
@@ -155,9 +157,9 @@ class BLINK_PLATFORM_EXPORT DedicatedOrSharedWorkerFetchContextImpl final
  private:
   class Factory;
 
-  ~DedicatedOrSharedWorkerFetchContextImpl() override;
+  ~DedicatedOrSharedWorkerGlobalScopeContextImpl() override;
 
-  scoped_refptr<DedicatedOrSharedWorkerFetchContextImpl>
+  scoped_refptr<DedicatedOrSharedWorkerGlobalScopeContextImpl>
   CloneForNestedWorkerInternal(
       mojo::PendingReceiver<mojom::blink::ServiceWorkerWorkerClient>
           service_worker_client_receiver,
@@ -301,7 +303,7 @@ class BLINK_PLATFORM_EXPORT DedicatedOrSharedWorkerFetchContextImpl final
 };
 
 template <>
-struct DowncastTraits<DedicatedOrSharedWorkerFetchContextImpl> {
+struct DowncastTraits<DedicatedOrSharedWorkerGlobalScopeContextImpl> {
   static bool AllowFrom(const WebWorkerFetchContext& context) {
     return context.IsDedicatedWorkerOrSharedWorkerFetchContext();
   }
@@ -309,4 +311,4 @@ struct DowncastTraits<DedicatedOrSharedWorkerFetchContextImpl> {
 
 }  // namespace blink
 
-#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_LOADER_FETCH_URL_LOADER_DEDICATED_OR_SHARED_WORKER_FETCH_CONTEXT_IMPL_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_LOADER_FETCH_URL_LOADER_DEDICATED_OR_SHARED_WORKER_GLOBAL_SCOPE_CONTEXT_IMPL_H_
