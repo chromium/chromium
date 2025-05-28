@@ -14,6 +14,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "build/build_config.h"
 #include "chrome/common/google_url_loader_throttle.h"
+#include "chrome/common/request_header_integrity/buildflags.h"
 #include "chrome/renderer/chrome_content_renderer_client.h"
 #include "chrome/renderer/chrome_render_frame_observer.h"
 #include "chrome/renderer/chrome_render_thread_observer.h"
@@ -42,6 +43,10 @@
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "extensions/common/switches.h"
 #include "extensions/renderer/extension_throttle_manager.h"
+#endif
+
+#if BUILDFLAG(ENABLE_REQUEST_HEADER_INTEGRITY)
+#include "chrome/common/request_header_integrity/request_header_integrity_url_loader_throttle.h"  // nogncheck crbug.com/1125897
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -285,6 +290,15 @@ URLLoaderThrottleProviderImpl::CreateThrottles(
       chrome_content_renderer_client_->GetChromeObserver()
           ->chromeos_listener()));
 #endif  // BUILDFLAG(IS_CHROMEOS)
+
+#if BUILDFLAG(ENABLE_REQUEST_HEADER_INTEGRITY)
+  if (request_header_integrity::RequestHeaderIntegrityURLLoaderThrottle::
+          IsFeatureEnabled()) {
+    throttles.push_back(
+        std::make_unique<request_header_integrity::
+                             RequestHeaderIntegrityURLLoaderThrottle>());
+  }
+#endif
 
   if (local_frame_token.has_value()) {
     auto throttle =
