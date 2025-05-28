@@ -531,7 +531,6 @@ LayerTreeHostImpl::LayerTreeHostImpl(
 #endif  // BUILDFLAG(IS_CHROMEOS)
   }
 
-  dropped_frame_counter_.set_total_counter(&total_frame_counter_);
   frame_trackers_.set_custom_tracker_results_added_callback(base::BindRepeating(
       &LayerTreeHostImpl::NotifyCompositorMetricsTrackerResults,
       weak_factory_.GetWeakPtr()));
@@ -641,7 +640,6 @@ void LayerTreeHostImpl::ReadyToCommit(
         begin_main_frame_metrics->should_measure_smoothness) ||
        commit_timeout)) {
     is_measuring_smoothness_ = true;
-    total_frame_counter_.Reset();
     dropped_frame_counter_.OnFirstContentfulPaintReceived();
   }
 
@@ -3472,7 +3470,6 @@ bool LayerTreeHostImpl::WillBeginImplFrame(const viz::BeginFrameArgs& args) {
   impl_thread_phase_ = ImplThreadPhase::INSIDE_IMPL_FRAME;
   current_begin_frame_tracker_.Start(args);
   frame_trackers_.NotifyBeginImplFrame(args);
-  total_frame_counter_.OnBeginFrame(args);
   compositor_frame_reporting_controller_->SetNeedsRasterPropertiesAnimated(
       paint_worklet_tracker_.HasInputPropertiesAnimatedOnImpl());
   if (!GetSettings().is_layer_tree_for_ui) {
@@ -4055,12 +4052,8 @@ void LayerTreeHostImpl::SetVisible(bool visible) {
     layer_context_->SetVisible(visible);
   }
 
-  if (visible_) {
+  if (!visible_) {
     auto now = base::TimeTicks::Now();
-    total_frame_counter_.OnShow(now);
-  } else {
-    auto now = base::TimeTicks::Now();
-    total_frame_counter_.OnHide(now);
     frame_sorter_.Reset();
     dropped_frame_counter_.ResetPendingFrames(now);
 
@@ -5995,7 +5988,6 @@ void LayerTreeHostImpl::SetActiveURL(const GURL& url, ukm::SourceId source_id) {
   // case to occur.
   // The source id has already been associated to the URL.
   compositor_frame_reporting_controller_->SetSourceId(source_id);
-  total_frame_counter_.Reset();
   frame_sorter_.Reset();
   dropped_frame_counter_.Reset();
   is_measuring_smoothness_ = false;

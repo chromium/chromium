@@ -64,7 +64,6 @@ class FrameSequenceTrackerTest : public testing::Test, FrameSorterObserver {
                 /*should_report_histograms=*/true,
                 /*should_report_ukm=*/false,
                 /*layer_tree_host_id=*/1)) {
-    dfc_mock_.set_total_counter(&total_frame_counter_);
     compositor_frame_reporting_controller_->SetFrameSorter(&sorter_);
     compositor_frame_reporting_controller_->SetDroppedFrameCounter(&dfc_mock_);
     sorter_.AddObserver(this);
@@ -343,7 +342,6 @@ class FrameSequenceTrackerTest : public testing::Test, FrameSorterObserver {
   }
 
  protected:
-  TotalFrameCounter total_frame_counter_;
   DroppedFrameCounterMock dfc_mock_;
   FrameSequenceTrackerCollection collection_;
   FrameSorter sorter_;

@@ -19,7 +19,6 @@
 #include "cc/metrics/event_metrics.h"
 #include "cc/metrics/frame_sequence_metrics.h"
 #include "cc/metrics/frame_sequence_tracker_collection.h"
-#include "cc/metrics/total_frame_counter.h"
 #include "cc/scheduler/commit_earlyout_reason.h"
 #include "components/viz/common/frame_timing_details.h"
 #include "components/viz/common/quads/compositor_frame_metadata.h"
@@ -127,7 +126,6 @@ class CompositorFrameReportingControllerTest : public testing::Test {
     reporting_controller_.SetFrameSequenceTrackerCollection(
         &tracker_collection_);
     reporting_controller_.SetDroppedFrameCounter(&dropped_counter_);
-    dropped_counter_.set_total_counter(&total_frame_counter_);
   }
 
   // The following functions simulate the actions that would
@@ -345,7 +343,6 @@ class CompositorFrameReportingControllerTest : public testing::Test {
   FrameSorter frame_sorter_;
   FrameSequenceTrackerCollection tracker_collection_;
   DroppedFrameCounter dropped_counter_;
-  TotalFrameCounter total_frame_counter_;
   TestCompositorFrameReportingController reporting_controller_;
   ::base::test::TracingEnvironment tracing_environment_;
 };

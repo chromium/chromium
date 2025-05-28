@@ -46,7 +46,6 @@
 #include "cc/metrics/frame_sequence_tracker.h"
 #include "cc/metrics/frame_sequence_tracker_collection.h"
 #include "cc/metrics/submit_info.h"
-#include "cc/metrics/total_frame_counter.h"
 #include "cc/paint/paint_worklet_job.h"
 #include "cc/scheduler/begin_frame_tracker.h"
 #include "cc/scheduler/commit_earlyout_reason.h"
@@ -874,9 +873,6 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
 
   Viewport& viewport() const { return *viewport_.get(); }
 
-  TotalFrameCounter* total_frame_counter_for_testing() {
-    return &total_frame_counter_;
-  }
   DroppedFrameCounter* dropped_frame_counter_for_testing() {
     return &dropped_frame_counter_;
   }
@@ -1161,7 +1157,6 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
   base::WritableSharedMemoryMapping ukm_smoothness_mapping_;
   base::WritableSharedMemoryMapping ukm_dropped_frames_mapping_;
 
-  TotalFrameCounter total_frame_counter_;
   // `dropped_frame_counter_` holds a pointer `to ukm_smoothness_mapping_` so
   // it must be declared last and deleted first;
   DroppedFrameCounter dropped_frame_counter_;
@@ -1325,8 +1320,8 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
   bool has_non_fling_input_since_last_frame_ = false;
   bool has_observed_first_scroll_delay_ = false;
 
-  // True if we are measuring smoothness in TotalFrameCounter and
-  // DroppedFrameCounter. Currently true when first contentful paint is done.
+  // True if we are measuring smoothness in DroppedFrameCounter.
+  // Currently true when first contentful paint is done.
   bool is_measuring_smoothness_ = false;
 
   // Cache for the results of calls to gfx::ColorSpace::Contains() on sRGB. This

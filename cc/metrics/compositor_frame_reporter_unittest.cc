@@ -18,7 +18,6 @@
 #include "cc/metrics/compositor_frame_reporting_controller.h"
 #include "cc/metrics/dropped_frame_counter.h"
 #include "cc/metrics/event_metrics.h"
-#include "cc/metrics/total_frame_counter.h"
 #include "components/viz/common/frame_timing_details.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -35,7 +34,6 @@ class CompositorFrameReporterTest : public testing::Test {
  public:
   CompositorFrameReporterTest() : pipeline_reporter_(CreatePipelineReporter()) {
     AdvanceNowByUs(1);
-    dropped_frame_counter_.set_total_counter(&total_frame_counter_);
   }
 
  protected:
@@ -245,7 +243,6 @@ class CompositorFrameReporterTest : public testing::Test {
   base::SimpleTestTickClock test_tick_clock_;
 
   DroppedFrameCounter dropped_frame_counter_;
-  TotalFrameCounter total_frame_counter_;
   FrameSorter frame_sorter_;
   std::unique_ptr<CompositorFrameReporter> pipeline_reporter_;
 

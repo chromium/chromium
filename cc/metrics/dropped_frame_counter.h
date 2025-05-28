@@ -25,7 +25,6 @@
 #include "cc/metrics/ukm_smoothness_data.h"
 
 namespace cc {
-class TotalFrameCounter;
 
 // This class maintains a counter for produced/dropped frames, and can be used
 // to estimate the recent throughput.
@@ -103,10 +102,6 @@ class CC_EXPORT DroppedFrameCounter : public FrameSorterObserver {
 
   // Enable dropped frame report for ui::Compositor..
   void EnableReportForUI();
-
-  void set_total_counter(TotalFrameCounter* total_counter) {
-    total_counter_ = total_counter;
-  }
 
   void SetTimeFirstContentfulPaintReceivedForTesting(
       base::TimeTicks time_fcp_received) {
@@ -191,7 +186,6 @@ class CC_EXPORT DroppedFrameCounter : public FrameSorterObserver {
   std::optional<double> sliding_window_max_percent_dropped_After_5_sec_;
   base::TimeTicks time_first_contentful_paint_received_;
   raw_ptr<UkmSmoothnessDataShared> ukm_smoothness_data_ = nullptr;
-  raw_ptr<TotalFrameCounter> total_counter_ = nullptr;
 
   struct {
     double max_window = 0;

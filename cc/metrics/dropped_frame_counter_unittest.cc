@@ -307,7 +307,6 @@ class DroppedFrameCounterTest : public testing::Test {
                                        SmoothnessStrategy::kDefaultStrategy)
       : smoothness_strategy_(smoothness_strategy) {
     dropped_frame_counter_ = std::make_unique<DroppedFrameCounter>();
-    dropped_frame_counter_->set_total_counter(&total_frame_counter_);
     dropped_frame_counter_->OnFirstContentfulPaintReceived();
     frame_sorter_.AddObserver(dropped_frame_counter_.get());
   }
@@ -420,7 +419,6 @@ class DroppedFrameCounterTest : public testing::Test {
     args.interval = interval_;
     return args;
   }
-  TotalFrameCounter total_frame_counter_;
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 

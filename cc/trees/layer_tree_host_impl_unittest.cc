@@ -14464,15 +14464,10 @@ TEST_P(LayerTreeHostImplTest,
 // Test that DroppedFrameCounter and TotalFrameCounter reset themselves under
 // certain conditions
 TEST_P(LayerTreeHostImplTest, FrameCounterReset) {
-  TotalFrameCounter* total_frame_counter =
-      host_impl_->total_frame_counter_for_testing();
   DroppedFrameCounter* dropped_frame_counter =
       host_impl_->dropped_frame_counter_for_testing();
   FrameSorter* frame_sorter = host_impl_->frame_sorter_for_testing();
-  EXPECT_EQ(total_frame_counter->total_frames(), 0u);
   EXPECT_EQ(dropped_frame_counter->total_frames(), 0u);
-  total_frame_counter->set_total_frames_for_testing(1u);
-  EXPECT_EQ(total_frame_counter->total_frames(), 1u);
   dropped_frame_counter->AddGoodFrame();
   EXPECT_EQ(dropped_frame_counter->total_frames(), 1u);
 
@@ -14501,11 +14496,8 @@ TEST_P(LayerTreeHostImplTest, FrameCounterReset) {
   frame_sorter->AddFrameResult(
       args, CreateFakeFrameInfo(FrameInfo::FrameFinalState::kDropped));
   EXPECT_EQ(dropped_frame_counter->total_smoothness_dropped(), 1u);
-
-  total_frame_counter->set_total_frames_for_testing(1u);
   dropped_frame_counter->AddGoodFrame();
   host_impl_->SetActiveURL(GURL(), 1u);
-  EXPECT_EQ(total_frame_counter->total_frames(), 0u);
   EXPECT_EQ(dropped_frame_counter->total_frames(), 0u);
   EXPECT_EQ(dropped_frame_counter->total_smoothness_dropped(), 0u);
 }
@@ -14513,11 +14505,8 @@ TEST_P(LayerTreeHostImplTest, FrameCounterReset) {
 // Test that DroppedFrameCounter and TotalFrameCounter do not reset themselves
 // under certain conditions
 TEST_P(LayerTreeHostImplTest, FrameCounterNotReset) {
-  TotalFrameCounter* total_frame_counter =
-      host_impl_->total_frame_counter_for_testing();
   DroppedFrameCounter* dropped_frame_counter =
       host_impl_->dropped_frame_counter_for_testing();
-  EXPECT_EQ(total_frame_counter->total_frames(), 0u);
   EXPECT_EQ(dropped_frame_counter->total_frames(), 0u);
 
   auto interval = base::Milliseconds(16);
@@ -14530,10 +14519,7 @@ TEST_P(LayerTreeHostImplTest, FrameCounterNotReset) {
   begin_frame_metrics.should_measure_smoothness = true;
   host_impl_->ReadyToCommit(arg1, /*scroll_and_viewport_changes_synced=*/true,
                             &begin_frame_metrics, /*commit_timeout=*/false);
-  EXPECT_EQ(total_frame_counter->total_frames(), 0u);
   EXPECT_EQ(dropped_frame_counter->total_frames(), 0u);
-  total_frame_counter->set_total_frames_for_testing(1u);
-  EXPECT_EQ(total_frame_counter->total_frames(), 1u);
   dropped_frame_counter->AddGoodFrame();
   EXPECT_EQ(dropped_frame_counter->total_frames(), 1u);
 
@@ -14546,7 +14532,6 @@ TEST_P(LayerTreeHostImplTest, FrameCounterNotReset) {
   // flag should not reset the counter.
   host_impl_->ReadyToCommit(arg2, /*scroll_and_viewport_changes_synced=*/true,
                             &begin_frame_metrics, /*commit_timeout=*/false);
-  EXPECT_EQ(total_frame_counter->total_frames(), 1u);
   EXPECT_EQ(dropped_frame_counter->total_frames(), 1u);
 }
 
