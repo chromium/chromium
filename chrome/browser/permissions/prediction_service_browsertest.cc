@@ -81,6 +81,9 @@ constexpr OptimizationTarget kCpssV1OptTargetNotification =
 constexpr OptimizationTarget kAiv3OptTargetNotification = OptimizationTarget::
     OPTIMIZATION_TARGET_NOTIFICATION_IMAGE_PERMISSION_RELEVANCE;
 
+constexpr OptimizationTarget kAiv3OptTargetGeolocation = OptimizationTarget::
+    OPTIMIZATION_TARGET_GEOLOCATION_IMAGE_PERMISSION_RELEVANCE;
+
 constexpr auto kLikelihoodUnspecified =
     PermissionUmaUtil::PredictionGrantLikelihood::
         PermissionPrediction_Likelihood_DiscretizedLikelihood_DISCRETIZED_LIKELIHOOD_UNSPECIFIED;
@@ -90,8 +93,10 @@ constexpr auto kLikelihoodVeryUnlikely =
     PermissionUmaUtil::PredictionGrantLikelihood::
         PermissionPrediction_Likelihood_DiscretizedLikelihood_VERY_UNLIKELY;
 
-constexpr std::string_view kModelExecutionSuccessHistogram =
+constexpr std::string_view kNotificationsModelExecutionSuccessHistogram =
     "OptimizationGuide.ModelExecutor.ExecutionStatus.NotificationPermissionsV3";
+constexpr std::string_view kGeolocationModelExecutionSuccessHistogram =
+    "OptimizationGuide.ModelExecutor.ExecutionStatus.GeolocationPermissionsV3";
 constexpr std::string_view kSnapshotTakenHistogram =
     "Permissions.AIv3.SnapshotTaken";
 constexpr char kAIv3InquiryDurationHistogram[] =
@@ -249,6 +254,7 @@ class PredictionServiceBrowserTestBase : public InProcessBrowserTest {
   void TriggerPromptAndVerifyUi(
       std::string test_url,
       PermissionAction permission_action,
+      RequestType request_type,
       bool should_expect_quiet_ui,
       std::optional<PermissionRequestRelevance> expected_relevance,
       std::optional<PermissionUmaUtil::PredictionGrantLikelihood>
@@ -257,13 +263,12 @@ class PredictionServiceBrowserTestBase : public InProcessBrowserTest {
     GURL url = embedded_test_server()->GetURL(test_url, "/title1.html");
     ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
-    auto req =
-        std::make_unique<MockPermissionRequest>(RequestType::kNotifications);
+    auto req = std::make_unique<MockPermissionRequest>(request_type);
     manager->AddRequest(GetActiveMainFrame(), std::move(req));
     bubble_factory()->WaitForPermissionBubble();
 
-    if (notification_model_handler_) {
-      notification_model_handler_->WaitForModelExecutionForTesting();
+    if (aiv3_model_handler_) {
+      aiv3_model_handler_->WaitForModelExecutionForTesting();
     }
     EXPECT_EQ(should_expect_quiet_ui,
               manager->ShouldCurrentRequestUseQuietUI());
@@ -286,7 +291,7 @@ class PredictionServiceBrowserTestBase : public InProcessBrowserTest {
         browser()->profile());
   }
 
-  raw_ptr<PermissionsAiv3HandlerFake> notification_model_handler_ = nullptr;
+  raw_ptr<PermissionsAiv3HandlerFake> aiv3_model_handler_ = nullptr;
 
  private:
   std::unique_ptr<MockPermissionPromptFactory> mock_permission_prompt_factory_;
@@ -335,8 +340,6 @@ class SignatureModelPredictionServiceBrowserTest
                                           permissions::features::
                                               kPermissionsAIv3,
                                           permissions::features::
-                                              kPermissionsAIv3Geolocation,
-                                          permissions::features::
                                               kPermissionsAIv3Geolocation}) {}
 
   void TriggerCpssV1AndVerifyUi(
@@ -350,11 +353,13 @@ class SignatureModelPredictionServiceBrowserTest
     std::string test_urls[] = {"a.test", "b.test", "c.test", "d.test"};
     for (std::string test_url : test_urls) {
       TriggerPromptAndVerifyUi(test_url, PermissionAction::GRANTED,
+                               RequestType::kNotifications,
                                /*should_expect_quiet_ui=*/false,
                                /*expected_relevance=*/std::nullopt,
                                /*expected_prediction_likelihood=*/std::nullopt);
     }
     TriggerPromptAndVerifyUi(/*test_url=*/"e.test", permission_action,
+                             RequestType::kNotifications,
                              should_expect_quiet_ui, expected_relevance,
                              expected_prediction_likelihood);
     EXPECT_EQ(5, bubble_factory()->show_count());
@@ -442,7 +447,7 @@ IN_PROC_BROWSER_TEST_P(SignatureModelPredictionServiceBrowserTest,
                                       /*expected_count=*/1);
 }
 
-struct Aiv3ModelTestCase {
+struct ModelMetadata {
   std::string test_name;
   std::string_view model_name;
   // This is defined by the output of the AIv3 model (and the defined
@@ -456,6 +461,13 @@ struct Aiv3ModelTestCase {
   bool should_expect_quiet_ui;
   int success_count_model_execution;
 };
+
+struct PermissionRequestMetadata {
+  OptimizationTarget optimization_target;
+  RequestType request_type;
+};
+
+using Aiv3ModelTestCase = std::tuple<ModelMetadata, PermissionRequestMetadata>;
 
 class Aiv3ModelPredictionServiceBrowserTest
     : public PredictionServiceBrowserTestBase,
@@ -491,6 +503,11 @@ class Aiv3ModelPredictionServiceBrowserTest
         &prediction_service_);
   }
 
+  RequestType request_type() const { return get<1>(GetParam()).request_type; }
+  OptimizationTarget optimization_target() const {
+    return get<1>(GetParam()).optimization_target;
+  }
+
   void SetUpOnMainThread() override {
     PredictionServiceBrowserTestBase::SetUpOnMainThread();
 
@@ -503,36 +520,34 @@ class Aiv3ModelPredictionServiceBrowserTest
     // explicitly in the opt_guide service or just destroy the object. Either
     // way, we need to do this before we create our fake handler.
     model_handler_provider()->set_permissions_aiv3_handler_for_testing(
-        RequestType::kNotifications, nullptr);
+        request_type(), nullptr);
 
-    std::unique_ptr<PermissionsAiv3HandlerFake> notification_model_handler =
+    std::unique_ptr<PermissionsAiv3HandlerFake> model_handler =
         std::make_unique<PermissionsAiv3HandlerFake>(
-            opt_guide(),
-            /*optimization_target=*/kAiv3OptTargetNotification,
-            /*request_type=*/RequestType::kNotifications);
-    notification_model_handler_ = notification_model_handler.get();
+            opt_guide(), optimization_target(), request_type());
+    aiv3_model_handler_ = model_handler.get();
 
     model_handler_provider()->set_permissions_aiv3_handler_for_testing(
-        RequestType::kNotifications, std::move(notification_model_handler));
+        request_type(), std::move(model_handler));
   }
 
   void TearDownOnMainThread() override {
     PredictionServiceBrowserTestBase::TearDownOnMainThread();
-    notification_model_handler_ = nullptr;
+    aiv3_model_handler_ = nullptr;
   }
 
   void PushModelFileToModelExecutor(const base::FilePath& model_file_path) {
     opt_guide()->OverrideTargetModelForTesting(
-        kAiv3OptTargetNotification, optimization_guide::TestModelInfoBuilder()
-                                        .SetModelFilePath(model_file_path)
-                                        .Build());
-    notification_model_handler_->WaitForModelLoadForTesting();
+        optimization_target(), optimization_guide::TestModelInfoBuilder()
+                                   .SetModelFilePath(model_file_path)
+                                   .Build());
+    aiv3_model_handler_->WaitForModelLoadForTesting();
   }
 
   PermissionsAiv3Handler* aiv3_model_handler() {
     return PredictionModelHandlerProviderFactory::GetForBrowserContext(
                browser()->profile())
-        ->GetPermissionsAiv3Handler(RequestType::kNotifications);
+        ->GetPermissionsAiv3Handler(request_type());
   }
 
   PredictionServiceMock& prediction_service() { return prediction_service_; }
@@ -546,66 +561,86 @@ class Aiv3ModelPredictionServiceBrowserTest
   PredictionServiceMock prediction_service_;
 };
 
+std::vector<ModelMetadata> model_data_testcase = {
+    {
+        /*test_name=*/"OnDeviceVeryLowAndServerSideUnspecifiedResponse"
+                      "ReturnsDefaultUI",
+        /*model_name=*/kZeroReturnAiv3Model,
+        /*expected_relevance=*/PermissionRequestRelevance::kVeryLow,
+        /*prediction_service_likelihood=*/kLikelihoodUnspecified,
+        /*should_expect_quiet_ui=*/false,
+        /*success_count_model_execution=*/1,
+    },
+    {
+        /*test_name=*/"OnDeviceVeryLowAndServerSideVeryUnlikelyResponse"
+                      "ReturnsQuietUI",
+        /*model_name=*/kZeroReturnAiv3Model,
+        /*expected_relevance=*/PermissionRequestRelevance::kVeryLow,
+        /*prediction_service_likelihood=*/kLikelihoodVeryUnlikely,
+        /*should_expect_quiet_ui=*/true,
+        /*success_count_model_execution=*/1,
+    },
+    {
+        /*test_name=*/"OnDeviceVeryHighAndServerSideUnspecifiedResponse"
+                      "ReturnsDefaultUI",
+        /*model_name=*/kOneReturnAiv3Model,
+        /*expected_relevance=*/PermissionRequestRelevance::kVeryHigh,
+        /*prediction_service_likelihood=*/kLikelihoodUnspecified,
+        /*should_expect_quiet_ui=*/false,
+        /*success_count_model_execution=*/1,
+    },
+    {
+        /*test_name=*/"OnDeviceVeryHighAndServerSideVeryUnlikelyResponse"
+                      "ReturnsQuietUI",
+        /*model_name=*/kOneReturnAiv3Model,
+        /*expected_relevance=*/PermissionRequestRelevance::kVeryHigh,
+        /*prediction_service_likelihood=*/kLikelihoodVeryUnlikely,
+        /*should_expect_quiet_ui=*/true,
+        /*success_count_model_execution=*/1,
+    },
+    {
+        /*test_name=*/"FailingAiv3ModelStillResultsInValid"
+                      "ServerSideExecution",
+        /*model_name=*/kNotExistingModel,
+        /*expected_relevance=*/PermissionRequestRelevance::kUnspecified,
+        /*prediction_service_likelihood=*/kLikelihoodVeryUnlikely,
+        /*should_expect_quiet_ui=*/true,
+        /*success_count_model_execution=*/0,
+    },
+};
+
+std::vector<PermissionRequestMetadata> request_data_testcase = {
+    {
+
+        /*optimization_target=*/kAiv3OptTargetGeolocation,
+        /*request_type=*/RequestType::kGeolocation},
+    {
+
+        /*optimization_target=*/kAiv3OptTargetNotification,
+        /*request_type=*/RequestType::kNotifications},
+};
+
 INSTANTIATE_TEST_SUITE_P(
     Aiv3ModelTest,
     Aiv3ModelPredictionServiceBrowserTest,
-    testing::ValuesIn<Aiv3ModelTestCase>({
-        {
-            /*test_name=*/"OnDeviceVeryLowAndServerSideUnspecifiedResponse"
-                          "ReturnsDefaultUI",
-            /*test_name=*/kZeroReturnAiv3Model,
-            /*expected_relevance=*/PermissionRequestRelevance::kVeryLow,
-            /*prediction_service_likelihood=*/kLikelihoodUnspecified,
-            /*should_expect_quiet_ui=*/false,
-            /*success_count_model_execution=*/1,
-        },
-        {
-            /*test_name=*/"OnDeviceVeryLowAndServerSideVeryUnlikelyResponse"
-                          "ReturnsQuietUI",
-            /*test_name=*/kZeroReturnAiv3Model,
-            /*expected_relevance=*/PermissionRequestRelevance::kVeryLow,
-            /*prediction_service_likelihood=*/kLikelihoodVeryUnlikely,
-            /*should_expect_quiet_ui=*/true,
-            /*success_count_model_execution=*/1,
-        },
-        {
-            /*test_name=*/"OnDeviceVeryHighAndServerSideUnspecifiedResponse"
-                          "ReturnsDefaultUI",
-            /*test_name=*/kOneReturnAiv3Model,
-            /*expected_relevance=*/PermissionRequestRelevance::kVeryHigh,
-            /*prediction_service_likelihood=*/kLikelihoodUnspecified,
-            /*should_expect_quiet_ui=*/false,
-            /*success_count_model_execution=*/1,
-        },
-        {
-            /*test_name=*/"OnDeviceVeryHighAndServerSideVeryUnlikelyResponse"
-                          "ReturnsQuietUI",
-            /*test_name=*/kOneReturnAiv3Model,
-            /*expected_relevance=*/PermissionRequestRelevance::kVeryHigh,
-            /*prediction_service_likelihood=*/kLikelihoodVeryUnlikely,
-            /*should_expect_quiet_ui=*/true,
-            /*success_count_model_execution=*/1,
-        },
-        {
-            /*test_name=*/"FailingAiv3ModelStillResultsInValid"
-                          "ServerSideExecution",
-            /*test_name=*/kNotExistingModel,
-            /*expected_relevance=*/PermissionRequestRelevance::kUnspecified,
-            /*prediction_service_likelihood=*/kLikelihoodVeryUnlikely,
-            /*should_expect_quiet_ui=*/true,
-            /*success_count_model_execution=*/0,
-        },
-    }),
+    ::testing::Combine(::testing::ValuesIn(model_data_testcase),
+                       ::testing::ValuesIn(request_data_testcase)),
     /*name_generator=*/
     [](const testing::TestParamInfo<
         Aiv3ModelPredictionServiceBrowserTest::ParamType>& info) {
-      return info.param.test_name;
+      return (std::get<1>(info.param).request_type ==
+                      RequestType::kNotifications
+                  ? "Notification"
+                  : "Geolocation") +
+             std::get<0>(info.param).test_name;
     });
 
 IN_PROC_BROWSER_TEST_P(Aiv3ModelPredictionServiceBrowserTest,
                        TestAiv3Workflow) {
+  const auto& test_case = std::get<0>(GetParam());
+
   ASSERT_TRUE(aiv3_model_handler());
-  PushModelFileToModelExecutor(ModelFilePath(GetParam().model_name));
+  PushModelFileToModelExecutor(ModelFilePath(test_case.model_name));
   ASSERT_TRUE(embedded_test_server()->Start());
 
   SkBitmap bitmap;
@@ -617,14 +652,15 @@ IN_PROC_BROWSER_TEST_P(Aiv3ModelPredictionServiceBrowserTest,
   prediction_service_response.mutable_prediction()
       ->Add()
       ->mutable_grant_likelihood()
-      ->set_discretized_likelihood(GetParam().prediction_service_likelihood);
+      ->set_discretized_likelihood(test_case.prediction_service_likelihood);
 
-  // The server side model fetches a lot of history actions, but we are only
-  // interested in the permission relevance field, that is populated by the
-  // on-device model. We also check that the feature id is set correctly.
+  // The server side model fetches a lot of history actions, but we are
+  // only interested in the permission relevance field, that is populated
+  // by the on-device model. We also check that the feature id is set
+  // correctly.
   auto expected_relevance =
       Field(&PredictionRequestFeatures::permission_relevance,
-            Eq(GetParam().expected_relevance));
+            Eq(test_case.expected_relevance));
   auto expected_experiment_id =
       Field(&PredictionRequestFeatures::experiment_id,
             PredictionRequestFeatures::ExperimentId::kAiV3ExperimentId);
@@ -639,19 +675,22 @@ IN_PROC_BROWSER_TEST_P(Aiv3ModelPredictionServiceBrowserTest,
                      /*response_from_cache=*/true, prediction_service_response);
           })));
   TriggerPromptAndVerifyUi(
-      /*test_url=*/"test.a", PermissionAction::DISMISSED,
-      GetParam().should_expect_quiet_ui, GetParam().expected_relevance,
-      GetParam().prediction_service_likelihood);
+      /*test_url=*/"test.a", PermissionAction::DISMISSED, request_type(),
+      test_case.should_expect_quiet_ui, test_case.expected_relevance,
+      test_case.prediction_service_likelihood);
 
   histogram_tester().ExpectBucketCount(
-      kModelExecutionSuccessHistogram, /*sample=*/true, /*expected_count=*/
-      GetParam().success_count_model_execution);
+      request_type() == RequestType::kNotifications
+          ? kNotificationsModelExecutionSuccessHistogram
+          : kGeolocationModelExecutionSuccessHistogram,
+      /*sample=*/true, /*expected_count=*/
+      test_case.success_count_model_execution);
 
   histogram_tester().ExpectBucketCount(kSnapshotTakenHistogram,
                                        /*sample=*/true,
                                        /*expected_count=*/1);
-  // We should receive timing information for both, the on-device model and
-  // the server-side model.
+  // We should receive timing information for both, the on-device model
+  // and the server-side model.
   histogram_tester().ExpectTotalCount(kCpssV3InquiryDurationHistogram,
                                       /*expected_count=*/1);
   histogram_tester().ExpectTotalCount(kAIv3InquiryDurationHistogram,
