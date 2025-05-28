@@ -1784,11 +1784,17 @@ PaintLayer* PaintLayer::HitTestChildren(
     double* z_offset,
     HitTestingTransformState* local_transform_state,
     bool depth_sort_descendants) {
-  if (!HasSelfPaintingLayerDescendant())
+  if (!HasSelfPaintingLayerDescendant()) {
     return nullptr;
+  }
 
-  if (GetLayoutObject().ChildPaintBlockedByDisplayLock())
+  if (GetLayoutObject().ChildPaintBlockedByDisplayLock()) {
     return nullptr;
+  }
+
+  if (GetLayoutObject().IsCanvas()) {
+    return nullptr;
+  }
 
   const LayoutObject* stop_node = result.GetHitTestRequest().GetStopNode();
   PaintLayer* stop_layer = stop_node ? stop_node->PaintingLayer() : nullptr;
