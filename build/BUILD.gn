@@ -52,6 +52,8 @@ buildflag_header("branding_buildflags") {
   } else {
     flags += [ "GOOGLE_CHROME_FOR_TESTING_BRANDING=false" ]
   }
+
+  flags += [ "ENABLE_BUILTIN_SEARCH_PROVIDER_ASSETS=$enable_builtin_search_provider_assets" ]
 }
 
 buildflag_header("blink_buildflags") {

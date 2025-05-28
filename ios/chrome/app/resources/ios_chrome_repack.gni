@@ -101,7 +101,6 @@ template("ios_chrome_repack_scalables") {
         "${root_gen_dir}/components/components_resources_${_scale}_percent.pak",
         "${root_gen_dir}/ios/chrome/ios_theme_resources_${_scale}_percent.pak",
         "${root_gen_dir}/ui/resources/ui_resources_${_scale}_percent.pak",
-        "${root_gen_dir}/third_party/search_engines_data/search_engines_resources_${_scale}_percent.pak",
       ]
       foreach(_source_pattern, ios_scalable_pack_extra_source_patterns) {
         _source_pattern = string_replace(_source_pattern, "%scale%", _scale)
@@ -115,8 +114,12 @@ template("ios_chrome_repack_scalables") {
                "//components/resources",
                "//ios/chrome/app/theme",
                "//ui/resources",
-               "//third_party/search_engines_data:resources",
              ] + ios_scalable_pack_extra_deps
+
+      if (enable_builtin_search_provider_assets) {
+        sources += [ "${root_gen_dir}/third_party/search_engines_data/search_engines_resources_${_scale}_percent.pak" ]
+        deps += [ "//third_party/search_engines_data:resources" ]
+      }
 
       output = "$target_gen_dir/chrome_${_scale}_percent.pak"
       copy_data_to_bundle = true

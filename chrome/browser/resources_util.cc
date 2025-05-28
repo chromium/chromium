@@ -11,12 +11,13 @@
 
 #include "base/containers/flat_map.h"
 #include "base/no_destructor.h"
+#include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "chrome/grit/theme_resources_map.h"
 #include "components/grit/components_scaled_resources_map.h"
 #include "ui/resources/grit/ui_resources_map.h"
 
-#if !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(ENABLE_BUILTIN_SEARCH_PROVIDER_ASSETS)
 #include "third_party/search_engines_data/search_engines_scaled_resources_map.h"
 #endif
 #if BUILDFLAG(IS_CHROMEOS)
@@ -35,7 +36,7 @@ class ThemeMap {
   ThemeMap() {
     size_t storage_size = std::size(kComponentsScaledResources) +
                           std::size(kThemeResources) + std::size(kUiResources);
-#if !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(ENABLE_BUILTIN_SEARCH_PROVIDER_ASSETS)
     storage_size += std::size(kSearchEnginesScaledResources);
 #endif
 #if BUILDFLAG(IS_CHROMEOS)
@@ -55,7 +56,7 @@ class ThemeMap {
     for (const auto& resource : kUiResources) {
       storage.emplace_back(resource.path, resource.id);
     }
-#if !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(ENABLE_BUILTIN_SEARCH_PROVIDER_ASSETS)
     for (const auto& resource : kSearchEnginesScaledResources) {
       storage.emplace_back(resource.path, resource.id);
     }
