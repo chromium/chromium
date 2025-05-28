@@ -64,8 +64,7 @@ BOOL CGSizeAlmostEqualToSize(CGSize size1, CGSize size2) {
 
   // Avoid recursion that can happen when multiple animations are happening
   // (example: entering fullscreen and displaying an infobar).
-  if (!base::FeatureList::IsEnabled(web::features::kSmoothScrollingDefault) &&
-      _isInViewDidLayoutSubviews) {
+  if (_isInViewDidLayoutSubviews) {
     return;
   }
   _isInViewDidLayoutSubviews = YES;
