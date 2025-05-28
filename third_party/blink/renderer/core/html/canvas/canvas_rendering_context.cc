@@ -96,13 +96,9 @@ void CanvasRenderingContext::DidDraw(
 scoped_refptr<StaticBitmapImage>
 CanvasRenderingContext::PaintRenderingResultsToSnapshot(
     SourceDrawingBuffer source_buffer,
-    FlushReason reason,
-    bool* had_resource_provider /*=nullptr*/) {
+    FlushReason reason) {
   CanvasResourceProvider* provider =
       PaintRenderingResultsToCanvas(source_buffer);
-  if (had_resource_provider) {
-    *had_resource_provider = !!provider;
-  }
 
   return provider ? provider->Snapshot(reason) : nullptr;
 }

@@ -208,11 +208,9 @@ class CORE_EXPORT CanvasRenderingContext
   // clients need to know whether in the case of failure the
   // CanvasResourceProvider being used internally was present; such clients can
   // pass in `had_canvas_resource_provider`.
-  // TODO(crbug.com/352263194): Remove `had_canvas_resource_provider`.
   scoped_refptr<StaticBitmapImage> PaintRenderingResultsToSnapshot(
       SourceDrawingBuffer source_buffer,
-      FlushReason reason,
-      bool* had_canvas_resource_provider = nullptr);
+      FlushReason reason);
 
   // Copy the contents of the rendering context to a media::VideoFrame created
   // using `frame_pool`, with color space specified by `dst_color_space`. If

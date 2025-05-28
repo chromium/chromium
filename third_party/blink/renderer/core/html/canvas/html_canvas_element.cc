@@ -1232,38 +1232,29 @@ void HTMLCanvasElement::PaintInternal(GraphicsContext& context,
   // hibernation is ended if the canvas' resource provider is recreated). For
   // all contexts other than canvas 2D, get a snapshot directly from the
   // context.
-  bool had_resource_provider = false;
   if (IsRenderingContext2D()) {
     if (ResourceProvider()) {
       snapshot = context_->GetImage(FlushReason::kPaint);
-      had_resource_provider = true;
     }
   } else {
-    snapshot = context_->PaintRenderingResultsToSnapshot(
-        kFrontBuffer, FlushReason::kPaint, &had_resource_provider);
+    snapshot = context_->PaintRenderingResultsToSnapshot(kFrontBuffer,
+                                                         FlushReason::kPaint);
   }
 
-  // To preserve historical behavior, the below code is conditioned on whether
-  // the CanvasResourceProvider was present rather than whether the snapshot
-  // is non-null.
-  // TODO(crbug.com/352263194): Check `snapshot` in the top-level `if` and
-  // eliminate `had_resource_provider` altogether.
-  if (had_resource_provider) {
+  if (snapshot) {
     SkBlendMode composite_operator =
         !context_ || context_->CreationAttributes().alpha
             ? SkBlendMode::kSrcOver
             : SkBlendMode::kSrc;
     gfx::RectF src_rect((gfx::SizeF(Size())));
 
-    if (snapshot) {
-      // GraphicsContext cannot handle gpu resource serialization.
-      snapshot = snapshot->MakeUnaccelerated();
-      DCHECK(!snapshot->IsTextureBacked());
-      context.DrawImage(*snapshot, Image::kSyncDecode,
-                        ImageAutoDarkMode::Disabled(), ImagePaintTimingInfo(),
-                        gfx::RectF(ToPixelSnappedRect(r)), &src_rect,
-                        composite_operator);
-    }
+    // GraphicsContext cannot handle gpu resource serialization.
+    snapshot = snapshot->MakeUnaccelerated();
+    DCHECK(!snapshot->IsTextureBacked());
+    context.DrawImage(*snapshot, Image::kSyncDecode,
+                      ImageAutoDarkMode::Disabled(), ImagePaintTimingInfo(),
+                      gfx::RectF(ToPixelSnappedRect(r)), &src_rect,
+                      composite_operator);
   } else {
     // When alpha is false, we should draw to opaque black.
     if (!context_->CreationAttributes().alpha) {
