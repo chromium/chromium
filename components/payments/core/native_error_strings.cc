@@ -266,5 +266,22 @@ const char kValidIssuerIconRequired[] =
     "The \"secure-payment-confirmation\" method requires a valid URL in the "
     "\"issuerInfo.icon\" field.";
 
+const char kNonNullPaymentEntityLogoRequired[] =
+    "The \"secure-payment-confirmation\" method requires that each entry in "
+    "\"paymentEntitiesLogos\" is non-null.";
+
+extern const char kValidLogoUrlRequired[] =
+    "The \"secure-payment-confirmation\" method requires that each entry in "
+    "\"paymentEntitiesLogos\" has a valid URL in the \"url\" field.";
+
+extern const char kValidLogoUrlSchemeRequired[] =
+    "The \"secure-payment-confirmation\" method requires that each entry in "
+    "\"paymentEntitiesLogos\" has a URL whose scheme is one of \"https\", "
+    "\"http\", or \"data\" in the \"url\" field.";
+
+extern const char kLogoLabelRequired[] =
+    "The \"secure-payment-confirmation\" method requires that each entry in "
+    "\"paymentEntitiesLogos\" has a non-empty \"label\" field.";
+
 }  // namespace errors
 }  // namespace payments

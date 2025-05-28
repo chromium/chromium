@@ -950,6 +950,8 @@ generated_dictionary_sources_in_modules = [
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_payment_details_modifier.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_payment_details_update.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_payment_details_update.h",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_payment_entity_logo.cc",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_payment_entity_logo.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_payment_handler_response.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_payment_handler_response.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_payment_item.cc",

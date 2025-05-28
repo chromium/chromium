@@ -305,6 +305,24 @@ extern const char kIssuerNameRequired[];
 // was not a valid URL in the "secure-payment-confirmation" method.
 extern const char kValidIssuerIconRequired[];
 
+// Used when a logo in the paymentEntitiesLogo list is null. A well-behaving
+// renderer cannot end up in this situation, but we must handle it gracefully as
+// renderers cannot be trusted.
+extern const char kNonNullPaymentEntityLogoRequired[];
+
+// Used when a logo in the paymentEntitiesLogo list had a non-valid URL in its
+// url field in the "secure-payment-confirmation" method.
+extern const char kValidLogoUrlRequired[];
+
+// Used when a logo in the paymentEntitiesLogo list had a URL in its url field
+// whose scheme was not one of "https", "http", or "data" in the
+// "secure-payment-confirmation" method.
+extern const char kValidLogoUrlSchemeRequired[];
+
+// Used when a logo in the paymentEntitiesLogo list had an empty label field in
+// the "secure-payment-confirmation" method.
+extern const char kLogoLabelRequired[];
+
 }  // namespace errors
 }  // namespace payments
 
