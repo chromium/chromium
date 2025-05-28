@@ -15,7 +15,8 @@
 
 #include <stddef.h>
 
-#include "base/atomicops.h"
+#include <atomic>
+
 #include "base/cfi_buildflags.h"
 #include "base/debug/asan_invalid_access.h"
 #include "base/debug/profiler.h"
@@ -38,7 +39,7 @@ namespace base {
 
 namespace {
 
-const base::subtle::Atomic32 kMagicValue = 42;
+const uint32_t kMagicValue = 42;
 
 // Helper for memory accesses that can potentially corrupt memory or cause a
 // crash during a native run.
@@ -306,10 +307,10 @@ class TOOLS_SANITY_TEST_CONCURRENT_THREAD : public PlatformThread::Delegate {
 
 class ReleaseStoreThread : public PlatformThread::Delegate {
  public:
-  explicit ReleaseStoreThread(base::subtle::Atomic32* value) : value_(value) {}
+  explicit ReleaseStoreThread(std::atomic<uint32_t> *value) : value_(value) {}
   ~ReleaseStoreThread() override = default;
   void ThreadMain() override {
-    base::subtle::Release_Store(value_, kMagicValue);
+    value_->store(kMagicValue, std::memory_order_release);
 
     // Sleep for a few milliseconds so the two threads are more likely to live
     // simultaneously. Otherwise we may miss the report due to mutex
@@ -318,21 +319,21 @@ class ReleaseStoreThread : public PlatformThread::Delegate {
   }
 
  private:
-  raw_ptr<base::subtle::Atomic32> value_;
+  raw_ptr<std::atomic<uint32_t>> value_;
 };
 
 class AcquireLoadThread : public PlatformThread::Delegate {
  public:
-  explicit AcquireLoadThread(base::subtle::Atomic32* value) : value_(value) {}
+  explicit AcquireLoadThread(std::atomic<uint32_t> *value) : value_(value) {}
   ~AcquireLoadThread() override = default;
   void ThreadMain() override {
     // Wait for the other thread to make Release_Store
     PlatformThread::Sleep(Milliseconds(100));
-    base::subtle::Acquire_Load(value_);
+    value_->load(std::memory_order_acquire);
   }
 
  private:
-  raw_ptr<base::subtle::Atomic32> value_;
+  raw_ptr<std::atomic<uint32_t>> value_;
 };
 
 void RunInParallel(PlatformThread::Delegate* d1, PlatformThread::Delegate* d2) {
@@ -376,7 +377,7 @@ TEST(ToolsSanityTest, AnnotateBenignRace) {
 }
 
 TEST(ToolsSanityTest, AtomicsAreIgnored) {
-  base::subtle::Atomic32 shared = 0;
+  std::atomic<uint32_t> shared = 0;
   ReleaseStoreThread thread1(&shared);
   AcquireLoadThread thread2(&shared);
   RunInParallel(&thread1, &thread2);
