@@ -290,52 +290,6 @@ void BuildProfileTitleAndSubtitle(Browser* browser,
   }
 }
 
-// TODO(crbug.com/419058908): Remove this class once
-// `views::CreateRoundedRectBackground` supports passing arbitrary insets.
-class RoundedRectBackground : public views::Background {
- public:
-  RoundedRectBackground(ui::ColorVariant color,
-                        float radius,
-                        gfx::Insets insets)
-      : radii_(gfx::RoundedCornersF(radius)), insets_(insets) {
-    SetColor(color);
-  }
-
-  RoundedRectBackground(const RoundedRectBackground&) = delete;
-  RoundedRectBackground& operator=(const RoundedRectBackground&) = delete;
-
-  void Paint(gfx::Canvas* canvas, views::View* view) const override {
-    gfx::Rect rect(view->GetLocalBounds());
-    rect.Inset(insets_);
-    SkPath path;
-    SkScalar radii[8] = {radii_.upper_left(),  radii_.upper_left(),
-                         radii_.upper_right(), radii_.upper_right(),
-                         radii_.lower_right(), radii_.lower_right(),
-                         radii_.lower_left(),  radii_.lower_left()};
-    path.addRoundRect(gfx::RectToSkRect(rect), radii);
-
-    cc::PaintFlags flags;
-    flags.setAntiAlias(true);
-    flags.setStyle(cc::PaintFlags::kFill_Style);
-    flags.setColor(color().ResolveToSkColor(view->GetColorProvider()));
-    canvas->DrawPath(path, flags);
-  }
-
-  std::optional<gfx::RoundedCornersF> GetRoundedCornerRadii() const override {
-    return radii_;
-  }
-
-  void OnViewThemeChanged(views::View* view) override {
-    if (color().IsSemantic()) {
-      view->SchedulePaint();
-    }
-  }
-
- private:
-  const gfx::RoundedCornersF radii_;
-  const gfx::Insets insets_;
-};
-
 }  // namespace
 
 ProfileMenuViewBase::IdentitySectionParams::IdentitySectionParams() = default;
@@ -662,8 +616,8 @@ void ProfileMenuViewBase::AddFeatureButton(
   if (background_color.has_value()) {
     constexpr int background_corner_radius = 8;
     constexpr int button_background_vertical_size = 40;
-    button->SetBackground(std::make_unique<RoundedRectBackground>(
-        *background_color, background_corner_radius,
+    button->SetBackground(views::CreateRoundedRectBackground(
+        *background_color, gfx::RoundedCornersF(background_corner_radius),
         gfx::Insets::VH(0, kIdentityContainerMargin)));
     // Button with a background should have a larger size to fit the background.
     button->SetPreferredSize(
