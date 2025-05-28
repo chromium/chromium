@@ -25,7 +25,6 @@
 #include "components/sharing_message/sharing_sync_preference.h"
 #include "components/sharing_message/sharing_target_device_info.h"
 #include "components/sharing_message/sharing_utils.h"
-#include "components/sharing_message/vapid_key_manager.h"
 #include "components/sync/service/sync_service.h"
 #include "components/sync_device_info/device_info.h"
 #include "crypto/ec_private_key.h"
@@ -40,12 +39,10 @@ using sync_pb::SharingSpecificFields;
 SharingDeviceRegistrationImpl::SharingDeviceRegistrationImpl(
     PrefService* pref_service,
     SharingSyncPreference* sharing_sync_preference,
-    VapidKeyManager* vapid_key_manager,
     instance_id::InstanceIDDriver* instance_id_driver,
     syncer::SyncService* sync_service)
     : pref_service_(pref_service),
       sharing_sync_preference_(sharing_sync_preference),
-      vapid_key_manager_(vapid_key_manager),
       instance_id_driver_(instance_id_driver),
       sync_service_(sync_service) {}
 

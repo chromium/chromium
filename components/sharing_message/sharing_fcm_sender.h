@@ -43,7 +43,6 @@ enum class SharingChannelType;
 enum class SendWebPushMessageResult;
 class SharingMessageBridge;
 class SharingSyncPreference;
-class VapidKeyManager;
 
 // Responsible for sending FCM messages within Sharing infrastructure.
 class SharingFCMSender : public SharingMessageSender::SendMessageDelegate,
@@ -59,7 +58,6 @@ class SharingFCMSender : public SharingMessageSender::SendMessageDelegate,
       std::unique_ptr<WebPushSender> web_push_sender,
       SharingMessageBridge* sharing_message_bridge,
       SharingSyncPreference* sync_preference,
-      VapidKeyManager* vapid_key_manager,
       gcm::GCMDriver* gcm_driver,
       const syncer::DeviceInfoTracker* device_info_tracker,
       const syncer::LocalDeviceInfoProvider* local_device_info_provider,
@@ -155,7 +153,6 @@ class SharingFCMSender : public SharingMessageSender::SendMessageDelegate,
   std::unique_ptr<WebPushSender> web_push_sender_;
   raw_ptr<SharingMessageBridge> sharing_message_bridge_;
   const raw_ptr<SharingSyncPreference> sync_preference_;
-  const raw_ptr<VapidKeyManager, DanglingUntriaged> vapid_key_manager_;
   const raw_ptr<gcm::GCMDriver, AcrossTasksDanglingUntriaged> gcm_driver_;
   const raw_ptr<const syncer::DeviceInfoTracker> device_info_tracker_;
   const raw_ptr<const syncer::LocalDeviceInfoProvider>

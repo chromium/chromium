@@ -26,7 +26,6 @@
 #include "components/sharing_message/sharing_sync_preference.h"
 #include "components/sharing_message/sharing_target_device_info.h"
 #include "components/sharing_message/sharing_utils.h"
-#include "components/sharing_message/vapid_key_manager.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/sync/protocol/unencrypted_sharing_message.pb.h"
 #include "components/sync/service/sync_service.h"
@@ -39,7 +38,6 @@ constexpr int kMinimumFaviconSize = 32;
 
 SharingService::SharingService(
     std::unique_ptr<SharingSyncPreference> sync_prefs,
-    std::unique_ptr<VapidKeyManager> vapid_key_manager,
     std::unique_ptr<SharingDeviceRegistration> sharing_device_registration,
     std::unique_ptr<SharingMessageSender> message_sender,
     std::unique_ptr<SharingDeviceSource> device_source,
@@ -50,7 +48,6 @@ SharingService::SharingService(
     send_tab_to_self::SendTabToSelfModel* send_tab_model,
     scoped_refptr<base::SingleThreadTaskRunner> task_runner)
     : sync_prefs_(std::move(sync_prefs)),
-      vapid_key_manager_(std::move(vapid_key_manager)),
       sharing_device_registration_(std::move(sharing_device_registration)),
       message_sender_(std::move(message_sender)),
       device_source_(std::move(device_source)),
@@ -241,14 +238,7 @@ void SharingService::OnStateChanged(syncer::SyncService* sync) {
              state_ == State::ACTIVE) {
     state_ = State::UNREGISTERING;
     fcm_handler_->StopListening();
-    sync_prefs_->ClearVapidKeyChangeObserver();
     UnregisterDevice();
-  }
-}
-
-void SharingService::RefreshVapidKey() {
-  if (vapid_key_manager_ && vapid_key_manager_->RefreshCachedKey()) {
-    RegisterDevice();
   }
 }
 
@@ -280,19 +270,12 @@ void SharingService::OnDeviceRegistered(
         if (IsSyncEnabledForSharing(sync_service_)) {
           state_ = State::ACTIVE;
           fcm_handler_->StartListening();
-          // Listen for further VAPID key changes for re-registration.
-          // state_ is kept as State::ACTIVE during re-registration.
-          sync_prefs_->SetVapidKeyChangeObserver(
-              base::BindRepeating(&SharingService::RefreshVapidKey,
-                                  weak_ptr_factory_.GetWeakPtr()));
         } else if (IsSyncDisabledForSharing(sync_service_)) {
           // In case sync is disabled during registration, unregister it.
           state_ = State::UNREGISTERING;
           UnregisterDevice();
         }
       }
-      // For registration as result of VAPID key change, state_ will be
-      // State::ACTIVE, and we don't need to start listeners.
       break;
     case SharingDeviceRegistrationResult::kFcmTransientError:
     case SharingDeviceRegistrationResult::kSyncServiceError:

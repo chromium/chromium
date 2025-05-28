@@ -19,7 +19,6 @@
 #include "components/sharing_message/sharing_message_bridge.h"
 #include "components/sharing_message/sharing_sync_preference.h"
 #include "components/sharing_message/sharing_utils.h"
-#include "components/sharing_message/vapid_key_manager.h"
 #include "components/sharing_message/web_push/web_push_sender.h"
 #include "components/sync/model/data_type_controller_delegate.h"
 #include "components/sync/test/test_sync_service.h"
@@ -152,16 +151,6 @@ class FakeSharingMessageBridge : public SharingMessageBridge {
       sync_pb::SharingMessageCommitError::NONE;
 };
 
-class MockVapidKeyManager : public VapidKeyManager {
- public:
-  MockVapidKeyManager()
-      : VapidKeyManager(/*sharing_sync_preference=*/nullptr,
-                        /*sync_service=*/nullptr) {}
-  ~MockVapidKeyManager() override = default;
-
-  MOCK_METHOD0(GetOrCreateKey, crypto::ECPrivateKey*());
-};
-
 class SharingFCMSenderTest : public testing::Test {
  public:
   void OnMessageSent(SharingSendMessageResult* result_out,
@@ -183,7 +172,6 @@ class SharingFCMSenderTest : public testing::Test {
             base::WrapUnique(fake_web_push_sender_.get()),
             &fake_sharing_message_bridge_,
             &sync_prefs_,
-            &vapid_key_manager_,
             &fake_gcm_driver_,
             fake_device_info_sync_service_.GetDeviceInfoTracker(),
             &fake_local_device_info_provider_,
@@ -197,7 +185,6 @@ class SharingFCMSenderTest : public testing::Test {
   FakeSharingMessageBridge fake_sharing_message_bridge_;
   syncer::FakeDeviceInfoSyncService fake_device_info_sync_service_;
   SharingSyncPreference sync_prefs_;
-  testing::NiceMock<MockVapidKeyManager> vapid_key_manager_;
   FakeGCMDriver fake_gcm_driver_;
   syncer::FakeLocalDeviceInfoProvider fake_local_device_info_provider_;
   syncer::TestSyncService test_sync_service_;
@@ -208,11 +195,6 @@ class SharingFCMSenderTest : public testing::Test {
 
 TEST_F(SharingFCMSenderTest, NoFcmRegistration) {
   sync_prefs_.ClearFCMRegistration();
-
-  std::unique_ptr<crypto::ECPrivateKey> vapid_key =
-      crypto::ECPrivateKey::Create();
-  ON_CALL(vapid_key_manager_, GetOrCreateKey())
-      .WillByDefault(testing::Return(vapid_key.get()));
 
   // Do not populate sender ID channel.
   components_sharing_message::FCMChannelConfiguration fcm_channel;
@@ -240,11 +222,6 @@ TEST_F(SharingFCMSenderTest, NoChannelsSpecified) {
   sync_prefs_.SetFCMRegistration(
       SharingSyncPreference::FCMRegistration(base::Time::Now()));
 
-  std::unique_ptr<crypto::ECPrivateKey> vapid_key =
-      crypto::ECPrivateKey::Create();
-  ON_CALL(vapid_key_manager_, GetOrCreateKey())
-      .WillByDefault(testing::Return(vapid_key.get()));
-
   components_sharing_message::FCMChannelConfiguration fcm_channel;
   // Don't set any channels.
 
@@ -271,11 +248,6 @@ TEST_F(SharingFCMSenderTest, PreferSync) {
   fake_web_push_sender_->set_result(SendWebPushMessageResult::kSuccessful);
   fake_sharing_message_bridge_.set_error_code(
       sync_pb::SharingMessageCommitError::NONE);
-
-  std::unique_ptr<crypto::ECPrivateKey> vapid_key =
-      crypto::ECPrivateKey::Create();
-  ON_CALL(vapid_key_manager_, GetOrCreateKey())
-      .WillByDefault(testing::Return(vapid_key.get()));
 
   components_sharing_message::FCMChannelConfiguration fcm_channel;
   // Set both VAPID and Sender ID channel.
@@ -435,11 +407,6 @@ TEST_F(SharingFCMSenderTest, ShouldPostponeSendingMessageViaSync) {
   sync_prefs_.SetFCMRegistration(
       SharingSyncPreference::FCMRegistration(base::Time::Now()));
 
-  std::unique_ptr<crypto::ECPrivateKey> vapid_key =
-      crypto::ECPrivateKey::Create();
-  ON_CALL(vapid_key_manager_, GetOrCreateKey())
-      .WillByDefault(testing::Return(vapid_key.get()));
-
   components_sharing_message::FCMChannelConfiguration fcm_channel;
   fcm_channel.set_vapid_fcm_token(kVapidFcmToken);
   fcm_channel.set_vapid_p256dh(kVapidP256dh);
@@ -476,11 +443,6 @@ TEST_F(SharingFCMSenderTest, ShouldClearPendingMessages) {
   test_sync_service_.SetFailedDataTypes({syncer::SHARING_MESSAGE});
   sync_prefs_.SetFCMRegistration(
       SharingSyncPreference::FCMRegistration(base::Time::Now()));
-
-  std::unique_ptr<crypto::ECPrivateKey> vapid_key =
-      crypto::ECPrivateKey::Create();
-  ON_CALL(vapid_key_manager_, GetOrCreateKey())
-      .WillByDefault(testing::Return(vapid_key.get()));
 
   components_sharing_message::FCMChannelConfiguration fcm_channel;
   fcm_channel.set_vapid_fcm_token(kVapidFcmToken);

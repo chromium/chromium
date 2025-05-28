@@ -54,7 +54,6 @@ class MockSharingFCMSender : public SharingFCMSender {
             /*web_push_sender=*/nullptr,
             /*sharing_message_bridge=*/nullptr,
             sync_preference,
-            /*vapid_key_manager=*/nullptr,
             /*gcm_driver=*/nullptr,
             device_info_tracker,
             local_device_info_provider,

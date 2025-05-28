@@ -29,7 +29,6 @@ class SyncService;
 
 enum class SharingDeviceRegistrationResult;
 class SharingSyncPreference;
-class VapidKeyManager;
 
 // Responsible for registering and unregistering device with
 // SharingSyncPreference.
@@ -44,7 +43,6 @@ class IOSSharingDeviceRegistrationImpl : public SharingDeviceRegistration {
   IOSSharingDeviceRegistrationImpl(
       PrefService* pref_service,
       SharingSyncPreference* prefs,
-      VapidKeyManager* vapid_key_manager,
       instance_id::InstanceIDDriver* instance_id_driver,
       syncer::SyncService* sync_service);
 
@@ -101,7 +99,6 @@ class IOSSharingDeviceRegistrationImpl : public SharingDeviceRegistration {
 
   raw_ptr<PrefService> pref_service_;
   raw_ptr<SharingSyncPreference> sharing_sync_preference_;
-  raw_ptr<VapidKeyManager> vapid_key_manager_;
   raw_ptr<instance_id::InstanceIDDriver> instance_id_driver_;
   raw_ptr<syncer::SyncService> sync_service_;
   std::optional<std::set<sync_pb::SharingSpecificFields_EnabledFeatures>>

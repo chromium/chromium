@@ -25,7 +25,6 @@
 #import "components/sharing_message/sharing_sync_preference.h"
 #import "components/sharing_message/sharing_target_device_info.h"
 #import "components/sharing_message/sharing_utils.h"
-#import "components/sharing_message/vapid_key_manager.h"
 #import "components/sync/service/sync_service.h"
 #import "components/sync_device_info/device_info.h"
 #import "crypto/ec_private_key.h"
@@ -36,12 +35,10 @@ using sync_pb::SharingSpecificFields;
 IOSSharingDeviceRegistrationImpl::IOSSharingDeviceRegistrationImpl(
     PrefService* pref_service,
     SharingSyncPreference* sharing_sync_preference,
-    VapidKeyManager* vapid_key_manager,
     instance_id::InstanceIDDriver* instance_id_driver,
     syncer::SyncService* sync_service)
     : pref_service_(pref_service),
       sharing_sync_preference_(sharing_sync_preference),
-      vapid_key_manager_(vapid_key_manager),
       instance_id_driver_(instance_id_driver),
       sync_service_(sync_service) {}
 

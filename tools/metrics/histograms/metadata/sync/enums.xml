@@ -376,7 +376,7 @@ chromium-metrics-reviews@google.com.
   <int value="73" label="SyncableTabGroups"/>
   <int value="74" label="AutoPinNewTabGroups"/>
   <int value="75" label="ShowGoogleLensShortcut"/>
-  <int value="76" label="SharingVapidKey"/>
+  <int value="76" label="(obsolete) SharingVapidKey2"/>
   <int value="77" label="FirstPlusAddressCreationTime"/>
   <int value="78" label="LastPlusAddressFillingTime"/>
   <int value="79" label="SafeBrowsingEnhanced"/>

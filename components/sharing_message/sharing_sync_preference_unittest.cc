@@ -73,12 +73,6 @@ class SharingSyncPreferenceTest : public testing::Test {
   SharingSyncPreference sharing_sync_preference_;
 };
 
-TEST_F(SharingSyncPreferenceTest, UpdateVapidKeys) {
-  EXPECT_EQ(std::nullopt, sharing_sync_preference_.GetVapidKey());
-  sharing_sync_preference_.SetVapidKey(kVapidKey);
-  EXPECT_EQ(kVapidKey, sharing_sync_preference_.GetVapidKey());
-}
-
 TEST_F(SharingSyncPreferenceTest, SyncAndRemoveLocalDevice) {
   const syncer::DeviceInfo* local_device_info =
       fake_device_info_sync_service_.GetLocalDeviceInfoProvider()

@@ -19,7 +19,6 @@
 #include "components/sharing_message/sharing_message_bridge.h"
 #include "components/sharing_message/sharing_sync_preference.h"
 #include "components/sharing_message/sharing_utils.h"
-#include "components/sharing_message/vapid_key_manager.h"
 #include "components/sharing_message/web_push/web_push_sender.h"
 #include "components/sync/service/sync_service.h"
 #include "components/sync_device_info/device_info_tracker.h"
@@ -39,7 +38,6 @@ SharingFCMSender::SharingFCMSender(
     std::unique_ptr<WebPushSender> web_push_sender,
     SharingMessageBridge* sharing_message_bridge,
     SharingSyncPreference* sync_preference,
-    VapidKeyManager* vapid_key_manager,
     gcm::GCMDriver* gcm_driver,
     const syncer::DeviceInfoTracker* device_info_tracker,
     const syncer::LocalDeviceInfoProvider* local_device_info_provider,
@@ -48,7 +46,6 @@ SharingFCMSender::SharingFCMSender(
     : web_push_sender_(std::move(web_push_sender)),
       sharing_message_bridge_(sharing_message_bridge),
       sync_preference_(sync_preference),
-      vapid_key_manager_(vapid_key_manager),
       gcm_driver_(gcm_driver),
       device_info_tracker_(device_info_tracker),
       local_device_info_provider_(local_device_info_provider),

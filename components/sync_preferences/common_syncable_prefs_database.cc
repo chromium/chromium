@@ -123,7 +123,7 @@ enum {
   kSyncableTabGroups = 73,
   kAutoPinNewTabGroups = 74,
   kShowGoogleLensShortcut = 75,
-  kSharingVapidKey = 76,
+  // kSharingVapidKey = 76, (deprecated)
   kFirstPlusAddressCreationTime = 77,
   kLastPlusAddressFillingTime = 78,
   kSafeBrowsingEnhanced = 79,
@@ -319,9 +319,6 @@ constexpr auto kCommonSyncablePrefsAllowlist =
           sync_preferences::MergeBehavior::kNone}},
         {autofill::prefs::kAutofillPaymentCardBenefits,
          {syncable_prefs_ids::kAutofillPaymentCardBenefits, syncer::PREFERENCES,
-          PrefSensitivity::kNone, MergeBehavior::kNone}},
-        {prefs::kSharingVapidKey,
-         {syncable_prefs_ids::kSharingVapidKey, syncer::PREFERENCES,
           PrefSensitivity::kNone, MergeBehavior::kNone}},
         {plus_addresses::prefs::kFirstPlusAddressCreationTime,
          {syncable_prefs_ids::kFirstPlusAddressCreationTime,
