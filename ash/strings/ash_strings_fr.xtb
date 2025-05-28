@@ -761,6 +761,7 @@ Sinon, le pavé tactile intégré sera réactivé dans <ph name="TIMEOUT_SECONDS
 <translation id="3552189655002856821">Le Wi-Fi est désactivé</translation>
 <translation id="3554215588514239132">Afficher ou masquer le panneau des outils pour les développeurs</translation>
 <translation id="3554637740840164787"><ph name="ITEM_TITLE" /> a été épinglé</translation>
+<translation id="3554928024630051016">Pour ajouter des appareils USB supplémentaires, essayez d'en retirer un avant d'en brancher un autre</translation>
 <translation id="3558768885091059911">Activer l'accès à la caméra et au micro ?</translation>
 <translation id="3560174576767922131">Enregistrer une vidéo</translation>
 <translation id="3563775809269155755">Activer le point d'accès</translation>
@@ -868,6 +869,7 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="3861651314799684201">Appuyez sur Entrée pour enregistrer tout l'écran</translation>
 <translation id="3870197372373144624">Essayez d'éteindre votre appareil.</translation>
 <translation id="3879748587602334249">Gestionnaire de téléchargement</translation>
+<translation id="3884007280698606545">Limite USB atteinte</translation>
 <translation id="3886872229787704059">Ouvert aujourd'hui</translation>
 <translation id="3891340733213178823">Appuyez deux fois sur Ctrl + Maj + Q pour vous déconnecter.</translation>
 <translation id="3892148308691398805">Copier le texte</translation>
@@ -1451,7 +1453,6 @@ Aucun appareil connecté.</translation>
 <translation id="5691772641933328258">Empreinte digitale non reconnue</translation>
 <translation id="5693255400847650006">Micro utilisé</translation>
 <translation id="5699366815052349604">Associer la fenêtre active à tous les bureaux</translation>
-<translation id="5701785125601597013">Envoyer des messages ou répondre rapidement à ceux de votre téléphone avec Phone Hub</translation>
 <translation id="570390244361237317">Toutes les applis : utiliser les touches fléchées pour accéder à toutes les applis</translation>
 <translation id="5705197514573687092">Afficher les paramètres du mode Sans distractions. Minuteur défini sur <ph name="FOCUS_DURATION" />.</translation>
 <translation id="5707775774148071965">Votre appareil accepte un débit de données supérieur à celui de votre câble. Cela peut limiter les performances de l'appareil.</translation>

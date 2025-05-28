@@ -80,6 +80,7 @@
 <translation id="1049743911850919806">Navigation privée</translation>
 <translation id="1049795001945932310">Paramètres &amp;linguistiques</translation>
 <translation id="1050693411695664090">Médiocre</translation>
+<translation id="1053226848101751430">Entrée supprimée</translation>
 <translation id="1053898984916097744">Commencez quelque chose de nouveau ou obtenez de l'aide tout en restant concentré.</translation>
 <translation id="1054048317165655285">Terminer la configuration sur votre téléphone</translation>
 <translation id="1054153489933238809">Ouvrir l'&amp;image d'origine dans un nouvel onglet</translation>
@@ -2227,6 +2228,7 @@ Vous pouvez gérer les paramètres à partir du menu de la carte ou voir plus d'
 <translation id="2519250377986324805">Voir comment</translation>
 <translation id="2519517390894391510">Nom de profil du certificat</translation>
 <translation id="2520644704042891903">En attente d'une interface de connexion disponible…</translation>
+<translation id="2520961587246779103">Plus d'options pour l'affichage partagé</translation>
 <translation id="2521427645491031107">La synchronisation des applications est définie dans les paramètres de l'appareil</translation>
 <translation id="2521835766824839541">chanson précédente</translation>
 <translation id="2521854691574443804">Vérification de la conformité du fichier <ph name="FILE_NAME" /> aux politiques de sécurité de votre organisation en cours…</translation>
@@ -3174,6 +3176,7 @@ l'<ph name="BEGIN_LINK" />
 <translation id="3202578601642193415">La plus récente</translation>
 <translation id="3204648577100496185">Les données associées à cette application pourraient être retirées de cet appareil</translation>
 <translation id="3204717934117444051">Les données enregistrées uniquement sur cet appareil resteront dans le profil existant. Elles ne seront pas synchronisées avec <ph name="EMAIL" />.</translation>
+<translation id="3206289903841621620">Dictionnaire personnel <ph name="NUMBER" /></translation>
 <translation id="3207344462385471911">Vous voyez des recherches suggérées et des rabais sur les articles qui pourraient vous intéresser en fonction de votre activité récente.
         <ph name="BREAK" />
         <ph name="BREAK" />
@@ -10004,6 +10007,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8073499153683482226"><ph name="BEGIN_PARAGRAPH1" />Les données des applications correspondent aux données de tous types enregistrées par des applications selon des paramètres définis par le développeur, y compris les contacts, les messages et les photos.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Les données sauvegardées ne sont pas prises en compte dans le quota de stockage Google Disque de votre enfant.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />Vous pouvez désactiver ce service dans les paramètres.<ph name="END_PARAGRAPH3" /></translation>
+<translation id="8075044377771022666">Bas de page</translation>
 <translation id="8076835018653442223">Votre administrateur a désactivé l'accès aux fichiers locaux sur votre appareil</translation>
 <translation id="8077120325605624147">Tous les sites que vous visitez peuvent vous suggérer n’importe quelle annonce</translation>
 <translation id="8077579734294125741">Autres profils Chrome</translation>
@@ -10938,6 +10942,7 @@ Vous pouvez gérer les paramètres à partir du menu de la carte ou voir plus d'
 <translation id="8729133765463465108">Utiliser l'appareil photo pour numériser le code QR</translation>
 <translation id="8730621377337864115">Terminé</translation>
 <translation id="8731029916209785242">Autorisations (<ph name="FORMATTED_ORIGIN" />)</translation>
+<translation id="8731258351357994801">Entrée <ph name="NUMBER" /></translation>
 <translation id="8731268612289859741">Code de sécurité</translation>
 <translation id="8731629443331803108"><ph name="SITE_NAME" /> veut : <ph name="PERMISSION" /></translation>
 <translation id="8731787661154643562">Numéro de port</translation>

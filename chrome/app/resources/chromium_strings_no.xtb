@@ -225,6 +225,7 @@
 <translation id="4019629340646866719">ChromiumOS er basert på <ph name="BEGIN_LINK_CROS_OSS" />tilleggsprogramvare med åpen kildekode<ph name="END_LINK_CROS_OSS" />, i likhet med <ph name="BEGIN_LINK_LINUX_OSS" />Linux-utviklingsmiljøet<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="4022972681110646219">Oversett skjermen</translation>
 <translation id="4023601594785368013">Originalspråk: <ph name="LANGUAGE" /></translation>
+<translation id="4023845192681161785">Åpne linker i Chromium fra alle apper. Og for å få enkel tilgang, blir det festet til oppgavelinjen.</translation>
 <translation id="4036079820698952681">Bidra til å gjøre Chromium bedre ved å rapportere de <ph name="BEGIN_LINK" />nåværende innstillingene<ph name="END_LINK" /></translation>
 <translation id="4050175100176540509">Viktige sikkerhetsforbedringer og nye funksjoner er tilgjengelige i den nyeste versjonen.</translation>
 <translation id="4055805654398742145">P&amp;assordlagring</translation>
@@ -326,6 +327,7 @@
 <translation id="5524890928877629608">øverst til venstre i søkefeltet: venstre<ph name="LEFT" /> %, øverst <ph name="TOP" /> %</translation>
 <translation id="5527463683072221100">Åpne PDF-filer i Chromium</translation>
 <translation id="5579324208890605088">Oppstartsfeil: Kjør installasjonsprogrammet som vanlig bruker, ikke som administrator.</translation>
+<translation id="5580770360767802657">Bruk Chromium som standard, og fest den</translation>
 <translation id="5596627076506792578">Flere alternativer</translation>
 <translation id="5605834417512968703">Velg hva som helst for å søke med bildesøk, eller trykk på Esc for å avslutte bildesøk</translation>
 <translation id="5618818588972826921">Velg tekst eller bilder for å søke med bildesøk, eller trykk på Esc for å avslutte bildesøk</translation>
@@ -598,6 +600,7 @@ Chromium kan ikke gjenopprette innstillingen dine.</translation>
 <translation id="9106612006984859720">For å få fremtidige Chromium-oppdateringer må du ha Windows 10 eller nyere. Denne datamaskinen bruker Windows 8.1.</translation>
 <translation id="91086099826398415">Åpne linken i en ny &amp;fane i Chromium</translation>
 <translation id="911206726377975832">Vil du slette all nettlesingsdata også?</translation>
+<translation id="9134482777260927479">Leksehjelp</translation>
 <translation id="9148058034647219655">Avslutt</translation>
 <translation id="9158494823179993217">Systemadministratoren din har konfigurert Chromium til å åpne en annen nettleser når du går til <ph name="TARGET_URL_HOSTNAME" />.</translation>
 <translation id="9185526690718004400">Start på nytt for å oppdatere &amp;Chromium</translation>

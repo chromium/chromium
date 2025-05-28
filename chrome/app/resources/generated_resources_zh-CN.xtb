@@ -1068,7 +1068,7 @@
 <translation id="1730989807608739928">滚动至最后一个标签页</translation>
 <translation id="1731520826054843792">Microsoft 证书模板</translation>
 <translation id="1731911755844941020">正在发送请求...</translation>
-<translation id="1732380773380808394">您还可以从您的 Google 账号中获取密码等信息。</translation>
+<translation id="1732380773380808394">登录后，您还可以使用 Google 账号中存储的密码等信息。</translation>
 <translation id="1734212868489994726">浅蓝色</translation>
 <translation id="1734230530703461088">未能在时限内加载扩展程序。请与您的管理员联系。</translation>
 <translation id="1734824808160898225">“<ph name="PRODUCT_NAME" />”可能无法自动更新</translation>
@@ -1709,7 +1709,7 @@
 <translation id="2182058453334755893">已复制到您的剪贴板</translation>
 <translation id="2182419606502127232">包含我的服务器日志。</translation>
 <translation id="2183570493397356669">已停用“继续”按钮</translation>
-<translation id="2184272387334793084">登录后即可将您的密码等信息同步到您的所有设备上</translation>
+<translation id="2184272387334793084">登录后即可将密码等信息同步到您的所有设备上</translation>
 <translation id="2184515124301515068">让 Chrome 选择何时允许网站播放声音（推荐）</translation>
 <translation id="2186206192313702726">Google 智能镜头</translation>
 <translation id="2186711480981247270">收到了另一设备分享的页面</translation>
@@ -1796,6 +1796,7 @@
 <translation id="2249111429176737533">在标签页窗口中打开</translation>
 <translation id="2249605167705922988">例如：1-5、8、11-13</translation>
 <translation id="2249635629516220541">自定义网站可用来向您投放广告的信息</translation>
+<translation id="2250153645770828940">删除字典</translation>
 <translation id="22505994009453896">使用数字键盘控制鼠标光标</translation>
 <translation id="2250624716625396929">此标签页正在使用摄像头和麦克风</translation>
 <translation id="2251218783371366160">使用系统查看器打开</translation>
@@ -2225,7 +2226,7 @@
 <translation id="2521835766824839541">上一首</translation>
 <translation id="2521854691574443804">正在检查 <ph name="FILE_NAME" /> 是否符合贵组织的安全政策…</translation>
 <translation id="252277619743753687">选择密码</translation>
-<translation id="2523184218357549926">将您所访问的网页的网址发送给 Google</translation>
+<translation id="2523184218357549926">将您访问的网页网址发送给 Google</translation>
 <translation id="2524093372979370955">此操作将为系统中的所有新 USB 外围设备停用通知功能。确定要继续吗？</translation>
 <translation id="252418934079508528">安装 <ph name="DEVICE_OS" /></translation>
 <translation id="2526590354069164005">桌面</translation>
@@ -3918,7 +3919,7 @@
 <translation id="3730298295914858769">Wi-Fi 直连功能：</translation>
 <translation id="3732078975418297900">第 <ph name="ERROR_LINE" /> 行存在错误</translation>
 <translation id="3732108843630241049">此设备不再接收自动软件更新。开启延长安全更新，持续获得安全性、稳定性和高性能体验。部分功能会受到限制。<ph name="LINK_BEGIN" />了解详情<ph name="LINK_END" /></translation>
-<translation id="3732414796052961578">继续以<ph name="ACCOUNT_NAME" />的身份登录</translation>
+<translation id="3732414796052961578">以<ph name="ACCOUNT_NAME" />的身份继续</translation>
 <translation id="3732530910372558017">PIN 码不得超过 63 个字符</translation>
 <translation id="3732706448780793442">手动接管</translation>
 <translation id="3732857534841813090">Google 助理相关信息</translation>
@@ -6886,7 +6887,7 @@
 <translation id="5864754048328252126">充电时的闲置操作</translation>
 <translation id="5865508026715185451">“<ph name="APP_NAME" />”即将暂停</translation>
 <translation id="586567932979200359">您正在通过磁盘映像运行 <ph name="PRODUCT_NAME" />。您只需在计算机上安装该软件，即可在没有磁盘映像的情况下运行它，并可确保使用最新版本。</translation>
-<translation id="5865733239029070421">自动将使用情况统计信息和崩溃报告发送至 Google</translation>
+<translation id="5865733239029070421">自动将使用情况统计信息和崩溃报告发送给 Google</translation>
 <translation id="5866363217037791319">结束任务</translation>
 <translation id="5868434909835797817">您设备的麦克风处于关闭状态</translation>
 <translation id="5868479397518301468">登录超时</translation>

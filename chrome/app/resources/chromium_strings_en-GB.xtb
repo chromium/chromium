@@ -227,6 +227,7 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="4019629340646866719">Chromium OS is made possible by additional <ph name="BEGIN_LINK_CROS_OSS" />open-source software<ph name="END_LINK_CROS_OSS" />, as is <ph name="BEGIN_LINK_LINUX_OSS" />Linux development environment<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="4022972681110646219">Translate screen</translation>
 <translation id="4023601594785368013">Original language: <ph name="LANGUAGE" /></translation>
+<translation id="4023845192681161785">Open links in Chromium from any app. Plus for easy access, it gets pinned to your taskbar.</translation>
 <translation id="4036079820698952681">Help make Chromium better by reporting the <ph name="BEGIN_LINK" />current settings<ph name="END_LINK" /></translation>
 <translation id="4050175100176540509">Important security improvements and new features are available in the latest version.</translation>
 <translation id="4055805654398742145">P&amp;assword Manager</translation>
@@ -328,6 +329,7 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="5524890928877629608">top-left corner of search area: left <ph name="LEFT" />%, top <ph name="TOP" />%</translation>
 <translation id="5527463683072221100">Open PDFs in Chromium</translation>
 <translation id="5579324208890605088">Startup error: Please run the installer as a regular user, not as administrator.</translation>
+<translation id="5580770360767802657">Use Chromium by default and get it pinned</translation>
 <translation id="5596627076506792578">More options</translation>
 <translation id="5605834417512968703">Select anything to search with image search or press escape to exit image search</translation>
 <translation id="5618818588972826921">Select any text or image to search with image search or press Escape to exit image search</translation>
@@ -600,6 +602,7 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="9106612006984859720">To get future Chromium updates, you'll need Windows 10 or later. This computer is using Windows 8.1.</translation>
 <translation id="91086099826398415">Open Link in New Chromium &amp;tab</translation>
 <translation id="911206726377975832">Also delete your browsing data?</translation>
+<translation id="9134482777260927479">Homework help</translation>
 <translation id="9148058034647219655">Exit</translation>
 <translation id="9158494823179993217">Your system administrator has configured Chromium to open an alternative browser to access <ph name="TARGET_URL_HOSTNAME" />.</translation>
 <translation id="9185526690718004400">Relaunch to update &amp;Chromium</translation>

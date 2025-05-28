@@ -221,6 +221,7 @@
 <translation id="181434555916624618">Sa ngayon, hindi ipapakita ang mga resultang may mga tao. Sumubok ng ibang prompt.</translation>
 <translation id="1815850098929213707"><ph name="KEYS" /> ang piniling key. I-tap ang button para i-edit ang kontrol</translation>
 <translation id="1818174214124933000">Kapag pinili mo ang ipadala, ang iyong feedback at content (na ipinapakita sa ibaba) ay ipapadala sa Google, susuriin ng mga tao, at gagamitin para sanayin o pahusayin ang aming mga produkto at serbisyo nang napapailalim sa <ph name="LINK_POLICY_BEGIN" />Patakaran sa Privacy<ph name="LINK_POLICY_END" /> at <ph name="LINK_TERMS_OF_SERVICE_BEGIN" />Mga Tuntunin ng Serbisyo ng Google<ph name="LINK_TERMS_OF_SERVICE_END" />.</translation>
+<translation id="1821075635029692203">Nagpadala ang iyong guro ng hindi sinusuportahang resource. Ipaalam sa kanya.</translation>
 <translation id="1823120442877418684">Mga Character</translation>
 <translation id="1827738518074806965">Art gallery</translation>
 <translation id="183287940576828840">Nakakapanakit/Hindi ligtas</translation>
@@ -477,6 +478,7 @@
 <translation id="3091839911843451378">Hindi na-print - Huminto</translation>
 <translation id="3102119246920354026">Cache</translation>
 <translation id="3103783611481501187">surreal</translation>
+<translation id="3119672627216736407">Available ang pagsasalin</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3122614491980756867">mga pool</translation>
 <translation id="3122883569442693641">Higit pang detalye</translation>
@@ -1137,6 +1139,7 @@
 <translation id="6058625436358447366">Para tapusin, ilagay ang iyong luma at bagong password</translation>
 <translation id="6061772781719867950">Mga hindi naisagawang kahilingang HTTP</translation>
 <translation id="6073292342939316679">babaan ang liwanag ng keyboard</translation>
+<translation id="6074608334942655098">Huminto sa pagsasalin</translation>
 <translation id="6074752328838739425">I-hide ang buod</translation>
 <translation id="6075872808778243331">(Android) Latency ng HTTP</translation>
 <translation id="6078323886959318429">Magdagdag ng shortcut</translation>

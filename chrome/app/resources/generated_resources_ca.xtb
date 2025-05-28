@@ -80,6 +80,7 @@
 <translation id="1049743911850919806">Incògnit</translation>
 <translation id="1049795001945932310">&amp;Configuració d'idioma</translation>
 <translation id="1050693411695664090">Deficient</translation>
+<translation id="1053226848101751430">S'ha suprimit l'entrada</translation>
 <translation id="1053898984916097744">Comença alguna cosa nova o obtén ajuda durant el procés.</translation>
 <translation id="1054048317165655285">Completa la configuració al telèfon</translation>
 <translation id="1054153489933238809">Obre la &amp;imatge original en una pestanya nova</translation>
@@ -1802,6 +1803,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="2249111429176737533">Obre com a finestra amb pestanyes</translation>
 <translation id="2249605167705922988">p. ex. 1-5, 8, 11-13</translation>
 <translation id="2249635629516220541">Personalitza la informació que utilitzen els llocs web per mostrar-te anuncis</translation>
+<translation id="2250153645770828940">Suprimeix el diccionari</translation>
 <translation id="22505994009453896">Controla el cursor del ratolí amb un teclat numèric</translation>
 <translation id="2250624716625396929">Aquesta pestanya utilitza la càmera i el micròfon</translation>
 <translation id="2251218783371366160">Obre amb el lector del sistema</translation>
@@ -2226,6 +2228,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="2519250377986324805">Com es fa</translation>
 <translation id="2519517390894391510">Nom del perfil del certificat</translation>
 <translation id="2520644704042891903">Estem esperant que hi hagi un sòcol disponible...</translation>
+<translation id="2520961587246779103">Més opcions per a la visualització dividida</translation>
 <translation id="2521427645491031107">La sincronització d'aplicacions s'estableix a la configuració del dispositiu</translation>
 <translation id="2521835766824839541">pista anterior</translation>
 <translation id="2521854691574443804">S'està comprovant si <ph name="FILE_NAME" /> compleix les polítiques de seguretat de la teva organització...</translation>
@@ -3169,6 +3172,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="3202578601642193415">Els més recents</translation>
 <translation id="3204648577100496185">Pot ser que les dades associades a aquesta aplicació se suprimeixin del dispositiu</translation>
 <translation id="3204717934117444051">Les dades que només s'han desat en aquest dispositiu es conservaran al perfil actual. No se sincronitzarà amb <ph name="EMAIL" />.</translation>
+<translation id="3206289903841621620">Diccionari de l'usuari <ph name="NUMBER" /></translation>
 <translation id="3207344462385471911">Veus suggeriments de cerca i de descomptes en compres que et poden interessar en funció de la teva activitat recent.
         <ph name="BREAK" />
         <ph name="BREAK" />
@@ -4708,6 +4712,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="4275397969489577657">Activa el registre del flux d'esdeveniments</translation>
 <translation id="4275788652681621337">Tanca el tauler lateral</translation>
 <translation id="4275830172053184480">Reinici del dispositiu</translation>
+<translation id="4276598757692536305">PPD de la impressora</translation>
 <translation id="4276856098224910511">No s'ha pogut instal·lar; l'actualització del sistema operatiu està pendent. Aplica les actualitzacions del sistema operatiu pendents, reinicia i torna-ho a provar. El codi d'error és <ph name="ERROR" />.</translation>
 <translation id="4277434192562187284">Font de configuració XML</translation>
 <translation id="4278348589087554892">{NUM_SITES,plural, =1{S'han suprimit els permisos d'1 lloc web}other{S'han suprimit els permisos de {NUM_SITES} llocs web}}</translation>
@@ -9997,6 +10002,7 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="8073499153683482226"><ph name="BEGIN_PARAGRAPH1" />Les dades de les aplicacions poden ser qualsevol mena de dada que hagi desat una aplicació (en funció de la configuració del desenvolupador), com ara els contactes, els missatges i les fotos.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Les dades de les còpies de seguretat no ocupen espai de la quota d'emmagatzematge de Drive del teu fill.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />Pots desactivar aquest servei a Configuració.<ph name="END_PARAGRAPH3" /></translation>
+<translation id="8075044377771022666">Peu de pàgina</translation>
 <translation id="8076835018653442223">L'administrador ha desactivat l'accés als fitxers locals del dispositiu</translation>
 <translation id="8077120325605624147">Qualsevol lloc web que visitis pot mostrar-te qualsevol anunci</translation>
 <translation id="8077579734294125741">Altres perfils de Chrome</translation>
@@ -10933,6 +10939,7 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="8729133765463465108">Utilitza la càmera per escanejar el codi QR</translation>
 <translation id="8730621377337864115">Fet</translation>
 <translation id="8731029916209785242">Permisos (<ph name="FORMATTED_ORIGIN" />)</translation>
+<translation id="8731258351357994801">Entrada <ph name="NUMBER" /></translation>
 <translation id="8731268612289859741">Codi de seguretat</translation>
 <translation id="8731629443331803108"><ph name="SITE_NAME" /> vol <ph name="PERMISSION" /></translation>
 <translation id="8731787661154643562">Número de port</translation>

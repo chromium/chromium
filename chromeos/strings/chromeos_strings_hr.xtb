@@ -206,6 +206,7 @@
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1758459542619182298"><ph name="CONTROL_TYPE" /> <ph name="KEY_LIST" /></translation>
 <translation id="1759842336958782510">Chrome</translation>
+<translation id="1762353673362288306">Sada možete upotrebljavati samo alate za predmet</translation>
 <translation id="1762483337755424125">Prijepis</translation>
 <translation id="1765169783255151332">Brza promjena tipki</translation>
 <translation id="1768959921651994223">Vrsta autentifikacije</translation>
@@ -220,6 +221,7 @@
 <translation id="181434555916624618">Rezultati s osobama zasad se neće prikazivati. Isprobajte drugi prompt.</translation>
 <translation id="1815850098929213707">Odabran je tipka <ph name="KEYS" />. Dodirnite tipku da biste uredili kontrolu</translation>
 <translation id="1818174214124933000">Kad odaberete slanje, vaše povratne informacije i sadržaj (prikazani u nastavku) poslat će se Googleu, pregledat će ih ljudi i upotrijebiti za obuku ili poboljšanje naših proizvoda i usluga u skladu s <ph name="LINK_POLICY_BEGIN" />pravilima o privatnosti<ph name="LINK_POLICY_END" /> i <ph name="LINK_TERMS_OF_SERVICE_BEGIN" />Googleovim uvjetima pružanja usluge<ph name="LINK_TERMS_OF_SERVICE_END" />.</translation>
+<translation id="1821075635029692203">Vaš je nastavnik poslao nepodržani resurs. Obavijestite ga o tome.</translation>
 <translation id="1823120442877418684">Objekti</translation>
 <translation id="1827738518074806965">Umjetnička galerija</translation>
 <translation id="183287940576828840">Uvredljivo/nesigurno</translation>
@@ -476,6 +478,7 @@
 <translation id="3091839911843451378">Nije uspjelo – zaustavljeno</translation>
 <translation id="3102119246920354026">Predmemorija</translation>
 <translation id="3103783611481501187">nadrealno</translation>
+<translation id="3119672627216736407">Dostupan je prijevod</translation>
 <translation id="3122464029669770682">Procesor (CPU)</translation>
 <translation id="3122614491980756867">bazeni</translation>
 <translation id="3122883569442693641">Više pojedinosti</translation>
@@ -1136,6 +1139,7 @@
 <translation id="6058625436358447366">Za dovršetak unesite staru i novu zaporku</translation>
 <translation id="6061772781719867950">Neuspješni HTTP zahtjevi</translation>
 <translation id="6073292342939316679">smanjivanje svjetline tipkovnice</translation>
+<translation id="6074608334942655098">Prestani prevoditi</translation>
 <translation id="6074752328838739425">Sakrij sažetak</translation>
 <translation id="6075872808778243331">(Android) Latencija HTTP-a</translation>
 <translation id="6078323886959318429">Dodajte prečac</translation>
@@ -1613,6 +1617,7 @@ Da biste dobili te prijepise, preuzmite model prijepisa (do 100 MB).</translati
 <translation id="8088963492174775412">Pritisnite za snimanje</translation>
 <translation id="8094062939584182041">Dopustite Googleu da vam pošalje e-poruku o tom problemu</translation>
 <translation id="8104083085214006426">Upotrebljavate otvorenu i nesigurnu mrežu</translation>
+<translation id="8108879170356113798">Alate za predmet moći ćete upotrebljavati samo za <ph name="NUM_SECONDS" /> s</translation>
 <translation id="811820734797650957">(Android) Pristupnik se može pingati</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8131740175452115882">Potvrdi</translation>

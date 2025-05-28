@@ -206,6 +206,7 @@
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1758459542619182298"><ph name="CONTROL_TYPE" /> <ph name="KEY_LIST" /></translation>
 <translation id="1759842336958782510">Chrome</translation>
+<translation id="1762353673362288306">이제 수업 도구만 사용할 수 있습니다</translation>
 <translation id="1762483337755424125">스크립트</translation>
 <translation id="1765169783255151332">빠른 키 전환</translation>
 <translation id="1768959921651994223">인증 유형</translation>
@@ -1613,6 +1614,7 @@
 <translation id="8088963492174775412">녹음하려면 누르세요</translation>
 <translation id="8094062939584182041">Google에서 이 문제에 관한 이메일을 보내도록 허용</translation>
 <translation id="8104083085214006426">안전하지 않은 개방형 네트워크를 사용하고 있습니다.</translation>
+<translation id="8108879170356113798">수업 도구는 <ph name="NUM_SECONDS" />초 후에만 사용할 수 있습니다</translation>
 <translation id="811820734797650957">(Android) 핑할 수 있는 게이트웨이</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />°C</translation>
 <translation id="8131740175452115882">확인</translation>

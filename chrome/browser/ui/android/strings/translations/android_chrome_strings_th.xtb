@@ -1440,6 +1440,7 @@
 <translation id="7431991332293347422">ควบคุมการใช้ประวัติการท่องเว็บเพื่อปรับเปลี่ยน Search และบริการอื่นๆ ในแบบของคุณ</translation>
 <translation id="7435356471928173109">ปิดโดยผู้ดูแลระบบ</translation>
 <translation id="7437998757836447326">ออกจากระบบ Chrome</translation>
+<translation id="7439467816829380878">ย้ายแท็บไปยังกลุ่ม</translation>
 <translation id="7453810262525006706">ยุบเป็นมุมมองด้านข้าง</translation>
 <translation id="7454641608352164238">พื้นที่ว่างไม่พอ</translation>
 <translation id="7454744349230173024">องค์กรปิดการบันทึกรหัสผ่านไว้</translation>
@@ -1815,6 +1816,7 @@
 <translation id="9019199799064251516">ดำเนินการต่อโดยไม่ล็อกโปรไฟล์รถยนต์ใช่ไหม</translation>
 <translation id="9022774213089566801">เข้าชมบ่อย</translation>
 <translation id="9022871169049522985">เว็บไซต์และผู้ลงโฆษณาสามารถวัดประสิทธิภาพโฆษณาของตน</translation>
+<translation id="9027728231343310283">เลิกทำ <ph name="SITE" /></translation>
 <translation id="9035378196785279980">ย้ายไปที่\u2026</translation>
 <translation id="9042893549633094279">ความเป็นส่วนตัวและความปลอดภัย</translation>
 <translation id="9047347135558855162">เริ่มการค้นหาใน Chrome ได้อย่างรวดเร็ว</translation>

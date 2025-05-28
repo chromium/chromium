@@ -298,7 +298,7 @@
 <translation id="4793679854893018356">Jak Chrome dba o Twoje bezpieczeństwo</translation>
 <translation id="4828579605166583682">Google Chrome próbuje zastąpić istniejące hasła. Aby na to zezwolić, podaj hasło do systemu Windows.</translation>
 <translation id="4842397268809523050">W ChromeOS Flex nie udało się zsynchronizować danych, ponieważ synchronizacja jest niedostępna w Twojej domenie.</translation>
-<translation id="4851866215237571846">Jesteś już zalogowany(a) na konto <ph name="EXISTING_USER" />.  Aby przeglądać osobno, zaloguj się w Chrome w swoim profilu jako <ph name="USER_EMAIL_ADDRESS" />.</translation>
+<translation id="4851866215237571846">Jesteś już zalogowany(-a) na konto <ph name="EXISTING_USER" />.  Aby przeglądać osobno, zaloguj się w Chrome w swoim profilu jako <ph name="USER_EMAIL_ADDRESS" />.</translation>
 <translation id="4855026984605187434">Aby udostępnić ekran, pozwól Chrome na nagrywanie ekranu w ustawieniach systemu</translation>
 <translation id="4873783916118289636">Zapoznaj się z najważniejszymi funkcjami prywatności i bezpieczeństwa w Chrome</translation>
 <translation id="4885446229353981848">Zawsze pokazuj skrót do Obiektywu Google</translation>
@@ -313,6 +313,7 @@
 <translation id="4970880042055371251">Wersja Chrome OS</translation>
 <translation id="4990567037958725628">Google Chrome Canary</translation>
 <translation id="5003967926796347400">Kliknij „Menedżer haseł Google”</translation>
+<translation id="504867494566807945">Otwieraj linki w Chrome z dowolnej aplikacji. Aby mieć łatwy dostęp do tej przeglądarki, możesz przypiąć ją do paska zadań.</translation>
 <translation id="5114340746415930644">Wpisz hasło, aby móc zapisywać dane z Chrome na koncie <ph name="USER_EMAIL" /> i ich używać</translation>
 <translation id="5120334927898581447">Loguj się w Chrome, gdy logujesz się w innych usługach Google</translation>
 <translation id="5126049312684316860">Chrome wstępnie wczytuje jeszcze więcej stron, które prawdopodobnie odwiedzisz, aby w razie potrzeby szybciej się ładowały</translation>
@@ -389,6 +390,7 @@
 <translation id="6075300983329039771">Twoja organizacja (<ph name="MANAGER" />) wymaga od Ciebie zalogowania się w Chrome</translation>
 <translation id="6113794647360055231">Chrome jest jeszcze lepszy</translation>
 <translation id="6116252277240876590">Ten język jest używany do wyświetlania menu, ustawień, alertów i innego tekstu w Chrome</translation>
+<translation id="6127237283587442951">Używaj domyślnie przeglądarki Chrome i przypnij ją</translation>
 <translation id="6134085236017727171">Aby używać mikrofonu, przyznaj Chrome dostęp w <ph name="BEGIN_LINK" />ustawieniach systemu<ph name="END_LINK" /></translation>
 <translation id="6135456723633883042">Te karty wykorzystują dodatkowe zasoby. Aby zwiększyć wydajność, pozwól Chrome je dezaktywować.</translation>
 <translation id="6145313976051292476">Otwieranie plików PDF w Chrome</translation>
@@ -503,7 +505,6 @@
 <translation id="7572537927358445944">Wyłączone • Chrome nie może sprawdzić, skąd pochodzi to rozszerzenie</translation>
 <translation id="7583399374488819119">Instalator <ph name="COMPANY_NAME" /></translation>
 <translation id="7606334485649076285">Google ChromeOS Flex</translation>
-<translation id="7626032353295482388">Witamy w Chrome</translation>
 <translation id="7626072681686626474"><ph name="MANAGER" /> wymaga, aby przed korzystaniem z tego urządzenia przeczytać i zaakceptować Warunki korzystania z usługi. Nie rozszerzają, nie zmieniają ani nie ograniczają one Warunków korzystania z Google Chrome OS.</translation>
 <translation id="7629695634924605473">Chrome poinformuje Cię, jeśli Twoje hasła dostaną się w niepowołane ręce</translation>
 <translation id="7641148173327520642">Administrator systemu skonfigurował Google Chrome tak, by strona <ph name="TARGET_URL_HOSTNAME" /> otwierała się w przeglądarce <ph name="ALTERNATIVE_BROWSER_NAME" />.</translation>

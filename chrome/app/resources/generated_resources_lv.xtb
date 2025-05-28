@@ -80,6 +80,7 @@
 <translation id="1049743911850919806">Inkognito</translation>
 <translation id="1049795001945932310">&amp;Valodas iestatījumi</translation>
 <translation id="1050693411695664090">vājš</translation>
+<translation id="1053226848101751430">Ieraksts izdzēsts</translation>
 <translation id="1053898984916097744">Iesāciet ko jaunu vai saņemiet palīdzību, kamēr esat plūsmas stāvoklī.</translation>
 <translation id="1054048317165655285">Pabeidziet iestatīšanu tālrunī</translation>
 <translation id="1054153489933238809">Atvērt sākotnējo &amp;attēlu jaunā cilnē</translation>
@@ -1804,6 +1805,7 @@ Varat pārvaldīt šī konta iestatījumus, savā ierīcē instalējot lietotni 
 <translation id="2249111429176737533">Atvērt kā logu ar cilnēm</translation>
 <translation id="2249605167705922988">piem., 1-5, 8, 11-13</translation>
 <translation id="2249635629516220541">Varat pielāgot informāciju, kas vietnēs tiek izmantota reklāmu rādīšanai</translation>
+<translation id="2250153645770828940">Dzēst vārdnīcu</translation>
 <translation id="22505994009453896">Peles kursora kontrolēšana, izmantojot cipartastatūru</translation>
 <translation id="2250624716625396929">Šī cilne izmanto jūsu kameru un mikrofonu.</translation>
 <translation id="2251218783371366160">Atvēršana, izmantojot sistēmas skatītāju</translation>
@@ -2228,6 +2230,7 @@ Varat pārvaldīt šī konta iestatījumus, savā ierīcē instalējot lietotni 
 <translation id="2519250377986324805">Skatīt pamācību</translation>
 <translation id="2519517390894391510">Sertifikāta profila nosaukums</translation>
 <translation id="2520644704042891903">Notiek pieejamas ligzdas gaidīšana...</translation>
+<translation id="2520961587246779103">Vairāk opciju dalītajam skatam</translation>
 <translation id="2521427645491031107">Ierīces iestatījumos ir iestatīta lietotņu sinhronizācija.</translation>
 <translation id="2521835766824839541">iepriekšējais ieraksts</translation>
 <translation id="2521854691574443804">Tiek pārbaudīts, vai fails <ph name="FILE_NAME" /> atbilst jūsu organizācijas drošības politikai...</translation>
@@ -3171,6 +3174,7 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="3202578601642193415">Jaunākā</translation>
 <translation id="3204648577100496185">Ar šo lietotni saistītie dati var tikt noņemti no šīs ierīces</translation>
 <translation id="3204717934117444051">Dati, kas ir saglabāti tikai šajā ierīcē, paliks esošajā profilā. Tie netiks sinhronizēti ar profilu <ph name="EMAIL" />.</translation>
+<translation id="3206289903841621620">Lietotāja <ph name="NUMBER" />. vārdnīca</translation>
 <translation id="3207344462385471911">Ņemot vērā jūsu pēdējās darbības, jums tiek rādīti ieteiktie meklēšanas vaicājumi un pirkumu atlaides, kas varētu jūs interesēt.
         <ph name="BREAK" />
         <ph name="BREAK" />
@@ -10938,6 +10942,7 @@ Glabājiet atslēgas failu drošā vietā. Tas būs vajadzīgs, lai izveidotu ja
 <translation id="8729133765463465108">Skenēt kvadrātkodu, izmantojot kameru</translation>
 <translation id="8730621377337864115">Gatavs</translation>
 <translation id="8731029916209785242">Atļaujas (<ph name="FORMATTED_ORIGIN" />)</translation>
+<translation id="8731258351357994801"><ph name="NUMBER" />. ieraksts</translation>
 <translation id="8731268612289859741">Drošības kods</translation>
 <translation id="8731629443331803108">Vietne <ph name="SITE_NAME" /> vēlas saņemt šādu atļauju: <ph name="PERMISSION" /></translation>
 <translation id="8731787661154643562">Porta numurs</translation>

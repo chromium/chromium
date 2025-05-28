@@ -225,6 +225,7 @@
 <translation id="4019629340646866719">Το Chromium OS υλοποιήθηκε με τη βοήθεια πρόσθετου <ph name="BEGIN_LINK_CROS_OSS" />λογισμικού ανοικτού κώδικα<ph name="END_LINK_CROS_OSS" />, όπως είναι το <ph name="BEGIN_LINK_LINUX_OSS" />περιβάλλον ανάπτυξης Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="4022972681110646219">Μετάφραση οθόνης</translation>
 <translation id="4023601594785368013">Αρχική γλώσσα: <ph name="LANGUAGE" /></translation>
+<translation id="4023845192681161785">Ανοίξτε συνδέσμους στο Chromium από οποιαδήποτε εφαρμογή. Επιπλέον, για εύκολη πρόσβαση, καρφιτσώνεται στη γραμμή εργαλείων.</translation>
 <translation id="4036079820698952681">Συμβάλετε στη βελτίωση του Chromium, αναφέροντας τις <ph name="BEGIN_LINK" />τρέχουσες ρυθμίσεις<ph name="END_LINK" /></translation>
 <translation id="4050175100176540509">Στην πιο πρόσφατη έκδοση διατίθενται σημαντικές βελτιώσεις ασφάλειας και νέες λειτουργίες.</translation>
 <translation id="4055805654398742145">Δ&amp;ιαχειριστής κωδικών πρόσβασης</translation>
@@ -326,6 +327,7 @@
 <translation id="5524890928877629608">επάνω αριστερή γωνία της περιοχής αναζήτησης: αριστερά <ph name="LEFT" />%, επάνω <ph name="TOP" />%</translation>
 <translation id="5527463683072221100">Άνοιγμα PDF στο Chromium</translation>
 <translation id="5579324208890605088">Σφάλμα εκκίνησης: Εκτελέστε το πρόγραμμα εγκατάστασης ως απλός χρήστης και όχι ως διαχειριστής.</translation>
+<translation id="5580770360767802657">Χρήση Chromium από προεπιλογή και καρφίτσωμα</translation>
 <translation id="5596627076506792578">Περισσότερες επιλογές</translation>
 <translation id="5605834417512968703">Επιλέξτε οτιδήποτε για αναζήτηση με την Αναζήτηση με εικόνες ή πατήστε Escape για έξοδο από την Αναζήτηση με εικόνες</translation>
 <translation id="5618818588972826921">Επιλέξτε οποιοδήποτε κείμενο ή εικόνα για αναζήτηση με την Αναζήτηση με εικόνες ή πατήστε Escape για έξοδο από την Αναζήτηση με εικόνες</translation>

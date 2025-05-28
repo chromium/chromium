@@ -375,6 +375,7 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="2718352093833049315">Apenas com Wi-Fi</translation>
 <translation id="2718846868787000099">Os sites que você visita podem ver suas preferências para exibir conteúdo nos seus idiomas preferidos</translation>
 <translation id="2723001399770238859">áudio</translation>
+<translation id="2734335652257251631">Mostrar modo de leitura</translation>
 <translation id="2739887572830526131">Mantenha este grupo para adicionar guias mais tarde ou exclua se não precisar mais dele.</translation>
 <translation id="2742373789128106053">O <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> não está disponível no momento.</translation>
 <translation id="2760805590727089264">MM / AA</translation>
@@ -795,7 +796,7 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 e mais <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}one{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 e mais <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 e mais <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}}</translation>
 <translation id="4698061626562952596">Revise suas guias inativas aqui</translation>
 <translation id="4698757800236023795">Guias ativas (<ph name="ITEM_COUNT" />)</translation>
-<translation id="4699172675775169585">Imagens e arquivos armazenados em cache</translation>
+<translation id="4699172675775169585">Imagens e arquivos em cache</translation>
 <translation id="4710167854527459075">Ordenar por mais recente</translation>
 <translation id="4718044610319080485">Aciona o assistente de IA</translation>
 <translation id="4719927025381752090">Oferecer para traduzir</translation>
@@ -1745,6 +1746,7 @@ Para mudar essa configuração, <ph name="BEGIN_LINK" />exclua os dados do Chrom
 <translation id="8676789164135894283">Verificações de login</translation>
 <translation id="8683039184091909753">imagem</translation>
 <translation id="8688183792442786085"><ph name="TAB_TITLE" /> (guia selecionada)</translation>
+<translation id="8693232767599693749">Ver modo de leitura?</translation>
 <translation id="8697753151306746444">Compartilhar a janela ou a tela</translation>
 <translation id="869891660844655955">Validade</translation>
 <translation id="8699120352855309748">Não oferecer a opção de traduzir estes idiomas</translation>

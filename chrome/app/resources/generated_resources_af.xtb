@@ -80,6 +80,7 @@
 <translation id="1049743911850919806">Incognito</translation>
 <translation id="1049795001945932310">Taalinstellings …</translation>
 <translation id="1050693411695664090">Swak</translation>
+<translation id="1053226848101751430">Inskrywing is uitgevee</translation>
 <translation id="1053898984916097744">Begin iets nuuts of kry hulp in die vloei van dinge.</translation>
 <translation id="1054048317165655285">Voltooi die opstelling op jou foon</translation>
 <translation id="1054153489933238809">Maak oorspronklike prent in nuwe oortjie oop</translation>
@@ -2239,6 +2240,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-app op jou t
 <translation id="2519250377986324805">Sien hoe</translation>
 <translation id="2519517390894391510">Sertifikaatprofielnaam</translation>
 <translation id="2520644704042891903">Wag tans vir beskikbare sok …</translation>
+<translation id="2520961587246779103">Meer opsies vir verdeelde aansig</translation>
 <translation id="2521427645491031107">Apps-sinkronisering word in toestelinstellings gestel</translation>
 <translation id="2521835766824839541">vorige snit</translation>
 <translation id="2521854691574443804">Kontroleer tans <ph name="FILE_NAME" /> met jou organisasie se sekuriteitbeleide …</translation>
@@ -3184,6 +3186,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-app op jou t
 <translation id="3202578601642193415">Nuutste</translation>
 <translation id="3204648577100496185">Data wat met hierdie app geassosieer word, kan van hierdie toestel verwyder word</translation>
 <translation id="3204717934117444051">Data wat net op hierdie toestel gestoor word, sal in die bestaande profiel bly. Dit sal nie met <ph name="EMAIL" /> sinkroniseer nie</translation>
+<translation id="3206289903841621620">Gebruikerwoordeboek <ph name="NUMBER" /></translation>
 <translation id="3207344462385471911">Jy sien voorgestelde soektogte en inkopieafslag waarin jy dalk belangstel op grond van jou onlangse aktiwiteit.
         <ph name="BREAK" />
         <ph name="BREAK" />
@@ -10015,6 +10018,7 @@ Hou jou sleutellêer op 'n veilige plek. Jy gaan dit nodig hê om nuwe weergawes
 <translation id="8073499153683482226"><ph name="BEGIN_PARAGRAPH1" />Appdata kan enige data wees wat 'n app gestoor het (op grond van ontwikkelaarinstellings), insluitend data soos kontakte, boodskappe en foto's.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Rugsteundata sal nie deel vorm van jou kind se Drive-berging nie.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />Jy kan hierdie diens in Instellings afskakel.<ph name="END_PARAGRAPH3" /></translation>
+<translation id="8075044377771022666">Voetreël</translation>
 <translation id="8076835018653442223">Toegang tot plaaslike lêers op jou toestel is deur jou administrateur gedeaktiveer</translation>
 <translation id="8077120325605624147">Enige werf wat jy besoek, kan vir jou enige advertensie wys</translation>
 <translation id="8077579734294125741">Ander Chrome-profiele</translation>
@@ -10950,6 +10954,7 @@ Hou jou sleutellêer op 'n veilige plek. Jy gaan dit nodig hê om nuwe weergawes
 <translation id="8729133765463465108">Gebruik kamera om QR-kode te skandeer</translation>
 <translation id="8730621377337864115">Gedoen</translation>
 <translation id="8731029916209785242">Toestemmings (<ph name="FORMATTED_ORIGIN" />)</translation>
+<translation id="8731258351357994801">Inskrywing <ph name="NUMBER" /></translation>
 <translation id="8731268612289859741">Sekuriteitkode</translation>
 <translation id="8731629443331803108"><ph name="SITE_NAME" /> wil: <ph name="PERMISSION" /></translation>
 <translation id="8731787661154643562">Poortnommer</translation>

@@ -761,6 +761,7 @@ Anders sal die ingeboude raakpaneel binne <ph name="TIMEOUT_SECONDS" /> geherakt
 <translation id="3552189655002856821">Wi-fi is afgeskakel</translation>
 <translation id="3554215588514239132">Wys of versteek ontwikkelaarnutsgoedpaneel</translation>
 <translation id="3554637740840164787"><ph name="ITEM_TITLE" /> is vasgespeld</translation>
+<translation id="3554928024630051016">Om enige bykomende USB-toestelle by te voeg, kan jy probeer om een te verwyder en dan ’n nuwe een in te prop</translation>
 <translation id="3558768885091059911">Skakel kamera- en mikrofoontoegang aan?</translation>
 <translation id="3560174576767922131">Neem video op</translation>
 <translation id="3563775809269155755">Aktiveer warmkol</translation>
@@ -869,6 +870,7 @@ Alle gebruikers moet afmeld om voort te gaan.</translation>
 <translation id="3861651314799684201">Druk Enter om volskerm op te neem</translation>
 <translation id="3870197372373144624">Probeer om jou toestel af te skakel.</translation>
 <translation id="3879748587602334249">Aflaaibestuurder</translation>
+<translation id="3884007280698606545">USB-limiet is bereik</translation>
 <translation id="3886872229787704059">Vandag oopgemaak</translation>
 <translation id="3891340733213178823">Druk Ctrl+Shift+Q twee keer om af te meld.</translation>
 <translation id="3892148308691398805">Kopieer teks</translation>
@@ -1452,7 +1454,6 @@ Geen toestelle is gekoppel nie.</translation>
 <translation id="5691772641933328258">Vingerafdruk nie herken nie</translation>
 <translation id="5693255400847650006">Mikrofoon in gebruik</translation>
 <translation id="5699366815052349604">Wys aktiewe venster aan alle lessenaars toe</translation>
-<translation id="5701785125601597013">Gebruik Foonsentrum om vinnig boodskappe te stuur of daarop te reageer</translation>
 <translation id="570390244361237317">Alle programme; navigeer met pylsleutels om toegang tot alle programme te kry</translation>
 <translation id="5705197514573687092">Wys Fokus-instellings Afteller is gestel op <ph name="FOCUS_DURATION" />.</translation>
 <translation id="5707775774148071965">Jou toestel steun ’n hoër datakoers as jou kabel. Toestelwerkverrigting kan beperk wees.</translation>

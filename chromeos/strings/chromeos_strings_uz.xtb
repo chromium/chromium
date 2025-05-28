@@ -221,6 +221,7 @@
 <translation id="181434555916624618">Hozircha odamlarga aloqador natijalar chiqarilmaydi. Boshqa soʻrov yuboring.</translation>
 <translation id="1815850098929213707">Tugma tanlandi: <ph name="KEYS" />. Boshqaruvni tahrirlash uchun tugmani bosing</translation>
 <translation id="1818174214124933000">“Yuborish” tugmasi bosilganda quyida keltirilgan axborotlar Googlega yuboriladi. Bu maʼlumotlar xodimlar tomonidan tekshiriladi hamda mahsulot va xizmatlarni yaxshilash maqsadida quyidagi hujjatlarga muvofiq ishlatiladi: <ph name="LINK_POLICY_BEGIN" />Maxfiylik siyosati<ph name="LINK_POLICY_END" /> va <ph name="LINK_TERMS_OF_SERVICE_BEGIN" />Google xizmat shartlari<ph name="LINK_TERMS_OF_SERVICE_END" />.</translation>
+<translation id="1821075635029692203">Oʻqituvchi ochilmaydigan resurs yubordi. Unga xabar qiling.</translation>
 <translation id="1823120442877418684">Qahramonlar</translation>
 <translation id="1827738518074806965">Fotogalereya</translation>
 <translation id="183287940576828840">Haqoratomuz/xavfli</translation>
@@ -477,6 +478,7 @@
 <translation id="3091839911843451378">Bajarilmadi - Toʻxtatildi</translation>
 <translation id="3102119246920354026">Kesh</translation>
 <translation id="3103783611481501187">syurrealizm</translation>
+<translation id="3119672627216736407">Tarjimasi bor</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3122614491980756867">hovuzlar</translation>
 <translation id="3122883569442693641">Batafsil</translation>
@@ -1137,6 +1139,7 @@
 <translation id="6058625436358447366">Yakunlash uchun eski va yangi parollarni kiriting</translation>
 <translation id="6061772781719867950">HTTP soʻrovlari yuborilmadi</translation>
 <translation id="6073292342939316679">klaviatura yorqinligi pasaytirish</translation>
+<translation id="6074608334942655098">Tarjimasini toʻxtatish</translation>
 <translation id="6074752328838739425">Xulosani berkitish</translation>
 <translation id="6075872808778243331">(Android) HTTP kechikichi</translation>
 <translation id="6078323886959318429">Yorliq bilan nomlash</translation>

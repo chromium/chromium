@@ -206,6 +206,7 @@
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1758459542619182298"><ph name="CONTROL_TYPE" /> <ph name="KEY_LIST" /></translation>
 <translation id="1759842336958782510">Chrome</translation>
+<translation id="1762353673362288306">Orain, Klaseko tresnak soilik erabil ditzakezu</translation>
 <translation id="1762483337755424125">Transkripzioa</translation>
 <translation id="1765169783255151332">Aldatu teklaz bizkor</translation>
 <translation id="1768959921651994223">Autentifikazio mota</translation>
@@ -1613,6 +1614,7 @@ Transkripzio horiek lortzeko, deskargatu transkripzio-eredua (gehienez ere 100 
 <translation id="8088963492174775412">Sakatu grabatzeko</translation>
 <translation id="8094062939584182041">Eman arazo honi buruzko mezu elektronikoak bidaltzeko baimena Google-ri</translation>
 <translation id="8104083085214006426">Segurua ez den sare ireki bat ari zara erabiltzen</translation>
+<translation id="8108879170356113798"><ph name="NUM_SECONDS" /> segundo barru, Klaseko tresnak soilik erabili ahalko dituzu</translation>
 <translation id="811820734797650957">Ping egin dakioke atebideari (Android)</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
 <translation id="8131740175452115882">Berretsi</translation>

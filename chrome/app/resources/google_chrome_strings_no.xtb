@@ -314,6 +314,7 @@
 <translation id="4970880042055371251">ChromeOS-versjon</translation>
 <translation id="4990567037958725628">Google Chrome Canary</translation>
 <translation id="5003967926796347400">Klikk på «Google Passordlagring»</translation>
+<translation id="504867494566807945">Åpne linker i Chrome fra alle apper. For å få enkel tilgang, festes Chrome på oppgavelinjen.</translation>
 <translation id="5114340746415930644">Skriv inn passordfrasen din for å bruke og lagre Chrome-data i kontoen din, <ph name="USER_EMAIL" /></translation>
 <translation id="5120334927898581447">Logg på Chrome når du logger på andre Google-tjenester</translation>
 <translation id="5126049312684316860">Chrome forhåndslaster enda flere sider du sannsynligvis kommer til å besøke, slik at de lastes inn raskere når du faktisk besøker dem</translation>
@@ -390,6 +391,7 @@
 <translation id="6075300983329039771">Organisasjonen din, <ph name="MANAGER" />, krever at du logger på Chrome</translation>
 <translation id="6113794647360055231">Nå er Chrome blitt enda bedre</translation>
 <translation id="6116252277240876590">Dette språket brukes når menyer, innstillinger, varsler og annen tekst vises i Chrome</translation>
+<translation id="6127237283587442951">Bruk Chrome som standard, og fest den</translation>
 <translation id="6134085236017727171">For å la Chrome bruke mikrofonen må du gi tilgang i <ph name="BEGIN_LINK" />systeminnstillingene<ph name="END_LINK" /></translation>
 <translation id="6135456723633883042">Disse fanene bruker ekstra ressurser. For å få bedre ytelse kan du la Chrome gjøre dem inaktive.</translation>
 <translation id="6145313976051292476">Åpne PDF-filer i Chrome</translation>
@@ -504,7 +506,6 @@
 <translation id="7572537927358445944">Av • Chrome kan ikke bekrefte hvor denne utvidelsen kommer fra</translation>
 <translation id="7583399374488819119"><ph name="COMPANY_NAME" />-installasjonsprogram</translation>
 <translation id="7606334485649076285">Google ChromeOS Flex</translation>
-<translation id="7626032353295482388">Velkommen til Chrome</translation>
 <translation id="7626072681686626474"><ph name="MANAGER" /> krever at du leser og godtar følgende vilkår før du bruker denne enheten. Disse vilkårene verken utvider, endrer eller begrenser Google ChromeOS-vilkårene.</translation>
 <translation id="7629695634924605473">Med Chrome får du beskjed hvis passordene dine noensinne utsettes for sikkerhetsbrudd</translation>
 <translation id="7641148173327520642">Systemadministratoren din har konfigurert Google Chrome til å åpne <ph name="ALTERNATIVE_BROWSER_NAME" /> for å få tilgang til <ph name="TARGET_URL_HOSTNAME" />.</translation>
@@ -624,6 +625,7 @@
 <translation id="9090566250983691233">Finn ut hvorfor Chrome blokkerer enkelte filer</translation>
 <translation id="9106236359747881194">Merk tekst for å søke</translation>
 <translation id="911206726377975832">Vil du slette all nettlesingsdata også?</translation>
+<translation id="9134482777260927479">Leksehjelp</translation>
 <translation id="9138603949443464873">For å bruke endringene dine må du starte Chrome på nytt</translation>
 <translation id="9148058034647219655">Avslutt</translation>
 <translation id="9195993889682885387">Chrome kan anslå interessene dine basert på nettleserloggen din fra de siste ukene. Denne informasjonen blir værende på enheten din.</translation>

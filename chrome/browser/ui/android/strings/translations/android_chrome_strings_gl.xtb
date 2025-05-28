@@ -375,6 +375,7 @@ Só poderán ler os teus datos encriptados as persoas que coñezan a túa frase 
 <translation id="2718352093833049315">Só con wifi</translation>
 <translation id="2718846868787000099">Se queres que che apareza o contido nos teus idiomas preferidos, os sitios que visites poderán ver as túas preferencias</translation>
 <translation id="2723001399770238859">audio</translation>
+<translation id="2734335652257251631">Mostrar modo de lectura</translation>
 <translation id="2739887572830526131">Mantén este grupo para engadir pestanas máis adiante ou elimínao se xa non o necesitas.</translation>
 <translation id="2742373789128106053"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> non está dispoñible neste momento.</translation>
 <translation id="2760805590727089264">MM/AA</translation>
@@ -1744,6 +1745,7 @@ Para cambiar esta opción de configuración, <ph name="BEGIN_LINK" />elimina os 
 <translation id="8676789164135894283">Verificacións inicio de sesión</translation>
 <translation id="8683039184091909753">imaxe</translation>
 <translation id="8688183792442786085"><ph name="TAB_TITLE" />, pestana seleccionada</translation>
+<translation id="8693232767599693749">Queres abrir o modo de lectura?</translation>
 <translation id="8697753151306746444">Comparte a ventá ou a pantalla no seu lugar</translation>
 <translation id="869891660844655955">Data de vencemento</translation>
 <translation id="8699120352855309748">Non ofrecer a opción de traducir texto escrito nestes idiomas</translation>

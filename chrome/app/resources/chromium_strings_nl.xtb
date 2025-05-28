@@ -226,6 +226,7 @@ Sommige functies zijn wellicht niet beschikbaar en wijzigingen in voorkeuren wor
 <translation id="4019629340646866719">Chromium OS wordt mogelijk gemaakt door aanvullende <ph name="BEGIN_LINK_CROS_OSS" />opensource-software<ph name="END_LINK_CROS_OSS" />, net als de <ph name="BEGIN_LINK_LINUX_OSS" />Linux-ontwikkelomgeving<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="4022972681110646219">Scherm vertalen</translation>
 <translation id="4023601594785368013">Oorspronkelijke taal: <ph name="LANGUAGE" /></translation>
+<translation id="4023845192681161785">Open links in Chromium vanuit elke app. Voor makkelijke toegang wordt Chromium vastgezet op je taakbalk.</translation>
 <translation id="4036079820698952681">Help Chromium beter te maken door de <ph name="BEGIN_LINK" />huidige instellingen<ph name="END_LINK" /> te melden</translation>
 <translation id="4050175100176540509">Er zijn belangrijke beveiligingsverbeteringen en nieuwe functies beschikbaar in de nieuwste versie.</translation>
 <translation id="4055805654398742145">W&amp;achtwoordmanager</translation>
@@ -327,6 +328,7 @@ Sommige functies zijn wellicht niet beschikbaar en wijzigingen in voorkeuren wor
 <translation id="5524890928877629608">linkerbovenhoek van zoekgebied: links <ph name="LEFT" />%, boven <ph name="TOP" />%</translation>
 <translation id="5527463683072221100">Pdf's openen in Chromium</translation>
 <translation id="5579324208890605088">Opstartfout: voer het installatieprogramma uit als normale gebruiker, niet als beheerder.</translation>
+<translation id="5580770360767802657">Chromium standaard gebruiken en vastzetten</translation>
 <translation id="5596627076506792578">Meer opties</translation>
 <translation id="5605834417512968703">Selecteer iets om te zoeken met Zoeken met afbeelding of druk op Escape om Zoeken met afbeelding te sluiten</translation>
 <translation id="5618818588972826921">Selecteer tekst of een afbeelding om te zoeken met Zoeken met afbeelding of druk op Escape om Zoeken met afbeelding te sluiten</translation>
@@ -599,6 +601,7 @@ Chromium kan je instellingen niet herstellen.</translation>
 <translation id="9106612006984859720">Als je toekomstige Chromium-updates wilt krijgen, heb je Windows 10 of hoger nodig. Deze computer gebruikt Windows 8.1.</translation>
 <translation id="91086099826398415">Link openen op een nieuw Chromium-&amp;tabblad</translation>
 <translation id="911206726377975832">Ook browsegegevens wissen?</translation>
+<translation id="9134482777260927479">Huiswerkbegeleiding</translation>
 <translation id="9148058034647219655">Sluiten</translation>
 <translation id="9158494823179993217">Je systeembeheerder heeft geconfigureerd dat Chromium een alternatieve browser opent voor toegang tot <ph name="TARGET_URL_HOSTNAME" />.</translation>
 <translation id="9185526690718004400">Opnieuw starten om &amp;Chromium te updaten</translation>

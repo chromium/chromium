@@ -6806,6 +6806,7 @@ Para obtener más información sobre el tratamiento de datos en las funciones de
 
       Si se inhabilita la política o no se establece, no se enviarán registros del sistema.</translation>
 <translation id="5861856285460256766">Configuración del código de acceso parental</translation>
+<translation id="5864898931148094192">Controlar la visibilidad de la atribución de la extensión en la página Nueva pestaña</translation>
 <translation id="5868414965372171132">Configuración de red de usuarios</translation>
 <translation id="5868454276721377379">Cuando un usuario cambia de un dispositivo <ph name="PRODUCT_OS_NAME" /> a otro, el servicio de SSO flotante restaura el estado de autenticación de los servicios web del usuario del dispositivo anterior en el nuevo. Esto se consigue moviendo las cookies del usuario de un dispositivo a otro.
 
@@ -6932,11 +6933,6 @@ En <ph name="MAC_OS_NAME" />, esta política solo está disponible en instancias
 <translation id="5917897389577978190">Gmail (compatible desde la versión 135)</translation>
 <translation id="592036544845479336">Volver a habilitar eventos de mutación obsoletos/retirados</translation>
 <translation id="5921713479449475707">Permitir descargas de actualizaciones automáticas a través de HTTP</translation>
-<translation id="5923084443277419535">El analizador de HTML se va a cambiar para permitir etiquetas HTML adicionales dentro del elemento &lt;select&gt;. Esta política permite usar el comportamiento anterior del analizador de HTML hasta la versión M138.
-
-Si se habilita esta política o no se define, el analizador de HTML permitirá etiquetas adicionales dentro del elemento &lt;select&gt;.
-
-Si se inhabilita esta política, el analizador de HTML restringirá las etiquetas que se pueden poner dentro del elemento &lt;select&gt;.</translation>
 <translation id="5925405187134730827">Esta política está obsoleta porque la función que controla nunca se lanzó. Usa la política <ph name="ENTERPRISE_PROFILE_BADGE_TOOLBAR_SETTINGS" /> en su lugar.
 
 Si no se le asigna ningún valor a esta política o se le asigna el valor <ph name="DISPLAY_MANAGEMENT_LABEL_PERMAMENT_VALUE" /> (valor 0), se mostrará una etiqueta de trabajo o de centro educativo junto al avatar de la barra de herramientas.
@@ -7088,6 +7084,13 @@ Esta política está obsoleta a partir de la versión M124.</translation>
 <translation id="604243460476563291">Inhabilitar la transferencia de archivos en conexiones de asistencia remota de administradores de empresas</translation>
 <translation id="6042629184389251062">No se permite la recogida de métricas con clave de URL</translation>
 <translation id="6046615715547751255">No permitir los controles de informes granulares</translation>
+<translation id="6047041034696466581">Esta política determina si se muestra una atribución de la extensión que modifica la página Nueva pestaña en el pie de la página Nueva pestaña.
+
+De forma predeterminada, si una extensión ha anulado la página Nueva pestaña estándar, en el pie de página aparecerá un mensaje que atribuye este cambio a la extensión en cuestión. Esta atribución suele incluir un enlace a la extensión correspondiente en Chrome Web Store.
+
+Si no se establece esta política o se le asigna el valor true, la atribución de la extensión se mostrará en el pie de la página Nueva pestaña cuando una extensión controle la página Nueva pestaña.
+
+Si se le asigna el valor false a esta política, se suprimirá la atribución a la extensión en el pie de la página Nueva pestaña.</translation>
 <translation id="6048199181629830227">Habilitar la gestión de energía Peak Shift</translation>
 <translation id="6048690591359317353">No permitir que el usuario desconecte o modifique manualmente una VPN</translation>
 <translation id="6049117606554031363">Habilitar los informes sobre el estado de la placa del dispositivo</translation>
@@ -9611,6 +9614,11 @@ Si se le asigna el valor false o no se establece, <ph name="PRODUCT_NAME" /> no 
 Para obtener más información sobre la política <ph name="IEEM_SITELIST_POLICY" /> de Internet Explorer, consulta https://docs.microsoft.com/internet-explorer/ie11-deploy-guide/what-is-enterprise-mode</translation>
 <translation id="7791215522423893512">No permitir que los usuarios hagan capturas de pantalla ni graben vídeos</translation>
 <translation id="7792796937016596423">El usuario no podrá realizar capturas de paquetes de red</translation>
+<translation id="7795648856511126914">El analizador de HTML se va a cambiar para permitir etiquetas HTML adicionales dentro del elemento &lt;select&gt;. Esta política permite usar el comportamiento anterior del analizador de HTML hasta la versión M136.
+
+Si se habilita esta política o no se define, el analizador de HTML permitirá etiquetas adicionales dentro del elemento &lt;select&gt;.
+
+Si se inhabilita esta política, el analizador de HTML restringirá las etiquetas que se pueden poner dentro del elemento &lt;select&gt;.</translation>
 <translation id="7798441698807517880">Esta política se quitó a partir de la versión 89 de <ph name="PRODUCT_NAME" /> porque <ph name="FLASH_PLUGIN_NAME" /> ya no está disponible.
 
       Si se le asigna el valor True a esta política, se ejecutará todo el contenido <ph name="FLASH_PLUGIN_NAME" /> insertado en los sitios web que permitan <ph name="FLASH_PLUGIN_NAME" />, incluido el contenido de otros orígenes o de tamaño reducido.

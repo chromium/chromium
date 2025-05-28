@@ -383,6 +383,7 @@ Los sitios no pueden usar cookies para ver tu actividad de navegación en otros 
 <translation id="2513103768503127042">Aquí verás tus grupos de pestañas</translation>
 <translation id="251837347827266434">Tu sesión y tus pestañas se cerrarán y se eliminarán los datos de navegación</translation>
 <translation id="2520787026086861736">Para desactivar esta función, ve a <ph name="BEGIN_LINK" />Autocompletar y contraseñas<ph name="END_LINK" /></translation>
+<translation id="2523295204312809179">Cuando cierras un grupo de pestañas, se guarda automáticamente aquí</translation>
 <translation id="2529021024822217800">Abrir todos</translation>
 <translation id="2536991091671391962">Puedes usar las contraseñas guardadas en cualquier dispositivo. Se guardan en el Gestor de contraseñas de Google de <ph name="EMAIL" />.</translation>
 <translation id="2538103551183528357">Contraseña oculta</translation>
@@ -396,7 +397,7 @@ Los sitios no pueden usar cookies para ver tu actividad de navegación en otros 
 <translation id="2597486707832946298">Disfruta de lo mejor del navegador para ordenadores que ya conoces y tanto te gusta en tu iPhone.</translation>
 <translation id="2601778637777010194">Sigue las bajadas de precio de productos</translation>
 <translation id="260378315836159338">En la parte superior de la pantalla, toca +</translation>
-<translation id="2612676031748830579">Número de la tarjeta</translation>
+<translation id="2612676031748830579">Número de tarjeta</translation>
 <translation id="261305050785128654">Permite que los sitios web sepan los idiomas que hablas. Si es posible, mostrarán contenido en esos idiomas.</translation>
 <translation id="2613747923081026172">Crear grupo</translation>
 <translation id="261735223792457154">Mostrar todas…</translation>
@@ -1035,6 +1036,7 @@ Consulta las instrucciones del buscador para eliminar tu historial de búsqueda 
 <translation id="5275912569557792098"><ph name="USER_NAME" /> (<ph name="USER_EMAIL" />) quiere que te unas a un grupo de pestañas. Cualquier persona que tenga el enlace puede editar todas las pestañas, así que únete con prudencia. El enlace caduca en 48 horas.</translation>
 <translation id="5279600392753459966">Bloquear todos</translation>
 <translation id="5282340693022193851">Para recibir notificaciones de seguimiento de precios, actívalas en los ajustes de iOS.</translation>
+<translation id="528857768909044842">Los grupos de pestañas se guardan aquí</translation>
 <translation id="5294624619177114121">Notificaciones móviles</translation>
 <translation id="5295239312320826323">¿Quitar la cuenta <ph name="USER_EMAIL" />?</translation>
 <translation id="5300589172476337783">Mostrar</translation>
@@ -1230,6 +1232,7 @@ Handoff también debe estar habilitado en la sección General de Ajustes del sis
 <translation id="6100617279104942061">Has iniciado sesión como <ph name="USER_EMAIL" />. Se abre la configuración.</translation>
 <translation id="6103540626693881831">Cifrado en el dispositivo</translation>
 <translation id="611361228753138223">Sitios que has visitado recientemente en este dispositivo</translation>
+<translation id="611705554202268369">Mantén pulsada la pestaña para añadirla a un grupo</translation>
 <translation id="6122191549521593678">Online</translation>
 <translation id="6122831415929794347">¿Desactivar Navegación segura?</translation>
 <translation id="6123514585040403489">Tus pestañas se cerrarán</translation>
@@ -1573,7 +1576,7 @@ Mientras estás en modo Incógnito, los sitios no pueden usar tus cookies para v
 <translation id="7438481509621345350">Ahora verás contenido de <ph name="CHANNEL_NAME" /> cuando abras una pestaña nueva.</translation>
 <translation id="7451023311965289370">{count,plural, =1{Marcador guardado en "{title}"}other{Marcadores guardados en "{title}"}}</translation>
 <translation id="7451404862887877229">Toca Privacidad y seguridad y, después, Navegación segura</translation>
-<translation id="7454057999980797137">Provincia/Comunidad autónoma</translation>
+<translation id="7454057999980797137">Provincia/Autonomía</translation>
 <translation id="7458706065921255639">Personalización y vinculación</translation>
 <translation id="745899714366929493">Todo el día</translation>
 <translation id="7460698861522306757">Solicitar sitio web móvil</translation>
@@ -1855,6 +1858,7 @@ Los sitios pueden usar cookies para ver tu actividad de navegación en otros sit
 <translation id="8535368836838588657">Mostrar contraseña</translation>
 <translation id="8545276357312221485">Comprueba la configuración predeterminada de tu navegador</translation>
 <translation id="854938212724803178">Tienes 1 contraseña vulnerada. Corrige el problema para protegerte.</translation>
+<translation id="8551311254462607218">En la barra de direcciones, toca el icono de la cámara de Google Lens</translation>
 <translation id="8556590991644167667">{count,plural, =1{Has cerrado {count} advertencia}other{Has cerrado {count} advertencias}}</translation>
 <translation id="8558046478684552694">Cerrar grupo.</translation>
 <translation id="8560253818350321773">Muestra primero los artículos utilizados con más frecuencia.</translation>
@@ -1998,6 +2002,7 @@ Los sitios pueden usar cookies para ver tu actividad de navegación en otros sit
 <translation id="9032405509996909363">Confirmar eliminación de datos de navegación</translation>
 <translation id="9039373489628511875">Ancho de banda</translation>
 <translation id="9042893549633094279">Privacidad y seguridad</translation>
+<translation id="9055291197094969722">Crea grupos de pestañas para organizar tus pestañas abiertas y mantener la productividad</translation>
 <translation id="9055580485132823283">Estás a punto de eliminar {password_count} contraseñas, {passkey_count} llaves de acceso y la lista de sitios y aplicaciones de los que has elegido no guardar nunca información de inicio de sesión. Las cuentas que hayas creado para sitios y aplicaciones no se eliminarán.</translation>
 <translation id="9057030985451135243">Más información sobre los grupos de pestañas compartidos</translation>
 <translation id="9057972802061533987">No se puede seguir. Algo ha fallado.</translation>

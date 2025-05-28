@@ -1816,6 +1816,7 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="2249111429176737533">Atidaryti kaip į skirtukus suskirstytą langą</translation>
 <translation id="2249605167705922988">pvz., 1–5, 8, 11–13</translation>
 <translation id="2249635629516220541">Tinkinkite informaciją, pagal kurią svetainės rodo jums skelbimus</translation>
+<translation id="2250153645770828940">Ištrinti žodyną</translation>
 <translation id="22505994009453896">Valdykite pelės žymeklį naudodami skaitmenų klaviatūrą</translation>
 <translation id="2250624716625396929">Šiame skirtuko lape naudojama vaizdo kamera arba mikrofonas</translation>
 <translation id="2251218783371366160">Atidaryti naudojat sistemos peržiūros priemonę</translation>
@@ -4730,6 +4731,7 @@ Ar norite paleisti „<ph name="CONTROL_PANEL_APPLET_NAME" />“?</translation>
 <translation id="4275397969489577657">Įgalinti įvykių srauto įrašymą į žurnalą</translation>
 <translation id="4275788652681621337">Uždaryti šoninį skydelį</translation>
 <translation id="4275830172053184480">Iš naujo paleisti įrenginį</translation>
+<translation id="4276598757692536305">Spausdintuvo PPD</translation>
 <translation id="4276856098224910511">Nepavyko įdiegti, laukiama OS naujinio. Pritaikykite visus laukiančius OS naujinius, paleiskite iš naujo ir bandykite dar kartą. Klaidos kodas: <ph name="ERROR" />.</translation>
 <translation id="4277434192562187284">XML konfigūracijos šaltinis</translation>
 <translation id="4278348589087554892">{NUM_SITES,plural, =1{Leidimai pašalinti iš vienos svetainės}one{Leidimai pašalinti iš {NUM_SITES} svetainės}few{Leidimai pašalinti iš {NUM_SITES} svetainių}many{Leidimai pašalinti iš {NUM_SITES} svetainės}other{Leidimai pašalinti iš {NUM_SITES} svetainių}}</translation>

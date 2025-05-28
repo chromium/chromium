@@ -383,6 +383,7 @@ Ni all gwefannau ddefnyddio cwcis i weld eich gweithgarwch pori ar draws gwahano
 <translation id="2513103768503127042">Byddwch yn gweld eich grwpiau tabiau yma</translation>
 <translation id="251837347827266434">Byddwch yn cael eich allgofnodi, bydd tabiau'n cael eu cau, bydd data pori yn cael eu dileu</translation>
 <translation id="2520787026086861736">I'w ddiffodd, ewch i <ph name="BEGIN_LINK" />Awtolenwi a Chyfrineiriau<ph name="END_LINK" /></translation>
+<translation id="2523295204312809179">Pan fyddwch chi'n cau grŵp tabiau, caiff ei gadw'n awtomatig yma</translation>
 <translation id="2529021024822217800">Agor y Cyfan</translation>
 <translation id="2536991091671391962">Gallwch ddefnyddio cyfrineiriau sydd wedi'u cadw ar unrhyw ddyfais. Maent yn cael eu cadw i Rheolwr Cyfrineiriau Google ar gyfer <ph name="EMAIL" />.</translation>
 <translation id="2538103551183528357">Cudd, cyfrinair</translation>
@@ -1035,6 +1036,7 @@ Gweler cyfarwyddiadau eich peiriant chwilio er mwyn dileu eich hanes chwilio, os
 <translation id="5275912569557792098">Mae <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />) eisiau i chi ymuno â grŵp tabiau. Gall unrhyw un sydd â'r ddolen olygu'r holl dabiau, felly ymunwch â gofal. Dolen yn dod i ben mewn 48 awr.</translation>
 <translation id="5279600392753459966">Rhwystro pob un</translation>
 <translation id="5282340693022193851">I gael hysbysiadau olrhain prisiau, trowch hysbysiadau ymlaen yn eich Gosodiadau iOS.</translation>
+<translation id="528857768909044842">Mae grwpiau tabiau wedi'u cadw yma</translation>
 <translation id="5294624619177114121">Hysbysiadau ffôn symudol</translation>
 <translation id="5295239312320826323">Tynnu'r cyfrif <ph name="USER_EMAIL" />?</translation>
 <translation id="5300589172476337783">Arddangos</translation>
@@ -1230,6 +1232,7 @@ Rhaid galluogi Handoff hefyd yn adran Cyffredinol y Gosodiadau, a rhaid i'ch dyf
 <translation id="6100617279104942061">Wedi mewngofnodi fel <ph name="USER_EMAIL" />. Yn agor gosodiadau.</translation>
 <translation id="6103540626693881831">Amgryptio ar y Ddyfais</translation>
 <translation id="611361228753138223">Gwefannau rydych wedi ymweld â nhw yn ddiweddar ar y ddyfais hon</translation>
+<translation id="611705554202268369">Pwyso estynedig i ychwanegu at grŵp tabiau</translation>
 <translation id="6122191549521593678">Ar-lein</translation>
 <translation id="6122831415929794347">Diffodd Pori'n Ddiogel?</translation>
 <translation id="6123514585040403489">Bydd eich tabiau yn cael eu cau</translation>
@@ -1855,6 +1858,7 @@ Gall gwefannau ddefnyddio cwcis i weld eich gweithgarwch pori ar draws gwahanol 
 <translation id="8535368836838588657">Datgelu'r cyfrinair</translation>
 <translation id="8545276357312221485">Gwiriwch eich gosodiadau porwr diofyn</translation>
 <translation id="854938212724803178">Mae gennych 1 cyfrinair sydd wedi'i ddarganfod. Trwsiwch ef nawr i aros yn ddiogel.</translation>
+<translation id="8551311254462607218">Yn y bar cyfeiriad, tapiwch yr eicon camera Google Lens</translation>
 <translation id="8556590991644167667">{count,plural, =1{Rydych wedi diystyru {count} rhybudd}zero{Rydych wedi diystyru {count} rhybudd}two{Rydych wedi diystyru {count} rybudd}few{Rydych wedi diystyru {count} rhybudd}many{Rydych wedi diystyru {count} rhybudd}other{Rydych wedi diystyru {count} rhybudd}}</translation>
 <translation id="8558046478684552694">Cau grŵp.</translation>
 <translation id="8560253818350321773">Dangos eitemau a ddefnyddir yn aml yn gyntaf.</translation>
@@ -1998,6 +2002,7 @@ Gall gwefannau ddefnyddio cwcis i weld eich gweithgarwch pori ar draws gwahanol 
 <translation id="9032405509996909363">Cadarnhau dileu data pori</translation>
 <translation id="9039373489628511875">Lled band</translation>
 <translation id="9042893549633094279">Preifatrwydd a diogelwch</translation>
+<translation id="9055291197094969722">Creu grwpiau tab i drefnu eich tabiau agored ac aros yn gynhyrchiol</translation>
 <translation id="9055580485132823283">Rydych ar fin dileu {password_count} o gyfrineiriau, {passkey_count} o godau pas, a'r rhestr o wefannau ac apiau y gwnaethoch ddewis peidio byth â chadw mewngofnodi. Ni fydd unrhyw gyfrif a grëwyd gennych ar gyfer gwefannau ac apiau yn cael ei ddileu.</translation>
 <translation id="9057030985451135243">Dysgu rhagor am grwpiau tabiau a rennir</translation>
 <translation id="9057972802061533987">Methu â dilyn. Aeth rhywbeth o'i le.</translation>

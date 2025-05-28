@@ -80,6 +80,7 @@
 <translation id="1049743911850919806">Navigation privée</translation>
 <translation id="1049795001945932310">&amp;Paramètres linguistiques</translation>
 <translation id="1050693411695664090">Médiocre</translation>
+<translation id="1053226848101751430">Entrée supprimée</translation>
 <translation id="1053898984916097744">Commencez une nouvelle activité ou obtenez de l'aide pour votre travail en cours.</translation>
 <translation id="1054048317165655285">Terminez la configuration sur votre téléphone</translation>
 <translation id="1054153489933238809">Ouvrir l'&amp;image originale dans un nouvel onglet</translation>
@@ -1803,6 +1804,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2249111429176737533">Ouvrir dans une fenêtre à onglets</translation>
 <translation id="2249605167705922988">par exemple : 1-5, 8, 11-13</translation>
 <translation id="2249635629516220541">Personnalisez les informations utilisées par les sites pour vous montrer des annonces</translation>
+<translation id="2250153645770828940">Supprimer le dictionnaire</translation>
 <translation id="22505994009453896">Contrôler le curseur de la souris avec un clavier numérique</translation>
 <translation id="2250624716625396929">Cet onglet utilise votre caméra et votre micro</translation>
 <translation id="2251218783371366160">Ouvrir avec le lecteur système</translation>
@@ -2227,6 +2229,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2519250377986324805">En savoir plus</translation>
 <translation id="2519517390894391510">Nom du profil du certificat</translation>
 <translation id="2520644704042891903">En attente d'une interface de connexion disponible…</translation>
+<translation id="2520961587246779103">Plus d'options pour la vue fractionnée</translation>
 <translation id="2521427645491031107">La synchronisation des applis est configurée dans les paramètres de l'appareil</translation>
 <translation id="2521835766824839541">piste précédente</translation>
 <translation id="2521854691574443804">Vérification du fichier "<ph name="FILE_NAME" />" par rapport aux règles de sécurité de votre organisation…</translation>
@@ -3170,6 +3173,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="3202578601642193415">Le plus récent</translation>
 <translation id="3204648577100496185">Les données associées à cette application pourront être supprimées de cet appareil</translation>
 <translation id="3204717934117444051">Les données enregistrées uniquement sur cet appareil resteront dans le profil existant. Elles ne seront pas synchronisées avec <ph name="EMAIL" />.</translation>
+<translation id="3206289903841621620">Dictionnaire personnel <ph name="NUMBER" /></translation>
 <translation id="3207344462385471911">Des suggestions de recherche et des remises sur les achats susceptibles de vous intéresser sont affichées en fonction de votre activité récente.
         <ph name="BREAK" />
         <ph name="BREAK" />
@@ -10003,6 +10007,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8073499153683482226"><ph name="BEGIN_PARAGRAPH1" />Les données d'applications correspondent aux données de tous types enregistrées par des applications en fonction des paramètres définis par le développeur. Elles incluent potentiellement des données sensibles comme des contacts, des messages et des photos.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Les données sauvegardées ne sont pas prises en compte dans le calcul du quota de stockage Drive de votre enfant.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />Vous pouvez désactiver ce service dans les paramètres.<ph name="END_PARAGRAPH3" /></translation>
+<translation id="8075044377771022666">Pied de page</translation>
 <translation id="8076835018653442223">Votre administrateur a désactivé l'accès aux fichiers locaux sur votre appareil</translation>
 <translation id="8077120325605624147">Tous les sites que vous consultez peuvent vous montrer des annonces</translation>
 <translation id="8077579734294125741">Autres profils Chrome</translation>
@@ -10938,6 +10943,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8729133765463465108">Scanner le QR code avec l'appareil photo</translation>
 <translation id="8730621377337864115">OK</translation>
 <translation id="8731029916209785242">Autorisations (<ph name="FORMATTED_ORIGIN" />)</translation>
+<translation id="8731258351357994801">Entrée <ph name="NUMBER" /></translation>
 <translation id="8731268612289859741">Code de sécurité</translation>
 <translation id="8731629443331803108"><ph name="SITE_NAME" /> souhaite obtenir l'autorisation suivante : <ph name="PERMISSION" /></translation>
 <translation id="8731787661154643562">Numéro de port</translation>

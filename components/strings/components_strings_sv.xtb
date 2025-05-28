@@ -2450,6 +2450,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="519422657042045905">Kommentering är inte tillgängligt</translation>
 <translation id="5200063972779787617">Spara adressen i kontot</translation>
 <translation id="5201306358585911203">På en inbäddad sida på den här sidan står det</translation>
+<translation id="5203716867500274632">Administratören har gjort att följande synkroniseras mellan dina tidigare och nuvarande sessioner på dina ChromeOS-enheter:</translation>
 <translation id="5205114269877707377"><ph name="OMNIBOX_ACTION_FOCUSED_FRIENDLY_MATCH_TEXT" />: tryck på Tabb för att bläddra bland tillgängliga åtgärder och sedan på Retur för att utföra den valda åtgärden.</translation>
 <translation id="5205222826937269299">Namn måste anges</translation>
 <translation id="5206392433295093945">Sovrum</translation>
@@ -2609,6 +2610,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="5472588168895083535">Handspårning har blockerats</translation>
 <translation id="547963486735802022">Testa att överföra filerna igen</translation>
 <translation id="5481076368049295676">Sidan kan ha till syfte att installera farlig mjukvara som stjäl eller raderar information på enheten. <ph name="BEGIN_LINK" />Visa ändå<ph name="END_LINK" />.</translation>
+<translation id="5481604577800516617">Fönster och flikar</translation>
 <translation id="5481682542063333508">Erbjud skrivhjälp</translation>
 <translation id="54817484435770891">Lägg till giltig adress</translation>
 <translation id="5483838506518938965">Nu är det klart</translation>
@@ -4284,6 +4286,7 @@ Mer information.
 <translation id="8352849934814541340">Administratören för enheten har installerat appar för ytterligare funktioner. Apparna har åtkomst till en del av din data.</translation>
 <translation id="8355270400102541638">Kontext för lokal krasch:</translation>
 <translation id="8363502534493474904">inaktivera flygplansläget</translation>
+<translation id="8363929499301563123">Webbplatscookies (inloggningsstatus på webbplatser som du har besökt nyligen bevaras)</translation>
 <translation id="8364627913115013041">Inte angiven.</translation>
 <translation id="8366057325711477500">Världsnyheter</translation>
 <translation id="836616551641291797">Läs mer om hur webbläsaren hanteras</translation>

@@ -313,6 +313,7 @@
 <translation id="4970880042055371251">Chrome OS-Version</translation>
 <translation id="4990567037958725628">Google Chrome Canary</translation>
 <translation id="5003967926796347400">Klicke auf „Google Passwortmanager“</translation>
+<translation id="504867494566807945">Du kannst über jede App Links in Chrome öffnen. Außerdem wird Chrome für einen einfachen Zugriff an die Taskleiste angepinnt.</translation>
 <translation id="5114340746415930644">Gib deine Passphrase ein, um Chrome-Daten in deinem Konto <ph name="USER_EMAIL" /> zu verwenden und zu speichern</translation>
 <translation id="5120334927898581447">In Chrome anmelden, wenn du dich in anderen Google-Diensten anmeldest</translation>
 <translation id="5126049312684316860">Chrome lädt noch mehr Seiten vorab, die du wahrscheinlich besuchen wirst, sodass sie dann schneller zur Verfügung stehen</translation>
@@ -389,6 +390,7 @@
 <translation id="6075300983329039771">Deine Organisation (<ph name="MANAGER" />) verlangt, dass du dich in Chrome anmeldest</translation>
 <translation id="6113794647360055231">Chrome ist jetzt noch besser</translation>
 <translation id="6116252277240876590">In dieser Sprache werden Menüs, Einstellungen, Benachrichtigungen und andere Texte in Chrome angezeigt</translation>
+<translation id="6127237283587442951">Chrome standardmäßig verwenden und anpinnen</translation>
 <translation id="6134085236017727171">Wenn du dein Mikrofon verwenden möchtest, erlaube Chrome über die <ph name="BEGIN_LINK" />Systemeinstellungen<ph name="END_LINK" /> den Zugriff darauf</translation>
 <translation id="6135456723633883042">Diese Tabs verbrauchen zusätzliche Ressourcen. Du kannst die Leistung verbessern, wenn du zulässt, dass Chrome sie deaktiviert.</translation>
 <translation id="6145313976051292476">PDFs in Chrome öffnen</translation>
@@ -503,7 +505,6 @@
 <translation id="7572537927358445944">Deaktiviert • Chrome kann nicht bestätigen, woher diese Erweiterung stammt</translation>
 <translation id="7583399374488819119"><ph name="COMPANY_NAME" />-Installationsprogramm</translation>
 <translation id="7606334485649076285">Google Chrome OS Flex</translation>
-<translation id="7626032353295482388">Willkommen bei Chrome</translation>
 <translation id="7626072681686626474">Für <ph name="MANAGER" /> ist es erforderlich, dass du vor der Verwendung dieses Geräts die folgenden Nutzungsbedingungen akzeptierst. Durch diese Nutzungsbedingungen werden die Google Chrome OS-Nutzungsbedingungen nicht erweitert, geändert oder eingeschränkt.</translation>
 <translation id="7629695634924605473">Chrome wird dich informieren, sollten deine Passwörter nicht mehr sicher sein</translation>
 <translation id="7641148173327520642">Dein Systemadministrator hat Google Chrome so konfiguriert, dass <ph name="ALTERNATIVE_BROWSER_NAME" /> für den Zugriff auf <ph name="TARGET_URL_HOSTNAME" /> geöffnet wird.</translation>
@@ -623,6 +624,7 @@
 <translation id="9090566250983691233">Gründe, warum Chrome einige Dateien blockiert</translation>
 <translation id="9106236359747881194">Einen Text für die Suche auswählen</translation>
 <translation id="911206726377975832">Auch die Browserdaten löschen?</translation>
+<translation id="9134482777260927479">Hilfe bei den Hausaufgaben</translation>
 <translation id="9138603949443464873">Starte Chrome neu, um die Änderungen zu übernehmen</translation>
 <translation id="9148058034647219655">Beenden</translation>
 <translation id="9195993889682885387">Chrome kann auf Grundlage deines Browserverlaufs der letzten Wochen deine Interessen schätzen. Diese Daten bleiben auf deinem Gerät.</translation>

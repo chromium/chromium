@@ -175,6 +175,7 @@
 <translation id="7942349550061667556">Rouge</translation>
 <translation id="7961015016161918242">Jamais</translation>
 <translation id="7966321538264951561">Ignorer les suggestions.</translation>
+<translation id="796696298310625748">{WINDOW_COUNT,plural, =1{Déplacer l'onglet vers la nouvelle fenêtre}one{Déplacer l'onglet vers une autre fenêtre}other{Déplacer l'onglet vers une autre fenêtre}}</translation>
 <translation id="799469866974412355">Nouveau groupe sur votre autre appareil</translation>
 <translation id="8029301326595421733">Les renseignements à propos de ce magasin sont ouverts à pleine hauteur</translation>
 <translation id="8053770993984522566">Liste des groupes d'onglets, ouverte à mi-hauteur</translation>
@@ -196,6 +197,7 @@
 <translation id="8730621377337864115">Terminé</translation>
 <translation id="8730999928494395583">Votre activité dans ces onglets de navigation privée sera retirée de cet appareil</translation>
 <translation id="875848103419578654">{NUM_MONTHS,plural, =1{Créé il y a <ph name="NUM_MONTHS_ONE" /> mois}one{Créé il y a <ph name="NUM_MONTHS_MANY" /> mois}other{Créé il y a <ph name="NUM_MONTHS_MANY" /> mois}}</translation>
+<translation id="8813708480179818649">Retirer l'onglet du groupe</translation>
 <translation id="8820741577754260431">Faites le suivi des baisses de prix dans vos onglets</translation>
 <translation id="883379923675618699">Chrome ferme automatiquement les éléments de la section inactive que vous n'avez pas utilisés depuis trois mois. Vous pouvez désactiver cette fonctionnalité en tout temps dans les paramètres.</translation>
 <translation id="8887921976452567404">Vos onglets et groupes fermés peuvent être rouverts à partir de la section Onglets récents et de la section Groupes d'onglets.</translation>

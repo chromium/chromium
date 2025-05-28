@@ -17,7 +17,7 @@
 <translation id="1006873397406093306">Esta extensión puede leer y cambiar tus datos en los sitios. Puedes controlar a qué sitios puede acceder la extensión.</translation>
 <translation id="1007057452468855774">Activar Google Play Store</translation>
 <translation id="1008186147501209563">Exportar marcadores</translation>
-<translation id="1008261151167010035"><ph name="BRAND" /> recuerda cómo has iniciado sesión e inicia tu sesión automáticamente cuando sea posible. Si esta opción está desactivada, se te pedirá confirmación siempre.</translation>
+<translation id="1008261151167010035"><ph name="BRAND" /> recuerda cómo has iniciado sesión y la inicia automáticamente cuando sea posible. Si esta opción está desactivada, se te pedirá confirmación siempre.</translation>
 <translation id="1008557486741366299">Ahora no</translation>
 <translation id="100881991356161927">Nombre del sitio</translation>
 <translation id="1009663062402466586">Controles de juegos ya disponibles</translation>
@@ -1803,6 +1803,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2249111429176737533">Abrir como ventana con pestañas</translation>
 <translation id="2249605167705922988">p. ej. 1-5, 8, 11-13</translation>
 <translation id="2249635629516220541">Personaliza la información que usan los sitios para mostrarte anuncios</translation>
+<translation id="2250153645770828940">Eliminar diccionario</translation>
 <translation id="22505994009453896">Controla el cursor del ratón con el teclado numérico</translation>
 <translation id="2250624716625396929">Esta pestaña está usando tu cámara y tu micrófono</translation>
 <translation id="2251218783371366160">Abrir con visor del sistema</translation>
@@ -2349,7 +2350,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="261114180663074524">Inicia sesión en tu cuenta de Microsoft y vuelve a intentarlo</translation>
 <translation id="2611702650078660078">Se ha producido un error</translation>
 <translation id="2611776654555141051">Herramienta de rectángulo</translation>
-<translation id="2612676031748830579">Número de la tarjeta</translation>
+<translation id="2612676031748830579">Número de tarjeta</translation>
 <translation id="261305050785128654">Permite que los sitios web sepan los idiomas que hablas. Si es posible, mostrarán contenido en esos idiomas.</translation>
 <translation id="2613210758071148851">No permitir ninguna extensión en <ph name="RESTRICTED_SITE" /></translation>
 <translation id="2613535083491958306"><ph name="ORIGIN" /> podrá editar <ph name="FILENAME" /></translation>
@@ -4714,6 +4715,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="4275397969489577657">Habilitar registro de emisión de eventos</translation>
 <translation id="4275788652681621337">Cerrar panel lateral</translation>
 <translation id="4275830172053184480">Reiniciar tu dispositivo</translation>
+<translation id="4276598757692536305">PPD de impresora</translation>
 <translation id="4276856098224910511">No se puede realizar la instalación porque hay una actualización del SO pendiente. Instala las actualizaciones pendientes del SO, reinicia y vuelve a intentarlo. El código de error es <ph name="ERROR" />.</translation>
 <translation id="4277434192562187284">Fuente de configuración de XMLs</translation>
 <translation id="4278348589087554892">{NUM_SITES,plural, =1{Permisos quitados de 1 sitio}other{Permisos quitados de {NUM_SITES} sitios}}</translation>
@@ -10063,7 +10065,7 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="8110489095782891123">Descargando lista de contactos...</translation>
 <translation id="8114925369073821854">Permiso de micrófono de <ph name="APP_NAME" /></translation>
 <translation id="8116972784401310538">Administrador de &amp;marcadores</translation>
-<translation id="8118276691321086429"><ph name="PASSWORD_MANAGER_BRAND" /> recuerda cómo has iniciado sesión e inicia tu sesión automáticamente cuando sea posible. Si esta opción está desactivada, se te pedirá confirmación siempre.</translation>
+<translation id="8118276691321086429"><ph name="PASSWORD_MANAGER_BRAND" /> recuerda cómo has iniciado sesión y la inicia automáticamente cuando sea posible. Si esta opción está desactivada, se te pedirá confirmación siempre.</translation>
 <translation id="8118362518458010043">Chrome ha inhabilitado esta extensión porque es posible que no sea segura.</translation>
 <translation id="8118448640060360549">{EXTENSIONS_COUNT,plural, =1{# marcador}other{# marcadores}}</translation>
 <translation id="8118488170956489476">Tu organización es la encargada de <ph name="BEGIN_LINK" />gestionar tu navegador<ph name="END_LINK" /></translation>

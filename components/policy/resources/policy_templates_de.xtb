@@ -944,6 +944,7 @@ Platzhalter wie <ph name="WILDCARD_VALUE" /> sind zulässig.
 Ursprünge, die sowohl mit blockierten als auch mit zulässigen Richtlinienmustern übereinstimmen, werden blockiert.
 Für Ursprünge, die nicht durch eine Richtlinie oder Nutzereinstellungen angegeben sind, ist zum Aufrufen dieser API eine vorherige Nutzergeste erforderlich.</translation>
 <translation id="1645793986494086629">Schema:</translation>
+<translation id="1647420986475965896">Einstellungen für Suchvorschläge in der Adressleiste und im Suchfeld auf der Seite „Neuer Tab“ im KI-Modus</translation>
 <translation id="1647558381546345298">Wenn du diese Richtlinie festlegst, wird die Cache-Größe konfiguriert, die <ph name="PRODUCT_NAME" /> zum Speichern von Mediendateien im Cache auf dem Datenträger verwendet, und zwar unabhängig davon, ob der Nutzer den Parameter "--media-cache-size" angegeben hat oder nicht. Der in dieser Richtlinie angegebene Wert ist keine feste Grenze, sondern ein Richtwert für das Caching-System. Werte, die kleiner als einige Megabyte sind, werden aufgerundet.
 
       Wird der Wert dieser Richtlinie auf 0 gesetzt, wird die Standard-Cache-Größe verwendet und Nutzer können sie nicht ändern.
@@ -2359,6 +2360,7 @@ Das System fragt AAAA-Einträge nur dann ab, wenn es für einen globalen IPv6-Ho
 <translation id="268695908564263739">Mit dieser Richtlinie wird die Einstellung „Modus für hohe Effizienz“ aktiviert oder deaktiviert. Die Einstellung bewirkt, dass Tabs nach einer bestimmten Zeit im Hintergrund geschlossen werden, um Arbeitsspeicher freizugeben.
       Wenn die Richtlinie nicht konfiguriert ist, kann der Endnutzer diese Einstellung unter chrome://settings/performance verwalten.
       </translation>
+<translation id="2687600966277668971">Der „SpeculationRules“-Prefetch kann nicht an von ServiceWorkers gesteuerte URLs gesendet werden (altes Verhalten).</translation>
 <translation id="2691668238491124549">Wenn die Richtlinie konfiguriert ist (als "nur empfohlene"), werden die empfohlenen Sprachen für eine verwaltete Sitzung an den Anfang der Liste verschoben. Sie werden in der Reihenfolge aufgeführt, in der sie in der Richtlinie vorkommen. Die erste empfohlene Sprache ist vorab ausgewählt.
 
       Ist die Richtlinie nicht konfiguriert, wird die aktuelle Sprache der Benutzeroberfläche vorab ausgewählt.
@@ -2381,6 +2383,16 @@ Das System fragt AAAA-Einträge nur dann ab, wenn es für einen globalen IPv6-Ho
 <translation id="2702682139813393777">Erzwingen, dass Windows-Hosts für natives Messaging über cmd.exe gestartet werden</translation>
 <translation id="270582584528242502">Keine Warnung anzeigen, wenn der Nutzer versucht, den Browser zu schließen</translation>
 <translation id="2706708761587205154">Drucken nur mit PIN zulassen</translation>
+<translation id="2706972066112233185">Mit dieser Richtlinie wird der Bereich für Suchvorschläge in der Adressleiste und im Suchfeld auf der Seite „Neuer Tab“ im KI-Modus gesteuert.
+
+Sofern die Funktion nicht durch diese Richtlinie deaktiviert wird, ist sie standardmäßig für alle Nutzer verfügbar, die Google als Standardsuchmaschine verwenden.
+
+Wenn die Richtlinie nicht konfiguriert ist, wird das Verhalten der Funktion durch die Richtlinie „<ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" />“ bestimmt.
+
+Wenn die Richtlinie auf „0 – Aktiviert“ festgelegt oder nicht konfiguriert ist, ist die Funktion für Nutzer verfügbar. Ist die Richtlinie auf „1 – Deaktiviert“ festgelegt, ist die Funktion nicht verfügbar.
+
+0 = Die Funktion darf verwendet werden.
+1 = Die Funktion darf nicht verwendet werden.</translation>
 <translation id="2707733461906745082">Profiltrennung</translation>
 <translation id="2707873794476722903">Safe Browsing ist im Standardmodus aktiv.</translation>
 <translation id="2709516037105925701">Autofill</translation>
@@ -3980,6 +3992,7 @@ Falls die Richtlinie nicht festgelegt wird, bleibt die Varianten-Seed-URL unver�
 
  Wenn die Richtlinie nicht konfiguriert oder auf einen leeren oder ungültigen Wert festgelegt ist, wird Druckauftragsanfragen kein zusätzlicher Wert „<ph name="CLIENT_INFO_IPP_ATTRIBUTE" />“ hinzugefügt.
 </translation>
+<translation id="3895626555961466729">Empfehlungen im KI-Modus zulassen.</translation>
 <translation id="3896591584655529057">Speichern von Passkeys im Passwortmanager aktivieren</translation>
 <translation id="3896751141670591496">Wenn die Richtlinie aktiviert oder nicht konfiguriert ist, werden Sicherheitswarnungen angezeigt, wenn Chrome mit potenziell schädlichen Befehlszeilen-Flags gestartet wird.
 
@@ -4399,6 +4412,7 @@ Nicht mehr unterstützt: Die Paketverfolgung ist seit M132 deaktiviert und diese
 <translation id="4189872355465413041">System-Apps</translation>
 <translation id="4190316993598857632">Bearbeitung von Lesezeichen aktivieren</translation>
 <translation id="4192388905594723944">URL zur Überprüfung des Client-Authentifizierungs-Tokens für den Remote-Zugriff</translation>
+<translation id="4195119404667420672">„SpeculationRules“-Prefetch kann an von ServiceWorkers gesteuerte URLs gesendet werden.</translation>
 <translation id="4195698007674066525">Standardmäßig numerische Tastatur für Passworteingabe anzeigen</translation>
 <translation id="4203055629055264833">Wenn die Richtlinie aktiviert oder nicht konfiguriert ist, können Nutzer ihre neuesten Ergebnisse der Standardsuchmaschine in einer Seitenleiste anzeigen, indem sie ein Symbol in der Symbolleiste ein- oder ausschalten.
 
@@ -4971,6 +4985,13 @@ Die Einstellung <ph name="CHROME_OS_RELEASE_CHANNEL_POLICY_NAME" /> ist nur wirk
 <translation id="4650044303940238102">Einstellungen für lokale Schriftarten</translation>
 <translation id="4650759511838826572">URL-Protokollschemas deaktivieren</translation>
 <translation id="465099050592230505">Unternehmens-Web-Store-URL (veraltet)</translation>
+<translation id="4652388001247121058">„SpeculationRules-Prefetch“ kann für URLs ausgegeben werden, die von ServiceWorkers gesteuert werden. Der alte Code erlaubte dies jedoch nicht und brach die Prefetch-Anfragen ab. Mit dieser Richtlinie lässt sich das Verhalten steuern.
+
+Wenn die Richtlinie aktiviert oder nicht konfiguriert ist, ist der „SpeculationRules“-Prefetch für von ServiceWorkers gesteuerte URLs zulässig. Dies gilt, wenn das Funktions-Flag „PrefetchServiceWorker“ aktiviert ist. Dies ist das aktuelle Standardverhalten und entspricht den Spezifikationen.
+
+Wenn diese Richtlinie deaktiviert ist, wird der „SpeculationRules“-Prefetch für von ServiceWorkers gesteuerte URLs nicht zugelassen. Dies entspricht dem alten Verhalten.
+
+Diese Richtlinie ist vorübergehend und wird zukünftig entfernt.</translation>
 <translation id="4653465451589191309">Wenn die Richtlinie aktiviert oder nicht konfiguriert ist, können Nutzer VPN-Verbindungen verwalten, d. h. trennen oder ändern. Wenn die VPN-Verbindung innerhalb einer VPN-App erstellt wird, hat diese Richtlinie keine Auswirkungen auf die Benutzeroberfläche der App. So können Nutzer die App auch weiterhin zum Ändern der VPN-Verbindung verwenden. Diese Richtlinie soll gemeinsam mit der Funktion „Durchgehend aktives VPN“ verwendet werden, mit der der Administrator festlegen kann, ob beim Start eines Geräts eine VPN-Verbindung hergestellt werden soll.
 
       Wenn diese Richtlinie deaktiviert ist, werden die Benutzeroberflächen in <ph name="PRODUCT_OS_NAME" /> deaktiviert, mit denen Nutzer VPN-Verbindungen trennen oder ändern.</translation>
@@ -5648,6 +5669,7 @@ Falls die Richtlinie nicht konfiguriert oder deaktiviert ist, können Cookies un
 
           Wenn diese Richtlinie nicht festgelegt wird, wird die Standardbefehlszeile verwendet.</translation>
 <translation id="5151099177901233471">Melden der Zeitzoneninformationen auf Geräten deaktivieren</translation>
+<translation id="5151163911478747031">Namensnennung für Erweiterungen in der Fußzeile auf der Seite „Neuer Tab“ deaktivieren</translation>
 <translation id="5152393033264257734">DNS-Abfangprüfungen und „Meintest du: http://intranetsite/“-Infoleisten erlauben.</translation>
 <translation id="5152787786897382519">Sowohl in Chromium als auch in Google Chrome gibt es Richtliniengruppen, die in Abhängigkeit voneinander die Steuerung einer Funktion ermöglichen. Diese Richtliniensätze werden durch die folgenden Richtliniengruppen repräsentiert. Aufgrund der Tatsache, dass Richtlinien mehrere Quellen haben können, werden nur Werte, die aus der Quelle mit der höchsten Priorität stammen, angewendet. Werte aus einer Quelle mit niedrigerer Priorität in derselben Gruppe werden ignoriert. Die Hierarchie wird unter <ph name="POLICY_PRIORITY_DOC_URL" /> definiert.</translation>
 <translation id="5153187201534281749">Symbol für experimentelle Browserfunktionen auf der Symbolleiste</translation>
@@ -5736,6 +5758,7 @@ HINWEIS: Während der Browser ausgeführt wird, werden Änderungen an dieser Ric
 <translation id="5194683382395300627">Verwendung von <ph name="ASSISTANT_PRODUCT_NAME" /> im Web zulassen, z. B. um das automatische Ändern von Passwörtern zu ermöglichen</translation>
 <translation id="5196630732055960309">File Handling API bei diesen Webanwendungen erlauben</translation>
 <translation id="5205352023880027050">Aktiviere nicht die Funktion „EphemeralNetworkPolicies“.</translation>
+<translation id="5205385499831960279">Einschränkungen auf Anfragen an lokale Netzwerkendpunkte anwenden</translation>
 <translation id="5206454085187851382">Wenn <ph name="PRINTERS_ALLOWLIST" /> für <ph name="PRINTERS_BULK_ACCESS_MODE_POLICY_NAME" /> ausgewählt ist, wird durch Festlegen von <ph name="PRINTERS_BULK_ALLOWLIST_POLICY_NAME" /> angegeben, welche Drucker die Nutzer verwenden können. Den Nutzern stehen nur die Drucker zur Verfügung, deren IDs mit den Werten in dieser Richtlinie übereinstimmen. Die IDs müssen dem Feld <ph name="ID_FIELD" /> oder dem Feld <ph name="GUID_FIELD" /> in der Datei entsprechen, die in <ph name="PRINTERS_BULK_CONFIGURATION_POLICY_NAME" /> angegeben ist.</translation>
 <translation id="5207543664699568887">Mit der Richtlinie wird konfiguriert, ob <ph name="PRODUCT_NAME" /> unter Linux Systembenachrichtigungen verwendet.
 
@@ -5976,6 +5999,7 @@ Verwaltete Konten können keiner Familiengruppe beitreten oder eine erstellen un
 <translation id="5334404204520035180">Verwendung der WebPrinting API festlegen</translation>
 <translation id="5334501839642146593">Messwerte nie an Google senden</translation>
 <translation id="5335910979215357815">Save and Share API für die <ph name="PRODUCT_OS_NAME" />-Steuerung durch Drittanbieter aktivieren.</translation>
+<translation id="5337869685871558036">„SpeculationRules“-Prefetch für von ServiceWorkers gesteuerte URLs zulassen</translation>
 <translation id="5339096331970464266">Bedienungshilfe „Bildschirmtastatur“ aktivieren</translation>
 <translation id="5340008866815063393">Erfassen von Richtliniendaten aktivieren</translation>
 <translation id="5345892164332459671">Floating-SSO deaktivieren und die Webdienst-Authentifizierungen des Nutzers nicht auf ein neues Gerät verschieben</translation>
@@ -6633,6 +6657,7 @@ Unter <ph name="MS_WIN_NAME" /> steht diese Richtlinie nur bei Instanzen zur Ver
 
       Hinweis: Der Skalierungsfaktor muss bei mindestens 100 % liegen.</translation>
 <translation id="5740636973289452345">Erfassen von Daten zu Erweiterungen und Plug-ins aktivieren</translation>
+<translation id="5740716956489996914">Standardverhalten anwenden, wenn festgelegt wird, ob Websites Anfragen an lokale Netzwerkendpunkte senden können</translation>
 <translation id="5741110260062082926">Orca deaktivieren</translation>
 <translation id="5746149754419996562">Dadurch können Glanceables-Widgets in <ph name="PRODUCT_OS_NAME" /> verwendet werden. Das gilt insbesondere für die Widgets, die über den Datums-Chip in der Ablage verfügbar sind.
 Wenn diese Richtlinie aktiviert ist, sind Glanceables in <ph name="PRODUCT_OS_NAME" /> aktiviert.
@@ -6754,6 +6779,7 @@ Weitere Informationen zur Datenverarbeitung bei auf generativer KI basierenden 
 
       Ist sie deaktiviert oder nicht konfiguriert, werden keine Systemprotokolle gemeldet.</translation>
 <translation id="5861856285460256766">Konfiguration von Elternzugangscodes</translation>
+<translation id="5864898931148094192">Sichtbarkeit der Namensnennung für Erweiterungen auf der Seite „Neuer Tab“ steuern</translation>
 <translation id="5868414965372171132">Netzwerkkonfiguration auf Nutzerebene</translation>
 <translation id="5868454276721377379">Wenn ein Nutzer zwischen <ph name="PRODUCT_OS_NAME" />-Geräten wechselt, stellt der Floating-SSO-Dienst den Webdienst-Authentifizierungsstatus des Nutzers vom vorherigen Gerät auf dem neuen Gerät wieder her. Dazu werden die Cookies des Nutzers zwischen den Geräten verschoben.
 
@@ -6880,11 +6906,6 @@ Unter <ph name="MAC_OS_NAME" /> steht diese Richtlinie nur bei Instanzen zur Ver
 <translation id="5917897389577978190">Gmail (wird seit Version 135 unterstützt)</translation>
 <translation id="592036544845479336">Eingestellte/entfernte Mutationsereignisse wieder aktivieren</translation>
 <translation id="5921713479449475707">Downloads automatischer Updates über HTTP zulassen</translation>
-<translation id="5923084443277419535">Der HTML-Parser wird geändert, um zusätzliche HTML-Tags im &lt;select&gt;-Element zuzulassen. Mit dieser Richtlinie kann das alte HTML-Parser-Verhalten bis M138 verwendet werden.
-
-Wenn diese Richtlinie aktiviert oder nicht konfiguriert ist, erlaubt der HTML-Parser zusätzliche Tags im &lt;select&gt;-Element.
-
-Wenn diese Richtlinie deaktiviert ist, schränkt der HTML-Parser ein, welche Tags im &lt;select&gt;-Element platziert werden können.</translation>
 <translation id="5925405187134730827">Diese Richtlinie wurde eingestellt, da die von ihr gesteuerte Funktion nie eingeführt wurde. Verwende stattdessen die Richtlinie „<ph name="ENTERPRISE_PROFILE_BADGE_TOOLBAR_SETTINGS" />“.
 
 Ist diese Richtlinie nicht konfiguriert oder auf „<ph name="DISPLAY_MANAGEMENT_LABEL_PERMAMENT_VALUE" />“ (Wert 0) gesetzt, wird neben dem Avatar der Symbolleiste das Label „Arbeit“ oder „Schule“ angezeigt.
@@ -7036,6 +7057,13 @@ Diese Richtlinie wird ab M124 eingestellt.</translation>
 <translation id="604243460476563291">Dateiübertragung in Remote-Supportverbindungen von Unternehmensadministratoren deaktivieren</translation>
 <translation id="6042629184389251062">Das Erfassen von URL-Messwerten ist nicht zulässig</translation>
 <translation id="6046615715547751255">Steuerelemente für detailliertes Reporting nicht zulassen</translation>
+<translation id="6047041034696466581">Mit dieser Richtlinie wird festgelegt, ob in der Fußzeile der Seite „Neuer Tab“ eine Namensnennung für die Erweiterung angezeigt wird, die die Seite „Neuer Tab“ ändert.
+
+Wenn eine Erweiterung die Standardseite „Neuer Tab“ überschreibt, wird standardmäßig eine Meldung in der Fußzeile angezeigt, die diese Änderung der entsprechenden Erweiterung zuordnet. Die Meldung enthält in der Regel einen Link zu der Erweiterung im Chrome Web Store.
+
+Ist diese Richtlinie auf „true“ gesetzt oder nicht konfiguriert, wird die Namensnennung für die Erweiterung in der Fußzeile der Seite „Neuer Tab“ angezeigt, wenn diese Seite von einer Erweiterung gesteuert wird.
+
+Ist die Richtlinie auf „false“ gesetzt, wird keine Namensnennung für die Erweiterung in der Fußzeile der Seite „Neuer Tab“ angezeigt.</translation>
 <translation id="6048199181629830227">Energieverwaltung zum Umschalten bei Leistungsspitzen aktivieren</translation>
 <translation id="6048690591359317353">Nutzern nicht erlauben, VPN-Verbindungen manuell zu trennen oder zu ändern</translation>
 <translation id="6049117606554031363">Melden des Boardstatus auf Geräten aktivieren</translation>
@@ -7566,6 +7594,7 @@ Eine Liste der Variablen, die du verwenden kannst, findest du unter https://www.
 
 Wenn die Richtlinie nicht konfiguriert ist, verwendet <ph name="PRODUCT_OS_NAME" /> das Standardverzeichnis „Downloads“ zum Speichern von Bildschirmaufnahmen. Dieser Speicherort kann vom Nutzer geändert werden.</translation>
 <translation id="6377031865393559909">Nutzer dürfen Desktopvorlagen verwenden</translation>
+<translation id="6377570995433636383">Gibt an, ob Einschränkungen auf Anfragen an lokale Netzwerkendpunkte angewendet werden sollen</translation>
 <translation id="6378076389057087301">Angaben zum Einfluss von Audioaktivitäten auf den Energiesparmodus</translation>
 <translation id="6378393933102834628">Wenn die Richtlinie auf "True" gesetzt ist, wird die Apps-Verknüpfung eingeblendet. Ist sie auf "False" gesetzt, wird die Verknüpfung nie eingeblendet.
 
@@ -9533,6 +9562,11 @@ Wenn für die Richtlinie „false“ festgelegt oder sie nicht konfiguriert ist,
 Weitere Informationen zur Richtlinie <ph name="IEEM_SITELIST_POLICY" /> von Internet Explorer: https://docs.microsoft.com/internet-explorer/ie11-deploy-guide/what-is-enterprise-mode</translation>
 <translation id="7791215522423893512">Nutzer dürfen keine Screenshots und Videoaufzeichnungen machen</translation>
 <translation id="7792796937016596423">Der Nutzer ist nicht zu Netzwerkpaketaufnahmen berechtigt</translation>
+<translation id="7795648856511126914">Der HTML-Parser wird geändert, um zusätzliche HTML-Tags im &lt;select&gt;-Element zuzulassen. Mit dieser Richtlinie kann das alte HTML-Parser-Verhalten bis M136 verwendet werden.
+
+Wenn diese Richtlinie aktiviert oder nicht konfiguriert ist, erlaubt der HTML-Parser zusätzliche Tags im &lt;select&gt;-Element.
+
+Wenn diese Richtlinie deaktiviert ist, schränkt der HTML-Parser ein, welche Tags im &lt;select&gt;-Element platziert werden können.</translation>
 <translation id="7798441698807517880">Diese Richtlinie ist seit Version 89 von <ph name="PRODUCT_NAME" /> nicht mehr enthalten, da <ph name="FLASH_PLUGIN_NAME" /> eingestellt wurde.
 
       Wenn die Richtlinie auf „True“ gesetzt ist, werden alle <ph name="FLASH_PLUGIN_NAME" />-Inhalte ausgeführt, die auf Websites eingebettet sind, die <ph name="FLASH_PLUGIN_NAME" /> zulassen. Hierzu gehören auch Inhalte anderer Herkunft sowie kleine Inhalte.
@@ -10249,6 +10283,7 @@ Weitere Informationen zu Legacy-Technologien findest du unter https://chromestat
       <ph name="TAB_CAPTURE_ALLOWED_BY_ORIGINS_POLICY_NAME" />,
       <ph name="SAME_ORIGIN_TAB_CAPTURE_ALLOWED_BY_ORIGINS_POLICY_NAME" />.
       </translation>
+<translation id="8309511882585098865">Empfehlungen im KI-Modus nicht zulassen.</translation>
 <translation id="8310392396850884147">CORS-Anfrageheader ohne Platzhalter unterstützen.</translation>
 <translation id="8312129124898414409">Ermöglicht dir, festzulegen, ob die Schlüsselgenerierung für Websites zugelassen wird. Die Schlüsselgenerierung kann entweder für alle Websites zugelassen oder für alle Websites verboten werden.
 
@@ -10963,6 +10998,7 @@ Wenn diese Richtlinie auf „True“ gesetzt ist, wird das adaptive Lademodell a
 Ist diese Richtlinie auf „False“ gesetzt oder nicht konfiguriert, hat das adaptive Lademodell keinen Einfluss auf den Ladevorgang.
 
 Hinweis: Diese Richtlinie hat keine Auswirkungen, wenn „DevicePowerBatteryChargingOptimization“ konfiguriert ist.</translation>
+<translation id="883025651704099882">Namensnennung für Erweiterungen in der Fußzeile auf der Seite „Neuer Tab“ aktivieren</translation>
 <translation id="8830717323204407209">Nutzern darf Werbung zur Erweiterung für Anmeldeinformationsanbieter angezeigt werden</translation>
 <translation id="8832829916385857156">Die „Neuer Tab“-Seite zeigt Karten an, sofern Inhalte vorhanden sind</translation>
 <translation id="8833109046074170275">Authentifizierung über den standardmäßigen GAIA-Vorgang</translation>
@@ -11220,6 +11256,11 @@ Ist die Richtlinie deaktiviert, sind alle Integrationen deaktiviert.</translatio
       Sollte das URL-Muster sowohl in dieser Richtlinie als auch in der Richtlinie „<ph name="SENSORS_BLOCKED_FOR_URLS_POLICY_NAME" />“ enthalten sein, hat letztere Vorrang und der Zugriff auf Bewegungs- und Lichtsensoren wird blockiert.
 
       Ausführliche Informationen zu gültigen <ph name="URL_LABEL" />-Mustern findest du unter https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. Platzhalter wie <ph name="WILDCARD_VALUE" /> sind zulässig.</translation>
+<translation id="9002299469625801504">Wenn diese Richtlinie aktiviert ist und aufgrund fehlgeschlagener <ph name="LOCAL_NETWORK_ACCCESS" />-Prüfungen in <ph name="DEV_TOOLS_NAME" /> eine Warnung angezeigt werden sollte, wird stattdessen die Hauptanfrage blockiert.
+
+Wenn diese Richtlinie deaktiviert oder nicht konfiguriert ist, wird für <ph name="LOCAL_NETWORK_ACCESS" />-Anfragen die Standardeinstellung für derartige Anfragen verwendet.
+
+Unter https://github.com/explainers-by-googlers/local-network-access findest du Informationen zu Einschränkungen für <ph name="LOCAL_NETWORK_ACCESS" />.</translation>
 <translation id="9003823644527627017">Bruschetta-VMs unter <ph name="PRODUCT_OS_NAME" /> konfigurieren</translation>
 <translation id="9004469022085379212">Wenn die Richtlinie aktiviert ist, kann das Gerät unter <ph name="PRODUCT_OS_NAME" /> virtuelle Maschinen ausführen. <ph name="VIRTUAL_MACHINES_ALLOWED_POLICY_NAME" /> und <ph name="CROSTINI_ALLOWED_POLICY_NAME" /> müssen aktiviert sein, um <ph name="PRODUCT_CROSTINI_NAME" /> zu verwenden. Ist die Richtlinie deaktiviert, kann das Gerät keine virtuellen Maschinen ausführen. Wenn sie deaktiviert wird, wird die Richtlinie beim Starten neuer virtueller Maschinen angewandt. Die bereits ausgeführten sind nicht betroffen.
 

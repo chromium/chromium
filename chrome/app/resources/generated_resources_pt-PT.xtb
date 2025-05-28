@@ -4716,6 +4716,7 @@ Quer pará-lo?</translation>
 <translation id="4275397969489577657">Ativar o registo de transmissões de eventos</translation>
 <translation id="4275788652681621337">Feche o painel lateral</translation>
 <translation id="4275830172053184480">Reiniciar o dispositivo</translation>
+<translation id="4276598757692536305">PPD da impressora</translation>
 <translation id="4276856098224910511">Não é possível instalar. A atualização do SO está pendente. Aplique as atualizações do SO pendentes, reinicie e tente novamente. O código de erro é <ph name="ERROR" />.</translation>
 <translation id="4277434192562187284">Origem da configuração XML</translation>
 <translation id="4278348589087554892">{NUM_SITES,plural, =1{Autorizações removidas de 1 site}other{Autorizações removidas de {NUM_SITES} sites}}</translation>

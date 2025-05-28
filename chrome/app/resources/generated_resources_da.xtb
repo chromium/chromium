@@ -80,6 +80,7 @@
 <translation id="1049743911850919806">Inkognito</translation>
 <translation id="1049795001945932310">&amp;Sprogindstillinger</translation>
 <translation id="1050693411695664090">Dårlig</translation>
+<translation id="1053226848101751430">Opslagsordet er slettet</translation>
 <translation id="1053898984916097744">Start et nyt projekt, eller få hjælp undervejs.</translation>
 <translation id="1054048317165655285">Gennemfør konfigurationen på din telefon</translation>
 <translation id="1054153489933238809">Åbn originalbillede på ny fane</translation>
@@ -2241,6 +2242,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2519250377986324805">Se hvordan</translation>
 <translation id="2519517390894391510">Navn på certifikatprofil</translation>
 <translation id="2520644704042891903">Venter på tilgængelig socket...</translation>
+<translation id="2520961587246779103">Flere valgmuligheder for opdelt visning</translation>
 <translation id="2521427645491031107">Synkronisering af apps angives i enhedsindstillingerne</translation>
 <translation id="2521835766824839541">forrige nummer</translation>
 <translation id="2521854691574443804">Tjekker <ph name="FILE_NAME" /> i henhold til din organisations sikkerhedspolitikker...</translation>
@@ -3186,6 +3188,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="3202578601642193415">Nyeste</translation>
 <translation id="3204648577100496185">Data, der er knyttet til denne app, fjernes muligvis fra enheden</translation>
 <translation id="3204717934117444051">Data, der kun er gemt på denne enhed, forbliver på den eksisterende profil. De synkroniseres ikke med <ph name="EMAIL" /></translation>
+<translation id="3206289903841621620">Brugerordbog <ph name="NUMBER" /></translation>
 <translation id="3207344462385471911">Du får vist foreslåede søgninger og shoppingrabatter, der kan være interessante for dig, baseret på din seneste aktivitet.
         <ph name="BREAK" />
         <ph name="BREAK" />
@@ -7704,7 +7707,7 @@ Flere kontakter kan tildeles denne handling.</translation>
 <translation id="6445450263907939268">Hvis du ikke var interesseret i disse ændringer, kan du gendanne dine tidligere indstillinger.</translation>
 <translation id="6446213738085045933">Opret genvej på skrivebordet</translation>
 <translation id="6447842834002726250">Cookies</translation>
-<translation id="6450876761651513209">Rediger privatlivsrelaterede indstillinger</translation>
+<translation id="6450876761651513209">Redigere privatlivsrelaterede indstillinger</translation>
 <translation id="6451591602925140504">{NUM_PAGES,plural, =0{<ph name="PAGE_TITLE" />}=1{<ph name="PAGE_TITLE" /> og 1 anden fane}one{<ph name="PAGE_TITLE" /> og # anden fane}other{<ph name="PAGE_TITLE" /> og # andre faner}}</translation>
 <translation id="6451689256222386810">Hvis du har glemt din adgangssætning eller vil ændre denne indstilling, skal du <ph name="BEGIN_LINK" />nulstille synkroniseringen<ph name="END_LINK" />.</translation>
 <translation id="6451861213630784801">Du er logget ud</translation>
@@ -10019,6 +10022,7 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8073499153683482226"><ph name="BEGIN_PARAGRAPH1" />Appdata kan være alle former for data, som en app har gemt (baseret på udviklerens indstillinger), f.eks. kontakter, beskeder og billeder.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Sikkerhedskopierede data tæller ikke med i din kvote for Drev-lagerplads.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />Du kan deaktivere denne tjeneste i Indstillinger.<ph name="END_PARAGRAPH3" /></translation>
+<translation id="8075044377771022666">Sidefod</translation>
 <translation id="8076835018653442223">Din administrator har deaktiveret adgangen til lokale filer på din enhed</translation>
 <translation id="8077120325605624147">Ethvert website, du besøger, kan vise dig en hvilken som helst annonce</translation>
 <translation id="8077579734294125741">Andre Chrome-profiler</translation>
@@ -10954,6 +10958,7 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8729133765463465108">Scan QR-koden med kameraet</translation>
 <translation id="8730621377337864115">Udført</translation>
 <translation id="8731029916209785242">Tilladelser (<ph name="FORMATTED_ORIGIN" />)</translation>
+<translation id="8731258351357994801">Opslagsord <ph name="NUMBER" /></translation>
 <translation id="8731268612289859741">Sikkerhedskode</translation>
 <translation id="8731629443331803108"><ph name="SITE_NAME" /> vil gerne have tilladelse til at: <ph name="PERMISSION" /></translation>
 <translation id="8731787661154643562">Portnummer</translation>

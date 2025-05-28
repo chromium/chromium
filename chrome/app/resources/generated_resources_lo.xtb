@@ -485,6 +485,7 @@
 <translation id="1319983966058170660">ປຸ່ມກັບຄືນຂອງໜ້າຍ່ອຍ <ph name="SUBPAGE_TITLE" /></translation>
 <translation id="1322046419516468189">ເບິ່ງ ແລະ ຈັດການລະຫັດຜ່ານທີ່ບັນທຶກໄວ້ໃນ <ph name="SAVED_PASSWORDS_STORE" /> ຂອງທ່ານ</translation>
 <translation id="132539964543492755">ໃຊ້ປຸ່ມ “x” ເພື່ອປ່ຽນການເລືອກປຸ່ມເມົ້າລະຫວ່າງປຸ່ມຊ້າຍ, ປຸ່ມຂວາ ແລະ ທັງສອງປຸ່ມ</translation>
+<translation id="1325611581149097457">ຂຽນດີຂຶ້ນ</translation>
 <translation id="1325898422473267360"><ph name="PERMISSION_USAGE" /> <ph name="PERMISSION_INDICATOR_DESCRIPTION" /></translation>
 <translation id="1327272175893960498">ປີ້ Kerberos</translation>
 <translation id="1327495825214193325">ເພື່ອເປີດນຳໃຊ້ການດີບັກ ADB, ຈຳເປັນຕ້ອງຣີສະຕາດ <ph name="DEVICE_TYPE" /> ນີ້. ການປິດນຳໃຊ້ມັນຈຳເປັນຕ້ອງຣີເຊັດເປັນການຕັ້ງຄ່າຈາກໂຮງງານ.</translation>
@@ -1811,6 +1812,7 @@
 <translation id="2249111429176737533">ເປີດເປັນໜ້າຈໍແຖບ</translation>
 <translation id="2249605167705922988">ຕົວ​ຢ່າງ​: 1-5​, 8​, 11-13</translation>
 <translation id="2249635629516220541">ປັບແຕ່ງຂໍ້ມູນທີ່ໃຊ້ໂດຍເວັບໄຊເພື່ອສະແດງໂຄສະນາໃຫ້ທ່ານເຫັນ</translation>
+<translation id="2250153645770828940">ລຶບວັດຈະນານຸກົມ</translation>
 <translation id="22505994009453896">ຄວບຄຸມເຄີເຊີເມົ້າຂອງທ່ານດ້ວຍແປ້ນພິມຕົວເລກ</translation>
 <translation id="2250624716625396929">ແຖບນີ້ກຳລັງໃຊ້ກ້ອງຖ່າຍຮູບ ແລະ ໄມໂຄຣໂຟນຂອງທ່ານ</translation>
 <translation id="2251218783371366160">ເປີດດ້ວຍຕົວເບິ່ງລະບົບ</translation>
@@ -1998,6 +2000,7 @@
 <translation id="2359345697448000899">ຈັດການສ່ວນຂະຫຍາຍຂອງທ່ານໂດຍການຄລິກສ່ວນຂະຫຍາຍຢູ່ໃນເມນູເຄື່ອງມື.</translation>
 <translation id="2359556993567737338">ເຊື່ອມຕໍ່ອຸປະກອນ Bluetooth</translation>
 <translation id="2359808026110333948">ສືບຕໍ່</translation>
+<translation id="2360047907847684514">ເພີ່ມປະສິດທິພາບໂປຣແກຣມທ່ອງເວັບຂອງທ່ານດ້ວຍສ່ວນຂະຫຍາຍ ແລະ ຮູບແບບສີສັນ</translation>
 <translation id="2360792123962658445">ເພື່ອເບິ່ງຂໍ້ມູນສະຫຼຸບໜ້າເວັບ, ການຊອກຫາທີ່ກ່ຽວຂ້ອງ ແລະ ຂໍ້ມູນອື່ນໆທີ່ເປັນປະໂຫຍດກ່ຽວກັບໜ້ານີ້, ໃຫ້ເລືອກປຸ່ມແຜງຄວບຄຸມດ້ານຂ້າງຂອງ Google ຊອກຫາໃນແຖບເຄື່ອງມື</translation>
 <translation id="2361100938102002520">ທ່ານກຳລັງເພີ່ມໂປຣໄຟລ໌ທີ່ມີການຈັດການໄປໃສ່ໂປຣແກຣມທ່ອງເວັບນີ້. ຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານສາມາດຄວບຄຸມໂປຣໄຟລ໌ ແລະ ເຂົ້າເຖິງຂໍ້ມູນຂອງມັນໄດ້.</translation>
 <translation id="236117173274098341">ປັບໃຫ້ເໝາະສົມ</translation>
@@ -2476,6 +2479,7 @@
 <translation id="2692503699962701720">ປ່ຽນລະດັບສຽງເວົ້າໃນເວລາເວົ້າປະເພດອົງປະກອບ ແລະ ຂໍ້ຄວາມທີ່ມີການຈັດຮູບແບບ</translation>
 <translation id="2692901429679246677">ນ້ຳ</translation>
 <translation id="2693134906590795721">ສຽງການສາກ</translation>
+<translation id="2695943520968279338">ຄົ້ນພົບສ່ວນຂະຫຍາຍ</translation>
 <translation id="2698147581454716013">ອຸປະກອນນີ້ເປັນສ່ວນໜຶ່ງຂອງຊຸດ ແລະ ບໍ່ສາມາດລົງທະບຽນກັບ Kiosk ແລະ Signage Upgrade ໄດ້.</translation>
 <translation id="2699911226086014512">ການດຳເນີນ PIN ບໍ່ສຳເລັດໂດຍມີລະຫັດ <ph name="RETRIES" />.</translation>
 <translation id="2701330563083355633">ແບ່ງປັນຈາກ <ph name="DEVICE_NAME" /></translation>
@@ -2990,6 +2994,7 @@
 <translation id="3043126717220766543">ລຶບລ້າງການແນະນຳກຸ່ມ</translation>
 <translation id="3043218608271070212"><ph name="GROUP_NAME" /> - <ph name="GROUP_CONTENT_STRING" /></translation>
 <translation id="3043581297103810752">ຈາກ <ph name="ORIGIN" /></translation>
+<translation id="3044066905368192931">ປັບປຸງໃຫ້ດີຂຶ້ນດ້ວຍ AI</translation>
 <translation id="3045447014237878114">ເວັບໄຊນີ້ໄດ້ດາວໂຫຼດຫຼາຍໄຟລ໌ໂດຍອັດຕະໂນມັດ</translation>
 <translation id="3046178388369461825">ພື້ນທີ່ດິສກ໌ Linux ເຫຼືອໜ້ອຍລະດັບວິກິດແລ້ວ</translation>
 <translation id="304644035656848980">ຕົວຢ່າງໄມໂຄຣໂຟນຂອງທ່ານ</translation>
@@ -4593,6 +4598,7 @@
 <translation id="4176864026061939326">ອຸປະກອນນີ້ຖືກຈັດການຢູ່. ຕ້ອງໃຊ້ໂປຣໄຟລ໌ໃໝ່ສຳລັບບັນຊີ <ph name="USER_EMAIL_ADDRESS" /> ໂດຍຜູ້ເບິ່ງແຍງລະບົບອຸປະກອນຂອງທ່ານ</translation>
 <translation id="4177501066905053472">ຫົວຂໍ້ໂຄສະນາ</translation>
 <translation id="4177668342649553942">ເປີດ <ph name="SHORTCUT_NAME" /> - <ph name="APP_NAME" /></translation>
+<translation id="4177731895051842298">ສ່ວນຂະຫຍາຍແມ່ນສ່ວນເສີມຂອງ Chrome ທີ່ສາມາດຊ່ວຍໃຫ້ທ່ານຈັດລະບຽບ, ເຮັດໃຫ້ວຽກງານງ່າຍຂຶ້ນ ແລະ ປັບແຕ່ງການທ່ອງເວັບຂອງທ່ານ</translation>
 <translation id="4178220097446335546">ເພື່ອລືມການສະໝັກສະມາຊິກນີ້ ແລະ ເຄືອຂ່າຍທີ່ກ່ຽວຂ້ອງຂອງມັນ, ໃຫ້ໄປທີ່ໜ້າການສະໝັກສະມາຊິກ Passpoint ເພື່ອລຶບການສະໝັກສະມາຊິກອອກ.</translation>
 <translation id="4181602000363099176">20x</translation>
 <translation id="4181841719683918333">ພາສາ</translation>
@@ -5382,6 +5388,7 @@
 <translation id="4750185073185658673">ໄປຫາໂທລະສັບຂອງທ່ານເພື່ອກວດສອບການອະນຸຍາດເພີ່ມເຕີມອີກຈຳນວນໜຶ່ງ. ກວດສອບວ່າເປີດ Bluetooth ແລະ Wi-Fi ຂອງໂທລະສັບທ່ານແລ້ວ.</translation>
 <translation id="4750394297954878236">ຄໍາ​ແນະ​ນໍາ</translation>
 <translation id="475088594373173692">ຜູ້​ໃຊ້​ທໍາ​ອິດ</translation>
+<translation id="4754590344707355551">ປັບປຸງໂປຣແກຣມທ່ອງເວັບຂອງທ່ານໃຫ້ດີຂຶ້ນດ້ວຍສ່ວນຂະຫຍາຍ</translation>
 <translation id="4756378406049221019">ຢຸດ/ໂຫຼດຄືນໃໝ່</translation>
 <translation id="4756388243121344051">ປະຫວັດ</translation>
 <translation id="4756671452988984333">ຂໍ້ຄວາມສຳລັບສຽງ</translation>
@@ -6412,6 +6419,7 @@
 <translation id="5490798133083738649">ອະນຸຍາດໃຫ້ Linux ເຂົ້າເຖິງໄມໂຄຣໂຟນຂອງທ່ານ</translation>
 <translation id="549211519852037402">ສີເທົາອ່ອນ ແລະ ສີຂາວ</translation>
 <translation id="5492637351392383067">ການເຂົ້າລະຫັດຢູ່ອຸປະກອນ</translation>
+<translation id="5492780659774694607">ສ່ວນຂະຫຍາຍແມ່ນສ່ວນເສີມໃຫ້ Chrome ທີ່ສາມາດຊ່ວຍທ່ານໄດ້</translation>
 <translation id="5493455553805432330">ລືມ</translation>
 <translation id="5493792505296048976">ໜ້າຈໍເປີດຢູ່</translation>
 <translation id="5494016731375030300">ແຖບທີ່ປິດຫຼ້າສຸດ</translation>
@@ -9634,6 +9642,7 @@
 <translation id="7815680994978050279">ບລັອກການດາວໂຫຼດອັນຕະລາຍໄວ້ແລ້ວ</translation>
 <translation id="7817361223956157679">ແປ້ນພິມໃນໜ້າຈໍໃຊ້ບໍ່ໄດ້ໃນແອັບ Linux ເທື່ອ</translation>
 <translation id="7818135753970109980">ເພີ່ມເທມໃໝ່ແລ້ວ ( <ph name="EXTENSION_NAME" /> )</translation>
+<translation id="7819839686707222575">ສ່ວນຂະຫຍາຍແມ່ນສ່ວນເສີມສໍາລັບ Chrome ທີ່ສາມາດຊ່ວຍທ່ານເຮັດໄດ້ຫຼາຍຂຶ້ນ</translation>
 <translation id="7820400255539998692">ກະລຸນາລຶບ <ph name="FILENAME" /> ອອກ, ເພື່ອໃຫ້ຄົນອື່ນທີ່ໃຊ້ອຸປະກອນນີ້ບໍ່ສາມາດເບິ່ງເຫັນລະຫັດຜ່ານຂອງທ່ານໄດ້</translation>
 <translation id="7820561748632634942">ມອບໝາຍສະວິດເພີ່ມເຕີມບໍ?</translation>
 <translation id="782057141565633384">ອັດ​ສຳ​ເນົາ​ທີ່​ຢູ່​ວິ​ດີ​ໂອ</translation>
@@ -10600,6 +10609,7 @@
 <translation id="8477241577829954800">ປ່ຽນແທນແລ້ວ</translation>
 <translation id="8477384620836102176">ທົ່ວໄປ</translation>
 <translation id="8477446666255316832">ເຂົ້າສູ່ລະບົບເທື່ອຕໍ່ໄປໄດ້ໄວຂຶ້ນ</translation>
+<translation id="8478346767369317046">ບ່ອນເຮັດວຽກ</translation>
 <translation id="8479176401914456949">ລະຫັດບໍ່ຖືກຕ້ອງ. ກະລຸນາລອງໃໝ່.</translation>
 <translation id="8480869669560681089">ອຸປະກອນທີ່ບໍ່ຮູ້ຈັກຈາກ <ph name="VENDOR_NAME" /></translation>
 <translation id="8481187309597259238">ຢືນຢັນການອະນຸຍາດ USB</translation>
@@ -11092,6 +11102,7 @@
 <translation id="8827289157496676362">ປັກໝຸດສ່ວນຂະຫຍາຍ</translation>
 <translation id="8828933418460119530">ຊື່ DNS</translation>
 <translation id="8829979393064090868">ເພີ່ມແຖບເພື່ອແຍກມຸມມອງ</translation>
+<translation id="8830479210602243906">ເພີ່ມຜະລິດຕະພາບ</translation>
 <translation id="883062543841130884">ການແທນທີ່</translation>
 <translation id="8830779999439981481">ກຳລັງຣິສະຕາດເພື່ອນຳໃຊ້ການອັບເດດ</translation>
 <translation id="8830796635868321089">ການກວດຫາອັບເດດບໍ່ສໍາເລັດດ້ວຍການໃຊ້ການຕັ້ງຄ່າພຣັອກຊີປະຈຸບັນ. ກະລຸນາປັບ <ph name="PROXY_SETTINGS_LINK_START" />ການຕັ້ງຄ່າພຣັອກຊີ<ph name="PROXY_SETTINGS_LINK_END" /> ຂອງທ່ານ.</translation>

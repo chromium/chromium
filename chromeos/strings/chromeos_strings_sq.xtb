@@ -206,6 +206,7 @@
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1758459542619182298"><ph name="CONTROL_TYPE" />: <ph name="KEY_LIST" /></translation>
 <translation id="1759842336958782510">Chrome</translation>
+<translation id="1762353673362288306">Tani mund të përdorësh vetëm "Veglat e orës së mësimit"</translation>
 <translation id="1762483337755424125">Transkripti</translation>
 <translation id="1765169783255151332">Ndërro me shpejtësi tastet</translation>
 <translation id="1768959921651994223">Lloji i vërtetimit</translation>
@@ -1613,6 +1614,7 @@ Shkarko modelin e transkriptimit (deri në 100 MB) për të marrë këto transk
 <translation id="8088963492174775412">Shtyp për të regjistruar</translation>
 <translation id="8094062939584182041">Lejo që Google të të dërgojë email-e për këtë problem</translation>
 <translation id="8104083085214006426">Po përdor një rrjet të hapur dhe të pasigurt</translation>
+<translation id="8108879170356113798">Do të mund të përdorësh vetëm "Veglat e orës së mësimit" pas <ph name="NUM_SECONDS" /> sekondash</translation>
 <translation id="811820734797650957">(Android) Portëkalimi mund të marrë ping</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8131740175452115882">Konfirmo</translation>

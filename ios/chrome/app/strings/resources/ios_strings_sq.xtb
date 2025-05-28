@@ -265,6 +265,7 @@
 <translation id="2044681667265133332">Llogaria <ph name="USER_EMAIL" /> menaxhohet nga <ph name="HOSTED_DOMAIN" />, që mund të jetë në gjendje të shikojë disa informacione. <ph name="BEGIN_LINK" />Mëso më shumë<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">artikull i ri</translation>
 <translation id="2049727122989709386"><ph name="COUNT" /> llogari po përdorin të njëjtin fjalëkalim</translation>
+<translation id="2054044186557130763">Identifikohu si <ph name="NAME" /> (<ph name="EMAIL" />), menaxhohet nga organizata jote.</translation>
 <translation id="2059166748188874810">Komunë</translation>
 <translation id="2060638295449304809">Kjo adresë ruhet vetëm në këtë pajisje. Për ta përdorur atë në pajisje të tjera, ruaje në "Llogarinë tënde të Google", <ph name="USER_EMAIL" /></translation>
 <translation id="20638360198452347">Përzgjedhësi i llojit të njësisë</translation>
@@ -613,6 +614,7 @@ Shiko udhëzimet e motorit të kërkimit për fshirjen e historikut të kërkimi
 <translation id="3572607909481582402">Në "Llogarinë tënde të Google"</translation>
 <translation id="3575234738189584619">Kërko me "Lenten"</translation>
 <translation id="3575426792457739946">Kjo listë përfshin të gjitha profilet e ngarkuara.</translation>
+<translation id="3578866308944526475"><ph name="EMAIL" />, menaxhohet nga organizata jote.</translation>
 <translation id="3581564640715911333">Ofro që t'i përkthesh faqet në gjuhë të tjera</translation>
 <translation id="3587885837929752825">Organizata jote kufizon se çfarë mund të ruash në "Llogarinë tënde të Google".</translation>
 <translation id="3588820906588687999">Hape imazhin në skedë të re</translation>
@@ -880,6 +882,9 @@ Shiko udhëzimet e motorit të kërkimit për fshirjen e historikut të kërkimi
 <translation id="4669618761237477717">Organizata jote kërkon që të shfletosh në mënyrë private. Grupet e skedave nuk sinkronizohen në modalitetin "i fshehtë".
 <ph name="BEGIN_LINK" />Mëso më shumë<ph name="END_LINK" /></translation>
 <translation id="467189612236587057">Lidhu me një biznes duke nisur një telefonatë</translation>
+<translation id="4673565891421389203">Identifikimi me llogarinë tënde të menaxhuar të ndihmon ta mbash shfletimin në lidhje me organizatën tënde, (duke përfshirë skedat, historikun dhe fjalëkalimet) veçmas nga shfletime të tjera.
+
+       Zgjidh se çfarë do të bësh me të dhënat ekzistuese të shfletimit në këtë pajisje.</translation>
 <translation id="4682496302933121474">Të përkthehet faqja?</translation>
 <translation id="4682686630151240767">1. Hap "Cilësimet e iPhone"</translation>
 <translation id="4699172675775169585">Imazhet dhe skedarët në memorien specifike</translation>
@@ -888,6 +893,7 @@ Shiko udhëzimet e motorit të kërkimit për fshirjen e historikut të kërkimi
 <translation id="4719927025381752090">Ofro që t'i përkthesh</translation>
 <translation id="4720530280568305198">Zgjedhja jote u hap në një skedë të re</translation>
 <translation id="472259426228234149">Çmimi 100 - 180 USD</translation>
+<translation id="4735849923335729414">Identifikohu si <ph name="EMAIL" />, menaxhohet nga organizata jote.</translation>
 <translation id="473775607612524610">Përditësoje</translation>
 <translation id="474209246745757965">Bli dhe përkthe me kamerën tënde</translation>
 <translation id="4742407542027196863">Menaxho fjalëkalimet…</translation>
@@ -960,6 +966,7 @@ Shiko udhëzimet e motorit të kërkimit për fshirjen e historikut të kërkimi
 <translation id="4985921635659180565">Pasi një skedar të planifikohet për t'u fshirë, kjo nuk mund të anulohet.</translation>
 <translation id="498624032394115435">Çdo person që ka lidhjen mund të modifikojë të gjitha skedat.</translation>
 <translation id="4989065233040279145">Zgjidh se ku do ta ruash skedarin <ph name="FILENAME" /></translation>
+<translation id="499122600724363620"><ph name="NAME" />, <ph name="EMAIL" />, menaxhohet nga organizata jote.</translation>
 <translation id="4992255726304765516">Ngjyra e grupit të skedave: <ph name="COLOR" /></translation>
 <translation id="5005498671520578047">Kopjo fjalëkalimin</translation>
 <translation id="5012914568031465281">Çmimi nuk mund të monitorohej.</translation>
@@ -1019,6 +1026,7 @@ Shiko udhëzimet e motorit të kërkimit për fshirjen e historikut të kërkimi
 <translation id="5234094073825090254">{count,plural, =1{Faqeshënuesi u ruajt në "Llogarinë tënde të Google", {email}.}other{Faqeshënuesit u ruajtën në "Llogarinë tënde të Google", {email}.}}</translation>
 <translation id="5234764350956374838">Hiq</translation>
 <translation id="5238596603078743134"><ph name="BEGIN_BOLD" /><ph name="USERNAME" /><ph name="END_BOLD" /> mund të përdorë tani emrin e përdoruesit dhe fjalëkalimin tënd kur përdor "Menaxherin e fjalëkalimeve të Google" për t'u identifikuar në <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" />.</translation>
+<translation id="5241106044372754566"><ph name="NAME" />, <ph name="EMAIL" />, menaxhohet nga organizata jote, zgjedhur aktualisht. Zgjidh një llogari.</translation>
 <translation id="5242899254250321823">Ndrysho fjalëkalimin në uebsajt</translation>
 <translation id="5248640482715684545">Ky sajt po përpiqet të hapë një aplikacion tjetër.</translation>
 <translation id="5250371859659394278">Nga një burim i panjohur</translation>
@@ -1075,6 +1083,7 @@ Shiko udhëzimet e motorit të kërkimit për fshirjen e historikut të kërkimi
 <translation id="5524590039848017563">Butoni i shiritit kryesor të veglave u palos</translation>
 <translation id="553151287733286479">{COUNT,plural, =1{{COUNT} fjalëkalim i dobët}other{{COUNT} fjalëkalime të dobëta}}</translation>
 <translation id="5532545557415295622">Dialogu i kohës së pritjes në gjendje joaktive</translation>
+<translation id="5547868626772433490">Pyet Gemini</translation>
 <translation id="5548760955356983418">Handoff të lejon të fillosh të shfletosh një uebsajt në këtë pajisje dhe pastaj me lehtësi të vazhdosh në kompjuterin tënd Mac. Uebsajti aktual i hapur do të shfaqet në Dock të kompjuterit tënd Mac.
 
 Handoff duhet gjithashtu të jetë i aktivizuar në seksionin "Të përgjithshme" te "Cilësimet", dhe pajisjet e tua duhet të përdorin të njëjtën llogari iCloud.</translation>
@@ -1286,6 +1295,9 @@ Handoff duhet gjithashtu të jetë i aktivizuar në seksionin "Të përgjithshme
 <translation id="6339793034470834130">Për të përdorur Web Inspector, lidhu me Safari në kompjuterin tënd duke përdorur një kabllo dhe qasu te telefoni yt iPhone nga menyja Develop. Mund ta aktivizosh menynë Develop në seksionin Advanced të cilësimeve të Safari në kompjuterin tënd.</translation>
 <translation id="6340285871011301182">Përkthimi i pjesshëm nuk ofrohet.</translation>
 <translation id="6340526405444716530">Personalizimi</translation>
+<translation id="6341140761912903432">Identifikimi me llogarinë tënde të menaxhuar të ndihmon ta mbash shfletimin në lidhje me organizatën tënde, (duke përfshirë skedat, historikun dhe fjalëkalimet) veçmas nga shfletime të tjera.
+
+       Të dhënat e tua ekzistuese të shfletimit do të mbahen veçmas. Për t'i përdorur, dil nga llogaria jote e menaxhuar.</translation>
 <translation id="6342069812937806050">Pikërisht tani</translation>
 <translation id="6344533709188026708">Një hapësirë e veçantë për punën</translation>
 <translation id="6347953390226388422">{count,plural, =1{Kjo adresë do të fshihet nga "Llogaria jote e Google" (<ph name="USER_EMAIL" />) dhe nga kjo pajisje.}other{Këto adresa do të fshihen nga "Llogaria jote e Google" (<ph name="USER_EMAIL" />) dhe nga kjo pajisje.}}</translation>
@@ -1958,6 +1970,7 @@ Sajtet mund t'i përdorin kukit për të parë aktivitetin tënd të shfletimit 
 <translation id="8923178205567790913">Fjalëkalimet</translation>
 <translation id="892776311701544612">Mëso më shumë…</translation>
 <translation id="8928133177108699615">Desktop</translation>
+<translation id="8928426232677696166"><ph name="EMAIL" />, menaxhohet nga organizata jote, zgjedhur aktualisht. Zgjidh një llogari.</translation>
 <translation id="894191600409472540">Krijo fjalëkalime të forta</translation>
 <translation id="8943780400130412484">Të niset shkarkim i ri?</translation>
 <translation id="8944844131570002190">Hap vendndodhjen…</translation>

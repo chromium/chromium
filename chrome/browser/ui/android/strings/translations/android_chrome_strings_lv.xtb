@@ -375,6 +375,7 @@ Jūsu šifrētos datus var lasīt tikai personas, kurām ir jūsu ieejas frāze.
 <translation id="2718352093833049315">Tikai Wi-Fi</translation>
 <translation id="2718846868787000099">Apmeklētajām vietnēm ir atļauta piekļuve jūsu preferencēm, lai nodrošinātu satura rādīšanu jūsu izvēlētajā valodā.</translation>
 <translation id="2723001399770238859">audio</translation>
+<translation id="2734335652257251631">Rādīt lasīšanas režīmu</translation>
 <translation id="2739887572830526131">Paturiet šo grupu, lai vēlāk pievienotu cilnes, vai izdzēsiet to, ja tā jums vairs nav vajadzīga.</translation>
 <translation id="2742373789128106053">Identitātes nodrošinātājs <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> pašlaik nav pieejams.</translation>
 <translation id="2760805590727089264">MM/GG</translation>
@@ -1744,6 +1745,7 @@ Lai mainītu šo iestatījumu, <ph name="BEGIN_LINK" />izdzēsiet Chrome datus s
 <translation id="8676789164135894283">Pierakstīšanās verifikācija</translation>
 <translation id="8683039184091909753">attēls</translation>
 <translation id="8688183792442786085">“<ph name="TAB_TITLE" />”, atlasītā cilne</translation>
+<translation id="8693232767599693749">Vai skatīt lasīšanas režīmu?</translation>
 <translation id="8697753151306746444">Tā vietā kopīgojiet logu vai ekrānu</translation>
 <translation id="869891660844655955">Derīguma termiņš</translation>
 <translation id="8699120352855309748">Nepiedāvāt tulkot no šīm valodām</translation>

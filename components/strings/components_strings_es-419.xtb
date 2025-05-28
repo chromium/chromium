@@ -367,6 +367,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="1612199629998703524">Administración de temas</translation>
 <translation id="1615178538289490617">Revocar el acceso a <ph name="PORT_NAME" /></translation>
 <translation id="1615402009686901181">La política del administrador inhabilita la captura de pantalla cuando hay contenido confidencial a la vista.</translation>
+<translation id="161612500287664753">Preguntar a la Búsqueda de Google acerca de esta página</translation>
 <translation id="1617276713587758852">Vehículos mixtos</translation>
 <translation id="1619007254056372606">Administrar los datos de sitios integrados en el dispositivo</translation>
 <translation id="1619648179761984213"><ph name="USER_DISPLAY_NAME" /> quitó una pestaña</translation>
@@ -1509,6 +1510,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="3586931643579894722">Ocultar detalles</translation>
 <translation id="3587725436724465984">Tu organización identificó <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> como un sitio que podría incumplir una política. <ph name="BEGIN_LEARN_MORE_LINK" />Obtén más información sobre esta advertencia<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3587738293690942763">Medio</translation>
+<translation id="3589519427766620380">Preguntar a Google Lens acerca de esta página</translation>
 <translation id="3596918995172292499">Estado de la matrícula</translation>
 <translation id="3600106876108433070">Obtén más información sobre las tablas de comparación</translation>
 <translation id="3600246354004376029"><ph name="TITLE" />, <ph name="DOMAIN" />, <ph name="TIME" /></translation>
@@ -2449,6 +2451,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="519422657042045905">La anotación no está disponible</translation>
 <translation id="5200063972779787617">Guarda la dirección en la cuenta</translation>
 <translation id="5201306358585911203">Una página incorporada en esta página dice</translation>
+<translation id="5203716867500274632">El administrador habilitó la sincronización de los siguientes elementos entre tus sesiones anteriores y actuales en todos tus dispositivos ChromeOS:</translation>
 <translation id="5205114269877707377"><ph name="OMNIBOX_ACTION_FOCUSED_FRIENDLY_MATCH_TEXT" />, presiona Tab para explorar las acciones disponibles y, luego, presiona Intro para ejecutar la acción seleccionada.</translation>
 <translation id="5205222826937269299">Nombre (obligatorio)</translation>
 <translation id="5206392433295093945">Dormitorio</translation>
@@ -2608,6 +2611,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="5472588168895083535">Se bloqueó el seguimiento de manos</translation>
 <translation id="547963486735802022">Intenta volver a transferir tus archivos</translation>
 <translation id="5481076368049295676">Es posible que este contenido intente instalar software peligroso que robe o borre tu información en tu dispositivo . <ph name="BEGIN_LINK" />Mostrar de todos modos<ph name="END_LINK" /></translation>
+<translation id="5481604577800516617">Organización de ventanas y pestañas</translation>
 <translation id="5481682542063333508">Ofrecer ayuda para escribir</translation>
 <translation id="54817484435770891">Agregar una dirección válida</translation>
 <translation id="5483838506518938965">Terminaste</translation>
@@ -3443,6 +3447,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="6925267999184670015">B+ norteamericano</translation>
 <translation id="6926216138694948720">Arte corporal</translation>
 <translation id="692638818576287323">Vehículos comerciales</translation>
+<translation id="6930607614725241390">Buscar en el panel lateral</translation>
 <translation id="6934236486840930310"><ph name="BEGIN_BOLD" />Tu motor de búsqueda predeterminado te permite buscar en la Web y potencia las funciones de Chrome<ph name="END_BOLD" />, como la búsqueda desde la barra de direcciones o desde imágenes de páginas web. Es posible que una función no esté disponible si tu motor de búsqueda no la admite.</translation>
 <translation id="6934672428414710184">Este nombre es de tu Cuenta de Google</translation>
 <translation id="6935077351544118151">Ahora puedes autocompletar tarjetas de lealtad de la Billetera de Google</translation>
@@ -4282,6 +4287,7 @@ Detalles adicionales:
 <translation id="8352849934814541340">El administrador de este dispositivo instaló aplicaciones para funciones adicionales. Las aplicaciones tienen acceso a algunos de tus datos.</translation>
 <translation id="8355270400102541638">Contexto de falla local:</translation>
 <translation id="8363502534493474904">Desactivar el modo avión.</translation>
+<translation id="8363929499301563123">Cookies de sitios web (se conservará el estado de acceso en los sitios web visitados recientemente)</translation>
 <translation id="8364627913115013041">Sin establecer</translation>
 <translation id="8366057325711477500">Noticias del mundo</translation>
 <translation id="836616551641291797">Más información sobre cómo se administra tu navegador</translation>

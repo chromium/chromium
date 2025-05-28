@@ -175,6 +175,7 @@
 <translation id="7942349550061667556">Vermello</translation>
 <translation id="7961015016161918242">Nunca</translation>
 <translation id="7966321538264951561">Ignorar estas suxestións.</translation>
+<translation id="796696298310625748">{WINDOW_COUNT,plural, =1{Mover a pestana a unha ventá nova}other{Mover a pestana a outra ventá}}</translation>
 <translation id="799469866974412355">Novo grupo do teu outro dispositivo</translation>
 <translation id="8029301326595421733">A folla de información sobre esta tenda está aberta a pantalla completa</translation>
 <translation id="8053770993984522566">Lista dos grupos de pestanas aberta a media pantalla</translation>
@@ -196,6 +197,7 @@
 <translation id="8730621377337864115">Feito</translation>
 <translation id="8730999928494395583">A túa actividade nestas pestanas do modo de incógnito quitarase deste dispositivo</translation>
 <translation id="875848103419578654">{NUM_MONTHS,plural, =1{Creouse hai <ph name="NUM_MONTHS_ONE" /> mes}other{Creouse hai <ph name="NUM_MONTHS_MANY" /> meses}}</translation>
+<translation id="8813708480179818649">Quitar a pestana do grupo</translation>
 <translation id="8820741577754260431">Consulta as baixadas de prezo nas túas pestanas</translation>
 <translation id="883379923675618699">Chrome pechará automaticamente os elementos da sesión inactiva que non usases en tres meses. Podes desactivar esta opción agora ou en calquera momento en Configuración.</translation>
 <translation id="8887921976452567404">As pestanas e grupos pechados poden volver abrirse desde as seccións Pestanas recentes e Grupos de pestanas.</translation>

@@ -383,6 +383,7 @@ Sites mogen geen cookies gebruiken om je browse-activiteit op verschillende site
 <translation id="2513103768503127042">Hier vind je je tabbladgroepen</translation>
 <translation id="251837347827266434">Je wordt uitgelogd, tabbladen worden gesloten, browsegegevens worden verwijderd</translation>
 <translation id="2520787026086861736">Ga naar <ph name="BEGIN_LINK" />Automatisch invullen en wachtwoorden<ph name="END_LINK" /> om dit uit te zetten</translation>
+<translation id="2523295204312809179">Als je een tabbladgroep sluit, wordt deze hier automatisch opgeslagen</translation>
 <translation id="2529021024822217800">Alles openen</translation>
 <translation id="2536991091671391962">Je kunt opgeslagen wachtwoorden op elk apparaat gebruiken. Ze worden opgeslagen in Google Wachtwoordmanager voor <ph name="EMAIL" />.</translation>
 <translation id="2538103551183528357">Verborgen, wachtwoord</translation>
@@ -969,6 +970,7 @@ Bekijk de instructies van je zoekmachine voor het verwijderen van je zoekgeschie
 <translation id="499122600724363620"><ph name="NAME" />, <ph name="EMAIL" />, beheerd door je organisatie.</translation>
 <translation id="4992255726304765516">Kleur van tabbladgroep <ph name="COLOR" /></translation>
 <translation id="5005498671520578047">Wachtwoord kopiëren</translation>
+<translation id="5009127379503001909">Blijven browsen</translation>
 <translation id="5012914568031465281">Kan prijs niet volgen.</translation>
 <translation id="5016420433031926653">Sturen naar <ph name="USER_EMAIL" /></translation>
 <translation id="5017529052065664584">Afgelopen 15 minuten</translation>
@@ -1035,6 +1037,7 @@ Bekijk de instructies van je zoekmachine voor het verwijderen van je zoekgeschie
 <translation id="5275912569557792098"><ph name="USER_NAME" /> (<ph name="USER_EMAIL" />) vraagt je om lid te worden van een tabbladgroep. Iedereen met de link kan alle tabbladen bewerken. Overweeg dus goed of je lid wilt worden. De link verloopt over 48 uur.</translation>
 <translation id="5279600392753459966">Alle blokkeren</translation>
 <translation id="5282340693022193851">Als je meldingen voor prijzen volgen wilt krijgen, zet je meldingen aan in de iOS-instellingen.</translation>
+<translation id="528857768909044842">Tabbladgroepen worden hier opgeslagen</translation>
 <translation id="5294624619177114121">Mobiele meldingen</translation>
 <translation id="5295239312320826323">Account <ph name="USER_EMAIL" /> verwijderen?</translation>
 <translation id="5300589172476337783">Tonen</translation>
@@ -1230,6 +1233,7 @@ Handoff moet ook aanstaan in het gedeelte Algemeen van Instellingen en je appara
 <translation id="6100617279104942061">Ingelogd als <ph name="USER_EMAIL" />. Hiermee worden de instellingen geopend.</translation>
 <translation id="6103540626693881831">Versleuteling op het apparaat</translation>
 <translation id="611361228753138223">Sites die je recent hebt bezocht op dit apparaat</translation>
+<translation id="611705554202268369">Houd je vinger hier lang op om dit toe te voegen aan een tabbladgroep</translation>
 <translation id="6122191549521593678">Online</translation>
 <translation id="6122831415929794347">Safe Browsing uitzetten?</translation>
 <translation id="6123514585040403489">Je tabbladen worden gesloten</translation>
@@ -1478,6 +1482,7 @@ Als je de incognitomodus gebruikt, kunnen sites geen cookies gebruiken om je bro
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6979737339423435258">Alles</translation>
 <translation id="6983306615164277634">Je kunt ook je vinger op de adresbalk houden om de positie te wijzigen.</translation>
+<translation id="6987201788018524855">Ontdek handige functies die je hebt gemist</translation>
 <translation id="6990519590575500580">FaceTime</translation>
 <translation id="6998251471716094661">Volg de prijzen van producten en krijg meldingen als de prijs daalt op een site</translation>
 <translation id="7004032350256606903">Je organisatie vereist dat je privé browst.
@@ -1855,6 +1860,7 @@ Sites mogen cookies gebruiken om je browse-activiteit op verschillende sites te 
 <translation id="8535368836838588657">Wachtwoord tonen</translation>
 <translation id="8545276357312221485">Je standaardbrowserinstellingen checken</translation>
 <translation id="854938212724803178">Je hebt 1 gehackt wachtwoord Los dit nu op om beveiligd te blijven.</translation>
+<translation id="8551311254462607218">Tik in de adresbalk op het camera-icoon van Google Lens</translation>
 <translation id="8556590991644167667">{count,plural, =1{Je hebt {count} waarschuwing gesloten}other{Je hebt {count} waarschuwingen gesloten}}</translation>
 <translation id="8558046478684552694">Groep sluiten.</translation>
 <translation id="8560253818350321773">Toon veelgebruikte items eerst.</translation>
@@ -1998,6 +2004,7 @@ Sites mogen cookies gebruiken om je browse-activiteit op verschillende sites te 
 <translation id="9032405509996909363">Browsegegevens verwijderen bevestigen</translation>
 <translation id="9039373489628511875">Bandbreedte</translation>
 <translation id="9042893549633094279">Privacy en beveiliging</translation>
+<translation id="9055291197094969722">Maak tabbladgroepen om je geopende tabbladen te ordenen en productief te blijven</translation>
 <translation id="9055580485132823283">Je staat op het punt om {password_count} wachtwoorden, {passkey_count} toegangssleutels en de lijst met sites en apps waarvoor je hebt gekozen om nooit inloggegevens op te slaan, te verwijderen. Accounts die je voor sites en apps hebt gemaakt, worden niet verwijderd.</translation>
 <translation id="9057030985451135243">Meer informatie over gedeelde tabbladgroepen</translation>
 <translation id="9057972802061533987">Volgen is mislukt. Er is iets misgegaan.</translation>

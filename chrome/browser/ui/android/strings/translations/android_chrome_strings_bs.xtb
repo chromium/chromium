@@ -1440,6 +1440,7 @@ Da promijenite ovu postavku, <ph name="BEGIN_LINK" />izbrišite podatke Chromea 
 <translation id="7431991332293347422">Kontrolirajte kako se koristi vaša historija pregledanja za personalizaciju Pretraživanja i još mnogo toga</translation>
 <translation id="7435356471928173109">Funkciju je isključio vaš administrator</translation>
 <translation id="7437998757836447326">Odjava iz Chromea</translation>
+<translation id="7439467816829380878">Premjesti karticu u grupu</translation>
 <translation id="7453810262525006706">Sužavanje u bočni prikaz</translation>
 <translation id="7454641608352164238">Nema dovoljno prostora</translation>
 <translation id="7454744349230173024">Organizacija je isključila pohranjivanje lozinki</translation>
@@ -1815,6 +1816,7 @@ Da promijenite ovu postavku, <ph name="BEGIN_LINK" />izbrišite podatke Chromea 
 <translation id="9019199799064251516">Nastaviti bez zaključavanja profila u automobilu?</translation>
 <translation id="9022774213089566801">Često posjećivano</translation>
 <translation id="9022871169049522985">Web lokacije i oglašivači mogu mjeriti performanse svojih oglasa</translation>
+<translation id="9027728231343310283">Poništi <ph name="SITE" /></translation>
 <translation id="9035378196785279980">Premjesti u\u2026</translation>
 <translation id="9042893549633094279">Privatnost i sigurnost</translation>
 <translation id="9047347135558855162">Brzo započnite pretraživati u Chromeu</translation>

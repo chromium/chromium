@@ -175,6 +175,7 @@
 <translation id="7942349550061667556">Rauður</translation>
 <translation id="7961015016161918242">Aldrei</translation>
 <translation id="7966321538264951561">Hunsa tillögurnar.</translation>
+<translation id="796696298310625748">{WINDOW_COUNT,plural, =1{Færa flipa í nýjan glugga}one{Færa flipa í annan glugga}other{Færa flipa í annan glugga}}</translation>
 <translation id="799469866974412355">Nýr hópur úr öðru tæki</translation>
 <translation id="8029301326595421733">Upplýsingar um þessa verslun opnaðar á öllum skjánum</translation>
 <translation id="8053770993984522566">Flipahópalisti, opinn í hálfri hæð</translation>
@@ -196,6 +197,7 @@
 <translation id="8730621377337864115">Lokið</translation>
 <translation id="8730999928494395583">Virknin þín í þessum huliðsflipum verður fjarlægð úr þessu tæki</translation>
 <translation id="875848103419578654">{NUM_MONTHS,plural, =1{Búinn til fyrir <ph name="NUM_MONTHS_ONE" /> mánuði}one{Búinn til fyrir <ph name="NUM_MONTHS_MANY" /> mánuði}other{Búinn til fyrir <ph name="NUM_MONTHS_MANY" /> mánuðum}}</translation>
+<translation id="8813708480179818649">Fjarlægja flipa úr hóp</translation>
 <translation id="8820741577754260431">Sjá verðlækkanir á flipum</translation>
 <translation id="883379923675618699">Chrome lokar sjálfkrafa flipum í óvirka hlutanum sem hafa ekki verið notaðir í þrjá mánuði. Þú getur slökkt á þessu núna eða síðar í stillingunum.</translation>
 <translation id="8887921976452567404">Þú getur opnað lokuðu flipana og hópana þína aftur með því að fara í hlutann „Nýlegir flipar“ eða „Flipahópar“.</translation>

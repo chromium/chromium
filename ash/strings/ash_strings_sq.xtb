@@ -761,6 +761,7 @@ Në rast të kundërt, blloku i integruar me prekje do të riaktivizohet pas <ph
 <translation id="3552189655002856821">Wi-Fi është çaktivizuar</translation>
 <translation id="3554215588514239132">Shfaq ose fshih panelin e "Veglave të zhvilluesit"</translation>
 <translation id="3554637740840164787"><ph name="ITEM_TITLE" /> u gozhdua</translation>
+<translation id="3554928024630051016">Për të shtuar pajisje të tjera USB, provo ta heqësh një dhe më pas lidh një të re</translation>
 <translation id="3558768885091059911">Të aktivizohet qasja te kamera dhe mikrofoni?</translation>
 <translation id="3560174576767922131">Regjistro një video</translation>
 <translation id="3563775809269155755">Aktivizo zonën e qasjes për internet</translation>
@@ -868,6 +869,7 @@ Lidhe pajisjen me një burim të energjisë elektrike.</translation>
 <translation id="3861651314799684201">Shtyp "Enter" për të regjistruar ekranin e plotë</translation>
 <translation id="3870197372373144624">Provo ta fikësh pajisjen tënde.</translation>
 <translation id="3879748587602334249">Menaxheri i shkarkimeve</translation>
+<translation id="3884007280698606545">U arrit kufiri për USB-në</translation>
 <translation id="3886872229787704059">Hapur sot</translation>
 <translation id="3891340733213178823">Shtyp Ctrl+Shift+Q për të dalë nga llogaria.</translation>
 <translation id="3892148308691398805">Kopjo tekstin</translation>
@@ -1451,7 +1453,6 @@ Nuk ka pajisje të lidhura.</translation>
 <translation id="5691772641933328258">Gjurma e gishtit nuk njihet</translation>
 <translation id="5693255400847650006">Mikrofoni në përdorim</translation>
 <translation id="5699366815052349604">Cakto dritaren aktive për të gjitha tavolinat e punës</translation>
-<translation id="5701785125601597013">Dërgo ose përgjigjju me shpejtësi mesazheve të telefonit duke përdorur "Qendrën e telefonit"</translation>
 <translation id="570390244361237317">Të gjitha aplikacionet; navigo me tastet e shigjetave për t'u qasur te të gjitha aplikacionet</translation>
 <translation id="5705197514573687092">Shfaq cilësimet e "Fokusit". Kohëmatësi është caktuar në <ph name="FOCUS_DURATION" />.</translation>
 <translation id="5707775774148071965">Pajisja jote mbështet një shpejtësi më të lartë të të dhënave sesa kablloja. Cilësia e funksionimit të pajisjes mund të jetë e kufizuar.</translation>

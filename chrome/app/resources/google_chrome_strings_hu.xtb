@@ -504,7 +504,6 @@
 <translation id="7572537927358445944">Ki • A Chrome nem tudja ellenőrizni a bővítmény forrását</translation>
 <translation id="7583399374488819119"><ph name="COMPANY_NAME" />-telepítő</translation>
 <translation id="7606334485649076285">Google ChromeOS Flex</translation>
-<translation id="7626032353295482388">A Chrome üdvözli Önt!</translation>
 <translation id="7626072681686626474">A(z) <ph name="MANAGER" /> megköveteli, hogy olvassa el, majd fogadja el a következő Általános Szerződési Feltételeket, mielőtt használná ezt az eszközt. Ezek a feltételek nem bővítik, módosítják vagy korlátozzák a Google ChromeOS Általános Szerződési Feltételeit.</translation>
 <translation id="7629695634924605473">A Chrome tájékoztatja arról, ha jelszavai illetéktelen kezekbe kerülnek</translation>
 <translation id="7641148173327520642">Rendszergazdája úgy állította be a Google Chrome-ot, hogy a(z) <ph name="ALTERNATIVE_BROWSER_NAME" /> böngészőt nyissa meg a(z) <ph name="TARGET_URL_HOSTNAME" /> eléréséhez.</translation>
@@ -624,6 +623,7 @@
 <translation id="9090566250983691233">További információ arról, hogy miért tilt le bizonyos fájlokat a Chrome</translation>
 <translation id="9106236359747881194">Jelöljön ki szöveget a kereséshez</translation>
 <translation id="911206726377975832">Törli a böngészési adatait is?</translation>
+<translation id="9134482777260927479">Segítség a házi feladatban</translation>
 <translation id="9138603949443464873">A módosítások alkalmazásához indítsa újra a Chrome-ot</translation>
 <translation id="9148058034647219655">Kilépés</translation>
 <translation id="9195993889682885387">A Chrome meg tudja becsülni az Ön érdeklődési köreit a legutóbbi pár hétben végzett böngészési tevékenységei alapján. Ezek az információk nem hagyják el az eszközt.</translation>

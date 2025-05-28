@@ -367,6 +367,7 @@
 <translation id="1612199629998703524">विषय व्यवस्थापित करा</translation>
 <translation id="1615178538289490617"><ph name="PORT_NAME" /> साठी अ‍ॅक्सेस मागे घ्या</translation>
 <translation id="1615402009686901181">गोपनीय आशय दृश्यमान असेल तेव्हा अ‍ॅडमिनिस्ट्रेटर धोरण स्‍क्रीन कॅप्‍चर बंद करते</translation>
+<translation id="161612500287664753">या पेजविषयी Google Search ला विचारा</translation>
 <translation id="1617276713587758852">क्रॉसओव्हर</translation>
 <translation id="1619007254056372606">डिव्‍हाइसवरील साइट डेटा व्यवस्थापित करणे</translation>
 <translation id="1619648179761984213"><ph name="USER_DISPLAY_NAME" /> यांनी टॅब काढून टाकला आहे</translation>
@@ -1507,6 +1508,7 @@
 <translation id="3586931643579894722">तपशील लपवा</translation>
 <translation id="3587725436724465984">तुमच्या संस्थेने  <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> ला कदाचित धोरणाचे उल्लंघन करू शकेल अशी साइट म्हणून ओळखले आहे. <ph name="BEGIN_LEARN_MORE_LINK" />या चेतावणीबद्दल अधिक जाणून घ्या<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3587738293690942763">मध्य</translation>
+<translation id="3589519427766620380">या पेजविषयी Google Lens ला विचारा</translation>
 <translation id="3596918995172292499">वाहनाचा परवाना जारी करणारे राज्य</translation>
 <translation id="3600106876108433070">तुलना सारण्यांबद्दल जाणून घ्या</translation>
 <translation id="3600246354004376029"><ph name="TITLE" />, <ph name="DOMAIN" />, <ph name="TIME" /></translation>
@@ -2447,6 +2449,7 @@
 <translation id="519422657042045905">भाष्य उपलब्ध नाही</translation>
 <translation id="5200063972779787617">खात्यामध्ये पत्ता सेव्ह करा</translation>
 <translation id="5201306358585911203">या पेजवरील एंबेड केलेल्‍या पेजचे म्हणणे हे आहे की</translation>
+<translation id="5203716867500274632">तुमच्या अ‍ॅडमिनिस्ट्रेटरने सर्व ChromeOS डिव्हाइसवर तुमच्या मागील आणि सद्य सेशनदरम्यान पुढील गोष्टी सिंक करणे सुरू केले आहे:</translation>
 <translation id="5205114269877707377"><ph name="OMNIBOX_ACTION_FOCUSED_FRIENDLY_MATCH_TEXT" />, उपलब्ध असलेल्या कृती ब्राउझ करण्यासाठी टॅब प्रेस करा, त्यानंतर निवडलेली कृती अमलात आणण्यासाठी एंटर प्रेस करा.</translation>
 <translation id="5205222826937269299">नाव आवश्यक आहे</translation>
 <translation id="5206392433295093945">बेडरूम</translation>
@@ -2606,6 +2609,7 @@
 <translation id="5472588168895083535">हँड ट्रॅकिंग ब्लॉक केले आहे</translation>
 <translation id="547963486735802022">तुमच्या फाइल पुन्हा ट्रान्सफर करण्याचा प्रयत्न करा</translation>
 <translation id="5481076368049295676">हा आशय तुमच्या डिव्हाइसवर तुमची माहिती चोरू किंवा मिटवू शकणारे धोकादायक सॉफ्टवेअर इंस्टॉल करण्याचा कदाचित प्रयत्न करेल. <ph name="BEGIN_LINK" />तरीही दाखवा<ph name="END_LINK" /></translation>
+<translation id="5481604577800516617">विंडो आणि टॅबचे व्यवस्थापन करा</translation>
 <translation id="5481682542063333508">लिहिण्याशी संबंधित मदत देऊ करा</translation>
 <translation id="54817484435770891">वैध पत्ता जोडा</translation>
 <translation id="5483838506518938965">तुम्ही पूर्णपणे तयार आहात</translation>
@@ -3442,6 +3446,7 @@
 <translation id="6925267999184670015">North American B+</translation>
 <translation id="6926216138694948720">बॉडी आर्ट</translation>
 <translation id="692638818576287323">व्यावसायिक वाहने</translation>
+<translation id="6930607614725241390">साइड पॅनलमध्ये शोधा</translation>
 <translation id="6934236486840930310"><ph name="BEGIN_BOLD" />तुमचे डीफॉल्ट शोध इंजीन तुम्हाला वेबवर शोधू देते आणि Chrome वैशिष्ट्यांना सामर्थ्य देते<ph name="END_BOLD" />, जसे की ॲड्रेस बारवरून आणि वेब पेजवरील इमेजमधून शोधणे. तुमचे शोध इंजीन त्यास सपोर्ट करत नसल्यास, एखादे वैशिष्ट्य कदाचित उपलब्ध होणार नाही.</translation>
 <translation id="6934672428414710184">हे नाव तुमच्या Google खात्यावरून आहे</translation>
 <translation id="6935077351544118151">तुम्ही आता Google Wallet मधून लॉयल्‍टी कार्ड ऑटोफिल करू शकता</translation>
@@ -4281,6 +4286,7 @@
 <translation id="8352849934814541340">या डिव्हाइसच्या अ‍ॅडमिनिस्ट्रेटरने अतिरिक्त फंक्शनसाठी अ‍ॅप्लिकेशन इंस्टॉल केली आहेत. अ‍ॅप्लिकेशनकडे तुमच्या काही डेटाचा अ‍ॅक्सेस आहे.</translation>
 <translation id="8355270400102541638">स्थानिक क्रॅश संदर्भ:</translation>
 <translation id="8363502534493474904">विमान मोड बंद करा</translation>
+<translation id="8363929499301563123">वेबसाइट कुकी (अलीकडे भेट दिलेल्या वेबसाइटवरील साइन-इनची स्थिती कायम ठेवली जाईल)</translation>
 <translation id="8364627913115013041">सेट केलेले नाही.</translation>
 <translation id="8366057325711477500">जागतिक बातम्या</translation>
 <translation id="836616551641291797">तुमचा ब्राउझर कसा व्यवस्थापित केला जातो याबद्दल अधिक जाणून घ्या</translation>

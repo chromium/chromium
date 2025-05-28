@@ -383,6 +383,7 @@ Situs tidak dapat menggunakan cookie untuk melihat aktivitas penjelajahan Anda d
 <translation id="2513103768503127042">Anda akan menemukan grup tab di sini</translation>
 <translation id="251837347827266434">Anda akan logout, tab akan ditutup, data penjelajahan akan dihapus</translation>
 <translation id="2520787026086861736">Untuk menonaktifkan, buka <ph name="BEGIN_LINK" />Isi Otomatis &amp; Sandi<ph name="END_LINK" /></translation>
+<translation id="2523295204312809179">Saat Anda menutup grup tab, grup tersebut otomatis disimpan di sini</translation>
 <translation id="2529021024822217800">Buka Semua</translation>
 <translation id="2536991091671391962">Anda dapat menggunakan sandi tersimpan di semua perangkat. Sandi disimpan ke Pengelola Sandi Google untuk <ph name="EMAIL" />.</translation>
 <translation id="2538103551183528357">Sandi tersembunyi</translation>
@@ -1035,6 +1036,7 @@ Lihat petunjuk mesin telusur untuk menghapus histori penelusuran Anda, jika memu
 <translation id="5275912569557792098"><ph name="USER_NAME" /> (<ph name="USER_EMAIL" />) ingin Anda bergabung ke grup tab. Siapa saja yang memiliki link ini dapat mengedit semua tab. Harap bergabung dengan hati-hati. Masa berlaku link akan berakhir setelah 48 jam.</translation>
 <translation id="5279600392753459966">Blokir semua</translation>
 <translation id="5282340693022193851">Untuk mendapatkan notifikasi pemantauan harga, aktifkan notifikasi di Setelan iOS.</translation>
+<translation id="528857768909044842">Grup tab disimpan di sini</translation>
 <translation id="5294624619177114121">Notifikasi seluler</translation>
 <translation id="5295239312320826323">Hapus akun <ph name="USER_EMAIL" />?</translation>
 <translation id="5300589172476337783">Tampilkan</translation>
@@ -1230,6 +1232,7 @@ Handoff juga harus diaktifkan pada bagian General di Settings, dan perangkat And
 <translation id="6100617279104942061">Login sebagai <ph name="USER_EMAIL" />. Membuka setelan.</translation>
 <translation id="6103540626693881831">Enkripsi di Perangkat</translation>
 <translation id="611361228753138223">Situs yang Anda buka baru-baru ini di perangkat ini</translation>
+<translation id="611705554202268369">Tekan lama untuk menambahkan ke grup tab</translation>
 <translation id="6122191549521593678">Online</translation>
 <translation id="6122831415929794347">Nonaktifkan Safe Browsing?</translation>
 <translation id="6123514585040403489">Tab Anda akan ditutup</translation>
@@ -1855,6 +1858,7 @@ Situs dapat menggunakan cookie untuk melihat aktivitas penjelajahan Anda di berb
 <translation id="8535368836838588657">Perlihatkan sandi</translation>
 <translation id="8545276357312221485">Periksa setelan browser default Anda</translation>
 <translation id="854938212724803178">Anda memiliki 1 sandi yang telah dibobol. Perbaiki sekarang agar tetap terlindungi.</translation>
+<translation id="8551311254462607218">Di kolom URL, ketuk ikon kamera Google Lens</translation>
 <translation id="8556590991644167667">{count,plural, =1{Anda menolak {count} peringatan}other{Anda menolak {count} peringatan}}</translation>
 <translation id="8558046478684552694">Tutup grup.</translation>
 <translation id="8560253818350321773">Tampilkan item yang sering digunakan terlebih dahulu.</translation>
@@ -1998,6 +2002,7 @@ Situs dapat menggunakan cookie untuk melihat aktivitas penjelajahan Anda di berb
 <translation id="9032405509996909363">Konfirmasi penghapusan data penjelajahan</translation>
 <translation id="9039373489628511875">Bandwidth</translation>
 <translation id="9042893549633094279">Privasi dan keamanan</translation>
+<translation id="9055291197094969722">Buat grup tab untuk mengatur tab yang terbuka dan tetap produktif</translation>
 <translation id="9055580485132823283">Anda akan menghapus {password_count} sandi, {passkey_count} kunci sandi, dan daftar situs &amp; aplikasi yang Anda pilih agar tidak pernah menyimpan info login. Akun apa pun yang Anda buat untuk situs dan aplikasi tidak akan dihapus.</translation>
 <translation id="9057030985451135243">Pelajari grup tab bersama</translation>
 <translation id="9057972802061533987">Tidak dapat mengikuti. Terjadi error.</translation>

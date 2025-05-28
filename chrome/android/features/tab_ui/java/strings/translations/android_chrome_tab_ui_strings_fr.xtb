@@ -175,6 +175,7 @@
 <translation id="7942349550061667556">Rouge</translation>
 <translation id="7961015016161918242">Jamais</translation>
 <translation id="7966321538264951561">Fermer les suggestions.</translation>
+<translation id="796696298310625748">{WINDOW_COUNT,plural, =1{Déplacer l'onglet vers une nouvelle fenêtre}one{Déplacer l'onglet vers une autre fenêtre}other{Déplacer l'onglet vers une autre fenêtre}}</translation>
 <translation id="799469866974412355">Nouveau groupe issu de votre autre appareil</translation>
 <translation id="8029301326595421733">Fiche d'infos sur ce magasin ouverte à pleine hauteur</translation>
 <translation id="8053770993984522566">Liste de groupes d'onglets, ouverte à mi-hauteur</translation>
@@ -196,6 +197,7 @@
 <translation id="8730621377337864115">OK</translation>
 <translation id="8730999928494395583">Votre activité dans ces onglets de navigation privée sera supprimée de cet appareil</translation>
 <translation id="875848103419578654">{NUM_MONTHS,plural, =1{Créé il y a <ph name="NUM_MONTHS_ONE" /> mois}one{Créé il y a <ph name="NUM_MONTHS_MANY" /> mois}other{Créé il y a <ph name="NUM_MONTHS_MANY" /> mois}}</translation>
+<translation id="8813708480179818649">Supprimer l'onglet du groupe</translation>
 <translation id="8820741577754260431">Consultez les baisses de prix dans les onglets</translation>
 <translation id="883379923675618699">Chrome ferme automatiquement les éléments de la section des onglets inactifs que vous n'avez pas utilisés depuis trois mois. Vous pouvez désactiver cette option maintenant ou à tout moment dans les paramètres.</translation>
 <translation id="8887921976452567404">Vous pouvez rouvrir vos onglets et groupes fermés depuis les sections "Onglets récents" et "Groupes d'onglets".</translation>

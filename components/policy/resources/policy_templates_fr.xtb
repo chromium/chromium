@@ -2359,6 +2359,7 @@ Le système n'interroge les enregistrements AAAA que si un hôte IPv6 global pe
 <translation id="268695908564263739">Cette règle active ou désactive le mode Haute efficacité. Avec ce paramètre, les onglets sont supprimés en arrière-plan après un certain temps afin de récupérer de la mémoire.
       Si cette règle n'est pas configurée, l'utilisateur final peut contrôler ce paramètre dans chrome://settings/performance.
       </translation>
+<translation id="2687600966277668971">Le préchargement SpeculationRules ne peut pas être envoyé aux URL contrôlées par ServiceWorker (ancien comportement).</translation>
 <translation id="2691668238491124549">Cette règle (recommandation uniquement) permet de placer les langues recommandées pour une session gérée en haut de la liste, conformément à leur ordre d'affichage dans la règle. La première langue recommandée est présélectionnée.
 
       Si cette règle n'est pas configurée, la langue actuelle de l'interface utilisateur est présélectionnée.
@@ -4396,6 +4397,7 @@ Obsolète : la fonctionnalité de suivi des colis étant désactivée depuis M1
 <translation id="4189872355465413041">Applis système</translation>
 <translation id="4190316993598857632">Activer la modification des favoris</translation>
 <translation id="4192388905594723944">URL permettant de valider le jeton d'authentification du client d'accès à distance</translation>
+<translation id="4195119404667420672">Le préchargement SpeculationRules peut être envoyé aux URL contrôlées par ServiceWorker.</translation>
 <translation id="4195698007674066525">Utiliser par défaut un clavier numérique pour la saisie du mot de passe</translation>
 <translation id="4203055629055264833">Si cette règle est activée ou n'est pas configurée, les utilisateurs peuvent afficher la page la plus récente des résultats du moteur de recherche par défaut dans un panneau latéral à l'aide d'une icône de la barre d'outils.
 
@@ -4981,6 +4983,13 @@ La configuration de la règle <ph name="CHROME_OS_RELEASE_CHANNEL_POLICY_NAME" /
 <translation id="4650044303940238102">Paramètres de polices locales</translation>
 <translation id="4650759511838826572">Désactiver les schémas de protocole d'URL</translation>
 <translation id="465099050592230505">URL de boutique en ligne d'entreprise (abandonné)</translation>
+<translation id="4652388001247121058">Le préchargement SpeculationRules peut être émis pour les URL contrôlées par ServiceWorker. Cependant, l'ancien code ne l'autorisait pas et annulait les requêtes de préchargement. Cette règle permet de contrôler le comportement.
+
+Si cette règle est activée ou n'est pas configurée, le préchargement SpeculationRules est autorisé pour les URL contrôlées par ServiceWorker (si le flag de fonctionnalité PrefetchServiceWorker est activé). Il s'agit du comportement par défaut actuel, qui est conforme aux spécifications.
+
+Si cette règle est désactivée, le préchargement SpeculationRules n'est pas autorisé pour les URL contrôlées par ServiceWorker. Cela correspond à l'ancien comportement.
+
+Cette règle est provisoire et sera supprimée prochainement.</translation>
 <translation id="4653465451589191309">Si cette règle est activée ou qu'elle n'est pas configurée, les utilisateurs peuvent gérer (déconnecter ou modifier) les connexions VPN. Si la connexion VPN est créée à l'aide d'une application VPN, l'interface utilisateur dans cette application n'est pas affectée. Ainsi, les utilisateurs peuvent quand même utiliser l'application pour modifier la connexion VPN. Utilisez cette règle avec la fonctionnalité VPN toujours activée, ce qui permet à l'administrateur d'établir une connexion VPN lors du démarrage d'un appareil.
 
       Si cette règle est désactivée, les interfaces utilisateur <ph name="PRODUCT_OS_NAME" /> qui permettraient à l'utilisateur de déconnecter ou de modifier les connexions VPN sont également désactivées.</translation>
@@ -5737,6 +5746,7 @@ REMARQUE : Seuls les nouveaux processus du moteur de rendu refléteront les mod
 <translation id="5194683382395300627">Autoriser l'utilisation de l'<ph name="ASSISTANT_PRODUCT_NAME" /> sur le Web (par ex. : pour activer la modification automatique des mots de passe)</translation>
 <translation id="5196630732055960309">Autoriser l'API File Handling pour ces applis Web</translation>
 <translation id="5205352023880027050">Ne pas activer la fonctionnalité EphemeralNetworkPolicies.</translation>
+<translation id="5205385499831960279">Appliquer des restrictions aux requêtes adressées à des points de terminaison du réseau local</translation>
 <translation id="5206454085187851382">Si <ph name="PRINTERS_ALLOWLIST" /> est sélectionné pour la règle <ph name="PRINTERS_BULK_ACCESS_MODE_POLICY_NAME" />, la définition de <ph name="PRINTERS_BULK_ALLOWLIST_POLICY_NAME" /> indique les imprimantes accessibles aux utilisateurs. Seules les imprimantes dont les ID correspondent aux valeurs définies dans cette règle sont proposées aux utilisateurs. Ces ID doivent correspondre à ceux indiqués dans les champs <ph name="ID_FIELD" /> ou <ph name="GUID_FIELD" /> du fichier spécifié dans la règle <ph name="PRINTERS_BULK_CONFIGURATION_POLICY_NAME" />.</translation>
 <translation id="5207543664699568887">Cette règle détermine si <ph name="PRODUCT_NAME" /> utilise les notifications système sur Linux.
 
@@ -5977,6 +5987,7 @@ Les comptes gérés ne peuvent pas rejoindre ni créer de groupe familial, et ne
 <translation id="5334404204520035180">Contrôler l'utilisation de l'API WebPrinting</translation>
 <translation id="5334501839642146593">Ne pas envoyer de statistiques à Google</translation>
 <translation id="5335910979215357815">Activer l'API Save and Share pour le contrôle <ph name="PRODUCT_OS_NAME" /> tiers.</translation>
+<translation id="5337869685871558036">Autoriser le préchargement SpeculationRules pour les URL contrôlées par ServiceWorker</translation>
 <translation id="5339096331970464266">Activer le clavier virtuel d'accessibilité</translation>
 <translation id="5340008866815063393">Activer les rapports sur les données des règles</translation>
 <translation id="5345892164332459671">Désactiver le SSO flottant et ne pas déplacer les authentifications des services Web de l'utilisateur vers un nouvel appareil</translation>
@@ -6647,6 +6658,7 @@ Sous <ph name="MS_WIN_NAME" />, cette règle n'est disponible que sur les instan
 
       Remarque : Le facteur de scaling doit être de 100 % ou plus.</translation>
 <translation id="5740636973289452345">Activer les rapports sur les informations liées aux extensions et plug-ins</translation>
+<translation id="5740716956489996914">Utiliser le comportement par défaut pour déterminer si des sites Web peuvent envoyer des requêtes aux points de terminaison du réseau local</translation>
 <translation id="5741110260062082926">Désactiver Orca</translation>
 <translation id="5746149754419996562">Active la présence de widgets Glanceables sur <ph name="PRODUCT_OS_NAME" />. Plus précisément, les widgets accessibles via le chip de date sur l'étagère.
 Lorsque cette règle est activée, les Glanceables le sont aussi sur <ph name="PRODUCT_OS_NAME" />.
@@ -6768,6 +6780,7 @@ Pour en savoir plus sur la gestion des données pour les fonctionnalités d'IA 
 
       Si cette règle est désactivée ou qu'elle n'est pas configurée, aucun journal système n'est communiqué.</translation>
 <translation id="5861856285460256766">Configuration du code d'accès parental</translation>
+<translation id="5864898931148094192">Contrôler la visibilité de l'attribution à l'extension sur la page "Nouvel onglet"</translation>
 <translation id="5868414965372171132">Configuration réseau au niveau de l'utilisateur</translation>
 <translation id="5868454276721377379">Lorsqu'un utilisateur passe d'un appareil <ph name="PRODUCT_OS_NAME" /> à un autre, le service SSO flottant restaure sur le nouvel appareil l'état d'authentification du service Web de l'utilisateur de l'appareil précédent. Pour cela, les cookies des utilisateurs sont déplacés d'un appareil à l'autre.
 
@@ -6894,11 +6907,6 @@ Sous <ph name="MAC_OS_NAME" />, cette règle n'est disponible que sur les instan
 <translation id="5917897389577978190">Gmail (compatible depuis la version 135)</translation>
 <translation id="592036544845479336">Réactiver les événements de mutation obsolètes/supprimés</translation>
 <translation id="5921713479449475707">Autoriser les téléchargements de mise à jour automatique via HTTP</translation>
-<translation id="5923084443277419535">L'analyseur HTML est modifié pour autoriser des balises HTML supplémentaires dans l'élément &lt;select&gt;. Cette règle permet d'utiliser l'ancien comportement de l'analyseur HTML jusqu'à la version M138.
-
-Si cette règle est activée ou n'est pas configurée, l'analyseur HTML autorise les balises supplémentaires dans l'élément &lt;select&gt;.
-
-Si elle est désactivée, l'analyseur HTML limite les balises pouvant être placées dans l'élément &lt;select&gt;.</translation>
 <translation id="5925405187134730827">Cette règle a été abandonnée, car la fonctionnalité qu'elle contrôle n'a jamais été lancée. Veuillez utiliser la règle <ph name="ENTERPRISE_PROFILE_BADGE_TOOLBAR_SETTINGS" /> à la place.
 
 Si cette règle n'est pas configurée ou qu'elle est définie sur <ph name="DISPLAY_MANAGEMENT_LABEL_PERMAMENT_VALUE" /> (valeur 0), un libellé "Professionnel" ou "Scolaire" s'affiche à côté de l'avatar de la barre d'outils.
@@ -7050,6 +7058,13 @@ Cette règle a été abandonnée dans la version M124.</translation>
 <translation id="604243460476563291">Désactiver le transfert de fichiers dans les connexions d'assistance à distance avec les administrateurs de l'entreprise</translation>
 <translation id="6042629184389251062">La collecte de métriques avec clé d'URL  n'est pas autorisée</translation>
 <translation id="6046615715547751255">Ne pas autoriser les contrôles de rapports précis</translation>
+<translation id="6047041034696466581">Cette règle détermine si une attribution à l'extension modifiant la page "Nouvel onglet" s'affiche dans le pied de cette page.
+
+Par défaut, si une extension a remplacé la page "Nouvel onglet" standard, un message attribuant ce changement à l'extension spécifique s'affiche dans le pied de page. Cette attribution inclut généralement un lien vers l'extension correspondante dans le Chrome Web Store.
+
+Si cette règle n'est pas configurée ou si elle est définie sur "True", l'attribution à l'extension est visible dans le pied de la page "Nouvel onglet" lorsqu'une extension contrôle cette page.
+
+Si cette règle est définie sur "False", l'attribution à l'extension dans le pied de la page "Nouvel onglet" est supprimée.</translation>
 <translation id="6048199181629830227">Activer l'alimentation alternée en heures pleines</translation>
 <translation id="6048690591359317353">Ne pas autoriser l'utilisateur à déconnecter ni modifier manuellement un VPN</translation>
 <translation id="6049117606554031363">Activer les rapports sur l'état de la carte d'appareil</translation>
@@ -7579,6 +7594,7 @@ Voici une liste des variables que vous pouvez utiliser (https://www.chromium.org
 
 Si cette règle n'est pas configurée, <ph name="PRODUCT_OS_NAME" /> stocke par défaut les captures d'écran dans le répertoire "Téléchargements", mais les utilisateurs peuvent modifier l'emplacement.</translation>
 <translation id="6377031865393559909">Autoriser les utilisateurs à se servir de modèles de bureau</translation>
+<translation id="6377570995433636383">Indique si des restrictions doivent être appliquées aux requêtes adressées à des points de terminaison du réseau local</translation>
 <translation id="6378076389057087301">Indiquer si l'activité audio a une incidence sur la gestion de l'alimentation</translation>
 <translation id="6378393933102834628">Si cette règle est définie sur "True", le raccourci des applications est affiché. Si cette règle est définie sur "False", ce raccourci n'est jamais affiché.
 
@@ -9550,6 +9566,11 @@ Si cette règle est définie sur "False" ou qu'elle n'est pas configurée, <ph n
 Pour en savoir plus sur la règle <ph name="IEEM_SITELIST_POLICY" /> d'Internet Explorer, consultez la page https://docs.microsoft.com/internet-explorer/ie11-deploy-guide/what-is-enterprise-mode.</translation>
 <translation id="7791215522423893512">Ne pas autoriser les captures d'écran et l'enregistrement de vidéos</translation>
 <translation id="7792796937016596423">L'utilisateur ne pourra pas capturer de paquets du réseau</translation>
+<translation id="7795648856511126914">L'analyseur HTML est modifié pour autoriser des balises HTML supplémentaires dans l'élément &lt;select&gt;. Cette règle permet d'utiliser l'ancien comportement de l'analyseur HTML jusqu'à la version M136.
+
+Si cette règle est activée ou n'est pas configurée, l'analyseur HTML autorise les balises supplémentaires dans l'élément &lt;select&gt;.
+
+Si cette règle est désactivée, l'analyseur HTML limite les balises pouvant être placées dans l'élément &lt;select&gt;.</translation>
 <translation id="7798441698807517880">Cette règle a été supprimée depuis la version 89 de <ph name="PRODUCT_NAME" />, car <ph name="FLASH_PLUGIN_NAME" /> est obsolète.
 
       Si cette règle est définie sur "True", tous les contenus <ph name="FLASH_PLUGIN_NAME" /> intégrés aux sites qui autorisent <ph name="FLASH_PLUGIN_NAME" /> sont exécutés (y compris les contenus de provenance différente ou de petite taille).
@@ -11236,6 +11257,11 @@ Si cette règle est désactivée, toutes les intégrations le sont aussi.</trans
       Si un même format d'URL est spécifié à la fois dans cette règle et dans <ph name="SENSORS_BLOCKED_FOR_URLS_POLICY_NAME" />, cette dernière est prioritaire et l'accès aux capteurs de mouvement ou de lumière est bloqué.
 
       Pour en savoir plus sur les formats <ph name="URL_LABEL" /> valides, veuillez consulter https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. Les caractères génériques (<ph name="WILDCARD_VALUE" />) sont autorisés.</translation>
+<translation id="9002299469625801504">Lorsque cette règle est activée, la requête principale est bloquée chaque fois qu'un avertissement est censé s'afficher dans <ph name="DEV_TOOLS_NAME" /> en raison de l'échec des vérifications <ph name="LOCAL_NETWORK_ACCCESS" />.
+
+Si cette règle est désactivée ou n'est pas configurée, les requêtes <ph name="LOCAL_NETWORK_ACCESS" /> utiliseront le traitement par défaut.
+
+Pour connaître les restrictions concernant <ph name="LOCAL_NETWORK_ACCESS" />, consultez https://github.com/explainers-by-googlers/local-network-access.</translation>
 <translation id="9003823644527627017">Configurer les VM Bruschetta sur <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="9004469022085379212">Si cette règle est activée, l'appareil est autorisé à exécuter des machines virtuelles sur <ph name="PRODUCT_OS_NAME" />. Vous devez activer <ph name="VIRTUAL_MACHINES_ALLOWED_POLICY_NAME" /> et <ph name="CROSTINI_ALLOWED_POLICY_NAME" /> pour pouvoir utiliser <ph name="PRODUCT_CROSTINI_NAME" />. Si cette règle est désactivée, l'appareil n'est pas autorisé à exécuter des machines virtuelles. Si vous la désactivez, elle sera appliquée aux machines virtuelles qui vont être lancées, mais pas à celles qui le sont déjà.
 

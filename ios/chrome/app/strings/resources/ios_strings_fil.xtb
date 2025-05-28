@@ -383,6 +383,7 @@ Hindi magagamit ng mga site ang cookies para makita ang iyong aktibidad sa pag-b
 <translation id="2513103768503127042">Makikita mo rito ang iyong mga grupo ng tab</translation>
 <translation id="251837347827266434">Masa-sign out ka, isasara ang mga tab, ide-delete ang data mula sa pag-browse</translation>
 <translation id="2520787026086861736">Para i-off, pumunta sa <ph name="BEGIN_LINK" />AutoFill &amp; Passwords<ph name="END_LINK" /></translation>
+<translation id="2523295204312809179">Kapag isinara mo ang isang grupo ng tab, awtomatiko itong mase-save dito</translation>
 <translation id="2529021024822217800">Buksan Lahat</translation>
 <translation id="2536991091671391962">Puwede mong gamitin ang mga naka-save na password sa anumang device. Sine-save ang mga ito sa Google Password Manager para sa <ph name="EMAIL" />.</translation>
 <translation id="2538103551183528357">Naka-hide, password</translation>
@@ -969,6 +970,7 @@ Tingnan ang mga tagubilin ng iyong search engine para sa pag-delete sa history n
 <translation id="499122600724363620"><ph name="NAME" />, <ph name="EMAIL" />, pinapamahalaan ng iyong organisasyon.</translation>
 <translation id="4992255726304765516">Kulay <ph name="COLOR" /> na grupo ng tab</translation>
 <translation id="5005498671520578047">Kopyahin password</translation>
+<translation id="5009127379503001909">Magpatuloy sa pag-browse</translation>
 <translation id="5012914568031465281">Hindi masubaybayan ang presyo.</translation>
 <translation id="5016420433031926653">Ipadala sa <ph name="USER_EMAIL" /></translation>
 <translation id="5017529052065664584">Nakalipas na 15 minuto</translation>
@@ -1035,6 +1037,7 @@ Tingnan ang mga tagubilin ng iyong search engine para sa pag-delete sa history n
 <translation id="5275912569557792098">Gusto ni <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />) na sumali ka sa isang grupo ng tab. Mae-edit ng sinumang may link ang lahat ng tab, kaya mag-ingat sa pagsali. Mag-e-expire ang link sa loob ng 48 oras.</translation>
 <translation id="5279600392753459966">I-block lahat</translation>
 <translation id="5282340693022193851">Para makatanggap ng mga notification sa pagsubaybay sa presyo, i-on ang mga notification sa iyong Mga Setting ng iOS.</translation>
+<translation id="528857768909044842">Naka-save dito ang mga grupo ng tab</translation>
 <translation id="5294624619177114121">Mga notification sa mobile</translation>
 <translation id="5295239312320826323">Alisin ang account na <ph name="USER_EMAIL" />?</translation>
 <translation id="5300589172476337783">Ipakita</translation>
@@ -1230,6 +1233,7 @@ Dapat ding naka-enable ang handoff sa Pangkalahatang seksyon ng Mga Setting, at 
 <translation id="6100617279104942061">Naka-sign in bilang <ph name="USER_EMAIL" />. Binubuksan ang mga setting.</translation>
 <translation id="6103540626693881831">On-device na Pag-encrypt</translation>
 <translation id="611361228753138223">Mga site na binisita mo kamakailan sa device na ito</translation>
+<translation id="611705554202268369">Pindutin nang matagal para idagdag sa isang grupo ng tab</translation>
 <translation id="6122191549521593678">Online</translation>
 <translation id="6122831415929794347">I-off ang Ligtas na Pag-browse?</translation>
 <translation id="6123514585040403489">Isasara ang iyong mga tab</translation>
@@ -1478,6 +1482,7 @@ Habang nasa Incognito, hindi magagamit ng mga site ang cookies para makita ang i
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6979737339423435258">Lahat ng oras</translation>
 <translation id="6983306615164277634">Puwede mo ring pindutin nang matagal ang address bar para baguhin ang posisyon.</translation>
+<translation id="6987201788018524855">I-explore ang mga kapaki-pakinabang na feature na napalampas mo</translation>
 <translation id="6990519590575500580">Facetime</translation>
 <translation id="6998251471716094661">Subaybayan ang mga presyo ng mga produkto at makatanggap ng mga alerto kapag bumaba ang presyo sa anumang site</translation>
 <translation id="7004032350256606903">Ipinag-aatas sa iyo ng organisasyon mo na mag-browse nang pribado.
@@ -1855,6 +1860,7 @@ Puwedeng gumamit ng cookies ang mga site para makita ang iyong aktibidad sa pag-
 <translation id="8535368836838588657">Ipakita ang password</translation>
 <translation id="8545276357312221485">Tingnan ang iyong mga setting ng default browser</translation>
 <translation id="854938212724803178">Mayroon kang 1 nakompromisong password. Ayusin ito ngayon para manatiling ligtas.</translation>
+<translation id="8551311254462607218">Sa address bar, i-tap ang icon na camera ng Google Lens</translation>
 <translation id="8556590991644167667">{count,plural, =1{Nag-dismiss ka ng {count} babala}one{Nag-dismiss ka ng {count} babala}other{Nag-dismiss ka ng {count} na babala}}</translation>
 <translation id="8558046478684552694">Isara ang grupo.</translation>
 <translation id="8560253818350321773">Unang ipakita ang mga item na madalas gamitin.</translation>
@@ -1926,7 +1932,7 @@ Puwedeng gumamit ng cookies ang mga site para makita ang iyong aktibidad sa pag-
 <translation id="8786100550345425552">I-edit ang mga pahintulot</translation>
 <translation id="878871978861915380">I-hide ang "Pagsubaybay sa presyo"</translation>
 <translation id="8792626944327216835">mikropono</translation>
-<translation id="8796634520835503150">Available na reading mode</translation>
+<translation id="8796634520835503150">Available ang reading mode</translation>
 <translation id="8803526663383843427">Kapag naka-on</translation>
 <translation id="8803639129939845298">Secure</translation>
 <translation id="8806823403540278281">Ipinag-aatas sa iyo ng organisasyon mo na mag-browse nang pribado. Hindi nase-save ang mga tab sa Incognito mode.
@@ -1999,6 +2005,7 @@ Puwedeng gumamit ng cookies ang mga site para makita ang iyong aktibidad sa pag-
 <translation id="9032405509996909363">Kumpirmahin ang pag-delete ng data mula sa pag-browse</translation>
 <translation id="9039373489628511875">Bandwidth</translation>
 <translation id="9042893549633094279">Privacy at seguridad</translation>
+<translation id="9055291197094969722">Gumawa ng mga grupo ng tab para isaayos ang iyong mga nakabukas na tab at manatiling produktibo</translation>
 <translation id="9055580485132823283">Ide-delete mo ang {password_count} (na) password, {passkey_count} (na) passkey, at ang listahan ng mga site at app na pinili mong hinding-hindi magse-save ng impormasyon sa pag-sign in. Hindi made-delete ang anumang account na ginawa mo para sa mga site at app.</translation>
 <translation id="9057030985451135243">Matuto tungkol sa mga naka-share na grupo ng tab</translation>
 <translation id="9057972802061533987">Hindi masubaybayan. Nagkaproblema.</translation>

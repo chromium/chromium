@@ -367,6 +367,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="1612199629998703524">Gérer les thèmes</translation>
 <translation id="1615178538289490617">Révoquer l'accès de <ph name="PORT_NAME" /></translation>
 <translation id="1615402009686901181">Une règle définie par l'administrateur a désactivé la capture d'écran lorsqu'un contenu confidentiel est affiché</translation>
+<translation id="161612500287664753">Poser une question à la recherche Google concernant cette page</translation>
 <translation id="1617276713587758852">Crossovers</translation>
 <translation id="1619007254056372606">Gérer les données des sites sur l'appareil</translation>
 <translation id="1619648179761984213"><ph name="USER_DISPLAY_NAME" /> a supprimé un onglet</translation>
@@ -1508,6 +1509,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="3586931643579894722">Masquer les détails</translation>
 <translation id="3587725436724465984">Votre organisation a identifié <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> comme un site susceptible de ne pas respecter une règle. <ph name="BEGIN_LEARN_MORE_LINK" />En savoir plus sur cet avertissement<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3587738293690942763">Milieu</translation>
+<translation id="3589519427766620380">Poser une question à Google Lens concernant cette page</translation>
 <translation id="3596918995172292499">État de la plaque</translation>
 <translation id="3600106876108433070">En savoir plus sur les tableaux comparatifs</translation>
 <translation id="3600246354004376029">"<ph name="TITLE" />", <ph name="DOMAIN" />, <ph name="TIME" /></translation>
@@ -2448,6 +2450,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="519422657042045905">Annotation indisponible</translation>
 <translation id="5200063972779787617">Enregistrer l'adresse dans le compte</translation>
 <translation id="5201306358585911203">Une page intégrée à cette page Web indique</translation>
+<translation id="5203716867500274632">Votre administrateur a autorisé la synchronisation des éléments suivants entre vos sessions précédentes et actuelles sur vos appareils ChromeOS :</translation>
 <translation id="5205114269877707377"><ph name="OMNIBOX_ACTION_FOCUSED_FRIENDLY_MATCH_TEXT" />, appuyez sur Tabulation pour parcourir les actions disponibles, puis sur Entrée pour exécuter l'action sélectionnée.</translation>
 <translation id="5205222826937269299">Veuillez saisir un nom</translation>
 <translation id="5206392433295093945">Chambre</translation>
@@ -2607,6 +2610,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="5472588168895083535">Suivi des mains bloqué</translation>
 <translation id="547963486735802022">Réessayez de transférer vos fichiers</translation>
 <translation id="5481076368049295676">Ce contenu peut essayer d'installer un logiciel dangereux sur votre appareil pour dérober ou supprimer vos informations. <ph name="BEGIN_LINK" />Je souhaite y accéder malgré tout.<ph name="END_LINK" /></translation>
+<translation id="5481604577800516617">Disposition des fenêtres et des onglets</translation>
 <translation id="5481682542063333508">Obtenir de l'aide pour écrire</translation>
 <translation id="54817484435770891">Ajouter une adresse valide</translation>
 <translation id="5483838506518938965">Tout est prêt</translation>
@@ -3442,6 +3446,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="6925267999184670015">B+ nord-américain</translation>
 <translation id="6926216138694948720">Tatouages/Piercings</translation>
 <translation id="692638818576287323">Véhicules commerciaux</translation>
+<translation id="6930607614725241390">Rechercher dans le panneau latéral</translation>
 <translation id="6934236486840930310"><ph name="BEGIN_BOLD" />Votre moteur de recherche par défaut vous permet d'effectuer des recherches sur le Web et alimente des fonctionnalités Chrome<ph name="END_BOLD" /> telles que la recherche à partir de la barre d'adresse et d'images issues de pages Web. Une fonctionnalité peut ne pas être disponible si votre moteur de recherche ne la prend pas en charge.</translation>
 <translation id="6934672428414710184">Ce nom provient de votre compte Google</translation>
 <translation id="6935077351544118151">Vous pouvez désormais saisir automatiquement les cartes de fidélité depuis Google Wallet</translation>
@@ -4282,6 +4287,7 @@ Informations supplémentaires :
 <translation id="8352849934814541340">L'administrateur de cet appareil a installé des applis permettant d'utiliser des fonctions supplémentaires. Ces applis ont accès à certaines de vos données.</translation>
 <translation id="8355270400102541638">Contexte de plantage local :</translation>
 <translation id="8363502534493474904">Désactivez le mode Avion.</translation>
+<translation id="8363929499301563123">Cookies de sites Web (l'état connecté sur les sites Web consultés récemment sera préservé)</translation>
 <translation id="8364627913115013041">Non définie</translation>
 <translation id="8366057325711477500">Actualités internationales</translation>
 <translation id="836616551641291797">En savoir plus sur la gestion de votre navigateur</translation>

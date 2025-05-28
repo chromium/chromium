@@ -375,6 +375,7 @@ Nur Personen, die deine Passphrase kennen, können deine verschlüsselten Daten 
 <translation id="2718352093833049315">Nur bei WLAN</translation>
 <translation id="2718846868787000099">Zum Anzeigen von Inhalten in deinen bevorzugten Sprachen müssen Websites, die du besuchst, deine Einstellungen abrufen können</translation>
 <translation id="2723001399770238859">Audio</translation>
+<translation id="2734335652257251631">Lesemodus anzeigen</translation>
 <translation id="2739887572830526131">Du kannst diese Gruppe beibehalten, um später Tabs hinzuzufügen, oder sie löschen, wenn du sie nicht mehr benötigst.</translation>
 <translation id="2742373789128106053"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ist momentan nicht verfügbar.</translation>
 <translation id="2760805590727089264">MM/JJ</translation>
@@ -1439,6 +1440,7 @@ Wenn du diese Einstellung ändern möchtest, <ph name="BEGIN_LINK" />lösche die
 <translation id="7431991332293347422">Lege fest, wie dein Browserverlauf zur Personalisierung der Google Suche verwendet wird</translation>
 <translation id="7435356471928173109">Von deinem Administrator deaktiviert</translation>
 <translation id="7437998757836447326">Von Chrome abmelden</translation>
+<translation id="7439467816829380878">Tab in Gruppe verschieben</translation>
 <translation id="7453810262525006706">Zu Seitenansicht minimieren</translation>
 <translation id="7454641608352164238">Zu wenig Speicherplatz</translation>
 <translation id="7454744349230173024">Deine Organisation hat das Speichern von Passwörtern deaktiviert</translation>
@@ -1607,7 +1609,7 @@ Wenn du diese Einstellung ändern möchtest, <ph name="BEGIN_LINK" />lösche die
 <translation id="8105613260829665809">Wenn du fortfährst, akzeptierst du damit die <ph name="BEGIN_TOS_LINK" />Nutzungsbedingungen<ph name="END_TOS_LINK" />.\nChrome sendet Nutzungsstatistiken und Absturzberichte an Google, damit wir die App verbessern können. <ph name="BEGIN_UMA_LINK" />Verwalten<ph name="END_UMA_LINK" /></translation>
 <translation id="8105893657415066307"><ph name="DESCRIPTION" /> <ph name="SEPARATOR" /> <ph name="FILE_SIZE" /></translation>
 <translation id="8107530384992929318">Sortierungsoptionen schließen</translation>
-<translation id="8110024788458304985">Helfen, die Funktionen und die Leistung von Chrome zu verbessern</translation>
+<translation id="8110024788458304985">Hilf uns, die Funktionen und die Leistung von Chrome zu verbessern</translation>
 <translation id="8110087112193408731">Deine Chrome-Aktivitäten in Digital Wellbeing anzeigen?</translation>
 <translation id="8118117428362942925">Wenn du Hilfe brauchst, sprich mit deinen Eltern (<ph name="PARENT_NAME" />)</translation>
 <translation id="8120286190326371840">Keine kompromittierten Passwörter auf diesem Gerät</translation>
@@ -1744,6 +1746,7 @@ Wenn du diese Einstellung ändern möchtest, <ph name="BEGIN_LINK" />lösche die
 <translation id="8676789164135894283">Anmeldebestätigungen</translation>
 <translation id="8683039184091909753">Bild</translation>
 <translation id="8688183792442786085"><ph name="TAB_TITLE" />, ausgewählter Tab</translation>
+<translation id="8693232767599693749">Lesemodus anzeigen?</translation>
 <translation id="8697753151306746444">Stattdessen Fenster oder Bildschirm freigeben</translation>
 <translation id="869891660844655955">Ablaufdatum</translation>
 <translation id="8699120352855309748">Übersetzen dieser Sprachen nicht anbieten</translation>

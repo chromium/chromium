@@ -265,6 +265,7 @@
 <translation id="2044681667265133332">Računom <ph name="USER_EMAIL" /> upravlja domena <ph name="HOSTED_DOMAIN" /> koja možda može pregledavati neke podatke. <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">nova stavka</translation>
 <translation id="2049727122989709386"><ph name="COUNT" /> računa koristi istu zaporku</translation>
+<translation id="2054044186557130763">Prijavite se kao <ph name="NAME" />, s računom <ph name="EMAIL" /> kojim upravlja vaša organizacija.</translation>
 <translation id="2059166748188874810">Općina</translation>
 <translation id="2060638295449304809">Adresa se sprema samo na ovaj uređaj. Da biste je upotrebljavali na svojim drugim uređajima, spremite je na svoj Google račun <ph name="USER_EMAIL" /></translation>
 <translation id="20638360198452347">Alat za odabir vrste jedinica</translation>
@@ -614,6 +615,7 @@ Potražite upute za svoju tražilicu da biste saznali kako izbrisati svoju povij
 <translation id="3572607909481582402">Na vašem Google računu</translation>
 <translation id="3575234738189584619">Pretraživanje pomoću Objektiva</translation>
 <translation id="3575426792457739946">Ovaj popis sadrži sve učitane profile.</translation>
+<translation id="3578866308944526475">Račun <ph name="EMAIL" /> kojim upravlja vaša organizacija.</translation>
 <translation id="3581564640715911333">Ponudi prevođenje stranica na druge jezike</translation>
 <translation id="3587885837929752825">Vaša organizacija ograničava sadržaj koji možete spremati na svoj Google račun.</translation>
 <translation id="3588820906588687999">Otvori sliku u novoj kartici</translation>
@@ -881,6 +883,9 @@ Potražite upute za svoju tražilicu da biste saznali kako izbrisati svoju povij
 <translation id="4669618761237477717">Vaša organizacija zahtijeva da pregledavate privatno. Grupe kartica ne sinkroniziraju se u anonimnom načinu.
 <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
 <translation id="467189612236587057">Povežite se s tvrtkom upućivanjem telefonskog poziva</translation>
+<translation id="4673565891421389203">Prijavite se na upravljani račun kako biste pregledavanje povezano s vašom organizacijom (uključujući kartice, povijest i zaporke) lakše odvojili od ostatka pregledavanja.
+
+       Odaberite što želite učiniti s postojećim podacima o pregledavanju na ovom uređaju.</translation>
 <translation id="4682496302933121474">Želite li prevesti stranicu?</translation>
 <translation id="4682686630151240767">1. Otvorite postavke iPhonea</translation>
 <translation id="4699172675775169585">Predmemorirane slike i datoteke</translation>
@@ -889,6 +894,7 @@ Potražite upute za svoju tražilicu da biste saznali kako izbrisati svoju povij
 <translation id="4719927025381752090">Ponudi prijevod</translation>
 <translation id="4720530280568305198">Vaš odabir otvorio se u novoj kartici</translation>
 <translation id="472259426228234149">Cijena 100 – 180 USD</translation>
+<translation id="4735849923335729414">Prijavite se s računom <ph name="EMAIL" /> kojim upravlja vaša organizacija.</translation>
 <translation id="473775607612524610">Ažuriraj</translation>
 <translation id="474209246745757965">Kupujte i prevodite pomoću kamere</translation>
 <translation id="4742407542027196863">Upravljaj zaporkama…</translation>
@@ -961,8 +967,10 @@ Potražite upute za svoju tražilicu da biste saznali kako izbrisati svoju povij
 <translation id="4985921635659180565">Nakon što se datoteka zakaže za brisanje, to se ne može otkazati.</translation>
 <translation id="498624032394115435">Svatko s vezom može uređivati sve kartice.</translation>
 <translation id="4989065233040279145">Odaberite mjesto spremanja datoteke <ph name="FILENAME" /></translation>
+<translation id="499122600724363620"><ph name="NAME" />, <ph name="EMAIL" />, pod upravljanjem vaše organizacije.</translation>
 <translation id="4992255726304765516">Boja grupe kartica <ph name="COLOR" /></translation>
 <translation id="5005498671520578047">Kopiranje zaporke</translation>
+<translation id="5009127379503001909">Nastavite pregledavati</translation>
 <translation id="5012914568031465281">Praćenje cijene nije uspjelo.</translation>
 <translation id="5016420433031926653">Šalju se na <ph name="USER_EMAIL" /></translation>
 <translation id="5017529052065664584">Posljednjih 15 minuta</translation>
@@ -1020,6 +1028,7 @@ Potražite upute za svoju tražilicu da biste saznali kako izbrisati svoju povij
 <translation id="5234094073825090254">{count,plural, =1{Oznaka je spremljena na vaš Google račun, {email}}one{Oznake su spremljene na vaš Google račun, {email}.}few{Oznake su spremljene na vaš Google račun, {email}.}other{Oznake su spremljene na vaš Google račun, {email}.}}</translation>
 <translation id="5234764350956374838">Odbaci</translation>
 <translation id="5238596603078743134"><ph name="BEGIN_BOLD" /><ph name="USERNAME" /><ph name="END_BOLD" /> sada može koristiti vaše korisničko ime i zaporku kad upotrebljava Google upravitelj zaporki za prijavu na <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" />.</translation>
+<translation id="5241106044372754566">Trenutačno je odabran račun <ph name="EMAIL" /> korisnika <ph name="NAME" /> kojim upravlja vaša organizacija. Odaberite račun.</translation>
 <translation id="5242899254250321823">Promijenite zaporku na web-lokaciji</translation>
 <translation id="5248640482715684545">Ova web-lokacija pokušava otvoriti drugu aplikaciju.</translation>
 <translation id="5250371859659394278">Iz nepoznatog izvora</translation>
@@ -1077,6 +1086,7 @@ Potražite upute za svoju tražilicu da biste saznali kako izbrisati svoju povij
 <translation id="5524590039848017563">Sažeti primarni gumb alatne trake</translation>
 <translation id="553151287733286479">{COUNT,plural, =1{{COUNT} slaba zaporka}one{{COUNT} slaba zaporka}few{{COUNT} slabe zaporke}other{{COUNT} slabih zaporki}}</translation>
 <translation id="5532545557415295622">Dijaloški okvir za vrijeme čekanja u mirovanju</translation>
+<translation id="5547868626772433490">Pitajte Gemini</translation>
 <translation id="5548760955356983418">Handoff vam omogućuje da počnete pregledavati web-lokaciju na ovom uređaju i nastavite na Macu. Trenutačno otvorena web-lokacija pojavit će se u Docku na vašem Macu.
 
 Handoff mora biti omogućen i u odjeljku Općenito u Postavkama, a vaši uređaji moraju upotrebljavati isti iCloud račun.</translation>
@@ -1289,6 +1299,9 @@ Handoff mora biti omogućen i u odjeljku Općenito u Postavkama, a vaši uređaj
 <translation id="6339793034470834130">Da biste upotrebljavali web inspektor, povežite se sa Safarijem na računalu pomoću kabela i pristupite svojem iPadu putem izbornika Razvoj. Izbornik Razvoj možete omogućiti u odjeljku Napredno u postavkama Safarija na računalu.</translation>
 <translation id="6340285871011301182">Djelomični prijevod nije dostupan.</translation>
 <translation id="6340526405444716530">Prilagodba</translation>
+<translation id="6341140761912903432">Prijavite se na upravljani račun kako biste pregledavanje povezano s vašom organizacijom (uključujući kartice, povijest i zaporke) lakše odvojili od ostatka pregledavanja.
+
+       Vaši postojeći podaci o pregledavanju bit će odvojeni. Da biste ih koristili, odjavite se s upravljanog računa.</translation>
 <translation id="6342069812937806050">Upravo sada</translation>
 <translation id="6344533709188026708">Zasebni prostor za rad</translation>
 <translation id="6347953390226388422">{count,plural, =1{Ta će se adresa izbrisati s vašeg Google računa (<ph name="USER_EMAIL" />) i ovog uređaja.}one{Ta će se adresa izbrisati s vašeg Google računa (<ph name="USER_EMAIL" />) i ovog uređaja.}few{Te će se adrese izbrisati s vašeg Google računa (<ph name="USER_EMAIL" />) i ovog uređaja.}other{Te će se adrese izbrisati s vašeg Google računa (<ph name="USER_EMAIL" />) i ovog uređaja.}}</translation>
@@ -1469,6 +1482,7 @@ Dok ste u anonimnom načinu, web-lokacije ne mogu upotrebljavati kolačiće za u
 <translation id="6979158407327259162">Google disk</translation>
 <translation id="6979737339423435258">Cijelo vrijeme</translation>
 <translation id="6983306615164277634">Možete i dodirnuti i zadržati pritisak na adresnoj traci kako biste promijenili položaj.</translation>
+<translation id="6987201788018524855">Istražite korisne značajke koje ste propustili</translation>
 <translation id="6990519590575500580">FaceTime</translation>
 <translation id="6998251471716094661">Pratite cijene proizvoda i primajte upozorenja kad se cijena snizi na bilo kojoj web-lokaciji</translation>
 <translation id="7004032350256606903">Vaša organizacija zahtijeva da pregledavate privatno.
@@ -1962,6 +1976,7 @@ Web-lokacije mogu upotrebljavati kolačiće za uvid u vašu aktivnost pregledava
 <translation id="8923178205567790913">Zaporke</translation>
 <translation id="892776311701544612">Saznajte više…</translation>
 <translation id="8928133177108699615">Računalo</translation>
+<translation id="8928426232677696166">Trenutačno je odabran račun <ph name="EMAIL" /> kojim upravlja vaša organizacija. Odaberite račun.</translation>
 <translation id="894191600409472540">Izradite snažne zaporke</translation>
 <translation id="8943780400130412484">Želite li pokrenuti novo preuzimanje?</translation>
 <translation id="8944844131570002190">Otvaranje lokacije…</translation>

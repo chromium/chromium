@@ -224,6 +224,7 @@
 <translation id="4019629340646866719">Chromium OS und die <ph name="BEGIN_LINK_LINUX_OSS" />Linux-Entwicklungsumgebung<ph name="END_LINK_LINUX_OSS" /> werden durch zusätzliche <ph name="BEGIN_LINK_CROS_OSS" />Open-Source-Software<ph name="END_LINK_CROS_OSS" /> ermöglicht.</translation>
 <translation id="4022972681110646219">Bildschirm übersetzen</translation>
 <translation id="4023601594785368013">Originalsprache: <ph name="LANGUAGE" /></translation>
+<translation id="4023845192681161785">Du kannst über jede App Links in Chromium öffnen. Außerdem wird Chromium für einen einfachen Zugriff an die Taskleiste angepinnt.</translation>
 <translation id="4036079820698952681">Hilf uns mit deinem Feedback zu den <ph name="BEGIN_LINK" />aktuellen Einstellungen<ph name="END_LINK" /> bei der Verbesserung von Chromium</translation>
 <translation id="4050175100176540509">Wichtige Sicherheitsverbesserungen und neue Funktionen sind in der aktuellen Version verfügbar.</translation>
 <translation id="4055805654398742145">P&amp;asswortmanager</translation>
@@ -325,6 +326,7 @@
 <translation id="5524890928877629608">Linke obere Ecke des Suchbereichs: links <ph name="LEFT" /> %, oben <ph name="TOP" /> %</translation>
 <translation id="5527463683072221100">PDFs in Chromium öffnen</translation>
 <translation id="5579324208890605088">Fehler beim Starten: Bitte führe das Installationsprogramm als normaler Nutzer statt als Administrator aus.</translation>
+<translation id="5580770360767802657">Chromium standardmäßig verwenden und anpinnen</translation>
 <translation id="5596627076506792578">Weitere Optionen</translation>
 <translation id="5605834417512968703">Wähle ein beliebiges Element für die Bildersuche aus oder drücke die Esc-Taste, um die Bildersuche zu beenden</translation>
 <translation id="5618818588972826921">Wähle einen beliebigen Text oder ein beliebiges Bild für die Bildersuche aus oder drücke die Esc-Taste, um die Bildersuche zu beenden</translation>
@@ -597,6 +599,7 @@ Chromium kann deine Einstellungen nicht wiederherstellen.</translation>
 <translation id="9106612006984859720">Du benötigst Windows 10 oder höher, um zukünftige Chromium-Updates zu erhalten. Dieser Computer verwendet Windows 8.1.</translation>
 <translation id="91086099826398415">Link in neuem Chromium-Tab öffnen</translation>
 <translation id="911206726377975832">Auch die Browserdaten löschen?</translation>
+<translation id="9134482777260927479">Hilfe bei den Hausaufgaben</translation>
 <translation id="9148058034647219655">Beenden</translation>
 <translation id="9158494823179993217">Dein Systemadministrator hat Chromium so konfiguriert, dass ein alternativer Browser für den Zugriff auf <ph name="TARGET_URL_HOSTNAME" /> geöffnet wird.</translation>
 <translation id="9185526690718004400">Neu starten, um &amp;Chromium zu aktualisieren</translation>

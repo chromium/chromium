@@ -314,6 +314,7 @@
 <translation id="4970880042055371251">Verzija Chrome OS-a</translation>
 <translation id="4990567037958725628">Google Chrome Canary</translation>
 <translation id="5003967926796347400">Kliknite Google upravitelj zaporki</translation>
+<translation id="504867494566807945">Otvorite veze u Chromeu iz bilo koje aplikacije. Osim toga, za lakši pristup prikvačen je na programsku traku.</translation>
 <translation id="5114340746415930644">Unesite šifru kako biste upotrebljavali i spremali podatke iz Chromea na svojem računu, <ph name="USER_EMAIL" /></translation>
 <translation id="5120334927898581447">Prijavite se u Chrome prilikom prijave na druge Googleove usluge</translation>
 <translation id="5126049312684316860">Chrome predučitava još više stranica koje ćete vjerojatno posjetiti kako bi se brže učitale kad ih posjetite.</translation>
@@ -390,6 +391,7 @@
 <translation id="6075300983329039771">Vaša organizacija <ph name="MANAGER" /> zahtijeva da se prijavite u Chrome</translation>
 <translation id="6113794647360055231">Chrome je upravo postao bolji</translation>
 <translation id="6116252277240876590">Taj se jezik koristi za prikazivanje izbornika, postavki, upozorenja i drugog teksta u Chromeu</translation>
+<translation id="6127237283587442951">Koristite Chrome prema zadanim postavkama i prikvačite ga</translation>
 <translation id="6134085236017727171">Da biste upotrebljavali mikrofon, odobrite Chromeu pristup u <ph name="BEGIN_LINK" />sistemskim postavkama<ph name="END_LINK" /></translation>
 <translation id="6135456723633883042">Te kartice upotrebljavaju dodatne resurse. Da biste poboljšali izvedbu, dopustite Chromeu da ih deaktivira.</translation>
 <translation id="6145313976051292476">Otvaranje PDF-ova u Chromeu</translation>
@@ -504,7 +506,6 @@
 <translation id="7572537927358445944">Isključeno • Chrome ne može provjeriti odakle dolazi ovo proširenje</translation>
 <translation id="7583399374488819119">Program za instalaciju <ph name="COMPANY_NAME" /></translation>
 <translation id="7606334485649076285">Google ChromeOS Flex</translation>
-<translation id="7626032353295482388">Dobro došli u Chrome</translation>
 <translation id="7626072681686626474"><ph name="MANAGER" /> zahtijeva da pročitate i prihvatite sljedeće uvjete pružanja usluge prije upotrebe ovog uređaja. Ti uvjeti ne predstavljaju proširenje, izmjenu ni ograničenje uvjeta Google Chrome OS-a.</translation>
 <translation id="7629695634924605473">Chrome će vas obavijestiti ako vaše zaporke budu ugrožene</translation>
 <translation id="7641148173327520642">Vaš administrator sustava konfigurirao je Google Chrome da otvara <ph name="ALTERNATIVE_BROWSER_NAME" /> za pristup URL-u <ph name="TARGET_URL_HOSTNAME" />.</translation>

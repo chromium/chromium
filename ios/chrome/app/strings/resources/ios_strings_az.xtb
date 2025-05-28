@@ -383,6 +383,7 @@ Saytlar müxtəlif saytlarda baxış fəaliyyətinizi görmək üçün kukiləri
 <translation id="2513103768503127042">Tab qruplarını burada tapa bilərsiniz</translation>
 <translation id="251837347827266434">Çıxacaqsınız, tablar bağlanacaq, baxış datası silinəcək</translation>
 <translation id="2520787026086861736">Söndürmək üçün <ph name="BEGIN_LINK" />Avto-doldurma və Parollar<ph name="END_LINK" /> bölməsinə keçin</translation>
+<translation id="2523295204312809179">Tab qrupunu bağladığınız zaman avtomatik olaraq burada yadda saxlanılır</translation>
 <translation id="2529021024822217800">Hamısını açın</translation>
 <translation id="2536991091671391962">Yadda saxlanmış parolları istənilən cihazda istifadə edə bilərsiniz. <ph name="EMAIL" /> üçün Google Parol Menecerində yadda saxlanır.</translation>
 <translation id="2538103551183528357">Gizli, parol</translation>
@@ -1035,6 +1036,7 @@ Axtarış tarixçənizi silmək üçün axtarış mexanizminizin təlimatlarına
 <translation id="5275912569557792098"><ph name="USER_NAME" /> (<ph name="USER_EMAIL" />) tab qrupuna qoşulmağınızı istəyir. Keçidi olan hər kəs bütün tabları redaktə edə bilər, ona görə də qoşularkən diqqətli olun. Keçidin müddəti 48 saat sonra bitir.</translation>
 <translation id="5279600392753459966">Hamısını bloklayın</translation>
 <translation id="5282340693022193851">Qiymət izləmə bildirişləri əldə etmək üçün iOS Ayarlarında bildirişləri aktiv edin.</translation>
+<translation id="528857768909044842">Tab qrupları burada yadda saxlanılır</translation>
 <translation id="5294624619177114121">Mobil bildirişlər</translation>
 <translation id="5295239312320826323"><ph name="USER_EMAIL" /> hesabı silinsin?</translation>
 <translation id="5300589172476337783">Göstərin</translation>
@@ -1230,6 +1232,7 @@ Handoff Ayarların Ümumi bölməsindən də aktiv edilə bilər və cihazların
 <translation id="6100617279104942061"><ph name="USER_EMAIL" /> kimi daxil olunub. Ayarları açır.</translation>
 <translation id="6103540626693881831">Cihazda Şifrələmə</translation>
 <translation id="611361228753138223">Bu cihazda son zamanlarda daxil olduğunuz saytlar</translation>
+<translation id="611705554202268369">Tab qrupuna əlavə etmək üçün basıb saxlayın</translation>
 <translation id="6122191549521593678">Onlayn</translation>
 <translation id="6122831415929794347">Təhlükəsiz Baxış deaktiv edilsin?</translation>
 <translation id="6123514585040403489">Tablar bağlanacaq</translation>
@@ -1855,6 +1858,7 @@ Saytlar müxtəlif saytlarda baxış fəaliyyətinizi görmək üçün kukilərd
 <translation id="8535368836838588657">Parolu göstərin</translation>
 <translation id="8545276357312221485">Defolt brauzer ayarlarını yoxlayın</translation>
 <translation id="854938212724803178">1 oğurlanmış parol var. Təhlükəsizlik üçün bunu indi həll edin.</translation>
+<translation id="8551311254462607218">Ünvan panelində Google Linza kamera ikonasına toxunun</translation>
 <translation id="8556590991644167667">{count,plural, =1{{count} xəbərdarlıqdan imtina etdiniz}other{{count} xəbərdarlıqdan imtina etdiniz}}</translation>
 <translation id="8558046478684552694">Qrupu bağlayın.</translation>
 <translation id="8560253818350321773">Əvvəlcə çox istifadə edilənləri göstərin.</translation>
@@ -1998,6 +2002,7 @@ Saytlar müxtəlif saytlarda baxış fəaliyyətinizi görmək üçün kukilərd
 <translation id="9032405509996909363">Baxış datasının silinməsini təsdiq edin</translation>
 <translation id="9039373489628511875">Ötürmə qabiliyyəti</translation>
 <translation id="9042893549633094279">Məxfilik və təhlükəsizlik</translation>
+<translation id="9055291197094969722">Açıq tabları düzənləmək və məhsuldar olmaq üçün tab qrupları yaradın</translation>
 <translation id="9055580485132823283">{password_count} parolu, {passkey_count} giriş açarını və girişi yadda saxlamamağı seçdiyiniz sayt və tətbiqlərin siyahısını silmək üzrəsiniz. Sayt və tətbiqlər üçün yaratdığınız hər hansı hesab silinməyəcək.</translation>
 <translation id="9057030985451135243">Ortaq tab qrupları haqqında məlumat əldə edin</translation>
 <translation id="9057972802061533987">İzləmək olmur. Xəta oldu.</translation>

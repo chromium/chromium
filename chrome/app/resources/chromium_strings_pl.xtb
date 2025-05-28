@@ -222,6 +222,7 @@
 <translation id="4019629340646866719">Opracowanie Chromium OS było możliwe dzięki dodatkowemu <ph name="BEGIN_LINK_CROS_OSS" />oprogramowaniu open source<ph name="END_LINK_CROS_OSS" />. To samo dotyczy <ph name="BEGIN_LINK_LINUX_OSS" />środowiska programistycznego Linuksa<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="4022972681110646219">Przetłumacz ekran</translation>
 <translation id="4023601594785368013">Język oryginału: <ph name="LANGUAGE" /></translation>
+<translation id="4023845192681161785">Otwieraj linki w Chromium z dowolnej aplikacji. Aby mieć łatwy dostęp do tej przeglądarki, możesz przypiąć ją do paska zadań.</translation>
 <translation id="4036079820698952681">Pomóż ulepszyć Chromium, zgłaszając <ph name="BEGIN_LINK" />bieżące ustawienia<ph name="END_LINK" /></translation>
 <translation id="4050175100176540509">W najnowszej wersji zostały wprowadzone ważne poprawki bezpieczeństwa i nowe funkcje.</translation>
 <translation id="4055805654398742145">Menedżer &amp;haseł</translation>
@@ -323,6 +324,7 @@
 <translation id="5524890928877629608">lewy górny róg obszaru wyszukiwania: po lewej stronie <ph name="LEFT" />%, u góry <ph name="TOP" />%</translation>
 <translation id="5527463683072221100">Otwieranie plików PDF w Chromium</translation>
 <translation id="5579324208890605088">Błąd uruchamiania: uruchom instalator jako zwykły użytkownik, a nie jako administrator.</translation>
+<translation id="5580770360767802657">Używaj domyślnie przeglądarki Chromium i przypnij ją</translation>
 <translation id="5596627076506792578">Więcej opcji</translation>
 <translation id="5605834417512968703">Wybierz, co chcesz wyszukać za pomocą wyszukiwania obrazów, lub naciśnij Escape, aby zamknąć tę funkcję</translation>
 <translation id="5618818588972826921">Wybierz dowolny tekst lub obraz, aby wyszukać go za pomocą wyszukiwania obrazów, lub naciśnij Escape, aby zamknąć tę funkcję</translation>

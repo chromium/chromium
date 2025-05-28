@@ -80,6 +80,7 @@
 <translation id="1049743911850919806">गुप्त</translation>
 <translation id="1049795001945932310">&amp;भाषा सेटिंग्ज</translation>
 <translation id="1050693411695664090">खराब</translation>
+<translation id="1053226848101751430">एंट्री हटवली गेली आहे</translation>
 <translation id="1053898984916097744">नवीन काहीतरी सुरू करा किंवा फ्लोमध्ये मदत मिळवा.</translation>
 <translation id="1054048317165655285">तुमच्या फोनवर सेटअप पूर्ण करा</translation>
 <translation id="1054153489933238809">नवीन टॅबमध्‍ये मूळ &amp;प्रतिमा उघडा</translation>
@@ -1811,6 +1812,7 @@
 <translation id="2249111429176737533">टॅब असलेली विंडो म्हणून उघडा</translation>
 <translation id="2249605167705922988">उदा. 1-5, 8, 11-13</translation>
 <translation id="2249635629516220541">तुम्हाला जाहिराती दाखवण्यासाठी साइटद्वारे वापरलेली माहिती कस्टमाइझ करा</translation>
+<translation id="2250153645770828940">शब्दकोश हटवा</translation>
 <translation id="22505994009453896">अंकीय कीपॅडद्वारे तुमचा माउस कर्सर नियंत्रित करा</translation>
 <translation id="2250624716625396929">हा टॅब तुमचा कॅमेरा आणि मायक्रोफोन वापरत आहे</translation>
 <translation id="2251218783371366160">सिस्टीम दर्शकासह उघडा</translation>
@@ -2238,6 +2240,7 @@
 <translation id="2519250377986324805">कसे ते पहा</translation>
 <translation id="2519517390894391510">सर्टिफिकेट प्रोफाइल नाव</translation>
 <translation id="2520644704042891903">उपलब्ध सॉकेटची प्रतीक्षा करत आहे...</translation>
+<translation id="2520961587246779103">स्प्लिट दृश्यासाठी आणखी पर्याय</translation>
 <translation id="2521427645491031107">अ‍ॅप्स सिंक हे डिव्हाइस सेटिंग्ज मध्ये सेट केले आहे</translation>
 <translation id="2521835766824839541">मागील ट्रॅक</translation>
 <translation id="2521854691574443804"><ph name="FILE_NAME" /> तुमच्या संस्थेच्या सुरक्षितता धोरणांनुसार तपासत आहे...</translation>
@@ -3183,6 +3186,7 @@
 <translation id="3202578601642193415">नवीन‍तम</translation>
 <translation id="3204648577100496185">या अ‍ॅपशी संबंधित डेटा या डिव्हाइसवरून कदाचित काढून टाकला जाईल.</translation>
 <translation id="3204717934117444051">फक्त या डिव्हाइसवर सेव्ह केलेला डेटा सद्य प्रोफाइलमध्ये राहील. तो <ph name="EMAIL" /> वर सिंक केला जाणार नाही</translation>
+<translation id="3206289903841621620">वापरकर्ता शब्दकोश <ph name="NUMBER" /></translation>
 <translation id="3207344462385471911">तुमच्या अलीकडील अ‍ॅक्टिव्हिटीनुसार तुम्हाला स्वारस्य असेल असे सुचवलेले शोध आणि खरेदीच्या सवलती तुम्हाला दिसत आहेत.
         <ph name="BREAK" />
         <ph name="BREAK" />
@@ -10950,6 +10954,7 @@ I feel - विटांची इमारत</translation>
 <translation id="8729133765463465108">QR कोड स्कॅन करण्यासाठी कॅमेरा वापरा</translation>
 <translation id="8730621377337864115">पूर्ण झाले</translation>
 <translation id="8731029916209785242">परवानग्या (<ph name="FORMATTED_ORIGIN" />)</translation>
+<translation id="8731258351357994801">एंट्री <ph name="NUMBER" /></translation>
 <translation id="8731268612289859741">सुरक्षितता कोड</translation>
 <translation id="8731629443331803108"><ph name="SITE_NAME" /> ला हे करायचे आहे: <ph name="PERMISSION" /></translation>
 <translation id="8731787661154643562">पोर्ट क्रमांक</translation>

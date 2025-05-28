@@ -221,6 +221,7 @@
 <translation id="181434555916624618">Foreløpig vises ikke resultater med personer. Prøv en annen forespørsel.</translation>
 <translation id="1815850098929213707">Den valgte tasten er <ph name="KEYS" />. Trykk på knappen for å endre kontrollen</translation>
 <translation id="1818174214124933000">Når du velger Send, blir tilbakemeldingen og innholdet i den (som du ser nedenfor) sendt til Google, gjennomgått av mennesker og brukt til å lære opp eller forbedre produktene og tjenestene våre, i henhold til <ph name="LINK_POLICY_BEGIN" />personvernreglene<ph name="LINK_POLICY_END" /> og <ph name="LINK_TERMS_OF_SERVICE_BEGIN" />Googles vilkår for bruk<ph name="LINK_TERMS_OF_SERVICE_END" />.</translation>
+<translation id="1821075635029692203">Læreren din har sendt en ressurs som ikke støttes. Fortell dem det.</translation>
 <translation id="1823120442877418684">Tegn</translation>
 <translation id="1827738518074806965">Kunstgalleri</translation>
 <translation id="183287940576828840">Støtende/farlig</translation>
@@ -477,6 +478,7 @@
 <translation id="3091839911843451378">Mislykket – stoppet</translation>
 <translation id="3102119246920354026">Buffer</translation>
 <translation id="3103783611481501187">surrealistisk</translation>
+<translation id="3119672627216736407">En oversettelse er tilgjengelig</translation>
 <translation id="3122464029669770682">Prosessor</translation>
 <translation id="3122614491980756867">bassenger</translation>
 <translation id="3122883569442693641">Mer informasjon</translation>
@@ -1137,6 +1139,7 @@
 <translation id="6058625436358447366">For å fullføre passordendringen, skriv inn det gamle og det nye passordet</translation>
 <translation id="6061772781719867950">Mislykkede HTTP-forespørsler</translation>
 <translation id="6073292342939316679">tastaturlysstyrke ned</translation>
+<translation id="6074608334942655098">Avslutt oversetting</translation>
 <translation id="6074752328838739425">Skjul sammendraget</translation>
 <translation id="6075872808778243331">(Android) HTTP-tidsforsinkelse</translation>
 <translation id="6078323886959318429">Legg til snarvei</translation>

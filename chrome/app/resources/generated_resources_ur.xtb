@@ -485,6 +485,7 @@
 <translation id="1319983966058170660"><ph name="SUBPAGE_TITLE" /> ذیلی صفحے کا پیچھے جانے کا بٹن</translation>
 <translation id="1322046419516468189">اپنے <ph name="SAVED_PASSWORDS_STORE" /> میں محفوظ کردہ پاسورڈز دیکھیں اور ان کا نظم کریں</translation>
 <translation id="132539964543492755">‏بائیں بٹن، دائیں بٹن اور دونوں کے درمیان ماؤس کے بٹن کا انتخاب تبدیل کرنے کیلئے "x" کا استعمال کریں</translation>
+<translation id="1325611581149097457">بہتر لکھیں</translation>
 <translation id="1325898422473267360"><ph name="PERMISSION_USAGE" /> <ph name="PERMISSION_INDICATOR_DESCRIPTION" /></translation>
 <translation id="1327272175893960498">‏Kerberos ٹکٹس</translation>
 <translation id="1327495825214193325">‏ADB ڈیبگنگ کو فعال کرنے کے لیے، اس <ph name="DEVICE_TYPE" /> کو ری سٹارٹ کرنے کی ضرورت ہے۔ اسے غیر فعال کرنے کے لیے فیکٹری کی ترتیبات کو ری سیٹ کرنا ہوگا۔</translation>
@@ -1989,6 +1990,7 @@
 <translation id="2359345697448000899">ٹولز مینیو میں ایکسٹینشنز پر کلک کر کے اپنے ایکسٹینشنز کا نظم کریں۔</translation>
 <translation id="2359556993567737338">بلوٹوتھ آلہ منسلک کریں</translation>
 <translation id="2359808026110333948">جاری رکھیں</translation>
+<translation id="2360047907847684514">ایکسٹینشنز اور تھیمز کے ساتھ اپنے براؤزر کو سپرچارج کریں</translation>
 <translation id="2360792123962658445">‏صفحہ کا خلاصہ، متعلقہ تلاشیں اور اس صفحہ کے بارے میں دیگر مفید معلومات حاصل کرنے کے لیے، ٹول بار میں Google تلاش کے سائڈ پینل کا بٹن منتخب کریں</translation>
 <translation id="2361100938102002520">آپ اس براؤزر میں ایک زیر انتظام پروفائل شامل کر رہے ہیں۔ آپ کے منتظم کو پروفائل پر کنٹرول حاصل ہے اور وہ اس کے ڈیٹا تک رسائی حاصل کر سکتا ہے۔</translation>
 <translation id="236117173274098341">بہتر بنائیں</translation>
@@ -2467,6 +2469,7 @@
 <translation id="2692503699962701720">عنصر کی اقسام اور فارمیٹ کردہ ٹیکسٹ بولتے وقت پِچ تبدیل کریں</translation>
 <translation id="2692901429679246677">فیروزی</translation>
 <translation id="2693134906590795721">چارج کرنے کی آوازیں</translation>
+<translation id="2695943520968279338">ایکسٹینشنز کو دریافت کریں</translation>
 <translation id="2698147581454716013">‏یہ ایک بنڈل کردہ آلہ ہے اور اس کا Kiosk اور Signage Upgrade کے ساتھ اندراج نہیں کیا جا سکتا۔</translation>
 <translation id="2699911226086014512">‏کوڈ <ph name="RETRIES" /> کے ساتھ PIN کی کارروائی ناکام ہو گئی۔</translation>
 <translation id="2701330563083355633"><ph name="DEVICE_NAME" /> سے اشتراک کردہ</translation>
@@ -2981,6 +2984,7 @@
 <translation id="3043126717220766543">گروپ کی تجاویز کو صاف کریں</translation>
 <translation id="3043218608271070212"><ph name="GROUP_NAME" /> - <ph name="GROUP_CONTENT_STRING" /></translation>
 <translation id="3043581297103810752"><ph name="ORIGIN" /> سے</translation>
+<translation id="3044066905368192931">‏‫AI کے ذریعے بہتر بنائیں</translation>
 <translation id="3045447014237878114">اس سائٹ نے متعدد فائلز کو خودکار طور پر ڈاؤن لوڈ کیا ہے</translation>
 <translation id="3046178388369461825">‏Linux ڈسک اسپیس انتہائی کم ہے</translation>
 <translation id="304644035656848980">آپ کے مائیکروفون کا پیش منظر</translation>
@@ -4582,6 +4586,7 @@
 <translation id="4176864026061939326">یہ آلہ زیر انتظام ہے۔ آپ کے آلہ کے منتظم کو اکاؤنٹ <ph name="USER_EMAIL_ADDRESS" /> کے لیے ایک نئی پروفائل درکار ہے</translation>
 <translation id="4177501066905053472">اشتہار کے موضوعات</translation>
 <translation id="4177668342649553942"><ph name="SHORTCUT_NAME" /> - <ph name="APP_NAME" /> کھولیں</translation>
+<translation id="4177731895051842298">‏ایکسٹینشنز Chrome کے ایڈ آنز ہیں جو آپ کو منظم رہنے، ٹاسکس کو آسان بنانے اور آپ کی براؤزنگ کو حسب ضرورت بنانے میں مدد کر سکتے ہیں</translation>
 <translation id="4178220097446335546">اس سبسکرپشن اور اس سے منسلک نیٹ ورکس کو بھولنے کے لیے، سبسکرپشن کو ہٹانے کی خاطر پاس پوائنٹ سبسکرپشن کے صفحے پر جائیں۔</translation>
 <translation id="4181602000363099176">20x</translation>
 <translation id="4181841719683918333">زبانیں</translation>
@@ -4715,6 +4720,7 @@
 <translation id="4275397969489577657">ایونٹ اسٹریم لاگنگ کو فعال کریں</translation>
 <translation id="4275788652681621337">سائیڈ پینل بند کریں</translation>
 <translation id="4275830172053184480">اپنا آلہ دوبارہ شروع کریں</translation>
+<translation id="4276598757692536305">‏پرنٹر PPD</translation>
 <translation id="4276856098224910511">‏انسٹال کرنے سے قاصر، OS اپ ڈیٹ زیر التواء ہے۔ براہ کرم کسی بھی زیر التواء OS اپ ڈیٹ کو لاگو کریں، ری سٹارٹ کریں اور دوبارہ کوشش کریں۔ خرابی کا کوڈ <ph name="ERROR" /> ہے۔</translation>
 <translation id="4277434192562187284">‏XML کنفیگریشن کا ماخذ</translation>
 <translation id="4278348589087554892">{NUM_SITES,plural, =1{1 سائٹ سے اجازتیں ہٹائی گئیں}other{{NUM_SITES} سائٹس سے اجازتیں ہٹا دی گئیں}}</translation>
@@ -5371,6 +5377,7 @@
 <translation id="4750185073185658673">‏کچھ مزید اجازتوں کا جائزہ لینے کے لیے اپنے فون پر جائیں۔ اس بات کو یقینی بنائیں کہ آپ کے فون کا بلوٹوتھ اور Wi-Fi آن ہیں۔</translation>
 <translation id="4750394297954878236">تجاویز</translation>
 <translation id="475088594373173692">پہلا صارف</translation>
+<translation id="4754590344707355551">ایکسٹینشنز کے ساتھ اپنے براؤزر کو بہتر بنائیں</translation>
 <translation id="4756378406049221019">بند کریں/دوبارہ لوڈ کریں</translation>
 <translation id="4756388243121344051">&amp;سرگزشت</translation>
 <translation id="4756671452988984333">آڈیو کے لیے ٹیکسٹ</translation>
@@ -6399,6 +6406,7 @@
 <translation id="5490798133083738649">‏Linux کو اپنے مائکروفون تک رسائی کی اجازت دیں</translation>
 <translation id="549211519852037402">ہلکا بادامی اور سفید</translation>
 <translation id="5492637351392383067">آلے پر مرموزکاری</translation>
+<translation id="5492780659774694607">‏ایکسٹینشنز Chrome کے ایڈ آنز ہیں جو آپ کی مدد کر سکتے ہیں</translation>
 <translation id="5493455553805432330">بھول جائیں</translation>
 <translation id="5493792505296048976">اسکرین آن ہے</translation>
 <translation id="5494016731375030300">حال ہی میں بند کئے گئے ٹیبز</translation>
@@ -9623,6 +9631,7 @@
 <translation id="7815680994978050279">خطرناک ڈاؤن لوڈ مسدود کیا گیا</translation>
 <translation id="7817361223956157679">‏Linux ایپس پر آن اسکرین کی بورڈ ابھی کام نہیں کرتا ہے</translation>
 <translation id="7818135753970109980">نیا تھیم شامل کر دیا گیا (<ph name="EXTENSION_NAME" />)</translation>
+<translation id="7819839686707222575">‏ایکسٹینشنز Chrome کے لیے ایڈ آنز ہیں جو آپ کو مزید کام کرنے میں مدد کر سکتی ہیں</translation>
 <translation id="7820400255539998692"><ph name="FILENAME" /> کو حذف کریں، تاکہ اس آلے کو استعمال کرنے والے دوسرے لوگ آپ کے پاس ورڈز نہ دیکھ سکیں</translation>
 <translation id="7820561748632634942">اضافی سوئچز تفویض کریں؟</translation>
 <translation id="782057141565633384">ویڈیو پتہ کا&amp;پی کریں</translation>
@@ -10589,6 +10598,7 @@
 <translation id="8477241577829954800">جگہ لی ہوئی</translation>
 <translation id="8477384620836102176">&amp;عمومی</translation>
 <translation id="8477446666255316832">اگلی بار زیادہ تیزی سے سائن ان کریں</translation>
+<translation id="8478346767369317046">دفتر</translation>
 <translation id="8479176401914456949">غلط کوڈ۔ براہ کرم دوبارہ کوشش کریں۔</translation>
 <translation id="8480869669560681089"><ph name="VENDOR_NAME" /> کا نامعلوم آلہ</translation>
 <translation id="8481187309597259238">‏USB کی اجازت کی تصدیق کریں</translation>
@@ -11081,6 +11091,7 @@
 <translation id="8827289157496676362">ایکسٹینشن پن کریں</translation>
 <translation id="8828933418460119530">‏DNS نام</translation>
 <translation id="8829979393064090868">اسپلٹ ویو میں ٹیب شامل کریں</translation>
+<translation id="8830479210602243906">پروڈکٹیوٹی بوسٹ کریں</translation>
 <translation id="883062543841130884">متبادلات</translation>
 <translation id="8830779999439981481">اپ ڈیٹس لاگو کرنے کے لیے ری سٹارٹ ہو رہا ہے</translation>
 <translation id="8830796635868321089">موجودہ پراکسی ترتیبات کا استعمال کرتے ہوئے اپ ڈیٹ چیک ناکام ہو گیا۔ براہ کرم اپنی <ph name="PROXY_SETTINGS_LINK_START" />پراکسی کی ترتیبات<ph name="PROXY_SETTINGS_LINK_END" /> ایڈجسٹ کریں۔</translation>

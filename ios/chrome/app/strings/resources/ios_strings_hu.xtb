@@ -383,6 +383,7 @@ A webhelyek nem használhatnak cookie-kat arra, hogy megfigyeljék más webhelye
 <translation id="2513103768503127042">Itt láthatja majd a lapcsoportjait</translation>
 <translation id="251837347827266434">A rendszer kijelentkezteti Önt, a lapokat bezárja, a böngészési adatokat pedig törli</translation>
 <translation id="2520787026086861736">A funkció kikapcsolásához lépjen az <ph name="BEGIN_LINK" />Automatikus kitöltés és jelszavak<ph name="END_LINK" /> ponthoz</translation>
+<translation id="2523295204312809179">A lapcsoportok bezárásakor a rendszer automatikusan ide menti őket</translation>
 <translation id="2529021024822217800">Az összes megnyitása</translation>
 <translation id="2536991091671391962">A mentett jelszavakat bármelyik eszközön használhatja. A jelszavakat a Google Jelszókezelő szolgáltatásba menti a rendszer a(z) <ph name="EMAIL" /> fiókhoz.</translation>
 <translation id="2538103551183528357">Rejtett, jelszó</translation>
@@ -1035,6 +1036,7 @@ A keresési előzmények törléséről a keresőmotorja útmutatójából táj�
 <translation id="5275912569557792098"><ph name="USER_NAME" /> (<ph name="USER_EMAIL" />) arra kéri, hogy csatlakozzon egy lapcsoporthoz. A link birtokában bárki szerkesztheti az összes lapot, ezért legyen körültekintő a csatlakozáskor. A link 48 óra múlva lejár.</translation>
 <translation id="5279600392753459966">Összes letiltása</translation>
 <translation id="5282340693022193851">Ha árfigyelési értesítéseket szeretne kapni, kapcsolja be az értesítéseket az iOS beállításaiban.</translation>
+<translation id="528857768909044842">Ide kerülnek mentésre a lapcsoportok</translation>
 <translation id="5294624619177114121">Mobilos értesítések</translation>
 <translation id="5295239312320826323">Eltávolítja a(z) <ph name="USER_EMAIL" /> fiókot?</translation>
 <translation id="5300589172476337783">Megjelenítés</translation>
@@ -1230,6 +1232,7 @@ Az Átadást engedélyezni kell a Beállítások általános részében is, és 
 <translation id="6100617279104942061">Bejelentkezve a következőként: <ph name="USER_EMAIL" />. Megnyitja a beállításokat.</translation>
 <translation id="6103540626693881831">Eszközalapú titkosítás</translation>
 <translation id="611361228753138223">Az ezen az eszközön nemrégiben felkeresett webhelyek</translation>
+<translation id="611705554202268369">Lapcsoporthoz való hozzáadáshoz nyomja meg hosszan</translation>
 <translation id="6122191549521593678">Online</translation>
 <translation id="6122831415929794347">Kikapcsolja a Biztonságos Böngészést?</translation>
 <translation id="6123514585040403489">A rendszer bezárja a lapokat</translation>
@@ -1855,6 +1858,7 @@ A webhelyek használhatnak cookie-kat arra, hogy megfigyeljék más webhelyekre 
 <translation id="8535368836838588657">Jelszó megjelenítése</translation>
 <translation id="8545276357312221485">Az alapértelmezett böngészőbeállítások ellenőrzése</translation>
 <translation id="854938212724803178">1 jelszavához illetéktelenül hozzáfértek. A biztonság megőrzése érdekében javítsa ki most.</translation>
+<translation id="8551311254462607218">Koppintson a címsávban a Google Lens kamera ikonjára</translation>
 <translation id="8556590991644167667">{count,plural, =1{Elvetett {count} figyelmeztetést}other{Elvetett {count} figyelmeztetést}}</translation>
 <translation id="8558046478684552694">Csoport bezárása.</translation>
 <translation id="8560253818350321773">Először a gyakran használt elemek jelenjenek meg.</translation>
@@ -1998,6 +2002,7 @@ A webhelyek használhatnak cookie-kat arra, hogy megfigyeljék más webhelyekre 
 <translation id="9032405509996909363">Böngészési adatok törlésének megerősítése</translation>
 <translation id="9039373489628511875">Sávszélesség</translation>
 <translation id="9042893549633094279">Adatvédelem és biztonság</translation>
+<translation id="9055291197094969722">Létrehozhat lapcsoportokat a megnyitott lapok rendszerezéséhez és a hatékonyság fenntartásához</translation>
 <translation id="9055580485132823283">{password_count} jelszót, {passkey_count} azonosítókulcsot, valamint azon webhelyek és alkalmazások listáját készül törölni, amelyeknél úgy döntött, hogy soha nem menti a bejelentkezési adatokat. A webhelyekhez és alkalmazásokhoz létrehozott fiókok nem törlődnek.</translation>
 <translation id="9057030985451135243">További információ a megosztott lapcsoportokról</translation>
 <translation id="9057972802061533987">Nem lehetséges a követés. Hiba történt.</translation>

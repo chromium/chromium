@@ -383,6 +383,7 @@ Site-urile nu pot folosi cookie-uri pentru a-ți vedea activitatea de navigare d
 <translation id="2513103768503127042">Aici vei vedea grupurile de file</translation>
 <translation id="251837347827266434">Vei fi deconectat(ă), filele se vor închide, datele de navigare se vor șterge</translation>
 <translation id="2520787026086861736">Pentru a dezactiva, accesează <ph name="BEGIN_LINK" />Completare automată și parole<ph name="END_LINK" /></translation>
+<translation id="2523295204312809179">Când închizi un grup de file, acesta se salvează automat aici</translation>
 <translation id="2529021024822217800">Deschide-le pe toate</translation>
 <translation id="2536991091671391962">Poți folosi parolele salvate pe orice dispozitiv. Acestea se salvează în Managerul de parole Google pentru <ph name="EMAIL" />.</translation>
 <translation id="2538103551183528357">Parolă ascunsă</translation>
@@ -1035,6 +1036,7 @@ Vezi instrucțiunile motorului de căutare pentru ștergerea istoricului căută
 <translation id="5275912569557792098"><ph name="USER_NAME" /> (<ph name="USER_EMAIL" />) vrea să te alături unui grup de file. Oricine are linkul poate edita toate filele, așadar ai grijă la conectare. Linkul expiră în 48 de ore.</translation>
 <translation id="5279600392753459966">Blochează-le pe toate</translation>
 <translation id="5282340693022193851">Pentru a primi notificări privind urmărirea prețurilor, activează notificările din Setările iOS.</translation>
+<translation id="528857768909044842">Grupurile de file se salvează aici</translation>
 <translation id="5294624619177114121">Notificări pe dispozitivul mobil</translation>
 <translation id="5295239312320826323">Elimini contul <ph name="USER_EMAIL" />?</translation>
 <translation id="5300589172476337783">Afișează</translation>
@@ -1230,6 +1232,7 @@ Trebuie să activezi Handoff în secțiunea General din Setări, iar dispozitive
 <translation id="6100617279104942061">Te-ai conectat ca <ph name="USER_EMAIL" />. Deschide setările.</translation>
 <translation id="6103540626693881831">Criptare pe dispozitiv</translation>
 <translation id="611361228753138223">Site-uri pe care le-ai accesat recent pe acest dispozitiv</translation>
+<translation id="611705554202268369">Apasă lung pentru a adăuga într-un grup de file</translation>
 <translation id="6122191549521593678">Online</translation>
 <translation id="6122831415929794347">Dezactivezi Navigarea sigură?</translation>
 <translation id="6123514585040403489">Filele vor fi închise</translation>
@@ -1855,6 +1858,7 @@ Site-urile pot folosi cookie-uri pentru a vedea activitatea ta de navigare de pe
 <translation id="8535368836838588657">Afișează parola</translation>
 <translation id="8545276357312221485">Verifică setările browserului prestabilit</translation>
 <translation id="854938212724803178">Ai o parolă compromisă. Remediază problema acum pentru a rămâne în siguranță.</translation>
+<translation id="8551311254462607218">În bara de adrese, atinge pictograma camerei Google Lens</translation>
 <translation id="8556590991644167667">{count,plural, =1{Ai respins {count} avertisment}few{Ai respins {count} avertismente}other{Ai respins {count} de avertismente}}</translation>
 <translation id="8558046478684552694">Închide grupul.</translation>
 <translation id="8560253818350321773">Afișează mai întâi elementele folosite frecvent.</translation>
@@ -1998,6 +2002,7 @@ Site-urile pot folosi cookie-uri pentru a vedea activitatea ta de navigare de pe
 <translation id="9032405509996909363">Confirmă ștergerea datelor de navigare</translation>
 <translation id="9039373489628511875">Lățime de bandă</translation>
 <translation id="9042893549633094279">Confidențialitate și securitate</translation>
+<translation id="9055291197094969722">Creează grupuri de file pentru a-ți organiza filele deschise și a rămâne productiv</translation>
 <translation id="9055580485132823283">Urmează să ștergi {password_count} parole, {passkey_count} chei de acces și lista de site-uri și aplicații pentru care ai ales să nu salvezi niciodată informațiile de conectare. Conturile pe care le-ai creat pentru site-uri și aplicații nu se vor șterge.</translation>
 <translation id="9057030985451135243">Află mai multe despre grupurile de file folosite în comun</translation>
 <translation id="9057972802061533987">Nu se poate urmări. A apărut o eroare.</translation>

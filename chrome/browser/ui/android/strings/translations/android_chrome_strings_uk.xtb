@@ -375,6 +375,7 @@
 <translation id="2718352093833049315">Лише у Wi-Fi</translation>
 <translation id="2718846868787000099">Сайти, які ви відвідуєте, можуть переглядати ваші налаштування, щоб показувати контент вибраними мовами</translation>
 <translation id="2723001399770238859">аудіо</translation>
+<translation id="2734335652257251631">Показати в режимі читання</translation>
 <translation id="2739887572830526131">Збережіть цю групу, щоб додавати вкладки пізніше, або видаліть, якщо вона вам більше не потрібна.</translation>
 <translation id="2742373789128106053">Сервіс "<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />" зараз не доступний.</translation>
 <translation id="2760805590727089264">ММ / РР</translation>
@@ -1744,6 +1745,7 @@
 <translation id="8676789164135894283">Підтвердження входу</translation>
 <translation id="8683039184091909753">зображення</translation>
 <translation id="8688183792442786085"><ph name="TAB_TITLE" /> (вибрана вкладка)</translation>
+<translation id="8693232767599693749">Переглянути в режимі читання?</translation>
 <translation id="8697753151306746444">Натомість надайте доступ до вікна або екрана</translation>
 <translation id="869891660844655955">Діє до</translation>
 <translation id="8699120352855309748">Не пропонувати перекладати ці мови</translation>

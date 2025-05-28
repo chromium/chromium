@@ -130,7 +130,7 @@ Se la casella "<ph name="SERVICE_SCRIPT_NAME" />" è già selezionata, deselezio
 <translation id="6902524959760471898">Helper per aprire un URL sul client <ph name="PRODUCT_NAME" /></translation>
 <translation id="6939719207673461467">Mostra/nascondi tastiera.</translation>
 <translation id="6963936880795878952">Le connessioni al computer remoto sono temporaneamente bloccate perché qualcuno stava cercando di collegarsi al computer con un PIN non valido. Riprova più tardi.</translation>
-<translation id="6965382102122355670">OK</translation>
+<translation id="6965382102122355670">Ok</translation>
 <translation id="6985691951107243942">Vuoi disattivare le connessioni remote a <ph name="HOSTNAME" />? Se cambi idea, dovrai utilizzare il computer in questione per riattivare le connessioni.</translation>
 <translation id="7019153418965365059">Errore host non riconosciuto: <ph name="HOST_OFFLINE_REASON" />.</translation>
 <translation id="701976023053394610">Assistenza remota</translation>

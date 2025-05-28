@@ -206,6 +206,7 @@
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1758459542619182298"><ph name="CONTROL_TYPE" /> <ph name="KEY_LIST" /></translation>
 <translation id="1759842336958782510">Chrome</translation>
+<translation id="1762353673362288306">আপুনি এতিয়া কেৱল Class Tools ব্যৱহাৰ কৰিব পাৰিব</translation>
 <translation id="1762483337755424125">ট্ৰান্সক্ৰিপ্ট</translation>
 <translation id="1765169783255151332">ক্ষিপ্ৰতাৰে কীসমূহ সালসলনি কৰক</translation>
 <translation id="1768959921651994223">বিশ্বাসযোগ্যতা প্ৰমাণীকৰণৰ প্ৰকাৰ</translation>
@@ -1613,6 +1614,7 @@
 <translation id="8088963492174775412">ৰেকৰ্ড কৰিবলৈ টিপক</translation>
 <translation id="8094062939584182041">Googleক এই সমস্যাটোৰ বিষয়ে আপোনালৈ ইমেইল কৰিবলৈ দিয়ক</translation>
 <translation id="8104083085214006426">আপুনি এটা মুক্ত আৰু অসুৰক্ষিত নেটৱৰ্ক ব্যৱহাৰ কৰি আছে</translation>
+<translation id="8108879170356113798">আপুনি এতিয়া <ph name="NUM_SECONDS" /> ছেকেণ্ডত কেৱল Class Tools ব্যৱহাৰ কৰিব পাৰিব</translation>
 <translation id="811820734797650957">(Android) গে’টৱে’ পিং কৰিব পাৰি</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8131740175452115882">নিশ্চিত কৰক</translation>

@@ -226,6 +226,7 @@
 <translation id="4019629340646866719">Chromium OS, як і <ph name="BEGIN_LINK_LINUX_OSS" />асяроддзе распрацоўкі Linux<ph name="END_LINK_LINUX_OSS" />, працуе дзякуючы дадатковаму <ph name="BEGIN_LINK_CROS_OSS" />праграмнаму забеспячэнню з адкрытым зыходным кодам<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="4022972681110646219">Перакласці экран</translation>
 <translation id="4023601594785368013">Мова арыгінала: <ph name="LANGUAGE" /></translation>
+<translation id="4023845192681161785">Вы можаце адкрываць спасылкі з любой праграмы ў Chromium. Для хуткага доступу браўзер замацаваны на панэлі задач.</translation>
 <translation id="4036079820698952681">Дапамажыце палепшыць Chromium, паведаміўшы <ph name="BEGIN_LINK" />бягучыя налады<ph name="END_LINK" /></translation>
 <translation id="4050175100176540509">У апошняй версіі з’явіліся важныя паляпшэнні сістэмы бяспекі і новыя функцыі.</translation>
 <translation id="4055805654398742145">&amp;Менеджар пароляў</translation>
@@ -327,6 +328,7 @@
 <translation id="5524890928877629608">верхні левы вугал поля пошуку: <ph name="LEFT" />% злева, <ph name="TOP" />% зверху</translation>
 <translation id="5527463683072221100">Адкрываць PDF-файлы ў Chromium</translation>
 <translation id="5579324208890605088">Памылка запуску: запусціце ўсталёўшчык ад імені звычайнага карыстальніка, а не адміністратара.</translation>
+<translation id="5580770360767802657">Зрабіце Chromium стандартным браўзерам і замацуйце яго на панэлі задач</translation>
 <translation id="5596627076506792578">Дадатковыя параметры</translation>
 <translation id="5605834417512968703">Паспрабуйце знайсці што-небудзь з дапамогай пошуку відарысаў або націсніце Esc, каб закрыць яго</translation>
 <translation id="5618818588972826921">Выберыце тэкст або відарыс для пошуку з дапамогай пошуку відарысаў або націсніце Escape, каб закрыць пошук відарысаў</translation>
@@ -599,6 +601,7 @@
 <translation id="9106612006984859720">Каб атрымліваць наступныя абнаўленні Chromium, вам патрэбная версія Windows 10 ці пазнейшая. На гэтым камп’ютары выкарыстоўваецца Windows 8.1.</translation>
 <translation id="91086099826398415">Адкрыць спасылку ў новай &amp;укладцы Chromium</translation>
 <translation id="911206726377975832">Выдаліць таксама гісторыю праглядаў?</translation>
+<translation id="9134482777260927479">Дапаможнікі</translation>
 <translation id="9148058034647219655">Выйсці</translation>
 <translation id="9158494823179993217">Ваш сістэмны адміністратар наладзіў Chromium, каб адкрыць альтэрнатыўны браўзер для доступу да <ph name="TARGET_URL_HOSTNAME" />.</translation>
 <translation id="9185526690718004400">Перазапусціць, каб абнавіць &amp;Chromium</translation>

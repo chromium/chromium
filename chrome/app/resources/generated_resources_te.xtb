@@ -80,6 +80,7 @@
 <translation id="1049743911850919806">అజ్ఞాత మోడ్</translation>
 <translation id="1049795001945932310">&amp;భాష సెట్టింగ్‌లు</translation>
 <translation id="1050693411695664090">బలహీనంగా ఉంది</translation>
+<translation id="1053226848101751430">ఎంట్రీ తొలగించబడింది</translation>
 <translation id="1053898984916097744">కొత్తగా ఏదైనా ప్రారంభించండి లేదా ఫ్లోలో సహాయం పొందండి.</translation>
 <translation id="1054048317165655285">మీ ఫోన్‌లో సెటప్‌ను పూర్తి చేయండి</translation>
 <translation id="1054153489933238809">అసలు &amp;చిత్రాన్ని కొత్త ట్యాబ్‌లో తెరువు</translation>
@@ -484,6 +485,7 @@
 <translation id="1319983966058170660"><ph name="SUBPAGE_TITLE" /> సబ్‌పేజీ 'వెనుకకు' బటన్</translation>
 <translation id="1322046419516468189">మీ <ph name="SAVED_PASSWORDS_STORE" />లో సేవ్ చేసిన పాస్‌వర్డ్‌లను చూడండి మరియు నిర్వహించండి</translation>
 <translation id="132539964543492755">మౌస్‌లోని ఎడమ బటన్‌ను, కుడి బటన్‌ను లేదా రెండు బటన్‌లనూ ఎంచుకోవడానికి “x”ను వినియోగించండి</translation>
+<translation id="1325611581149097457">మెరుగ్గా రాయండి</translation>
 <translation id="1325898422473267360"><ph name="PERMISSION_USAGE" /> <ph name="PERMISSION_INDICATOR_DESCRIPTION" /></translation>
 <translation id="1327272175893960498">Kerberos టికెట్‌లు</translation>
 <translation id="1327495825214193325">ADB డీబగ్గింగ్‌ను ఎనేబుల్ చేయడానికి, ఈ <ph name="DEVICE_TYPE" />ను తప్పనిసరిగా రీస్టార్ట్ చేయాలి. దీనిని డిజేబుల్ చేయాలంటే, ఫ్యాక్టరీ సెట్టింగ్‌లకు రీసెట్ చేయడం అవసరం అవుతుంది.</translation>
@@ -1997,6 +1999,7 @@
 <translation id="2359345697448000899">'సాధనాలు' మెనూలోని ఎక్స్‌టెన్షన్‌లను క్లిక్ చేయడం ద్వారా మీ ఎక్స్‌టెన్షన్‌లను నిర్వహించండి.</translation>
 <translation id="2359556993567737338">బ్లూటూత్ పరికరాన్ని కనెక్ట్ చేయండి</translation>
 <translation id="2359808026110333948">కొనసాగించండి</translation>
+<translation id="2360047907847684514">ఎక్స్‌టెన్షన్‌లు, థీమ్‌లతో మీ బ్రౌజర్‌ను మెరుగుపరుచుకోండి</translation>
 <translation id="2360792123962658445">పేజీ సారాంశం, సంబంధిత సెర్చ్‌లు, అలాగే ఈ పేజీ వివరాల గురించిన ఇతర ఉపయోగకరమైన సమాచారాన్ని పొందడానికి, టూల్‌బార్‌లోని Google Search సైడ్ ప్యానెల్ బటన్‌ను ఎంచుకోండి</translation>
 <translation id="2361100938102002520">మీరు ఈ బ్రౌజర్‌కు మేనేజ్ చేయబడిన ప్రొఫైల్‌ను జోడిస్తున్నారు. మీ అడ్మినిస్ట్రేటర్ ప్రొఫైల్‌పైన కంట్రోల్‌ను కలిగి ఉన్నారు, అలాగే దాని డేటాను యాక్సెస్ చేయగలరు.</translation>
 <translation id="236117173274098341">ఆప్టిమైజ్ చేయండి</translation>
@@ -2238,6 +2241,7 @@
 <translation id="2519250377986324805">ఎలా చేయాలో తెలుసుకోండి</translation>
 <translation id="2519517390894391510">సర్టిఫికెట్ ప్రొఫైల్ పేరు</translation>
 <translation id="2520644704042891903">అందుబాటులో ఉన్న సాకెట్ కోసం వేచి ఉంది...</translation>
+<translation id="2520961587246779103">స్ప్లిట్ వీక్షణ కోసం మరిన్ని ఆప్షన్‌లు</translation>
 <translation id="2521427645491031107">పరికర సెట్టింగ్‌లలో యాప్‌ల సింక్ సెట్ చేసి ఉంది</translation>
 <translation id="2521835766824839541">మునుపటి ట్రాక్</translation>
 <translation id="2521854691574443804">మీ సంస్థకు చెందిన భద్రతా పాలసీలతో <ph name="FILE_NAME" />ను చెక్ చేస్తోంది...</translation>
@@ -2474,6 +2478,7 @@
 <translation id="2692503699962701720">ఎలిమెంట్ రకాలు, ఇంకా ఫార్మాట్ చేయబడిన టెక్స్ట్‌ను మాట్లాడేటప్పుడు పిచ్‌ను మార్చండి</translation>
 <translation id="2692901429679246677">ఆక్వా</translation>
 <translation id="2693134906590795721">ఛార్జింగ్ సౌండ్‌లు</translation>
+<translation id="2695943520968279338">ఎక్స్‌టెన్షన్‌లను అన్వేషించండి</translation>
 <translation id="2698147581454716013">ఇది బండిల్ చేయబడిన పరికరం, కియోస్క్ &amp; సంకేత చిహ్నాల అప్‌గ్రేడ్‌తో దీనిని ఎన్‌రోల్ చేయడం సాధ్యం కాదు.</translation>
 <translation id="2699911226086014512"><ph name="RETRIES" /> కోడ్‌తో పిన్ ఆపరేషన్ విఫలమైంది.</translation>
 <translation id="2701330563083355633"><ph name="DEVICE_NAME" /> నుండి షేర్ చేయబడింది</translation>
@@ -2988,6 +2993,7 @@
 <translation id="3043126717220766543">గ్రూప్ సూచనలను క్లియర్ చేయండి</translation>
 <translation id="3043218608271070212"><ph name="GROUP_NAME" /> - <ph name="GROUP_CONTENT_STRING" /></translation>
 <translation id="3043581297103810752"><ph name="ORIGIN" /> నుండి</translation>
+<translation id="3044066905368192931">AI సహాయంతో మెరుగుపరచండి</translation>
 <translation id="3045447014237878114">ఈ సైట్ పలు ఫైళ్లను ఆటోమేటిక్‌గా డౌన్‌లోడ్ చేసింది</translation>
 <translation id="3046178388369461825">Linux డిస్క్ స్పేస్ చాలా తక్కువగా ఉంది</translation>
 <translation id="304644035656848980">మీ మైక్రోఫోన్ ప్రివ్యూ</translation>
@@ -3183,6 +3189,7 @@
 <translation id="3202578601642193415">కొత్తది</translation>
 <translation id="3204648577100496185">ఈ యాప్‌తో అనుబంధించబడిన డేటా ఈ పరికరం నుండి తీసివేయబడవచ్చు</translation>
 <translation id="3204717934117444051">ఈ పరికరంలో మాత్రమే సేవ్ చేసిన డేటా ఇప్పటికే ఉన్న ప్రొఫైల్‌లోనే ఉంటుంది. ఇది <ph name="EMAIL" />‌కు సింక్ అవ్వదు</translation>
+<translation id="3206289903841621620">యూజర్ డిక్షనరీ <ph name="NUMBER" /></translation>
 <translation id="3207344462385471911">మీ ఇటీవలి యాక్టివిటీ ఆధారంగా, మీకు ఆసక్తి ఉండే అవకాశం గల సెర్చ్ సూచనలు, షాపింగ్ డిస్కౌంట్‌లు మీకు ప్రదర్శించబడుతున్నాయి.
         <ph name="BREAK" />
         <ph name="BREAK" />
@@ -4590,6 +4597,7 @@
 <translation id="4176864026061939326">ఈ పరికరం మేనేజ్ చేయబడుతోంది. <ph name="USER_EMAIL_ADDRESS" /> ఖాతా కోసం మీ పరికర అడ్మినిస్ట్రేటర్‌కు ఒక కొత్త ప్రొఫైల్ అవసరం</translation>
 <translation id="4177501066905053472">యాడ్ టాపిక్‌లు</translation>
 <translation id="4177668342649553942"><ph name="SHORTCUT_NAME" />‌ను తెరవండి - <ph name="APP_NAME" /></translation>
+<translation id="4177731895051842298">ఎక్స్‌టెన్షన్‌లు అనేవి Chromeకు యాడ్-ఆన్‌లు, ఇవి మీరు ఆర్గనైజ్డ్‌గా ఉండటానికి, టాస్క్‌లను సింప్లిఫై చేయడానికి మరియు మీ బ్రౌజింగ్‌ను అనుకూలంగా మార్చడానికి సహాయపడతాయి</translation>
 <translation id="4178220097446335546">ఈ సబ్‌స్క్రిప్షన్‌ను, దానికి అనుబంధించి ఉన్న నెట్‌వర్క్‌లను విస్మరించడానికి, Passpoint సబ్‌స్క్రిప్షన్ పేజీకి వెళ్లి, సబ్‌స్క్రిప్షన్‌ను తీసివేయండి.</translation>
 <translation id="4181602000363099176">20x</translation>
 <translation id="4181841719683918333">భాషలు</translation>
@@ -4723,6 +4731,7 @@
 <translation id="4275397969489577657">ఈవెంట్ ప్రసార లాగింగ్‌ను ప్రారంభించండి</translation>
 <translation id="4275788652681621337">సైడ్ ప్యానెల్‌ను మూసివేయండి</translation>
 <translation id="4275830172053184480">మీ పరికరాన్ని పునఃప్రారంభించండి</translation>
+<translation id="4276598757692536305">ప్రింటర్ PPD</translation>
 <translation id="4276856098224910511">ఇన్‌స్టాల్ చేయడం సాధ్యపడలేదు, OS అప్‌డేట్ పెండింగ్‌లో ఉంది. OS అప్‌డేట్లు ఏవైనా పెండింగ్‌లో ఉంటే ఇన్‌స్టాల్ చేయండి, ఆపై రీస్టార్ట్ చేసి, మళ్లీ ట్రై చేయండి. ఎర్రర్ కోడ్ <ph name="ERROR" />.</translation>
 <translation id="4277434192562187284">XML కాన్ఫిగరేషన్ సోర్స్</translation>
 <translation id="4278348589087554892">{NUM_SITES,plural, =1{1 సైట్ నుండి అనుమతులు తీసివేయబడ్డాయి}other{{NUM_SITES} సైట్‌ల నుండి అనుమతులు తీసివేయబడ్డాయి}}</translation>
@@ -5379,6 +5388,7 @@
 <translation id="4750185073185658673">మరి కొన్ని అనుమతులను రివ్యూ చేయడానికి మీ ఫోన్ సెట్టింగ్‌లకు వెళ్లండి. మీ ఫోన్‌లో బ్లూటూత్, Wi-Fi ఆన్‌లో ఉన్నాయని నిర్ధారించుకోండి.</translation>
 <translation id="4750394297954878236">సూచనలు</translation>
 <translation id="475088594373173692">మొదటి వినియోగదారు</translation>
+<translation id="4754590344707355551">ఎక్స్‌టెన్షన్‌లతో మీ బ్రౌజర్‌ను మెరుగుపరచండి</translation>
 <translation id="4756378406049221019">ఆపండి/మళ్లీ లోడ్ చేయండి</translation>
 <translation id="4756388243121344051">&amp;చరిత్ర</translation>
 <translation id="4756671452988984333">ఆడియోకు టెక్స్ట్</translation>
@@ -6409,6 +6419,7 @@
 <translation id="5490798133083738649">మీ మైక్రోఫోన్‌ను యాక్సెస్ చేయడానికి Linuxకు అనుమతివ్వండి</translation>
 <translation id="549211519852037402">లేత గోధుమ రంగు మరియు తెలుపు</translation>
 <translation id="5492637351392383067">పరికరంలో ఎన్‌క్రిప్షన్</translation>
+<translation id="5492780659774694607">ఎక్స్‌టెన్షన్‌లు అనేవి Chromeకు యాడ్-ఆన్‌లు, ఇవి మీకు సహాయపడతాయి</translation>
 <translation id="5493455553805432330">విస్మరించండి</translation>
 <translation id="5493792505296048976">స్క్రీన్ ఆన్‌లో ఉంది</translation>
 <translation id="5494016731375030300">ఇటీవల మూసివేయబడిన ట్యాబ్‌లు</translation>
@@ -9633,6 +9644,7 @@
 <translation id="7815680994978050279">ప్రమాదకరమైన డౌన్‌లోడ్ బ్లాక్ చేయబడింది</translation>
 <translation id="7817361223956157679">స్క్రీన్‌పై కీబోర్డ్ ఇంకా Linux యాప్‌లలో పనిచేయడం లేదు</translation>
 <translation id="7818135753970109980">కొత్త థీమ్ జోడించబడింది (<ph name="EXTENSION_NAME" />)</translation>
+<translation id="7819839686707222575">ఎక్స్‌టెన్షన్‌లు అనేవి Chromeలో ఉపయోగించగల యాడ్-ఆన్‌లు, ఇవి మీకు మరిన్ని పనులను చేయడంలో సహాయపడతాయి</translation>
 <translation id="7820400255539998692"><ph name="FILENAME" />‌ను తొలగించండి, తద్వారా ఈ పరికరాన్ని ఉపయోగించే ఇతర వ్యక్తులు మీ పాస్‌వర్డ్‌లను చూడలేరు</translation>
 <translation id="7820561748632634942">అదనపు స్విచ్‌లను అసైన్ చేయాలా?</translation>
 <translation id="782057141565633384">వీడియో అడ్రస్‌ను కా&amp;పీ చేయండి</translation>
@@ -10597,6 +10609,7 @@
 <translation id="8477241577829954800">బదులు పెట్టు</translation>
 <translation id="8477384620836102176">&amp;సాధారణ</translation>
 <translation id="8477446666255316832">వచ్చేసారి మరింత వేగంగా సైన్ ఇన్ చేయండి</translation>
+<translation id="8478346767369317046">వర్క్ ప్లేస్</translation>
 <translation id="8479176401914456949">చెల్లని కోడ్. దయచేసి మళ్లీ ట్రై చేయండి.</translation>
 <translation id="8480869669560681089"><ph name="VENDOR_NAME" /> నుండి తెలియని పరికరం</translation>
 <translation id="8481187309597259238">USB అనుమతిని నిర్ధారించండి</translation>
@@ -10946,6 +10959,7 @@
 <translation id="8729133765463465108">QR కోడ్‌ను స్కాన్ చేయడానికి కెమెరాను ఉపయోగించండి</translation>
 <translation id="8730621377337864115">పూర్తయింది</translation>
 <translation id="8731029916209785242">అనుమతులు (<ph name="FORMATTED_ORIGIN" />)</translation>
+<translation id="8731258351357994801">ఎంట్రీ <ph name="NUMBER" /></translation>
 <translation id="8731268612289859741">సెక్యూరిటీ కోడ్</translation>
 <translation id="8731629443331803108"><ph name="SITE_NAME" /> వీటిని చేయాలనుకుంటోంది: <ph name="PERMISSION" /></translation>
 <translation id="8731787661154643562">పోర్ట్ సంఖ్య</translation>
@@ -11088,6 +11102,7 @@
 <translation id="8827289157496676362">ఎక్స్‌టెన్షన్‌ను పిన్ చేయండి</translation>
 <translation id="8828933418460119530">DNS పేరు</translation>
 <translation id="8829979393064090868">స్ప్లిట్ వీక్షణకు ట్యాబ్‌ను జోడించండి</translation>
+<translation id="8830479210602243906">ప్రొడక్టివిటీని పెంచండి</translation>
 <translation id="883062543841130884">ప్రత్యామ్నాయాలు</translation>
 <translation id="8830779999439981481">అప్‌డేట్‌లను వర్తింపజేయడానికి రీస్టార్ట్ అవుతోంది</translation>
 <translation id="8830796635868321089">ప్రస్తుత ప్రాక్సీ సెట్టింగ్‌లను ఉపయోగించి అప్‌‌డేట్‌ను చెక్ చేయడం విఫలమైంది. దయచేసి మీ <ph name="PROXY_SETTINGS_LINK_START" />ప్రాక్సీ సెట్టింగ్‌ల<ph name="PROXY_SETTINGS_LINK_END" />ను సర్దుబాటు చేయండి.</translation>

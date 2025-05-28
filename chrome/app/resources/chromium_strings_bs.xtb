@@ -227,6 +227,7 @@ Neke funkcije možda neće biti dostupne i promjene postavki se neće sačuvati.
 <translation id="4019629340646866719">ChromiumOS je moguć zahvaljujući dodatnom <ph name="BEGIN_LINK_CROS_OSS" />softveru otvorenog koda<ph name="END_LINK_CROS_OSS" />, isto kao i <ph name="BEGIN_LINK_LINUX_OSS" />Linuxovo okruženje za razvoj<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="4022972681110646219">Prevedi ekran</translation>
 <translation id="4023601594785368013">Izvorni jezik: <ph name="LANGUAGE" /></translation>
+<translation id="4023845192681161785">Otvorite veze u Chromiumu iz bilo koje aplikacije. Osim toga, za lakši pristup prikvačen je na programsku traku.</translation>
 <translation id="4036079820698952681">Pomozite nam da poboljšamo Chromium tako što ćete nam prijaviti <ph name="BEGIN_LINK" />trenutne postavke<ph name="END_LINK" /></translation>
 <translation id="4050175100176540509">U najnovijoj verziji su dostupna važna poboljšanja sigurnosti i nove funkcije.</translation>
 <translation id="4055805654398742145">Upravitelj l&amp;ozinki</translation>
@@ -328,6 +329,7 @@ Neke funkcije možda neće biti dostupne i promjene postavki se neće sačuvati.
 <translation id="5524890928877629608">gornji lijevi ugao područja za pretraživanje: lijevo <ph name="LEFT" />%, gore <ph name="TOP" />%</translation>
 <translation id="5527463683072221100">Otvaraj PDF-ove u Chromiumu</translation>
 <translation id="5579324208890605088">Došlo je do greške prilikom pokretanja. Pokrenite alat za instaliranje kao obični korisnik, a ne kao administrator.</translation>
+<translation id="5580770360767802657">Koristite Chromium prema zadanim postavkama i prikvačite ga</translation>
 <translation id="5596627076506792578">Više opcija</translation>
 <translation id="5605834417512968703">Pretraživanje pomoću slika odabirom bilo čega ili napuštanje pretraživanja pomoću slika klikom na Esc</translation>
 <translation id="5618818588972826921">Pretraživanje pomoću slika odabirom bilo kojeg teksta ili slike ili napuštanje pretraživanja pomoću slika pritiskom na Esc</translation>

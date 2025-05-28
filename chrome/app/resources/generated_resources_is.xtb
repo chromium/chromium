@@ -80,6 +80,7 @@
 <translation id="1049743911850919806">Fara huldu höfðu</translation>
 <translation id="1049795001945932310">Tungumá&amp;lastillingar</translation>
 <translation id="1050693411695664090">Léleg</translation>
+<translation id="1053226848101751430">Færslu eytt</translation>
 <translation id="1053898984916097744">Byrjaðu á nýju verkefni eða fáðu aðstoð við að komast í gírinn.</translation>
 <translation id="1054048317165655285">Ljúka uppsetningu í símanum</translation>
 <translation id="1054153489933238809">Opna upprunalega &amp;mynd á nýjum flipa</translation>
@@ -1813,6 +1814,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="2249111429176737533">Opna sem flipaglugga</translation>
 <translation id="2249605167705922988">t.d. 1-5, 8, 11-13</translation>
 <translation id="2249635629516220541">Sérsníddu upplýsingarnar sem vefsvæði nota til að birta þér auglýsingar</translation>
+<translation id="2250153645770828940">Eyða orðabók</translation>
 <translation id="22505994009453896">Stýrðu músarbendlinum með talnaborði</translation>
 <translation id="2250624716625396929">Þessi flipi er að nota myndavélina og hljóðnemann</translation>
 <translation id="2251218783371366160">Opna með skoðara kerfis</translation>
@@ -2240,6 +2242,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="2519250377986324805">Sjá hvernig</translation>
 <translation id="2519517390894391510">Heiti vottorðsprófíls</translation>
 <translation id="2520644704042891903">Bíður eftir lausum tengli...</translation>
+<translation id="2520961587246779103">Fleiri valkostir skjáskiptingar</translation>
 <translation id="2521427645491031107">Samstilling forrita er stillt í stillingum tækis</translation>
 <translation id="2521835766824839541">fyrra lag</translation>
 <translation id="2521854691574443804">Athugar <ph name="FILE_NAME" /> út frá öryggisreglum fyrirtækisins þíns...</translation>
@@ -3185,6 +3188,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="3202578601642193415">Nýjast</translation>
 <translation id="3204648577100496185">Gögn sem tengjast þessu forriti verða hugsanlega fjarlægð úr tækinu</translation>
 <translation id="3204717934117444051">Gögn sem eru aðeins vistuð í þessu tæki verða áfram tiltæk á núverandi prófíl. Þau munu ekki samstillast <ph name="EMAIL" /></translation>
+<translation id="3206289903841621620"><ph name="NUMBER" />. orðabók notanda</translation>
 <translation id="3207344462385471911">Þú sérð leitartillögur og afslætti sem kunna að vekja áhuga þinn byggt á nýlegri virkni þinni.
         <ph name="BREAK" />
         <ph name="BREAK" />
@@ -10017,6 +10021,7 @@ Geymdu lykilskrána á öruggum stað. Þú þarft hana til að búa til nýjar 
 <translation id="8073499153683482226"><ph name="BEGIN_PARAGRAPH1" />Forritagögn geta verið hvaða gögn sem er sem forrit hefur vistað (í samræmi við stillingar þróunaraðila), þar á meðal gögn svo sem tengiliðir, skilaboð og myndir.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Gagnanotkun vegna öryggisafrita er ekki talin með í geymslurými barnsins á Drive.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />Þú getur slökkt á þessari þjónustu í stillingunum.<ph name="END_PARAGRAPH3" /></translation>
+<translation id="8075044377771022666">Fótur</translation>
 <translation id="8076835018653442223">Stjórnandi hefur lokað fyrir aðgang að staðbundnum skrám tækisins</translation>
 <translation id="8077120325605624147">Öll vefsvæði sem þú heimsækir mega birta þér hvaða auglýsingar sem er</translation>
 <translation id="8077579734294125741">Aðrir Chrome-prófílar</translation>
@@ -10952,6 +10957,7 @@ Geymdu lykilskrána á öruggum stað. Þú þarft hana til að búa til nýjar 
 <translation id="8729133765463465108">Notaðu myndavélina til að skanna inn QR-kóða</translation>
 <translation id="8730621377337864115">Lokið</translation>
 <translation id="8731029916209785242">Heimildir (<ph name="FORMATTED_ORIGIN" />)</translation>
+<translation id="8731258351357994801">Færsla <ph name="NUMBER" /></translation>
 <translation id="8731268612289859741">Öryggiskóði</translation>
 <translation id="8731629443331803108"><ph name="SITE_NAME" /> vill: <ph name="PERMISSION" /></translation>
 <translation id="8731787661154643562">Númer gáttar</translation>

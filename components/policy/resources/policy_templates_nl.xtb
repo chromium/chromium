@@ -943,6 +943,7 @@ Jokertekens (<ph name="WILDCARD_VALUE" />) zijn toegestaan.
 Oorsprongen die overeenkomen met zowel geblokkeerde als toegestane beleidspatronen worden geblokkeerd.
 Voor oorsprongen waarvoor geen informatie is in beleid of gebruikersinstellingen is een eerder gebruikersgebaar vereist om deze API aan te roepen.</translation>
 <translation id="1645793986494086629">Schema:</translation>
+<translation id="1647420986475965896">Instellingen voor zoekaanbevelingen in de AI-modus in de adresbalk en het zoekvak op de pagina Nieuw tabblad</translation>
 <translation id="1647558381546345298">Als je het beleid instelt, wordt de cachegrootte ingesteld die <ph name="PRODUCT_NAME" /> gebruikt om gecachte mediabestanden op de schijf op te slaan, ongeacht of de gebruiker de markering --media-cache-size heeft opgegeven. De waarde die in dit beleid wordt opgegeven, is geen harde grens maar een suggestie voor het cachesysteem. Een waarde die lager is dan een paar megabytes wordt naar boven afgerond.
 
       Als je de waarde van dit beleid instelt op 0, wordt de standaard cachegrootte gebruikt, maar kunnen gebruikers deze niet wijzigen.
@@ -2380,6 +2381,16 @@ Het systeem vraagt AAAA-records alleen op indien bereikbaar voor een algemene IP
 <translation id="2702682139813393777">Afdwingen dat Windows-hosts voor native berichten worden gestart via cmd.exe</translation>
 <translation id="270582584528242502">Geen waarschuwingsdialoogvenster tonen als de gebruiker probeert de browser te sluiten</translation>
 <translation id="2706708761587205154">Afdrukken alleen toestaan met pincode</translation>
+<translation id="2706972066112233185">Met dit beleid bepaal je of het gedeelte Aanbevelingen in de AI-modus zichtbaar is in de adresbalk en het zoekvak op de pagina Nieuw tabblad.
+
+Deze functie is beschikbaar voor alle gebruikers die Google als standaard zoekmachine hebben, tenzij de functie is uitgezet op basis van dit beleid.
+
+Als je het beleid niet instelt, wordt het gedrag bepaald door het beleid <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" />.
+
+Als je het beleid instelt op 0 - Enabled of niet instelt, is de functie beschikbaar voor gebruikers. Als je het beleid instelt op 1 - Disabled, is de functie niet beschikbaar.
+
+0 = Sta toe dat de functie wordt gebruikt.
+1 = Sta de functie niet toe.</translation>
 <translation id="2707733461906745082">Profielscheiding</translation>
 <translation id="2707873794476722903">Safe Browsing is actief in de standaardmodus.</translation>
 <translation id="2709516037105925701">Automatisch invullen</translation>
@@ -3974,6 +3985,7 @@ Dit beleid heeft geen effect als het beleid <ph name="ENTERPRISE_PROFILE_BADGE_T
 
  Als je het beleid niet instelt of dit instelt op een lege of ongeldige waarde, wordt er geen extra <ph name="CLIENT_INFO_IPP_ATTRIBUTE" />-waarde toegevoegd aan verzoeken voor afdruktaken.
 </translation>
+<translation id="3895626555961466729">Aanbevelingen in de AI-modus toestaan.</translation>
 <translation id="3896591584655529057">Opslag van toegangssleutels met de wachtwoordmanager aanzetten</translation>
 <translation id="3896751141670591496">Als je dit beleid toepast of niet instelt, worden er beveiligingswaarschuwingen getoond als Chrome wordt gestart met bepaalde mogelijk schadelijke opdrachtregelmarkeringen.
 
@@ -5626,6 +5638,7 @@ Als je het beleid niet instelt of niet toepast, mogen de cookies en gegevens wor
 
           Als dit beleid niet is ingesteld, wordt de standaardopdrachtregel gebruikt.</translation>
 <translation id="5151099177901233471">Rapportage van tijdzone-informatie van apparaat aanzetten</translation>
+<translation id="5151163911478747031">Toeschrijving van extensie in NTP-voettekst uitzetten</translation>
 <translation id="5152393033264257734">Controles voor DNS-onderschepping en infobalken voor 'bedoelde je http://intranetsite/' toestaan.</translation>
 <translation id="5152787786897382519">Zowel Chromium als Google Chrome bevatten enkele beleidsgroepen die voor het beheer van een functie van elkaar afhankelijk zijn. Deze reeksen worden vertegenwoordigd door de volgende beleidsgroepen. Aangezien beleidsregels meerdere bronnen kunnen hebben, worden alleen waarden afkomstig van de bron met de hoogste prioriteit toegepast. Waarden van een bron met een lagere prioriteit in dezelfde groep worden genegeerd. De prioriteitsvolgorde wordt gedefinieerd in <ph name="POLICY_PRIORITY_DOC_URL" />.</translation>
 <translation id="5153187201534281749">Icoon voor experimentele browserfuncties op werkbalk</translation>
@@ -6734,6 +6747,7 @@ Ga naar https://support.google.com/chrome/a?p=generative_ai_settings voor meer i
 
       Als je het beleid niet toepast of niet instelt, worden er geen systeemlogboeken gerapporteerd.</translation>
 <translation id="5861856285460256766">Configuratie van toegangscode voor ouders</translation>
+<translation id="5864898931148094192">Bepalen of de toeschrijving van de extensie zichtbaar is op de pagina Nieuw tabblad</translation>
 <translation id="5868414965372171132">Netwerkconfiguratie op gebruikersniveau</translation>
 <translation id="5868454276721377379">Als een gebruiker schakelt tussen <ph name="PRODUCT_OS_NAME" />-apparaten, herstelt de zwevende SSO-service de verificatiestatus van de gebruiker van het vorige apparaat naar het nieuwe apparaat. Hiervoor worden de cookies van de gebruiker naar verschillende apparaten verplaatst.
 
@@ -6860,11 +6874,6 @@ In <ph name="MAC_OS_NAME" /> is dit beleid alleen beschikbaar voor instanties di
 <translation id="5917897389577978190">Gmail (ondersteund sinds versie 135)</translation>
 <translation id="592036544845479336">Beëindigde/verwijderde mutatiegebeurtenissen opnieuw aanzetten</translation>
 <translation id="5921713479449475707">Downloads voor automatische updates via HTTP toestaan</translation>
-<translation id="5923084443277419535">De HTML-parser wordt gewijzigd zodat extra HTML-tags zijn toegestaan in het &lt;select&gt;-element. Met dit beleid kan het oude gedrag van de HTML-parser worden gebruikt tot M138.
-
-Als je dit beleid toepast of niet instelt, staat de HTML-parser extra tags toe in het &lt;select&gt;-element.
-
-Als je dit beleid niet toepast, beperkt de HTML-parser welke tags in het &lt;select&gt;-element kunnen worden geplaatst.</translation>
 <translation id="5925405187134730827">Dit beleid is beëindigd omdat de functie die het beleid beheert, nooit is gelanceerd. Gebruik in plaats daarvan het beleid <ph name="ENTERPRISE_PROFILE_BADGE_TOOLBAR_SETTINGS" />.
 
 Als je dit beleid niet instelt of instelt op <ph name="DISPLAY_MANAGEMENT_LABEL_PERMAMENT_VALUE" /> (waarde 0), wordt het label Werk of School naast de werkbalkavatar getoond.
@@ -7016,6 +7025,13 @@ Dit beleid is beëindigd vanaf M124.</translation>
 <translation id="604243460476563291">Bestandsoverdracht in verbindingen voor externe support van bedrijfsbeheerders uitzetten</translation>
 <translation id="6042629184389251062">Verzameling van URL-sleutelstatistieken is niet toegestaan</translation>
 <translation id="6046615715547751255">Opties voor gedetailleerde rapportage niet toestaan</translation>
+<translation id="6047041034696466581">Dit beleid bepaalt of een toeschrijving aan de extensie die de pagina Nieuw tabblad (New Tab Page, NTP) aanpast, wordt getoond in de voettekst van de NTP.
+
+Als een extensie de normale NTP heeft overschreven, wordt standaard een bericht in de voettekst getoond waarin deze wijziging aan de specifieke extensie wordt toegeschreven. Deze toeschrijving bevat meestal een link naar de relevante extensie in de Chrome Web Store.
+
+Als je dit beleid niet instelt of instelt op Waar, is de toeschrijving van de extensie zichtbaar in de voettekst van de NTP als een extensie de NTP beheert.
+
+Als je dit beleid instelt op Onwaar, wordt de toeschrijving aan de extensie in de NTP-voettekst onderdrukt.</translation>
 <translation id="6048199181629830227">Stroombeheer voor piekuren aanzetten</translation>
 <translation id="6048690591359317353">De gebruiker niet toestaan een VPN handmatig te ontkoppelen of aan te passen</translation>
 <translation id="6049117606554031363">Rapportage van moederbordstatus van apparaat aanzetten</translation>
@@ -9512,6 +9528,11 @@ Als je dit beleid instelt op False of niet instelt, gebruikt <ph name="PRODUCT_N
 Ga naar https://docs.microsoft.com/internet-explorer/ie11-deploy-guide/what-is-enterprise-mode voor meer informatie over het <ph name="IEEM_SITELIST_POLICY" />-beleid van Internet Explorer</translation>
 <translation id="7791215522423893512">Niet toestaan dat gebruikers screenshots en video-opnamen maken</translation>
 <translation id="7792796937016596423">De gebruiker kan geen opnamen van netwerkpakketten uitvoeren</translation>
+<translation id="7795648856511126914">De HTML-parser wordt gewijzigd zodat extra HTML-tags zijn toegestaan in het &lt;select&gt;-element. Met dit beleid kan het oude gedrag van de HTML-parser worden gebruikt tot M136.
+
+Als je dit beleid toepast of niet instelt, staat de HTML-parser extra tags toe in het &lt;select&gt;-element.
+
+Als je dit beleid niet toepast, beperkt de HTML-parser welke tags in het &lt;select&gt;-element kunnen worden geplaatst.</translation>
 <translation id="7798441698807517880">Dit beleid is verwijderd vanaf <ph name="PRODUCT_NAME" /> versie 89 omdat <ph name="FLASH_PLUGIN_NAME" /> is beëindigd.
 
       Als je het beleid instelt op True, wordt alle <ph name="FLASH_PLUGIN_NAME" />-content ingesloten op websites waarop <ph name="FLASH_PLUGIN_NAME" /> is toegestaan, waaronder content van een andere herkomst of kleine content.
@@ -10228,6 +10249,7 @@ Meer informatie over verouderde technologieën vind je op https://chromestatus.c
 <ph name="TAB_CAPTURE_ALLOWED_BY_ORIGINS_POLICY_NAME" />,
 <ph name="SAME_ORIGIN_TAB_CAPTURE_ALLOWED_BY_ORIGINS_POLICY_NAME" />.
       </translation>
+<translation id="8309511882585098865">Aanbevelingen in de AI-modus niet toestaan.</translation>
 <translation id="8310392396850884147">CORS-verzoekheaders zonder jokertekens ondersteunen.</translation>
 <translation id="8312129124898414409">Hiermee kun je instellen of websites sleutels mogen genereren. Het genereren van sleutels kan ofwel worden toegestaan voor alle websites ofwel worden geweigerd voor alle websites.
 
@@ -10942,6 +10964,7 @@ Als je dit beleid instelt op Waar, wordt het model voor aangepast opladen aangez
 Als je dit beleid instelt op Onwaar of niet instelt, heeft het model voor aangepast opladen geen invloed op het oplaadproces.
 
 Opmerking: Dit beleid heeft geen effect als DevicePowerBatteryChargingOptimization is ingesteld.</translation>
+<translation id="883025651704099882">Toeschrijving van extensie in NTP-voettekst aanzetten</translation>
 <translation id="8830717323204407209">Hiermee kan de promotie voor de extensie voor inloggegevensproviders worden getoond aan gebruikers</translation>
 <translation id="8832829916385857156">De pagina Nieuw tabblad laat kaarten zien als er content beschikbaar is</translation>
 <translation id="8833109046074170275">Verificatie via GAIA (standaard)</translation>

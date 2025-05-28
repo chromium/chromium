@@ -314,6 +314,7 @@
 <translation id="4970880042055371251">Chrome-käyttöjärjestelmän versio</translation>
 <translation id="4990567037958725628">Google Chrome Canary</translation>
 <translation id="5003967926796347400">Valitse "Google Salasanat"</translation>
+<translation id="504867494566807945">Avaa minkä tahansa sovelluksen linkit Chromessa. Lisäksi se kiinnitetään tehtäväpalkkiin, jotta pääset siihen helposti.</translation>
 <translation id="5114340746415930644">Lisää tunnuslause, jotta voit käyttää ja tallentaa Chrome-dataa tililläsi: <ph name="USER_EMAIL" /></translation>
 <translation id="5120334927898581447">Kirjaudu Chromeen, kun kirjaudut muihin Googlen palveluihin</translation>
 <translation id="5126049312684316860">Chrome esilataa enemmän sivuja, joilla todennäköisesti käyt, jotta ne latautuisivat avatessa nopeammin</translation>
@@ -390,6 +391,7 @@
 <translation id="6075300983329039771">Organisaatiosi (<ph name="MANAGER" />) edellyttää, että kirjaudut Chromeen</translation>
 <translation id="6113794647360055231">Chrome on nyt entistä parempi</translation>
 <translation id="6116252277240876590">Chromen valikot, asetukset, ilmoitukset ja muu teksti näytetään tällä kielellä</translation>
+<translation id="6127237283587442951">Chromen käyttäminen oletuksena ja kiinnittäminen</translation>
 <translation id="6134085236017727171">Jos haluat käyttää mikrofonia, anna Chromelle pääsyoikeus <ph name="BEGIN_LINK" />järjestelmäasetuksista<ph name="END_LINK" /></translation>
 <translation id="6135456723633883042">Nämä välilehdet käyttävät ylimääräisiä resursseja. Jos haluat parantaa suorituskykyä, anna Chromen tehdä niistä ei-aktiivisia.</translation>
 <translation id="6145313976051292476">Avaa PDF-tiedostot Chromessa</translation>
@@ -504,7 +506,6 @@
 <translation id="7572537927358445944">Pois päältä • Chrome ei voi vahvistaa, mistä tämä laajennus on peräisin</translation>
 <translation id="7583399374488819119">Asennusohjelma: <ph name="COMPANY_NAME" /></translation>
 <translation id="7606334485649076285">Google ChromeOS Flex</translation>
-<translation id="7626032353295482388">Tervetuloa Chromeen</translation>
 <translation id="7626072681686626474"><ph name="MANAGER" /> edellyttää, että luet ja hyväksyt seuraavat käyttöehdot ennen tämän laitteen käyttöä. Nämä ehdot eivät laajenna, muokkaa tai rajoita Google Chrome ‑käyttöjärjestelmän ehtoja.</translation>
 <translation id="7629695634924605473">Chrome ilmoittaa sinulle, jos salasanasi ovat vaarantuneet</translation>
 <translation id="7641148173327520642">Järjestelmänvalvojasi on määrittänyt Chromen avaamaan osoitteen <ph name="TARGET_URL_HOSTNAME" /> selaimella <ph name="ALTERNATIVE_BROWSER_NAME" />.</translation>

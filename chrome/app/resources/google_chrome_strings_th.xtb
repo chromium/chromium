@@ -313,6 +313,7 @@
 <translation id="4970880042055371251">เวอร์ชัน Chrome OS</translation>
 <translation id="4990567037958725628">Google Chrome Canary</translation>
 <translation id="5003967926796347400">คลิก "เครื่องมือจัดการรหัสผ่านบน Google"</translation>
+<translation id="504867494566807945">เปิดลิงก์ใน Chrome จากแอปใดก็ได้ และปักหมุดไว้ที่แถบงานเพื่อให้เข้าถึงได้ง่าย</translation>
 <translation id="5114340746415930644">ป้อนรหัสผ่านเพื่อใช้และบันทึกข้อมูล Chrome ในบัญชี <ph name="USER_EMAIL" /></translation>
 <translation id="5120334927898581447">ลงชื่อเข้าใช้ Chrome เมื่อคุณลงชื่อเข้าใช้บริการอื่นๆ ของ Google</translation>
 <translation id="5126049312684316860">Chrome จะโหลดหน้าเว็บที่คุณน่าจะเข้าชมเอาไว้ล่วงหน้าเพิ่มมากขึ้น เพื่อให้หน้าเหล่านั้นโหลดเร็วขึ้นเมื่อคุณเข้าชม</translation>
@@ -389,6 +390,7 @@
 <translation id="6075300983329039771">องค์กร <ph name="MANAGER" /> กำหนดให้คุณต้องลงชื่อเข้าใช้ Chrome</translation>
 <translation id="6113794647360055231">Chrome ดีขึ้นกว่าเดิม</translation>
 <translation id="6116252277240876590">ระบบจะใช้ภาษานี้เพื่อแสดงเมนู การตั้งค่า การแจ้งเตือน และข้อความอื่นๆ ใน Chrome</translation>
+<translation id="6127237283587442951">ใช้ Chrome โดยค่าเริ่มต้นและปักหมุดไว้</translation>
 <translation id="6134085236017727171">หากต้องการใช้ไมโครโฟน โปรดให้สิทธิ์เข้าถึงแก่ Chrome ใน<ph name="BEGIN_LINK" />การตั้งค่าระบบ<ph name="END_LINK" /></translation>
 <translation id="6135456723633883042">แท็บเหล่านี้ใช้ทรัพยากรมากเป็นพิเศษ ให้ Chrome ช่วยปิดใช้งานแท็บเหล่านี้เพื่อปรับปรุงประสิทธิภาพ</translation>
 <translation id="6145313976051292476">เปิด PDF ใน Chrome</translation>
@@ -503,7 +505,6 @@
 <translation id="7572537927358445944">ปิด • Chrome ยืนยันไม่ได้ว่าส่วนขยายนี้มาจากไหน</translation>
 <translation id="7583399374488819119">โปรแกรมติดตั้ง <ph name="COMPANY_NAME" /></translation>
 <translation id="7606334485649076285">Google Chrome OS Flex</translation>
-<translation id="7626032353295482388">ยินดีต้อนรับสู่ Chrome</translation>
 <translation id="7626072681686626474"><ph name="MANAGER" /> กำหนดว่าคุณต้องอ่านและยอมรับข้อกำหนดในการให้บริการต่อไปนี้ก่อนใช้อุปกรณ์นี้ ข้อกำหนดเหล่านี้ไม่ได้ขยาย แก้ไข หรือจำกัดข้อกำหนดของ Google Chrome OS</translation>
 <translation id="7629695634924605473">Chrome จะแจ้งให้ทราบหากมีคนล่วงรู้รหัสผ่านของคุณ</translation>
 <translation id="7641148173327520642">ผู้ดูแลระบบได้กำหนดค่าให้ Google Chrome เปิด <ph name="ALTERNATIVE_BROWSER_NAME" /> เพื่อเข้าถึง <ph name="TARGET_URL_HOSTNAME" /></translation>
@@ -623,6 +624,7 @@
 <translation id="9090566250983691233">ดูสาเหตุที่ Chrome บล็อกบางไฟล์</translation>
 <translation id="9106236359747881194">เลือกข้อความที่จะค้นหา</translation>
 <translation id="911206726377975832">ลบข้อมูลการท่องเว็บด้วยหรือไม่</translation>
+<translation id="9134482777260927479">ความช่วยเหลือเรื่องการบ้าน</translation>
 <translation id="9138603949443464873">เปิด Chrome ขึ้นมาใหม่เพื่อให้การเปลี่ยนแปลงมีผล</translation>
 <translation id="9148058034647219655">ออก</translation>
 <translation id="9195993889682885387">Chrome สามารถคาดคะเนความสนใจโดยพิจารณาจากประวัติการท่องเว็บเมื่อ 2-3 สัปดาห์ที่ผ่านมา ข้อมูลนี้อยู่ในอุปกรณ์ของคุณ</translation>

@@ -206,6 +206,7 @@
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1758459542619182298"><ph name="CONTROL_TYPE" /> <ph name="KEY_LIST" /></translation>
 <translation id="1759842336958782510">Chrome</translation>
+<translation id="1762353673362288306">ଆପଣ ବର୍ତ୍ତମାନ କେବଳ କ୍ଲାସ ଟୁଲ୍ସକୁ ବ୍ୟବହାର କରିବାକୁ ସକ୍ଷମ ଅଟନ୍ତି</translation>
 <translation id="1762483337755424125">ଟ୍ରାନ୍ସକ୍ରିପ୍ଟ</translation>
 <translation id="1765169783255151332">ଶୀଘ୍ର କୀଗୁଡ଼ିକୁ ସୁଇଚ କରନ୍ତୁ</translation>
 <translation id="1768959921651994223">ପ୍ରମାଣୀକରଣର ପ୍ରକାର</translation>
@@ -1613,6 +1614,7 @@
 <translation id="8088963492174775412">ରେକର୍ଡ କରିବାକୁ ଦବାନ୍ତୁ</translation>
 <translation id="8094062939584182041">ଏହି ସମସ୍ୟା ବିଷୟରେ ଆପଣଙ୍କୁ ଇମେଲ କରିବା ପାଇଁ Googleକୁ ଅନୁମତି ଦିଅନ୍ତୁ</translation>
 <translation id="8104083085214006426">ଆପଣ ଏକ ଖୋଲା ଏବଂ ଅସୁରକ୍ଷିତ ନେଟୱାର୍କ ବ୍ୟବହାର କରୁଛନ୍ତି</translation>
+<translation id="8108879170356113798">ଆପଣ କେବଳ <ph name="NUM_SECONDS" /> ସେକେଣ୍ଡରେ କ୍ଲାସ ଟୁଲ୍ସକୁ ବ୍ୟବହାର କରିବାକୁ ସକ୍ଷମ ହେବେ</translation>
 <translation id="811820734797650957">(Android) ଗେଟୱେକୁ ପିଙ୍ଗ୍ କରାଯାଇପାରିବ</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8131740175452115882">ନିଶ୍ଚିତ କରନ୍ତୁ</translation>

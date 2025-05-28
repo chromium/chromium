@@ -175,6 +175,7 @@
 <translation id="7942349550061667556">Röd</translation>
 <translation id="7961015016161918242">Aldrig</translation>
 <translation id="7966321538264951561">Ignorera förslagen.</translation>
+<translation id="796696298310625748">{WINDOW_COUNT,plural, =1{Flytta fliken till ett nytt fönster}other{Flytta fliken till ett annat fönster}}</translation>
 <translation id="799469866974412355">Ny grupp från din andra enhet</translation>
 <translation id="8029301326595421733">Information om den här butiken har öppnats över hela skärmen</translation>
 <translation id="8053770993984522566">Lista över flikgrupper som har öppnats över halva skärmen</translation>
@@ -196,6 +197,7 @@
 <translation id="8730621377337864115">Klart</translation>
 <translation id="8730999928494395583">Aktivitet på de här inkognitoflikarna tas bort från enheten</translation>
 <translation id="875848103419578654">{NUM_MONTHS,plural, =1{Skapades för <ph name="NUM_MONTHS_ONE" /> månad sedan}other{Skapades för <ph name="NUM_MONTHS_MANY" /> månader sedan}}</translation>
+<translation id="8813708480179818649">Ta bort fliken från gruppen</translation>
 <translation id="8820741577754260431">Se sänkta priser på flikar</translation>
 <translation id="883379923675618699">Chrome stänger automatiskt objekt i avsnittet Inaktiva som du inte har använt på tre månader. Du kan inaktivera detta nu eller när som helst i inställningarna.</translation>
 <translation id="8887921976452567404">Du kan öppna dina stängda flikar och grupper på nytt från avsnittet Senaste flikar och avsnittet Flikgrupper.</translation>

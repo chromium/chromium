@@ -206,6 +206,7 @@
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1758459542619182298"><ph name="CONTROL_TYPE" /> <ph name="KEY_LIST" /></translation>
 <translation id="1759842336958782510">Chrome</translation>
+<translation id="1762353673362288306">మీరు ఇప్పుడు క్లాస్ టూల్స్‌ను మాత్రమే ఉపయోగించగలరు</translation>
 <translation id="1762483337755424125">టైప్ చేసిన మాటల ఫైల్</translation>
 <translation id="1765169783255151332">కీలను వేగంగా మార్చండి</translation>
 <translation id="1768959921651994223">ప్రామాణీకరణ రకం</translation>
@@ -220,6 +221,7 @@
 <translation id="181434555916624618">ప్రస్తుతానికి, వ్యక్తులకు సంబంధించిన ఫలితాలు చూపబడవు. మరొక ప్రాంప్ట్‌ను ట్రై చేయండి.</translation>
 <translation id="1815850098929213707"><ph name="KEYS" /> కీ ఎంపిక చేయబడింది. కంట్రోల్‌ను ఎడిట్ చేయడానికి బటన్‌పై ట్యాప్ చేయండి</translation>
 <translation id="1818174214124933000">మీరు ఫీడ్‌బ్యాక్‌ను, కంటెంట్‌ను పంపడాన్ని ఎంచుకున్నప్పుడు, వాటిని (కింద చూడవచ్చు) Googleకు పంపడం జరుగుతుంది; ఆపై వాటిని మాన్యువల్‌గా రివ్యూ చేస్తారు; అదే విధంగా <ph name="LINK_POLICY_BEGIN" />గోప్యతా పాలసీ<ph name="LINK_POLICY_END" />, <ph name="LINK_TERMS_OF_SERVICE_BEGIN" />Google సర్వీస్ నియమాల<ph name="LINK_TERMS_OF_SERVICE_END" />కు లోబడి వాటిని ప్రోడక్ట్‌లను, సర్వీస్‌లను మెరుగుపరచడానికి, ట్రెయినింగ్ ఇవ్వడానికి ఉపయోగిస్తారు.</translation>
+<translation id="1821075635029692203">మీ టీచర్, సపోర్ట్ లేని రిసోర్స్‌ను పంపారు. వారికి తెలియజేయండి.</translation>
 <translation id="1823120442877418684">పాత్రలు</translation>
 <translation id="1827738518074806965">చిత్రకళా గ్యాలరీ</translation>
 <translation id="183287940576828840">అభ్యంతరకరమైనది/సురక్షితం కానిది</translation>
@@ -476,6 +478,7 @@
 <translation id="3091839911843451378">విఫలమైంది - ఆగిపోయింది</translation>
 <translation id="3102119246920354026">కాష్</translation>
 <translation id="3103783611481501187">సర్రియల్</translation>
+<translation id="3119672627216736407">అనువాదం అందుబాటులో ఉంది</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3122614491980756867">పూల్స్</translation>
 <translation id="3122883569442693641">మరిన్ని వివరాలు</translation>
@@ -1136,6 +1139,7 @@
 <translation id="6058625436358447366">దీనిని ముగించడానికి, మీ పాత, కొత్త పాస్‌వర్డ్‌లను నమోదు చేయండి</translation>
 <translation id="6061772781719867950">విఫలమైన HTTP రిక్వెస్ట్‌లు</translation>
 <translation id="6073292342939316679">కీబోర్డ్ బ్రైట్‌నెస్‌ను తగ్గిస్తుంది</translation>
+<translation id="6074608334942655098">అనువదించడం ఆపివేయండి</translation>
 <translation id="6074752328838739425">సారాంశాన్ని దాచండి</translation>
 <translation id="6075872808778243331">(Android) HTTP ప్రతిస్పందన సమయం</translation>
 <translation id="6078323886959318429">షార్ట్‌కట్‌ను జోడించండి</translation>
@@ -1613,6 +1617,7 @@
 <translation id="8088963492174775412">రికార్డ్ చేయడానికి నొక్కండి</translation>
 <translation id="8094062939584182041">ఈ సమస్యకు గురించి మీకు ఈమెయిల్ చేయడానికి Googleకు అనుమతినివ్వండి</translation>
 <translation id="8104083085214006426">మీరు ఓపెన్, అసురక్షిత నెట్‌వర్క్‌ను ఉపయోగిస్తున్నారు</translation>
+<translation id="8108879170356113798">మీరు క్లాస్ టూల్స్‌ను <ph name="NUM_SECONDS" /> సెకన్లలోపు మాత్రమే ఉపయోగించగలరు</translation>
 <translation id="811820734797650957">(Android) గేట్‌వేను పింగ్ చేయవచ్చు</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8131740175452115882">నిర్ధారించు</translation>

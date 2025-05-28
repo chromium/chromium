@@ -367,6 +367,7 @@
 <translation id="1612199629998703524">Управление темами</translation>
 <translation id="1615178538289490617">Отменить доступ к порту "<ph name="PORT_NAME" />"</translation>
 <translation id="1615402009686901181">Администратор запретил запись экрана, когда видны конфиденциальные данные.</translation>
+<translation id="161612500287664753">Спросить об этой странице у Google Поиска</translation>
 <translation id="1617276713587758852">Кроссоверы</translation>
 <translation id="1619007254056372606">Управлять данными сайтов на устройстве</translation>
 <translation id="1619648179761984213">Пользователь <ph name="USER_DISPLAY_NAME" /> удалил вкладку</translation>
@@ -1507,6 +1508,7 @@
 <translation id="3586931643579894722">Скрыть подробности</translation>
 <translation id="3587725436724465984">Ваша организация указала, что сайт <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> может нарушать ее правила. Подробнее <ph name="BEGIN_LEARN_MORE_LINK" />об этом предупреждении<ph name="END_LEARN_MORE_LINK" />…</translation>
 <translation id="3587738293690942763">Середина</translation>
+<translation id="3589519427766620380">Спросить об этой странице у Google Объектива</translation>
 <translation id="3596918995172292499">Регион регистрации номерного знака</translation>
 <translation id="3600106876108433070">Подробнее о сравнительных таблицах…</translation>
 <translation id="3600246354004376029"><ph name="TITLE" />, <ph name="DOMAIN" />, <ph name="TIME" /></translation>
@@ -3443,6 +3445,7 @@
 <translation id="6925267999184670015">North American B+</translation>
 <translation id="6926216138694948720">Боди-арт</translation>
 <translation id="692638818576287323">Коммерческий транспорт</translation>
+<translation id="6930607614725241390">Результаты поиска на боковой панели</translation>
 <translation id="6934236486840930310"><ph name="BEGIN_BOLD" />Поисковая система по умолчанию позволяет находить информацию в интернете и пользоваться различными функциями Chrome<ph name="END_BOLD" />, например совершать запросы из адресной строки или по изображению с веб-страницы. Некоторые функции могут быть недоступны, если их не поддерживает ваша поисковая система.</translation>
 <translation id="6934672428414710184">Это имя из вашего аккаунта Google</translation>
 <translation id="6935077351544118151">Теперь вы можете автоматически заполнять данные карт постоянного клиента из Google Кошелька</translation>
@@ -4557,7 +4560,7 @@
 <translation id="8858065207712248076">Chrome рекомендует сбросить пароль, используемый в подразделении <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" />, если вы указывали его на других сайтах.</translation>
 <translation id="885906927438988819">Если все правильно, <ph name="BEGIN_LINK" />воспользуйтесь инструментом "Диагностика сетей Windows"<ph name="END_LINK" />.</translation>
 <translation id="8861126751581835107">Фотография и цифровые искусства</translation>
-<translation id="8863218129525348270">Чтобы оплачивать покупки быстрее, сохраните карту на своем устройстве</translation>
+<translation id="8863218129525348270">Чтобы оплачивать покупки быстрее, сохраните карту на своем устройстве.</translation>
 <translation id="8864939224504814334">Деловая одежда</translation>
 <translation id="8866132857352163524">Саундтреки</translation>
 <translation id="8866481888320382733">Не удалось выполнить анализ настроек политики</translation>

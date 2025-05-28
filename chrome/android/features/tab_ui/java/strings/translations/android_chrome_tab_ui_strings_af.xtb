@@ -175,6 +175,7 @@
 <translation id="7942349550061667556">Rooi</translation>
 <translation id="7961015016161918242">Nooit</translation>
 <translation id="7966321538264951561">Maak die voorstelle toe.</translation>
+<translation id="796696298310625748">{WINDOW_COUNT,plural, =1{Skuif oortjie na ’n nuwe venster toe}other{Skuif oortjie na ’n ander venster toe}}</translation>
 <translation id="799469866974412355">Nuwe groep van jou ander toestel af</translation>
 <translation id="8029301326595421733">Inligting oor hierdie winkel is teen volle hoogte oopgemaak</translation>
 <translation id="8053770993984522566">Oortjiegroeplys is teen halwe hoogte oopgemaak</translation>
@@ -196,6 +197,7 @@
 <translation id="8730621377337864115">Gedoen</translation>
 <translation id="8730999928494395583">Jou aktiwiteit in hierdie Incognito-oortjies sal van hierdie toestel af verwyder word</translation>
 <translation id="875848103419578654">{NUM_MONTHS,plural, =1{<ph name="NUM_MONTHS_ONE" /> maand gelede geskep}other{<ph name="NUM_MONTHS_MANY" /> maande gelede geskep}}</translation>
+<translation id="8813708480179818649">Verwyder oortjie uit groep</translation>
 <translation id="8820741577754260431">Sien prysdalings in jou oortjies</translation>
 <translation id="883379923675618699">Chrome sluit outomaties items in die onaktiewe afdeling wat jy vir 3 maande nie gebruik het nie. Jy kan dit nou of enige tyd in Instellings afskakel.</translation>
 <translation id="8887921976452567404">Jou toegemaakte oortjies en groepe kan weer van die Onlangse oortjies-afdeling en die Oortjiegroepe-afdeling af oopgemaak word.</translation>

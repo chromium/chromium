@@ -485,6 +485,7 @@
 <translation id="1319983966058170660">Alasivun <ph name="SUBPAGE_TITLE" /> takaisin-painike</translation>
 <translation id="1322046419516468189">Katso ja ylläpidä salasanoja: <ph name="SAVED_PASSWORDS_STORE" /></translation>
 <translation id="132539964543492755">Jos haluat vaihtaa valintaa hiiren vasemman ja oikean painikkeen sekä molempien painikkeiden välillä, paina "x"</translation>
+<translation id="1325611581149097457">Kirjoita paremmin</translation>
 <translation id="1325898422473267360"><ph name="PERMISSION_USAGE" /> <ph name="PERMISSION_INDICATOR_DESCRIPTION" /></translation>
 <translation id="1327272175893960498">Kerberos-tukipyyntö</translation>
 <translation id="1327495825214193325">ADB-virheenkorjauksen käyttöönottoa varten tämä <ph name="DEVICE_TYPE" /> on käynnistettävä uudelleen. Sen poistaminen käytöstä edellyttää tehdasasetusten palautusta.</translation>
@@ -1998,6 +1999,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="2359345697448000899">Hallinnoi laajennuksiasi valitsemalla Työkalut-valikosta Laajennukset.</translation>
 <translation id="2359556993567737338">Yhdistä Bluetooth-laite</translation>
 <translation id="2359808026110333948">Jatka</translation>
+<translation id="2360047907847684514">Selaimen tehostaminen laajennuksilla ja teemoilla</translation>
 <translation id="2360792123962658445">Saat yhteenvedon sivusta, samantyyppisiä hakuja ja muita hyödyllisiä tietoja sivusta, kun valitset yläpalkista Google Haun sivupaneelin</translation>
 <translation id="2361100938102002520">Olet lisäämässä ylläpidettyä profiilia tähän selaimeen. Järjestelmänvalvoja hallitsee profiilia ja pääsee sen dataan.</translation>
 <translation id="236117173274098341">Optimoi</translation>
@@ -2476,6 +2478,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="2692503699962701720">Muuta äänenkorkeutta, kun ääneen luetaan elementtityyppejä ja muotoiltua tekstiä</translation>
 <translation id="2692901429679246677">Sinivihreä</translation>
 <translation id="2693134906590795721">Latausäänet</translation>
+<translation id="2695943520968279338">Tutustu laajennuksiin</translation>
 <translation id="2698147581454716013">Tämä on laite kuuluu pakettiin, eikä sitä voi rekisteröidä Kiosk &amp; Signage Upgradeen.</translation>
 <translation id="2699911226086014512">PIN-toiminto epäonnistui (koodi: <ph name="RETRIES" />).</translation>
 <translation id="2701330563083355633">Jaettu: <ph name="DEVICE_NAME" /></translation>
@@ -2990,6 +2993,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="3043126717220766543">Tyhjennä ryhmän ehdotukset</translation>
 <translation id="3043218608271070212"><ph name="GROUP_NAME" /> – <ph name="GROUP_CONTENT_STRING" /></translation>
 <translation id="3043581297103810752">Lähde: <ph name="ORIGIN" /></translation>
+<translation id="3044066905368192931">Tee parannuksia tekoälyllä</translation>
 <translation id="3045447014237878114">Tämä sivusto latasi useita tiedostoja automaattisesti</translation>
 <translation id="3046178388369461825">Linux-levytila erittäin vähissä</translation>
 <translation id="304644035656848980">Esikatsele mikrofonia</translation>
@@ -4590,6 +4594,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="4176864026061939326">Tämä on hallinnoitu laite. Laitteen järjestelmänvalvoja edellyttää uutta profiilia tilille <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="4177501066905053472">Mainosten aiheet</translation>
 <translation id="4177668342649553942">Avaa <ph name="SHORTCUT_NAME" /> – <ph name="APP_NAME" /></translation>
+<translation id="4177731895051842298">Laajennukset ovat Chromen lisäosia, joiden avulla voit pitää asiat järjestyksessä, yksinkertaistaa tehtäviä ja muokata selauskokemusta</translation>
 <translation id="4178220097446335546">Jos haluat unohtaa tämän tilauksen ja siihen liittyvät verkostot, poista tilaus Passpoint-tilaussivulla.</translation>
 <translation id="4181602000363099176">20x</translation>
 <translation id="4181841719683918333">Kielet</translation>
@@ -5379,6 +5384,7 @@ Loitonna painamalla Ctrl + Alt + kirkkauden vähennys.</translation>
 <translation id="4750185073185658673">Voit tarkistaa muutamia muita lupia puhelimellasi. Varmista, että puhelimen Bluetooth ja Wi-Fi ovat päällä.</translation>
 <translation id="4750394297954878236">Ehdotukset</translation>
 <translation id="475088594373173692">Ensimmäinen käyttäjä</translation>
+<translation id="4754590344707355551">Selaimen tehostaminen laajennuksilla</translation>
 <translation id="4756378406049221019">Pysäytä/päivitä</translation>
 <translation id="4756388243121344051">&amp;Historia</translation>
 <translation id="4756671452988984333">Audio ja tekstitys</translation>
@@ -6410,6 +6416,7 @@ Voit määrittää samalle toiminnolle useita kytkimiä.</translation>
 <translation id="5490798133083738649">Anna Linuxin käyttää mikrofoniasi</translation>
 <translation id="549211519852037402">Beige ja valkoinen</translation>
 <translation id="5492637351392383067">Laitteen salaus</translation>
+<translation id="5492780659774694607">Laajennukset ovat Chromen lisäosia, jotka voivat auttaa sinua</translation>
 <translation id="5493455553805432330">Unohda</translation>
 <translation id="5493792505296048976">näyttö päällä</translation>
 <translation id="5494016731375030300">Viimeksi suljetut välilehdet</translation>
@@ -9634,6 +9641,7 @@ Poista määritys painamalla määritettyä kytkintä tai näppäintä.</transla
 <translation id="7815680994978050279">Vaarallinen lataus estettiin</translation>
 <translation id="7817361223956157679">Näyttönäppäimistö ei vielä toimi Linux-sovelluksissa</translation>
 <translation id="7818135753970109980">Uusi teema lisätty (<ph name="EXTENSION_NAME" />)</translation>
+<translation id="7819839686707222575">Laajennukset ovat Chromen lisäosia, joiden avulla voit tehdä enemmän</translation>
 <translation id="7820400255539998692">Poista <ph name="FILENAME" />, jotta muut laitteen käyttäjät eivät näe salasanojasi</translation>
 <translation id="7820561748632634942">Määritetäänkö lisää kytkimiä?</translation>
 <translation id="782057141565633384">K&amp;opioi videon osoite</translation>
@@ -10601,6 +10609,7 @@ Tallenna avaintiedosto suojattuun sijaintiin. Tarvitset sitä, jos haluat luoda 
 <translation id="8477241577829954800">Tarpeeton</translation>
 <translation id="8477384620836102176">&amp;Yleistä</translation>
 <translation id="8477446666255316832">Kirjaudu ensi kerralla nopeammin sisään</translation>
+<translation id="8478346767369317046">Työ</translation>
 <translation id="8479176401914456949">Virheellinen koodi. Yritä uudelleen.</translation>
 <translation id="8480869669560681089">Tuntematon laite toimittajalta <ph name="VENDOR_NAME" /></translation>
 <translation id="8481187309597259238">Vahvista USB:n käyttöoikeus</translation>
@@ -11093,6 +11102,7 @@ Tällaisia tietoja voivat olla esimerkiksi asennetut ohjelmistot, tiedostot, sel
 <translation id="8827289157496676362">Kiinnitä laajennus</translation>
 <translation id="8828933418460119530">DNS-nimi</translation>
 <translation id="8829979393064090868">Lisää välilehti jaettuun näkymään</translation>
+<translation id="8830479210602243906">Tehosta tuottavuutta</translation>
 <translation id="883062543841130884">Vastikkeet</translation>
 <translation id="8830779999439981481">Käynnistetään uudelleen päivitysten käyttöönoton vuoksi</translation>
 <translation id="8830796635868321089">Päivitystarkistus epäonnistui nykyisillä välityspalvelinasetuksilla. Muuta <ph name="PROXY_SETTINGS_LINK_START" />välityspalvelinasetuksia<ph name="PROXY_SETTINGS_LINK_END" />.</translation>

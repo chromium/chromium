@@ -367,6 +367,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="1612199629998703524">Kelola topik</translation>
 <translation id="1615178538289490617">Cabut akses untuk <ph name="PORT_NAME" /></translation>
 <translation id="1615402009686901181">Kebijakan administrator akan menonaktifkan tangkapan layar saat konten rahasia terlihat</translation>
+<translation id="161612500287664753">Tanyakan Google Penelusuran tentang halaman ini</translation>
 <translation id="1617276713587758852">Mobil crossover</translation>
 <translation id="1619007254056372606">Kelola data situs di perangkat</translation>
 <translation id="1619648179761984213"><ph name="USER_DISPLAY_NAME" /> menghapus tab</translation>
@@ -1508,6 +1509,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="3586931643579894722">Sembunyikan detail</translation>
 <translation id="3587725436724465984">Organisasi Anda telah mengidentifikasi <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> sebagai situs yang mungkin melanggar kebijakan. <ph name="BEGIN_LEARN_MORE_LINK" />Pelajari lebih lanjut peringatan ini<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3587738293690942763">Tengah</translation>
+<translation id="3589519427766620380">Tanyakan Google Lens info tentang halaman ini</translation>
 <translation id="3596918995172292499">Status plat</translation>
 <translation id="3600106876108433070">Pelajari tabel perbandingan</translation>
 <translation id="3600246354004376029"><ph name="TITLE" />, <ph name="DOMAIN" />, <ph name="TIME" /></translation>
@@ -3444,6 +3446,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="6925267999184670015">Amerika Utara B+</translation>
 <translation id="6926216138694948720">Seni Rajah dan Tindik</translation>
 <translation id="692638818576287323">Kendaraan Niaga</translation>
+<translation id="6930607614725241390">Telusuri di panel samping</translation>
 <translation id="6934236486840930310"><ph name="BEGIN_BOLD" />Mesin telusur default memungkinkan Anda menelusuri web dan mendukung fitur Chrome<ph name="END_BOLD" /> seperti menelusuri dari kolom URL dan dari gambar di halaman web. Fitur mungkin tidak tersedia jika mesin telusur tidak mendukungnya.</translation>
 <translation id="6934672428414710184">Nama ini dari Akun Google Anda</translation>
 <translation id="6935077351544118151">Sekarang Anda dapat mengisi otomatis kartu loyalitas dari Google Wallet</translation>

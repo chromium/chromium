@@ -375,6 +375,7 @@
 <translation id="2718352093833049315">Wi-Fiలో మాత్రమే</translation>
 <translation id="2718846868787000099">కంటెంట్‌ను మీ ప్రాధాన్య భాషల్లో చూపించడానికి, మీరు సందర్శించే సైట్‌లు మీ ప్రాధాన్యతలను చూడగలవు</translation>
 <translation id="2723001399770238859">ఆడియో</translation>
+<translation id="2734335652257251631">రీడింగ్ మోడ్‌ను చూడండి</translation>
 <translation id="2739887572830526131">ట్యాబ్‌లను తర్వాత జోడించడానికి ఈ గ్రూప్‌ను కొనసాగించండి, లేదా మీకు ఇది అవసరం లేకపోతే, దాన్ని తొలగించండి.</translation>
 <translation id="2742373789128106053"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ప్రస్తుతం అందుబాటులో లేదు.</translation>
 <translation id="2760805590727089264">MM / YY</translation>
@@ -1437,6 +1438,7 @@
 <translation id="7431991332293347422">సెర్చ్‌లు మరియు మరిన్నింటిని వ్యక్తిగతీకరించడానికి మీ బ్రౌజింగ్ హిస్టరీ ఎలా ఉపయోగించబడుతుందో నియంత్రించండి</translation>
 <translation id="7435356471928173109">మీ అడ్మినిస్ట్రేటర్ ఆఫ్ చేశారు</translation>
 <translation id="7437998757836447326">Chrome నుండి సైన్ అవుట్ చేయండి</translation>
+<translation id="7439467816829380878">ట్యాబ్‌ను గ్రూప్‌నకు మార్చండి</translation>
 <translation id="7453810262525006706">సైడ్ వ్యూకు కుదించండి</translation>
 <translation id="7454641608352164238">తగినంత స్థలం లేదు</translation>
 <translation id="7454744349230173024">మీ సంస్థ పాస్‌వర్డ్‌లను సేవ్ చేయడాన్ని ఆఫ్ చేసింది</translation>
@@ -1742,6 +1744,7 @@
 <translation id="8676789164135894283">సైన్ ఇన్ వెరిఫికేషన్‌లు</translation>
 <translation id="8683039184091909753">ఇమేజ్</translation>
 <translation id="8688183792442786085"><ph name="TAB_TITLE" />, ఎంచుకున్న ట్యాబ్</translation>
+<translation id="8693232767599693749">రీడింగ్ మోడ్‌ను చూడాలనుకుంటున్నారా?</translation>
 <translation id="8697753151306746444">బదులుగా విండోను లేదా స్క్రీన్‌ను షేర్ చేయండి</translation>
 <translation id="869891660844655955">గడువు తేదీ</translation>
 <translation id="8699120352855309748">ఈ భాషలను అనువాదం చేసే సదుపాయాన్ని అందించవద్దు</translation>
@@ -1811,6 +1814,7 @@
 <translation id="9019199799064251516">కారు ప్రొఫైల్ లాక్ తీయకుండానే కొనసాగించాలా?</translation>
 <translation id="9022774213089566801">తరచుగా సందర్శించినవి</translation>
 <translation id="9022871169049522985">సైట్‌లు, అడ్వర్టయిజర్‌లు, వారి యాడ్‌ల పనితీరును అంచనా వేయగలరు</translation>
+<translation id="9027728231343310283"><ph name="SITE" /> చర్యరద్దు చేయండి</translation>
 <translation id="9035378196785279980">అక్కడికి తరలించండి</translation>
 <translation id="9042893549633094279">గోప్యత, సెక్యూరిటీ</translation>
 <translation id="9047347135558855162">Chromeలో త్వరగా సెర్చ్ చేయడం ప్రారంభించండి</translation>

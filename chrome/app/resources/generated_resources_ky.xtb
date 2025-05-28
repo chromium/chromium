@@ -10017,6 +10017,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="8073499153683482226"><ph name="BEGIN_PARAGRAPH1" />Колдонмо дайындарына иштеп чыгуучунун параметрлеринин негизинде сакталган бардык нерселер, анын ичинде байланыштар, билдирүүлөр жана сүрөттөр сыяктуу дайындар кириши мүмкүн.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Дайындардын камдык көчүрмөлөрү балаңыздын Drive сактагычынан орун ээлебейт.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />Бул кызматты жөндөөлөрдөн өчүрсөңүз болот.<ph name="END_PARAGRAPH3" /></translation>
+<translation id="8075044377771022666">Төмөнкү колонтитул</translation>
 <translation id="8076835018653442223">Түзмөгүңүздөгү файлдарды пайдалануу мүмкүнчүлүгүн администраторуңуз өчүрүп койгон</translation>
 <translation id="8077120325605624147">Сиз кирген бардык сайттар каалаган жарнаманы көрсөтө алышат</translation>
 <translation id="8077579734294125741">Башка Chrome профилдери</translation>
@@ -10882,7 +10883,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="8685882652128627032">Сайттан издөөнү кошуу диалогун ачуу үчүн чыкылдатыңыз</translation>
 <translation id="8686142379631285985"><ph name="BEGIN_BOLD" /><ph name="DRIVE_ACCOUNT_EMAIL" /><ph name="END_BOLD" /> катары кирдиңиз</translation>
 <translation id="8687103160920393343"><ph name="FILE_NAME" /> файлын жүктөп алууну токтотуу</translation>
-<translation id="8687527282898211955">PIN кодду коюңуз</translation>
+<translation id="8687527282898211955">PIN код коюңуз</translation>
 <translation id="8688672835843460752">Бош</translation>
 <translation id="8689811383248488428">Четке кагып, профилди жабуу</translation>
 <translation id="8689998525144040851">100</translation>

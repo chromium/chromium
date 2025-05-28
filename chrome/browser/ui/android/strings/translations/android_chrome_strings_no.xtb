@@ -1440,6 +1440,7 @@ For å endre denne innstillingen, <ph name="BEGIN_LINK" />slett Chrome-dataene i
 <translation id="7431991332293347422">Kontroller hvordan nettleserloggen din brukes til blant annet personlig tilpasning av søk</translation>
 <translation id="7435356471928173109">Slått av av administratoren din</translation>
 <translation id="7437998757836447326">Logg av Chrome</translation>
+<translation id="7439467816829380878">Flytt fanen til en gruppe</translation>
 <translation id="7453810262525006706">Skjul til sidevisning</translation>
 <translation id="7454641608352164238">Det er ikke nok plass</translation>
 <translation id="7454744349230173024">Organisasjonen din har slått av lagring av passord</translation>
@@ -1815,6 +1816,7 @@ For å endre denne innstillingen, <ph name="BEGIN_LINK" />slett Chrome-dataene i
 <translation id="9019199799064251516">Vil du fortsette uten profillås for bilen?</translation>
 <translation id="9022774213089566801">Ofte besøkte</translation>
 <translation id="9022871169049522985">Nettsteder og annonsører kan måle annonseresultater sine</translation>
+<translation id="9027728231343310283">Angre <ph name="SITE" /></translation>
 <translation id="9035378196785279980">Flytt til\u2026</translation>
 <translation id="9042893549633094279">Personvern og sikkerhet</translation>
 <translation id="9047347135558855162">Start et søk raskt i Chrome</translation>

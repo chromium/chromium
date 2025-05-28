@@ -96,7 +96,7 @@
 <translation id="1377508275003315939">密码</translation>
 <translation id="1381022135873211423">{count,plural, =1{第 {position} 个地址，共 {count} 个}other{第 {position} 个地址，共 {count} 个}}</translation>
 <translation id="1383876407941801731">搜索</translation>
-<translation id="138618066238211776">继续以<ph name="USER_NAME" />的身份登录</translation>
+<translation id="138618066238211776">以<ph name="USER_NAME" />的身份继续</translation>
 <translation id="138692594145659985">卡片保存选项</translation>
 <translation id="1396260204083880024">目前登录的用户名是<ph name="USER_NAME" />，账号是 <ph name="USER_EMAIL" />。打开账号菜单。</translation>
 <translation id="1397144142234474689">隐藏历史记录</translation>
@@ -294,7 +294,7 @@
 <translation id="2164946989711475905">登录…</translation>
 <translation id="2175927920773552910">二维码</translation>
 <translation id="218350106843433823">自动填充密码和通行密钥</translation>
-<translation id="2184272387334793084">登录后即可将您的密码等信息同步到您的所有设备上</translation>
+<translation id="2184272387334793084">登录后即可将密码等信息同步到您的所有设备上</translation>
 <translation id="2186206192313702726">Google 智能镜头</translation>
 <translation id="219283042927675668">分组内的标签页</translation>
 <translation id="2194856509914051091">注意事项</translation>
@@ -383,6 +383,7 @@
 <translation id="2513103768503127042">您的标签页分组会显示在此处</translation>
 <translation id="251837347827266434">您将退出账号，标签页将被关闭，而且浏览数据将被删除</translation>
 <translation id="2520787026086861736">如需关闭此功能，请前往<ph name="BEGIN_LINK" />自动填充与密码<ph name="END_LINK" />部分</translation>
+<translation id="2523295204312809179">关闭标签页分组后，系统会自动将其保存在此处</translation>
 <translation id="2529021024822217800">全部打开</translation>
 <translation id="2536991091671391962">您可在任何设备上使用保存的密码。系统会将密码保存到 <ph name="EMAIL" /> 的 Google 密码管理工具中。</translation>
 <translation id="2538103551183528357">目前为隐藏状态的密码</translation>
@@ -440,7 +441,7 @@
 <translation id="2761788987260570878">拍摄要搜索的内容</translation>
 <translation id="2761898608071930085">使用另一账号</translation>
 <translation id="2762000892062317888">刚刚</translation>
-<translation id="2772667768515195373">您可在各种 Google 产品中使用已保存的地址。这个地址已保存到您的 Google 账号 <ph name="USER_EMAIL" /> 中。</translation>
+<translation id="2772667768515195373">您可在各种 Google 产品中使用已保存的地址。这个地址已保存到您的 Google 账号 <ph name="USER_EMAIL" />。</translation>
 <translation id="2773344962924806829">邮件通知</translation>
 <translation id="2781331604911854368">已开启</translation>
 <translation id="2781692009645368755">Google Pay</translation>
@@ -802,7 +803,7 @@
 <translation id="4331177082088332784">您可以在BEGIN_LINK内容设置END_LINK中管理此设置</translation>
 <translation id="4334428914252001502">有 1 篇未读文章。</translation>
 <translation id="4338258232580025606">无法登录</translation>
-<translation id="4338650699862464074">将您所访问的网页的网址发送给 Google。</translation>
+<translation id="4338650699862464074">将您访问的网页网址发送给 Google。</translation>
 <translation id="4342946437867096381">您已在 Google 账号中保存了一个用于登录此网站的密码。Google 可为您选择保存最新的密码。</translation>
 <translation id="4365121137632832185">标签页分组，已展开。</translation>
 <translation id="4367971618859387374">显示名称</translation>
@@ -873,7 +874,7 @@
 <translation id="4642472735733036929">已停止跟踪价格</translation>
 <translation id="4645575059429386691">由您父母管理</translation>
 <translation id="4647758699119474035">目前登录的用户名是<ph name="USER_NAME" />，账号是 <ph name="USER_EMAIL" />。Google 账号错误，打开账号菜单。</translation>
-<translation id="4650125387981512669">继续以<ph name="FIRST_RUN_ACCOUNT_NAME" />的身份登录</translation>
+<translation id="4650125387981512669">以<ph name="FIRST_RUN_ACCOUNT_NAME" />的身份继续</translation>
 <translation id="4651927776207937667">{count,plural, =1{1 分钟后隐藏}other{{count} 分钟后隐藏}}</translation>
 <translation id="4652817563047461855">确保密码安全，检查密码是否遭泄露，并了解如何保障上网安全。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
 <translation id="4658335131052370646">保存</translation>
@@ -923,7 +924,7 @@
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} 以及另外 1 个}other{{domain} 以及另外 {count} 个}}</translation>
 <translation id="4826588772550366629">摄像头和麦克风</translation>
 <translation id="4828431027673677473">根据您的兴趣推荐的商品</translation>
-<translation id="4833786495304741580">自动将使用情况统计信息和崩溃报告发送至 Google。</translation>
+<translation id="4833786495304741580">自动将使用情况统计信息和崩溃报告发送给 Google。</translation>
 <translation id="483689884442613745">保存…</translation>
 <translation id="4840495572919996524">您的书签、历史记录、密码和其他信息将不再同步到您的 Google 账号中。</translation>
 <translation id="484280513275854557">您已退出账号；浏览数据已被删除</translation>
@@ -1035,6 +1036,7 @@
 <translation id="5275912569557792098"><ph name="USER_NAME" /> (<ph name="USER_EMAIL" />) 邀请您加入一个标签页分组。知道链接的任何人都能修改所有标签页，因此请谨慎加入。链接将在 48 小时后失效。</translation>
 <translation id="5279600392753459966">全部屏蔽</translation>
 <translation id="5282340693022193851">若要接收价格跟踪通知，请在 iOS 设置中开启通知功能。</translation>
+<translation id="528857768909044842">标签页分组会保存在此处</translation>
 <translation id="5294624619177114121">移动设备通知</translation>
 <translation id="5295239312320826323">移除账号 <ph name="USER_EMAIL" />？</translation>
 <translation id="5300589172476337783">显示</translation>
@@ -1230,6 +1232,7 @@
 <translation id="6100617279104942061">您目前登录的账号为 <ph name="USER_EMAIL" />。打开“设置”。</translation>
 <translation id="6103540626693881831">设备端加密</translation>
 <translation id="611361228753138223">您最近在此设备上访问过的网站</translation>
+<translation id="611705554202268369">长按即可添加到标签页分组</translation>
 <translation id="6122191549521593678">在线</translation>
 <translation id="6122831415929794347">要关闭“安全浏览”功能吗？</translation>
 <translation id="6123514585040403489">标签页将被关闭</translation>
@@ -1855,6 +1858,7 @@
 <translation id="8535368836838588657">显示密码</translation>
 <translation id="8545276357312221485">检查默认浏览器设置</translation>
 <translation id="854938212724803178">发现有 1 个密码已泄露。建议立即更改密码，确保安全。</translation>
+<translation id="8551311254462607218">在地址栏中，点按“Google 智能镜头”相机图标</translation>
 <translation id="8556590991644167667">{count,plural, =1{您忽略了 {count} 条警告}other{您忽略了 {count} 条警告}}</translation>
 <translation id="8558046478684552694">关闭分组。</translation>
 <translation id="8560253818350321773">将常用项显示在最前面。</translation>
@@ -1998,6 +2002,7 @@
 <translation id="9032405509996909363">确认删除浏览数据</translation>
 <translation id="9039373489628511875">带宽</translation>
 <translation id="9042893549633094279">隐私与安全</translation>
+<translation id="9055291197094969722">创建标签页分组即可整理打开的标签页，并保持高效</translation>
 <translation id="9055580485132823283">您即将删除 {password_count} 个密码、{passkey_count} 个通行密钥以及您选择一律不保存登录信息的网站和应用列表。您为网站和应用创建的任何账号都不会被删除。</translation>
 <translation id="9057030985451135243">了解分享的标签页分组</translation>
 <translation id="9057972802061533987">无法关注。出了点问题。</translation>

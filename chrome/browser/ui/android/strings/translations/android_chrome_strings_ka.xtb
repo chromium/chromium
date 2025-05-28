@@ -375,6 +375,7 @@
 <translation id="2718352093833049315">მხოლოდ Wi-Fi-ით</translation>
 <translation id="2718846868787000099">კონტენტის თქვენთვის სასურველ ენებზე რომ გამოჩნდეს, თქვენ მიერ მონახულებული საიტებისთვის ხელმისაწვდომი იქნება თქვენი უპირატესი პარამეტრები</translation>
 <translation id="2723001399770238859">აუდიო</translation>
+<translation id="2734335652257251631">წაკითხვის რეჟიმის ჩვენება</translation>
 <translation id="2739887572830526131">შეინარჩუნეთ ეს ჯგუფი, რომ მოგვიანებით დაამატოთ ჩანართები, ან წაშალეთ, თუ აღარ გჭირდებათ.</translation>
 <translation id="2742373789128106053"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ამჟამად მიუწვდომელია.</translation>
 <translation id="2760805590727089264">თთ / წწ</translation>
@@ -1439,6 +1440,7 @@
 <translation id="7431991332293347422">მართეთ თქვენი დათვალიერების ისტორიის გამოყენების ხერხები Search-ისა და სხვა სერვისების პერსონალიზებისთვის</translation>
 <translation id="7435356471928173109">გამორთულია თქვენი ადმინისტრატორის მიერ</translation>
 <translation id="7437998757836447326">Chrome-დან გამოსვლა</translation>
+<translation id="7439467816829380878">ჩანართის გადატანა ჯგუფში</translation>
 <translation id="7453810262525006706">გვერდით ხედზე ჩაკეცვა</translation>
 <translation id="7454641608352164238">მეხსიერება არასაკმარისია</translation>
 <translation id="7454744349230173024">თქვენმა ორგანიზაციამ გამორთო პაროლების შენახვა</translation>
@@ -1744,6 +1746,7 @@
 <translation id="8676789164135894283">დადასტურება შესვლისთვის</translation>
 <translation id="8683039184091909753">სურათი</translation>
 <translation id="8688183792442786085"><ph name="TAB_TITLE" />, არჩეული ჩანართი</translation>
+<translation id="8693232767599693749">გსურთ წაკითხვის რეჟიმის ნახვა?</translation>
 <translation id="8697753151306746444">ფანჯრის ან ეკრანის გაზიარება</translation>
 <translation id="869891660844655955">ვადის გასვლის თარიღი</translation>
 <translation id="8699120352855309748">ამ ენების თარგმნის შემოთავაზების აკრძალვა</translation>

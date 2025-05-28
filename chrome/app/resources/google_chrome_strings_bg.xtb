@@ -506,7 +506,6 @@
 <translation id="7572537927358445944">Изключено • Chrome не може да потвърди източника на това разширение</translation>
 <translation id="7583399374488819119">Инсталационна програма за <ph name="COMPANY_NAME" /></translation>
 <translation id="7606334485649076285">Google ChromeOS Flex</translation>
-<translation id="7626032353295482388">Добре дошли в Chrome</translation>
 <translation id="7626072681686626474"><ph name="MANAGER" /> изисква да прочетете и приемете следните Общи условия, преди да използвате това устройство. Те не разширяват, не променят, нито ограничават Общите условия на Google Chrome OS.</translation>
 <translation id="7629695634924605473">Chrome ви уведомява, ако паролите ви бъдат компрометирани</translation>
 <translation id="7641148173327520642">Системният ви администратор е конфигурирал Google Chrome да отваря <ph name="ALTERNATIVE_BROWSER_NAME" /> за достъп до <ph name="TARGET_URL_HOSTNAME" />.</translation>
@@ -626,6 +625,7 @@
 <translation id="9090566250983691233">Научете защо Chrome блокира някои файлове</translation>
 <translation id="9106236359747881194">Избиране на текст за търсене</translation>
 <translation id="911206726377975832">Да се изтрият ли и данните от сърфирането?</translation>
+<translation id="9134482777260927479">Помощ за домашна работа</translation>
 <translation id="9138603949443464873">За да приложите промените си, рестартирайте Chrome</translation>
 <translation id="9148058034647219655">Изход</translation>
 <translation id="9195993889682885387">Chrome може да прогнозира интересите ви въз основа на историята ви на сърфиране от последните няколко седмици. Тази информация не напуска устройството ви.</translation>

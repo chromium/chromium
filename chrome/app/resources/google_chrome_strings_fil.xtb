@@ -318,6 +318,7 @@ Maaaring hindi available ang ilang tampok at hindi mase-save ang mga pagbabago s
 <translation id="4970880042055371251">Bersyon ng ChromeOS</translation>
 <translation id="4990567037958725628">Google Chrome Canary</translation>
 <translation id="5003967926796347400">I-click ang “Google Password Manager”</translation>
+<translation id="504867494566807945">Magbukas ng mga link sa Chrome mula sa anumang app. Para sa madaling pag-access, ipi-pin ito sa iyong taskbar.</translation>
 <translation id="5114340746415930644">Ilagay ang iyong passphrase para magamit at ma-save ang data sa Chrome sa account mong <ph name="USER_EMAIL" /></translation>
 <translation id="5120334927898581447">Mag-sign in sa Chrome kapag nag-sign in ka sa iba pang serbisyo ng Google</translation>
 <translation id="5126049312684316860">Nagpi-preload ang Chrome ng mas marami pang page na malamang na bibisitahin mo, para mas mabilis na mag-load ang mga ito kapag binisita mo</translation>
@@ -398,6 +399,7 @@ Hindi magawang bawiin ng Google Chrome ang iyong mga setting.</translation>
 <translation id="6075300983329039771">Nire-require ka ng iyong organisasyong <ph name="MANAGER" /> na mag-sign in sa Chrome</translation>
 <translation id="6113794647360055231">Mas mahusay na ang Chrome</translation>
 <translation id="6116252277240876590">Ginagamit ang wikang ito para magpakita ng mga menu, setting, alerto, at iba pang text sa Chrome</translation>
+<translation id="6127237283587442951">Gamitin ang Chrome bilang default at i-pin ito</translation>
 <translation id="6134085236017727171">Para magamit ang iyong mikropono, bigyan ng access ang Chrome sa <ph name="BEGIN_LINK" />mga setting ng system<ph name="END_LINK" /></translation>
 <translation id="6135456723633883042">Gumagamit ang mga tab na ito ng mga karagdagang resource. Para pahusayin ang iyong performance, hayaan ang Chrome na gawing hindi aktibo ang mga ito.</translation>
 <translation id="6145313976051292476">Magbukas ng mga PDF sa Chrome</translation>
@@ -512,7 +514,6 @@ Hindi magawang bawiin ng Google Chrome ang iyong mga setting.</translation>
 <translation id="7572537927358445944">Naka-off • Hindi ma-verify ng Chrome kung saan galing ang extension na ito</translation>
 <translation id="7583399374488819119">Installer ng <ph name="COMPANY_NAME" /></translation>
 <translation id="7606334485649076285">Google ChromeOS Flex</translation>
-<translation id="7626032353295482388">Welcome sa Chrome</translation>
 <translation id="7626072681686626474">Kinakailangan ng <ph name="MANAGER" /> na basahin mo at tanggapin ang sumusunod na Mga Tuntunin ng Serbisyo bago gamitin ang device na ito. Hindi pinapalawak, binabago o nililimitahan ng mga tuntuning ito ang Mga Tuntunin ng Google ChromeOS.</translation>
 <translation id="7629695634924605473">Ipinapaalam sa iyo ng Chrome kung nakompromiso ang mga password mo</translation>
 <translation id="7641148173327520642">Na-configure ng iyong system administrator ang Google Chrome para buksan ang <ph name="ALTERNATIVE_BROWSER_NAME" /> para ma-access ang <ph name="TARGET_URL_HOSTNAME" />.</translation>
@@ -632,6 +633,7 @@ Hindi magawang bawiin ng Google Chrome ang iyong mga setting.</translation>
 <translation id="9090566250983691233">Alamin kung bakit bina-block ng Chrome ang ilang file</translation>
 <translation id="9106236359747881194">Piliin ang text para maghanap</translation>
 <translation id="911206726377975832">Tatanggalin din ang iyong data sa pag-browse?</translation>
+<translation id="9134482777260927479">Tulong sa homework</translation>
 <translation id="9138603949443464873">Para ilapat ang iyong mga pagbabago, muling ilunsad ang Chrome</translation>
 <translation id="9148058034647219655">Lumabas</translation>
 <translation id="9195993889682885387">Puwedeng tantyahin ng Chrome ang iyong mga interes batay sa history ng pag-browse mo mula sa mga nakalipas na ilang linggo. Mananatili ang impormasyong ito sa iyong device.</translation>

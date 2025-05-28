@@ -761,6 +761,7 @@
 <translation id="3552189655002856821">Wi-Fi ක්‍රියාවිරහිත කර ඇත</translation>
 <translation id="3554215588514239132">සංවර්ධක මෙවලම් පැනලය පෙන්වන්න හෝ සඟවන්න</translation>
 <translation id="3554637740840164787"><ph name="ITEM_TITLE" /> අමුණා ඇත</translation>
+<translation id="3554928024630051016">අතිරේක USB උපාංග එක් කිරීමට, එකක් ඉවත් කර නව එකක් පේනු වැද්දීමට උත්සාහ කරන්න</translation>
 <translation id="3558768885091059911">කැමරාව සහ මයික්‍රෆෝන ප්‍රවේශය ක්‍රියාත්මක කරන්න ද?</translation>
 <translation id="3560174576767922131">වීඩියෝව පටිගත කරන්න</translation>
 <translation id="3563775809269155755">හොට්ස්පොට් සබල කරන්න</translation>
@@ -868,6 +869,7 @@
 <translation id="3861651314799684201">සම්පූර්ණ තිරය පටිගත කිරීමට Enter ඔබන්න</translation>
 <translation id="3870197372373144624">ඔබේ උපාංගය වසා දැමීමට උත්සාහ කරන්න.</translation>
 <translation id="3879748587602334249">බාගැනීමේ කළමනාකරු</translation>
+<translation id="3884007280698606545">USB සීමාවට ළඟා විය</translation>
 <translation id="3886872229787704059">අද විවෘත කරන ලදි</translation>
 <translation id="3891340733213178823">වැරිමට Ctrl+Shift+Q දෙසැරයක් ඔබන්න.</translation>
 <translation id="3892148308691398805">පෙළ පිටපත් කරන්න</translation>
@@ -1451,7 +1453,6 @@
 <translation id="5691772641933328258">ඇඟිලි සලකුණ හඳුනා නොගැනිණි</translation>
 <translation id="5693255400847650006">මයික්‍රෆෝනය භාවිතා වේ</translation>
 <translation id="5699366815052349604">සියලු මේසවලට සක්‍රිය කවුළුව පවරන්න</translation>
-<translation id="5701785125601597013">Phone Hub භාවිත කර ඔබේ දුරකථනයේ පණිවුඩ ඉක්මනින් යවන්න හෝ පිළිතුරු දෙන්න.</translation>
 <translation id="570390244361237317">සියලු යෙදුම්, සියලු යෙදුම් වෙත ප්‍රවේශ වීමට ඊතල යතුරු සමඟ සංචාලනය කරන්න</translation>
 <translation id="5705197514573687092">අවධාන සැකසීම් පෙන්වන්න. මුහූර්තකය <ph name="FOCUS_DURATION" /> ලෙස සකසන ලදි</translation>
 <translation id="5707775774148071965">ඔබගේ උපාංගය ඔබගේ කේබලයට වඩා ඉහළ දත්ත අනුපාතයකට සහාය දක්වයි. උපාංග කාර්ය සාධනය සීමා විය හැකිය.</translation>

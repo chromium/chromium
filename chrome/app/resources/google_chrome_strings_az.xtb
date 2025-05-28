@@ -508,7 +508,6 @@ Bəzi funksiyalar əlçatmaz ola bilər. Xüsusi profil direktoriyası göstəri
 <translation id="7572537927358445944">Sönülü • Chrome bu artırmanın mənbəyini doğrulaya bilmir</translation>
 <translation id="7583399374488819119"><ph name="COMPANY_NAME" /> Quraşdırıcısı</translation>
 <translation id="7606334485649076285">Google ChromeOS Flex</translation>
-<translation id="7626032353295482388">Chrome'a xoş gəlmisiniz</translation>
 <translation id="7626072681686626474"><ph name="MANAGER" /> bu cihazı istifadə etməzdən əvvəl aşağıdakı Xidmət Şərtlərini oxumağınızı və qəbul etməyinizi tələb edir. Bu şərtlər Google ChromeOS Şərtlərini artırmır, dəyişdirmir və ya məhdudlaşdırmır.</translation>
 <translation id="7629695634924605473">Chrome parollarınızın oğurlanıb-oğurlanmadığı haqqında Sizə məlumat verir</translation>
 <translation id="7641148173327520642">Sistem administratorunun konfiqurasiyasına əsasən Google Chrome <ph name="TARGET_URL_HOSTNAME" /> ünvanına daxil olmaq üçün <ph name="ALTERNATIVE_BROWSER_NAME" /> tətbiqini aça bilər.</translation>
@@ -628,6 +627,7 @@ Bəzi funksiyalar əlçatmaz ola bilər. Xüsusi profil direktoriyası göstəri
 <translation id="9090566250983691233">Chrome-un bəzi faylları bloklama səbəbini öyrənin</translation>
 <translation id="9106236359747881194">Axtarmaq üçün mətn seçin</translation>
 <translation id="911206726377975832">Brauzinq datanız da silinsin?</translation>
+<translation id="9134482777260927479">Ev tapşırığı ilə bağlı yardım</translation>
 <translation id="9138603949443464873">Dəyişiklikləri tətbiq etmək üçün Chrome'u yenidən başladın</translation>
 <translation id="9148058034647219655">Çıxış</translation>
 <translation id="9195993889682885387">Chrome son bir neçə həftədəki baxış tarixçənizə əsasən maraqlarınızı təxmin edə bilər. Bu məlumat cihazınızda qalır.</translation>

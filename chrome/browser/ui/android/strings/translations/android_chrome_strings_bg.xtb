@@ -375,6 +375,7 @@
 <translation id="2718352093833049315">Само при Wi-Fi</translation>
 <translation id="2718846868787000099">Сайтовете, които посещавате, могат да виждат предпочитанията ви, за да ви показват съдържание на предпочитаните от вас езици</translation>
 <translation id="2723001399770238859">звук</translation>
+<translation id="2734335652257251631">Показване на режима на четене</translation>
 <translation id="2739887572830526131">Запазете тази група, за да добавяте раздели по-късно, или я изтрийте, ако вече не ви е нужна.</translation>
 <translation id="2742373789128106053">В момента <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> не е налице.</translation>
 <translation id="2760805590727089264">ММ/ГГ</translation>
@@ -1744,6 +1745,7 @@
 <translation id="8676789164135894283">Потвърждения при вход</translation>
 <translation id="8683039184091909753">изображение</translation>
 <translation id="8688183792442786085"><ph name="TAB_TITLE" /> – избран раздел</translation>
+<translation id="8693232767599693749">Искате ли да прегледате режима на четене?</translation>
 <translation id="8697753151306746444">Вместо това споделяне на прозорец или екран</translation>
 <translation id="869891660844655955">Дата на валидност</translation>
 <translation id="8699120352855309748">Да не се предлага превод от тези езици</translation>
@@ -1813,6 +1815,7 @@
 <translation id="9019199799064251516">Искате ли да продължите без опция за заключване на потребителския профил за автомобила?</translation>
 <translation id="9022774213089566801">Често посещавани</translation>
 <translation id="9022871169049522985">Сайтовете и рекламодателите могат да измерват ефективността на рекламите си</translation>
+<translation id="9027728231343310283">Отмяна на <ph name="SITE" /></translation>
 <translation id="9035378196785279980">Преместване във\u2026</translation>
 <translation id="9042893549633094279">Поверителност и сигурност</translation>
 <translation id="9047347135558855162">Бързо стартиране на търсене в Chrome</translation>

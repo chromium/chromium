@@ -4705,6 +4705,7 @@
 <translation id="4275397969489577657">イベント ストリームのログを有効にする</translation>
 <translation id="4275788652681621337">サイドパネルを閉じる</translation>
 <translation id="4275830172053184480">デバイスの再起動</translation>
+<translation id="4276598757692536305">プリンタの PPD</translation>
 <translation id="4276856098224910511">インストールできません。OS のアップデートが保留中です。保留中の OS アップデートをすべて適用し、再起動してからもう一度お試しください。エラーコード: <ph name="ERROR" />。</translation>
 <translation id="4277434192562187284">XML 構成の参照元</translation>
 <translation id="4278348589087554892">{NUM_SITES,plural, =1{1 件のサイトから権限を削除しました}other{{NUM_SITES} 件のサイトから権限を削除しました}}</translation>
@@ -6049,7 +6050,7 @@
 <translation id="5242724311594467048">「<ph name="EXTENSION_NAME" />」を有効にしますか？</translation>
 <translation id="5243522832766285132">しばらくしてからもう一度お試しください</translation>
 <translation id="5244234799035360187">ファイル アプリに OneDrive が表示されるようになります</translation>
-<translation id="5244466461749935369">今は残す</translation>
+<translation id="5244466461749935369">まだ削除しない</translation>
 <translation id="5244474230056479698"><ph name="EMAIL" /> に同期しています</translation>
 <translation id="5245610266855777041">学校用アカウントのご利用開始</translation>
 <translation id="5246282308050205996"><ph name="APP_NAME" /> がクラッシュしました。このバルーンをクリックして再起動してください。</translation>

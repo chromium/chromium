@@ -367,6 +367,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="1612199629998703524">Valdyti temas</translation>
 <translation id="1615178538289490617">Anuliuoti prieigą prie „<ph name="PORT_NAME" />“</translation>
 <translation id="1615402009686901181">Remiantis administratoriaus politika, negalima užfiksuoti ekrano, jei matomas konfidencialus turinys</translation>
+<translation id="161612500287664753">Paklauskite „Google“ paieškos apie šį puslapį</translation>
 <translation id="1617276713587758852">Krosoveriai</translation>
 <translation id="1619007254056372606">Įrenginyje esančių svetainių duomenų tvarkymas</translation>
 <translation id="1619648179761984213"><ph name="USER_DISPLAY_NAME" /> pašalino skirtuką</translation>
@@ -1509,6 +1510,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="3586931643579894722">Slėpti išsamią informaciją</translation>
 <translation id="3587725436724465984">Organizacija nustatė, kad svetainėje <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> galbūt pažeidžiamos politikos nuostatos. <ph name="BEGIN_LEARN_MORE_LINK" />Sužinokite daugiau apie šį perspėjimą<ph name="END_LEARN_MORE_LINK" />.</translation>
 <translation id="3587738293690942763">Vidurys</translation>
+<translation id="3589519427766620380">Paklauskite „Google Lens“ apie šį puslapį</translation>
 <translation id="3596918995172292499">Numerio lentelės būsena</translation>
 <translation id="3600106876108433070">Sužinokite apie palyginimo lenteles</translation>
 <translation id="3600246354004376029">„<ph name="TITLE" />“, <ph name="DOMAIN" />, <ph name="TIME" /></translation>
@@ -3445,6 +3447,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="6925267999184670015">Šiaurės Amerikos B+</translation>
 <translation id="6926216138694948720">Kūno menas</translation>
 <translation id="692638818576287323">Komerciniai automobiliai</translation>
+<translation id="6930607614725241390">Paieška šoniniame skydelyje</translation>
 <translation id="6934236486840930310"><ph name="BEGIN_BOLD" />Naudodami numatytąjį paieškos variklį galite ieškoti žiniatinklyje ir naudoti „Chrome“ funkcijas<ph name="END_BOLD" />, pvz., paiešką iš adreso juostos ir vaizdų tinklalapiuose. Funkcija gali būti nepasiekiama, jei paieškos variklis jos nepalaiko.</translation>
 <translation id="6934672428414710184">Šis vardas yra iš jūsų „Google“ paskyros</translation>
 <translation id="6935077351544118151">Dabar galite automatiškai pildyti lojalumo korteles iš „Google Wallet“</translation>

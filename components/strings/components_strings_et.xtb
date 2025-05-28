@@ -2450,6 +2450,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="519422657042045905">Märkuste lisamise funktsioon ei ole saadaval</translation>
 <translation id="5200063972779787617">Salvestage aadress kontole</translation>
 <translation id="5201306358585911203">Selle lehe manustatud leht ütleb</translation>
+<translation id="5203716867500274632">Teie administraator lubas teie ChromeOS-i seadmetes eelmise ja praeguse seansi vahel sünkroonida järgmised andmed.</translation>
 <translation id="5205114269877707377"><ph name="OMNIBOX_ACTION_FOCUSED_FRIENDLY_MATCH_TEXT" />, vajutage saadaolevate toimingute sirvimiseks tabulaatorit, seejärel valitud toimingu käivitamiseks sisestusklahvi.</translation>
 <translation id="5205222826937269299">Nimi on nõutav</translation>
 <translation id="5206392433295093945">Magamistuba</translation>
@@ -2609,6 +2610,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="5472588168895083535">Käeliigutuste jälgimine on blokeeritud</translation>
 <translation id="547963486735802022">Proovige oma failid uuesti üle kanda</translation>
 <translation id="5481076368049295676">See sisu võib üritada installida teie seadmesse ohtlikku tarkvara, mis varastab või kustutab teie teavet. <ph name="BEGIN_LINK" />Kuva ikkagi<ph name="END_LINK" />.</translation>
+<translation id="5481604577800516617">Akende ja vahelehtede ümberpaigutamine</translation>
 <translation id="5481682542063333508">Paku kirjutamisel abi</translation>
 <translation id="54817484435770891">Sisestage sobiv aadress</translation>
 <translation id="5483838506518938965">Olete valmis</translation>
@@ -4284,6 +4286,7 @@ Lisateave:
 <translation id="8352849934814541340">Seadme administraator on installinud rakendused, mis hõlmavad lisafunktsioone. Rakendustel on juurdepääs teie mõningatele andmetele.</translation>
 <translation id="8355270400102541638">Kohaliku kokkujooksmise kontekst:</translation>
 <translation id="8363502534493474904">Lülitage lennurežiim välja</translation>
+<translation id="8363929499301563123">Veebisaidi küpsised (säilitatakse hiljuti külastatud veebisaitide sisselogitud olek)</translation>
 <translation id="8364627913115013041">Määramata.</translation>
 <translation id="8366057325711477500">Maailma uudised</translation>
 <translation id="836616551641291797">Lugege lisateavet brauseri haldamise kohta</translation>

@@ -352,7 +352,7 @@ Solo las personas que tengan tu frase de contraseña podrán leer tus datos cifr
 <translation id="260403163289591229">Siguiendo</translation>
 <translation id="2604446170045642109">Puedes desactivar el tema oscuro para los sitios en tus ajustes.</translation>
 <translation id="2607441479295509868">Se ha cerrado la sesión. Vuelve a iniciarla para usar los marcadores, las contraseñas y más en tu cuenta.</translation>
-<translation id="2612676031748830579">Número de la tarjeta</translation>
+<translation id="2612676031748830579">Número de tarjeta</translation>
 <translation id="2620314865574742210"><ph name="NAME" /> te ha invitado a acceder a un elemento compartido.</translation>
 <translation id="2625189173221582860">Se ha copiado la contraseña</translation>
 <translation id="2630630219780173487">Puedes impedir que estos sitios envíen más notificaciones</translation>
@@ -1815,6 +1815,7 @@ Para cambiar este ajuste, <ph name="BEGIN_LINK" />elimina los datos de Chrome de
 <translation id="9019199799064251516">¿Continuar sin un bloqueo de perfil del coche?</translation>
 <translation id="9022774213089566801">Visitados con frecuencia</translation>
 <translation id="9022871169049522985">Los sitios y los anunciantes pueden medir el rendimiento de sus anuncios</translation>
+<translation id="9027728231343310283">Deshacer <ph name="SITE" /></translation>
 <translation id="9035378196785279980">Mover a\u2026</translation>
 <translation id="9042893549633094279">Privacidad y seguridad</translation>
 <translation id="9047347135558855162">Inicia una búsqueda rápida en Chrome</translation>

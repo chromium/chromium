@@ -437,7 +437,7 @@
 <translation id="6712881677154121168">Ошибка при скачивании: <ph name="DOWNLOAD_ERROR" />.</translation>
 <translation id="6718739135284199302">Chrome может работать ещё быстрее</translation>
 <translation id="6735387454586646204">Система Chrome OS Flex</translation>
-<translation id="6750954913813541382">Для проверки правописания Chrome отправляет в Google текст, который вы вводите в браузере.</translation>
+<translation id="6750954913813541382">Для проверки правописания Chrome отправляет в Google текст, который вы вводите в браузере</translation>
 <translation id="677276454032249905">Закрыть Chrome?</translation>
 <translation id="6794858689789885890">Всегда удалять с устройства данные сайтов при закрытии Chrome</translation>
 <translation id="6831043979455480757">Перевести</translation>
@@ -503,7 +503,6 @@
 <translation id="7572537927358445944">Отключено • Chrome не может проверить происхождение расширения</translation>
 <translation id="7583399374488819119">Установщик <ph name="COMPANY_NAME" /></translation>
 <translation id="7606334485649076285">Google Chrome OS Flex</translation>
-<translation id="7626032353295482388">Добро пожаловать в Chrome!</translation>
 <translation id="7626072681686626474">Согласно действующим правилам <ph name="MANAGER" />, до начала работы с устройством необходимо ознакомиться с приведенными ниже Условиями использования и принять их. Они не дополняют, не заменяют и не ограничивают Условия использования Google Chrome OS.</translation>
 <translation id="7629695634924605473">Chrome сообщит вам, если возникнет проблема с безопасностью ваших паролей.</translation>
 <translation id="7641148173327520642">Ваш системный администратор задал настройки, согласно которым Google Chrome должен запускать <ph name="ALTERNATIVE_BROWSER_NAME" /> для доступа к сайту <ph name="TARGET_URL_HOSTNAME" />.</translation>
@@ -623,6 +622,7 @@
 <translation id="9090566250983691233">Узнайте, почему Chrome блокирует скачивание некоторых файлов</translation>
 <translation id="9106236359747881194">Выберите текст для поиска</translation>
 <translation id="911206726377975832">Также удалить данные о работе в браузере?</translation>
+<translation id="9134482777260927479">Помощь с домашним заданием</translation>
 <translation id="9138603949443464873">Чтобы изменения вступили в силу, перезапустите Chrome.</translation>
 <translation id="9148058034647219655">Выйти</translation>
 <translation id="9195993889682885387">Chrome может предполагать ваши интересы, анализируя историю браузера за последние несколько недель. Эта информация хранится только на вашем устройстве.</translation>

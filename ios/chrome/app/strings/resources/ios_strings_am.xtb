@@ -383,6 +383,7 @@
 <translation id="2513103768503127042">የትር ቡድኖችዎን እዚህ ያገኟቸዋል</translation>
 <translation id="251837347827266434">እርስዎ ዘግተው እንዲወጡ ይደረጋሉ፣ ትሮች ይዘጋሉ፣ የአሰሳ ውሂብ ይሰረዛሉ</translation>
 <translation id="2520787026086861736">ለማጥፋት ወደ <ph name="BEGIN_LINK" />ራስ-ሙላ እና የይለፍ ቃላት<ph name="END_LINK" /> ይሂዱ</translation>
+<translation id="2523295204312809179">የትር ቡድን ሲዘጉ በራስ-ሰር እዚህ ይቀመጣል</translation>
 <translation id="2529021024822217800">ሁሉንም ክፈት</translation>
 <translation id="2536991091671391962">የተቀመጡ የይለፍ ቃላትን በማንኛውም መሣሪያ ላይ መጠቀም ይችላሉ። ለ<ph name="EMAIL" /> ወደ የGoogle የይለፍ ቃል አስተዳዳሪ ተቀምጠዋል።</translation>
 <translation id="2538103551183528357">የተደበቀ፣ የይለፍ ቃል</translation>
@@ -1035,6 +1036,7 @@
 <translation id="5275912569557792098"><ph name="USER_NAME" /> (<ph name="USER_EMAIL" />) እርስዎ የትር ቡድንን እንዲቀላቀሉ ይፈልጋሉ። አገናኙ ያላቸው ማንኛውም ሰው ሁሉንም ትሮች ማርትዕ ይችላሉ፣ ስለዚህ በጥንቃቄ ይቀላቀሉ። አገናኙ በ48 ሰዓት ውስጥ የአገልግሎት ጊዜው ያበቃል።</translation>
 <translation id="5279600392753459966">ሁሉንም አግድ</translation>
 <translation id="5282340693022193851">የዋጋ ክትትል ማሳወቂያዎችን ለማግኘት በእርስዎ iOS ቅንብሮች ውስጥ ማሳወቂያዎችን ያብሩ።</translation>
+<translation id="528857768909044842">የትር ቡድኖች እዚህ ይቀመጣሉ</translation>
 <translation id="5294624619177114121">የሞባይል ማሳወቂያዎች</translation>
 <translation id="5295239312320826323">የ<ph name="USER_EMAIL" /> መለያ ይወገድ?</translation>
 <translation id="5300589172476337783">አሳይ</translation>
@@ -1230,6 +1232,7 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="6100617279104942061">እንደ <ph name="USER_EMAIL" /> ሆነው ገብተዋል። ቅንብሮችን ይከፍታል።</translation>
 <translation id="6103540626693881831">በመሳሪያ ላይ ምስጠራ</translation>
 <translation id="611361228753138223">በዚህ መሣሪያ ላይ በቅርብ ጊዜ የጎበኟቸው ጣቢያዎች</translation>
+<translation id="611705554202268369">ወደ የትር ቡድን ለማከል ረዥም ይጫኑ</translation>
 <translation id="6122191549521593678">መስመር ላይ</translation>
 <translation id="6122831415929794347">የጥንቃቄ አሰሳ ይጥፋ?</translation>
 <translation id="6123514585040403489">ትሮችዎ ይዘጋሉ</translation>
@@ -1855,6 +1858,7 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="8535368836838588657">የይለፍ ቃልን አሳይ</translation>
 <translation id="8545276357312221485">የእርስዎን ነባሪ የአሳሽ ቅንብሮች ይፈትሹ</translation>
 <translation id="854938212724803178">1 የተጠለፈ የይለፍ ቃል አለዎት። ደህንነትዎን እንደተጠበቀ ለማቆየት አሁን ያስተካክሉት።</translation>
+<translation id="8551311254462607218">በአድራሻ አሞሌው ውስጥ የGoogle ሌንስ ካሜራ አዶ ላይ መታ ያድርጉ</translation>
 <translation id="8556590991644167667">{count,plural, =1{{count} ማስጠንቀቂያ አሰናብተዋል}one{{count} ማስጠንቀቂያ አሰናብተዋል}other{{count} ማስጠንቀቂያዎች አሰናብተዋል}}</translation>
 <translation id="8558046478684552694">ቡድንን ዝጋ።</translation>
 <translation id="8560253818350321773">መጀመሪያ ጥቅም ላይ የዋሉ ንጥሎችን ያሳያል።</translation>
@@ -1998,6 +2002,7 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="9032405509996909363">የአሰሳ ውሂብን ሰርዝን ያረጋግጡ</translation>
 <translation id="9039373489628511875">መተላለፊያ ይዘት</translation>
 <translation id="9042893549633094279">ግላዊነት እና ደኅንነት</translation>
+<translation id="9055291197094969722">ክፍት ትሮችዎን ለማደራጀት የትር ቡድኖችን ይፍጠሩ እና ምርታማ ሆነው ይቆዩ</translation>
 <translation id="9055580485132823283">{password_count} የይለፍ ቃሎችን፣ {passkey_count} የይለፍ ቁልፎችን እና በመለያ መግቢያ መረጃን መቼም ላለማስቀመጥ የመረጡባቸውን የጣቢያዎች እና መተግበሪያዎች ዝርዝር ሊሰርዙ ነው። ለጣቢያዎች ወይም ለመተግበሪያዎች የፈጠሩት ማንኛውም መለያ አይሰረዝም።</translation>
 <translation id="9057030985451135243">ስለተጋሩ የትር ቡድኖች የበለጠ ይወቁ</translation>
 <translation id="9057972802061533987">መከተል አልተቻለም። የሆነ ችግር ተፈጥሯል።</translation>

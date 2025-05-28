@@ -222,6 +222,7 @@
 <translation id="4019629340646866719">ChromiumOS tizimini ishlab chiqishda <ph name="BEGIN_LINK_LINUX_OSS" />Linux dasturlash muhiti<ph name="END_LINK_LINUX_OSS" /> <ph name="BEGIN_LINK_CROS_OSS" />ochiq kodli DT<ph name="END_LINK_CROS_OSS" /> vositalaridan foydalanilgan.</translation>
 <translation id="4022972681110646219">Ekrandagi matnni tarjima qilish</translation>
 <translation id="4023601594785368013">Asl tili: <ph name="LANGUAGE" /></translation>
+<translation id="4023845192681161785">Istalgan ilovadagi havolalarni Chromiumda ochish. Shuningdek, uni vazifalar paneliga mahkamlab, tezkor ochish mumkin.</translation>
 <translation id="4036079820698952681">Chromium brauzerining <ph name="BEGIN_LINK" />joriy sozlamalari<ph name="END_LINK" /> asosida hisobot yuboring va brauzerning ishlashini yaxshilashga yordamlashing</translation>
 <translation id="4050175100176540509">So‘nggi versiyada himoya devori yaxshilandi va yangi funksiyalar qo‘shildi.</translation>
 <translation id="4055805654398742145">Parollar menejeri</translation>
@@ -323,6 +324,7 @@
 <translation id="5524890928877629608">qidiruv hududining yuqori chap burchagi: chap <ph name="LEFT" />%, yuqori <ph name="TOP" />%</translation>
 <translation id="5527463683072221100">PDF fayllarni Chromium bilan ochish</translation>
 <translation id="5579324208890605088">Ishga tushirishda xato: oʻrnatish faylini oddiy foydalanuvchi (administrator emas) nomidan ishga tushiring.</translation>
+<translation id="5580770360767802657">Chromiumdan birlamchi holatda foydalanish va uni mahkamlash</translation>
 <translation id="5596627076506792578">Boshqa sozlamalar</translation>
 <translation id="5605834417512968703">Rasm orqali qidirish uchun istalgan obyektni tanlang yoki yopish uchun Espace tugmasini bosing</translation>
 <translation id="5618818588972826921">Rasm orqali qidirish uchun undagi istalgan matn yoki rasmni tanlang yoki Esc tugmasini bosib, qidiruvni yoping</translation>

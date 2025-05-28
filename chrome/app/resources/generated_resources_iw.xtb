@@ -80,6 +80,7 @@
 <translation id="1049743911850919806">גלישה פרטית</translation>
 <translation id="1049795001945932310">הגד&amp;רות שפה</translation>
 <translation id="1050693411695664090">איכות גרועה</translation>
+<translation id="1053226848101751430">הערך נמחק</translation>
 <translation id="1053898984916097744">אפשר להתחיל משהו חדש או לקבל עזרה במהלך העבודה.</translation>
 <translation id="1054048317165655285">יש להשלים את ההגדרה בטלפון</translation>
 <translation id="1054153489933238809">פתיחת ה&amp;תמונה המקורית בכרטיסייה חדשה</translation>
@@ -2238,6 +2239,7 @@
 <translation id="2519250377986324805">איך עושים את זה?</translation>
 <translation id="2519517390894391510">שם פרופיל האישור</translation>
 <translation id="2520644704042891903">רגע, אנחנו מחפשים את המקום המתאים…</translation>
+<translation id="2520961587246779103">אפשרויות נוספות לתצוגה מפוצלת</translation>
 <translation id="2521427645491031107">סנכרון האפליקציות נקבע בהגדרות המכשיר</translation>
 <translation id="2521835766824839541">הטראק הקודם</translation>
 <translation id="2521854691574443804">המערכת בודקת אם הקובץ <ph name="FILE_NAME" /> מציית למדיניות האבטחה של הארגון שלך...</translation>
@@ -3183,6 +3185,7 @@
 <translation id="3202578601642193415">החדש ביותר</translation>
 <translation id="3204648577100496185">יכול להיות שיוסרו מהמכשיר נתונים המשויכים לאפליקציה הזו</translation>
 <translation id="3204717934117444051">נתונים שנשמרים רק במכשיר הזה יישארו בפרופיל הקיים. הם לא ייסנכרנו עם <ph name="EMAIL" /></translation>
+<translation id="3206289903841621620">מילון משתמש <ph name="NUMBER" /></translation>
 <translation id="3207344462385471911">‏מוצגות לך הצעות לחיפושים והנחות לקניות שעשויות לעניין אותך על סמך הפעילות שלך מהזמן האחרון.
         <ph name="BREAK" />
         <ph name="BREAK" />
@@ -10957,6 +10960,7 @@
 <translation id="8729133765463465108">‏סריקת קוד QR באמצעות המצלמה</translation>
 <translation id="8730621377337864115">בוצע</translation>
 <translation id="8731029916209785242">הרשאות (<ph name="FORMATTED_ORIGIN" />)</translation>
+<translation id="8731258351357994801">ערך <ph name="NUMBER" /></translation>
 <translation id="8731268612289859741">קוד האבטחה</translation>
 <translation id="8731629443331803108">האתר <ph name="SITE_NAME" /> מבקש את ההרשאה הבאה: <ph name="PERMISSION" /></translation>
 <translation id="8731787661154643562">מספר יציאה</translation>

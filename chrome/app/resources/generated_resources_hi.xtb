@@ -80,6 +80,7 @@
 <translation id="1049743911850919806">गुप्त</translation>
 <translation id="1049795001945932310">&amp;भाषा सेटिंग</translation>
 <translation id="1050693411695664090">खराब</translation>
+<translation id="1053226848101751430">एंट्री मिटाई गई</translation>
 <translation id="1053898984916097744">कुछ नया शुरू करें या मौजूदा काम में मदद पाएं.</translation>
 <translation id="1054048317165655285">अपने फ़ोन पर सेट अप पूरा करें</translation>
 <translation id="1054153489933238809">मूल &amp;चित्र को नए टैब में खोलें</translation>
@@ -1813,6 +1814,7 @@
 <translation id="2249111429176737533">टैब की गई विंडो के तौर पर खोलें</translation>
 <translation id="2249605167705922988">जैसे कि 1-5, 8, 11-13</translation>
 <translation id="2249635629516220541">विज्ञापन दिखाने के लिए साइटें जिस जानकारी का इस्तेमाल करती हैं उसमें अपनी ज़रूरत के हिसाब से बदलाव करें</translation>
+<translation id="2250153645770828940">डिक्शनरी मिटाएं</translation>
 <translation id="22505994009453896">माउस के कर्सर को कंट्रोल करने के लिए, न्यूमेरिक कीपैड का इस्तेमाल करें</translation>
 <translation id="2250624716625396929">यह टैब आपके कैमरे और माइक्रोफ़ोन का इस्तेमाल कर रहा है</translation>
 <translation id="2251218783371366160">सिस्टम दर्शक के साथ खोलें</translation>
@@ -2240,6 +2242,7 @@
 <translation id="2519250377986324805">इसका तरीका देखें</translation>
 <translation id="2519517390894391510">प्रमाणपत्र वाली प्रोफ़ाइल का नाम</translation>
 <translation id="2520644704042891903">उपलब्ध सॉकेट की प्रतीक्षा की जा रही है...</translation>
+<translation id="2520961587246779103">स्क्रीन स्प्लिट वाले व्यू के लिए ज़्यादा विकल्प</translation>
 <translation id="2521427645491031107">ऐप्लिकेशन सिंक करने की सुविधा, डिवाइस की सेटिंग में सेट की गई है</translation>
 <translation id="2521835766824839541">पिछला ट्रैक</translation>
 <translation id="2521854691574443804">आपके संगठन की सुरक्षा नीतियों के मुताबिक <ph name="FILE_NAME" /> की जांच की जा रही है...</translation>
@@ -3185,6 +3188,7 @@
 <translation id="3202578601642193415">नवीनतम</translation>
 <translation id="3204648577100496185">इस ऐप्लिकेशन से जुड़े डेटा को इस डिवाइस से हटाया जा सकता है</translation>
 <translation id="3204717934117444051">इस डिवाइस में सेव किया गया डेटा ही मौजूदा प्रोफ़ाइल में रहेगा. यह <ph name="EMAIL" /> के साथ सिंक नहीं होगा</translation>
+<translation id="3206289903841621620">उपयोगकर्ता डिक्शनरी <ph name="NUMBER" /></translation>
 <translation id="3207344462385471911">आपकी हाल की गतिविधि के आधार पर, आपकी दिलचस्पी के हिसाब से, सुझाई गई खोजें और खरीदारी पर मिलने वाली छूट की जानकारी दिखाई जा रही है.
         <ph name="BREAK" />
         <ph name="BREAK" />
@@ -10950,6 +10954,7 @@
 <translation id="8729133765463465108">क्यूआर कोड स्कैन करने के लिए कैमरा इस्तेमाल करें</translation>
 <translation id="8730621377337864115">हो गया</translation>
 <translation id="8731029916209785242">अनुमतियां (<ph name="FORMATTED_ORIGIN" />)</translation>
+<translation id="8731258351357994801">एंट्री <ph name="NUMBER" /></translation>
 <translation id="8731268612289859741">सुरक्षा कोड</translation>
 <translation id="8731629443331803108"><ph name="SITE_NAME" /> इसके लिए अनुमति चाहता है: <ph name="PERMISSION" /></translation>
 <translation id="8731787661154643562">पोर्ट नंबर</translation>

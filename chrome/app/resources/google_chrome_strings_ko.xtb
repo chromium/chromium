@@ -511,7 +511,6 @@ Chrome에서 설정을 복구할 수 없습니다.</translation>
 <translation id="7572537927358445944">사용 안함 • Chrome에서 이 확장 프로그램의 출처를 확인할 수 없습니다.</translation>
 <translation id="7583399374488819119"><ph name="COMPANY_NAME" /> 설치 프로그램</translation>
 <translation id="7606334485649076285">Google ChromeOS Flex</translation>
-<translation id="7626032353295482388">Chrome에 오신 것을 환영합니다</translation>
 <translation id="7626072681686626474">기기를 사용하기 전에 <ph name="MANAGER" />의 정책에 따라 다음 서비스 약관을 읽고 이에 동의해야 합니다. 이 약관은 ChromeOS 약관을 확대, 수정 또는 제한하지 않습니다</translation>
 <translation id="7629695634924605473">비밀번호가 유출되면 Chrome에서 알려줍니다.</translation>
 <translation id="7641148173327520642">시스템 관리자가 <ph name="TARGET_URL_HOSTNAME" /> 액세스를 위해 <ph name="ALTERNATIVE_BROWSER_NAME" />을(를) 열도록 Chrome을 구성했습니다.</translation>
@@ -631,6 +630,7 @@ Chrome에서 설정을 복구할 수 없습니다.</translation>
 <translation id="9090566250983691233">Chrome에서 일부 파일을 차단하는 이유 알아보기</translation>
 <translation id="9106236359747881194">검색할 텍스트 선택</translation>
 <translation id="911206726377975832">인터넷 사용 기록도 삭제하시겠습니까?</translation>
+<translation id="9134482777260927479">과제 해결 도움 받기</translation>
 <translation id="9138603949443464873">변경사항을 적용하려면 Chrome을 다시 실행하세요.</translation>
 <translation id="9148058034647219655">나가기</translation>
 <translation id="9195993889682885387">Chrome은 지난 몇 주간의 방문 기록을 토대로 관심분야를 예측할 수 있습니다. 예측 정보는 기기 외부로 전송되지 않습니다.</translation>

@@ -175,6 +175,7 @@
 <translation id="7942349550061667556">लाल</translation>
 <translation id="7961015016161918242">कधीही नाही</translation>
 <translation id="7966321538264951561">सूचना डिसमिस करा.</translation>
+<translation id="796696298310625748">{WINDOW_COUNT,plural, =1{टॅब नवीन विंडोवर हलवा}other{टॅब दुसर्‍या विंडोवर हलवा}}</translation>
 <translation id="799469866974412355">तुमच्या इतर डिव्हाइसवरील नवीन गट</translation>
 <translation id="8029301326595421733">या स्टोअरविषयी माहिती पूर्ण उंचीवर उघडली आहे</translation>
 <translation id="8053770993984522566">टॅब गट सूची, अर्ध्या उंचीवर उघडली आहे</translation>
@@ -196,6 +197,7 @@
 <translation id="8730621377337864115">पूर्ण झाले</translation>
 <translation id="8730999928494395583">या गुप्त टॅबमधील तुमची अ‍ॅक्टिव्हिटी या डिव्हाइसवरून काढून टाकली जाईल</translation>
 <translation id="875848103419578654">{NUM_MONTHS,plural, =1{<ph name="NUM_MONTHS_ONE" /> महिन्यापूर्वी तयार केला आहे}other{<ph name="NUM_MONTHS_MANY" /> महिन्यांपूर्वी तयार केला आहे}}</translation>
+<translation id="8813708480179818649">गटामधून टॅब काढून टाका</translation>
 <translation id="8820741577754260431">तुमच्या टॅबवर कमी झालेली किंमत पहा</translation>
 <translation id="883379923675618699">Chrome हे तुम्ही ३ महिन्यांपासून न वापरलेल्या इनॅक्टिव्ह विभागामधील आयटम आपोआप बंद करते. तुम्ही हे सेटिंग्ज मध्ये आताच किंवा कधीही बंद करू शकता.</translation>
 <translation id="8887921976452567404">तुमचे बंद केलेले टॅब आणि गट अलीकडील टॅब विभाग व टॅब गट विभागामधून पुन्हा उघडले जाऊ शकतात.</translation>

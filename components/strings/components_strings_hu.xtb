@@ -367,6 +367,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="1612199629998703524">Témák kezelése</translation>
 <translation id="1615178538289490617"><ph name="PORT_NAME" /> hozzáférésének visszavonása</translation>
 <translation id="1615402009686901181">Rendszergazdai házirend tiltja képernyőfelvétel készítését, ha bizalmas tartalom látható a képernyőn.</translation>
+<translation id="161612500287664753">Az erre az oldalra vonatkozó kérdés feltevése a Google Keresőnek</translation>
 <translation id="1617276713587758852">Crossover autók</translation>
 <translation id="1619007254056372606">Eszközön tárolt webhelyadatok kezelése</translation>
 <translation id="1619648179761984213"><ph name="USER_DISPLAY_NAME" /> eltávolított egy lapot</translation>
@@ -1506,6 +1507,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="3586931643579894722">Részletek elrejtése</translation>
 <translation id="3587725436724465984">Szervezete azt jelezte, hogy a(z) <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> webhely irányelvet sérthet. <ph name="BEGIN_LEARN_MORE_LINK" />További információ erről a figyelmeztetésről<ph name="END_LEARN_MORE_LINK" />.</translation>
 <translation id="3587738293690942763">Közép</translation>
+<translation id="3589519427766620380">Az erre az oldalra vonatkozó kérdés feltevése a Google Lensnek</translation>
 <translation id="3596918995172292499">Rendszámtábla szerinti állam</translation>
 <translation id="3600106876108433070">További információ az összehasonlító táblázatokról</translation>
 <translation id="3600246354004376029"><ph name="TITLE" />, <ph name="DOMAIN" />, <ph name="TIME" /></translation>
@@ -3441,6 +3443,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="6925267999184670015">„Észak-amerikai B+” méret</translation>
 <translation id="6926216138694948720">Testművészet</translation>
 <translation id="692638818576287323">Haszonjárművek</translation>
+<translation id="6930607614725241390">Keresés az oldalsó panelen</translation>
 <translation id="6934236486840930310"><ph name="BEGIN_BOLD" />Az alapértelmezett keresőmotor lehetővé teszi az internetes keresést, és biztosítja a Chrome-funkciókat<ph name="END_BOLD" />, például a címsávból és a weboldalakon található képek alapján történő keresést. Előfordulhat, hogy egy funkció nem áll rendelkezésre, ha a keresőmotor nem támogatja.</translation>
 <translation id="6934672428414710184">Ez a név a Google-fiókjából származik</translation>
 <translation id="6935077351544118151">Mostantól automatikusan kitöltheti a hűségkártyák adatait a Google Walletből</translation>

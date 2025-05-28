@@ -453,7 +453,7 @@
 <translation id="6933858244219479645">Sistema ChromeOS</translation>
 <translation id="6938166777909186039">Per ricevere gli aggiornamenti futuri di Google Chrome, devi avere Windows 10 o versioni successive. Su questo computer è installato Windows 8.1.</translation>
 <translation id="6943584222992551122">I dati di navigazione di questa persona verranno eliminati dal dispositivo. Per recuperare i dati, accedi a Chromium con il nome utente <ph name="USER_EMAIL" />.</translation>
-<translation id="6965382102122355670">OK</translation>
+<translation id="6965382102122355670">Ok</translation>
 <translation id="6967962315388095737">Regola inbound per consentire il traffico mDNS in Google Chrome Beta.</translation>
 <translation id="6979589607440534284">Scopri perché Chrome blocca alcuni file (si apre in una nuova scheda)</translation>
 <translation id="6991926986715044139">Mostra sempre la scorciatoia di Google Lens</translation>
@@ -503,7 +503,6 @@
 <translation id="7572537927358445944">Off • Chrome non può verificare la provenienza dell'estensione</translation>
 <translation id="7583399374488819119">Programma di installazione di <ph name="COMPANY_NAME" /></translation>
 <translation id="7606334485649076285">Google ChromeOS Flex</translation>
-<translation id="7626032353295482388">Ti diamo il benvenuto in Chrome</translation>
 <translation id="7626072681686626474"><ph name="MANAGER" /> richiede di leggere e accettare i seguenti Termini di servizio prima di utilizzare il dispositivo. Questi termini non ampliano, modificano né limitano i Termini di Google ChromeOS.</translation>
 <translation id="7629695634924605473">Chrome ti avvisa se le tue password vengono compromesse</translation>
 <translation id="7641148173327520642">L'amministratore di sistema ha configurato Google Chrome per l'apertura di <ph name="ALTERNATIVE_BROWSER_NAME" /> per accedere a<ph name="TARGET_URL_HOSTNAME" />.</translation>
@@ -623,6 +622,7 @@
 <translation id="9090566250983691233">Scopri perché Chrome blocca alcuni file</translation>
 <translation id="9106236359747881194">Seleziona il testo da cercare</translation>
 <translation id="911206726377975832">Eliminare anche i tuoi dati di navigazione?</translation>
+<translation id="9134482777260927479">Aiuto per i compiti</translation>
 <translation id="9138603949443464873">Riavvia Chrome per applicare le modifiche</translation>
 <translation id="9148058034647219655">Esci</translation>
 <translation id="9195993889682885387">Chrome può stimare i tuoi interessi in base alla cronologia di navigazione delle ultime settimane. Queste informazioni rimangono sul dispositivo.</translation>

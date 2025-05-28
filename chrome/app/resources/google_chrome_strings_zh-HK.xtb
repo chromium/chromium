@@ -317,6 +317,7 @@
 <translation id="4970880042055371251">Chrome OS 版本</translation>
 <translation id="4990567037958725628">Google Chrome Canary</translation>
 <translation id="5003967926796347400">按一下 [Google 密碼管理工具]</translation>
+<translation id="504867494566807945">Chrome 將開啟任何應用程式的連結。此外，Chrome 會固定在工作列，方便你隨時使用。</translation>
 <translation id="5114340746415930644">輸入用於在帳戶 <ph name="USER_EMAIL" /> 中使用及儲存 Chrome 資料的密碼短語</translation>
 <translation id="5120334927898581447">在登入其他 Google 服務時登入 Chrome</translation>
 <translation id="5126049312684316860">Chrome 會預先載入更多你可能瀏覽的網頁，以便在你瀏覽時更快載入</translation>
@@ -397,6 +398,7 @@ Google Chrome 無法復原您的設定。</translation>
 <translation id="6075300983329039771">你的機構 <ph name="MANAGER" /> 要求你登入 Chrome</translation>
 <translation id="6113794647360055231">Chrome 變得更好用了</translation>
 <translation id="6116252277240876590">此語言用於顯示 Chrome 中的選單、設定、快訊和其他文字</translation>
+<translation id="6127237283587442951">預設使用 Chrome 並固定在工作列</translation>
 <translation id="6134085236017727171">如要使用麥克風，請在<ph name="BEGIN_LINK" />系統設定<ph name="END_LINK" />中向 Chrome 授予存取權</translation>
 <translation id="6135456723633883042">這些分頁正在使用額外的資源。為提升效能，請讓 Chrome 將其設定為閒置分頁。</translation>
 <translation id="6145313976051292476">在 Chrome 中開啟 PDF</translation>
@@ -511,7 +513,6 @@ Google Chrome 無法復原您的設定。</translation>
 <translation id="7572537927358445944">已關閉 • Chrome 無法驗證此擴充程式的來源</translation>
 <translation id="7583399374488819119"><ph name="COMPANY_NAME" /> 安裝程式</translation>
 <translation id="7606334485649076285">Google ChromeOS Flex</translation>
-<translation id="7626032353295482388">歡迎使用 Chrome</translation>
 <translation id="7626072681686626474">在使用此裝置前，<ph name="MANAGER" /> 要求您仔細閱讀並接受下列《服務條款》。這些條款不會擴展、修改或限制《Google Chrome OS 條款》。</translation>
 <translation id="7629695634924605473">Chrome 會通知您密碼是否曾被盜用</translation>
 <translation id="7641148173327520642">系統管理員已設定由 Google Chrome 開啟 <ph name="ALTERNATIVE_BROWSER_NAME" /> 以存取 <ph name="TARGET_URL_HOSTNAME" />。</translation>

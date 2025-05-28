@@ -316,6 +316,7 @@
 <translation id="4970880042055371251">Έκδοση Chrome OS</translation>
 <translation id="4990567037958725628">Google Chrome Canary</translation>
 <translation id="5003967926796347400">Κάντε κλικ στην επιλογή Διαχείριση κωδικών πρόσβασης Google</translation>
+<translation id="504867494566807945">Ανοίξτε συνδέσμους στο Chrome από οποιαδήποτε εφαρμογή. Επιπλέον, για εύκολη πρόσβαση, καρφιτσώνεται στη γραμμή εργαλείων.</translation>
 <translation id="5114340746415930644">Εισαγάγετε τη φράση πρόσβασης, για να χρησιμοποιήσετε και να αποθηκεύσετε δεδομένα Chrome στον λογαριασμό σας, <ph name="USER_EMAIL" /></translation>
 <translation id="5120334927898581447">Σύνδεση στο Chrome όταν συνδέεστε σε άλλες υπηρεσίες Google</translation>
 <translation id="5126049312684316860">Το Chrome προφορτώνει ακόμα περισσότερες σελίδες που είναι πιθανό να επισκεφτείτε, ώστε να φορτώνουν πιο γρήγορα όταν τις επισκέπτεστε</translation>
@@ -394,6 +395,7 @@
 <translation id="6075300983329039771">Ο οργανισμός σας, <ph name="MANAGER" />, απαιτεί να συνδεθείτε στο Chrome</translation>
 <translation id="6113794647360055231">Το Chrome έγινε ακόμα καλύτερο</translation>
 <translation id="6116252277240876590">Αυτή η γλώσσα χρησιμοποιείται για την προβολή μενού, ρυθμίσεων, ειδοποιήσεων και άλλου κειμένου στο Chrome</translation>
+<translation id="6127237283587442951">Χρήση Chrome από προεπιλογή και καρφίτσωμα</translation>
 <translation id="6134085236017727171">Για χρήση του μικροφώνου, παραχωρήστε πρόσβαση στο Chrome στις <ph name="BEGIN_LINK" />ρυθμίσεις συστήματος<ph name="END_LINK" /></translation>
 <translation id="6135456723633883042">Αυτές οι καρτέλες χρησιμοποιούν επιπλέον πόρους. Για να βελτιώσετε την απόδοσή σας, επιτρέψτε στο Chrome να τις απενεργοποιήσει.</translation>
 <translation id="6145313976051292476">Άνοιγμα αρχείων PDF στο Chrome</translation>
@@ -508,7 +510,6 @@
 <translation id="7572537927358445944">Ανενεργή • Το Chrome δεν μπορεί να επαληθεύσει την προέλευση αυτής της επέκτασης</translation>
 <translation id="7583399374488819119">Πρόγραμμα εγκατάστασης <ph name="COMPANY_NAME" /></translation>
 <translation id="7606334485649076285">Google ChromeOS Flex</translation>
-<translation id="7626032353295482388">Καλώς ήρθατε στο Chrome</translation>
 <translation id="7626072681686626474">Το <ph name="MANAGER" /> απαιτεί να διαβάσετε και να αποδεχτείτε τους παρακάτω Όρους Παροχής Υπηρεσιών πριν από τη χρήση αυτής της συσκευής. Οι συγκεκριμένοι όροι δεν επεκτείνουν, τροποποιούν ή περιορίζουν τους Όρους του Google Chrome OS.</translation>
 <translation id="7629695634924605473">Το Chrome σας ενημερώνει σε περίπτωση παραβίασης των κωδικών πρόσβασής σας.</translation>
 <translation id="7641148173327520642">Ο διαχειριστής συστήματος έχει διαμορφώσει το Google Chrome έτσι ώστε να ανοίγει <ph name="ALTERNATIVE_BROWSER_NAME" /> για πρόσβαση σε <ph name="TARGET_URL_HOSTNAME" />.</translation>

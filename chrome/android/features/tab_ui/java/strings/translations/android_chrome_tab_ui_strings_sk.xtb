@@ -175,6 +175,7 @@
 <translation id="7942349550061667556">Červená</translation>
 <translation id="7961015016161918242">Nikdy</translation>
 <translation id="7966321538264951561">Zavrieť návrhy.</translation>
+<translation id="796696298310625748">{WINDOW_COUNT,plural, =1{Presunúť kartu do nového okna}few{Presunúť kartu do iného okna}many{Presunúť kartu do iného okna}other{Presunúť kartu do iného okna}}</translation>
 <translation id="799469866974412355">Nová skupina z vášho druhého zariadenia</translation>
 <translation id="8029301326595421733">Informácie o tomto obchode sú otvorené na úplnú výšku</translation>
 <translation id="8053770993984522566">Zoznam skupín kariet je otvorený na polovičnú výšku</translation>
@@ -196,6 +197,7 @@
 <translation id="8730621377337864115">Hotovo</translation>
 <translation id="8730999928494395583">Vaša aktivita v týchto kartách inkognito bude odstránená z tohto zariadenia</translation>
 <translation id="875848103419578654">{NUM_MONTHS,plural, =1{Vytvorená pred <ph name="NUM_MONTHS_ONE" /> mesiacom}few{Vytvorená pred <ph name="NUM_MONTHS_MANY" /> mesiacmi}many{Vytvorená pred <ph name="NUM_MONTHS_MANY" /> mesiaca}other{Vytvorená pred <ph name="NUM_MONTHS_MANY" /> mesiacmi}}</translation>
+<translation id="8813708480179818649">Odstrániť kartu zo skupiny</translation>
 <translation id="8820741577754260431">Zobrazte si na kartách poklesy cien</translation>
 <translation id="883379923675618699">Chrome automaticky zavrie položky v sekcii Neaktívne, ktoré ste nepoužili tri mesiace. V nastaveniach to môžete teraz alebo kedykoľvek v budúcnosti vypnúť.</translation>
 <translation id="8887921976452567404">Zavreté karty a skupiny môžete znova otvoriť v sekciách Nedávne karty a Skupiny kariet.</translation>
