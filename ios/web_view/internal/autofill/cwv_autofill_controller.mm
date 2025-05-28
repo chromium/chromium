@@ -783,6 +783,10 @@ using UserDecision = autofill::AutofillClient::AddressPromptUserDecision;
   // No op
 }
 
+- (void)showSignedInWithSavedCredentialMessage {
+  [self didLoginWithExistingPassword];
+}
+
 - (void)didLoginWithExistingPassword {
   if ([self.delegate respondsToSelector:@selector
                      (autofillControllerDidLoginWithExistingPassword:)]) {
