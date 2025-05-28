@@ -63,6 +63,11 @@ void FacilitatedPaymentsApiClientAndroid::IsAvailable(
       base::android::AttachCurrentThread(), java_bridge_);
 }
 
+bool FacilitatedPaymentsApiClientAndroid::IsAvailableSync() {
+  return Java_FacilitatedPaymentsApiClientBridge_isAvailableSync(
+      base::android::AttachCurrentThread(), java_bridge_);
+}
+
 void FacilitatedPaymentsApiClientAndroid::GetClientToken(
     base::OnceCallback<void(std::vector<uint8_t>)> callback) {
   DCHECK(!IsAnyCallbackPending());

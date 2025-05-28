@@ -46,6 +46,10 @@ class FacilitatedPaymentsApiClient {
   // made at a time, then only the last callback will be invoked.
   virtual void IsAvailable(base::OnceCallback<void(bool)> callback) = 0;
 
+  // The synchronous version to check whether the facilitated payment API is
+  // available.
+  virtual bool IsAvailableSync() = 0;
+
   // Retrieves the client token to be used to initiate a payment and invokes the
   // given `callback` with the result. Only one GetClientToken() call per API
   // client should be made a time, because, if more than one GetClientToken()

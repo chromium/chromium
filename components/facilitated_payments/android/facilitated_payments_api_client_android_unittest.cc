@@ -57,6 +57,13 @@ TEST_F(FacilitatedPaymentsApiClientAndroidTest,
 }
 
 TEST_F(FacilitatedPaymentsApiClientAndroidTest,
+       IsAvailableSyncResultIsFalseByDefault) {
+  FacilitatedPaymentsApiClientAndroid apiClient(main_rfh());
+
+  EXPECT_FALSE(apiClient.IsAvailableSync());
+}
+
+TEST_F(FacilitatedPaymentsApiClientAndroidTest,
        GetClientTokenResultIsEmptyByDefault) {
   FacilitatedPaymentsApiClientAndroid apiClient(main_rfh());
   bool was_callback_invoked = false;

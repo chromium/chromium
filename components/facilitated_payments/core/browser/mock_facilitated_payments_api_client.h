@@ -26,6 +26,7 @@ class MockFacilitatedPaymentsApiClient : public FacilitatedPaymentsApiClient {
   ~MockFacilitatedPaymentsApiClient() override;
 
   MOCK_METHOD(void, IsAvailable, (base::OnceCallback<void(bool)>), (override));
+  MOCK_METHOD(bool, IsAvailableSync, (), (override));
   MOCK_METHOD(void,
               GetClientToken,
               (base::OnceCallback<void(std::vector<uint8_t>)>),
