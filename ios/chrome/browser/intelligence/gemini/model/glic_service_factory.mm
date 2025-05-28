@@ -4,11 +4,13 @@
 
 #import "ios/chrome/browser/intelligence/gemini/model/glic_service_factory.h"
 
+#import "components/signin/public/identity_manager/identity_manager.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/intelligence/gemini/model/glic_service.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
+#import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/public/provider/chrome/browser/glic/glic_api.h"
 
 class GlicService;
@@ -21,7 +23,8 @@ std::unique_ptr<KeyedService> BuildGlicService(web::BrowserState* context) {
   }
   ProfileIOS* profile = ProfileIOS::FromBrowserState(context);
   return std::make_unique<GlicService>(
-      AuthenticationServiceFactory::GetForProfile(profile));
+      AuthenticationServiceFactory::GetForProfile(profile),
+      IdentityManagerFactory::GetForProfile(profile));
 }
 
 }  // namespace
@@ -41,6 +44,7 @@ GlicServiceFactory* GlicServiceFactory::GetInstance() {
 GlicServiceFactory::GlicServiceFactory()
     : ProfileKeyedServiceFactoryIOS("GlicService") {
   DependsOn(AuthenticationServiceFactory::GetInstance());
+  DependsOn(IdentityManagerFactory::GetInstance());
 }
 
 GlicServiceFactory::~GlicServiceFactory() = default;

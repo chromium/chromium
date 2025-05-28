@@ -59,7 +59,7 @@ const CGFloat kMenuHeaderHeight = 58;
 
   // Add blurred background.
   UIBlurEffect* blurEffect =
-      [UIBlurEffect effectWithStyle:UIBlurEffectStyleLight];
+      [UIBlurEffect effectWithStyle:UIBlurEffectStyleRegular];
   UIVisualEffectView* blurEffectView =
       [[UIVisualEffectView alloc] initWithEffect:blurEffect];
   blurEffectView.translatesAutoresizingMaskIntoConstraints = NO;
