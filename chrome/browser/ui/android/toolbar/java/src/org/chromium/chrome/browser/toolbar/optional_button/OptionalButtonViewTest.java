@@ -61,6 +61,7 @@ import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonVariant
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarFeatures;
 import org.chromium.chrome.browser.toolbar.optional_button.ButtonData.ButtonSpec;
 import org.chromium.chrome.browser.toolbar.optional_button.OptionalButtonConstants.TransitionType;
+import org.chromium.components.browser_ui.widget.textbubble.TextBubble;
 import org.chromium.ui.listmenu.ListMenuButton;
 
 import java.util.function.BooleanSupplier;
@@ -891,6 +892,29 @@ public class OptionalButtonViewTest {
         assertThat(
                 mOptionalButtonView.getLayoutParams().width,
                 Matchers.lessThanOrEqualTo(maxActionChipWidth));
+    }
+
+    @Test
+    public void testUpdateButtonWithAnimation_showIconWithTextBubble() {
+        TextBubble.setSkipShowCheckForTesting(true);
+
+        // Test that an action chip displays a text bubble instead of expansion/collapse
+        // animation when |setShowTextBubble()| passes a predicate returning |true|.
+        ButtonDataImpl buttonData = getDataForReaderModeActionChip();
+        buttonData.setShouldShowTextBubble(true);
+
+        mOptionalButtonView.updateButtonWithAnimation(buttonData);
+
+        // Get past the delay to show the text bubble.
+        mShadowLooper.runOneTask();
+
+        // Icon is visible without animation.
+        assertEquals(View.VISIBLE, mOptionalButtonView.getVisibility());
+        assertEquals(View.VISIBLE, mInnerButton.getVisibility());
+        assertEquals(View.GONE, mActionChipLabel.getVisibility());
+
+        // Text bubble is showing.
+        assertThat(TextBubble.getTextBubbleSetForTesting().size(), Matchers.greaterThan(0));
     }
 
     @Test

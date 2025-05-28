@@ -33,6 +33,7 @@ import android.widget.TextView;
 import androidx.annotation.DimenRes;
 import androidx.annotation.DrawableRes;
 import androidx.annotation.IntDef;
+import androidx.annotation.StringRes;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.appcompat.widget.TooltipCompat;
 import androidx.core.view.ViewCompat;
@@ -52,8 +53,11 @@ import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonVariant
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarFeatures;
 import org.chromium.chrome.browser.toolbar.optional_button.ButtonData.ButtonSpec;
 import org.chromium.chrome.browser.toolbar.optional_button.OptionalButtonConstants.TransitionType;
+import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
+import org.chromium.components.browser_ui.widget.textbubble.TextBubble;
 import org.chromium.ui.interpolators.Interpolators;
 import org.chromium.ui.listmenu.ListMenuButton;
+import org.chromium.ui.widget.ViewRectProvider;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -64,6 +68,11 @@ import java.util.function.BooleanSupplier;
 class OptionalButtonView extends FrameLayout implements TransitionListener {
     private static final int SWAP_TRANSITION_DURATION_MS = 300;
     private static final int HIDE_TRANSITION_DURATION_MS = 225;
+
+    // Constants for text bubble displayed instead of chip expansion/collapse
+    // depending on the toolbar width. Used for CCT.
+    private static final int TEXT_BUBBLE_FOR_ANIMATION_DURATION_MS = 5000;
+    private static final int TEXT_BUBBLE_FOR_ANIMATION_START_DELAY_MS = 500;
 
     private final int mExpandedStatePaddingPx;
 
@@ -210,10 +219,11 @@ class OptionalButtonView extends FrameLayout implements TransitionListener {
      *     attributes. If null then this view starts a hide transition.
      */
     void updateButtonWithAnimation(@Nullable ButtonData buttonData) {
+        boolean canShow = buttonData != null && buttonData.canShow();
         // If we receive the same button with the same visibility then there's no need to update.
         if (buttonData != null
                 && mCurrentButtonVariant == buttonData.getButtonSpec().getButtonVariant()
-                && mCanCurrentButtonShow == buttonData.canShow()
+                && mCanCurrentButtonShow == canShow
                 && mIconDrawable == buttonData.getButtonSpec().getDrawable()) {
             return;
         }
@@ -244,7 +254,7 @@ class OptionalButtonView extends FrameLayout implements TransitionListener {
             mState = getNextState();
         }
 
-        if (buttonData == null || !buttonData.canShow()) {
+        if (buttonData == null || !canShow) {
             mCurrentButtonVariant = AdaptiveToolbarButtonVariant.NONE;
             mCanCurrentButtonShow = false;
             hide(isAnimationAllowedByParent);
@@ -257,7 +267,7 @@ class OptionalButtonView extends FrameLayout implements TransitionListener {
         final boolean canAnimate = isAnimationAllowedByParent && isButtonVariantChanging;
 
         mCurrentButtonVariant = buttonSpec.getButtonVariant();
-        mCanCurrentButtonShow = buttonData.canShow();
+        mCanCurrentButtonShow = canShow;
         mCurrentButtonSupportsTinting = buttonSpec.getSupportsTinting();
 
         mIconDrawable = buttonSpec.getDrawable();
@@ -279,10 +289,11 @@ class OptionalButtonView extends FrameLayout implements TransitionListener {
         }
 
         mNextButtonType = buttonSpec.isDynamicAction() ? ButtonType.DYNAMIC : ButtonType.STATIC;
+        @StringRes int chipLabelResId = buttonSpec.getActionChipLabelResId();
         if (buttonSpec.getActionChipLabelResId() == Resources.ID_NULL) {
             mActionChipLabelString = null;
         } else {
-            mActionChipLabelString = getContext().getString(buttonSpec.getActionChipLabelResId());
+            mActionChipLabelString = getContext().getString(chipLabelResId);
         }
 
         // The button's height precisely matches the avatar and its padding. When an error badge is
@@ -318,6 +329,7 @@ class OptionalButtonView extends FrameLayout implements TransitionListener {
             TooltipCompat.setTooltipText(mButton, null);
         }
         mContentDescription = buttonSpec.getContentDescription();
+        boolean showTextBubble = buttonData.shouldShowTextBubble();
 
         // If the transition root hasn't been laid out then try again after the next layout. This
         // may happen if the view gets initialized while the activity is not visible (e.g. when a
@@ -329,21 +341,31 @@ class OptionalButtonView extends FrameLayout implements TransitionListener {
                                 @Override
                                 public void onGlobalLayout() {
                                     if (ViewCompat.isLaidOut(mTransitionRoot)) {
-                                        startTransitionToNewButton(canAnimate);
+                                        startTransitionToNewButton(
+                                                canAnimate, showTextBubble, chipLabelResId);
                                         getViewTreeObserver().removeOnGlobalLayoutListener(this);
                                     }
                                 }
                             });
         } else {
-            startTransitionToNewButton(canAnimate);
+            startTransitionToNewButton(canAnimate, showTextBubble, chipLabelResId);
         }
     }
 
-    private void startTransitionToNewButton(boolean canAnimate) {
+    private void startTransitionToNewButton(
+            boolean canAnimate, boolean showTextBubble, @StringRes int bubbleTextId) {
         if (mState == State.HIDDEN && mActionChipLabelString == null) {
             showIcon(canAnimate);
         } else if (canAnimate && mActionChipLabelString != null) {
-            animateActionChipExpansion();
+            if (showTextBubble) {
+                showIcon(/* animate= */ true);
+                getHandler()
+                        .postDelayed(
+                                () -> showTextBubble(bubbleTextId),
+                                TEXT_BUBBLE_FOR_ANIMATION_START_DELAY_MS);
+            } else {
+                animateActionChipExpansion();
+            }
         } else if (canAnimate && mActionChipLabelString == null) {
             animateSwapToNewIcon();
         } else {
@@ -802,6 +824,22 @@ class OptionalButtonView extends FrameLayout implements TransitionListener {
         setWidth(mCollapsedStateWidthPx);
 
         mState = State.RUNNING_ACTION_CHIP_COLLAPSE_TRANSITION;
+    }
+
+    private void showTextBubble(@StringRes int stringId) {
+        // TODO(crbug.com/391931916): Now the bubble shows up when the expansion animation would
+        //     have appeared. Consider displaying IPH for setting a different cadence.
+        var textBubble =
+                new TextBubble(
+                        getContext(),
+                        this,
+                        stringId,
+                        stringId,
+                        true,
+                        new ViewRectProvider(this),
+                        ChromeAccessibilityUtil.get().isAccessibilityEnabled());
+        textBubble.setAutoDismissTimeout(TEXT_BUBBLE_FOR_ANIMATION_DURATION_MS);
+        textBubble.show();
     }
 
     private void hide(boolean animate) {

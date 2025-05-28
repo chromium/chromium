@@ -76,6 +76,12 @@ public class CustomTabAdaptiveToolbarBehavior implements AdaptiveToolbarBehavior
         return false;
     }
 
+    @Override
+    public boolean shouldShowTextBubble() {
+        int screenWidthDp = mContext.getResources().getConfiguration().screenWidthDp;
+        return screenWidthDp < AdaptiveToolbarFeatures.MAX_WIDTH_FOR_BUBBLE_DP;
+    }
+
     @ExperimentalOpenInBrowser
     @Override
     public void registerPerSurfaceButtons(

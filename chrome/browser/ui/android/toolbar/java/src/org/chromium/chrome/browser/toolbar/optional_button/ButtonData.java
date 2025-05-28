@@ -31,6 +31,12 @@ public interface ButtonData {
     boolean isEnabled();
 
     /**
+     * Returns {@code true} if the button with a chip string should show a text bubble instead of
+     * expansion/collapse animation.
+     */
+    boolean shouldShowTextBubble();
+
+    /**
      * Returns a {@link ButtonSpec} describing button properties which don't change often. When
      * feasible, a {@link ButtonDataProvider} should prefer to reuse a single {@code ButtonSpec}
      * instance.

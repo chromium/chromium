@@ -46,6 +46,14 @@ public interface AdaptiveToolbarBehavior {
     }
 
     /**
+     * Returns {@code true} if the button with a chip string should show a text bubble instead of
+     * expansion/collapse animation.
+     */
+    default boolean shouldShowTextBubble() {
+        return false;
+    }
+
+    /**
      * Register embedder-specific toolbar action buttons.
      *
      * @param controller {@link AdaptiveToolbarButtonController} to which the buttons will be added.

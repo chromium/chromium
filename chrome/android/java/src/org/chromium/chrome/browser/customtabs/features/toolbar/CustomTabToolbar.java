@@ -1377,7 +1377,7 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
                                         new Handler());
                             },
                             /* transitionRoot= */ CustomTabToolbar.this,
-                            /* isAnimationAllowedPredicate= */ this::shouldAnimateOptionalButton,
+                            /* isAnimationAllowedPredicate= */ () -> true,
                             mTrackerSupplier);
 
             mOptionalButtonCoordinator.setBackgroundColorFilter(getBackgroundColor());
@@ -1397,12 +1397,6 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
 
         private @Px int getDimensionPx(@DimenRes int resId) {
             return getResources().getDimensionPixelSize(resId);
-        }
-
-        private boolean shouldAnimateOptionalButton() {
-            // TODO(crdebug/391931152): Do not do animation for < 360dp toolbar width
-            //     and show a tooltip instead (TBD).
-            return true;
         }
 
         private @ColorInt int getBackgroundColor() {

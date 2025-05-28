@@ -254,7 +254,9 @@ public class AdaptiveToolbarButtonController
                     AdaptiveToolbarButtonVariant.MAX_VALUE);
         }
 
-        mButtonData.setCanShow(receivedButtonData.canShow() && isScreenWideEnoughForButton());
+        mButtonData.setCanShow(
+                receivedButtonData.canShow() && shouldButtonShowBasedOnScreenWidth());
+        mButtonData.setShouldShowTextBubble(mToolbarBehavior.shouldShowTextBubble());
         mButtonData.setEnabled(receivedButtonData.isEnabled());
         final ButtonSpec receivedButtonSpec = receivedButtonData.getButtonSpec();
         // ButtonSpec is immutable, so we keep the previous value when noting changes.
@@ -281,6 +283,10 @@ public class AdaptiveToolbarButtonController
                             receivedButtonSpec.isChecked()));
         }
         return mButtonData;
+    }
+
+    private boolean shouldButtonShowBasedOnScreenWidth() {
+        return mToolbarBehavior.shouldShowTextBubble() || isScreenWideEnoughForButton();
     }
 
     private static View.OnClickListener wrapClickListener(
