@@ -166,19 +166,23 @@ void AdTracker::WillExecuteScript(ExecutionContext* execution_context,
     } else if (top_level_execution &&
                IsAdScriptInStackHelper(StackType::kBottomAndTop,
                                        &ancestor_ad_script)) {
-      AppendToKnownAdScripts(*execution_context, fake_url, ancestor_ad_script);
-      MaybeLinkKnownAdScriptToAncestor(execution_context, v8_context, fake_url,
-                                       script_id);
+      CHECK(ancestor_ad_script.has_value());
+
+      AppendToKnownAdScripts(
+          *execution_context, fake_url,
+          std::make_unique<AdAncestorProvenance>(*ancestor_ad_script));
+      OnScriptIdAvailableForKnownAdScript(execution_context, v8_context,
+                                          fake_url, script_id);
       is_ad = true;
     }
   }
 
   if (!should_track_with_id) {
     is_ad = IsKnownAdScript(execution_context, script_url);
-    if (is_ad && !IsKnownAdExecutionContext(execution_context) &&
-        !script_url.empty()) {
-      MaybeLinkKnownAdScriptToAncestor(execution_context, v8_context,
-                                       script_url, script_id);
+    if (top_level_execution && is_ad && !script_url.empty() &&
+        !IsKnownAdExecutionContext(execution_context)) {
+      OnScriptIdAvailableForKnownAdScript(execution_context, v8_context,
+                                          script_url, script_id);
     }
   }
 
@@ -246,7 +250,10 @@ bool AdTracker::CalculateIfAdSubresource(
     const KURL& request_url,
     ResourceType resource_type,
     const FetchInitiatorInfo& initiator_info,
-    bool known_ad) {
+    bool known_ad,
+    const subresource_filter::ScopedRule& rule) {
+  DCHECK(!rule.IsValid() || known_ad);
+
   // Check if the document loading the resource is an ad.
   const bool is_ad_execution_context =
       IsKnownAdExecutionContext(execution_context);
@@ -272,8 +279,21 @@ bool AdTracker::CalculateIfAdSubresource(
   // ad script by IsKnownAdScript.
   if (resource_type == ResourceType::kScript && known_ad &&
       !is_ad_execution_context) {
+    DCHECK(!ancestor_ad_script || !rule.IsValid());
+
+    std::unique_ptr<AdProvenance> ad_provenance;
+    if (!ancestor_ad_script && !rule.IsValid()) {
+      ad_provenance = std::make_unique<NoAdProvenance>();
+    } else if (ancestor_ad_script) {
+      ad_provenance =
+          std::make_unique<AdAncestorProvenance>(*ancestor_ad_script);
+    } else {
+      DCHECK(rule.IsValid());
+      ad_provenance = std::make_unique<AdRulesetProvenance>(rule);
+    }
+
     AppendToKnownAdScripts(*execution_context, request_url.GetString(),
-                           ancestor_ad_script);
+                           std::move(ad_provenance));
   }
 
   return known_ad;
@@ -309,9 +329,8 @@ void AdTracker::DidFinishAsyncTask(probe::AsyncTaskContext* task_context) {
   }
 }
 
-bool AdTracker::IsAdScriptInStack(
-    StackType stack_type,
-    Vector<AdScriptIdentifier>* out_ad_script_ancestry) {
+bool AdTracker::IsAdScriptInStack(StackType stack_type,
+                                  AdScriptAncestry* out_ad_script_ancestry) {
   std::optional<AdScriptIdentifier> out_ad_script;
 
   std::optional<AdScriptIdentifier>* out_ad_script_ptr =
@@ -323,7 +342,7 @@ bool AdTracker::IsAdScriptInStack(
   if (out_ad_script.has_value()) {
     CHECK(out_ad_script_ancestry);
     CHECK(is_ad_script_in_stack);
-    *out_ad_script_ancestry = GetAncestryChain(out_ad_script.value());
+    *out_ad_script_ancestry = GetAncestry(out_ad_script.value());
   }
 
   return is_ad_script_in_stack;
@@ -418,20 +437,23 @@ bool AdTracker::IsKnownAdScriptForCheckedContext(
 void AdTracker::AppendToKnownAdScripts(
     ExecutionContext& execution_context,
     const String& url,
-    const std::optional<AdScriptIdentifier>& ancestor_ad_script) {
+    std::unique_ptr<AdProvenance> ad_provenance) {
   DCHECK(!url.empty());
-  auto add_result = context_known_ad_scripts_.insert(
-      &execution_context, KnownAdScriptsAndAncestor());
+  DCHECK(ad_provenance);
 
-  KnownAdScriptsAndAncestor& known_ad_scripts_and_ancestor =
+  auto add_result = context_known_ad_scripts_.insert(
+      &execution_context, KnownAdScriptsAndProvenance());
+
+  KnownAdScriptsAndProvenance& known_ad_scripts_and_provenance =
       add_result.stored_value->value;
 
-  // While technically the same script URL can be loaded by different ancestors,
-  // we track only the first association for simplicity.
-  known_ad_scripts_and_ancestor.insert(url, ancestor_ad_script);
+  // While technically the same script URL can be loaded with different
+  // provenances (e.g., from different ancestors), we track only the first
+  // association for simplicity.
+  known_ad_scripts_and_provenance.insert(url, std::move(ad_provenance));
 }
 
-void AdTracker::MaybeLinkKnownAdScriptToAncestor(
+void AdTracker::OnScriptIdAvailableForKnownAdScript(
     ExecutionContext* execution_context,
     const v8::Local<v8::Context>& v8_context,
     const String& script_name,
@@ -446,52 +468,81 @@ void AdTracker::MaybeLinkKnownAdScriptToAncestor(
     return;
   }
 
-  const HashMap<String, std::optional<AdScriptIdentifier>>&
-      known_ad_scripts_and_ancestor = it->value;
+  const HashMap<String, std::unique_ptr<AdProvenance>>&
+      known_ad_scripts_and_provenance = it->value;
 
-  auto known_ad_script_it = known_ad_scripts_and_ancestor.find(script_name);
-  DCHECK(known_ad_script_it != known_ad_scripts_and_ancestor.end());
+  auto known_ad_script_it = known_ad_scripts_and_provenance.find(script_name);
+  DCHECK(known_ad_script_it != known_ad_scripts_and_provenance.end());
 
-  const std::optional<AdScriptIdentifier>& ancestor_ad_script =
+  const std::unique_ptr<AdProvenance>& ad_provenance =
       known_ad_script_it->value;
+  DCHECK(ad_provenance);
 
-  // If `ancestor_ad_script` is present for the given `script_name`, it implies
-  // that the current script (`script_name`/`script_id`) was loaded transitively
-  // from `ancestor_ad_script`. In such cases, we link them.
-  if (ancestor_ad_script.has_value()) {
-    AdScriptIdentifier current_ad_script =
-        AdScriptIdentifier(GetDebuggerIdForContext(v8_context), script_id);
+  // We clone `ad_provenance` rather than transferring ownership. This is
+  // because multiple script executions might originate from the same script
+  // URL, and are intended to share the same provenance. While this approach
+  // might not perfectly mirror the script loading ancestry in all complex
+  // scenarios, it's considered sufficient for our tracking purposes.
+  AdScriptIdentifier current_ad_script =
+      AdScriptIdentifier(GetDebuggerIdForContext(v8_context), script_id);
 
-    ancestor_ad_scripts_.insert(current_ad_script, ancestor_ad_script.value());
-  }
+  ad_script_provenances_.insert(current_ad_script, ad_provenance->Clone());
 }
 
-Vector<AdScriptIdentifier> AdTracker::GetAncestryChain(
+AdTracker::AdScriptAncestry AdTracker::GetAncestry(
     const AdScriptIdentifier& ad_script) {
-  Vector<AdScriptIdentifier> ancestry_chain = {ad_script};
+  AdTracker::AdScriptAncestry ancestry;
+  ancestry.ancestry_chain.push_back(ad_script);
 
   // Limits the ancestry chain length to protect against potential cycles in the
   // ancestry graph (though unexpected).
   constexpr size_t kMaxScriptAncestrySize = 50;
   bool max_size_reached = false;
 
-  auto ancestor_it = ancestor_ad_scripts_.find(ancestry_chain.back());
-  while (ancestor_it != ancestor_ad_scripts_.end()) {
-    ancestry_chain.push_back(ancestor_it->value);
+  // TODO(yaoxia): Determine if we should CHECK that that the script ID in each
+  // step is guaranteed to be present in `ad_script_provenances_`.
+  auto provenance_it =
+      ad_script_provenances_.find(ancestry.ancestry_chain.back());
+  while (provenance_it != ad_script_provenances_.end()) {
+    const std::unique_ptr<AdProvenance>& ad_provenance = provenance_it->value;
 
-    if (ancestry_chain.size() >= kMaxScriptAncestrySize) {
+    bool root_reached = false;
+    switch (ad_provenance->Type()) {
+      case AdProvenance::ProvenanceType::kMatchedRule: {
+        ancestry.root_script_filterlist_rule =
+            DynamicTo<AdRulesetProvenance>(*ad_provenance)->filterlist_rule;
+        root_reached = true;
+        break;
+      }
+      case AdProvenance::ProvenanceType::kAncestorScript: {
+        ancestry.ancestry_chain.push_back(
+            DynamicTo<AdAncestorProvenance>(*ad_provenance)
+                ->ancestor_ad_script);
+        break;
+      }
+      case AdProvenance::ProvenanceType::kNone: {
+        root_reached = true;
+        break;
+      }
+    }
+
+    if (ancestry.ancestry_chain.size() >= kMaxScriptAncestrySize) {
       max_size_reached = true;
       break;
     }
 
-    ancestor_it = ancestor_ad_scripts_.find(ancestry_chain.back());
+    if (root_reached) {
+      break;
+    }
+
+    provenance_it = ad_script_provenances_.find(ancestry.ancestry_chain.back());
   }
 
   base::UmaHistogramBoolean(
       "Navigation.IframeCreated.AdTracker.MaxScriptAncestrySizeReached",
       max_size_reached);
 
-  return ancestry_chain;
+  return ancestry;
 }
 
 void AdTracker::Trace(Visitor* visitor) const {

@@ -70,8 +70,10 @@ WebDocumentSubresourceFilterImpl::WebDocumentSubresourceFilterImpl(
 
 WebLoadPolicy WebDocumentSubresourceFilterImpl::GetLoadPolicy(
     const blink::WebURL& resourceUrl,
-    network::mojom::RequestDestination request_destination) {
-  return getLoadPolicyImpl(resourceUrl, ToElementType(request_destination));
+    network::mojom::RequestDestination request_destination,
+    ScopedRule* out_rule) {
+  return getLoadPolicyImpl(resourceUrl, ToElementType(request_destination),
+                           out_rule);
 }
 
 WebLoadPolicy
@@ -99,7 +101,8 @@ bool WebDocumentSubresourceFilterImpl::ShouldLogToConsole() {
 
 WebLoadPolicy WebDocumentSubresourceFilterImpl::getLoadPolicyImpl(
     const blink::WebURL& url,
-    proto::ElementType element_type) {
+    proto::ElementType element_type,
+    ScopedRule* out_rule) {
   if (filter_.activation_state().filtering_disabled_for_document ||
       url.ProtocolIs(url::kDataScheme)) {
     ++filter_.statistics().num_loads_total;
@@ -107,7 +110,8 @@ WebLoadPolicy WebDocumentSubresourceFilterImpl::getLoadPolicyImpl(
   }
 
   // TODO(pkalinnikov): Would be good to avoid converting to GURL.
-  return ToWebLoadPolicy(filter_.GetLoadPolicy(GURL(url), element_type));
+  return ToWebLoadPolicy(
+      filter_.GetLoadPolicy(GURL(url), element_type, out_rule));
 }
 
 WebDocumentSubresourceFilterImpl::BuilderImpl::BuilderImpl(

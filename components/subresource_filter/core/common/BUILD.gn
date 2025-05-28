@@ -30,6 +30,8 @@ static_library("common") {
     "ruleset_config.h",
     "ruleset_dealer.cc",
     "ruleset_dealer.h",
+    "scoped_rule.cc",
+    "scoped_rule.h",
     "scoped_timers.h",
     "time_measurements.cc",
     "time_measurements.h",

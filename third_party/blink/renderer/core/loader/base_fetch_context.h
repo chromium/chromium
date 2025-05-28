@@ -96,7 +96,8 @@ class CORE_EXPORT BaseFetchContext : public FetchContext {
       const ResourceRequestHead& resource_request,
       base::optional_ref<const KURL> alias_url,
       ResourceType type,
-      const FetchInitiatorInfo& initiator_info) override;
+      const FetchInitiatorInfo& initiator_info,
+      subresource_filter::ScopedRule* out_rule) override;
 
  protected:
   BaseFetchContext(const DetachableResourceFetcherProperties& properties,

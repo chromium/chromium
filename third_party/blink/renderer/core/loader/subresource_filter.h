@@ -41,7 +41,8 @@ class CORE_EXPORT SubresourceFilter final
 
   // Returns if |resource_url| is an ad resource.
   bool IsAdResource(const KURL& resource_url,
-                    network::mojom::RequestDestination);
+                    network::mojom::RequestDestination,
+                    subresource_filter::ScopedRule* out_rule);
 
   void Trace(Visitor*) const;
 
@@ -54,9 +55,14 @@ class CORE_EXPORT SubresourceFilter final
   Member<ExecutionContext> execution_context_;
   std::unique_ptr<WebDocumentSubresourceFilter> subresource_filter_;
 
+  struct ResourceCheckResult {
+    WebDocumentSubresourceFilter::LoadPolicy load_policy;
+    subresource_filter::ScopedRule rule;
+  };
+
   // Save the last resource check's result in the single element cache.
   std::pair<std::pair<KURL, network::mojom::RequestDestination>,
-            WebDocumentSubresourceFilter::LoadPolicy>
+            ResourceCheckResult>
       last_resource_check_result_;
 };
 

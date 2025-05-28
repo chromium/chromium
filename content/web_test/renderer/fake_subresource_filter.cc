@@ -24,7 +24,8 @@ FakeSubresourceFilter::~FakeSubresourceFilter() = default;
 
 blink::WebDocumentSubresourceFilter::LoadPolicy
 FakeSubresourceFilter::GetLoadPolicy(const blink::WebURL& resource_url,
-                                     network::mojom::RequestDestination) {
+                                     network::mojom::RequestDestination,
+                                     subresource_filter::ScopedRule* out_rule) {
   return GetLoadPolicyImpl(resource_url);
 }
 

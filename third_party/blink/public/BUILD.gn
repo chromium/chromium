@@ -427,6 +427,7 @@ source_set("blink_headers") {
     ":devtools_inspector_resources_grit",
     ":resources_grit",
     ":runtime_features_for_public",
+    "//components/subresource_filter/core/common",
     "//net",
     "//services/network/public/mojom:mojom_shared",
     "//services/service_manager/public/cpp",

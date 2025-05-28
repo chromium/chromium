@@ -32,7 +32,8 @@ class TestDocumentSubresourceFilter : public WebDocumentSubresourceFilter {
       : load_policy_(policy) {}
 
   LoadPolicy GetLoadPolicy(const WebURL& resource_url,
-                           network::mojom::RequestDestination) override {
+                           network::mojom::RequestDestination,
+                           subresource_filter::ScopedRule* out_rule) override {
     String resource_path = KURL(resource_url).GetPath().ToString();
     if (!base::Contains(queried_subresource_paths_, resource_path)) {
       queried_subresource_paths_.push_back(resource_path);

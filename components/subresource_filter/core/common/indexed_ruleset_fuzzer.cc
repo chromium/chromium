@@ -80,6 +80,6 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   matcher.GetLoadPolicyForResourceLoad(
       url_to_check, subresource_filter::FirstPartyOrigin(url::Origin()),
       url_pattern_index::proto::ELEMENT_TYPE_SCRIPT,
-      false /* disable_generic_rules */);
+      /*disable_generic_rules=*/false, /*out_rule=*/nullptr);
   return 0;
 }

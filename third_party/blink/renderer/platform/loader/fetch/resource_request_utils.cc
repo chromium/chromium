@@ -195,9 +195,9 @@ void UpgradeResourceRequestForLoader(
 
   resource_request_context.RecordTrace();
 
-  if (context.CalculateIfAdSubresource(resource_request,
-                                       std::nullopt /* alias_url */,
-                                       resource_type, options.initiator_info)) {
+  if (context.CalculateIfAdSubresource(
+          resource_request, /*alias_url=*/std::nullopt, resource_type,
+          options.initiator_info, /*out_rule=*/nullptr)) {
     resource_request.SetIsAdResource();
   }
 
@@ -301,9 +301,10 @@ PrepareResourceRequestForCacheAccess(
                                  : params.Url()),
                          options, reporting_disposition,
                          resource_request.GetRedirectInfo());
-  if (context.CalculateIfAdSubresource(resource_request,
-                                       std::nullopt /* alias_url */,
-                                       resource_type, options.initiator_info)) {
+
+  if (context.CalculateIfAdSubresource(
+          resource_request, /*alias_url=*/std::nullopt, resource_type,
+          options.initiator_info, /*out_rule=*/nullptr)) {
     resource_request.SetIsAdResource();
   }
   if (blocked_reason) {

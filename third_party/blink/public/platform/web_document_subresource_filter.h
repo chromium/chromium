@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_PUBLIC_PLATFORM_WEB_DOCUMENT_SUBRESOURCE_FILTER_H_
 #define THIRD_PARTY_BLINK_PUBLIC_PLATFORM_WEB_DOCUMENT_SUBRESOURCE_FILTER_H_
 
+#include "components/subresource_filter/core/common/scoped_rule.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-shared.h"
 
 namespace blink {
@@ -24,8 +25,10 @@ class WebDocumentSubresourceFilter {
   enum LoadPolicy { kAllow, kDisallow, kWouldDisallow };
 
   virtual ~WebDocumentSubresourceFilter() = default;
-  virtual LoadPolicy GetLoadPolicy(const WebURL& resource_url,
-                                   network::mojom::RequestDestination) = 0;
+  virtual LoadPolicy GetLoadPolicy(
+      const WebURL& resource_url,
+      network::mojom::RequestDestination,
+      subresource_filter::ScopedRule* out_rule) = 0;
   virtual LoadPolicy GetLoadPolicyForWebSocketConnect(const WebURL&) = 0;
   virtual LoadPolicy GetLoadPolicyForWebTransportConnect(const WebURL&) = 0;
 

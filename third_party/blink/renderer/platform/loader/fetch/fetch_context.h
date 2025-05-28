@@ -36,6 +36,7 @@
 
 #include "base/task/single_thread_task_runner.h"
 #include "base/types/optional_ref.h"
+#include "components/subresource_filter/core/common/scoped_rule.h"
 #include "third_party/blink/public/common/subresource_load_metrics.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/loader/request_context_frame_type.mojom-blink-forward.h"
@@ -207,12 +208,15 @@ class PLATFORM_EXPORT FetchContext : public GarbageCollected<FetchContext> {
 
   // Determine if the request is on behalf of an advertisement. If so, return
   // true. Checks `resource_request.Url()` unless `alias_url` is non-null, in
-  // which case it checks the latter.
+  // which case it checks the latter. If `out_rule` is non-null and the
+  // SubresourceFilter identifies the current resource as an ad based on its
+  // URL, then `out_rule` will be populated with the matching filterlist rule.
   virtual bool CalculateIfAdSubresource(
       const ResourceRequestHead& resource_request,
       base::optional_ref<const KURL> alias_url,
       ResourceType type,
-      const FetchInitiatorInfo& initiator_info) {
+      const FetchInitiatorInfo& initiator_info,
+      subresource_filter::ScopedRule* out_rule) {
     return false;
   }
 

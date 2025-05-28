@@ -130,12 +130,16 @@ class IndexedRulesetMatcher {
 
   // Returns the LoadPolicy for a network request to |url| of |element_type|
   // initiated by |document_origin|. Always returns ALLOW if the  |url| is not
-  // valid or |element_type| == ELEMENT_TYPE_UNSPECIFIED.
+  // valid or |element_type| == ELEMENT_TYPE_UNSPECIFIED. If `out_rule` is
+  // non-null and the result load policy is DISALLOW, then `out_rule` will be
+  // populated with a pointer to the matching filterlist rule. `out_rule` is
+  // valid as long as the ruleset is kept alive.
   LoadPolicy GetLoadPolicyForResourceLoad(
       const GURL& url,
       const FirstPartyOrigin& first_party,
       url_pattern_index::proto::ElementType element_type,
-      bool disable_generic_rules) const;
+      bool disable_generic_rules,
+      const url_pattern_index::flat::UrlRule** out_rule) const;
 
   // Like ShouldDisallowResourceLoad, but returns the matching rule that
   // determines whether the request should be allowed or not. Allowlist rules
