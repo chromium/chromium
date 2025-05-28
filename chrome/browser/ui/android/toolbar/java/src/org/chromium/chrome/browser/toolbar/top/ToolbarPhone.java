@@ -1226,9 +1226,7 @@ public class ToolbarPhone extends ToolbarLayout
         // Skip if in or entering tab switcher mode.
         if (mTabSwitcherState == TAB_SWITCHER || mTabSwitcherState == ENTERING_TAB_SWITCHER) return;
 
-        boolean isExpanded =
-                mUrlExpansionFraction > 0f
-                        || (mAlwaysShowDseIconOnNtp && isLocationBarShownInNtp());
+        boolean isExpanded = mUrlExpansionFraction > 0f;
         boolean isPartiallyExpanded = isExpanded && mUrlExpansionFraction < 1f;
         // We only need to avoid getting clipped in the period where the fakebox drawable belongs to
         // us but is taller than our bounds. It doesn't yet belong to us when the expansion fraction

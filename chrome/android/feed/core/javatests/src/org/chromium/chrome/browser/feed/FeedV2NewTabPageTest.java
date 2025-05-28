@@ -147,7 +147,7 @@ public class FeedV2NewTabPageTest {
             ChromeRenderTestRule.Builder.withPublicCorpus()
                     .setBugComponent(
                             ChromeRenderTestRule.Component.UI_BROWSER_CONTENT_SUGGESTIONS_FEED)
-                    .setRevision(1)
+                    .setRevision(2)
                     .build();
 
     public final SigninTestRule mSigninTestRule = new SigninTestRule();
