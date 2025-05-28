@@ -4742,6 +4742,14 @@ StyleRecalcChange Element::RecalcOwnStyle(
   if (!child_change.ReattachLayoutTree() &&
       (GetForceReattachLayoutTree() || NeedsReattachLayoutTree() ||
        ComputedStyle::NeedsReattachLayoutTree(*this, old_style, new_style))) {
+    if (style_recalc_context.anchor_evaluator) {
+      // position-try-fallbacks should not have style changes that causes layout
+      // tree changes. If they do, it is probably the ComputedStyle diff in
+      // NeedsReattachLayoutTree() that incorrectly detects a diff without an
+      // actual computed value change. Without the NOTREACHED() here could end
+      // up accessing a destroyed LayoutObject in layout.
+      NOTREACHED();
+    }
     child_change = child_change.ForceReattachLayoutTree();
   }
 

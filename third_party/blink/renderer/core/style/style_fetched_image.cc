@@ -70,7 +70,9 @@ bool StyleFetchedImage::IsEqual(const StyleImage& other) const {
     return false;
   }
   const auto& other_image = To<StyleFetchedImage>(other);
-  return image_ == other_image.image_ && *url_data_ == *other_image.url_data_ &&
+  return (image_ == other_image.image_ ||
+          (ErrorOccurred() && other_image.ErrorOccurred())) &&
+         *url_data_ == *other_image.url_data_ &&
          EqualResolutions(override_image_resolution_,
                           other_image.override_image_resolution_);
 }
