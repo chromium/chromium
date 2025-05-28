@@ -3112,7 +3112,8 @@ void WebGLRenderingContextWebGPUBase::InitializeContext() {
   swap_buffers_ = base::AdoptRef(new WebGPUSwapBufferProvider(
       this, dawn_control_client_, device_, kDefaultFBOUsages,
       wgpu::TextureUsage::None, kDefaultFBON32Format,
-      PredefinedColorSpace::kSRGB, gfx::HDRMetadata{}));
+      PredefinedColorSpace::kSRGB, gfx::HDRMetadata{},
+      kBottomLeft_GrSurfaceOrigin));
 
   // Create the default framebuffer and leave it as the bound framebuffer. It
   // has no texture attached yet, that is done in EnsureDefaultFramebuffer

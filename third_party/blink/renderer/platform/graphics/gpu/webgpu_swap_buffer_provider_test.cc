@@ -118,7 +118,8 @@ class WebGPUSwapBufferProviderForTests : public WebGPUSwapBufferProvider {
       wgpu::TextureUsage internal_usage,
       wgpu::TextureFormat format,
       PredefinedColorSpace color_space,
-      const gfx::HDRMetadata& hdr_metadata)
+      const gfx::HDRMetadata& hdr_metadata,
+      GrSurfaceOrigin surface_origin)
       : WebGPUSwapBufferProvider(client,
                                  dawn_control_client,
                                  device,
@@ -126,7 +127,8 @@ class WebGPUSwapBufferProviderForTests : public WebGPUSwapBufferProvider {
                                  internal_usage,
                                  format,
                                  color_space,
-                                 hdr_metadata),
+                                 hdr_metadata,
+                                 surface_origin),
         alive_(alive),
         client_(client) {
     texture_desc_ = {
@@ -259,7 +261,7 @@ class WebGPUSwapBufferProviderTest : public testing::Test {
     provider_ = base::MakeRefCounted<WebGPUSwapBufferProviderForTests>(
         &provider_alive_, &client_, device_.Get(), dawn_control_client_, kUsage,
         kInternalUsage, kFormat, PredefinedColorSpace::kSRGB,
-        gfx::HDRMetadata());
+        gfx::HDRMetadata(), kTopLeft_GrSurfaceOrigin);
   }
 
   void TearDown() override { Platform::UnsetMainThreadTaskRunnerForTesting(); }

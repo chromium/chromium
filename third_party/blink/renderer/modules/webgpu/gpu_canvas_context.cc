@@ -544,7 +544,8 @@ void GPUCanvasContext::configure(const GPUCanvasConfiguration* descriptor,
   swap_buffers_ = base::AdoptRef(new WebGPUSwapBufferProvider(
       this, device_->GetDawnControlClient(), device_->GetHandle(),
       swap_texture_descriptor_.usage, internal_usage,
-      swap_texture_descriptor_.format, color_space_, hdr_metadata));
+      swap_texture_descriptor_.format, color_space_, hdr_metadata,
+      kTopLeft_GrSurfaceOrigin));
 
   // Note: SetContentsOpaque is only an optimization hint. It doesn't
   // actually make the contents opaque.
