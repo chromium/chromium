@@ -65,7 +65,7 @@ std::unique_ptr<BatteryLevelProvider> BatteryLevelProvider::Create() {
 std::optional<BatteryLevelProviderMac::BatteryState>
 BatteryLevelProviderMac::GetBatteryStateImpl() {
   const base::mac::ScopedIOObject<io_service_t> service(
-      IOServiceGetMatchingService(kIOMasterPortDefault,
+      IOServiceGetMatchingService(kIOMainPortDefault,
                                   IOServiceMatching("IOPMPowerSource")));
   if (!service) {
     // Macs without a battery don't necessarily provide the IOPMPowerSource

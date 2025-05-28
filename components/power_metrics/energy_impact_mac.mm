@@ -180,7 +180,7 @@ std::optional<EnergyImpactCoefficients> ReadCoefficientsForBoardIdOrDefault(
 
 std::optional<std::string> GetBoardIdForThisMachine() {
   base::mac::ScopedIOObject<io_service_t> platform_expert(
-      IOServiceGetMatchingService(kIOMasterPortDefault,
+      IOServiceGetMatchingService(kIOMainPortDefault,
                                   IOServiceMatching("IOPlatformExpertDevice")));
   if (!platform_expert)
     return std::nullopt;

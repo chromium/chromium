@@ -206,7 +206,7 @@ bool BluetoothAdapterMac::IsPresent() const {
 
   base::mac::ScopedIOObject<io_iterator_t> iterator;
   IOReturn result = IOServiceGetMatchingServices(
-      kIOMasterPortDefault, IOServiceMatching("IOBluetoothHCIController"),
+      kIOMainPortDefault, IOServiceMatching("IOBluetoothHCIController"),
       iterator.InitializeInto());
   if (result != kIOReturnSuccess) {
     BLUETOOTH_LOG(ERROR) << "Failed to enumerate Bluetooth controller: "

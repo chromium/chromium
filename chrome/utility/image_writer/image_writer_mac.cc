@@ -50,7 +50,7 @@ bool ImageWriter::IsValidDevice() {
   // IOServiceGetMatchingService consumes a reference to the matching dictionary
   // passed to it.
   base::mac::ScopedIOObject<io_service_t> disk_obj(
-      IOServiceGetMatchingService(kIOMasterPortDefault, matching.release()));
+      IOServiceGetMatchingService(kIOMainPortDefault, matching.release()));
   if (!disk_obj)
     return false;
 

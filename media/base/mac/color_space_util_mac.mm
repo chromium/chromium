@@ -19,38 +19,16 @@
 namespace media {
 
 gfx::ColorSpace GetImageBufferColorSpace(CVImageBufferRef image_buffer) {
-  base::apple::ScopedCFTypeRef<CFTypeRef> color_primaries;
-  base::apple::ScopedCFTypeRef<CFTypeRef> transfer_function;
-  base::apple::ScopedCFTypeRef<CFTypeRef> gamma_level;
-  base::apple::ScopedCFTypeRef<CFTypeRef> ycbcr_matrix;
-
-  if (@available(macOS 12, iOS 15, *)) {
-    color_primaries.reset(CVBufferCopyAttachment(
-        image_buffer, kCVImageBufferColorPrimariesKey, nullptr));
-    transfer_function.reset(CVBufferCopyAttachment(
-        image_buffer, kCVImageBufferTransferFunctionKey, nullptr));
-    gamma_level.reset(CVBufferCopyAttachment(
-        image_buffer, kCVImageBufferGammaLevelKey, nullptr));
-    ycbcr_matrix.reset(CVBufferCopyAttachment(
-        image_buffer, kCVImageBufferYCbCrMatrixKey, nullptr));
-  } else {
-#if !defined(__IPHONE_15_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_15_0
-    color_primaries.reset(
-        CVBufferGetAttachment(image_buffer, kCVImageBufferColorPrimariesKey,
-                              nullptr),
-        base::scoped_policy::RETAIN);
-    transfer_function.reset(
-        CVBufferGetAttachment(image_buffer, kCVImageBufferTransferFunctionKey,
-                              nullptr),
-        base::scoped_policy::RETAIN);
-    gamma_level.reset(CVBufferGetAttachment(
-                          image_buffer, kCVImageBufferGammaLevelKey, nullptr),
-                      base::scoped_policy::RETAIN);
-    ycbcr_matrix.reset(CVBufferGetAttachment(
-                           image_buffer, kCVImageBufferYCbCrMatrixKey, nullptr),
-                       base::scoped_policy::RETAIN);
-#endif
-  }
+  base::apple::ScopedCFTypeRef<CFTypeRef> color_primaries(
+      CVBufferCopyAttachment(image_buffer, kCVImageBufferColorPrimariesKey,
+                             /*attachmentMode=*/nullptr));
+  base::apple::ScopedCFTypeRef<CFTypeRef> transfer_function(
+      CVBufferCopyAttachment(image_buffer, kCVImageBufferTransferFunctionKey,
+                             /*attachmentMode=*/nullptr));
+  base::apple::ScopedCFTypeRef<CFTypeRef> gamma_level(CVBufferCopyAttachment(
+      image_buffer, kCVImageBufferGammaLevelKey, /*attachmentMode=*/nullptr));
+  base::apple::ScopedCFTypeRef<CFTypeRef> ycbcr_matrix(CVBufferCopyAttachment(
+      image_buffer, kCVImageBufferYCbCrMatrixKey, /*attachmentMode=*/nullptr));
 
   return gfx::ColorSpaceFromCVImageBufferKeys(
       color_primaries.get(), transfer_function.get(), gamma_level.get(),

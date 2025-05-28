@@ -255,7 +255,7 @@ DiskImageStatus IsPathOnReadOnlyDiskImage(
   }
 
   base::apple::ScopedCFTypeRef<CFMutableDictionaryRef> match_dict(
-      IOBSDNameMatching(kIOMasterPortDefault, /*options=*/0,
+      IOBSDNameMatching(kIOMainPortDefault, /*options=*/0,
                         dmg_bsd_device_name));
   if (!match_dict) {
     LOG(ERROR) << "IOBSDNameMatching " << dmg_bsd_device_name;
@@ -264,7 +264,7 @@ DiskImageStatus IsPathOnReadOnlyDiskImage(
 
   base::mac::ScopedIOObject<io_iterator_t> iterator;
   kern_return_t kr = IOServiceGetMatchingServices(
-      kIOMasterPortDefault, match_dict.release(), iterator.InitializeInto());
+      kIOMainPortDefault, match_dict.release(), iterator.InitializeInto());
   if (kr != KERN_SUCCESS) {
     MACH_LOG(ERROR, kr) << "IOServiceGetMatchingServices";
     return DiskImageStatusFailure;

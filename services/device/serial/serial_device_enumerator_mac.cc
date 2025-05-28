@@ -124,7 +124,7 @@ std::optional<std::string> GetUsbDriverName(
 }  // namespace
 
 SerialDeviceEnumeratorMac::SerialDeviceEnumeratorMac() {
-  notify_port_.reset(IONotificationPortCreate(kIOMasterPortDefault));
+  notify_port_.reset(IONotificationPortCreate(kIOMainPortDefault));
   CFRunLoopAddSource(CFRunLoopGetMain(),
                      IONotificationPortGetRunLoopSource(notify_port_.get()),
                      kCFRunLoopDefaultMode);

@@ -66,49 +66,28 @@ NSString* GetBundleIdForDefaultAppForUTType(NSString* type) {
 }  // namespace
 
 bool SetAsDefaultBrowser() {
-  if (@available(macOS 12, *)) {
-    // We really do want the outer bundle here, not the main bundle since
-    // setting a shortcut to Chrome as the default browser doesn't make sense.
-    NSURL* app_bundle = base::apple::OuterBundleURL();
-    if (!app_bundle) {
-      return false;
-    }
-
-    [NSWorkspace.sharedWorkspace setDefaultApplicationAtURL:app_bundle
-                                       toOpenURLsWithScheme:@"http"
-                                          completionHandler:^(NSError*){
-                                          }];
-    [NSWorkspace.sharedWorkspace setDefaultApplicationAtURL:app_bundle
-                                       toOpenURLsWithScheme:@"https"
-                                          completionHandler:^(NSError*){
-                                          }];
-    [NSWorkspace.sharedWorkspace setDefaultApplicationAtURL:app_bundle
-                                          toOpenContentType:UTTypeHTML
-                                          completionHandler:^(NSError*){
-                                          }];
-    // TODO(crbug.com/40248220): Passing empty completion handlers,
-    // above, is kinda broken, but given that this API is synchronous, nothing
-    // better can be done. This entire API should be rebuilt.
-  } else {
-    // We really do want the outer bundle here, not the main bundle since
-    // setting a shortcut to Chrome as the default browser doesn't make sense.
-    CFStringRef identifier =
-        base::apple::NSToCFPtrCast(base::apple::OuterBundle().bundleIdentifier);
-    if (!identifier) {
-      return false;
-    }
-
-    if (LSSetDefaultHandlerForURLScheme(CFSTR("http"), identifier) != noErr) {
-      return false;
-    }
-    if (LSSetDefaultHandlerForURLScheme(CFSTR("https"), identifier) != noErr) {
-      return false;
-    }
-    if (LSSetDefaultRoleHandlerForContentType(kUTTypeHTML, kLSRolesViewer,
-                                              identifier) != noErr) {
-      return false;
-    }
+  // We really do want the outer bundle here, not the main bundle since
+  // setting a shortcut to Chrome as the default browser doesn't make sense.
+  NSURL* app_bundle = base::apple::OuterBundleURL();
+  if (!app_bundle) {
+    return false;
   }
+
+  [NSWorkspace.sharedWorkspace setDefaultApplicationAtURL:app_bundle
+                                     toOpenURLsWithScheme:@"http"
+                                        completionHandler:^(NSError*){
+                                        }];
+  [NSWorkspace.sharedWorkspace setDefaultApplicationAtURL:app_bundle
+                                     toOpenURLsWithScheme:@"https"
+                                        completionHandler:^(NSError*){
+                                        }];
+  [NSWorkspace.sharedWorkspace setDefaultApplicationAtURL:app_bundle
+                                        toOpenContentType:UTTypeHTML
+                                        completionHandler:^(NSError*){
+                                        }];
+  // TODO(https://crbug.com/40248220): Passing empty completion handlers,
+  // above, is kinda broken, but given that this API is synchronous, nothing
+  // better can be done. This entire API should be rebuilt.
 
   // The CoreServicesUIAgent presents a dialog asking the user to confirm their
   // new default browser choice, but the agent sometimes orders the dialog

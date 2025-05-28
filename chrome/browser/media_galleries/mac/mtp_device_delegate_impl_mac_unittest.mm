@@ -2,20 +2,21 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/media_galleries/mac/mtp_device_delegate_impl_mac.h"
+
 #import <Foundation/Foundation.h>
 #import <ImageCaptureCore/ImageCaptureCore.h>
-#include "base/files/file_path.h"
+#import <UniformTypeIdentifiers/UniformTypeIdentifiers.h>
 
-#include "base/apple/bridging.h"
 #include "base/apple/foundation_util.h"
 #include "base/files/file.h"
+#include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/synchronization/waitable_event.h"
-#include "chrome/browser/media_galleries/mac/mtp_device_delegate_impl_mac.h"
 #include "components/storage_monitor/image_capture_device_manager.h"
 #include "components/storage_monitor/test_storage_monitor.h"
 #include "content/public/test/browser_task_environment.h"
@@ -135,7 +136,7 @@ const char kTestFileContents[] = "test";
 }
 
 - (NSString*)UTI {
-  return base::apple::CFToNSPtrCast(kUTTypeImage);
+  return UTTypeImage.identifier;
 }
 
 - (NSDate*)modificationDate {
