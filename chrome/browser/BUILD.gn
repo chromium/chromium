@@ -3759,6 +3759,8 @@ static_library("browser") {
       "download/offline_item_model_manager.h",
       "download/offline_item_model_manager_factory.cc",
       "download/offline_item_model_manager_factory.h",
+      "enterprise/data_protection/data_protection_features.cc",
+      "enterprise/data_protection/data_protection_features.h",
       "enterprise/data_protection/data_protection_navigation_controller.cc",
       "enterprise/data_protection/data_protection_navigation_controller.h",
       "enterprise/data_protection/data_protection_navigation_observer.cc",
