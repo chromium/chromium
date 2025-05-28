@@ -12,6 +12,7 @@
 #include "base/containers/fixed_flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/containers/to_vector.h"
+#include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/browser/ui/tabs/alert/tab_alert.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_capability_type.h"
@@ -42,7 +43,12 @@ bool CompareAlerts::operator()(TabAlert first, TabAlert second) const {
 }
 
 TabAlertController::TabAlertController(content::WebContents* web_contents)
-    : content::WebContentsObserver(web_contents) {}
+    : content::WebContentsObserver(web_contents) {
+  media_stream_capture_indicator_observation_.Observe(
+      MediaCaptureDevicesDispatcher::GetInstance()
+          ->GetMediaStreamCaptureIndicator()
+          .get());
+}
 
 TabAlertController::~TabAlertController() = default;
 
@@ -101,6 +107,46 @@ void TabAlertController::DidUpdateAudioMutingState(bool muted) {
 
 void TabAlertController::OnAudioStateChanged(bool audible) {
   UpdateAlertState(TabAlert::AUDIO_PLAYING, audible);
+}
+
+void TabAlertController::OnIsCapturingVideoChanged(
+    content::WebContents* contents,
+    bool is_capturing_video) {
+  if (contents == web_contents()) {
+    UpdateAlertState(TabAlert::MEDIA_RECORDING, is_capturing_video);
+  }
+}
+
+void TabAlertController::OnIsCapturingAudioChanged(
+    content::WebContents* contents,
+    bool is_capturing_audio) {
+  if (contents == web_contents()) {
+    UpdateAlertState(TabAlert::MEDIA_RECORDING, is_capturing_audio);
+  }
+}
+
+void TabAlertController::OnIsBeingMirroredChanged(
+    content::WebContents* contents,
+    bool is_being_mirrored) {
+  if (contents == web_contents()) {
+    UpdateAlertState(TabAlert::TAB_CAPTURING, is_being_mirrored);
+  }
+}
+
+void TabAlertController::OnIsCapturingWindowChanged(
+    content::WebContents* contents,
+    bool is_capturing_window) {
+  if (contents == web_contents()) {
+    UpdateAlertState(TabAlert::DESKTOP_CAPTURING, is_capturing_window);
+  }
+}
+
+void TabAlertController::OnIsCapturingDisplayChanged(
+    content::WebContents* contents,
+    bool is_capturing_display) {
+  if (contents == web_contents()) {
+    UpdateAlertState(TabAlert::DESKTOP_CAPTURING, is_capturing_display);
+  }
 }
 
 void TabAlertController::UpdateAlertState(TabAlert alert, bool is_active) {
