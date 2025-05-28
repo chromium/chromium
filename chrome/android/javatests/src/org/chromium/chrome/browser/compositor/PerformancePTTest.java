@@ -16,6 +16,8 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.transit.TransitAsserts;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DisableIf;
+import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tab.TabStateBrowserControlsVisibilityDelegate;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -23,6 +25,8 @@ import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.chrome.test.transit.testhtmls.TopBottomLinksPageStation;
+import org.chromium.ui.base.DeviceFormFactor;
+import org.chromium.ui.test.util.DeviceRestriction;
 
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
@@ -48,6 +52,8 @@ public class PerformancePTTest {
     @Test
     @MediumTest
     @CommandLineFlags.Add({ChromeSwitches.DISABLE_MINIMUM_SHOW_DURATION})
+    @DisableIf.Device(DeviceFormFactor.TABLET) // Disable on tablet (crbug.com/420861061)
+    @Restriction(DeviceRestriction.RESTRICTION_TYPE_NON_AUTO) // Disable on automotive (crbug.com/420881807)
     public void zeroCompositorFramesWhileScrollingBrowserControls() {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
