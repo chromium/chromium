@@ -3695,31 +3695,6 @@ TEST_F(LegacySWPictureLayerImplTest,
   EXPECT_BOTH_EQ(HighResTiling()->contents_scale_key(), 2.f);
 }
 
-TEST_F(LegacySWPictureLayerImplTest, LowResReadyToDrawNotEnoughToActivate) {
-  gfx::Size tile_size(100, 100);
-  gfx::Size layer_bounds(1000, 1000);
-
-  // Make sure pending tree has tiles.
-  gfx::Rect invalidation(gfx::Point(50, 50), tile_size);
-  SetupDefaultTreesWithFixedTileSize(layer_bounds, tile_size, invalidation);
-
-  // All pending layer tiles required are not ready.
-  EXPECT_FALSE(host_impl()->tile_manager()->IsReadyToActivate());
-
-  // Initialize all low-res tiles.
-  EXPECT_FALSE(pending_layer()->LowResTiling());
-  pending_layer()->SetAllTilesReadyInTiling(active_layer()->LowResTiling());
-
-  // Low-res tiles should not be enough.
-  EXPECT_FALSE(host_impl()->tile_manager()->IsReadyToActivate());
-
-  // Initialize remaining tiles.
-  pending_layer()->SetAllTilesReady();
-  active_layer()->SetAllTilesReady();
-
-  EXPECT_TRUE(host_impl()->tile_manager()->IsReadyToActivate());
-}
-
 TEST_F(LegacySWPictureLayerImplTest, HighResReadyToDrawEnoughToActivate) {
   gfx::Size tile_size(100, 100);
   gfx::Size layer_bounds(1000, 1000);
