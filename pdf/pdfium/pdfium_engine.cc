@@ -4348,8 +4348,7 @@ void PDFiumEngine::UpdatePageCount() {
 void PDFiumEngine::StartSearchify(
     GetOcrMaxImageDimensionCallbackAsync get_max_dimension,
     PerformOcrCallbackAsync perform_ocr_callback) {
-  if (!base::FeatureList::IsEnabled(chrome_pdf::features::kPdfSearchify) ||
-      !base::FeatureList::IsEnabled(ax::mojom::features::kScreenAIOCREnabled)) {
+  if (!base::FeatureList::IsEnabled(ax::mojom::features::kScreenAIOCREnabled)) {
     return;
   }
   // Searchify requests may be sent to the engine when PDF pages are loaded and
@@ -4403,8 +4402,7 @@ void PDFiumEngine::ScheduleSearchifyIfNeeded(PDFiumPage* page) {
     return;
   }
 
-  if (!base::FeatureList::IsEnabled(chrome_pdf::features::kPdfSearchify) ||
-      !base::FeatureList::IsEnabled(ax::mojom::features::kScreenAIOCREnabled)) {
+  if (!base::FeatureList::IsEnabled(ax::mojom::features::kScreenAIOCREnabled)) {
     return;
   }
 

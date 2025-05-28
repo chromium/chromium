@@ -13,7 +13,6 @@
 #include "components/pdf/browser/pdf_document_helper.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
-#include "pdf/pdf_features.h"
 #include "services/screen_ai/public/cpp/utilities.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/accessibility_switches.h"
@@ -77,7 +76,6 @@ class PDFSearchifyTest : public PDFExtensionTestBase,
     if (IsSearchifyActive()) {
       enabled.push_back({::features::kScreenAITestMode, {}});
       enabled.push_back({ax::mojom::features::kScreenAIOCREnabled, {}});
-      enabled.push_back({chrome_pdf::features::kPdfSearchify, {}});
     }
     return enabled;
   }
@@ -189,6 +187,9 @@ IN_PROC_BROWSER_TEST_P(PDFSearchifyTest, MAYBE_MultiPage) {
       "Accessibility.ScreenAI.Searchify.ScreenReaderModeEnabled",
       IsScreenReaderEnabled(), IsSearchifyActive() ? 1 : 0);
 }
+
+// TODO(crbug.com/382610226): Add text selection test for PDFs with rotated page
+// or image.
 
 // TODO(crbug.com/382610226): Consider adding save tests like
 // pdf_extension_download_test.cc
