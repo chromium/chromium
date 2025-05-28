@@ -5,6 +5,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
+#include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
 
 namespace blink {
@@ -34,6 +35,88 @@ TEST_F(HTMLElementContainerTimingAttributesTest,
   Element* element_c = GetDocument().getElementById(AtomicString("c"));
 
   EXPECT_TRUE(element_a->SelfOrAncestorHasContainerTiming());
+  EXPECT_TRUE(element_b->SelfOrAncestorHasContainerTiming());
+  EXPECT_FALSE(element_c->SelfOrAncestorHasContainerTiming());
+}
+
+TEST_F(HTMLElementContainerTimingAttributesTest,
+       SelfOrAncestorContainerTiming_AddContainerTiming) {
+  SetBodyContent("<div id=a><div id=b></div></div><div id=c></div>");
+
+  Element* element_a = GetDocument().getElementById(AtomicString("a"));
+  Element* element_b = GetDocument().getElementById(AtomicString("b"));
+  Element* element_c = GetDocument().getElementById(AtomicString("c"));
+
+  EXPECT_FALSE(element_a->SelfOrAncestorHasContainerTiming());
+  EXPECT_FALSE(element_b->SelfOrAncestorHasContainerTiming());
+  EXPECT_FALSE(element_c->SelfOrAncestorHasContainerTiming());
+
+  element_a->setAttribute(html_names::kContainertimingAttr, g_empty_atom);
+
+  EXPECT_TRUE(element_a->SelfOrAncestorHasContainerTiming());
+  EXPECT_TRUE(element_b->SelfOrAncestorHasContainerTiming());
+  EXPECT_FALSE(element_c->SelfOrAncestorHasContainerTiming());
+}
+
+TEST_F(
+    HTMLElementContainerTimingAttributesTest,
+    SelfOrAncestorContainerTiming_AddContainerTimingWithChildContainerTiming) {
+  SetBodyContent(
+      "<div id=a><div id=b containertiming></div></div><div id=c></div>");
+
+  Element* element_a = GetDocument().getElementById(AtomicString("a"));
+  Element* element_b = GetDocument().getElementById(AtomicString("b"));
+  Element* element_c = GetDocument().getElementById(AtomicString("c"));
+
+  EXPECT_FALSE(element_a->SelfOrAncestorHasContainerTiming());
+  EXPECT_TRUE(element_b->SelfOrAncestorHasContainerTiming());
+  EXPECT_FALSE(element_c->SelfOrAncestorHasContainerTiming());
+
+  element_a->setAttribute(html_names::kContainertimingAttr, g_empty_atom);
+
+  EXPECT_TRUE(element_a->SelfOrAncestorHasContainerTiming());
+  EXPECT_TRUE(element_b->SelfOrAncestorHasContainerTiming());
+  EXPECT_FALSE(element_c->SelfOrAncestorHasContainerTiming());
+}
+
+TEST_F(HTMLElementContainerTimingAttributesTest,
+       SelfOrAncestorContainerTiming_RemoveContainerTiming) {
+  SetBodyContent(
+      "<div id=a containertiming><div id=b></div></div><div id=c></div>");
+
+  Element* element_a = GetDocument().getElementById(AtomicString("a"));
+  Element* element_b = GetDocument().getElementById(AtomicString("b"));
+  Element* element_c = GetDocument().getElementById(AtomicString("c"));
+
+  EXPECT_TRUE(element_a->SelfOrAncestorHasContainerTiming());
+  EXPECT_TRUE(element_b->SelfOrAncestorHasContainerTiming());
+  EXPECT_FALSE(element_c->SelfOrAncestorHasContainerTiming());
+
+  element_a->removeAttribute(html_names::kContainertimingAttr);
+
+  EXPECT_FALSE(element_a->SelfOrAncestorHasContainerTiming());
+  EXPECT_FALSE(element_b->SelfOrAncestorHasContainerTiming());
+  EXPECT_FALSE(element_c->SelfOrAncestorHasContainerTiming());
+}
+
+TEST_F(
+    HTMLElementContainerTimingAttributesTest,
+    SelfOrAncestorContainerTiming_RemoveContainerTimingWithContainerTimingChild) {
+  SetBodyContent(
+      "<div id=a containertiming><div id=b containertiming></div></div><div "
+      "id=c></div>");
+
+  Element* element_a = GetDocument().getElementById(AtomicString("a"));
+  Element* element_b = GetDocument().getElementById(AtomicString("b"));
+  Element* element_c = GetDocument().getElementById(AtomicString("c"));
+
+  EXPECT_TRUE(element_a->SelfOrAncestorHasContainerTiming());
+  EXPECT_TRUE(element_b->SelfOrAncestorHasContainerTiming());
+  EXPECT_FALSE(element_c->SelfOrAncestorHasContainerTiming());
+
+  element_a->removeAttribute(html_names::kContainertimingAttr);
+
+  EXPECT_FALSE(element_a->SelfOrAncestorHasContainerTiming());
   EXPECT_TRUE(element_b->SelfOrAncestorHasContainerTiming());
   EXPECT_FALSE(element_c->SelfOrAncestorHasContainerTiming());
 }
@@ -86,6 +169,32 @@ TEST_F(
   EXPECT_TRUE(element_b->SelfOrAncestorHasContainerTiming());
   EXPECT_TRUE(element_c->SelfOrAncestorHasContainerTiming());
   EXPECT_TRUE(element_d->SelfOrAncestorHasContainerTiming());
+}
+
+TEST_F(
+    HTMLElementContainerTimingAttributesTest,
+    SelfOrAncestorContainerTiming_MoveNonContainerTimingSubTreeToNonContainerTiming) {
+  SetBodyContent(
+      "<div id=a><div id=b><div id=c "
+      "containertiming></div></div></div><div "
+      "id=d></div>");
+
+  Element* element_a = GetDocument().getElementById(AtomicString("a"));
+  Element* element_b = GetDocument().getElementById(AtomicString("b"));
+  Element* element_c = GetDocument().getElementById(AtomicString("c"));
+  Element* element_d = GetDocument().getElementById(AtomicString("d"));
+
+  EXPECT_FALSE(element_a->SelfOrAncestorHasContainerTiming());
+  EXPECT_FALSE(element_b->SelfOrAncestorHasContainerTiming());
+  EXPECT_TRUE(element_c->SelfOrAncestorHasContainerTiming());
+  EXPECT_FALSE(element_d->SelfOrAncestorHasContainerTiming());
+
+  element_d->appendChild(element_b);
+
+  EXPECT_FALSE(element_a->SelfOrAncestorHasContainerTiming());
+  EXPECT_FALSE(element_b->SelfOrAncestorHasContainerTiming());
+  EXPECT_TRUE(element_c->SelfOrAncestorHasContainerTiming());
+  EXPECT_FALSE(element_d->SelfOrAncestorHasContainerTiming());
 }
 
 }  // namespace blink
