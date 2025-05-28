@@ -106,6 +106,8 @@ public class PageInfoCookiesController extends PageInfoPreferenceSubpageControll
                                 ::onThirdPartyCookieToggleChanged,
                         /* onClearCallback= */ this::onClearCookiesClicked,
                         /* onCookieSettingsLinkClicked= */ delegate::showCookieSettings,
+                        /* onIncognitoSettingsLinkClicked */ delegate
+                                ::showIncognitoTrackingProtectionsSettings,
                         /* onFeedbackLinkClicked= */ delegate::showCookieFeedback,
                         /* disableCookieDeletion= */ isDeletionDisabled(),
                         /* hostName= */ mMainController.getURL().getHost(),
@@ -271,6 +273,10 @@ public class PageInfoCookiesController extends PageInfoPreferenceSubpageControll
 
     public void setIsModeBUiForTesting(boolean isModeBUi) {
         mIsModeBUi = isModeBUi;
+    }
+
+    public void setControlsStateForTesting(@CookieControlsState int controlsState) {
+        mControlsState = controlsState;
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)

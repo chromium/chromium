@@ -55,6 +55,7 @@ public class PageInfoCookiesSettings extends BaseSiteSettingsFragment {
     private TextMessagePreference mThirdPartyCookiesSummary;
     private Runnable mOnClearCallback;
     private Runnable mOnCookieSettingsLinkClicked;
+    private Runnable mOnIncognitoSettingsLinkClicked;
     private Callback<Activity> mOnFeedbackClicked;
     private @Nullable Dialog mConfirmationDialog;
     private boolean mDeleteDisabled;
@@ -73,6 +74,7 @@ public class PageInfoCookiesSettings extends BaseSiteSettingsFragment {
         public final Callback<Boolean> onThirdPartyCookieToggleChanged;
         public final Runnable onClearCallback;
         public final Runnable onCookieSettingsLinkClicked;
+        public final Runnable onIncognitoSettingsLinkClicked;
         public final Callback<Activity> onFeedbackLinkClicked;
         public final boolean disableCookieDeletion;
         public final CharSequence hostName;
@@ -86,6 +88,7 @@ public class PageInfoCookiesSettings extends BaseSiteSettingsFragment {
                 Callback<Boolean> onThirdPartyCookieToggleChanged,
                 Runnable onClearCallback,
                 Runnable onCookieSettingsLinkClicked,
+                Runnable onIncognitoSettingsLinkClicked,
                 Callback<Activity> onFeedbackLinkClicked,
                 boolean disableCookieDeletion,
                 CharSequence hostName,
@@ -97,6 +100,7 @@ public class PageInfoCookiesSettings extends BaseSiteSettingsFragment {
             this.onThirdPartyCookieToggleChanged = onThirdPartyCookieToggleChanged;
             this.onClearCallback = onClearCallback;
             this.onCookieSettingsLinkClicked = onCookieSettingsLinkClicked;
+            this.onIncognitoSettingsLinkClicked = onIncognitoSettingsLinkClicked;
             this.onFeedbackLinkClicked = onFeedbackLinkClicked;
             this.disableCookieDeletion = disableCookieDeletion;
             this.hostName = hostName;
@@ -148,6 +152,7 @@ public class PageInfoCookiesSettings extends BaseSiteSettingsFragment {
     public void setParams(PageInfoCookiesViewParams params, PageInfoControllerDelegate delegate) {
         mPageInfoControllerDelegate = delegate;
         mOnCookieSettingsLinkClicked = params.onCookieSettingsLinkClicked;
+        mOnIncognitoSettingsLinkClicked = params.onIncognitoSettingsLinkClicked;
         mFixedExpirationForTesting = params.fixedExpirationForTesting;
         mBlockAll3pc = params.blockAll3pc;
         mIsIncognito = params.isIncognito;
@@ -159,18 +164,7 @@ public class PageInfoCookiesSettings extends BaseSiteSettingsFragment {
         mHostName = params.hostName;
 
         // Initialize UI elements that are based on params.
-        Preference cookieSummary = assertNonNull(findPreference(COOKIE_SUMMARY_PREFERENCE));
-        cookieSummary.setSummary(
-                SpanApplier.applySpans(
-                        getSummaryString(),
-                        new SpanApplier.SpanInfo(
-                                "<link>",
-                                "</link>",
-                                new ChromeClickableSpan(
-                                        getContext(),
-                                        (view) -> {
-                                            mOnCookieSettingsLinkClicked.run();
-                                        }))));
+        setCookieSummary(get3pcSummary(), mOnCookieSettingsLinkClicked);
 
         mCookieSwitch.setOnPreferenceChangeListener(
                 (preference, newValue) -> {
@@ -185,7 +179,7 @@ public class PageInfoCookiesSettings extends BaseSiteSettingsFragment {
         updateCookieDeleteButton();
     }
 
-    private String getSummaryString() {
+    private String get3pcSummary() {
         if (!mIsModeBUi) {
             // Pre Mode B description: "Cookies and other site data are used to remember you..."
             return getString(R.string.page_info_cookies_description);
@@ -250,17 +244,24 @@ public class PageInfoCookiesSettings extends BaseSiteSettingsFragment {
 
         switch (controlsState) {
             case CookieControlsState.ACTIVE_TP:
-            case CookieControlsState.PAUSED_TP:
+                setCookieSummary(
+                        getTrackingProtectionsSummary(enforcement),
+                        mOnIncognitoSettingsLinkClicked);
                 // TODO(crbug.com/388294499): Add support for TP UI.
+                mCookieSwitch.setVisible(false);
+                break;
+            case CookieControlsState.PAUSED_TP:
+                // No summary when protections are paused.
+                hideCookieSummary();
                 mCookieSwitch.setVisible(false);
                 break;
             case CookieControlsState.BLOCKED3PC:
                 setBlocked3pcTitleAndSummary();
-                updateCookieSwitch(/*cookiesAllowed*/ false, enforcement);
+                updateCookieSwitch(/* cookiesAllowed= */ false, enforcement);
                 break;
             case CookieControlsState.ALLOWED3PC:
                 setAllowed3pcTitleAndSummary(expiration);
-                updateCookieSwitch(/*cookiesAllowed*/ true, enforcement);
+                updateCookieSwitch(/* cookiesAllowed= */ true, enforcement);
                 break;
             default:
                 assert false : "Should not be reached.";
@@ -268,11 +269,31 @@ public class PageInfoCookiesSettings extends BaseSiteSettingsFragment {
         updateContentDescriptionsForA11y();
     }
 
+    private void hideCookieSummary() {
+        Preference cookieSummary = assertNonNull(findPreference(COOKIE_SUMMARY_PREFERENCE));
+        cookieSummary.setVisible(false);
+    }
+
+    private void setCookieSummary(String summary, Runnable link) {
+        Preference cookieSummary = assertNonNull(findPreference(COOKIE_SUMMARY_PREFERENCE));
+        cookieSummary.setVisible(true);
+        cookieSummary.setSummary(
+                SpanApplier.applySpans(
+                        summary,
+                        new SpanApplier.SpanInfo(
+                                "<link>",
+                                "</link>",
+                                new ChromeClickableSpan(
+                                        getContext(),
+                                        (view) -> {
+                                            link.run();
+                                        }))));
+    }
+
     private void setTpcdGrantState() {
         mCookieSwitch.setVisible(false);
         mThirdPartyCookiesTitle.setVisible(false);
-        Preference cookieSummary = assertNonNull(findPreference(COOKIE_SUMMARY_PREFERENCE));
-        cookieSummary.setVisible(false);
+        hideCookieSummary();
         mThirdPartyCookiesSummary.setSummary(
                 SpanApplier.applySpans(
                         getString(R.string.page_info_tracking_protection_site_grant_description),
@@ -285,6 +306,18 @@ public class PageInfoCookiesSettings extends BaseSiteSettingsFragment {
                                             mOnCookieSettingsLinkClicked.run();
                                         }))));
         mThirdPartyCookiesSummary.setDividerAllowedAbove(true);
+    }
+
+    private String getTrackingProtectionsSummary(@CookieControlsEnforcement int enforcement) {
+        int id;
+        if (enforcement == CookieControlsEnforcement.ENFORCED_BY_POLICY) {
+            id = R.string.page_info_privacy_site_data_3pcs_enterprise_allowed_description_android;
+        } else if (enforcement == CookieControlsEnforcement.ENFORCED_BY_COOKIE_SETTING) {
+            id = R.string.page_info_privacy_site_data_3pcs_user_allowed_description_android;
+        } else {
+            id = R.string.page_info_privacy_site_data_description_android;
+        }
+        return getString(id);
     }
 
     private void setBlocked3pcTitleAndSummary() {
