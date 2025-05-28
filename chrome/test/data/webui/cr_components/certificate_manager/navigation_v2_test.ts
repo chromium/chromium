@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
-import 'chrome://resources/cr_components/certificate_manager/navigation_v2.js';
+import 'chrome://certificate-manager/navigation_v2.js';
 
-import {Page, Route, RouteObserverMixin, Router} from 'chrome://resources/cr_components/certificate_manager/navigation_v2.js';
+import {Page, Route, RouteObserverMixin, Router} from 'chrome://certificate-manager/navigation_v2.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';

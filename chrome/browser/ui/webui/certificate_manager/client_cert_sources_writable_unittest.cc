@@ -15,6 +15,7 @@
 #include "chrome/browser/net/nss_service.h"
 #include "chrome/browser/net/nss_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/resources/certificate_manager/certificate_manager_v2.mojom.h"
 #include "chrome/browser/ui/webui/certificate_manager/certificate_manager_utils.h"
 #include "chrome/browser/ui/webui/certificate_manager/client_cert_sources.h"
 #include "chrome/common/pref_names.h"
@@ -37,7 +38,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/shell_dialogs/fake_select_file_dialog.h"
-#include "ui/webui/resources/cr_components/certificate_manager/certificate_manager_v2.mojom.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "ash/constants/ash_features.h"

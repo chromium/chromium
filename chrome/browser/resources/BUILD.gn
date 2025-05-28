@@ -33,6 +33,7 @@ group("resources") {
       "access_code_cast:resources",
       "app_service_internals:resources",
       "bookmarks:resources",
+      "certificate_manager:resources",
       "commerce/product_specifications:resources",
       "data_sharing:resources",
       "downloads:resources",

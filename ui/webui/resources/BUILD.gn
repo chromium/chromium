@@ -85,15 +85,6 @@ generate_grd("build_grd") {
       "$target_gen_dir/cr_components/most_visited/resources.grdp",
     ]
 
-    if (use_blink) {
-      if (use_nss_certs || chrome_root_store_cert_management_ui) {
-        public_deps += [ "cr_components/certificate_manager:build_grdp" ]
-        grdp_files += [
-          "$target_gen_dir/cr_components/certificate_manager/resources.grdp",
-        ]
-      }
-    }
-
     if (!is_android) {
       public_deps += [
         "cr_components/history:build_grdp",

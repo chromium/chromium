@@ -30,15 +30,20 @@ build_webui_tests("build") {
   }
 
   ts_deps = [
+    "//chrome/browser/resources/certificate_manager:build_ts",
     "//third_party/polymer/v3_0:library",
-    "//ui/webui/resources/cr_components/certificate_manager:build_ts",
     "//ui/webui/resources/cr_elements:build_ts",
     "//ui/webui/resources/js:build_ts",
     "//ui/webui/resources/mojo:build_ts",
   ]
 
-  ts_path_mappings =
-      [ "chrome://certificate-manager/strings.m.js|" +
+  ts_path_mappings = [
+    "chrome://certificate-manager/*|" +
+        rebase_path(
+            "$root_gen_dir/chrome/browser/resources/certificate_manager/tsc/*",
+            target_gen_dir),
+    "chrome://certificate-manager/strings.m.js|" +
         rebase_path("//tools/typescript/definitions/strings.d.ts",
-                    target_gen_dir) ]
+                    target_gen_dir),
+  ]
 }

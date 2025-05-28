@@ -5756,8 +5756,7 @@ static_library("ui_public_dependencies") {
     ]
   }
   if (chrome_root_store_cert_management_ui) {
-    public_deps +=
-        [ "//ui/webui/resources/cr_components/certificate_manager:mojom" ]
+    public_deps += [ "//chrome/browser/resources/certificate_manager:mojom" ]
   }
 }
 

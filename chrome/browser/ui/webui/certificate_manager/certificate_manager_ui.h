@@ -5,13 +5,13 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_CERTIFICATE_MANAGER_CERTIFICATE_MANAGER_UI_H_
 #define CHROME_BROWSER_UI_WEBUI_CERTIFICATE_MANAGER_CERTIFICATE_MANAGER_UI_H_
 
+#include "chrome/browser/resources/certificate_manager/certificate_manager_v2.mojom.h"
 #include "chrome/browser/ui/webui/certificate_manager/certificate_manager_handler.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/common/webui_url_constants.h"
 #include "content/public/browser/webui_config.h"
 #include "content/public/common/url_constants.h"
 #include "ui/web_dialogs/web_dialog_ui.h"
-#include "ui/webui/resources/cr_components/certificate_manager/certificate_manager_v2.mojom.h"
 
 class CertificateManagerUI;
 

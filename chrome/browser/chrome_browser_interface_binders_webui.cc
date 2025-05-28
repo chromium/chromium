@@ -338,8 +338,8 @@
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(CHROME_ROOT_STORE_CERT_MANAGEMENT_UI)
+#include "chrome/browser/resources/certificate_manager/certificate_manager_v2.mojom.h"
 #include "chrome/browser/ui/webui/certificate_manager/certificate_manager_ui.h"
-#include "ui/webui/resources/cr_components/certificate_manager/certificate_manager_v2.mojom.h"
 #endif  // BUILDFLAG(CHROME_ROOT_STORE_CERT_MANAGEMENT_UI)
 
 #if BUILDFLAG(ENABLE_COMPOSE)

@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://resources/cr_components/certificate_manager/certificate_password_dialog.js';
+import 'chrome://certificate-manager/certificate_password_dialog.js';
 import 'chrome://certificate-manager/strings.m.js';
 
-import type {CertificatePasswordDialogElement} from 'chrome://resources/cr_components/certificate_manager/certificate_password_dialog.js';
+import type {CertificatePasswordDialogElement} from 'chrome://certificate-manager/certificate_password_dialog.js';
 import {assertEquals, assertFalse, assertNull, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 

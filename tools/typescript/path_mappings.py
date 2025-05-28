@@ -20,7 +20,6 @@ def _add_ui_webui_resources_mappings(path_mappings, root_gen_dir):
       "js",
       "mojo",
       "cr_components/app_management",
-      "cr_components/certificate_manager",
       "cr_components/color_change_listener",
       "cr_components/commerce",
       "cr_components/cr_shortcut_input",

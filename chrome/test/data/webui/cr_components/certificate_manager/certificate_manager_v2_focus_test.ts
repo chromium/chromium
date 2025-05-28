@@ -6,13 +6,13 @@
 // depend on what element is focused, and thus need to be an
 // interactive_ui_test to avoid flake.
 
-import 'chrome://resources/cr_components/certificate_manager/certificate_manager_v2.js';
+import 'chrome://certificate-manager/certificate_manager_v2.js';
 import 'chrome://certificate-manager/strings.m.js';
 
-import type {CertificateManagerV2Element} from 'chrome://resources/cr_components/certificate_manager/certificate_manager_v2.js';
-import {CertificateSource} from 'chrome://resources/cr_components/certificate_manager/certificate_manager_v2.mojom-webui.js';
-import type {CertManagementMetadata} from 'chrome://resources/cr_components/certificate_manager/certificate_manager_v2.mojom-webui.js';
-import {CertificatesV2BrowserProxy} from 'chrome://resources/cr_components/certificate_manager/certificates_v2_browser_proxy.js';
+import type {CertificateManagerV2Element} from 'chrome://certificate-manager/certificate_manager_v2.js';
+import {CertificateSource} from 'chrome://certificate-manager/certificate_manager_v2.mojom-webui.js';
+import type {CertManagementMetadata} from 'chrome://certificate-manager/certificate_manager_v2.mojom-webui.js';
+import {CertificatesV2BrowserProxy} from 'chrome://certificate-manager/certificates_v2_browser_proxy.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
 import {getDeepActiveElement} from 'chrome://resources/js/util.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';

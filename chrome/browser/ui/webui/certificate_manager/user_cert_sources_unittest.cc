@@ -8,6 +8,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/net/server_certificate_database_service_factory.h"
+#include "chrome/browser/resources/certificate_manager/certificate_manager_v2.mojom-forward.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
@@ -21,7 +22,6 @@
 #include "net/test/test_data_directory.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/shell_dialogs/fake_select_file_dialog.h"
-#include "ui/webui/resources/cr_components/certificate_manager/certificate_manager_v2.mojom-forward.h"
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/webui/certificate_manager/certificate_manager_utils.h"

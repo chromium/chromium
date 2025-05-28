@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import type {ActionResult, CertificateManagerPageHandlerInterface, CertificateManagerPageRemote, CertificateSource, CertManagementMetadata, SummaryCertInfo} from 'chrome://resources/cr_components/certificate_manager/certificate_manager_v2.mojom-webui.js';
-import {CertificateManagerPageCallbackRouter} from 'chrome://resources/cr_components/certificate_manager/certificate_manager_v2.mojom-webui.js';
+import type {ActionResult, CertificateManagerPageHandlerInterface, CertificateManagerPageRemote, CertificateSource, CertManagementMetadata, SummaryCertInfo} from 'chrome://certificate-manager/certificate_manager_v2.mojom-webui.js';
+import {CertificateManagerPageCallbackRouter} from 'chrome://certificate-manager/certificate_manager_v2.mojom-webui.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
 class FakePageHandler extends TestBrowserProxy implements

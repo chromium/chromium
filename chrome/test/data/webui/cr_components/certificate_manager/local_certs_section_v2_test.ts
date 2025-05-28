@@ -4,13 +4,13 @@
 
 // These test suites test the local-certs-section-v2 component.
 
-import 'chrome://resources/cr_components/certificate_manager/local_certs_section_v2.js';
+import 'chrome://certificate-manager/local_certs_section_v2.js';
 import 'chrome://certificate-manager/strings.m.js';
 
 import {PluralStringProxyImpl} from '//resources/js/plural_string_proxy.js';
-import type {CertManagementMetadata} from 'chrome://resources/cr_components/certificate_manager/certificate_manager_v2.mojom-webui.js';
-import {CertificatesV2BrowserProxy} from 'chrome://resources/cr_components/certificate_manager/certificates_v2_browser_proxy.js';
-import type {LocalCertsSectionV2Element} from 'chrome://resources/cr_components/certificate_manager/local_certs_section_v2.js';
+import type {CertManagementMetadata} from 'chrome://certificate-manager/certificate_manager_v2.mojom-webui.js';
+import {CertificatesV2BrowserProxy} from 'chrome://certificate-manager/certificates_v2_browser_proxy.js';
+import type {LocalCertsSectionV2Element} from 'chrome://certificate-manager/local_certs_section_v2.js';
 import {assertEquals, assertNull} from 'chrome://webui-test/chai_assert.js';
 import {TestPluralStringProxy} from 'chrome://webui-test/test_plural_string_proxy.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';

@@ -17,6 +17,8 @@
 #include "base/task/bind_post_task.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/resources/certificate_manager/certificate_manager_v2.mojom-shared.h"
+#include "chrome/browser/resources/certificate_manager/certificate_manager_v2.mojom.h"
 #include "chrome/browser/ui/chrome_select_file_policy.h"
 #include "chrome/browser/ui/webui/certificate_manager/certificate_manager_utils.h"
 #include "chrome/common/net/x509_certificate_model.h"
@@ -34,8 +36,6 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/shell_dialogs/select_file_dialog.h"
 #include "ui/shell_dialogs/selected_file_info.h"
-#include "ui/webui/resources/cr_components/certificate_manager/certificate_manager_v2.mojom-shared.h"
-#include "ui/webui/resources/cr_components/certificate_manager/certificate_manager_v2.mojom.h"
 
 #if BUILDFLAG(USE_NSS_CERTS)
 #include "chrome/browser/net/nss_service.h"

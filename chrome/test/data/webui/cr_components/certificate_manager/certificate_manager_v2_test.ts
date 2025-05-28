@@ -4,13 +4,13 @@
 
 // These test suites test the certificate-manager v2 component.
 
-import 'chrome://resources/cr_components/certificate_manager/certificate_manager_v2.js';
+import 'chrome://certificate-manager/certificate_manager_v2.js';
 import 'chrome://certificate-manager/strings.m.js';
 
-import type {CertificateManagerV2Element} from 'chrome://resources/cr_components/certificate_manager/certificate_manager_v2.js';
-import type {CertManagementMetadata} from 'chrome://resources/cr_components/certificate_manager/certificate_manager_v2.mojom-webui.js';
-import type {CertificatePasswordDialogElement} from 'chrome://resources/cr_components/certificate_manager/certificate_password_dialog.js';
-import {CertificatesV2BrowserProxy} from 'chrome://resources/cr_components/certificate_manager/certificates_v2_browser_proxy.js';
+import type {CertificateManagerV2Element} from 'chrome://certificate-manager/certificate_manager_v2.js';
+import type {CertManagementMetadata} from 'chrome://certificate-manager/certificate_manager_v2.mojom-webui.js';
+import type {CertificatePasswordDialogElement} from 'chrome://certificate-manager/certificate_password_dialog.js';
+import {CertificatesV2BrowserProxy} from 'chrome://certificate-manager/certificates_v2_browser_proxy.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertNull, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 

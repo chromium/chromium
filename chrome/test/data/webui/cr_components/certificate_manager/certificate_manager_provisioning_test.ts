@@ -3,16 +3,16 @@
 // found in the LICENSE file.
 
 import 'chrome://certificate-manager/strings.m.js';
-import 'chrome://resources/cr_components/certificate_manager/certificate_provisioning_list.js';
-import 'chrome://resources/cr_components/certificate_manager/certificate_provisioning_entry.js';
+import 'chrome://certificate-manager/certificate_provisioning_list.js';
+import 'chrome://certificate-manager/certificate_provisioning_entry.js';
 
-import type {CertificateProvisioningActionEventDetail} from 'chrome://resources/cr_components/certificate_manager/certificate_manager_types.js';
-import {CertificateProvisioningViewDetailsActionEvent} from 'chrome://resources/cr_components/certificate_manager/certificate_manager_types.js';
-import type {CertificateProvisioningProcess} from 'chrome://resources/cr_components/certificate_manager/certificate_provisioning_browser_proxy.js';
-import {CertificateProvisioningBrowserProxyImpl} from 'chrome://resources/cr_components/certificate_manager/certificate_provisioning_browser_proxy.js';
-import type {CertificateProvisioningDetailsDialogElement} from 'chrome://resources/cr_components/certificate_manager/certificate_provisioning_details_dialog.js';
-import type {CertificateProvisioningEntryElement} from 'chrome://resources/cr_components/certificate_manager/certificate_provisioning_entry.js';
-import type {CertificateProvisioningListElement} from 'chrome://resources/cr_components/certificate_manager/certificate_provisioning_list.js';
+import type {CertificateProvisioningActionEventDetail} from 'chrome://certificate-manager/certificate_manager_types.js';
+import {CertificateProvisioningViewDetailsActionEvent} from 'chrome://certificate-manager/certificate_manager_types.js';
+import type {CertificateProvisioningProcess} from 'chrome://certificate-manager/certificate_provisioning_browser_proxy.js';
+import {CertificateProvisioningBrowserProxyImpl} from 'chrome://certificate-manager/certificate_provisioning_browser_proxy.js';
+import type {CertificateProvisioningDetailsDialogElement} from 'chrome://certificate-manager/certificate_provisioning_details_dialog.js';
+import type {CertificateProvisioningEntryElement} from 'chrome://certificate-manager/certificate_provisioning_entry.js';
+import type {CertificateProvisioningListElement} from 'chrome://certificate-manager/certificate_provisioning_list.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
