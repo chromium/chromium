@@ -580,8 +580,12 @@ void ReadAnythingAppController::AccessibilityLocationChangesReceived(
   // the current active tree has been destroyed, do nothing.
   DUMP_WILL_BE_CHECK(model_.active_tree_id() != ui::AXTreeIDUnknown());
   DUMP_WILL_BE_CHECK(model_.ContainsTree(tree_id));
+  // TODO: crbug.com/411776559- Determine if a DUMP_WILL_BE_CHECK is needed
+  // here or if it's okay to just ignore AccessibilityLocationChangesReceived
+  // events if they're sent not on the active tree.
+  DUMP_WILL_BE_CHECK(model_.active_tree_id() == tree_id);
   if (model_.active_tree_id() == ui::AXTreeIDUnknown() ||
-      !model_.ContainsTree(tree_id)) {
+      !model_.ContainsTree(tree_id) || model_.active_tree_id() != tree_id) {
     return;
   }
   // Listen to location change notifications to update locations of the nodes
