@@ -13,6 +13,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
@@ -22,6 +23,7 @@ import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.util.DOMUtils;
 import org.chromium.content_public.browser.test.util.TestCallbackHelperContainer;
 import org.chromium.content_public.browser.test.util.TestCallbackHelperContainer.OnPageFinishedHelper;
+import org.chromium.content_public.browser.test.util.WebContentsUtils;
 import org.chromium.content_shell_apk.ContentShellActivityTestRule;
 import org.chromium.content_shell_apk.ContentShellActivityTestRule.RerunWithUpdatedContainerView;
 
@@ -37,11 +39,11 @@ public class SelectPopupTest {
     private static final String SELECT_URL =
             UrlUtils.encodeHtmlDataUri(
                     "<html><head><meta name=\"viewport\"content=\"width=device-width,"
-                            + " initial-scale=1.0, maximum-scale=1.0\" /></head><body>Which animal is"
-                            + " the strongest:<br/><select id=\"select\"><option>Black"
-                            + " bear</option><option>Polar bear</option><option>Grizzly</option>"
-                            + "<option>Tiger</option><option>Lion</option><option>Gorilla</option>"
-                            + "<option>Chipmunk</option></select></body></html>");
+                        + " initial-scale=1.0, maximum-scale=1.0\" /></head><body>Which animal is"
+                        + " the strongest:<br/><select id=\"select\"><option>Black"
+                        + " bear</option><option>Polar bear</option><option>Grizzly</option>"
+                        + "<option>Tiger</option><option>Lion</option><option>Gorilla</option>"
+                        + "<option>Chipmunk</option></select></body></html>");
 
     private void verifyPopupShownState(boolean shown) {
         CriteriaHelper.pollUiThread(
@@ -75,6 +77,8 @@ public class SelectPopupTest {
         final OnPageFinishedHelper onPageFinishedHelper = viewClient.getOnPageFinishedHelper();
 
         // Once clicked, the popup should show up.
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> WebContentsUtils.simulateEndOfPaintHolding(webContents));
         DOMUtils.clickNode(webContents, "select");
         verifyPopupShownState(true);
 
