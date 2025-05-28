@@ -255457,7 +255457,7 @@
       ]
      ],
      "inline-with-offset-from-containing-block.html": [
-      "31f8449ff630fe6844eb16b46e445ec840d550d8",
+      "77fb0570966e47909b7b9d06f1330adcd5233ac8",
       [
        null,
        [
@@ -255477,7 +255477,7 @@
            ],
            [
             0,
-            1500
+            1633
            ]
           ]
          ]
@@ -257328,7 +257328,7 @@
       ]
      ],
      "new-content-captures-different-size.html": [
-      "eeb7347981daac829fd17d85ada19730fe22af32",
+      "0a754c651ffa2f0e7cbd957ab4ad2b8bb35f2cd2",
       [
        null,
        [
@@ -257348,7 +257348,7 @@
            ],
            [
             0,
-            15000
+            15393
            ]
           ]
          ]
@@ -325995,7 +325995,7 @@
      []
     ],
     "META.yml": [
-     "68c30024552f526e2d34f42eb22416ac3b585114",
+     "4bbc6311bdceece7580ba9c38344081e0b4aba57",
      []
     ],
     "OWNERS": [
@@ -491268,7 +491268,7 @@
      ]
     ],
     "cookieStore_special_names.https.any.js": [
-     "e2a3df7fe33f3d4325cb1f602d5582dba97da627",
+     "1e12674a7f7ce9b1fbc5aa46e53be9c6bc08c084",
      [
       "cookie-store/cookieStore_special_names.https.any.html",
       {
