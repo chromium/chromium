@@ -61,6 +61,8 @@ chromium-metrics-reviews@google.com.
   <int value="26" label="kFinalizeConcurrentMinorMS"/>
   <int value="27" label="kCppHeapAllocationFailure"/>
   <int value="28" label="kFrozen"/>
+  <int value="29" label="kIdleContextDisposal"/>
+  <int value="30" label="kFinalizeMinorMSForMajorGC"/>
 </enum>
 
 <enum name="LiftoffBailoutReason">
