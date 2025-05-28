@@ -23,7 +23,7 @@
 
 struct wl_buffer;
 struct wl_registry;
-struct zcr_ui_controls_v1;
+struct zcr_ui_controls_v2;
 struct wl_callback;
 
 namespace wl {
@@ -56,12 +56,6 @@ class WaylandInputEmulate : public wl::WaylandProxy::Delegate {
                             int accelerator_state,
                             uint32_t request_id);
 
-  // |touch_screen_location| is in DIP.
-  void EmulateTouch(int action,
-                    const gfx::Point& touch_screen_location,
-                    int touch_id,
-                    uint32_t request_id);
-
   void ForceUseScreenCoordinatesOnce();
 
  private:
@@ -69,7 +63,6 @@ class WaylandInputEmulate : public wl::WaylandProxy::Delegate {
     KeyPress,
     MouseMove,
     MouseButton,
-    Touch,
   };
 
   // Pending emulation request.
@@ -145,9 +138,9 @@ class WaylandInputEmulate : public wl::WaylandProxy::Delegate {
                           bool is_configured) override;
   void OnWindowRoleAssigned(gfx::AcceleratedWidget widget) override;
 
-  // zcr_ui_controls_v1_listener callbacks:
+  // zcr_ui_controls_v2_listener callbacks:
   static void OnRequestProcessed(void* data,
-                                 zcr_ui_controls_v1* ui_controls,
+                                 zcr_ui_controls_v2* ui_controls,
                                  uint32_t id);
 
   // wl_registry_listener callbacks:
@@ -186,7 +179,7 @@ class WaylandInputEmulate : public wl::WaylandProxy::Delegate {
   base::RepeatingCallback<void(uint32_t)> request_processed_callback_;
 
   // If true, the next `EmulatePointerMotion` call will use global screen
-  // coordinates, i.e. send zcr_ui_controls_v1.mouse_move with the `surface`
+  // coordinates, i.e. send zcr_ui_controls_v2.mouse_move with the `surface`
   // parameter set to NULL.
   // Note: this does not affect whether `EmulatePointerMotion` uses the
   // coordinates from its `mouse_surface_location` or `mouse_screen_location`
@@ -197,7 +190,7 @@ class WaylandInputEmulate : public wl::WaylandProxy::Delegate {
   // class belongs to cannot depend on the "wayland" target in the
   // //ui/ozone/platform/wayland/BUILD.gn
   raw_ptr<wl_registry> registry_ = nullptr;
-  raw_ptr<zcr_ui_controls_v1> ui_controls_ = nullptr;
+  raw_ptr<zcr_ui_controls_v2> ui_controls_ = nullptr;
 };
 
 }  // namespace wl
