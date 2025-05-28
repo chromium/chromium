@@ -18,44 +18,68 @@ namespace media {
 // CDM creation status.
 // These are reported to UMA server. Do not renumber or reuse values.
 enum class CreateCdmStatus : StatusCodeType {
-  kSuccess,                       // Succeeded
-  kUnknownError,                  // Unknown error.
-  kCdmCreationAborted,            // CDM creation aborted.
-  kLoadCdmFailed [[deprecated]],  // Failed to load the CDM.
-  kCreateCdmFuncNotAvailable,     // CreateCdmFunc not available.
-  kCdmHelperCreationFailed,       // CDM helper creation failed.
-  kGetCdmPrefDataFailed,          // Failed to get the CDM preference data.
-  kGetCdmOriginIdFailed,          // Failed to get the CDM origin ID.
-  kInitCdmFailed,                 // Failed to initialize CDM.
-  kCdmFactoryCreationFailed,      // CDM Factory creation failed.
-  kCdmNotSupported,               // CDM not supported.
-  kInvalidCdmConfig,  // Invalid CdmConfig. e.g. MediaFoundationService requires
-                      // both distinctive identifier and persistent state.
-  kUnsupportedKeySystem,  // Unsupported key system.
-  kDisconnectionError,    // Disconnection error. The remote process dropped the
-                          // callback. e.g. in case of crash.
-  kNotAllowedOnUniqueOrigin,         // EME use is not allowed on unique
-                                     // origins.
-  kMediaDrmBridgeCreationFailed,     // Android: MediaDrmBridge creation failed.
-  kMediaCryptoNotAvailable,          // Android: MediaCrypto not available.
-  kNoMoreInstances,                  // CrOs: Only one instance allowed.
-  kInsufficientGpuResources,         // CrOs: Insufficient GPU memory
-                                     // available.
-  kCrOsVerifiedAccessDisabled,       // CrOs: Verified Access is disabled.
-  kCrOsRemoteFactoryCreationFailed,  // CrOs: Remote factory creation failed.
-  kAndroidMediaDrmIllegalArgument,   // Android: Illegal argument passed to
-                                     // MediaDrm.
-  kAndroidMediaDrmIllegalState,   // Android: MediaDrm not initialized properly.
-  kAndroidFailedL1SecurityLevel,  // Android: Unable to set L1 security level.
-  kAndroidFailedL3SecurityLevel,  // Android: Unable to set L3 security level.
-  kAndroidFailedSecurityOrigin,   // Android: Unable to set origin.
-  kAndroidFailedMediaCryptoSession,   // Android: Unable to create MediaCrypto
-                                      // session.
-  kAndroidFailedToStartProvisioning,  // Android: Unable to start provisioning.
-  kAndroidFailedMediaCryptoCreate,    // Android: Unable to create MediaCrypto
-                                      // object.
-  kAndroidUnsupportedMediaCryptoScheme,  // Android: Crypto scheme not
-                                         // supported.
+  // Succeeded.
+  kSuccess = 0,
+  // Unknown error.
+  kUnknownError = 1,
+  // CDM creation aborted.
+  kCdmCreationAborted = 2,
+  // 3 was kLoadCdmFailed; no longer used.
+  // CreateCdmFunc not available.
+  kCreateCdmFuncNotAvailable = 4,
+  // CDM helper creation failed.
+  kCdmHelperCreationFailed = 5,
+  // Failed to get the CDM preference data.
+  kGetCdmPrefDataFailed = 6,
+  // Failed to get the CDM origin ID.
+  kGetCdmOriginIdFailed = 7,
+  // Failed to initialize CDM.
+  kInitCdmFailed = 8,
+  // CDM Factory creation failed.
+  kCdmFactoryCreationFailed = 9,
+  // CDM not supported.
+  kCdmNotSupported = 10,
+  // Invalid CdmConfig. e.g. MediaFoundationService requires both distinctive
+  // identifier and persistent state.
+  kInvalidCdmConfig = 11,
+  // Unsupported key system.
+  kUnsupportedKeySystem = 12,
+  // Disconnection error. The remote process dropped the callback. e.g. in case
+  // of crash.
+  kDisconnectionError = 13,
+  // EME use is not allowed on unique origins.
+  kNotAllowedOnUniqueOrigin = 14,
+  // Android: MediaDrmBridge creation failed.
+  kMediaDrmBridgeCreationFailed = 15,
+  // Android: MediaCrypto not available.
+  kMediaCryptoNotAvailable = 16,
+  // CrOs: Only one instance allowed.
+  kNoMoreInstances = 17,
+  // CrOs: Insufficient GPU memory available.
+  kInsufficientGpuResources = 18,
+  // CrOs: Verified Access is disabled.
+  kCrOsVerifiedAccessDisabled = 19,
+  // CrOs: Remote factory creation failed.
+  kCrOsRemoteFactoryCreationFailed = 20,
+  // Android: Illegal argument passed to MediaDrm.
+  kAndroidMediaDrmIllegalArgument = 21,
+  // Android: MediaDrm not initialized properly.
+  kAndroidMediaDrmIllegalState = 22,
+  // Android: Unable to set L1 security level.
+  kAndroidFailedL1SecurityLevel = 23,
+  // Android: Unable to set L3 security level.
+  kAndroidFailedL3SecurityLevel = 24,
+  // Android: Unable to set origin.
+  kAndroidFailedSecurityOrigin = 25,
+  // Android: Unable to create MediaCrypto session.
+  kAndroidFailedMediaCryptoSession = 26,
+  // Android: Unable to start provisioning.
+  kAndroidFailedToStartProvisioning = 27,
+  // Android: Unable to create MediaCrypto object.
+  kAndroidFailedMediaCryptoCreate = 28,
+  // Android: Crypto scheme not supported.
+  kAndroidUnsupportedMediaCryptoScheme = 29,
+
   kMaxValue = kAndroidUnsupportedMediaCryptoScheme,
 };
 
