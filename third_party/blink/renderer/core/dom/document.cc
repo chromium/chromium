@@ -9559,7 +9559,7 @@ void Document::OnLocalRootWidgetCreated() {
       !GetFrame()->GetPage() || !GetFrame()->IsAttached()) {
     return;
   }
-  bool allowed_by_security = CanThrottleFrateRate();
+  bool allowed_by_security = CanThrottleFrameRate();
   base::UmaHistogramBoolean(
       "Blink.ThrottleFrameRate.AllowedBySecurity.DocumentInitialization",
       allowed_by_security);
@@ -9615,7 +9615,7 @@ void Document::UpdateRenderFrameRate() {
   if (!GetFrame() || !GetFrame()->GetPage() || !GetFrame()->IsAttached()) {
     return;
   }
-  bool allowed_by_security = CanThrottleFrateRate();
+  bool allowed_by_security = CanThrottleFrameRate();
   base::UmaHistogramBoolean("Blink.ThrottleFrameRate.AllowedBySecurity.API",
                             allowed_by_security);
   if (allowed_by_security) {
@@ -9791,7 +9791,7 @@ net::SchemefulSite Document::GetCachedTopFrameSite(VisitedLinkPassKey) {
   return cached_top_frame_site_for_visited_links_.value();
 }
 
-bool Document::CanThrottleFrateRate() {
+bool Document::CanThrottleFrameRate() {
   // To prevent side-channel attacks by monitoring the frame rate to detect
   // page loads from other origins, we only allow the frame rate to be throttled
   // if the renderer process is only hosting pages from one origin.
