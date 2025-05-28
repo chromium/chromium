@@ -1,1 +1,26 @@
-[]
+[
+    {
+        "duration": "22.0",
+        "name": "rendering.mobile/famo_us_twitter_demo"
+    },
+    {
+        "duration": "22.0",
+        "name": "rendering.mobile/text_scrollbar_100_pixels_per_second"
+    },
+    {
+        "duration": "22.0",
+        "name": "rendering.mobile/text_scrollbar_1200_pixels_per_second"
+    },
+    {
+        "duration": "22.0",
+        "name": "rendering.mobile/text_scrollbar_200_pixels_per_second"
+    },
+    {
+        "duration": "22.0",
+        "name": "rendering.mobile/text_scrollbar_2300_pixels_per_second"
+    },
+    {
+        "duration": "22.0",
+        "name": "rendering.mobile/text_scrollbar_700_pixels_per_second"
+    }
+]

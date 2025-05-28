@@ -592,6 +592,32 @@ BUILDERS = {
         },
     },
     'android-desktop-x64-builder-perf': {},
+    'android-brya-perf': {
+        'tests': [{
+            'isolate':
+            'performance_test_suite_android_trichrome_chrome_google_64_32_bundle',
+            'extra_args': [
+                '--device',
+                'variable_lab_dut_hostname',
+                '--connect-to-device-over-network',
+            ],
+        }],
+        'platform':
+        'android-trichrome-chrome-google-64-32-bundle',
+        'dimension': {
+            'dut_state': 'ready',
+            'pool': 'chrome',
+            'os': 'Android',
+            'label-pool': 'chrome.tests.perf',
+            'label-board': 'brya',
+        },
+        'server':
+        'https://chromeos-swarming.appspot.com',
+        'service_account':
+        'chromeos-tester@chops-service-accounts.iam.gserviceaccount.com',
+        'realm':
+        'chromeos:chrome',
+    },
     'android-byra-perf': {
         'tests': [{
             'isolate':
@@ -599,6 +625,7 @@ BUILDERS = {
             'extra_args': [
                 '--device',
                 'variable_lab_dut_hostname',
+                '--connect-to-device-over-network',
             ],
         }],
         'platform':
