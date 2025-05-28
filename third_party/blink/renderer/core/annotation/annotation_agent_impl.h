@@ -83,6 +83,8 @@ class CORE_EXPORT AnnotationAgentImpl final
   // request an attachment if the initial one failed).
   void Attach(base::PassKey<AnnotationAgentContainerImpl>);
 
+  AnnotationAgentContainerImpl* OwningContainer() { return owning_container_; }
+
   // Clients can request an attachment (after the automatic first one has
   // failed) to occur using this setter.
   void SetNeedsAttachment() { needs_attachment_ = true; }
@@ -103,9 +105,10 @@ class CORE_EXPORT AnnotationAgentImpl final
   // Returns true if this agent is bound to a host.
   bool IsBoundForTesting() const;
 
-  // Removes the agent from its container, clearing all its state, mojo
-  // bindings, and any visual indications in the document.
-  void Remove();
+  // Prepares the agent to be removed from its container by clearing all its
+  // state, mojo bindings, and any visual indications in the document. Should
+  // only be called by its container.
+  void Reset(base::PassKey<AnnotationAgentContainerImpl>);
 
   // mojom::blink::AnnotationAgent
   void ScrollIntoView(bool applies_focus) override {

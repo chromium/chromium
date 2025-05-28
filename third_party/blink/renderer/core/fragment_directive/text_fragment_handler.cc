@@ -99,7 +99,7 @@ void TextFragmentHandler::RemoveFragments() {
   // page-wide operation, and the URL might have selectors for a subframe.
   FragmentDirectiveUtils::RemoveSelectorsFromUrl(GetFrame());
   for (auto& annotation : annotation_agents_)
-    annotation->Remove();
+    annotation->OwningContainer()->RemoveAgent(*annotation);
 
   annotation_agents_.clear();
 

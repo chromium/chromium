@@ -307,13 +307,13 @@ TEST_F(AnnotationAgentContainerImplTest, ManuallyRemoveAgent) {
   EXPECT_TRUE(IsInContainer(*agent1, *container));
   EXPECT_TRUE(IsInContainer(*agent2, *container));
 
-  agent1->Remove();
+  container->RemoveAgent(*agent1);
 
   EXPECT_EQ(GetAgentCount(*container), 1ul);
   EXPECT_FALSE(IsInContainer(*agent1, *container));
   EXPECT_TRUE(IsInContainer(*agent2, *container));
 
-  agent2->Remove();
+  container->RemoveAgent(*agent2);
 
   EXPECT_EQ(GetAgentCount(*container), 0ul);
   EXPECT_FALSE(IsInContainer(*agent2, *container));
