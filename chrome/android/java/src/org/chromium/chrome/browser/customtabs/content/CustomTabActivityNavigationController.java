@@ -261,6 +261,10 @@ public class CustomTabActivityNavigationController
         if (mTabProvider.getTab() == null) return false;
 
         if (mTabController.onlyOneTabRemaining()) {
+            MinimizeAppAndCloseTabBackPressHandler.record(
+                    MinimizeAppAndCloseTabType.MINIMIZE_APP_AND_CLOSE_TAB);
+            MinimizeAppAndCloseTabBackPressHandler.recordForCustomTab(
+                    MinimizeAppAndCloseTabType.MINIMIZE_APP_AND_CLOSE_TAB, separateTask);
             finishActivity(reason, separateTask);
             return true;
         }
