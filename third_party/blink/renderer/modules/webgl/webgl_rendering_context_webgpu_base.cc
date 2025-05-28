@@ -3048,7 +3048,7 @@ void WebGLRenderingContextWebGPUBase::InitializeContext() {
   // extensions is supported both for basic functionality and WebGL extensions.
   const EGLint context_attribs[] = {
       EGL_CONTEXT_MAJOR_VERSION,
-      2,
+      IsWebGL() ? 3 : 2,
       EGL_CONTEXT_MINOR_VERSION,
       0,
       EGL_CONTEXT_WEBGL_COMPATIBILITY_ANGLE,
