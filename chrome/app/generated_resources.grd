@@ -16500,6 +16500,29 @@ Please help our engineers fix this problem. Tell us what happened right before y
         Communications
       </message>
     </if>
+    <if expr="is_android">
+      <message name="IDS_GENERIC_AUDIO_DEVICE_NAME" desc="Generic input or output audio device of an unspecified type. Used as a final fallback if no other more specific name can be given to the audio device. This is typically presented to users in a drop-down list of device choices.">
+        Audio device
+      </message>
+      <message name="IDS_INTERNAL_SPEAKER_AUDIO_DEVICE_NAME" desc="Speaker that is internal to / built into the device running the browser. This is typically presented to users in a drop-down list of device choices.">
+        Speaker (internal)
+      </message>
+      <message name="IDS_INTERNAL_MIC_AUDIO_DEVICE_NAME" desc="Microphone that is internal to / built into the device running the browser. This is typically presented to users in a drop-down list of device choices.">
+        Mic (internal)
+      </message>
+      <message name="IDS_WIRED_HEADPHONES_AUDIO_DEVICE_NAME" desc="Pair of wired headphones, for instance connected via an audio phone connector. May be used when presenting the headphones as an input device (if the headphones also function as a microphone) or as an output device. This is typically presented to users in a drop-down list of device choices.">
+        Wired headphones
+      </message>
+      <message name="IDS_BLUETOOTH_AUDIO_DEVICE_NAME" desc="Audio device connected over Bluetooth. May be used when presenting the Bluetooth device as an input device (e.g. if it is a microphone or a headset) or as an output device (e.g. if it is a speaker or a headset). This is typically presented to users in a drop-down list of device choices.">
+        Bluetooth device
+      </message>
+      <message name="IDS_USB_AUDIO_DEVICE_NAME" desc="Audio device connected over USB. May be used when presenting the USB device as an input device (e.g. if it is a microphone or a headset) or as an output device (e.g. if it is a speaker or a headset). This is typically presented to users in a drop-down list of device choices.">
+        USB device
+      </message>
+      <message name="IDS_HDMI_AUDIO_DEVICE_NAME" desc="Audio device connected over HDMI. May be used when presenting the HDMI device as an input device or as an output device. This is typically presented to users in a drop-down list of device choices.">
+        HDMI device
+      </message>
+    </if>
 
     <if expr="not is_android">
       <!-- Device Chooser Prompt -->

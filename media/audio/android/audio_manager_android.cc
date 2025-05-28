@@ -29,6 +29,7 @@
 #include "media/audio/fake_audio_input_stream.h"
 #include "media/base/audio_parameters.h"
 #include "media/base/channel_layout.h"
+#include "media/base/localized_strings.h"
 #include "media/base/media_switches.h"
 #include "media/media_buildflags.h"
 
@@ -70,6 +71,53 @@ void AddDefaultDevice(AudioDeviceNames* device_names) {
 bool IsAudioSinkConnected() {
   return Java_AudioManagerAndroid_isAudioSinkConnected(
       base::android::AttachCurrentThread());
+}
+
+std::string GetFallbackDeviceNameForType(AudioDeviceType type) {
+  switch (type) {
+    case AudioDeviceType::kBuiltinEarpiece:
+    case AudioDeviceType::kBuiltinSpeaker:
+    case AudioDeviceType::kBuiltinSpeakerSafe:
+      return GetLocalizedStringUTF8(
+          MessageId::INTERNAL_SPEAKER_AUDIO_DEVICE_NAME);
+    case AudioDeviceType::kBuiltinMic:
+      return GetLocalizedStringUTF8(MessageId::INTERNAL_MIC_AUDIO_DEVICE_NAME);
+    case AudioDeviceType::kWiredHeadset:
+    case AudioDeviceType::kWiredHeadphones:
+      return GetLocalizedStringUTF8(
+          MessageId::WIRED_HEADPHONES_AUDIO_DEVICE_NAME);
+    case AudioDeviceType::kBluetoothSco:
+    case AudioDeviceType::kBluetoothA2dp:
+    case AudioDeviceType::kBleHeadset:
+    case AudioDeviceType::kBleSpeaker:
+    case AudioDeviceType::kBleBroadcast:
+    case AudioDeviceType::kHearingAid:
+      return GetLocalizedStringUTF8(MessageId::BLUETOOTH_AUDIO_DEVICE_NAME);
+    case AudioDeviceType::kUsbDevice:
+    case AudioDeviceType::kUsbAccessory:
+    case AudioDeviceType::kUsbHeadset:
+      return GetLocalizedStringUTF8(MessageId::USB_AUDIO_DEVICE_NAME);
+    case AudioDeviceType::kHdmi:
+    case AudioDeviceType::kHdmiArc:
+    case AudioDeviceType::kHdmiEarc:
+      return GetLocalizedStringUTF8(MessageId::HDMI_AUDIO_DEVICE_NAME);
+    case AudioDeviceType::kUnknown:
+    case AudioDeviceType::kLineAnalog:
+    case AudioDeviceType::kLineDigital:
+    case AudioDeviceType::kDock:
+    case AudioDeviceType::kFm:
+    case AudioDeviceType::kFmTuner:
+    case AudioDeviceType::kTvTuner:
+    case AudioDeviceType::kTelephony:
+    case AudioDeviceType::kAuxLine:
+    case AudioDeviceType::kIp:
+    case AudioDeviceType::kBus:
+    case AudioDeviceType::kRemoteSubmix:
+    case AudioDeviceType::kEchoReference:
+    case AudioDeviceType::kDockAnalog:
+    case AudioDeviceType::kMultichannelGroup:
+      return GetLocalizedStringUTF8(MessageId::GENERIC_AUDIO_DEVICE_NAME);
+  }
 }
 
 bool UseAAudioOutput() {
@@ -251,6 +299,14 @@ void AudioManagerAndroid::GetDeviceNames(AudioDeviceNames* device_names,
         Java_AudioDevice_name(env, j_device);
     jint j_device_type = Java_AudioDevice_type(env, j_device);
 
+    std::optional<AudioDeviceType> device_type =
+        IntToAudioDeviceType(j_device_type);
+    if (!device_type.has_value()) {
+      LOG(WARNING) << "No device type matching integer value: "
+                   << j_device_type;
+      device_type = AudioDeviceType::kUnknown;
+    }
+
     if (direction == AudioDeviceDirection::kInput ||
         direction == AudioDeviceDirection::kOutput) {
       std::optional<AudioDeviceId> device_id =
@@ -258,14 +314,6 @@ void AudioManagerAndroid::GetDeviceNames(AudioDeviceNames* device_names,
       if (!device_id.has_value()) {
         LOG(WARNING) << "Unexpectedly received device with default ID";
         continue;
-      }
-
-      std::optional<AudioDeviceType> device_type =
-          IntToAudioDeviceType(j_device_type);
-      if (!device_type.has_value()) {
-        LOG(WARNING) << "No device type matching integer value: "
-                     << j_device_type;
-        device_type = AudioDeviceType::kUnknown;
       }
 
       AudioDevice device(device_id.value(), device_type.value());
@@ -276,9 +324,7 @@ void AudioManagerAndroid::GetDeviceNames(AudioDeviceNames* device_names,
     if (!j_device_name.is_null()) {
       ConvertJavaStringToUTF8(env, j_device_name.obj(), &device_name);
     } else {
-      device_name = "Audio device";  // TODO(crbug.com/409028970): Also return
-                                     // the device type and provide a localized,
-                                     // type-specific fallback string.
+      device_name = GetFallbackDeviceNameForType(device_type.value());
     }
 
     std::string device_id_string = base::NumberToString(j_device_id);
