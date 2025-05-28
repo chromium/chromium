@@ -28,6 +28,9 @@ struct DistantSession;
 - (void)showHistorySyncOptInAfterDedicatedSignIn:(BOOL)dedicatedSignInDone;
 // Tells the receiver to open all tabs from the given `session`.
 - (void)openAllTabsFromSession:(const synced_sessions::DistantSession*)session;
+// Asks the presenter to display the reauthenticate the primary account.
+// The primary should be available.
+- (void)showPrimaryAccountReauth;
 
 @optional
 // Tells the receiver to display the tab grid. It is assumed the tab grid will

@@ -25,10 +25,12 @@
 #import "components/supervised_user/core/browser/supervised_user_utils.h"
 #import "components/sync/service/sync_service.h"
 #import "ios/chrome/app/profile/first_run_profile_agent.h"
+#import "ios/chrome/browser/authentication/ui_bundled/continuation.h"
 #import "ios/chrome/browser/authentication/ui_bundled/history_sync/history_sync_coordinator.h"
 #import "ios/chrome/browser/authentication/ui_bundled/history_sync/history_sync_popup_coordinator.h"
 #import "ios/chrome/browser/authentication/ui_bundled/history_sync/history_sync_utils.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_context_style.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin/signin_coordinator.h"
 #import "ios/chrome/browser/bookmarks/model/bookmark_model_factory.h"
 #import "ios/chrome/browser/bookmarks/ui_bundled/home/bookmarks_coordinator.h"
 #import "ios/chrome/browser/bring_android_tabs/model/bring_android_tabs_to_ios_service.h"
@@ -296,6 +298,8 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
   GuidedTourCoordinator* _guidedTourCoordinator;
   // Completion block for when the `_guidedTourCoordinator` finishes.
   ProceduralBlock _guidedTourCompletionBlock;
+  // The coordinator to sign-in from recent tabs.
+  SigninCoordinator* _signinCoordinator;
 }
 // Superclass property.
 @synthesize baseViewController = _baseViewController;
@@ -670,6 +674,11 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
 }
 
 #pragma mark - Private
+
+- (void)stopSigninCoordinator {
+  [_signinCoordinator stop];
+  _signinCoordinator = nil;
+}
 
 - (void)stopHistorySyncPopupCoordinator {
   [_historySyncPopupCoordinator stop];
@@ -1432,6 +1441,29 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
 }
 
 #pragma mark - RecentTabsPresentationDelegate
+
+- (void)showPrimaryAccountReauth {
+  signin_metrics::AccessPoint accessPoint =
+      signin_metrics::AccessPoint::kRecentTabs;
+  signin_metrics::PromoAction promoAction =
+      signin_metrics::PromoAction::PROMO_ACTION_NO_SIGNIN_PROMO;
+  SigninContextStyle style = SigninContextStyle::kDefault;
+  _signinCoordinator = [SigninCoordinator
+      primaryAccountReauthCoordinatorWithBaseViewController:
+          self.baseViewController
+                                                    browser:self.browser
+                                               contextStyle:style
+                                                accessPoint:accessPoint
+                                                promoAction:promoAction
+                                       continuationProvider:
+                                           DoNothingContinuationProvider()];
+  __weak __typeof(self) weakSelf = self;
+  _signinCoordinator.signinCompletion =
+      ^(SigninCoordinatorResult result, id<SystemIdentity> completionIdentity) {
+        [weakSelf stopSigninCoordinator];
+      };
+  [_signinCoordinator start];
+}
 
 - (void)showHistoryFromRecentTabsFilteredBySearchTerms:(NSString*)searchTerms {
   [self showHistoryForText:searchTerms];

@@ -1789,13 +1789,7 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
 #pragma mark - SyncPresenter
 
 - (void)showPrimaryAccountReauth {
-  auto provider =
-      base::BindRepeating(&CreateChangeProfileRecentTabsContinuation);
-  ShowSigninCommand* command = [[ShowSigninCommand
-      alloc] initWithOperation:AuthenticationOperation::kPrimaryAccountReauth
-                            accessPoint:signin_metrics::AccessPoint::kRecentTabs
-      changeProfileContinuationProvider:provider];
-  [self.applicationHandler showSignin:command baseViewController:self];
+  [self.presentationDelegate showPrimaryAccountReauth];
 }
 
 - (void)showSyncPassphraseSettings {
