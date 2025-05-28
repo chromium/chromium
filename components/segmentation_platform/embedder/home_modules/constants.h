@@ -46,15 +46,17 @@ const char kHasDefaultBrowserPromoShownInOtherSurface[] =
 const char kTabGroupExists[] = "tab_group_exists";
 const char kNumberOfTabs[] = "number_of_tabs";
 const char kTabGroupPromoShownCount[] = "tab_group_shown_count";
+const char kEducationalTipShownCount[] = "educational_tip_shown_count";
 const char kSyncedTabGroupExists[] = "synced_tab_group_exists";
 const char kTabGroupSyncPromoShownCount[] = "tab_group_sync_shown_count";
 const char kCountOfClearingBrowsingData[] = "count_of_clearing_browsing_data";
 const char kCountOfClearingBrowsingDataThroughQuickDelete[] =
     "count_of_clearing_browsing_data_through_quick_delete";
 const char kQuickDeletePromoShownCount[] = "quick_delete_shown_count";
-const char kAuxiliarySearchAvailable[] = "auxiliary_search_available";
 const char kIsEligibleToHistoryOptIn[] = "is_eligible_to_history_opt_in";
 const char kHistorySyncPromoShownCount[] = "history_sync_promo_shown_count";
+
+const char kAuxiliarySearchAvailable[] = "auxiliary_search_available";
 
 // Placeholder output label for segmentation model executor.
 inline constexpr char kPlaceholderEphemeralModuleLabel[] = "placeholder_module";

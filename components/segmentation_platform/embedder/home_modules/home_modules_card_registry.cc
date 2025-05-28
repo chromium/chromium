@@ -11,6 +11,7 @@
 
 #include <string_view>
 
+#include "base/containers/contains.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/strings/string_split.h"
 #include "components/commerce/core/commerce_feature_list.h"
@@ -438,35 +439,49 @@ void HomeModulesCardRegistry::CreateAllCards() {
     all_cards_by_priority_.push_back(std::make_unique<AuxiliarySearchPromo>());
   }
 
+  // TODO(crbug.com/420897397): Move the forced card check out from each card.
+  std::vector<std::string> enabled_educational_tip_cards_list =
+      GetEnabledCardList();
+  auto is_in_enabled_cards_set = [&](const std::string& card_name) {
+    return enabled_educational_tip_cards_list.empty() ||
+           base::Contains(enabled_educational_tip_cards_list, card_name);
+  };
+
   int default_browser_promo_count =
       profile_prefs_->GetInteger(kDefaultBrowserPromoImpressionCounterPref);
-  if (DefaultBrowserPromo::IsEnabled(default_browser_promo_count)) {
+  if (DefaultBrowserPromo::IsEnabled(
+          is_in_enabled_cards_set(kDefaultBrowserPromo),
+          default_browser_promo_count)) {
     all_cards_by_priority_.push_back(
         std::make_unique<DefaultBrowserPromo>(profile_prefs_));
   }
   int history_sync_educational_promo_show_count =
       profile_prefs_->GetInteger(kHistorySyncPromoImpressionCounterPref);
-  if (HistorySyncPromo::IsEnabled(history_sync_educational_promo_show_count)) {
+  if (HistorySyncPromo::IsEnabled(is_in_enabled_cards_set(kHistorySyncPromo),
+                                  history_sync_educational_promo_show_count)) {
     all_cards_by_priority_.push_back(
         std::make_unique<HistorySyncPromo>(profile_prefs_));
   }
   int tab_group_promo_count =
       profile_prefs_->GetInteger(kTabGroupPromoImpressionCounterPref);
-  if (TabGroupPromo::IsEnabled(tab_group_promo_count)) {
+  if (TabGroupPromo::IsEnabled(is_in_enabled_cards_set(kTabGroupPromo),
+                               tab_group_promo_count)) {
     all_cards_by_priority_.push_back(
         std::make_unique<TabGroupPromo>(profile_prefs_));
   }
 
   int tab_group_sync_promo_count =
       profile_prefs_->GetInteger(kTabGroupSyncPromoImpressionCounterPref);
-  if (TabGroupSyncPromo::IsEnabled(tab_group_sync_promo_count)) {
+  if (TabGroupSyncPromo::IsEnabled(is_in_enabled_cards_set(kTabGroupSyncPromo),
+                                   tab_group_sync_promo_count)) {
     all_cards_by_priority_.push_back(
         std::make_unique<TabGroupSyncPromo>(profile_prefs_));
   }
 
   int quick_delete_promo_count =
       profile_prefs_->GetInteger(kQuickDeletePromoImpressionCounterPref);
-  if (QuickDeletePromo::IsEnabled(quick_delete_promo_count)) {
+  if (QuickDeletePromo::IsEnabled(is_in_enabled_cards_set(kQuickDeletePromo),
+                                  quick_delete_promo_count)) {
     all_cards_by_priority_.push_back(
         std::make_unique<QuickDeletePromo>(profile_prefs_));
   }
@@ -508,6 +523,13 @@ void HomeModulesCardRegistry::AddCardLabels(
 
 base::WeakPtr<HomeModulesCardRegistry> HomeModulesCardRegistry::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
+}
+
+std::vector<std::string> HomeModulesCardRegistry::GetEnabledCardList() {
+  std::string raw_value = features::KNamesOfEphemeralCardsToShow.Get();
+  std::vector<std::string> result = base::SplitString(
+      raw_value, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+  return result;
 }
 
 }  // namespace segmentation_platform::home_modules

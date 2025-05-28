@@ -185,7 +185,7 @@ TEST_F(HomeModulesCardRegistryTest, TestTabGroupPromoCardEnabled) {
   registry_ = std::make_unique<HomeModulesCardRegistry>(&pref_service_);
 
   EXPECT_THAT(registry_->all_output_labels(), Contains(kTabGroupPromo));
-  EXPECT_GE(registry_->all_cards_input_size(), 4u);
+  EXPECT_GE(registry_->all_cards_input_size(), 5u);
   const std::vector<std::unique_ptr<CardSelectionInfo>>& all_cards =
       registry_->get_all_cards_by_priority();
   std::vector<std::string> card_names = ExtractCardNames(all_cards);
@@ -198,6 +198,7 @@ TEST_F(HomeModulesCardRegistryTest, TestTabGroupPromoCardEnabled) {
   EXPECT_THAT(signalKeys, Contains("number_of_tabs"));
   EXPECT_THAT(signalKeys, Contains("tab_group_shown_count"));
   EXPECT_THAT(signalKeys, Contains("is_user_signed_in"));
+  EXPECT_THAT(signalKeys, Contains("educational_tip_shown_count"));
 }
 
 // Tests that the Registry won't register the TabGroupPromo card when it is
@@ -222,6 +223,25 @@ TEST_F(HomeModulesCardRegistryTest, TestTabGroupPromoCardDisabled) {
   EXPECT_THAT(signalKeys, Not(Contains("number_of_tabs")));
   EXPECT_THAT(signalKeys, Not(Contains("tab_group_shown_count")));
   EXPECT_THAT(signalKeys, Not(Contains("is_user_signed_in")));
+  EXPECT_THAT(signalKeys, Not(Contains("educational_tip_shown_count")));
+}
+
+// Tests that the Registry won't register the TabGroupPromo card when it is
+// disabled because of only show another educational tip module.
+TEST_F(HomeModulesCardRegistryTest,
+       TestTabGroupPromoCardDisabledForSingleModuleConstraint) {
+  feature_list_.InitWithFeaturesAndParameters(
+      {{features::kEducationalTipModule,
+        {{"names_of_ephemeral_cards_to_show", kTabGroupSyncPromo}}}},
+      {});
+  registry_ = std::make_unique<HomeModulesCardRegistry>(&pref_service_);
+
+  EXPECT_THAT(registry_->all_output_labels(), Not(Contains(kTabGroupPromo)));
+  EXPECT_GE(registry_->all_cards_input_size(), 0u);
+  const std::vector<std::unique_ptr<CardSelectionInfo>>& all_cards =
+      registry_->get_all_cards_by_priority();
+  std::vector<std::string> card_names = ExtractCardNames(all_cards);
+  EXPECT_THAT(card_names, Not(Contains(kTabGroupPromo)));
 }
 
 // Tests that for educational tip cards, except for the default browser promo
@@ -245,7 +265,7 @@ TEST_F(HomeModulesCardRegistryTest, TestTabGroupSyncPromoCardEnabled) {
   registry_ = std::make_unique<HomeModulesCardRegistry>(&pref_service_);
 
   EXPECT_THAT(registry_->all_output_labels(), Contains(kTabGroupSyncPromo));
-  EXPECT_GE(registry_->all_cards_input_size(), 2u);
+  EXPECT_GE(registry_->all_cards_input_size(), 3u);
   const std::vector<std::unique_ptr<CardSelectionInfo>>& all_cards =
       registry_->get_all_cards_by_priority();
   std::vector<std::string> card_names = ExtractCardNames(all_cards);
@@ -256,6 +276,7 @@ TEST_F(HomeModulesCardRegistryTest, TestTabGroupSyncPromoCardEnabled) {
       GetSignalKeys(signal_map, kTabGroupSyncPromo);
   EXPECT_THAT(signalKeys, Contains("synced_tab_group_exists"));
   EXPECT_THAT(signalKeys, Contains("tab_group_sync_shown_count"));
+  EXPECT_THAT(signalKeys, Contains("educational_tip_shown_count"));
 }
 
 // Tests that the Registry won't register the TabGroupSyncPromo card when it is
@@ -279,6 +300,26 @@ TEST_F(HomeModulesCardRegistryTest, TestTabGroupSyncPromoCardDisabled) {
       GetSignalKeys(signal_map, kTabGroupSyncPromo);
   EXPECT_THAT(signalKeys, Not(Contains("synced_tab_group_exists")));
   EXPECT_THAT(signalKeys, Not(Contains("tab_group_sync_shown_count")));
+  EXPECT_THAT(signalKeys, Not(Contains("educational_tip_shown_count")));
+}
+
+// Tests that the Registry won't register the TabGroupSyncPromo card when it is
+// disabled because of only show another educational tip module.
+TEST_F(HomeModulesCardRegistryTest,
+       TestTabGroupSyncPromoCardDisabledForSingleModuleConstraint) {
+  feature_list_.InitWithFeaturesAndParameters(
+      {{features::kEducationalTipModule,
+        {{"names_of_ephemeral_cards_to_show", kTabGroupPromo}}}},
+      {});
+  registry_ = std::make_unique<HomeModulesCardRegistry>(&pref_service_);
+
+  EXPECT_THAT(registry_->all_output_labels(),
+              Not(Contains(kTabGroupSyncPromo)));
+  EXPECT_GE(registry_->all_cards_input_size(), 0u);
+  const std::vector<std::unique_ptr<CardSelectionInfo>>& all_cards =
+      registry_->get_all_cards_by_priority();
+  std::vector<std::string> card_names = ExtractCardNames(all_cards);
+  EXPECT_THAT(card_names, Not(Contains(kTabGroupSyncPromo)));
 }
 
 // Tests that the Registry registers the QuickDeletePromo card when its feature
@@ -288,7 +329,7 @@ TEST_F(HomeModulesCardRegistryTest, TestQuickDeletePromoCardEnabled) {
   registry_ = std::make_unique<HomeModulesCardRegistry>(&pref_service_);
 
   EXPECT_THAT(registry_->all_output_labels(), Contains(kQuickDeletePromo));
-  EXPECT_GE(registry_->all_cards_input_size(), 4u);
+  EXPECT_GE(registry_->all_cards_input_size(), 5u);
   const std::vector<std::unique_ptr<CardSelectionInfo>>& all_cards =
       registry_->get_all_cards_by_priority();
   std::vector<std::string> card_names = ExtractCardNames(all_cards);
@@ -302,6 +343,7 @@ TEST_F(HomeModulesCardRegistryTest, TestQuickDeletePromoCardEnabled) {
               Contains("count_of_clearing_browsing_data_through_quick_delete"));
   EXPECT_THAT(signalKeys, Contains("quick_delete_shown_count"));
   EXPECT_THAT(signalKeys, Contains("is_user_signed_in"));
+  EXPECT_THAT(signalKeys, Contains("educational_tip_shown_count"));
 }
 
 // Tests that the Registry won't register the QuickDeletePromo card when it is
@@ -328,6 +370,25 @@ TEST_F(HomeModulesCardRegistryTest, TestQuickDeletePromoCardDisabled) {
       Not(Contains("count_of_clearing_browsing_data_through_quick_delete")));
   EXPECT_THAT(signalKeys, Not(Contains("quick_delete_shown_count")));
   EXPECT_THAT(signalKeys, Not(Contains("is_user_signed_in")));
+  EXPECT_THAT(signalKeys, Not(Contains("educational_tip_shown_count")));
+}
+
+// Tests that the Registry won't register the QuickDeletePromo card when it is
+// disabled because of only show another educational tip module.
+TEST_F(HomeModulesCardRegistryTest,
+       TestQuickDeletePromoCardDisabledForSingleModuleConstraint) {
+  feature_list_.InitWithFeaturesAndParameters(
+      {{features::kEducationalTipModule,
+        {{"names_of_ephemeral_cards_to_show", kTabGroupPromo}}}},
+      {});
+  registry_ = std::make_unique<HomeModulesCardRegistry>(&pref_service_);
+
+  EXPECT_THAT(registry_->all_output_labels(), Not(Contains(kQuickDeletePromo)));
+  EXPECT_GE(registry_->all_cards_input_size(), 0u);
+  const std::vector<std::unique_ptr<CardSelectionInfo>>& all_cards =
+      registry_->get_all_cards_by_priority();
+  std::vector<std::string> card_names = ExtractCardNames(all_cards);
+  EXPECT_THAT(card_names, Not(Contains(kQuickDeletePromo)));
 }
 
 // Tests that the Registry registers the AuxiliarySearchPromo card when its
@@ -379,7 +440,7 @@ TEST_F(HomeModulesCardRegistryTest, TestHistorySyncPromoCardEnabled) {
   registry_ = std::make_unique<HomeModulesCardRegistry>(&pref_service_);
 
   EXPECT_THAT(registry_->all_output_labels(), Contains(kHistorySyncPromo));
-  EXPECT_GE(registry_->all_cards_input_size(), 2u);
+  EXPECT_GE(registry_->all_cards_input_size(), 3u);
   const std::vector<std::unique_ptr<CardSelectionInfo>>& all_cards =
       registry_->get_all_cards_by_priority();
   std::vector<std::string> card_names = ExtractCardNames(all_cards);
@@ -390,6 +451,7 @@ TEST_F(HomeModulesCardRegistryTest, TestHistorySyncPromoCardEnabled) {
       GetSignalKeys(signal_map, kHistorySyncPromo);
   EXPECT_THAT(signalKeys, Contains(kHistorySyncPromoShownCount));
   EXPECT_THAT(signalKeys, Contains(kIsEligibleToHistoryOptIn));
+  EXPECT_THAT(signalKeys, Contains("educational_tip_shown_count"));
 }
 
 // Tests that the Registry won't register the HistorySyncPromo card when it is
@@ -414,6 +476,25 @@ TEST_F(HomeModulesCardRegistryTest, TestHistorySyncPromoCardDisabled) {
       GetSignalKeys(signal_map, kHistorySyncPromo);
   EXPECT_THAT(signalKeys,
               Not(Contains("history_sync_educational_promo_shown_count")));
+  EXPECT_THAT(signalKeys, Not(Contains("educational_tip_shown_count")));
+}
+
+// Tests that the Registry won't register the HistorySyncPromo card when it is
+// disabled because of only show another educational tip module.
+TEST_F(HomeModulesCardRegistryTest,
+       TestHistorySyncPromoCardDisabledForSingleModuleConstraint) {
+  feature_list_.InitWithFeaturesAndParameters(
+      {{features::kEducationalTipModule,
+        {{"names_of_ephemeral_cards_to_show", kTabGroupSyncPromo}}}},
+      {});
+  registry_ = std::make_unique<HomeModulesCardRegistry>(&pref_service_);
+
+  EXPECT_THAT(registry_->all_output_labels(), Not(Contains(kHistorySyncPromo)));
+  EXPECT_GE(registry_->all_cards_input_size(), 0u);
+  const std::vector<std::unique_ptr<CardSelectionInfo>>& all_cards =
+      registry_->get_all_cards_by_priority();
+  std::vector<std::string> card_names = ExtractCardNames(all_cards);
+  EXPECT_THAT(card_names, Not(Contains(kHistorySyncPromo)));
 }
 
 #endif
