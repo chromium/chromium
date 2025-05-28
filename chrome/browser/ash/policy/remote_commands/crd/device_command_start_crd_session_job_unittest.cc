@@ -49,7 +49,6 @@ using base::test::TestFuture;
 using chromeos::network_config::mojom::NetworkType;
 using chromeos::network_config::mojom::OncSource;
 using remoting::features::kAutoApproveEnterpriseSharedSessions;
-using remoting::features::kEnableCrdAdminRemoteAccessV2;
 using remoting::features::kEnableCrdSharedSessionToUnattendedDevice;
 using test::TestSessionType;
 
@@ -1194,11 +1193,9 @@ TEST_P(DeviceCommandStartCrdSessionJobRemoteAccessTestParameterized,
 }
 
 TEST_P(DeviceCommandStartCrdSessionJobRemoteAccessTestParameterized,
-       ShouldAllowReconnectionsForRemoteAccessSessionsIfV2FeatureIsEnabled) {
+       ShouldAllowReconnectionsForRemoteAccessSessions) {
   TestSessionType user_session_type = GetParam();
   if (SupportsRemoteAccess(user_session_type)) {
-    EnableFeature(kEnableCrdAdminRemoteAccessV2);
-
     SCOPED_TRACE(base::StringPrintf("Testing session type %s",
                                     SessionTypeToString(user_session_type)));
     StartSessionOfType(user_session_type);
@@ -1229,32 +1226,10 @@ TEST_P(DeviceCommandStartCrdSessionJobRemoteAccessTestParameterized,
   EXPECT_EQ(delegate().session_parameters().allow_file_transfer, false);
 }
 
-TEST_P(
-    DeviceCommandStartCrdSessionJobRemoteAccessTestParameterized,
-    ShouldNotAllowReconnectionsForRemoteAccessSessionsIfV2FeatureIsDisabled) {
-  TestSessionType user_session_type = GetParam();
-  if (SupportsRemoteAccess(user_session_type)) {
-    DisableFeature(kEnableCrdAdminRemoteAccessV2);
-
-    SCOPED_TRACE(base::StringPrintf("Testing session type %s",
-                                    SessionTypeToString(user_session_type)));
-    StartSessionOfType(user_session_type);
-    AddActiveManagedNetwork();
-
-    Result result = RunJobAndWaitForResult(
-        Payload().Set("crdSessionType", CrdSessionType::REMOTE_ACCESS_SESSION));
-
-    EXPECT_SUCCESS(result);
-    EXPECT_FALSE(delegate().session_parameters().allow_reconnections);
-  }
-}
-
 TEST_P(DeviceCommandStartCrdSessionJobRemoteAccessTestParameterized,
        ShouldNeverAllowReconnectionsForRemoteSupport) {
   TestSessionType user_session_type = GetParam();
   if (SupportsRemoteSupport(user_session_type)) {
-    EnableFeature(kEnableCrdAdminRemoteAccessV2);
-
     SCOPED_TRACE(base::StringPrintf("Testing session type %s",
                                     SessionTypeToString(user_session_type)));
     StartSessionOfType(user_session_type);

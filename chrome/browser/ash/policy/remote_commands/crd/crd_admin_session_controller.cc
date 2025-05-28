@@ -45,7 +45,6 @@
 #include "components/user_manager/user_manager.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "remoting/host/chromeos/chromeos_enterprise_params.h"
-#include "remoting/host/chromeos/features.h"
 #include "remoting/host/chromeos/remote_support_host_ash.h"
 #include "remoting/host/chromeos/remoting_service.h"
 #include "remoting/host/chromeos/session_id.h"
@@ -58,7 +57,6 @@ using AccessCodeCallback = StartCrdSessionJobDelegate::AccessCodeCallback;
 using ErrorCallback = StartCrdSessionJobDelegate::ErrorCallback;
 using SessionEndCallback = StartCrdSessionJobDelegate::SessionEndCallback;
 using SessionParameters = StartCrdSessionJobDelegate::SessionParameters;
-using remoting::features::kEnableCrdAdminRemoteAccessV2;
 
 namespace {
 
@@ -669,19 +667,15 @@ void CrdAdminSessionController::Init(
     base::OnceClosure done_callback) {
   curtain_controller_ = &curtain_controller;
 
-  if (base::FeatureList::IsEnabled(kEnableCrdAdminRemoteAccessV2)) {
-    CHECK(!notification_controller_);
-    notification_controller_ =
-        std::make_unique<RemoteActivityNotificationController>(
-            CHECK_DEREF(local_state),
-            base::BindRepeating(
-                &CrdAdminSessionController::IsCurrentSessionCurtained,
-                base::Unretained(this)));
+  CHECK(!notification_controller_);
+  notification_controller_ =
+      std::make_unique<RemoteActivityNotificationController>(
+          CHECK_DEREF(local_state),
+          base::BindRepeating(
+              &CrdAdminSessionController::IsCurrentSessionCurtained,
+              base::Unretained(this)));
 
-    TryToReconnect(std::move(done_callback));
-  } else {
-    std::move(done_callback).Run();
-  }
+  TryToReconnect(std::move(done_callback));
 }
 
 void CrdAdminSessionController::Shutdown() {
@@ -771,10 +765,8 @@ CrdAdminSessionController::CreateCrdHostSession() {
                      base::Unretained(this))));
   result->AddObserver(this);
 
-  if (base::FeatureList::IsEnabled(kEnableCrdAdminRemoteAccessV2)) {
-    CHECK(notification_controller_);
-    result->AddObserver(notification_controller_.get());
-  }
+  CHECK(notification_controller_);
+  result->AddObserver(notification_controller_.get());
 
   return result;
 }

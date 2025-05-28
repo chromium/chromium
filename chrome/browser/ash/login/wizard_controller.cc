@@ -907,15 +907,11 @@ WizardController::CreateScreens() {
       base::BindRepeating(&WizardController::OnThemeSelectionScreenExit,
                           weak_factory_.GetWeakPtr())));
 
-  if (base::FeatureList::IsEnabled(
-          remoting::features::kEnableCrdAdminRemoteAccessV2)) {
-    append(std::make_unique<RemoteActivityNotificationScreen>(
-        oobe_ui->GetView<RemoteActivityNotificationScreenHandler>()
-            ->AsWeakPtr(),
-        base::BindRepeating(
-            &WizardController::OnRemoteActivityNotificationScreenExit,
-            weak_factory_.GetWeakPtr())));
-  }
+  append(std::make_unique<RemoteActivityNotificationScreen>(
+      oobe_ui->GetView<RemoteActivityNotificationScreenHandler>()->AsWeakPtr(),
+      base::BindRepeating(
+          &WizardController::OnRemoteActivityNotificationScreenExit,
+          weak_factory_.GetWeakPtr())));
 
   append(std::make_unique<CryptohomeRecoveryScreen>(
       oobe_ui->GetView<CryptohomeRecoveryScreenHandler>()->AsWeakPtr(),

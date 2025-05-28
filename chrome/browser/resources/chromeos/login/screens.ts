@@ -193,8 +193,7 @@ export const commonScreensList: OobeTypes.ScreensList = [
   {tag: 'recommend-apps-element', id: 'recommend-apps'},
   {
     tag: 'remote-activity-notification-element',
-    id: 'remote-activity-notification',
-    condition: 'isRemoteActivityNotificationEnabled',
+    id: 'remote-activity-notification'
   },
   {tag: 'saml-confirm-password-element', id: 'saml-confirm-password'},
   {tag: 'signin-fatal-error-element', id: 'signin-fatal-error'},

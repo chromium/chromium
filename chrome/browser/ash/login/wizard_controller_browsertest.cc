@@ -2301,8 +2301,6 @@ class WizardControllerRemoteActivityNotificationTest
   // WizardControllerTest:
   void SetUpInProcessBrowserTestFixture() override {
     WizardControllerTest::SetUpInProcessBrowserTestFixture();
-    feature_list_.InitAndEnableFeature(
-        remoting::features::kEnableCrdAdminRemoteAccessV2);
     login_manager_mixin_.AppendRegularUsers(1);
   }
 
@@ -2386,8 +2384,6 @@ class RemoteActivityNotificationTestWhenNoLoginAccountPresentTest
   // WizardControllerTest:
   void SetUpInProcessBrowserTestFixture() override {
     WizardControllerTest::SetUpInProcessBrowserTestFixture();
-    feature_list_.InitAndEnableFeature(
-        remoting::features::kEnableCrdAdminRemoteAccessV2);
   }
 
   void SetUpOnMainThread() override {

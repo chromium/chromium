@@ -362,10 +362,6 @@ void CreateAndAddOobeUIDataSource(Profile* profile,
   source->AddBoolean("isOobeSoftwareUpdateEnabled",
                      features::IsOobeSoftwareUpdateEnabled());
 
-  source->AddBoolean("isRemoteActivityNotificationEnabled",
-                     base::FeatureList::IsEnabled(
-                         remoting::features::kEnableCrdAdminRemoteAccessV2));
-
   source->AddBoolean("isSplitModifierKeyboardInfoEnabled",
                      features::IsOobeSplitModifierKeyboardInfoEnabled());
 
@@ -612,11 +608,7 @@ void OobeUI::ConfigureOobeDisplay() {
     AddScreenHandler(std::make_unique<AccountSelectionScreenHandler>());
   }
 
-  if (base::FeatureList::IsEnabled(
-          remoting::features::kEnableCrdAdminRemoteAccessV2)) {
-    AddScreenHandler(
-        std::make_unique<RemoteActivityNotificationScreenHandler>());
-  }
+  AddScreenHandler(std::make_unique<RemoteActivityNotificationScreenHandler>());
 
   Profile* const profile = Profile::FromWebUI(web_ui());
   // Set up the chrome://theme/ source, for Chrome logo.
