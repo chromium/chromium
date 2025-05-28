@@ -13,20 +13,15 @@ ChromeVoxBackgroundKeyboardHandlerTest = class extends ChromeVoxE2ETest {
   async setUpDeferred() {
     await super.setUpDeferred();
 
-    await Promise.all([
-      // Alphabetical based on file path.
-      importModule('ChromeVox', '/chromevox/mv3/background/chromevox.js'),
-      importModule(
-          'ChromeVoxRange', '/chromevox/mv3/background/chromevox_range.js'),
-      importModule(
-          'ChromeVoxState', '/chromevox/mv3/background/chromevox_state.js'),
-      importModule(
-          'BackgroundKeyboardHandler',
-          '/chromevox/mv3/background/input/background_keyboard_handler.js'),
-      importModule('KeyCode', '/common/key_code.js'),
-    ]);
-
     globalThis.keyboardHandler = BackgroundKeyboardHandler.instance;
+  }
+
+  callOnKeyDown(internalKeyEvent) {
+    keyboardHandler.onKeyDown_(internalKeyEvent, () => {});
+  }
+
+  callOnKeyUp(internalKeyEvent) {
+    keyboardHandler.onKeyUp_(internalKeyEvent, () => {});
   }
 };
 
@@ -37,10 +32,8 @@ AX_TEST_F(
       await this.runWithLoadedTree('<p>test</p>');
       // A Search keydown gets eaten.
       const searchDown = {};
-      searchDown.preventDefault = this.newCallback();
-      searchDown.stopPropagation = this.newCallback();
       searchDown.metaKey = true;
-      keyboardHandler.onKeyDown(searchDown);
+      this.callOnKeyDown(searchDown);
       assertEquals(1, keyboardHandler.eatenKeyDowns_.size);
 
       // A Search keydown does not get eaten when there's no range and there
@@ -49,7 +42,7 @@ AX_TEST_F(
       ChromeVoxRange.instance.previous_ = null;
       const searchDown2 = {};
       searchDown2.metaKey = true;
-      keyboardHandler.onKeyDown(searchDown2);
+      this.callOnKeyDown(searchDown2);
       assertEquals(1, keyboardHandler.eatenKeyDowns_.size);
     });
 
@@ -64,40 +57,40 @@ AX_TEST_F(
 
       // Send the pass through command: Search+Shift+Escape.
       const search =
-          TestUtils.createMockKeyEvent(KeyCode.SEARCH, {metaKey: true});
-      keyboardHandler.onKeyDown(search);
+          TestUtils.createMockInternalKey(KeyCode.SEARCH, {metaKey: true});
+      this.callOnKeyDown(search);
       assertEquals(1, keyboardHandler.eatenKeyDowns_.size);
       assertEquals(0, keyboardHandler.passedThroughKeyDowns_.size);
       assertEquals('no_pass_through', keyboardHandler.passThroughState_);
       assertFalse(BackgroundKeyboardHandler.passThroughModeEnabled_);
 
-      const searchShift = TestUtils.createMockKeyEvent(
+      const searchShift = TestUtils.createMockInternalKey(
           KeyCode.SHIFT, {metaKey: true, shiftKey: true});
-      keyboardHandler.onKeyDown(searchShift);
+      this.callOnKeyDown(searchShift);
       assertEquals(2, keyboardHandler.eatenKeyDowns_.size);
       assertEquals(0, keyboardHandler.passedThroughKeyDowns_.size);
       assertEquals('no_pass_through', keyboardHandler.passThroughState_);
       assertFalse(BackgroundKeyboardHandler.passThroughModeEnabled_);
 
-      const searchShiftEsc = TestUtils.createMockKeyEvent(
+      const searchShiftEsc = TestUtils.createMockInternalKey(
           KeyCode.ESCAPE, {metaKey: true, shiftKey: true});
-      keyboardHandler.onKeyDown(searchShiftEsc);
+      this.callOnKeyDown(searchShiftEsc);
       assertEquals(3, keyboardHandler.eatenKeyDowns_.size);
       assertEquals(0, keyboardHandler.passedThroughKeyDowns_.size);
       assertEquals(
           'pending_pass_through_keyups', keyboardHandler.passThroughState_);
       assertTrue(BackgroundKeyboardHandler.passThroughModeEnabled_);
 
-      keyboardHandler.onKeyUp(searchShiftEsc);
+      this.callOnKeyUp(searchShiftEsc);
       assertEquals(2, keyboardHandler.eatenKeyDowns_.size);
       assertEquals(0, keyboardHandler.passedThroughKeyDowns_.size);
       assertEquals(
           'pending_pass_through_keyups', keyboardHandler.passThroughState_);
       assertTrue(BackgroundKeyboardHandler.passThroughModeEnabled_);
 
-      const searchShiftUp = TestUtils.createMockKeyEvent(
+      const searchShiftUp = TestUtils.createMockInternalKey(
           KeyCode.SHIFT, {metaKey: true, shiftKey: false});
-      keyboardHandler.onKeyUp(searchShiftUp);
+      this.callOnKeyUp(searchShiftUp);
       assertEquals(1, keyboardHandler.eatenKeyDowns_.size);
       assertEquals(0, keyboardHandler.passedThroughKeyDowns_.size);
       assertEquals(
@@ -105,8 +98,8 @@ AX_TEST_F(
       assertTrue(BackgroundKeyboardHandler.passThroughModeEnabled_);
 
       const searchUp =
-          TestUtils.createMockKeyEvent(KeyCode.SEARCH, {metaKey: false});
-      keyboardHandler.onKeyUp(searchUp);
+          TestUtils.createMockInternalKey(KeyCode.SEARCH, {metaKey: false});
+      this.callOnKeyUp(searchUp);
       assertEquals(0, keyboardHandler.eatenKeyDowns_.size);
       assertEquals(0, keyboardHandler.passedThroughKeyDowns_.size);
       assertEquals(
@@ -115,46 +108,46 @@ AX_TEST_F(
 
       // Now, the next series of key downs should be passed through.
       // Try Search+Ctrl+M.
-      keyboardHandler.onKeyDown(search);
+      this.callOnKeyDown(search);
       assertEquals(0, keyboardHandler.eatenKeyDowns_.size);
       assertEquals(1, keyboardHandler.passedThroughKeyDowns_.size);
       assertEquals(
           'pending_shortcut_keyups', keyboardHandler.passThroughState_);
       assertTrue(BackgroundKeyboardHandler.passThroughModeEnabled_);
 
-      const searchCtrl = TestUtils.createMockKeyEvent(
+      const searchCtrl = TestUtils.createMockInternalKey(
           KeyCode.CONTROL, {metaKey: true, ctrlKey: true});
-      keyboardHandler.onKeyDown(searchCtrl);
+      this.callOnKeyDown(searchCtrl);
       assertEquals(0, keyboardHandler.eatenKeyDowns_.size);
       assertEquals(2, keyboardHandler.passedThroughKeyDowns_.size);
       assertEquals(
           'pending_shortcut_keyups', keyboardHandler.passThroughState_);
       assertTrue(BackgroundKeyboardHandler.passThroughModeEnabled_);
 
-      const searchCtrlM = TestUtils.createMockKeyEvent(
+      const searchCtrlM = TestUtils.createMockInternalKey(
           KeyCode.M, {metaKey: true, ctrlKey: true});
-      keyboardHandler.onKeyDown(searchCtrlM);
+      this.callOnKeyDown(searchCtrlM);
       assertEquals(0, keyboardHandler.eatenKeyDowns_.size);
       assertEquals(3, keyboardHandler.passedThroughKeyDowns_.size);
       assertEquals(
           'pending_shortcut_keyups', keyboardHandler.passThroughState_);
       assertTrue(BackgroundKeyboardHandler.passThroughModeEnabled_);
 
-      keyboardHandler.onKeyUp(searchCtrlM);
+      this.callOnKeyUp(searchCtrlM);
       assertEquals(0, keyboardHandler.eatenKeyDowns_.size);
       assertEquals(2, keyboardHandler.passedThroughKeyDowns_.size);
       assertEquals(
           'pending_shortcut_keyups', keyboardHandler.passThroughState_);
       assertTrue(BackgroundKeyboardHandler.passThroughModeEnabled_);
 
-      keyboardHandler.onKeyUp(searchCtrl);
+      this.callOnKeyUp(searchCtrl);
       assertEquals(0, keyboardHandler.eatenKeyDowns_.size);
       assertEquals(1, keyboardHandler.passedThroughKeyDowns_.size);
       assertEquals(
           'pending_shortcut_keyups', keyboardHandler.passThroughState_);
       assertTrue(BackgroundKeyboardHandler.passThroughModeEnabled_);
 
-      keyboardHandler.onKeyUp(search);
+      this.callOnKeyUp(search);
       assertEquals(0, keyboardHandler.eatenKeyDowns_.size);
       assertEquals(0, keyboardHandler.passedThroughKeyDowns_.size);
       assertEquals('no_pass_through', keyboardHandler.passThroughState_);
@@ -174,38 +167,38 @@ AX_TEST_F(
       // Send some random keys; ensure the pass through state variables never
       // change.
       const search =
-          TestUtils.createMockKeyEvent(KeyCode.SEARCH, {metaKey: true});
-      keyboardHandler.onKeyDown(search);
+          TestUtils.createMockInternalKey(KeyCode.SEARCH, {metaKey: true});
+      this.callOnKeyDown(search);
       assertNoPassThrough();
 
-      const searchShift = TestUtils.createMockKeyEvent(
+      const searchShift = TestUtils.createMockInternalKey(
           KeyCode.SHIFT, {metaKey: true, shiftKey: true});
-      keyboardHandler.onKeyDown(searchShift);
+      this.callOnKeyDown(searchShift);
       assertNoPassThrough();
 
-      const searchShiftM = TestUtils.createMockKeyEvent(
+      const searchShiftM = TestUtils.createMockInternalKey(
           KeyCode.M, {metaKey: true, shiftKey: true});
-      keyboardHandler.onKeyDown(searchShiftM);
+      this.callOnKeyDown(searchShiftM);
       assertNoPassThrough();
 
-      keyboardHandler.onKeyUp(searchShiftM);
+      this.callOnKeyUp(searchShiftM);
       assertNoPassThrough();
 
-      keyboardHandler.onKeyUp(searchShift);
+      this.callOnKeyUp(searchShift);
       assertNoPassThrough();
 
-      keyboardHandler.onKeyUp(search);
+      this.callOnKeyUp(search);
       assertNoPassThrough();
 
-      keyboardHandler.onKeyDown(TestUtils.createMockKeyEvent(KeyCode.A));
+      this.callOnKeyDown(TestUtils.createMockInternalKey(KeyCode.A));
       assertNoPassThrough();
 
-      keyboardHandler.onKeyDown(
-          TestUtils.createMockKeyEvent(KeyCode.A, {altKey: true}));
+      this.callOnKeyDown(
+          TestUtils.createMockInternalKey(KeyCode.A, {altKey: true}));
       assertNoPassThrough();
 
-      keyboardHandler.onKeyUp(
-          TestUtils.createMockKeyEvent(KeyCode.A, {altKey: true}));
+      this.callOnKeyUp(
+          TestUtils.createMockInternalKey(KeyCode.A, {altKey: true}));
       assertNoPassThrough();
     });
 
@@ -215,29 +208,29 @@ AX_TEST_F(
       await this.runWithLoadedTree('<p>test</p>');
       // Send a few key downs.
       const search =
-          TestUtils.createMockKeyEvent(KeyCode.SEARCH, {metaKey: true});
-      keyboardHandler.onKeyDown(search);
+          TestUtils.createMockInternalKey(KeyCode.SEARCH, {metaKey: true});
+      this.callOnKeyDown(search);
       assertEquals(1, keyboardHandler.eatenKeyDowns_.size);
 
-      const searchShift = TestUtils.createMockKeyEvent(
+      const searchShift = TestUtils.createMockInternalKey(
           KeyCode.SHIFT, {metaKey: true, shiftKey: true});
-      keyboardHandler.onKeyDown(searchShift);
+      this.callOnKeyDown(searchShift);
       assertEquals(2, keyboardHandler.eatenKeyDowns_.size);
 
-      const searchShiftM = TestUtils.createMockKeyEvent(
+      const searchShiftM = TestUtils.createMockInternalKey(
           KeyCode.M, {metaKey: true, shiftKey: true});
-      keyboardHandler.onKeyDown(searchShiftM);
+      this.callOnKeyDown(searchShiftM);
       assertEquals(3, keyboardHandler.eatenKeyDowns_.size);
 
       // Now, send a key down, but no modifiers set, which is impossible to
       // actually press. This key is not eaten.
-      const m = TestUtils.createMockKeyEvent(KeyCode.M, {});
-      keyboardHandler.onKeyDown(m);
+      const m = TestUtils.createMockInternalKey(KeyCode.M, {});
+      this.callOnKeyDown(m);
       assertEquals(0, keyboardHandler.eatenKeyDowns_.size);
 
       // To demonstrate eaten keys still work, send Search by itself, which is
       // always eaten.
-      keyboardHandler.onKeyDown(search);
+      this.callOnKeyDown(search);
       assertEquals(1, keyboardHandler.eatenKeyDowns_.size);
     });
 
@@ -250,27 +243,27 @@ AX_TEST_F(
 
       // Send a few key downs (which are passed through).
       const search =
-          TestUtils.createMockKeyEvent(KeyCode.SEARCH, {metaKey: true});
-      keyboardHandler.onKeyDown(search);
+          TestUtils.createMockInternalKey(KeyCode.SEARCH, {metaKey: true});
+      this.callOnKeyDown(search);
       assertEquals(0, keyboardHandler.eatenKeyDowns_.size);
       assertEquals(1, keyboardHandler.passedThroughKeyDowns_.size);
 
-      const searchShift = TestUtils.createMockKeyEvent(
+      const searchShift = TestUtils.createMockInternalKey(
           KeyCode.SHIFT, {metaKey: true, shiftKey: true});
-      keyboardHandler.onKeyDown(searchShift);
+      this.callOnKeyDown(searchShift);
       assertEquals(0, keyboardHandler.eatenKeyDowns_.size);
       assertEquals(2, keyboardHandler.passedThroughKeyDowns_.size);
 
-      const searchShiftM = TestUtils.createMockKeyEvent(
+      const searchShiftM = TestUtils.createMockInternalKey(
           KeyCode.M, {metaKey: true, shiftKey: true});
-      keyboardHandler.onKeyDown(searchShiftM);
+      this.callOnKeyDown(searchShiftM);
       assertEquals(0, keyboardHandler.eatenKeyDowns_.size);
       assertEquals(3, keyboardHandler.passedThroughKeyDowns_.size);
 
       // Now, send a key down, but no modifiers set, which is impossible to
       // actually press. This is passed through, so the count resets to 1.
-      const m = TestUtils.createMockKeyEvent(KeyCode.M, {});
-      keyboardHandler.onKeyDown(m);
+      const m = TestUtils.createMockInternalKey(KeyCode.M, {});
+      this.callOnKeyDown(m);
       assertEquals(0, keyboardHandler.eatenKeyDowns_.size);
       assertEquals(1, keyboardHandler.passedThroughKeyDowns_.size);
     });

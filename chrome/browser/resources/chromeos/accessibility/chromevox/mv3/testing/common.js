@@ -31,6 +31,29 @@ class TestUtils {
   }
 
   /**
+   * Create a mock InternalKeyEvent
+   * @param {number} keyCode
+   * @param {{altGraphKey: boolean=,
+   *         altKey: boolean=,
+   *         ctrlKey: boolean=,
+   *         metaKey: boolean=,
+   *         searchKeyHeld: boolean=,
+   *         shiftKey: boolean=,
+   *         stickyMode: boolean=,
+   *         prefixKey: boolean=}=} opt_modifiers
+   * @return {Object} The mock event.
+   */
+  static createMockInternalKey(keyCode, opt_modifiers) {
+    const modifiers = opt_modifiers === undefined ? {} : opt_modifiers;
+    const keyEvent = {};
+    keyEvent.keyCode = keyCode;
+    for (const key in modifiers) {
+      keyEvent[key] = modifiers[key];
+    }
+    return keyEvent;
+  }
+
+  /**
    * Returns a promise which gets resolved when ChromeVox speaks the given
    * string.
    * @param {string} textStringToWaitFor
