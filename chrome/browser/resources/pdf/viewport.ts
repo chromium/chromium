@@ -1677,9 +1677,11 @@ export class Viewport {
 
     // Compute the x-coordinate of the page within the document.
     // TODO(raymes): This should really be set when the PDF plugin passes the
-    // page coordinates, but it isn't yet.
-    const x = (this.documentDimensions_.width - pageDimensions.width) / 2 +
-        PAGE_SHADOW.left;
+    // page coordinates, but it isn't yet except for in two-up view.
+    const x = this.twoUpViewEnabled() ?
+        pageDimensions.x + PAGE_SHADOW.left :
+        (this.documentDimensions_.width - pageDimensions.width) / 2 +
+            PAGE_SHADOW.left;
     // Compute the space on the left of the document if the document fits
     // completely in the screen.
     const zoom = this.getZoom();
