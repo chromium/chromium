@@ -4,6 +4,11 @@
 
 #include "chrome/browser/extensions/api/tabs/tabs_api_stub.h"
 
+#include "base/notimplemented.h"
+#include "base/values.h"
+#include "chrome/browser/extensions/extension_tab_util.h"
+#include "chrome/browser/ui/android/tab_model/tab_model.h"
+#include "chrome/browser/ui/android/tab_model/tab_model_list.h"
 #include "url/gurl.h"
 
 namespace extensions {
@@ -88,7 +93,23 @@ ExtensionFunction::ResponseAction TabsQueryFunction::Run() {
   std::optional<tabs::Query::Params> params =
       tabs::Query::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
-  return RespondNow(Error(kNotImplemented));
+  NOTIMPLEMENTED() << "Using stub implementation and returning active tab";
+  base::Value::List result;
+  api::tabs::Tab tab_object;
+  // Always return the active tab in the current window.
+  for (TabModel* tab_model : TabModelList::models()) {
+    if (!tab_model->IsActiveModel()) {
+      continue;
+    }
+    auto* web_contents = tab_model->GetActiveWebContents();
+    if (!web_contents) {
+      continue;
+    }
+    tab_object.id = ExtensionTabUtil::GetTabId(web_contents);
+    result.Append(tab_object.ToValue());
+    return RespondNow(WithArguments(std::move(result)));
+  }
+  return RespondNow(Error("No active tab"));
 }
 
 ExtensionFunction::ResponseAction TabsCreateFunction::Run() {

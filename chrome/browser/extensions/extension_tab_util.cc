@@ -21,7 +21,11 @@
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
+#include "extensions/common/extension.h"
 #include "extensions/common/mojom/api_permission_id.mojom-shared.h"
+#include "extensions/common/mojom/context_type.mojom.h"
+#include "extensions/common/permissions/api_permission.h"
+#include "extensions/common/permissions/permissions_data.h"
 #include "third_party/blink/public/common/chrome_debug_urls.h"
 #include "third_party/blink/public/common/features.h"
 
@@ -76,14 +80,10 @@
 #include "extensions/browser/extension_util.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/error_utils.h"
-#include "extensions/common/extension.h"
 #include "extensions/common/feature_switch.h"
 #include "extensions/common/manifest_constants.h"
 #include "extensions/common/manifest_handlers/incognito_info.h"
 #include "extensions/common/manifest_handlers/options_page_info.h"
-#include "extensions/common/mojom/context_type.mojom.h"
-#include "extensions/common/permissions/api_permission.h"
-#include "extensions/common/permissions/permissions_data.h"
 #include "url/gurl.h"
 #include "url/url_constants.h"
 #endif
@@ -94,9 +94,9 @@ using extensions::mojom::APIPermissionID;
 
 namespace extensions {
 
-#if !BUILDFLAG(IS_ANDROID)
-
 namespace {
+
+#if !BUILDFLAG(IS_ANDROID)
 
 constexpr char kGroupNotFoundError[] = "No group with id: *.";
 constexpr char kInvalidUrlError[] = "Invalid url: \"*\".";
@@ -164,6 +164,7 @@ bool IsFileUrl(const GURL& url) {
   return url.SchemeIsFile() || (url.SchemeIs(content::kViewSourceScheme) &&
                                 GURL(url.GetContent()).SchemeIsFile());
 }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 ExtensionTabUtil::ScrubTabBehaviorType GetScrubTabBehaviorImpl(
     const Extension* extension,
@@ -203,6 +204,7 @@ ExtensionTabUtil::ScrubTabBehaviorType GetScrubTabBehaviorImpl(
   return ExtensionTabUtil::kDontScrubTab;
 }
 
+#if !BUILDFLAG(IS_ANDROID)
 bool HasValidMainFrameProcess(content::WebContents* contents) {
   content::RenderFrameHost* main_frame_host = contents->GetPrimaryMainFrame();
   content::RenderProcessHost* process_host = main_frame_host->GetProcess();
@@ -226,9 +228,11 @@ void RecordNavigationScheme(const GURL& url,
 
   base::UmaHistogramEnumeration("Extensions.Navigation.Scheme", scheme);
 }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace
 
+#if !BUILDFLAG(IS_ANDROID)
 ExtensionTabUtil::OpenTabParams::OpenTabParams() = default;
 
 ExtensionTabUtil::OpenTabParams::~OpenTabParams() = default;
@@ -469,6 +473,7 @@ int ExtensionTabUtil::GetWindowIdOfTab(const WebContents* web_contents) {
 std::string ExtensionTabUtil::GetBrowserWindowTypeText(const Browser& browser) {
   return WindowControllerFromBrowser(&browser)->GetWindowTypeText();
 }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 // static
 api::tabs::Tab ExtensionTabUtil::CreateTabObject(
@@ -477,6 +482,13 @@ api::tabs::Tab ExtensionTabUtil::CreateTabObject(
     const Extension* extension,
     TabStripModel* tab_strip,
     int tab_index) {
+#if BUILDFLAG(IS_ANDROID)
+  NOTIMPLEMENTED() << "Using stub implementation of CreateTabObject";
+  api::tabs::Tab tab_object;
+  tab_object.id = GetTabId(contents);
+  tab_object.index = tab_index;
+  return tab_object;
+#else
   if (!tab_strip)
     ExtensionTabUtil::GetTabStripModel(contents, &tab_strip, &tab_index);
   api::tabs::Tab tab_object;
@@ -558,8 +570,11 @@ api::tabs::Tab ExtensionTabUtil::CreateTabObject(
 
   ScrubTabForExtension(extension, contents, &tab_object, scrub_tab_behavior);
   return tab_object;
+#endif
 }
 
+#if !BUILDFLAG(IS_ANDROID)
+// static
 base::Value::List ExtensionTabUtil::CreateTabList(const Browser* browser,
                                                   const Extension* extension,
                                                   mojom::ContextType context) {
@@ -600,6 +615,7 @@ api::tabs::MutedInfo ExtensionTabUtil::CreateMutedInfo(
   }
   return info;
 }
+#endif
 
 // static
 ExtensionTabUtil::ScrubTabBehavior ExtensionTabUtil::GetScrubTabBehavior(
@@ -666,6 +682,7 @@ void ExtensionTabUtil::ScrubTabForExtension(
   }
 }
 
+#if !BUILDFLAG(IS_ANDROID)
 // static
 bool ExtensionTabUtil::GetTabStripModel(const WebContents* web_contents,
                                         TabStripModel** tab_strip_model,
