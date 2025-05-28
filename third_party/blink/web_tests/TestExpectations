@@ -8699,11 +8699,6 @@ crbug.com/342886014 external/wpt/css/css-fonts/variations/font-weight-matching-i
 
 crbug.com/342886014 external/wpt/css/css-fonts/generic-family-keywords-003.html [ Failure ]
 
-# Gardener 2024-08-07
-crbug.com/357976373 [ Mac ] fast/forms/accent-color/accent-color-contrast.html [ Failure Pass ]
-crbug.com/357976373 [ Mac ] fast/forms/accent-color/checkbox-accent-color-appearance.html [ Failure Pass ]
-crbug.com/357976373 [ Mac ] fast/forms/color-scheme/checkbox/checkbox-appearance-basic.html [ Failure Pass ]
-
 # Gardener 2024-08-08
 crbug.com/358343067 [ Linux ] external/wpt/html/semantics/embedded-content/media-elements/track/track-element/track-cues-cuechange.html [ Failure Pass ]
 
