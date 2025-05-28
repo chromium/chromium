@@ -34,9 +34,9 @@ class MockCollaborationServiceObserver
 
 }  // namespace
 
-class TabGroupSharingEnabledTest : public PolicyTest {
+class TabGroupSharingTest : public PolicyTest {
  public:
-  TabGroupSharingEnabledTest() {
+  TabGroupSharingTest() {
     feature_list_.InitWithFeatureStates({
         {data_sharing::features::kDataSharingFeature, true},
         {data_sharing::features::kCollaborationEntrepriseV2, true},
@@ -64,7 +64,7 @@ class TabGroupSharingEnabledTest : public PolicyTest {
     create_services_subscription_ =
         BrowserContextDependencyManager::GetInstance()
             ->RegisterCreateServicesCallbackForTesting(base::BindRepeating(
-                &TabGroupSharingEnabledTest::OnWillCreateBrowserContextServices,
+                &TabGroupSharingTest::OnWillCreateBrowserContextServices,
                 base::Unretained(this)));
   }
 
@@ -82,10 +82,10 @@ class TabGroupSharingEnabledTest : public PolicyTest {
   base::CallbackListSubscription create_services_subscription_;
 };
 
-IN_PROC_BROWSER_TEST_F(TabGroupSharingEnabledTest, TabGroupSharingEnabled) {
+IN_PROC_BROWSER_TEST_F(TabGroupSharingTest, TabGroupSharingEnableToDisable) {
   const PrefService* const prefs =
       chrome_test_utils::GetProfile(this)->GetPrefs();
-  EXPECT_EQ(0 /*disabled*/,
+  EXPECT_EQ(0 /*enabled*/,
             prefs->GetInteger(
                 collaboration::prefs::kSharedTabGroupsManagedAccountSetting));
 
@@ -106,7 +106,7 @@ IN_PROC_BROWSER_TEST_F(TabGroupSharingEnabledTest, TabGroupSharingEnabled) {
   policies.Set(key::kTabGroupSharingSettings, POLICY_LEVEL_MANDATORY,
                POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD, base::Value(1), nullptr);
   UpdateProviderPolicy(policies);
-  EXPECT_EQ(1 /*enabled*/,
+  EXPECT_EQ(1 /*disabled*/,
             prefs->GetInteger(
                 collaboration::prefs::kSharedTabGroupsManagedAccountSetting));
   EXPECT_FALSE(service->GetServiceStatus().IsAllowedToJoin());
