@@ -73,7 +73,6 @@ public class LayoutManagerChromeTablet extends LayoutManagerChrome {
      *     tab drag and drop.
      * @param toolbarContainerView View passed to StripLayoutHelper to support tab drag and drop.
      * @param tabHoverCardViewStub The ViewStub representing the strip tab hover card.
-     * @param tabStripTooltipViewStub The ViewStub representing the tooltip for NTB or MSB.
      * @param toolbarManager The ToolbarManager instance.
      * @param desktopWindowStateManager The DesktopWindowStateManager for the app header.
      * @param actionConfirmationManager The {@link ActionConfirmationManager} for group actions.
@@ -96,7 +95,6 @@ public class LayoutManagerChromeTablet extends LayoutManagerChrome {
             DragAndDropDelegate dragAndDropDelegate,
             View toolbarContainerView,
             @NonNull ViewStub tabHoverCardViewStub,
-            @NonNull ViewStub tabStripTooltipViewStub,
             @NonNull WindowAndroid windowAndroid,
             @NonNull ToolbarManager toolbarManager,
             @Nullable DesktopWindowStateManager desktopWindowStateManager,
@@ -125,7 +123,6 @@ public class LayoutManagerChromeTablet extends LayoutManagerChrome {
                         dragAndDropDelegate,
                         toolbarContainerView,
                         tabHoverCardViewStub,
-                        tabStripTooltipViewStub,
                         tabContentManagerSupplier,
                         browserControlsStateProvider,
                         windowAndroid,

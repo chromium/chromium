@@ -204,6 +204,7 @@ public class StripLayoutTab extends StripLayoutView {
                         this,
                         /* width= */ 0,
                         /* height= */ 0,
+                        /* tooltipHandler= */ null,
                         clickHandler,
                         keyboardFocusHandler,
                         R.drawable.btn_tab_close_normal,

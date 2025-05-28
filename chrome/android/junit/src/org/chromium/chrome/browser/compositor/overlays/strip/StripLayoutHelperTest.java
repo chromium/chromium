@@ -93,6 +93,7 @@ import org.chromium.chrome.browser.compositor.layouts.LayoutRenderHost;
 import org.chromium.chrome.browser.compositor.layouts.LayoutUpdateHost;
 import org.chromium.chrome.browser.compositor.layouts.components.CompositorButton;
 import org.chromium.chrome.browser.compositor.layouts.components.CompositorButton.ButtonType;
+import org.chromium.chrome.browser.compositor.layouts.components.CompositorButton.TooltipHandler;
 import org.chromium.chrome.browser.compositor.layouts.components.TintedCompositorButton;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutView.StripLayoutViewOnClickHandler;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutView.StripLayoutViewOnKeyboardFocusHandler;
@@ -185,6 +186,7 @@ public class StripLayoutHelperTest {
     @Mock private StripTabHoverCardView mTabHoverCardView;
     @Mock private Profile mProfile;
     @Mock private StripLayoutViewOnClickHandler mClickHandler;
+    @Mock private TooltipHandler mTooltipHandler;
     @Mock private StripLayoutViewOnKeyboardFocusHandler mKeyboardFocusHandler;
     @Mock private TabDragSource mTabDragSource;
     @Mock private WindowAndroid mWindowAndroid;
@@ -1443,6 +1445,7 @@ public class StripLayoutHelperTest {
                         tab,
                         24.f,
                         24.f,
+                        mTooltipHandler,
                         mClickHandler,
                         mKeyboardFocusHandler,
                         R.drawable.btn_tab_close_normal,
@@ -1480,6 +1483,7 @@ public class StripLayoutHelperTest {
                         tabs[0],
                         24.f,
                         24.f,
+                        mTooltipHandler,
                         mClickHandler,
                         mKeyboardFocusHandler,
                         R.drawable.btn_tab_close_normal,

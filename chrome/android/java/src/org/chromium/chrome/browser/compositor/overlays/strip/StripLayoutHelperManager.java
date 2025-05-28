@@ -21,7 +21,6 @@ import android.view.View;
 import android.view.View.OnDragListener;
 import android.view.ViewStub;
 import android.view.animation.Interpolator;
-import android.widget.FrameLayout;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.DrawableRes;
@@ -226,8 +225,6 @@ public class StripLayoutHelperManager
     private final TabSwitcherLayoutObserver mTabSwitcherLayoutObserver;
     private final View mToolbarControlContainer;
     private final ViewStub mTabHoverCardViewStub;
-    @Nullable private TooltipManager mTooltipManager;
-    private final ViewStub mTabStripTooltipViewStub;
     private float mModelSelectorWidth;
     private float mLastVisibleViewportOffsetY;
 
@@ -340,11 +337,6 @@ public class StripLayoutHelperManager
                 mTabHoverCardViewStub.inflate();
             }
 
-            // Inflate the tab strip tooltip ViewStub if not already inflated.
-            if (mTabStripTooltipViewStub.getParent() != null) {
-                mTabStripTooltipViewStub.inflate();
-            }
-
             getActiveStripLayoutHelper().onHoverEnter(x, y);
         }
 
@@ -414,7 +406,6 @@ public class StripLayoutHelperManager
      *     drop.
      * @param toolbarContainerView View passed to TabDragSource for drag and drop.
      * @param tabHoverCardViewStub The ViewStub representing the strip tab hover card.
-     * @param tabStripTooltipViewStub The ViewStub representing the tooltip for tab strip buttons.
      * @param tabContentManagerSupplier Supplier of the TabContentManager instance.
      * @param browserControlsStateProvider BrowserControlsStateProvider for drag drop.
      * @param toolbarManager The ToolbarManager instance.
@@ -436,7 +427,6 @@ public class StripLayoutHelperManager
             DragAndDropDelegate dragDropDelegate,
             View toolbarContainerView,
             @NonNull ViewStub tabHoverCardViewStub,
-            @NonNull ViewStub tabStripTooltipViewStub,
             ObservableSupplier<TabContentManager> tabContentManagerSupplier,
             @NonNull BrowserControlsStateProvider browserControlsStateProvider,
             @NonNull WindowAndroid windowAndroid,
@@ -497,7 +487,6 @@ public class StripLayoutHelperManager
         mStripEndPadding = res.getDimension(R.dimen.button_end_padding) / mDensity;
 
         mTabHoverCardViewStub = tabHoverCardViewStub;
-        mTabStripTooltipViewStub = tabStripTooltipViewStub;
 
         if (MultiWindowUtils.isMultiInstanceApi31Enabled()) {
             mTabDragSource =
@@ -563,16 +552,6 @@ public class StripLayoutHelperManager
                     mIncognitoHelper.setTabHoverCardView(hoverCardView);
                 });
 
-        tabStripTooltipViewStub.setOnInflateListener(
-                (viewStub, view) -> {
-                    mTooltipManager = new TooltipManager((FrameLayout) view, () -> mTopPadding);
-                    mNormalHelper.getNewTabButton().setTooltipManager(mTooltipManager);
-                    mIncognitoHelper.getNewTabButton().setTooltipManager(mTooltipManager);
-                    if (mModelSelectorButton != null) {
-                        mModelSelectorButton.setTooltipManager(mTooltipManager);
-                    }
-                });
-
         if (tabModelStartupInfoSupplier != null) {
             if (tabModelStartupInfoSupplier.hasValue()) {
                 setTabModelStartupInfo(tabModelStartupInfoSupplier.get());
@@ -621,6 +600,9 @@ public class StripLayoutHelperManager
                         null,
                         MODEL_SELECTOR_BUTTON_BACKGROUND_WIDTH_DP,
                         MODEL_SELECTOR_BUTTON_BACKGROUND_HEIGHT_DP,
+                        (tooltipText) -> {
+                            mToolbarControlContainer.setTooltipText(tooltipText);
+                        },
                         selectorClickHandler,
                         keyboardFocusHandler,
                         R.drawable.ic_incognito,
@@ -692,9 +674,6 @@ public class StripLayoutHelperManager
         mModelSelectorButton.setAccessibilityDescription(
                 context.getString(R.string.accessibility_tabstrip_btn_incognito_toggle_standard),
                 context.getString(R.string.accessibility_tabstrip_btn_incognito_toggle_incognito));
-        if (mTooltipManager != null) {
-            mModelSelectorButton.setTooltipManager(mTooltipManager);
-        }
     }
 
     /** Cleans up internal state. An instance should not be used after this method is called. */
@@ -1621,14 +1600,6 @@ public class StripLayoutHelperManager
 
     ViewStub getTabHoverCardViewStubForTesting() {
         return mTabHoverCardViewStub;
-    }
-
-    ViewStub getTooltipViewStubForTesting() {
-        return mTabStripTooltipViewStub;
-    }
-
-    TooltipManager getTooltipManagerForTesting() {
-        return mTooltipManager;
     }
 
     public TabDragSource getTabDragSourceForTesting() {

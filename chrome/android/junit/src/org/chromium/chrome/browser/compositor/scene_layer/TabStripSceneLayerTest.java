@@ -42,6 +42,7 @@ import org.chromium.chrome.browser.compositor.layouts.LayoutRenderHost;
 import org.chromium.chrome.browser.compositor.layouts.LayoutUpdateHost;
 import org.chromium.chrome.browser.compositor.layouts.components.CompositorButton;
 import org.chromium.chrome.browser.compositor.layouts.components.CompositorButton.ButtonType;
+import org.chromium.chrome.browser.compositor.layouts.components.CompositorButton.TooltipHandler;
 import org.chromium.chrome.browser.compositor.layouts.components.TintedCompositorButton;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutGroupTitle;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutHelperManager;
@@ -63,6 +64,7 @@ public class TabStripSceneLayerTest {
     @Mock private ResourceManager mResourceManager;
     @Mock private LayerTitleCache mLayerTitleCache;
     @Mock private SceneLayer mSceneLayer;
+    @Mock private TooltipHandler mTooltipHandler;
     @Mock private StripLayoutViewOnClickHandler mOnClickHandler;
     @Mock private StripLayoutViewOnKeyboardFocusHandler mKeyboardFocusHandler;
     @Mock private TabLoadTrackerCallback mTabLoadTrackerCallback;
@@ -109,6 +111,7 @@ public class TabStripSceneLayerTest {
                         null,
                         32.f,
                         32.f,
+                        mTooltipHandler,
                         mOnClickHandler,
                         mKeyboardFocusHandler,
                         R.drawable.ic_incognito,
@@ -120,6 +123,7 @@ public class TabStripSceneLayerTest {
                         null,
                         32.f,
                         32.f,
+                        mTooltipHandler,
                         mOnClickHandler,
                         mKeyboardFocusHandler,
                         R.drawable.ic_new_tab_button,

@@ -38,6 +38,7 @@ public class TintedCompositorButton extends CompositorButton {
             StripLayoutView parentView,
             float width,
             float height,
+            TooltipHandler tooltipHandler,
             StripLayoutViewOnClickHandler clickHandler,
             StripLayoutViewOnKeyboardFocusHandler keyboardFocusHandler,
             @DrawableRes int resource,
@@ -48,6 +49,7 @@ public class TintedCompositorButton extends CompositorButton {
                 parentView,
                 width,
                 height,
+                tooltipHandler,
                 clickHandler,
                 keyboardFocusHandler,
                 clickSlopDp);
