@@ -31,6 +31,7 @@
 #include "components/sync/protocol/entity_specifics.pb.h"
 #include "components/sync/protocol/proto_value_conversions.h"
 #include "components/sync/protocol/theme_specifics.pb.h"
+#include "components/sync/protocol/theme_types.pb.h"
 #include "components/sync_preferences/pref_service_syncable.h"
 #include "components/sync_preferences/pref_service_syncable_observer.h"
 #include "extensions/browser/disable_reason.h"
@@ -92,7 +93,7 @@ std::optional<base::Value::Dict> NtpBackgroundDictFromSpecifics(
   if (!theme_specifics.has_ntp_background()) {
     return std::nullopt;
   }
-  const sync_pb::ThemeSpecifics::NtpCustomBackground& ntp_background =
+  const sync_pb::NtpCustomBackground& ntp_background =
       theme_specifics.ntp_background();
   base::Value::Dict dict;
   if (ntp_background.has_url()) {
@@ -128,9 +129,9 @@ std::optional<base::Value::Dict> NtpBackgroundDictFromSpecifics(
   return dict;
 }
 
-sync_pb::ThemeSpecifics::NtpCustomBackground SpecificsNtpBackgroundFromDict(
+sync_pb::NtpCustomBackground SpecificsNtpBackgroundFromDict(
     const base::Value::Dict& dict) {
-  sync_pb::ThemeSpecifics::NtpCustomBackground ntp_background;
+  sync_pb::NtpCustomBackground ntp_background;
   if (const std::string* value = dict.FindString(kNtpCustomBackgroundURL)) {
     ntp_background.set_url(*value);
   }
@@ -165,8 +166,8 @@ sync_pb::ThemeSpecifics::NtpCustomBackground SpecificsNtpBackgroundFromDict(
 }
 
 bool AreSpecificsNtpBackgroundEquivalent(
-    const sync_pb::ThemeSpecifics::NtpCustomBackground& a,
-    const sync_pb::ThemeSpecifics::NtpCustomBackground& b) {
+    const sync_pb::NtpCustomBackground& a,
+    const sync_pb::NtpCustomBackground& b) {
   // MessageDifferencer cannot be used and explicitly comparing all the fields
   // is maintenance-heavy.
   return a.SerializeAsString() == b.SerializeAsString();
@@ -708,7 +709,7 @@ ThemeSyncableService::GetThemeSpecificsFromCurrentTheme() const {
   } else if (ThemeService::kUserColorThemeID == theme_id) {
     if (const std::optional<SkColor> user_color =
             theme_service_->GetUserColor()) {
-      sync_pb::ThemeSpecifics::UserColorTheme* user_color_theme =
+      sync_pb::UserColorTheme* user_color_theme =
           theme_specifics.mutable_user_color_theme();
       user_color_theme->set_color(*user_color);
       user_color_theme->set_browser_color_variant(

@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/home_customization/model/home_background_customization_service.h"
 
-#import "components/sync/protocol/theme_specifics.pb.h"
+#import "components/sync/protocol/theme_types.pb.h"
 #import "ios/chrome/browser/home_customization/model/home_background_customization_service_observer.h"
 #import "url/gurl.h"
 
@@ -14,7 +14,7 @@ HomeBackgroundCustomizationService::~HomeBackgroundCustomizationService() {}
 
 void HomeBackgroundCustomizationService::Shutdown() {}
 
-const sync_pb::ThemeSpecifics::NtpCustomBackground&
+const sync_pb::NtpCustomBackground&
 HomeBackgroundCustomizationService::GetCurrentBackground() {
   return current_background_;
 }
@@ -26,7 +26,7 @@ void HomeBackgroundCustomizationService::SetCurrentBackground(
     const std::string& attribution_line_2,
     const GURL& attribution_action_url,
     const std::string& collection_id) {
-  sync_pb::ThemeSpecifics::NtpCustomBackground new_background;
+  sync_pb::NtpCustomBackground new_background;
   new_background.set_url(background_url.spec());
   // TODO(crbug.com/411453550): Add thumbnail_url to NtpCustomBackground field.
   new_background.set_attribution_line_1(attribution_line_1);

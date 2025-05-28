@@ -60,6 +60,8 @@
 #include "components/sync/protocol/sync_invalidations_payload.pb.h"
 #include "components/sync/protocol/tab_group_attribution_metadata.pb.h"
 #include "components/sync/protocol/theme_specifics.pb.h"
+#include "components/sync/protocol/theme_specifics_ios.pb.h"
+#include "components/sync/protocol/theme_types.pb.h"
 #include "components/sync/protocol/typed_url_specifics.pb.h"
 #include "components/sync/protocol/unencrypted_sharing_message.pb.h"
 #include "components/sync/protocol/unique_position.pb.h"
@@ -1574,14 +1576,19 @@ VISIT_PROTO_FIELDS(
   VISIT(color);
 }
 
-VISIT_PROTO_FIELDS(const sync_pb::ThemeSpecifics::UserColorTheme& proto) {
+VISIT_PROTO_FIELDS(const sync_pb::ThemeSpecificsIos& proto) {
+  VISIT(user_color_theme);
+  VISIT(ntp_background);
+}
+
+VISIT_PROTO_FIELDS(const sync_pb::UserColorTheme& proto) {
   VISIT(color);
   VISIT_ENUM(browser_color_variant);
 }
 
 VISIT_PROTO_FIELDS(const sync_pb::ThemeSpecifics::Empty& proto) {}
 
-VISIT_PROTO_FIELDS(const sync_pb::ThemeSpecifics::NtpCustomBackground& proto) {
+VISIT_PROTO_FIELDS(const sync_pb::NtpCustomBackground& proto) {
   VISIT(url);
   VISIT(attribution_line_1);
   VISIT(attribution_line_2);

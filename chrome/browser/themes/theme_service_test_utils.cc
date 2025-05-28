@@ -9,6 +9,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/themes/theme_syncable_service.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
+#include "components/sync/protocol/theme_types.pb.h"
 #include "extensions/common/manifest_constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -115,11 +116,11 @@ sync_pb::ThemeSpecifics CreateThemeSpecificsWithColorTheme() {
   theme_specifics.set_use_system_theme_by_default(false);
   theme_specifics.set_browser_color_scheme(
       sync_pb::ThemeSpecifics_BrowserColorScheme_SYSTEM);
-  sync_pb::ThemeSpecifics::UserColorTheme* user_color_theme =
+  sync_pb::UserColorTheme* user_color_theme =
       theme_specifics.mutable_user_color_theme();
   user_color_theme->set_color(SK_ColorRED);
   user_color_theme->set_browser_color_variant(
-      sync_pb::ThemeSpecifics_UserColorTheme_BrowserColorVariant_TONAL_SPOT);
+      sync_pb::UserColorTheme_BrowserColorVariant_TONAL_SPOT);
   return theme_specifics;
 }
 
@@ -140,7 +141,7 @@ sync_pb::ThemeSpecifics CreateThemeSpecificsWithCustomNtpBackground(
   theme_specifics.set_use_system_theme_by_default(false);
   theme_specifics.set_browser_color_scheme(
       sync_pb::ThemeSpecifics_BrowserColorScheme_SYSTEM);
-  sync_pb::ThemeSpecifics::NtpCustomBackground* background =
+  sync_pb::NtpCustomBackground* background =
       theme_specifics.mutable_ntp_background();
   background->set_url(background_url);
   background->set_attribution_line_1("");

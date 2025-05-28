@@ -22,40 +22,37 @@ std::optional<SkColor> CurrentThemeUserColor(const PrefService* pref_service) {
                                            : std::make_optional(user_color);
 }
 
-sync_pb::ThemeSpecifics::UserColorTheme::BrowserColorVariant
-BrowserColorVariantToProtoEnum(ui::mojom::BrowserColorVariant color_variant) {
+sync_pb::UserColorTheme::BrowserColorVariant BrowserColorVariantToProtoEnum(
+    ui::mojom::BrowserColorVariant color_variant) {
   switch (color_variant) {
     case ui::mojom::BrowserColorVariant::kSystem:
-      return sync_pb::ThemeSpecifics_UserColorTheme_BrowserColorVariant_SYSTEM;
+      return sync_pb::UserColorTheme_BrowserColorVariant_SYSTEM;
     case ui::mojom::BrowserColorVariant::kTonalSpot:
-      return sync_pb::
-          ThemeSpecifics_UserColorTheme_BrowserColorVariant_TONAL_SPOT;
+      return sync_pb::UserColorTheme_BrowserColorVariant_TONAL_SPOT;
     case ui::mojom::BrowserColorVariant::kNeutral:
-      return sync_pb::ThemeSpecifics_UserColorTheme_BrowserColorVariant_NEUTRAL;
+      return sync_pb::UserColorTheme_BrowserColorVariant_NEUTRAL;
     case ui::mojom::BrowserColorVariant::kVibrant:
-      return sync_pb::ThemeSpecifics_UserColorTheme_BrowserColorVariant_VIBRANT;
+      return sync_pb::UserColorTheme_BrowserColorVariant_VIBRANT;
     case ui::mojom::BrowserColorVariant::kExpressive:
-      return sync_pb::
-          ThemeSpecifics_UserColorTheme_BrowserColorVariant_EXPRESSIVE;
+      return sync_pb::UserColorTheme_BrowserColorVariant_EXPRESSIVE;
   }
 }
 
 ui::mojom::BrowserColorVariant ProtoEnumToBrowserColorVariant(
-    sync_pb::ThemeSpecifics::UserColorTheme::BrowserColorVariant
-        color_variant) {
+    sync_pb::UserColorTheme::BrowserColorVariant color_variant) {
   switch (color_variant) {
-    case sync_pb::ThemeSpecifics_UserColorTheme_BrowserColorVariant_SYSTEM:
+    case sync_pb::UserColorTheme_BrowserColorVariant_SYSTEM:
       return ui::mojom::BrowserColorVariant::kSystem;
-    case sync_pb::ThemeSpecifics_UserColorTheme_BrowserColorVariant_TONAL_SPOT:
+    case sync_pb::UserColorTheme_BrowserColorVariant_TONAL_SPOT:
       return ui::mojom::BrowserColorVariant::kTonalSpot;
-    case sync_pb::ThemeSpecifics_UserColorTheme_BrowserColorVariant_NEUTRAL:
+    case sync_pb::UserColorTheme_BrowserColorVariant_NEUTRAL:
       return ui::mojom::BrowserColorVariant::kNeutral;
-    case sync_pb::ThemeSpecifics_UserColorTheme_BrowserColorVariant_VIBRANT:
+    case sync_pb::UserColorTheme_BrowserColorVariant_VIBRANT:
       return ui::mojom::BrowserColorVariant::kVibrant;
-    case sync_pb::ThemeSpecifics_UserColorTheme_BrowserColorVariant_EXPRESSIVE:
+    case sync_pb::UserColorTheme_BrowserColorVariant_EXPRESSIVE:
       return ui::mojom::BrowserColorVariant::kExpressive;
     case sync_pb::
-        ThemeSpecifics_UserColorTheme_BrowserColorVariant_BROWSER_COLOR_VARIANT_UNSPECIFIED:
+        UserColorTheme_BrowserColorVariant_BROWSER_COLOR_VARIANT_UNSPECIFIED:
       return ui::mojom::BrowserColorVariant::kSystem;
   }
 }

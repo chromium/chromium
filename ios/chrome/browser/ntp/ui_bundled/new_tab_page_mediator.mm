@@ -322,7 +322,7 @@
 #pragma mark - HomeBackgroundCustomizationServiceObserving
 
 - (void)onBackgroundChanged {
-  const sync_pb::ThemeSpecifics::NtpCustomBackground& background =
+  const sync_pb::NtpCustomBackground& background =
       _backgroundCustomizationService->GetCurrentBackground();
 
   GURL imageURL = GURL(background.url());

@@ -127,8 +127,7 @@ TEST(ProtoEnumConversionsTest,
 }
 
 TEST(ProtoEnumConversionsTest, GetBrowserColorVariantString) {
-  TestEnumStringsNonEmpty(
-      sync_pb::ThemeSpecifics::UserColorTheme::BrowserColorVariant);
+  TestEnumStringsNonEmpty(sync_pb::UserColorTheme::BrowserColorVariant);
 }
 
 TEST(ProtoEnumConversionsTest, GetBrowserColorSchemeString) {

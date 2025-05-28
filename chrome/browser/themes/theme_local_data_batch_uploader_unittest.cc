@@ -32,6 +32,7 @@
 #include "components/sync/model/sync_change.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
 #include "components/sync/protocol/theme_specifics.pb.h"
+#include "components/sync/protocol/theme_types.pb.h"
 #include "components/sync/service/local_data_description.h"
 #include "components/sync/test/fake_sync_change_processor.h"
 #include "components/sync/test/sync_change_processor_wrapper_for_test.h"
@@ -283,11 +284,11 @@ TEST_F(ThemeLocalDataBatchUploaderTest,
   theme_specifics.set_use_custom_theme(false);
   theme_specifics.set_browser_color_scheme(
       ::sync_pb::ThemeSpecifics_BrowserColorScheme_SYSTEM);
-  sync_pb::ThemeSpecifics::UserColorTheme* user_color_theme =
+  sync_pb::UserColorTheme* user_color_theme =
       theme_specifics.mutable_user_color_theme();
   user_color_theme->set_color(SK_ColorRED);
   user_color_theme->set_browser_color_variant(
-      sync_pb::ThemeSpecifics_UserColorTheme_BrowserColorVariant_TONAL_SPOT);
+      sync_pb::UserColorTheme_BrowserColorVariant_TONAL_SPOT);
 
   ASSERT_FALSE(theme_sync_service()->ProcessSyncChanges(
       FROM_HERE, MakeThemeChangeList(theme_specifics)));

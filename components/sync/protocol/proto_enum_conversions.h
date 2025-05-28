@@ -24,6 +24,7 @@
 #include "components/sync/protocol/sharing_message_specifics.pb.h"
 #include "components/sync/protocol/sync.pb.h"
 #include "components/sync/protocol/sync_enums.pb.h"
+#include "components/sync/protocol/theme_types.pb.h"
 #include "components/sync/protocol/user_consent_types.pb.h"
 #include "components/sync/protocol/user_event_specifics.pb.h"
 #include "components/sync/protocol/web_apk_specifics.pb.h"
@@ -236,8 +237,7 @@ const char* ProtoEnumToString(
         ChimeChannelConfiguration::ChimeChannelType channel_type);
 
 const char* ProtoEnumToString(
-    sync_pb::ThemeSpecifics::UserColorTheme::BrowserColorVariant
-        browser_color_variant);
+    sync_pb::UserColorTheme::BrowserColorVariant browser_color_variant);
 
 const char* ProtoEnumToString(
     sync_pb::ThemeSpecifics::BrowserColorScheme browser_color_scheme);

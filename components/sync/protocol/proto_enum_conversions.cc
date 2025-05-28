@@ -1024,19 +1024,16 @@ const char* ProtoEnumToString(
 }
 
 const char* ProtoEnumToString(
-    sync_pb::ThemeSpecifics::UserColorTheme::BrowserColorVariant
-        browser_color_variant) {
-  ASSERT_ENUM_BOUNDS(sync_pb::ThemeSpecifics::UserColorTheme,
-                     BrowserColorVariant, BROWSER_COLOR_VARIANT_UNSPECIFIED,
-                     EXPRESSIVE);
+    sync_pb::UserColorTheme::BrowserColorVariant browser_color_variant) {
+  ASSERT_ENUM_BOUNDS(sync_pb::UserColorTheme, BrowserColorVariant,
+                     BROWSER_COLOR_VARIANT_UNSPECIFIED, EXPRESSIVE);
   switch (browser_color_variant) {
-    ENUM_CASE(sync_pb::ThemeSpecifics::UserColorTheme,
-              BROWSER_COLOR_VARIANT_UNSPECIFIED);
-    ENUM_CASE(sync_pb::ThemeSpecifics::UserColorTheme, SYSTEM);
-    ENUM_CASE(sync_pb::ThemeSpecifics::UserColorTheme, TONAL_SPOT);
-    ENUM_CASE(sync_pb::ThemeSpecifics::UserColorTheme, NEUTRAL);
-    ENUM_CASE(sync_pb::ThemeSpecifics::UserColorTheme, VIBRANT);
-    ENUM_CASE(sync_pb::ThemeSpecifics::UserColorTheme, EXPRESSIVE);
+    ENUM_CASE(sync_pb::UserColorTheme, BROWSER_COLOR_VARIANT_UNSPECIFIED);
+    ENUM_CASE(sync_pb::UserColorTheme, SYSTEM);
+    ENUM_CASE(sync_pb::UserColorTheme, TONAL_SPOT);
+    ENUM_CASE(sync_pb::UserColorTheme, NEUTRAL);
+    ENUM_CASE(sync_pb::UserColorTheme, VIBRANT);
+    ENUM_CASE(sync_pb::UserColorTheme, EXPRESSIVE);
   }
   NOTREACHED();
 }
