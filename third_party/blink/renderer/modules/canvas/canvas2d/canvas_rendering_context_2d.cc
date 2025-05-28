@@ -649,7 +649,7 @@ scoped_refptr<StaticBitmapImage> blink::CanvasRenderingContext2D::GetImage(
         canvas()->GetHibernationHandler()->GetImage());
   }
 
-  if (!canvas()->IsResourceValid()) {
+  if (!canvas()->IsCanvas2DResourceValid()) {
     return nullptr;
   }
   // GetOrCreateResourceProvider needs to be called before FlushRecording, to
@@ -875,7 +875,7 @@ cc::Layer* CanvasRenderingContext2D::CcLayer() const {
     return nullptr;
   }
 
-  return canvas()->GetOrCreateCcLayerIfNeeded();
+  return canvas()->GetOrCreateCcLayerForCanvas2DIfNeeded();
 }
 
 void CanvasRenderingContext2D::drawFocusIfNeeded(Element* element) {
@@ -998,7 +998,7 @@ bool CanvasRenderingContext2D::ShouldDisableAccelerationBecauseOfReadback()
 
 bool CanvasRenderingContext2D::IsCanvas2DBufferValid() const {
   if (IsPaintable()) {
-    return canvas()->IsResourceValid();
+    return canvas()->IsCanvas2DResourceValid();
   }
   return false;
 }

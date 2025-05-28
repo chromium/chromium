@@ -355,6 +355,10 @@ HTMLCanvasElement::~HTMLCanvasElement() {
 bool HTMLCanvasElement::PrepareTransferableResource(
     viz::TransferableResource* out_resource,
     viz::ReleaseCallback* out_release_callback) {
+  // The only context type that sets up HTMLCanvasElement as a
+  // TextureLayerClient is CanvasRenderingContext2D.
+  CHECK(IsRenderingContext2D());
+
   CHECK(cc_layer_);  // This explodes if FinalizeFrame() was not called.
 
   frames_since_last_commit_ = 0;
@@ -367,7 +371,7 @@ bool HTMLCanvasElement::PrepareTransferableResource(
     return false;
   }
 
-  if (!IsResourceValid()) {
+  if (!IsCanvas2DResourceValid()) {
     return false;
   }
 
@@ -418,7 +422,10 @@ bool HTMLCanvasElement::PrepareTransferableResource(
   return true;
 }
 
-bool HTMLCanvasElement::IsResourceValid() {
+bool HTMLCanvasElement::IsCanvas2DResourceValid() {
+  // This should be called only for 2D contexts.
+  CHECK(IsRenderingContext2D());
+
   if (IsHibernating()) {
     return true;
   }
@@ -1699,7 +1706,9 @@ void HTMLCanvasElement::SetIsDisplayed(bool displayed) {
   }
 }
 
-cc::TextureLayer* HTMLCanvasElement::GetOrCreateCcLayerIfNeeded() {
+cc::TextureLayer* HTMLCanvasElement::GetOrCreateCcLayerForCanvas2DIfNeeded() {
+  CHECK(IsRenderingContext2D());
+
   if (!IsComposited()) {
     return nullptr;
   }
@@ -1714,7 +1723,8 @@ cc::TextureLayer* HTMLCanvasElement::GetOrCreateCcLayerIfNeeded() {
   return cc_layer_.get();
 }
 
-void HTMLCanvasElement::ClearLayerTexture() {
+void HTMLCanvasElement::ClearCanvas2DLayerTexture() {
+  CHECK(IsRenderingContext2D());
   if (cc_layer_) {
     cc_layer_->ClearTexture();
   }

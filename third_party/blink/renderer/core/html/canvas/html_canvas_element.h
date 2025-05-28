@@ -104,7 +104,7 @@ class CORE_EXPORT HTMLCanvasElement final
   bool PrepareTransferableResource(
       viz::TransferableResource* out_resource,
       viz::ReleaseCallback* out_release_callback) override;
-  bool IsResourceValid();
+  bool IsCanvas2DResourceValid();
 
   // Attributes and functions exposed to script
   unsigned width() const { return Size().width(); }
@@ -182,9 +182,9 @@ class CORE_EXPORT HTMLCanvasElement final
   void SetIsDisplayed(bool);
   bool IsDisplayed() const { return is_displayed_; }
 
-  cc::TextureLayer* GetOrCreateCcLayerIfNeeded();
-  cc::TextureLayer* GetCcLayerForTesting() { return cc_layer_.get(); }
-  void ClearLayerTexture() override;
+  cc::TextureLayer* GetOrCreateCcLayerForCanvas2DIfNeeded();
+  cc::TextureLayer* GetCanvas2DCcLayerForTesting() { return cc_layer_.get(); }
+  void ClearCanvas2DLayerTexture() override;
 
   void SetNeedsPushProperties();
 
