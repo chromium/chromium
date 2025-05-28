@@ -64,8 +64,10 @@ constexpr uint64_t kZeroesThenOnes = 0x5555555555555555u;
 // Waits on provided WaitableEvent before executing and signals when done.
 class BlockedThread : public DelegateSimpleThread::Delegate {
  public:
-  explicit BlockedThread(TimeDelta timeout)
-      : thread_(this, "BlockedThread"), timeout_(timeout) {
+  BlockedThread(HangWatcher::ThreadType thread_type, TimeDelta timeout)
+      : thread_(this, "BlockedThread"),
+        thread_type_(thread_type),
+        timeout_(timeout) {
     StartAndWaitForScopeEntered();
   }
 
@@ -81,8 +83,7 @@ class BlockedThread : public DelegateSimpleThread::Delegate {
       // (Un)Register the thread here instead of in ctor/dtor so that the action
       // happens on the right thread.
       base::ScopedClosureRunner unregister_closure =
-          base::HangWatcher::RegisterThread(
-              base::HangWatcher::ThreadType::kMainThread);
+          base::HangWatcher::RegisterThread(thread_type_);
 
       WatchHangsInScope scope(timeout_);
       wait_until_entered_scope_.Signal();
@@ -120,7 +121,8 @@ class BlockedThread : public DelegateSimpleThread::Delegate {
   // Used to unblock the monitored thread. Signaled from the test main thread.
   base::WaitableEvent unblock_thread_;
 
-  base::TimeDelta timeout_;
+  const HangWatcher::ThreadType thread_type_;
+  const base::TimeDelta timeout_;
 };
 
 // A hang watcher that only does monitoring when requested via
@@ -411,7 +413,7 @@ TEST_F(HangWatcherTest, HistogramsLoggedOnHang) {
   ManualHangWatcher hang_watcher;
 
   // Start a blocked thread and simulate a hang.
-  BlockedThread thread(base::Seconds(10));
+  BlockedThread thread(HangWatcher::ThreadType::kMainThread, base::Seconds(10));
   task_environment_.FastForwardBy(base::Seconds(11));
 
   // First monitoring catches the hang and emits the histogram.
@@ -463,7 +465,7 @@ TEST_F(HangWatcherTest, HistogramsLoggedWithoutHangs) {
 
   // Start a blocked thread with a 10 seconds hang limit, but don't fastforward
   // time.
-  BlockedThread thread(base::Seconds(10));
+  BlockedThread thread(HangWatcher::ThreadType::kMainThread, base::Seconds(10));
 
   // No hang to catch so nothing is recorded.
   hang_watcher.TriggerSynchronousMonitoring();
@@ -494,7 +496,7 @@ TEST_F(HangWatcherTest, HistogramsLoggedWithShutdownFlag) {
   ManualHangWatcher hang_watcher;
 
   // Start a blocked thread and simulate a hang.
-  BlockedThread thread(base::Seconds(10));
+  BlockedThread thread(HangWatcher::ThreadType::kMainThread, base::Seconds(10));
   task_environment_.FastForwardBy(base::Seconds(11));
 
   // Make this process emit *.Shutdown instead of *.Normal histograms.
@@ -531,7 +533,7 @@ TEST_F(HangWatcherTest, Hang) {
   ManualHangWatcher hang_watcher;
 
   // Start a blocked thread and simulate a hang.
-  BlockedThread thread(base::Seconds(10));
+  BlockedThread thread(HangWatcher::ThreadType::kMainThread, base::Seconds(10));
   task_environment_.FastForwardBy(base::Seconds(11));
 
   // First monitoring catches and records the hang.
@@ -543,7 +545,7 @@ TEST_F(HangWatcherTest, HangAlreadyRecorded) {
   ManualHangWatcher hang_watcher;
 
   // Start a blocked thread and simulate a hang.
-  BlockedThread thread(base::Seconds(10));
+  BlockedThread thread(HangWatcher::ThreadType::kMainThread, base::Seconds(10));
   task_environment_.FastForwardBy(base::Seconds(11));
 
   // First monitoring catches and records the hang.
@@ -561,7 +563,7 @@ TEST_F(HangWatcherTest, NoHang) {
 
   // Start a blocked thread with a 10 seconds hang limit, but don't fastforward
   // time.
-  BlockedThread thread(base::Seconds(10));
+  BlockedThread thread(HangWatcher::ThreadType::kMainThread, base::Seconds(10));
 
   // No hang to catch so nothing is recorded.
   hang_watcher.TriggerSynchronousMonitoring();
@@ -676,7 +678,8 @@ TEST_F(HangWatcherSnapshotTest, HungThreadIDs) {
   auto unregister_thread_closure =
       HangWatcher::RegisterThread(base::HangWatcher::ThreadType::kMainThread);
 
-  BlockedThread blocked_thread(base::TimeDelta{});
+  BlockedThread blocked_thread(HangWatcher::ThreadType::kMainThread,
+                               /*timeout=*/base::TimeDelta{});
   {
     // Ensure the blocking thread entered the scope before the main thread. This
     // will guarantee an ordering while reporting the list of hung threads.
