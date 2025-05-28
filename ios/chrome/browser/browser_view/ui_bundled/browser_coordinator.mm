@@ -41,6 +41,7 @@
 #import "components/trusted_vault/trusted_vault_server_constants.h"
 #import "ios/chrome/browser/app_launcher/model/app_launcher_tab_helper_browser_presentation_provider.h"
 #import "ios/chrome/browser/app_store_rating/ui_bundled/features.h"
+#import "ios/chrome/browser/authentication/ui_bundled/continuation.h"
 #import "ios/chrome/browser/authentication/ui_bundled/enterprise/enterprise_prompt/enterprise_prompt_coordinator.h"
 #import "ios/chrome/browser/authentication/ui_bundled/enterprise/enterprise_prompt/enterprise_prompt_type.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_constants.h"
@@ -3691,13 +3692,26 @@ enum class ToolbarKind {
 #pragma mark - SyncPresenter (Public)
 
 - (void)showPrimaryAccountReauth {
-  [HandlerForProtocol(self.dispatcher, ApplicationCommands)
-              showSignin:[[ShowSigninCommand alloc]
-                             initWithOperation:AuthenticationOperation::
-                                                   kPrimaryAccountReauth
-                                   accessPoint:signin_metrics::AccessPoint::
-                                                   kReauthInfoBar]
-      baseViewController:self.viewController];
+  signin_metrics::PromoAction promoAction =
+      signin_metrics::PromoAction::PROMO_ACTION_NO_SIGNIN_PROMO;
+  signin_metrics::AccessPoint accessPoint =
+      signin_metrics::AccessPoint::kReauthInfoBar;
+  SigninContextStyle style = SigninContextStyle::kDefault;
+  _signinCoordinator = [SigninCoordinator
+      primaryAccountReauthCoordinatorWithBaseViewController:self.viewController
+                                                    browser:self.browser
+                                               contextStyle:style
+                                                accessPoint:accessPoint
+                                                promoAction:promoAction
+                                       continuationProvider:
+                                           DoNothingContinuationProvider()];
+
+  __weak __typeof(self) weakSelf = self;
+  _signinCoordinator.signinCompletion =
+      ^(SigninCoordinatorResult result, id<SystemIdentity> identity) {
+        [weakSelf stopSigninCoordinator];
+      };
+  [_signinCoordinator start];
 }
 
 - (void)showSyncPassphraseSettings {
