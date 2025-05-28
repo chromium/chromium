@@ -85,12 +85,13 @@ void UpdatePageActionIconView(content::WebContents* web_contents,
 }  // namespace
 
 CommerceUiTabHelper::CommerceUiTabHelper(
-    content::WebContents* content,
+    tabs::TabInterface& tab_interface,
     ShoppingService* shopping_service,
     bookmarks::BookmarkModel* model,
     image_fetcher::ImageFetcher* image_fetcher,
     SidePanelRegistry* side_panel_registry)
-    : content::WebContentsObserver(content),
+    : content::WebContentsObserver(tab_interface.GetContents()),
+      tab_interface_(tab_interface),
       shopping_service_(shopping_service),
       bookmark_model_(model),
       image_fetcher_(image_fetcher),
@@ -254,10 +255,7 @@ void CommerceUiTabHelper::TriggerUpdateForIconView() {
 
 void CommerceUiTabHelper::UpdatePriceInsightsIconView() {
   if (IsPageActionMigrated(PageActionIconType::kPriceInsights)) {
-    auto* tab_interface = tabs::TabInterface::GetFromContents(web_contents());
-    CHECK(tab_interface);
-
-    tab_interface->GetTabFeatures()
+    tab_interface_->GetTabFeatures()
         ->commerce_price_insights_page_action_view_controller()
         ->UpdatePageActionIcon(
             ShouldShowPriceInsightsIconView(),
@@ -480,9 +478,8 @@ GURL CommerceUiTabHelper::GetComparisonTableURL() {
 }
 
 void CommerceUiTabHelper::OnOpenComparePageClicked() {
-  auto* tab_strip_model = tabs::TabInterface::GetFromContents(web_contents())
-                              ->GetBrowserWindowInterface()
-                              ->GetTabStripModel();
+  auto* tab_strip_model =
+      tab_interface_->GetBrowserWindowInterface()->GetTabStripModel();
   GURL comparison_table_url = GetComparisonTableURL();
 
   for (int index = 0; index < tab_strip_model->count(); index++) {

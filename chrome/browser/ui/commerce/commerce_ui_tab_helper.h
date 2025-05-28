@@ -32,8 +32,11 @@ class BookmarkModel;
 
 namespace content {
 class NavigationHandle;
-class WebContents;
 }  // namespace content
+
+namespace tabs {
+class TabInterface;
+}
 
 namespace image_fetcher {
 class ImageFetcher;
@@ -52,7 +55,7 @@ class ProductSpecificationsPageActionController;
 // features.
 class CommerceUiTabHelper : public content::WebContentsObserver {
  public:
-  CommerceUiTabHelper(content::WebContents* contents,
+  CommerceUiTabHelper(tabs::TabInterface& tab_interface,
                       ShoppingService* shopping_service,
                       bookmarks::BookmarkModel* model,
                       image_fetcher::ImageFetcher* image_fetcher,
@@ -216,6 +219,10 @@ class CommerceUiTabHelper : public content::WebContentsObserver {
 
   base::RepeatingClosure GetPageActionControllerNotificationCallback(
       base::RepeatingClosure page_action_icon_update_callback);
+
+  // Reference to the tab interface, which provides access to tab-specific
+  // features.
+  const raw_ref<tabs::TabInterface> tab_interface_;
 
   // The shopping service is tied to the lifetime of the browser context
   // which will always outlive this tab helper.

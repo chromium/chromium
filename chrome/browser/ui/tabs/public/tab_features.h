@@ -270,8 +270,7 @@ class TabFeatures {
       TabInterface* tab);
 
   virtual std::unique_ptr<commerce::CommerceUiTabHelper>
-  CreateCommerceUiTabHelper(content::WebContents* web_contents,
-                            Profile* profile);
+  CreateCommerceUiTabHelper(TabInterface& tab, Profile* profile);
 
  private:
   bool initialized_ = false;
