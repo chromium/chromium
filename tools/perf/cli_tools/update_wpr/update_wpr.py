@@ -756,6 +756,7 @@ class CrossbenchWprUpdater(object):
         'branch. If you need to create a new branch or have uncommitted '
         'changes, please stop the script and create a fresh branch. Do '
         'you want to continue?',
+        answers={'yes': True, 'no': False},
         default='no'):
       return
     cb_wprgo = self.RecordWpr()
@@ -764,6 +765,7 @@ class CrossbenchWprUpdater(object):
         f'The {cb_wprgo} file has been generated and replayed. Please '
         f'see the Crossbench log file in {self.output_dir}. Are you sure '
         'to upload the new archive file to the cloud?',
+        answers={'yes': True, 'no': False},
         default='no'):
       return
     if not self.UploadWpr(cb_wprgo):
