@@ -533,6 +533,7 @@
     "win-arm64-rel": "ci/win-arm64-rel/gn-args.json"
   },
   "tryserver.blink": {
+    "android-15-chrome-blink-rel": "try/android-15-chrome-blink-rel/gn-args.json",
     "linux-blink-rel": "try/linux-blink-rel/gn-args.json",
     "linux-wpt-chromium-rel": "try/linux-wpt-chromium-rel/gn-args.json",
     "mac-skia-alt-arm64-blink-rel": "try/mac-skia-alt-arm64-blink-rel/gn-args.json",
