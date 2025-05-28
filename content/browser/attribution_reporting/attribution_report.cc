@@ -123,7 +123,7 @@ void AttributionReport::AggregatableData::SetContributions(
 
 void AttributionReport::AggregatableData::SetAssembledReport(
     std::optional<AggregatableReport> assembled_report) {
-  DCHECK(!assembled_report_.has_value());
+  CHECK(!assembled_report_.has_value());
   assembled_report_ = std::move(assembled_report);
 }
 
@@ -153,8 +153,8 @@ AttributionReport::AttributionReport(
       data_(std::move(data)),
       reporting_origin_(std::move(reporting_origin)),
       source_debug_key_(source_debug_key) {
-  DCHECK(external_report_id_.is_valid());
-  DCHECK_GE(failed_send_attempts_, 0);
+  CHECK(external_report_id_.is_valid());
+  CHECK_GE(failed_send_attempts_, 0);
 }
 
 AttributionReport::AttributionReport(const AttributionReport&) = default;

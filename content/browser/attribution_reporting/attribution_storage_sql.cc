@@ -1549,7 +1549,7 @@ bool AttributionStorageSql::DeleteReportInternal(
 bool AttributionStorageSql::DeleteEventLevelReportsTriggeredLaterThanForSources(
     base::span<const StoredSource::Id> sources,
     base::Time source_time) {
-  DCHECK(db_.HasActiveTransactions());
+  CHECK(db_.HasActiveTransactions());
   // Note that this may also delete true reports if the user configured the
   // clock between the trigger time and now.
   sql::Statement statement(db_.GetCachedStatement(
@@ -1597,9 +1597,9 @@ bool AttributionStorageSql::AdjustOfflineReportTimes(
     base::TimeDelta max_delay) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  DCHECK_GE(min_delay, base::TimeDelta());
-  DCHECK_GE(max_delay, base::TimeDelta());
-  DCHECK_LE(min_delay, max_delay);
+  CHECK_GE(min_delay, base::TimeDelta());
+  CHECK_GE(max_delay, base::TimeDelta());
+  CHECK_LE(min_delay, max_delay);
 
   if (!LazyInit(DbCreationPolicy::kIgnoreIfAbsent)) {
     return false;
@@ -2682,7 +2682,7 @@ bool AttributionStorageSql::AdjustBudgetConsumedForSource(
     bool has_trigger_context_id,
     int additional_budget_consumed,
     const StoredSource::AggregatableNamedBudgets* budgets) {
-  DCHECK_GE(additional_budget_consumed, 0);
+  CHECK_GE(additional_budget_consumed, 0);
 
   sql::Transaction transaction(&db_);
   if (!transaction.Begin()) {

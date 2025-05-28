@@ -485,7 +485,7 @@ void AttributionInternalsHandlerImpl::OnTriggerHandled(
   observer_->OnTriggerHandled(std::move(web_ui_trigger));
 
   if (const AttributionReport* report = result.replaced_event_level_report()) {
-    DCHECK_EQ(
+    CHECK_EQ(
         result.event_level_status(),
         AttributionTrigger::EventLevelResult::kSuccessDroppedLowerPriority);
     CHECK(result.new_event_level_report());

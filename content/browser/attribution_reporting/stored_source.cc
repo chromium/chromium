@@ -166,11 +166,11 @@ StoredSource::StoredSource(
       remaining_aggregatable_debug_budget_(remaining_aggregatable_debug_budget),
       attribution_scopes_data_(std::move(attribution_scopes_data)),
       aggregatable_named_budgets_(std::move(aggregatable_named_budgets)) {
-  DCHECK(AreFieldsValid(remaining_aggregatable_attribution_budget_,
-                        remaining_aggregatable_debug_budget_,
-                        randomized_response_rate_, source_time_, expiry_time_,
-                        aggregatable_report_window_time_, debug_key_,
-                        common_info_.cookie_based_debug_allowed()));
+  CHECK(AreFieldsValid(remaining_aggregatable_attribution_budget_,
+                       remaining_aggregatable_debug_budget_,
+                       randomized_response_rate_, source_time_, expiry_time_,
+                       aggregatable_report_window_time_, debug_key_,
+                       common_info_.cookie_based_debug_allowed()));
 }
 
 StoredSource::~StoredSource() = default;

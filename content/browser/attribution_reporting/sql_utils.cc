@@ -195,8 +195,8 @@ std::string SerializeReadOnlySourceData(
     TriggerDataMatching trigger_data_matching,
     bool cookie_based_debug_allowed,
     absl::uint128 aggregatable_debug_key_piece) {
-  DCHECK_GE(randomized_response_rate, 0);
-  DCHECK_LE(randomized_response_rate, 1);
+  CHECK_GE(randomized_response_rate, 0);
+  CHECK_LE(randomized_response_rate, 1);
 
   proto::AttributionReadOnlySourceData msg;
 

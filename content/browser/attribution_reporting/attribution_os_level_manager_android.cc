@@ -195,7 +195,7 @@ void AttributionOsLevelManagerAndroid::Register(
 
   switch (type) {
     case attribution_reporting::mojom::RegistrationType::kSource: {
-      DCHECK(input_event.has_value());
+      CHECK(input_event.has_value());
 
       int request_id = next_callback_id_++;
       pending_registration_callbacks_.emplace(

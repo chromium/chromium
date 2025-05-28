@@ -314,8 +314,8 @@ void AttributionHost::NotifyNavigationRegistrationData(
   // must have an associated impression, be in the primary main frame and not in
   // the same document.
   CHECK(impression.has_value());
-  DCHECK(navigation_handle->IsInPrimaryMainFrame());
-  DCHECK(!navigation_handle->IsSameDocument());
+  CHECK(navigation_handle->IsInPrimaryMainFrame());
+  CHECK(!navigation_handle->IsSameDocument());
 
   // Populates `is_final_response` based on the headers to handle the case of an
   // intercepted redirect. See https://crbug.com/1520612.

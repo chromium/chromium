@@ -268,7 +268,7 @@ StoreSourceResult AttributionResolverImpl::StoreSource(StorableSource source) {
   // operations.
   const base::TimeDelta delete_frequency =
       delegate_->GetDeleteExpiredSourcesFrequency();
-  DCHECK_GE(delete_frequency, base::TimeDelta());
+  CHECK_GE(delete_frequency, base::TimeDelta());
   if (source_time - last_deleted_expired_sources_ >= delete_frequency) {
     if (!storage_.DeleteExpiredSources()) {
       return make_result(StoreSourceResult::InternalError());
@@ -604,7 +604,7 @@ CreateReportResult AttributionResolverImpl::MaybeCreateAndStoreReport(
                 MergeResult(std::move(aggregatable_result),
                             std::move(new_aggregatable_result));
             CHECK(aggregatable_result.has_value());
-            DCHECK(!GetSuccessResult(*aggregatable_result));
+            CHECK(!GetSuccessResult(*aggregatable_result));
 
             if (!GenerateNullAggregatableReportsAndStoreReports(
                     trigger, attribution_info,
@@ -1006,7 +1006,7 @@ bool AttributionResolverImpl::GenerateNullAggregatableReportsAndStoreReports(
     const auto* data = std::get_if<AttributionReport::AggregatableData>(
         &new_aggregatable_report->data());
     CHECK(data);
-    DCHECK(!data->is_null());
+    CHECK(!data->is_null());
     attributed_source_time = data->source_time();
 
     CHECK(source);
@@ -1313,7 +1313,7 @@ AttributionResolverImpl::MaybeReplaceLowerPriorityEventLevelReport(
     const AttributionReport& report,
     const StoredSource& source,
     int num_attributions) {
-  DCHECK_GE(num_attributions, 0);
+  CHECK_GE(num_attributions, 0);
 
   const auto* data =
       std::get_if<AttributionReport::EventLevelData>(&report.data());
