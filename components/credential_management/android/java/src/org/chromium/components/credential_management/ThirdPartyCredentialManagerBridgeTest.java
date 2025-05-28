@@ -36,7 +36,9 @@ import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
 
+import java.util.ArrayList;
 import java.util.concurrent.Executor;
+import org.chromium.url.GURL;
 
 /** Tests for the ThirdPartyCredentialManagerBridge. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -76,7 +78,7 @@ public class ThirdPartyCredentialManagerBridgeTest {
                         any(Executor.class),
                         any(CredentialManagerCallback.class));
 
-        mBridge.get(true, true, ORIGIN, mCredentialResponseCallback);
+        mBridge.get(true, true, new ArrayList<GURL>(), ORIGIN, mCredentialResponseCallback);
 
         verify(mCredentialManager)
                 .getCredentialAsync(
@@ -103,7 +105,7 @@ public class ThirdPartyCredentialManagerBridgeTest {
                         any(Executor.class),
                         any(CredentialManagerCallback.class));
 
-        mBridge.get(false, true, ORIGIN, mCredentialResponseCallback);
+        mBridge.get(false, true, new ArrayList<GURL>(), ORIGIN, mCredentialResponseCallback);
 
         verify(mCredentialManager)
                 .getCredentialAsync(
