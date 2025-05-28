@@ -12,6 +12,9 @@
 #include "crypto/signature_verifier.h"
 #include "net/cert/asn1_util.h"
 #include "net/cert/x509_util.h"
+#include "third_party/boringssl/src/include/openssl/bytestring.h"
+#include "third_party/boringssl/src/include/openssl/ec.h"
+#include "third_party/boringssl/src/include/openssl/ec_key.h"
 
 namespace net {
 
@@ -87,8 +90,6 @@ std::optional<Jades2QwacHeader> ParseJades2QwacHeader(
     return std::nullopt;
   }
   header.Remove("alg");
-  // TODO(crbug.com/392929826): process alg (check that it matches the alg in
-  // x5c).
 
   // "kid" (Key ID) parameter - RFC 7515, section 4.1.4
   //
@@ -408,6 +409,30 @@ std::optional<TwoQwacCertBinding> TwoQwacCertBinding::Parse(
   return TwoQwacCertBinding(*header, std::string(header_b64), *signature);
 }
 
+namespace {
+
+// Given a SPKI, returns whether the public key is an ECDSA key on the curve
+// P-256.
+bool IsKeyP256(base::span<const uint8_t> spki) {
+  CBS cbs;
+  CBS_init(&cbs, spki.data(), spki.size());
+  bssl::UniquePtr<EVP_PKEY> public_key(EVP_parse_public_key(&cbs));
+  if (!public_key) {
+    return false;
+  }
+  EC_KEY* ec_key = EVP_PKEY_get0_EC_KEY(public_key.get());
+  if (!ec_key) {
+    return false;
+  }
+  const EC_GROUP* group = EC_KEY_get0_group(ec_key);
+  if (!group) {
+    return false;
+  }
+  return EC_GROUP_get_curve_name(group) == NID_X9_62_prime256v1;
+}
+
+}  // namespace
+
 bool TwoQwacCertBinding::VerifySignature() {
   // ETSI TS 119 411-5 clause 6.2.2 step 5 states:
   //
@@ -458,11 +483,13 @@ bool TwoQwacCertBinding::VerifySignature() {
   crypto::SignatureVerifier::SignatureAlgorithm sig_alg;
   switch (header_.sig_alg) {
     case JwsSigAlg::kEcdsaP256Sha256:
-      // TODO(crbug.com/392929826): SignatureAlgorithm::ECDSA_SHA256 doesn't
-      // check the EC curve used for the signature, and could theoretically
-      // accept another EC curve (used with SHA-256). This would be an unusual
-      // thing to do, but we should still check that the key is P-256 instead of
-      // another curve.
+      // SignatureAlgorithm::ECDSA_SHA256 doesn't require that the EC curve be
+      // P-256, but the JWS signature algorithm does require that it be P-256.
+      // Before converting JwsSigAlg::kEcdsaP256Sha256 to ECDSA_SHA256, check
+      // that the key is P-256.
+      if (!IsKeyP256(base::as_byte_span(spki))) {
+        return false;
+      }
       sig_alg = crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256;
       break;
     case JwsSigAlg::kRsaPkcs1Sha256:
@@ -472,6 +499,11 @@ bool TwoQwacCertBinding::VerifySignature() {
       sig_alg = crypto::SignatureVerifier::SignatureAlgorithm::RSA_PSS_SHA256;
       break;
   }
+  // The crypto::SignatureVerifier checks that the public key in |spki| is
+  // compatible with the signature algorithm in |sig_alg| that came from the JWS
+  // header. This handles the requirement in the 2-QWAC spec (ETSI TS 119 411-5
+  // Annex B) that the "alg" JWS header field not conflict with the type of the
+  // public key in the "x5c" JWS header field.
   crypto::SignatureVerifier verifier;
   if (!verifier.VerifyInit(sig_alg, signature_, base::as_byte_span(spki))) {
     return false;

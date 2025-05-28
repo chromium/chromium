@@ -15,6 +15,7 @@
 #include "crypto/hash.h"
 #include "net/test/cert_builder.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/boringssl/src/include/openssl/ec_key.h"
 #include "third_party/boringssl/src/include/openssl/rsa.h"
 
 namespace net {
@@ -48,6 +49,12 @@ class TwoQwacCertBindingBuilder {
   void SetHeaderOverrides(base::DictValue header_overrides) {
     Invalidate();
     header_overrides_ = std::move(header_overrides);
+  }
+
+  // Returns a pointer to the leaf net::CertBuilder.
+  net::CertBuilder* GetLeafBuilder() {
+    Invalidate();
+    return cert_chain_[0].get();
   }
 
   std::string GetJWS() { return GetHeader() + ".." + GetSignature(); }
@@ -210,12 +217,6 @@ class TwoQwacCertBindingBuilder {
 };
 
 TEST(ParseTlsCertificateBinding, MinimalValidBinding) {
-  // TODO(crbug.com/392929826): Once we start validating signatures, these
-  // tests will probably need to be updated to have real algorithms,
-  // certificates, and signatures. (This is assuming that some basic checks are
-  // added to the parsing code, e.g. that we can parse certs into a
-  // net::X509Certificate and check that the "alg" matches the leaf cert.)
-
   // Build a header that has the minimally required set of parameters
   TwoQwacCertBindingBuilder binding_builder;
   std::string jws = binding_builder.GetJWS();
@@ -649,6 +650,28 @@ TEST(VerifyTwoQwacCertBinding, ValidSignatureES256) {
   // Check that the JWS header has "alg": "ES256"
   EXPECT_EQ(cert_binding->header().sig_alg, JwsSigAlg::kEcdsaP256Sha256);
   EXPECT_TRUE(cert_binding->VerifySignature());
+}
+
+TEST(VerifyTwoQwacCertBinding, InvalidEcdsaCurve) {
+  TwoQwacCertBindingBuilder binding_builder;
+  // Set "ES256" as the JWS signature algorithm.
+  binding_builder.SetJwsSigAlg(JwsSigAlg::kEcdsaP256Sha256);
+  // Set the leaf cert to use a P-384 key.
+  bssl::UniquePtr<EC_KEY> ec_key(EC_KEY_new_by_curve_name(NID_secp384r1));
+  ASSERT_TRUE(EC_KEY_generate_key(ec_key.get()));
+  bssl::UniquePtr<EVP_PKEY> pkey(EVP_PKEY_new());
+  ASSERT_TRUE(EVP_PKEY_assign_EC_KEY(pkey.get(), ec_key.release()));
+  binding_builder.GetLeafBuilder()->SetKey(std::move(pkey));
+
+  std::string jws = binding_builder.GetJWS();
+
+  std::optional<TwoQwacCertBinding> cert_binding =
+      TwoQwacCertBinding::Parse(jws);
+  ASSERT_TRUE(cert_binding.has_value());
+  // Check that the JWS header has "alg": "ES256"
+  EXPECT_EQ(cert_binding->header().sig_alg, JwsSigAlg::kEcdsaP256Sha256);
+  // Since the key uses the wrong curve, the signature verification should fail.
+  EXPECT_FALSE(cert_binding->VerifySignature());
 }
 
 TEST(VerifyTwoQwacCertBinding, InvalidSignature) {
