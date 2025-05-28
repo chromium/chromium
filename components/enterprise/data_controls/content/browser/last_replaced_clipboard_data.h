@@ -16,6 +16,8 @@ namespace data_controls {
 struct LastReplacedClipboardData {
   ui::ClipboardSequenceNumberToken seqno;
   content::ClipboardPasteData clipboard_paste_data;
+
+  std::vector<std::u16string> GetAvailableTypes() const;
 };
 
 // Get the last data to have been replaced by a warning string due to a Data
