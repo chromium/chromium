@@ -190,7 +190,7 @@
 <translation id="6021312115739110405">Google 專為你打造的自訂動態消息，像是新聞、體育和天氣資訊。</translation>
 <translation id="6022659036123304283">打造專屬的 Chrome</translation>
 <translation id="6132075343662013154">Chrome 會詢問你是否要儲存密碼</translation>
-<translation id="6132149203299792222">登入 Google 帳戶就能同步處理密碼、書籤和其他資訊。</translation>
+<translation id="6132149203299792222">登入 Google 帳戶就能同步處理密碼、&lt;br&gt;書籤和其他資訊。</translation>
 <translation id="6145223986912084844">chrome</translation>
 <translation id="6177442314419606057">在 Chrome 中搜尋</translation>
 <translation id="6181652351336379338">在 Chrome 中搜尋影像內容。</translation>
@@ -282,7 +282,7 @@
 <translation id="7897703007638178753">查看最近使用 Chrome 開啟的分頁</translation>
 <translation id="7948283758957877064">Chrome 新功能</translation>
 <translation id="8000174216052461231">Chrome 提示：享有 Chrome 最強大的安全防護</translation>
-<translation id="8006014511203279255">隨時可以使用 Chrome 開啟訊息或其他應用程式中的連結。</translation>
+<translation id="8006014511203279255">想開啟訊息或其他應用程式中的連結？就用 Chrome 吧！</translation>
 <translation id="8014670471808569312">Chrome 會詢問你是否要儲存密碼。</translation>
 <translation id="8018153653741938705">讓 Google Chrome 保障你的安全</translation>
 <translation id="8022947259858476807">預設使用 Chrome 來開啟連結、從小工具搜尋，以及自動在其他應用程式中填入密碼</translation>
@@ -291,7 +291,8 @@
 <translation id="8065292699993359127">在 Chrome 無痕模式中開啟網址</translation>
 <translation id="8069507567842347179">Chrome 已追蹤了這個包裹。</translation>
 <translation id="8136856065410661948">系統將使用 Chrome 和 Google 智慧鏡頭中的內容在 Apple 行事曆中建立活動。</translation>
-<translation id="8154120522323162874">如要充分運用 Chrome 的功能，請繼續設定瀏覽器。</translation>
+<translation id="8154120522323162874">如要充分運用 Chrome 的功能，&lt;br&gt;
+請繼續設定瀏覽器。</translation>
 <translation id="8160472928944011082">Chrome 無法更新</translation>
 <translation id="8245080522851805544">關閉 Chrome 時進行裝置驗證，確保瀏覽活動不外洩</translation>
 <translation id="8248887045858762645">Chrome 實用訣竅</translation>

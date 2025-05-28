@@ -6635,7 +6635,7 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="5651308944918885595">Detección de Compartir con Nearby</translation>
 <translation id="5653154844073528838">Tienes <ph name="PRINTER_COUNT" /> impresoras guardadas.</translation>
 <translation id="5654669866168491665">Más información sobre los sitios que podrían no funcionar cuando se bloquean las cookies de terceros</translation>
-<translation id="5654751240928365405">Esta extensión se desactivó porque ya no es compatible</translation>
+<translation id="5654751240928365405">Se desactivó esta extensión porque ya no es compatible</translation>
 <translation id="5654848283274615843">{NUM_SITES,plural, =1{Para proteger tu privacidad, se quitaron los permisos de un sitio}other{Para proteger tu privacidad, se quitaron los permisos de algunos sitios}}</translation>
 <translation id="5655296450510165335">Inscripción del dispositivo</translation>
 <translation id="5655823808357523308">Ajusta cómo se muestran los colores en la pantalla</translation>
@@ -10087,7 +10087,7 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8110489095782891123">Descargando la lista de contactos…</translation>
 <translation id="8114925369073821854">Permiso del micrófono de <ph name="APP_NAME" /></translation>
 <translation id="8116972784401310538">&amp;Administrador de favoritos</translation>
-<translation id="8118276691321086429">El <ph name="PASSWORD_MANAGER_BRAND" /> recuerda cómo ingresaste y te da acceso de forma automática cuando es posible. Si esta función está desactivada, siempre se te solicitará confirmación.</translation>
+<translation id="8118276691321086429"><ph name="PASSWORD_MANAGER_BRAND" /> recuerda cómo ingresaste y te da acceso de forma automática cuando es posible. Si esta función está desactivada, siempre se te solicitará confirmación.</translation>
 <translation id="8118362518458010043">Chrome la inhabilitó. Es posible que esta extensión no sea segura.</translation>
 <translation id="8118448640060360549">{EXTENSIONS_COUNT,plural, =1{# favorito}other{# favoritos}}</translation>
 <translation id="8118488170956489476">Tu organización <ph name="BEGIN_LINK" />administra el navegador<ph name="END_LINK" /></translation>
