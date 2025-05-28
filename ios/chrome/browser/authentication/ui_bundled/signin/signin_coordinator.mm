@@ -67,23 +67,6 @@ using signin_metrics::PromoAction;
                                     (UIViewController*)baseViewController {
   SigninCoordinator* signinCoordinator;
   switch (command.operation) {
-    case AuthenticationOperation::kPrimaryAccountReauth: {
-      signinCoordinator = [SigninCoordinator
-          primaryAccountReauthCoordinatorWithBaseViewController:
-              baseViewController
-                                                        browser:browser
-                                                   contextStyle:
-                                                       command.contextStyle
-
-                                                    accessPoint:command
-                                                                    .accessPoint
-                                                    promoAction:command
-                                                                    .promoAction
-                                           continuationProvider:
-                                               command
-                                                   .changeProfileContinuationProvider];
-      break;
-    }
     case AuthenticationOperation::kResignin: {
       signinCoordinator = [SigninCoordinator
           signinAndSyncReauthCoordinatorWithBaseViewController:

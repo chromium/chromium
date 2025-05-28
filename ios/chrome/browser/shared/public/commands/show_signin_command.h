@@ -16,11 +16,6 @@
 @protocol SystemIdentity;
 
 enum class AuthenticationOperation {
-  // Operation to start a re-authenticate operation. The user is presented with
-  // the SSOAuth re-authenticate dialog. This command can only be used if there
-  // is a primary account. Please note that the primary account can disappear
-  // (for external reasons) when the reauth is in progress.
-  kPrimaryAccountReauth,
   // Operation to sign-in again with the previously signed-in account. The user
   // is presented with the SSOAuth dialog. This command can only be used if
   // there is no primary account.
