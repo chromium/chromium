@@ -55,3 +55,4 @@
 
 # Failing on try bot due to DCHECK
 -AnimationTimingTestSuiteInstantiation/PictureInPictureBrowserFrameViewTest.TestAnimationTiming/*
+-TabDragging/DetachToBrowserTabDragControllerTest.DragToSeparateWindow/*

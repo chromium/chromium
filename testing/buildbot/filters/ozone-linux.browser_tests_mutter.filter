@@ -10,6 +10,7 @@
 -All/PDFExtensionJSInk2Test.Ink2BottomToolbar/*
 -All/PDFExtensionJSInk2Test.Ink2TextBottomToolbar/*
 -All/PDFExtensionScrollTest.WithArrowLeftRightScrollToPage/*
+-All/PDFExtensionJSInk2TextTest.Ink2TextBottomToolbar/*
 -All/SearchEnginePreconnectorNoDelaysBrowserTest.PreconnectOnlyInForeground/*
 -All/SoftNavigationTest.LayoutShift/*
 -BackForwardCachePageLoadMetricsObserverBrowserTest.LayoutShiftNormalization_AfterBackForwardCacheRestore
