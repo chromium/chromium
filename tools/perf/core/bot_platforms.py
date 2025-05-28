@@ -951,15 +951,6 @@ WIN_ARM64_SNAPDRAGON_PLUS = PerfPlatform(
     executables=_WIN_ARM64_EXECUTABLE_CONFIGS,
     crossbench=_CROSSBENCH_BENCHMARKS_ALL,
     is_fyi=True)
-WIN_ARM64_SNAPDRAGON_ELITE = PerfPlatform(
-    'win-arm64-snapdragon-elite-perf',
-    'Windows Dell Snapdragon Elite',
-    _WIN_ARM64_BENCHMARK_CONFIGS,
-    1,
-    'win',
-    executables=_WIN_ARM64_EXECUTABLE_CONFIGS,
-    crossbench=_CROSSBENCH_BENCHMARKS_ALL,
-    is_fyi=True)
 
 # Android
 ANDROID_BYRA = PerfPlatform(name='android-byra-perf',

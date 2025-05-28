@@ -306,27 +306,6 @@ FYI_BUILDERS = {
             'synthetic_product_name': 'Inspiron 14 Plus 7441 (Dell Inc.)'
         },
     },
-    'win-arm64-snapdragon-elite-perf': {
-        'tests': [
-            {
-                'isolate': 'performance_test_suite',
-                'extra_args': [
-                    '--assert-gpu-compositing',
-                ],
-            },
-        ],
-        'platform':
-        'win',
-        'target_bits':
-        64,
-        'dimension': {
-            'pool': 'chrome.tests.perf',
-            'os': 'Windows-11',
-            'cpu':
-            'arm64-64-Snapdragon(R)_X_Elite_-_X1E80100_-_Qualcomm(R)_Oryon(TM)_CPU',
-            'synthetic_product_name': 'Latitude 7455 (Dell Inc.)'
-        },
-    },
     'chromeos-kevin-builder-perf-fyi': {
         'additional_compile_targets': ['chromium_builder_perf'],
     },
