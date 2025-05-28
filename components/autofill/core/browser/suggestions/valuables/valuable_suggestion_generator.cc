@@ -18,11 +18,6 @@
 namespace autofill {
 namespace {
 
-// Compare function used when sorting loyalty cards by merchant name.
-bool CompareByMerchantName(const LoyaltyCard& a, const LoyaltyCard& b) {
-  return a.merchant_name() < b.merchant_name();
-}
-
 // Set the URL for the loyalty card icon image to be shown in the `suggestion`.
 void SetIconURL(Suggestion& suggestion,
                 const GURL& icon_url,
@@ -100,7 +95,7 @@ std::vector<Suggestion> GetLoyaltyCardSuggestions(
     const ValuablesDataManager& valuables_manager,
     const GURL& url) {
   std::vector<LoyaltyCard> all_loyalty_cards =
-      valuables_manager.GetLoyaltyCards();
+      valuables_manager.GetLoyaltyCardsToSuggest();
   if (all_loyalty_cards.empty()) {
     return {};
   }
@@ -114,7 +109,6 @@ std::vector<Suggestion> GetLoyaltyCardSuggestions(
       all_loyalty_cards.begin(), non_affiliated_cards.begin()));
   // If no submenu is needed.
   if (affiliated_cards.empty() || non_affiliated_cards.empty()) {
-    std::ranges::sort(all_loyalty_cards, CompareByMerchantName);
     std::vector<Suggestion> suggestions =
         CreateSuggestionsFromLoyaltyCards(all_loyalty_cards, valuables_manager);
     suggestions.emplace_back(SuggestionType::kSeparator);
@@ -123,7 +117,6 @@ std::vector<Suggestion> GetLoyaltyCardSuggestions(
   }
 
   // Build suggestions with 'all loyalty cards' submenu.
-  std::ranges::sort(affiliated_cards, CompareByMerchantName);
   std::vector<Suggestion> suggestions =
       CreateSuggestionsFromLoyaltyCards(affiliated_cards, valuables_manager);
   suggestions.emplace_back(SuggestionType::kSeparator);
@@ -137,9 +130,8 @@ std::vector<Suggestion> GetLoyaltyCardSuggestions(
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   submenu_suggestion.icon = Suggestion::Icon::kGoogleWalletMonochrome;
 #endif
-  std::ranges::sort(all_loyalty_cards, CompareByMerchantName);
-  submenu_suggestion.children =
-      CreateSuggestionsFromLoyaltyCards(all_loyalty_cards, valuables_manager);
+  submenu_suggestion.children = CreateSuggestionsFromLoyaltyCards(
+      valuables_manager.GetLoyaltyCardsToSuggest(), valuables_manager);
   suggestions.emplace_back(SuggestionType::kSeparator);
   suggestions.push_back(CreateManageLoyaltyCardsSuggestion());
   return suggestions;
@@ -150,12 +142,11 @@ void ExtendEmailSuggestionsWithLoyaltyCardSuggestions(
     const ValuablesDataManager& valuables_manager,
     const GURL& url) {
   std::vector<LoyaltyCard> all_loyalty_cards =
-      valuables_manager.GetLoyaltyCards();
+      valuables_manager.GetLoyaltyCardsToSuggest();
   CHECK(!email_suggestions.empty());
   if (all_loyalty_cards.empty()) {
     return;
   }
-  std::ranges::sort(all_loyalty_cards, CompareByMerchantName);
 #if BUILDFLAG(IS_ANDROID)
   // No submenu on Android. Loyalty card suggestions are listed right after
   // email suggestions.

@@ -37,6 +37,21 @@ std::vector<LoyaltyCard> ValuablesDataManager::GetLoyaltyCards() const {
   return loyalty_cards_;
 }
 
+std::vector<LoyaltyCard> ValuablesDataManager::GetLoyaltyCardsToSuggest()
+    const {
+  // Compare function used when sorting loyalty cards by merchant name.
+  const auto CompareByMerchantName = [](const LoyaltyCard& a,
+                                        const LoyaltyCard& b) {
+    if (a.merchant_name() != b.merchant_name()) {
+      return a.merchant_name() < b.merchant_name();
+    }
+    return a.loyalty_card_number() < b.loyalty_card_number();
+  };
+  std::vector<LoyaltyCard> loyalty_cards = GetLoyaltyCards();
+  std::ranges::sort(loyalty_cards, CompareByMerchantName);
+  return loyalty_cards;
+}
+
 const gfx::Image* ValuablesDataManager::GetCachedValuableImageForUrl(
     const GURL& image_url) const {
   if (!image_url.is_valid()) {

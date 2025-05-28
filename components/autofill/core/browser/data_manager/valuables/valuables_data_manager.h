@@ -57,6 +57,9 @@ class ValuablesDataManager : public KeyedService,
   // The returned vector may be invalidated asynchronously.
   std::vector<LoyaltyCard> GetLoyaltyCards() const;
 
+  // Returns the cached loyalty cards to suggest, sorted by merchant name.
+  std::vector<LoyaltyCard> GetLoyaltyCardsToSuggest() const;
+
   // Returns if there are any pending queries to the web database.
   bool HasPendingQueries() const;
 
