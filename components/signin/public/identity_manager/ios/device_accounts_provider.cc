@@ -11,7 +11,10 @@ DeviceAccountsProvider::AccountInfo::AccountInfo(GaiaId gaia,
     : gaia_(std::move(gaia)),
       email_(std::move(email)),
       hosted_domain_(std::move(hosted_domain)),
-      has_persistent_auth_error_(has_persistent_auth_error) {}
+      has_persistent_auth_error_(has_persistent_auth_error) {
+  CHECK(!gaia_.empty());
+  CHECK(!email_.empty());
+}
 
 DeviceAccountsProvider::AccountInfo::AccountInfo(const AccountInfo& other) =
     default;

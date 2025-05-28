@@ -38,6 +38,7 @@ class DeviceAccountsProvider {
   // Account information.
   class AccountInfo {
    public:
+    // `gaia` and `email` can't be empty.
     AccountInfo(GaiaId gaia,
                 std::string email,
                 std::string hosted_domain,
@@ -48,8 +49,12 @@ class DeviceAccountsProvider {
     AccountInfo& operator=(AccountInfo&& other);
     ~AccountInfo();
 
+    // Account's Gaia id. Guaranteed to be non-empty.
     const GaiaId& GetGaiaId() const;
+
+    // Account's email. Guaranteed to be non-empty.
     const std::string& GetEmail() const;
+
     const std::string& GetHostedDomain() const;
     bool HasPersistentAuthError() const;
 
