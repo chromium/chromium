@@ -13597,6 +13597,7 @@ from previous Chrome versions.
   <int value="-119055644" label="GenericSensor:enabled"/>
   <int value="-118993417" label="TLS13HardeningForLocalAnchors:disabled"/>
   <int value="-118897826" label="IntensiveWakeUpThrottling:enabled"/>
+  <int value="-116829440" label="WebNNCoreMLExplicitGPUOrNPU:disabled"/>
   <int value="-116692797" label="HTTPAuthCommittedInterstitials:enabled"/>
   <int value="-115834377" label="EnableUnifiedMultiDeviceSetup:disabled"/>
   <int value="-115541486" label="MostVisitedTilesReselect:enabled"/>
@@ -17299,6 +17300,7 @@ from previous Chrome versions.
   <int value="1281399380" label="NetworkServiceSandbox:disabled"/>
   <int value="1281471853" label="UseButtonTranslateBubbleUI:disabled"/>
   <int value="1281582408" label="EnablePendingModePasswordsPromo:disabled"/>
+  <int value="1282515002" label="WebNNCoreMLExplicitGPUOrNPU:enabled"/>
   <int value="1282551250" label="IgnoreHoverEventAnr:enabled"/>
   <int value="1282810683" label="DirectSocketsInSharedWorkers:enabled"/>
   <int value="1283205498" label="FasterSplitScreenSetup:disabled"/>

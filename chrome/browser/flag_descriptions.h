@@ -1565,6 +1565,9 @@ extern const char kExperimentalWebMachineLearningNeuralNetworkDescription[];
 #if BUILDFLAG(IS_MAC)
 extern const char kWebNNCoreMLName[];
 extern const char kWebNNCoreMLDescription[];
+
+extern const char kWebNNCoreMLExplicitGPUOrNPUName[];
+extern const char kWebNNCoreMLExplicitGPUOrNPUDescription[];
 #endif  // BUILDFLAG(IS_MAC)
 
 #if BUILDFLAG(IS_WIN)

@@ -8782,6 +8782,11 @@ const FeatureEntry kFeatureEntries[] = {
     {"webnn-coreml", flag_descriptions::kWebNNCoreMLName,
      flag_descriptions::kWebNNCoreMLDescription, kOsMac,
      FEATURE_VALUE_TYPE(webnn::mojom::features::kWebNNCoreML)},
+
+    {"webnn-coreml-explicit-gpu-or-npu",
+     flag_descriptions::kWebNNCoreMLExplicitGPUOrNPUName,
+     flag_descriptions::kWebNNCoreMLExplicitGPUOrNPUDescription, kOsMac,
+     FEATURE_VALUE_TYPE(webnn::mojom::features::kWebNNCoreMLExplicitGPUOrNPU)},
 #endif  // BUILDFLAG(IS_MAC)
 
 #if BUILDFLAG(IS_WIN)

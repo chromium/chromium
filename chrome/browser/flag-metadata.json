@@ -10120,6 +10120,11 @@
     "expiry_milestone": 146
   },
   {
+    "name": "webnn-coreml-explicit-gpu-or-npu",
+    "owners": [ "reillyg@chromium.org", "phillis@chromium.org" ],
+    "expiry_milestone": 146
+  },
+  {
     "name": "webnn-directml",
     "owners": [ "reillyg@chromium.org", "rafael.cintron@microsoft.com" ],
     "expiry_milestone": 146

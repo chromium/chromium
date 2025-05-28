@@ -2703,6 +2703,13 @@ const char kWebNNCoreMLDescription[] =
     "Enables using Core ML for GPU and "
     "NPU inference with the WebNN API. Disabling this flag enables a "
     "fallback to TFLite.";
+
+const char kWebNNCoreMLExplicitGPUOrNPUName[] =
+    "Instruct Core ML to use GPU or Neural Engine explicitly";
+const char kWebNNCoreMLExplicitGPUOrNPUDescription[] =
+    "Maps the WebNN \"gpu\" and \"npu\" device types to "
+    "MLComputeUnitsCPUAndGPU and MLComputeUnitsCPUAndNeuralEngine instead of "
+    "MLComputeUnitsAll. Disabled by default due to crashes.";
 #endif  // BUILDFLAG(IS_MAC)
 
 #if BUILDFLAG(IS_WIN)
