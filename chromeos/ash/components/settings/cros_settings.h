@@ -110,7 +110,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_SETTINGS) CrosSettings {
 
   // Add an observer Callback for changes for the given |path|.
   [[nodiscard]] base::CallbackListSubscription AddSettingsObserver(
-      const std::string& path,
+      std::string_view path,
       base::RepeatingClosure callback);
 
   // Returns the provider that handles settings with the |path| or prefix.
@@ -147,7 +147,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_SETTINGS) CrosSettings {
 
   // A map from settings names to a list of observers. Observers get fired in
   // the order they are added.
-  std::map<std::string, std::unique_ptr<base::RepeatingClosureList>>
+  std::map<std::string, base::RepeatingClosureList, std::less<>>
       settings_observers_;
 
   SEQUENCE_CHECKER(sequence_checker_);
