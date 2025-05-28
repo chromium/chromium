@@ -800,6 +800,18 @@ extern bool GetVisualSelectionUpdatesEnableCsbThumbnail();
 COMPONENT_EXPORT(LENS_FEATURES)
 extern bool GetVisualSelectionUpdatesEnableCsbMotionTweaks();
 
+// Whether to enable thumbnail sizing tweaks for the visual selection updates.
+COMPONENT_EXPORT(LENS_FEATURES)
+extern bool GetVisualSelectionUpdatesEnableThumbnailSizingTweaks();
+
+// Whether to hide the csb ellipsis for the visual selection updates.
+COMPONENT_EXPORT(LENS_FEATURES)
+extern bool GetVisualSelectionUpdatesHideCsbEllipsis();
+
+// Whether to enable close button tweaks for the visual selection updates.
+COMPONENT_EXPORT(LENS_FEATURES)
+extern bool GetVisualSelectionUpdatesEnableCloseButtonTweaks();
+
 // Whether to fix the request id for page content upload requests. When enabled,
 // this will not increment the image upload request ID when the page content
 // upload request is sent.
