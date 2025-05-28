@@ -4,6 +4,7 @@
 
 #import "ios/components/security_interstitials/https_only_mode/https_upgrade_service.h"
 
+#import "base/strings/string_number_conversions.h"
 #import "net/base/url_util.h"
 
 void HttpsUpgradeService::SetHttpsPortForTesting(

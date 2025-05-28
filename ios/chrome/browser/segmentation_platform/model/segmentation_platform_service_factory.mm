@@ -7,6 +7,7 @@
 #import "base/feature_list.h"
 #import "base/hash/hash.h"
 #import "base/scoped_observation.h"
+#import "base/strings/string_number_conversions.h"
 #import "base/supports_user_data.h"
 #import "base/task/sequenced_task_runner.h"
 #import "base/task/task_traits.h"

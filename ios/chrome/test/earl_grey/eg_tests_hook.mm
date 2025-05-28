@@ -8,6 +8,7 @@
 #import "base/files/file_path.h"
 #import "base/files/file_util.h"
 #import "base/logging.h"
+#import "base/strings/string_number_conversions.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/allow_check_is_test_for_testing.h"
 #import "base/time/time.h"

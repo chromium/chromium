@@ -9,6 +9,7 @@
 #import "base/apple/foundation_util.h"
 #import "base/files/scoped_temp_dir.h"
 #import "base/memory/raw_ptr.h"
+#import "base/strings/string_number_conversions.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
 #import "base/test/scoped_feature_list.h"

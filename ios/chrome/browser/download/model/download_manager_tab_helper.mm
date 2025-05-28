@@ -10,6 +10,7 @@
 #import "base/files/file_util.h"
 #import "base/functional/callback_helpers.h"
 #import "base/memory/ptr_util.h"
+#import "base/strings/string_number_conversions.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/task/thread_pool.h"
 #import "components/policy/core/common/policy_pref_names.h"

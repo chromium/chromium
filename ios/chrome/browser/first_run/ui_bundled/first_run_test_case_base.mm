@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/first_run/ui_bundled/first_run_test_case_base.h"
 
+#import "base/strings/string_number_conversions.h"
 #import "base/strings/string_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/policy/core/common/policy_loader_ios_constants.h"

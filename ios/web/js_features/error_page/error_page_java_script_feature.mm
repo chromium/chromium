@@ -4,6 +4,7 @@
 
 #import "ios/web/js_features/error_page/error_page_java_script_feature.h"
 
+#import "base/strings/string_number_conversions.h"
 #import "base/values.h"
 #import "ios/web/navigation/crw_error_page_helper.h"
 #import "ios/web/public/js_messaging/script_message.h"
