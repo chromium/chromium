@@ -23,6 +23,7 @@ import {
   InvalidArgumentException,
   InvalidSelectorException,
   NoSuchElementException,
+  NoSuchFrameException,
   NoSuchHistoryEntryException,
   Script,
   Session,
@@ -35,6 +36,7 @@ import {Deferred} from '../../../utils/Deferred.js';
 import {type LoggerFn, LogType} from '../../../utils/log.js';
 import {getTimestamp} from '../../../utils/time.js';
 import {inchesFromCm} from '../../../utils/unitConversions.js';
+import {uuidv4} from '../../../utils/uuid.js';
 import type {CdpTarget} from '../cdp/CdpTarget.js';
 import type {Realm} from '../script/Realm.js';
 import type {RealmStorage} from '../script/RealmStorage.js';
@@ -58,6 +60,8 @@ export class BrowsingContextImpl {
   /** The ID of this browsing context. */
   readonly #id: BrowsingContext.BrowsingContext;
   readonly userContext: string;
+  // Used for running helper scripts.
+  readonly #hiddenSandbox = uuidv4();
 
   /**
    * The ID of the parent browsing context.
@@ -108,6 +112,9 @@ export class BrowsingContextImpl {
     this.#unhandledPromptBehavior = unhandledPromptBehavior;
     this.#logger = logger;
     this.#originalOpener = originalOpener;
+
+    // Register helper realm as hidden, so that it will not be reported to the user.
+    this.#realmStorage.hiddenSandboxes.add(this.#hiddenSandbox);
 
     this.#navigationTracker = new NavigationTracker(
       url,
@@ -330,7 +337,23 @@ export class BrowsingContextImpl {
     }
   }
 
-  async getOrCreateSandbox(sandbox: string | undefined): Promise<Realm> {
+  /** Returns a sandbox for internal helper scripts which is not exposed to the user.*/
+  async getOrCreateHiddenSandbox(): Promise<Realm> {
+    return await this.#getOrCreateSandboxInternal(this.#hiddenSandbox);
+  }
+
+  /** Returns a sandbox which is exposed to user. */
+  async getOrCreateUserSandbox(sandbox: string | undefined): Promise<Realm> {
+    const realm = await this.#getOrCreateSandboxInternal(sandbox);
+    if (realm.isHidden()) {
+      throw new NoSuchFrameException(`Realm "${sandbox}" not found`);
+    }
+    return realm;
+  }
+
+  async #getOrCreateSandboxInternal(
+    sandbox: string | undefined,
+  ): Promise<Realm> {
     if (sandbox === undefined || sandbox === '') {
       // Default realm is not guaranteed to be created at this point, so return a deferred.
       return await this.#defaultRealmDeferred;
@@ -1093,8 +1116,8 @@ export class BrowsingContextImpl {
         break;
       }
     }
-    const realm = await this.getOrCreateSandbox(undefined);
-    const originResult = await realm.callFunction(script, false);
+    const hiddenSandboxRealm = await this.getOrCreateHiddenSandbox();
+    const originResult = await hiddenSandboxRealm.callFunction(script, false);
     assert(originResult.type === 'success');
     const origin = deserializeDOMRect(originResult.result);
     assert(origin);
@@ -1235,9 +1258,8 @@ export class BrowsingContextImpl {
       case 'box':
         return {x: clip.x, y: clip.y, width: clip.width, height: clip.height};
       case 'element': {
-        // TODO: #1213: Use custom sandbox specifically for Chromium BiDi
-        const sandbox = await this.getOrCreateSandbox(undefined);
-        const result = await sandbox.callFunction(
+        const hiddenSandboxRealm = await this.getOrCreateHiddenSandbox();
+        const result = await hiddenSandboxRealm.callFunction(
           String((element: unknown) => {
             return element instanceof Element;
           }),
@@ -1257,7 +1279,7 @@ export class BrowsingContextImpl {
           );
         }
         {
-          const result = await sandbox.callFunction(
+          const result = await hiddenSandboxRealm.callFunction(
             String((element: Element) => {
               const rect = element.getBoundingClientRect();
               return {

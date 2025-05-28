@@ -58,8 +58,8 @@ async function getElementCenter(
   context: BrowsingContextImpl,
   element: Script.SharedReference,
 ) {
-  const sandbox = await context.getOrCreateSandbox(undefined);
-  const result = await sandbox.callFunction(
+  const hiddenSandboxRealm = await context.getOrCreateHiddenSandbox();
+  const result = await hiddenSandboxRealm.callFunction(
     CALCULATE_IN_VIEW_CENTER_PT_DECL,
     false,
     {type: 'undefined'},
@@ -83,9 +83,8 @@ async function getElementCenter(
 
 export class ActionDispatcher {
   static isMacOS = async (context: BrowsingContextImpl) => {
-    const result = await (
-      await context.getOrCreateSandbox(undefined)
-    ).callFunction(IS_MAC_DECL, false);
+    const hiddenSandboxRealm = await context.getOrCreateHiddenSandbox();
+    const result = await hiddenSandboxRealm.callFunction(IS_MAC_DECL, false);
     assert(result.type !== 'exception');
     assert(result.result.type === 'boolean');
     return result.result.value;

@@ -38,7 +38,7 @@ export abstract class Realm {
   readonly #logger?: LoggerFn;
   readonly #origin: string;
   readonly #realmId: Script.Realm;
-  readonly #realmStorage: RealmStorage;
+  protected realmStorage: RealmStorage;
 
   constructor(
     cdpClient: CdpClient,
@@ -55,9 +55,9 @@ export abstract class Realm {
     this.#logger = logger;
     this.#origin = origin;
     this.#realmId = realmId;
-    this.#realmStorage = realmStorage;
+    this.realmStorage = realmStorage;
 
-    this.#realmStorage.addRealm(this);
+    this.realmStorage.addRealm(this);
   }
 
   cdpToBidiValue(
@@ -78,7 +78,7 @@ export abstract class Realm {
         // and  CDP response but not on the actual BiDi type.
         (bidiValue as any).handle = objectId;
         // Remember all the handles sent to client.
-        this.#realmStorage.knownHandlesToRealmMap.set(objectId, this.realmId);
+        this.realmStorage.knownHandlesToRealmMap.set(objectId, this.realmId);
       } else {
         // No need to await for the object to be released.
         void this.#releaseObject(objectId).catch((error) =>
@@ -88,6 +88,10 @@ export abstract class Realm {
     }
 
     return bidiValue;
+  }
+
+  isHidden(): boolean {
+    return false;
   }
 
   /**
@@ -246,11 +250,14 @@ export abstract class Realm {
   }
 
   protected initialize() {
-    this.#registerEvent({
-      type: 'event',
-      method: ChromiumBidi.Script.EventNames.RealmCreated,
-      params: this.realmInfo,
-    });
+    if (!this.isHidden()) {
+      // Report only not-hidden realms.
+      this.#registerEvent({
+        type: 'event',
+        method: ChromiumBidi.Script.EventNames.RealmCreated,
+        params: this.realmInfo,
+      });
+    }
   }
 
   /**
@@ -702,15 +709,13 @@ export abstract class Realm {
 
   async disown(handle: Script.Handle) {
     // Disowning an object from different realm does nothing.
-    if (
-      this.#realmStorage.knownHandlesToRealmMap.get(handle) !== this.realmId
-    ) {
+    if (this.realmStorage.knownHandlesToRealmMap.get(handle) !== this.realmId) {
       return;
     }
 
     await this.#releaseObject(handle);
 
-    this.#realmStorage.knownHandlesToRealmMap.delete(handle);
+    this.realmStorage.knownHandlesToRealmMap.delete(handle);
   }
 
   dispose(): void {

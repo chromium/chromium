@@ -75,7 +75,7 @@ export class InputProcessor {
 
   async setFiles(params: Input.SetFilesParameters): Promise<EmptyResult> {
     const context = this.#browsingContextStorage.getContext(params.context);
-    const realm = await context.getOrCreateSandbox(undefined);
+    const hiddenSandboxRealm = await context.getOrCreateHiddenSandbox();
 
     const enum ErrorCode {
       Node,
@@ -87,7 +87,7 @@ export class InputProcessor {
 
     let result;
     try {
-      result = await realm.callFunction(
+      result = await hiddenSandboxRealm.callFunction(
         String(function getFiles(this: unknown, fileListLength: number) {
           if (!(this instanceof HTMLInputElement)) {
             if (this instanceof Element) {
@@ -155,7 +155,7 @@ export class InputProcessor {
     if (params.files.length === 0) {
       // XXX: These events should converted to trusted events. Perhaps do this
       // in `DOM.setFileInputFiles`?
-      await realm.callFunction(
+      await hiddenSandboxRealm.callFunction(
         String(function dispatchEvent(this: HTMLInputElement) {
           if (this.files?.length === 0) {
             this.dispatchEvent(
@@ -184,15 +184,16 @@ export class InputProcessor {
     // file paths.
     const paths: string[] = [];
     for (let i = 0; i < params.files.length; ++i) {
-      const result: Script.EvaluateResult = await realm.callFunction(
-        String(function getFiles(this: HTMLInputElement, index: number) {
-          return this.files?.item(index);
-        }),
-        false,
-        params.element,
-        [{type: 'number', value: 0}],
-        Script.ResultOwnership.Root,
-      );
+      const result: Script.EvaluateResult =
+        await hiddenSandboxRealm.callFunction(
+          String(function getFiles(this: HTMLInputElement, index: number) {
+            return this.files?.item(index);
+          }),
+          false,
+          params.element,
+          [{type: 'number', value: 0}],
+          Script.ResultOwnership.Root,
+        );
       assert(result.type === 'success');
       if (result.result.type !== 'object') {
         break;
@@ -200,13 +201,16 @@ export class InputProcessor {
 
       const {handle}: {handle?: string} = result.result;
       assert(handle !== undefined);
-      const {path} = await realm.cdpClient.sendCommand('DOM.getFileInfo', {
-        objectId: handle,
-      });
+      const {path} = await hiddenSandboxRealm.cdpClient.sendCommand(
+        'DOM.getFileInfo',
+        {
+          objectId: handle,
+        },
+      );
       paths.push(path);
 
       // Cleanup the handle.
-      void realm.disown(handle).catch(undefined);
+      void hiddenSandboxRealm.disown(handle).catch(undefined);
     }
 
     paths.sort();
@@ -218,16 +222,18 @@ export class InputProcessor {
         return paths[index] !== path;
       })
     ) {
-      const {objectId} = await realm.deserializeForCdp(params.element);
+      const {objectId} = await hiddenSandboxRealm.deserializeForCdp(
+        params.element,
+      );
       // This cannot throw since this was just used in `callFunction` above.
       assert(objectId !== undefined);
-      await realm.cdpClient.sendCommand('DOM.setFileInputFiles', {
+      await hiddenSandboxRealm.cdpClient.sendCommand('DOM.setFileInputFiles', {
         files: params.files,
         objectId,
       });
     } else {
       // XXX: We should dispatch a trusted event.
-      await realm.callFunction(
+      await hiddenSandboxRealm.callFunction(
         String(function dispatchEvent(this: HTMLInputElement) {
           this.dispatchEvent(
             new Event('cancel', {

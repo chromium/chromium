@@ -14,10 +14,10 @@
 # limitations under the License.
 
 import pytest
-from anys import ANY_NUMBER, ANY_STR
-from test_helpers import (execute_command, read_JSON_message,
-                          send_JSON_command, subscribe, wait_for_event,
-                          wait_for_filtered_event)
+from anys import ANY_DICT, ANY_NUMBER, ANY_STR
+from test_helpers import (AnyExtending, execute_command, goto_url,
+                          read_JSON_message, send_JSON_command, subscribe,
+                          wait_for_event, wait_for_filtered_event)
 
 
 @pytest.mark.asyncio
@@ -236,3 +236,95 @@ async def test_realm_cdpResolveRealm(websocket, context_id, html):
     })
 
     assert result == {'executionContextId': ANY_NUMBER}
+
+
+1
+
+
+@pytest.mark.asyncio
+async def test_realm_helper_is_not_exposed_by_some_commands(
+        websocket, context_id, html, query_selector, read_messages):
+    """
+    Assert internal sandboxes are not exposed to user after the commands known
+    to use internal sandboxes.
+    """
+
+    await goto_url(
+        websocket, context_id,
+        html("<div style='height: 2000px; width: 10px'>some content</div>"))
+
+    await subscribe(websocket, ['script'])
+
+    resp = await execute_command(websocket, {
+        "method": "script.getRealms",
+        "params": {
+            "context": context_id
+        }
+    })
+    # Only the initial realm is exposed.
+    assert resp['realms'] == [ANY_DICT]
+    initial_realm = resp['realms'][0]['realm']
+
+    # Try to override the DOM property known to be used by screenshot.
+    await execute_command(
+        websocket, {
+            "method": "script.evaluate",
+            "params": {
+                "expression": "window.visualViewport=undefined",
+                "target": {
+                    "context": context_id
+                },
+                "awaitPromise": False,
+            }
+        })
+
+    # Try to make a screenshot.
+    command_id = await send_JSON_command(
+        websocket, {
+            "method": "browsingContext.captureScreenshot",
+            "params": {
+                "context": context_id
+            }
+        })
+
+    # Assert no unexpected script events.
+    [result] = await read_messages(1, check_no_other_messages=True)
+    assert result == AnyExtending({"id": command_id, "type": "success"})
+
+    target_element = await query_selector('div')
+    # Try to perform an action. It is known to use scripts to get the element's
+    # center.
+    command_id = await send_JSON_command(
+        websocket, {
+            "method": "input.performActions",
+            "params": {
+                "context": context_id,
+                "actions": [{
+                    "type": "pointer",
+                    "id": "__puppeteer_mouse",
+                    "actions": [{
+                        "type": "pointerMove",
+                        "x": 0,
+                        "y": 0,
+                        "origin": {
+                            "type": "element",
+                            "element": target_element
+                        }
+                    }]
+                }]
+            }
+        })
+
+    # Assert no unexpected script events.
+    [result] = await read_messages(1, check_no_other_messages=True)
+    assert result == AnyExtending({"id": command_id, "type": "success"})
+
+    resp = await execute_command(websocket, {
+        "method": "script.getRealms",
+        "params": {
+            "context": context_id
+        }
+    })
+
+    # Only the initial realm is exposed.
+    assert resp['realms'] == [AnyExtending({'realm': initial_realm})]

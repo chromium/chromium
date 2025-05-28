@@ -33,6 +33,7 @@ interface RealmFilter {
   type?: Script.RealmType;
   sandbox?: string;
   cdpSessionId?: Protocol.Target.SessionID;
+  isHidden?: boolean;
 }
 
 /** Container class for browsing realms. */
@@ -45,6 +46,8 @@ export class RealmStorage {
 
   /** Map from realm ID to Realm. */
   readonly #realmMap = new Map<Script.Realm, Realm>();
+  /** List of the internal sandboxed realms which should not be reported to the user. */
+  readonly hiddenSandboxes = new Set<string | undefined>();
 
   get knownHandlesToRealmMap() {
     return this.#knownHandlesToRealmMap;
@@ -89,6 +92,12 @@ export class RealmStorage {
       if (
         filter.cdpSessionId !== undefined &&
         filter.cdpSessionId !== realm.cdpClient.sessionId
+      ) {
+        return false;
+      }
+      if (
+        filter.isHidden !== undefined &&
+        filter.isHidden !== realm.isHidden()
       ) {
         return false;
       }
