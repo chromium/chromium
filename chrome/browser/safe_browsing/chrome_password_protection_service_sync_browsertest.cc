@@ -73,13 +73,12 @@ class ChromePasswordProtectionServiceSyncBrowserTest : public SyncTest {
 
     ASSERT_TRUE(SetupClients());
 
-    // Sign the profile in and enable Sync.
-    ASSERT_TRUE(
-        GetClient(0)->SignInPrimaryAccount(signin::ConsentLevel::kSync));
+    // Sign the profile.
+    ASSERT_TRUE(GetClient(0)->SignInPrimaryAccount());
 
     CoreAccountInfo current_info =
         IdentityManagerFactory::GetForProfile(GetProfile(0))
-            ->GetPrimaryAccountInfo(signin::ConsentLevel::kSync);
+            ->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
     // Need to update hosted domain since it is not populated.
     AccountInfo account_info;
     account_info.account_id = current_info.account_id;
@@ -89,6 +88,7 @@ class ChromePasswordProtectionServiceSyncBrowserTest : public SyncTest {
     signin::UpdateAccountInfoForAccount(
         IdentityManagerFactory::GetForProfile(GetProfile(0)), account_info);
 
+    // Enable sync.
     ASSERT_TRUE(GetClient(0)->SetupSync());
   }
 

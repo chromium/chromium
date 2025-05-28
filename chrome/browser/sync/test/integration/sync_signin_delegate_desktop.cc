@@ -23,8 +23,8 @@ void SyncSigninDelegateDesktop::SigninFake(Profile* profile,
   // Verify HasPrimaryAccount() separately because MakePrimaryAccountAvailable()
   // below DCHECK fails if there is already an authenticated account.
   if (identity_manager->HasPrimaryAccount(consent_level)) {
-    DCHECK_EQ(identity_manager->GetPrimaryAccountInfo(consent_level).email,
-              username);
+    CHECK_EQ(identity_manager->GetPrimaryAccountInfo(consent_level).email,
+             username);
     // Don't update the refresh token if we already have one. The reason is
     // that doing so causes Sync (ServerConnectionManager in particular) to
     // mark the current access token as invalid. Since tests typically
@@ -33,7 +33,28 @@ void SyncSigninDelegateDesktop::SigninFake(Profile* profile,
     if (!identity_manager->HasPrimaryAccountWithRefreshToken(consent_level)) {
       signin::SetRefreshTokenForPrimaryAccount(identity_manager);
     }
+  } else if (identity_manager->HasPrimaryAccount(
+                 signin::ConsentLevel::kSignin)) {
+    // Handle kSignin->kSync transitions.
+    CHECK_EQ(consent_level, signin::ConsentLevel::kSync);
+    CHECK_EQ(
+        identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
+            .email,
+        username);
+    signin::AccountAvailabilityOptionsBuilder options =
+        signin::AccountAvailabilityOptionsBuilder().AsPrimary(consent_level);
+
+    // Similarly to the above: if there is a primary account already with a
+    // refresh token, and this is about upgrading to ConsentLevel::kSync, avoid
+    // setting a new refresh token. Otherwise access token requests may fail.
+    if (identity_manager->HasPrimaryAccountWithRefreshToken(
+            signin::ConsentLevel::kSignin)) {
+      options.WithoutRefreshToken();
+    }
+
+    signin::MakeAccountAvailable(identity_manager, options.Build(username));
   } else {
+    // There is no primary account previously, so mimic a new sign-in.
     signin::MakePrimaryAccountAvailable(identity_manager, username,
                                         consent_level);
   }

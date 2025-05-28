@@ -582,11 +582,12 @@ void SyncTest::SetupMockGaiaResponsesForProfile(Profile* profile) {
                              test_url_loader_factory_.GetSafeWeakWrapper());
 }
 
-void SyncTest::SetupSyncInternal(SetupSyncMode setup_mode) {
+bool SyncTest::SetupSyncInternal(SetupSyncMode setup_mode) {
   // Create sync profiles and clients if they haven't already been created.
   if (profiles_.empty()) {
     if (!SetupClients()) {
-      LOG(FATAL) << "SetupClients() failed.";
+      ADD_FAILURE() << "SetupClients() failed.";
+      return false;
     }
   }
 
@@ -600,8 +601,10 @@ void SyncTest::SetupSyncInternal(SetupSyncMode setup_mode) {
   for (int client_index = 0; client_index < num_clients_; client_index++) {
     SyncServiceImplHarness* client = GetClient(client_index);
     DVLOG(1) << "Setting up " << client_index << " client";
-    ASSERT_TRUE(client->SetupSyncNoWaitForCompletion())
-        << "SetupSync() failed.";
+    if (!client->SetupSyncNoWaitForCompletion()) {
+      ADD_FAILURE() << "SetupSync() failed.";
+      return false;
+    }
 
     if (TestUsesSelfNotifications()) {
       // On Android, invalidations for Session data type are disabled by
@@ -626,19 +629,36 @@ void SyncTest::SetupSyncInternal(SetupSyncMode setup_mode) {
       case NO_WAITING:
         break;
       case WAIT_FOR_SYNC_SETUP_TO_COMPLETE:
-        ASSERT_TRUE(client->AwaitSyncSetupCompletion());
-        ASSERT_TRUE(client->AwaitInvalidationsStatus(/*expected_status=*/true));
+        if (!client->AwaitSyncSetupCompletion()) {
+          ADD_FAILURE() << "AwaitSyncSetupCompletion() failed";
+          return false;
+        }
+        if (!client->AwaitInvalidationsStatus(/*expected_status=*/true)) {
+          ADD_FAILURE() << "AwaitInvalidationsStatus() failed";
+          return false;
+        }
         break;
       case WAIT_FOR_COMMITS_TO_COMPLETE:
-        ASSERT_TRUE(client->AwaitSyncSetupCompletion());
-        ASSERT_TRUE(client->AwaitInvalidationsStatus(/*expected_status=*/true));
-        ASSERT_TRUE(WaitForAsyncChangesToBeCommitted(client_index));
+        if (!client->AwaitSyncSetupCompletion()) {
+          ADD_FAILURE() << "AwaitSyncSetupCompletion() failed";
+          return false;
+        }
+        if (!client->AwaitInvalidationsStatus(/*expected_status=*/true)) {
+          ADD_FAILURE() << "AwaitInvalidationsStatus() failed";
+          return false;
+        }
+        if (!WaitForAsyncChangesToBeCommitted(client_index)) {
+          ADD_FAILURE() << "WaitForAsyncChangesToBeCommitted() failed";
+          return false;
+        }
         break;
     }
 
     LOG(INFO) << "SetupSync for client " << client_index << " finished, "
               << "cache guid: " << GetCacheGuid(client_index);
   }
+
+  return true;
 }
 
 bool SyncTest::SetupSync(SetupSyncMode setup_mode) {
@@ -651,7 +671,9 @@ bool SyncTest::SetupSync(SetupSyncMode setup_mode) {
 
   base::ScopedAllowBlockingForTesting allow_blocking;
 
-  SetupSyncInternal(setup_mode);
+  if (!SetupSyncInternal(setup_mode)) {
+    return false;
+  }
 
   // Because clients may modify sync data as part of startup (for example
   // local session-related data is rewritten), we need to ensure all
@@ -662,7 +684,8 @@ bool SyncTest::SetupSync(SetupSyncMode setup_mode) {
   // need such guarantees.
   if (setup_mode != NO_WAITING && TestUsesSelfNotifications()) {
     if (!AwaitQuiescence()) {
-      LOG(FATAL) << "AwaitQuiescence() failed.";
+      ADD_FAILURE() << "AwaitQuiescence() failed.";
+      return false;
     }
   }
 

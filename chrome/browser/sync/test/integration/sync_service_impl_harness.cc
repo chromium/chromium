@@ -66,7 +66,13 @@ class EngineInitializeChecker : public SingleClientStatusChangeChecker {
       : SingleClientStatusChangeChecker(service) {}
 
   bool IsExitConditionSatisfied(std::ostream* os) override {
-    *os << "Waiting for sync engine initialization to complete";
+    *os << "Waiting for sync engine initialization to complete; actual "
+           "transport state: "
+        << syncer::sync_ui_util::TransportStateStringToDebugString(
+               service()->GetTransportState())
+        << ", disable reasons: "
+        << syncer::sync_ui_util::GetDisableReasonsDebugString(
+               service()->GetDisableReasons());
     if (service()->IsEngineInitialized()) {
       return true;
     }

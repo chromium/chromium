@@ -97,12 +97,11 @@ class PageInfoBubbleViewSyncBrowserTest : public SyncTest {
     ASSERT_TRUE(SetupClients());
 
     // Sign the profile in.
-    ASSERT_TRUE(
-        GetClient(0)->SignInPrimaryAccount(signin::ConsentLevel::kSync));
+    ASSERT_TRUE(GetClient(0)->SignInPrimaryAccount());
 
     CoreAccountInfo current_info =
         IdentityManagerFactory::GetForProfile(GetProfile(0))
-            ->GetPrimaryAccountInfo(signin::ConsentLevel::kSync);
+            ->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
     // Need to update hosted domain since it is not populated.
     AccountInfo account_info;
     account_info.account_id = current_info.account_id;

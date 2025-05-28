@@ -499,11 +499,11 @@ IN_PROC_BROWSER_TEST_F(SingleClientContactInfoManagedAccountTest,
                        DisabledForManagedAccounts) {
   ASSERT_TRUE(SetupClients());
   // Sign in with a managed account.
-  ASSERT_TRUE(GetClient(0)->SignInPrimaryAccount(signin::ConsentLevel::kSync));
+  ASSERT_TRUE(GetClient(0)->SignInPrimaryAccount());
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(GetProfile(0));
   CoreAccountInfo account =
-      identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSync);
+      identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
   signin::SimulateSuccessfulFetchOfAccountInfo(
       identity_manager, account.account_id, account.email, account.gaia,
       "managed-domain.com", "Full Name", "Given Name", "en-US",

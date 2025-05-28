@@ -1122,13 +1122,12 @@ class SingleClientHistoryNonGmailSyncTest : public SingleClientHistorySyncTest {
   }
 
   void SignInAndSetAccountInfo(bool is_managed) {
-    ASSERT_TRUE(
-        GetClient(0)->SignInPrimaryAccount(signin::ConsentLevel::kSync));
+    ASSERT_TRUE(GetClient(0)->SignInPrimaryAccount());
 
     signin::IdentityManager* identity_manager =
         IdentityManagerFactory::GetForProfile(GetProfile(0));
     CoreAccountInfo account =
-        identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSync);
+        identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
 
     // A non-empty hosted domain means the account is managed.
     std::string hosted_domain = is_managed ? "managed-domain.com" : "";

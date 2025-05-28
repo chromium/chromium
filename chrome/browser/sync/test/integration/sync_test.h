@@ -341,7 +341,7 @@ class SyncTest : public PlatformBrowserTest, public ProfileObserver {
   void InitializeProfile(int index, Profile* profile);
 
   // Internal routine for setting up sync.
-  void SetupSyncInternal(SetupSyncMode setup_mode);
+  [[nodiscard]] bool SetupSyncInternal(SetupSyncMode setup_mode);
 
   // Used to determine whether ARC_PACKAGE data type needs to be enabled. This
   // is applicable on ChromeOS-Ash platform only.
