@@ -37,6 +37,14 @@ config("compiler") {
 
   ldflags = common_mac_flags
 
+  # ld64 defaults to fixup chains on macOS 12+ when targeting arm64 and on
+  # macOS 13+ when targeting x86_64. ld.lld defaults to it on macOS 13+.
+  # It's probably safe to enable it on macOS even on intel, but for now
+  # only explicitly opt in on arm64.
+  if (current_cpu == "arm64") {
+    ldflags += [ "-Wl,-fixup_chains" ]
+  }
+
   if (save_unstripped_output) {
     ldflags += [ "-Wcrl,unstripped," + rebase_path(root_out_dir) ]
   }
