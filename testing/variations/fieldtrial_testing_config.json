@@ -23823,6 +23823,24 @@
             ]
         }
     ],
+    "ThreeButtonPasswordSaveDialog": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "ThreeButtonPasswordSaveDialog"
+                    ]
+                }
+            ]
+        }
+    ],
     "ThrottleMainFrameTo60HzV2": [
         {
             "platforms": [
