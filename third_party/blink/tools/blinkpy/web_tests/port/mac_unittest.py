@@ -35,9 +35,9 @@ from blinkpy.web_tests.port import port_testcase
 
 class MacPortTest(port_testcase.PortTestCase):
     os_name = 'mac'
-    os_version = 'mac11'
+    os_version = 'mac15'
     port_name = 'mac'
-    full_port_name = 'mac-mac11'
+    full_port_name = 'mac-mac15'
     port_maker = mac.MacPort
 
     def assert_name(self, port_name, os_version_string, expected,
@@ -53,26 +53,22 @@ class MacPortTest(port_testcase.PortTestCase):
     def test_get_platform_tags(self):
         port = self.make_port()
         self.assertEqual(port.get_platform_tags(),
-                         {'mac', 'mac11', 'x86', 'release'})
+                         {'mac', 'mac15', 'x86', 'release'})
 
     def test_versions(self):
-        self.assert_name(None, 'mac11', 'mac-mac11')
         self.assert_name(None, 'mac12', 'mac-mac12')
         self.assert_name(None, 'mac13', 'mac-mac13')
         self.assert_name(None, 'mac14', 'mac-mac14')
         self.assert_name(None, 'mac15', 'mac-mac15')
-        self.assert_name('mac', 'mac11', 'mac-mac11')
         self.assert_name('mac', 'mac12', 'mac-mac12')
         self.assert_name('mac', 'mac13', 'mac-mac13')
         self.assert_name('mac', 'mac14', 'mac-mac14')
         self.assert_name('mac', 'mac15', 'mac-mac15')
 
-        self.assert_name(None, 'mac11', 'mac-mac11-arm64', 'arm64')
         self.assert_name(None, 'mac12', 'mac-mac12-arm64', 'arm64')
         self.assert_name(None, 'mac13', 'mac-mac13-arm64', 'arm64')
         self.assert_name(None, 'mac14', 'mac-mac14-arm64', 'arm64')
         self.assert_name(None, 'mac15', 'mac-mac15-arm64', 'arm64')
-        self.assert_name('mac', 'mac11', 'mac-mac11-arm64', 'arm64')
         self.assert_name('mac', 'mac12', 'mac-mac12-arm64', 'arm64')
         self.assert_name('mac', 'mac13', 'mac-mac13-arm64', 'arm64')
         self.assert_name('mac', 'mac14', 'mac-mac14-arm64', 'arm64')
@@ -102,10 +98,10 @@ class MacPortTest(port_testcase.PortTestCase):
 
         The smoke test default should not depend on the current host's platform.
         """
-        port = self.make_port(os_version='mac11')
+        port = self.make_port(os_version='mac15')
         self.assertFalse(port.default_smoke_test_only())
-        all_tests_platform = MockPlatformInfo('mac', 'mac11')
+        all_tests_platform = MockPlatformInfo('mac', 'mac15')
 
     def test_default_timeout_ms(self):
-        port = self.make_port(os_version='mac11')
+        port = self.make_port(os_version='mac15')
         default_timeout = port._default_timeout_ms()

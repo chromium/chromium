@@ -17,11 +17,6 @@
         "port_name": "mac-mac12",
         "specifiers": ["Mac12", "Debug"]
     },
-    "Mac11 Tests": {
-        "main": "chromium.fyi",
-        "port_name": "mac-mac11",
-        "specifiers": ["Mac11", "Release"]
-    },
     "mac14-arm64-rel-tests": {
         "main": "chromium.mac",
         "port_name": "mac-mac14-arm64",
