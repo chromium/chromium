@@ -73,7 +73,7 @@ chromecast/common/mojom 1 1
 chromecast/media/cma/backend 1 1
 chromecast/media/cma/backend/alsa 1 1
 chromecast/public 2 1
-chrome/common 4 3
+chrome/common 3 3
 chrome/common/chromeos/extensions 2 1
 chrome/common/extensions 1 1
 chrome/common/extensions/api 2 2
