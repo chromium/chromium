@@ -21,7 +21,6 @@ void AddUiColorMixer(ColorProvider* provider, const ColorProviderKey& key) {
   const bool dark_mode = key.color_mode == ColorProviderKey::ColorMode::kDark;
 
   ColorMixer& mixer = provider->AddMixer();
-  mixer[kColorAvatarHeaderArt] = {kColorMidground};
   mixer[kColorAvatarIconGuest] = {kColorSecondaryForeground};
   mixer[kColorAvatarIconIncognito] = {kColorPrimaryForeground};
   mixer[kColorBadgeBackground] =

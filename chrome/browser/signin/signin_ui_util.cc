@@ -603,16 +603,16 @@ void RecordProfileMenuViewShown(Profile* profile) {
   }
 }
 
-void RecordProfileMenuClick(Profile* profile) {
+void RecordProfileMenuClick(const Profile& profile) {
   base::RecordAction(
       base::UserMetricsAction("ProfileMenu_ActionableItemClicked"));
-  if (profile->IsRegularProfile()) {
+  if (profile.IsRegularProfile()) {
     base::RecordAction(
         base::UserMetricsAction("ProfileMenu_ActionableItemClicked_Regular"));
-  } else if (profile->IsGuestSession()) {
+  } else if (profile.IsGuestSession()) {
     base::RecordAction(
         base::UserMetricsAction("ProfileMenu_ActionableItemClicked_Guest"));
-  } else if (profile->IsIncognitoProfile()) {
+  } else if (profile.IsIncognitoProfile()) {
     base::RecordAction(
         base::UserMetricsAction("ProfileMenu_ActionableItemClicked_Incognito"));
   }

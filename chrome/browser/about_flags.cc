@@ -11986,12 +11986,6 @@ const FeatureEntry kFeatureEntries[] = {
          password_manager::features::kMarkAllCredentialsAsLeaked)},
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-    {"enable-improved-guest-profile-menu",
-     flag_descriptions::kEnableImprovedGuestProfileMenuName,
-     flag_descriptions::kEnableImprovedGuestProfileMenuDescription,
-     kOsMac | kOsWin | kOsLinux,
-     FEATURE_VALUE_TYPE(switches::kEnableImprovedGuestProfileMenu)},
-
 #if !BUILDFLAG(IS_ANDROID)
     {"account-storage-prefs-themes-search-engines",
      flag_descriptions::kAccountStoragePrefsThemesAndSearchEnginesName,

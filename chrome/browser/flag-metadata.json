@@ -3522,14 +3522,6 @@
     "expiry_milestone": 135
   },
   {
-    "name": "enable-improved-guest-profile-menu",
-    "owners": [
-      "droger@chromium.org",
-      "chrome-signin-team@google.com"
-    ],
-    "expiry_milestone": 137
-  },
-  {
     "name": "enable-input-device-settings-split",
     "owners": [
       "dpad@google.com",

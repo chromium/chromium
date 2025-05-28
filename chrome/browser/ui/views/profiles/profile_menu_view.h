@@ -44,6 +44,7 @@ class Browser;
 // the signin (or sync), e.g. history sync opt-in identity pill promo.
 class ProfileMenuView : public ProfileMenuViewBase {
  public:
+  // `browser` must not be nullptr.
   ProfileMenuView(views::Button* anchor_button,
                   Browser* browser,
                   std::optional<signin_metrics::AccessPoint>
@@ -62,6 +63,8 @@ class ProfileMenuView : public ProfileMenuViewBase {
   friend class ProfileMenuViewSignoutTest;
   friend class ProfileMenuViewSyncErrorButtonTest;
   friend class ProfileMenuInteractiveUiTest;
+
+  Browser& browser() const { return *browser_; }
 
   // views::BubbleDialogDelegateView:
   std::u16string GetAccessibleWindowTitle() const override;
@@ -115,6 +118,8 @@ class ProfileMenuView : public ProfileMenuViewBase {
       const std::vector<ProfileAttributesEntry*>& available_profiles);
 
   void BuildProfileManagementFeatureButtons();
+
+  const raw_ref<Browser> browser_;
 
   std::u16string menu_title_;
   std::u16string menu_subtitle_;

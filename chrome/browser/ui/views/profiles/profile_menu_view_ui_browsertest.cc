@@ -204,21 +204,15 @@ const ProfileMenuViewPixelTestParam kPixelTestParams[] = {
     {
         .pixel_test_param = {.test_suffix = "Guest"},
         .profile_type_param = ProfileTypePixelTestParam::kGuest,
-        .extra_features_and_params =
-            {{switches::kEnableImprovedGuestProfileMenu, {}}},
     },
     {
         .pixel_test_param = {.test_suffix = "Guest_Dark",
                              .use_dark_theme = true},
         .profile_type_param = ProfileTypePixelTestParam::kGuest,
-        .extra_features_and_params =
-            {{switches::kEnableImprovedGuestProfileMenu, {}}},
     },
     {
         .pixel_test_param = {.test_suffix = "Incognito"},
         .profile_type_param = ProfileTypePixelTestParam::kIncognito,
-        .extra_features_and_params =
-            {{switches::kEnableImprovedGuestProfileMenu, {}}},
     },
     {
         .pixel_test_param = {.test_suffix = "HistorySyncOptinExperiment"},
@@ -258,7 +252,6 @@ class ProfileMenuViewPixelTest
       : ProfilesPixelTestBaseT<DialogBrowserTest>(GetParam().pixel_test_param) {
     // Disabled by default but may be overridden by `extra_features_and_params`.
     base::flat_set<base::test::FeatureRef> disabled_features = {
-        switches::kEnableImprovedGuestProfileMenu,
         switches::kEnableHistorySyncOptinExpansionPill};
     for (const auto& [feature, _] : GetParam().extra_features_and_params) {
       disabled_features.erase(feature.get());

@@ -1087,9 +1087,6 @@ extern const char kBoundaryEventDispatchTracksNodeRemovalDescription[];
 extern const char kEnableCssSelectorFragmentAnchorName[];
 extern const char kEnableCssSelectorFragmentAnchorDescription[];
 
-extern const char kEnableImprovedGuestProfileMenuName[];
-extern const char kEnableImprovedGuestProfileMenuDescription[];
-
 #if !BUILDFLAG(IS_ANDROID)
 extern const char kEnablePreferencesAccountStorageName[];
 extern const char kEnablePreferencesAccountStorageDescription[];

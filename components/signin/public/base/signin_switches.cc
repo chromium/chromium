@@ -189,10 +189,6 @@ BASE_FEATURE(kEnableSnackbarInSettings,
              "EnableSnackbarInSettings",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kEnableImprovedGuestProfileMenu,
-             "EnableImprovedGuestProfileMenu",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kEnablePendingModePasswordsPromo,
              "EnablePendingModePasswordsPromo",
              base::FEATURE_ENABLED_BY_DEFAULT);

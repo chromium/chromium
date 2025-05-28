@@ -85,9 +85,6 @@ void AddGtkNativeColorMixer(ui::ColorProvider* provider,
   mixer[ui::kColorTextSelectionForeground] = {kSelectedTextForeground};
 
   // UI element colors
-  mixer[ui::kColorAvatarHeaderArt] =
-      AlphaBlend(ui::kColorPrimaryForeground, ui::kColorPrimaryBackground,
-                 gfx::kGoogleGreyAlpha300);
   mixer[ui::kColorAvatarIconGuest] =
       DeriveDefaultIconColor(ui::kColorPrimaryForeground);
   mixer[ui::kColorBubbleBackground] = {ui::kColorPrimaryBackground};

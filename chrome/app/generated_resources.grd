@@ -17676,17 +17676,8 @@ Please help our engineers fix this problem. Tell us what happened right before y
     <message name="IDS_INCOGNITO_PROFILE_MENU_TITLE" desc="The title of the Incognito version of profile menu.">
       Incognito
     </message>
-    <message name="IDS_INCOGNITO_WINDOW_COUNT_MESSAGE" desc="The message showing the number of open incogntio windows. This is not used for zero windows.[ICU Syntax]">
-      {0, plural,
-        =1 {# open window}
-        other {# open windows}
-      }
-    </message>
     <message name="IDS_INCOGNITO_PROFILE_MENU_CLOSE_BUTTON" desc="The text of the button offering to close all Incognito windows.">
       Exit Incognito
-    </message>
-    <message name="IDS_INCOGNITO_PROFILE_MENU_CLOSE_BUTTON_NEW" desc="The text of the button offering to close all Incognito windows.">
-      Close Incognito
     </message>
 
     <!-- Incognito Delete Browsing Data dialog bubble. -->
@@ -17700,32 +17691,18 @@ Please help our engineers fix this problem. Tell us what happened right before y
       Close windows
     </message>
 
-  <!-- Incognito History Disclaimer dialog bubble. -->
-  <message name="IDS_INCOGNITO_HISTORY_BUBBLE_PRIMARY_TEXT" desc="Header in bubble view that states visited sites aren't saved in Incognito mode.">
-    Sites you visit aren’t saved in Incognito
-  </message>
-  <message name="IDS_INCOGNITO_HISTORY_BUBBLE_SECONDARY_TEXT" desc="Description in bubble view that states closing all Incognito tabs is necessary to delete Incognito browsing history from the device,">
-    To delete Incognito browsing history from your device, close all Incognito tabs
-  </message>
-  <message name="IDS_INCOGNITO_HISTORY_BUBBLE_CLOSE_INCOGNITO_BUTTON_TEXT" desc="Text of button in bubble view for calling to the close all incognito tabs action.">
-    Close Incognito
-  </message>
-  <message name="IDS_INCOGNITO_HISTORY_BUBBLE_CANCEL_BUTTON_TEXT" desc="Text of button in bubble view for calling to the close the bubble action.">
-    Got it
-  </message>
-
-   <!-- Guest Profile Menu bubble. -->
-   <message name="IDS_GUEST_WINDOW_COUNT_MESSAGE" desc="The message showing the number of open guest windows. This is not used for zero windows.[ICU Syntax]">
-      {0, plural,
-        =1 {# open window}
-        other {# open windows}
-      }
+    <!-- Incognito History Disclaimer dialog bubble. -->
+    <message name="IDS_INCOGNITO_HISTORY_BUBBLE_PRIMARY_TEXT" desc="Header in bubble view that states visited sites aren't saved in Incognito mode.">
+      Sites you visit aren’t saved in Incognito
     </message>
-    <message name="IDS_GUEST_PROFILE_MENU_CLOSE_BUTTON" desc="The text of the button offering to close all guest windows. The number in ICU syntax represents the number of open guest windows, but it is not used in the English text and can be used to choose singular/plural in translation to other languages, if needed.[ICU Syntax]">
-      {0, plural,
-        =1 {Close Guest}
-        other {Close Guest}
-      }
+    <message name="IDS_INCOGNITO_HISTORY_BUBBLE_SECONDARY_TEXT" desc="Description in bubble view that states closing all Incognito tabs is necessary to delete Incognito browsing history from the device,">
+      To delete Incognito browsing history from your device, close all Incognito tabs
+    </message>
+    <message name="IDS_INCOGNITO_HISTORY_BUBBLE_CLOSE_INCOGNITO_BUTTON_TEXT" desc="Text of button in bubble view for calling to the close all incognito tabs action.">
+      Close Incognito
+    </message>
+    <message name="IDS_INCOGNITO_HISTORY_BUBBLE_CANCEL_BUTTON_TEXT" desc="Text of button in bubble view for calling to the close the bubble action.">
+      Got it
     </message>
 
     <message name="IDS_NOTIFICATION_DEFAULT_HELPFUL_BUTTON_TEXT" desc="Text body for the helpful button in notifications sent from notification scheduler.">

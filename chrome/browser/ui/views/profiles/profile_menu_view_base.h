@@ -140,6 +140,7 @@ class ProfileMenuViewBase : public content::WebContentsDelegate,
   // icon size of other rows.
   static constexpr int kOtherProfileImageSize = 16;
 
+  // `browser` must not be nullptr.
   ProfileMenuViewBase(views::Button* anchor_button, Browser* browser);
   ~ProfileMenuViewBase() override;
 
@@ -148,13 +149,6 @@ class ProfileMenuViewBase : public content::WebContentsDelegate,
 
   // This method is called once to add all menu items.
   virtual void BuildMenu() = 0;
-
-  // If |profile_name| is empty, no heading will be displayed.
-  // `management_badge` and `image_model` do not need to be circular.
-  void SetProfileIdentityInfo(const ui::ImageModel& image_model,
-                              const std::u16string& title,
-                              const std::u16string& subtitle = std::u16string(),
-                              const gfx::VectorIcon* header_art_icon = nullptr);
 
   // See `IdentitySectionParams` for documentation of the parameters.
   void SetProfileIdentityWithCallToAction(IdentitySectionParams params);
@@ -181,7 +175,7 @@ class ProfileMenuViewBase : public content::WebContentsDelegate,
   // Should be called inside each button/link action.
   void RecordClick(ActionableItem item);
 
-  Browser* browser() const { return browser_; }
+  Profile& profile() const { return *profile_; }
 
   // Return maximal height for the view after which it becomes scrollable.
   // TODO(crbug.com/40587757): remove when a general solution is available.
@@ -209,10 +203,6 @@ class ProfileMenuViewBase : public content::WebContentsDelegate,
 
   void BuildIdentityInfoColorCallback(const ui::ColorProvider* color_provider);
 
-  void BuildProfileBackgroundContainer(
-      std::unique_ptr<views::View> avatar_image_view,
-      const ui::ThemedVectorIcon& avatar_header_art);
-
   // views::BubbleDialogDelegateView:
   void Init() final;
   void OnThemeChanged() override;
@@ -230,8 +220,7 @@ class ProfileMenuViewBase : public content::WebContentsDelegate,
       std::unique_ptr<views::View> icon_view,
       const std::u16string& text);
 
-  const raw_ptr<Browser> browser_;
-
+  const raw_ref<Profile> profile_;
   const raw_ptr<views::Button> anchor_button_;
 
   // Component containers.
@@ -264,12 +253,6 @@ class ProfileMenuViewBase : public content::WebContentsDelegate,
   // callback and calls it afterwards.
   base::RepeatingCallback<void(const ui::ColorProvider*)>
       identity_info_color_callback_ = base::DoNothing();
-
-  // Builds the background for |sync_info_container_|. This requires
-  // ui::ColorProvider, which is only available once OnThemeChanged() is called,
-  // so the class caches this callback and calls it afterwards.
-  base::RepeatingCallback<void(const ui::ColorProvider*)>
-      sync_info_background_callback_ = base::DoNothing();
 
   // Actual heading string would be set by children classes.
   std::u16string profile_mgmt_heading_;
