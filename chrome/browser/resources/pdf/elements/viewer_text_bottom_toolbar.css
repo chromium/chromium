@@ -14,6 +14,7 @@
 :host {
   --cr-focus-outline-color: var(--viewer-icon-focus-outline-color);
   border-radius: 16px 16px 0 0;
+  z-index: 2;  /* The text box itself uses 1. Use 2 to layer above the box. */
 }
 
 .md-select {
