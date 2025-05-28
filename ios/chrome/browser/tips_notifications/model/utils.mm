@@ -61,6 +61,8 @@ ContentIDs ContentIDsForType(TipsNotificationType type) {
       return {IDS_IOS_NOTIFICATIONS_TIPS_CPE_TITLE,
               IDS_IOS_NOTIFICATIONS_TIPS_CPE_BODY};
     case TipsNotificationType::kLensOverlay:
+      return {IDS_IOS_NOTIFICATIONS_TIPS_LENS_OVERLAY_TITLE,
+              IDS_IOS_NOTIFICATIONS_TIPS_LENS_OVERLAY_BODY};
     case TipsNotificationType::kIncognitoLock:
     case TipsNotificationType::kError:
       NOTREACHED();
@@ -228,6 +230,7 @@ std::vector<TipsNotificationType> TipsNotificationsTypesOrder(
             TipsNotificationType::kDefaultBrowser,
             TipsNotificationType::kDocking,
             TipsNotificationType::kSignin,
+            TipsNotificationType::kLensOverlay,
             TipsNotificationType::kCPE,
         });
   }

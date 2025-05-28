@@ -113,6 +113,9 @@ class TipsNotificationClient : public PushNotificationClient {
   // Returns true if the CPE notification should be sent.
   bool ShouldSendCPE(ProfileIOS* profile);
 
+  // Returns true if the Lens Overlay notification should be sent.
+  bool ShouldSendLensOverlay(ProfileIOS* profile);
+
   // Returns `true` if there is foreground active browser.
   bool IsSceneLevelForegroundActive();
 
@@ -127,6 +130,7 @@ class TipsNotificationClient : public PushNotificationClient {
   void ShowLensPromo(Browser* browser);
   void ShowEnhancedSafeBrowsingPromo(Browser* browser);
   void ShowCPEPromo(Browser* browser);
+  void ShowLensOverlayPromo(Browser* browser);
 
   // Helpers to store state in local state prefs.
   void MarkNotificationTypeSent(TipsNotificationType type);
