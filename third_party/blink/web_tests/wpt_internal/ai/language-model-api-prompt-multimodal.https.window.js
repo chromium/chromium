@@ -35,6 +35,16 @@ promise_test(async t => {
       session.prompt(messageWithContent(kPrompt, 'text', newImage)));
 }, 'Prompt with type:"text" and image content should reject');
 
+promise_test(async t => {
+  await ensureLanguageModel(kImageOptions);
+  const newImage = new Image();
+  newImage.src = kValidImagePath;
+  const session = await LanguageModel.create(kImageOptions);
+  promise_rejects_dom(t, 'NotSupportedError', session.prompt([
+    {role: 'assistant', content: [{type: 'image', value: newImage}]}
+  ]));
+}, 'Prompt with assistant role should reject with multimodal input');
+
 /*****************************************
  * Image tests
  *****************************************/
