@@ -77,8 +77,8 @@ base::expected<uint32_t, RandomizedResponseError> GetNumStates(
 RandomizedResponseData::RandomizedResponseData(double rate,
                                                RandomizedResponse response)
     : rate_(rate), response_(std::move(response)) {
-  DCHECK_GE(rate_, 0);
-  DCHECK_LE(rate_, 1);
+  CHECK_GE(rate_, 0);
+  CHECK_LE(rate_, 1);
 }
 
 RandomizedResponseData::~RandomizedResponseData() = default;
@@ -122,13 +122,13 @@ double PrivacyMathConfig::GetMaxChannelCapacityScopes(
 }
 
 bool GenerateWithRate(double r) {
-  DCHECK_GE(r, 0);
-  DCHECK_LE(r, 1);
+  CHECK_GE(r, 0);
+  CHECK_LE(r, 1);
   return r > 0 && (r == 1 || base::RandDouble() < r);
 }
 
 double GetRandomizedResponseRate(uint32_t num_states, double epsilon) {
-  DCHECK_GT(num_states, 0u);
+  CHECK_GT(num_states, 0u);
 
   return num_states / (num_states - 1.0 + std::exp(epsilon));
 }
@@ -348,9 +348,9 @@ double ComputeChannelCapacity(
     const base::StrictNumeric<uint32_t> num_states_strict,
     const double randomized_response_rate) {
   uint32_t num_states = num_states_strict;
-  DCHECK_GT(num_states, 0u);
-  DCHECK_GE(randomized_response_rate, 0);
-  DCHECK_LE(randomized_response_rate, 1);
+  CHECK_GT(num_states, 0u);
+  CHECK_GE(randomized_response_rate, 0);
+  CHECK_LE(randomized_response_rate, 1);
 
   // The capacity of a unary channel is 0. This follows from the definition
   // of mutual information.
@@ -421,7 +421,7 @@ GetFakeReportsForSequenceIndex(
     auto result = std::div(num_bars - 1, trigger_data_cardinality);
 
     const int trigger_data_index = result.rem;
-    DCHECK_LT(trigger_data_index, trigger_data_cardinality);
+    CHECK_LT(trigger_data_index, trigger_data_cardinality);
 
     fake_reports.push_back({
         .trigger_data =
