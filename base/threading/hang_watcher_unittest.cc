@@ -141,9 +141,6 @@ class HangWatcherTest : public testing::Test {
     HangWatcher::UninitializeOnMainThreadForTesting();
   }
 
-  HangWatcherTest(const HangWatcherTest& other) = delete;
-  HangWatcherTest& operator=(const HangWatcherTest& other) = delete;
-
  protected:
   // Used to wait for monitoring. Will be signaled by the HangWatcher thread and
   // so needs to outlive it.
@@ -169,11 +166,6 @@ class HangWatcherTest : public testing::Test {
 class HangWatcherBlockingThreadTest : public HangWatcherTest {
  public:
   HangWatcherBlockingThreadTest() : thread_(&unblock_thread_, kTimeout) {}
-
-  HangWatcherBlockingThreadTest(const HangWatcherBlockingThreadTest& other) =
-      delete;
-  HangWatcherBlockingThreadTest& operator=(
-      const HangWatcherBlockingThreadTest& other) = delete;
 
  protected:
   void JoinThread() {
@@ -610,11 +602,6 @@ class HangWatcherSnapshotTest : public testing::Test {
     HangWatcher::UninitializeOnMainThreadForTesting();
   }
 
-  HangWatcherSnapshotTest() = default;
-  HangWatcherSnapshotTest(const HangWatcherSnapshotTest& other) = delete;
-  HangWatcherSnapshotTest& operator=(const HangWatcherSnapshotTest& other) =
-      delete;
-
  protected:
   void TriggerMonitorAndWaitForCompletion() {
     monitor_event_.Reset();
@@ -864,11 +851,6 @@ class HangWatcherPeriodicMonitoringTest : public testing::Test {
     hang_watcher_.SetTickClockForTesting(&test_clock_);
   }
 
-  HangWatcherPeriodicMonitoringTest(
-      const HangWatcherPeriodicMonitoringTest& other) = delete;
-  HangWatcherPeriodicMonitoringTest& operator=(
-      const HangWatcherPeriodicMonitoringTest& other) = delete;
-
   void TearDown() override {
     hang_watcher_.UninitializeOnMainThreadForTesting();
   }
@@ -1048,11 +1030,6 @@ class WatchHangsInScopeBlockingTest : public testing::Test {
   void TearDown() override {
     HangWatcher::UninitializeOnMainThreadForTesting();
   }
-
-  WatchHangsInScopeBlockingTest(const WatchHangsInScopeBlockingTest& other) =
-      delete;
-  WatchHangsInScopeBlockingTest& operator=(
-      const WatchHangsInScopeBlockingTest& other) = delete;
 
   void VerifyScopesDontBlock() {
     // Start a WatchHangsInScope that cannot possibly cause a hang to be
