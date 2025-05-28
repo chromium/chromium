@@ -46,9 +46,6 @@ FirstPartySetEntry::~FirstPartySetEntry() = default;
 bool FirstPartySetEntry::operator==(const FirstPartySetEntry& other) const =
     default;
 
-bool FirstPartySetEntry::operator!=(const FirstPartySetEntry& other) const =
-    default;
-
 // static
 std::optional<net::SiteType> FirstPartySetEntry::DeserializeSiteType(
     int value) {

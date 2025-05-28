@@ -28,9 +28,6 @@ FirstPartySetMetadata::~FirstPartySetMetadata() = default;
 bool FirstPartySetMetadata::operator==(
     const FirstPartySetMetadata& other) const = default;
 
-bool FirstPartySetMetadata::operator!=(
-    const FirstPartySetMetadata& other) const = default;
-
 std::ostream& operator<<(std::ostream& os,
                          const FirstPartySetMetadata& metadata) {
   os << "{" << base::OptionalToPtr(metadata.frame_entry()) << ", "

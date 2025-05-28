@@ -30,7 +30,6 @@ class NET_EXPORT FirstPartySetMetadata {
   ~FirstPartySetMetadata();
 
   bool operator==(const FirstPartySetMetadata& other) const;
-  bool operator!=(const FirstPartySetMetadata& other) const;
 
   const std::optional<FirstPartySetEntry>& frame_entry() const {
     return frame_entry_;

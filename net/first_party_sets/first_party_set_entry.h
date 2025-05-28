@@ -43,7 +43,6 @@ class NET_EXPORT FirstPartySetEntry {
   ~FirstPartySetEntry();
 
   bool operator==(const FirstPartySetEntry& other) const;
-  bool operator!=(const FirstPartySetEntry& other) const;
 
   static std::optional<net::SiteType> DeserializeSiteType(int value);
 

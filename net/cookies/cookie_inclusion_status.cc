@@ -31,9 +31,6 @@ CookieInclusionStatus& CookieInclusionStatus::operator=(
 bool CookieInclusionStatus::operator==(
     const CookieInclusionStatus& other) const = default;
 
-bool CookieInclusionStatus::operator!=(
-    const CookieInclusionStatus& other) const = default;
-
 bool CookieInclusionStatus::IsInclude() const {
   return exclusion_reasons_.empty();
 }

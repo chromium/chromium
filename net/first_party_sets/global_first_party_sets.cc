@@ -100,9 +100,6 @@ GlobalFirstPartySets::~GlobalFirstPartySets() = default;
 bool GlobalFirstPartySets::operator==(const GlobalFirstPartySets& other) const =
     default;
 
-bool GlobalFirstPartySets::operator!=(const GlobalFirstPartySets& other) const =
-    default;
-
 GlobalFirstPartySets GlobalFirstPartySets::Clone() const {
   return GlobalFirstPartySets(public_sets_version_, entries_, aliases_,
                               manual_config_.Clone());
