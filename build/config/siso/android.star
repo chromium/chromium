@@ -159,7 +159,9 @@ def __step_config(ctx, step_config):
             "remote": remote_run_static_analysis,
             "platform_ref": "large",
             "canonicalize_dir": True,
-            "timeout": "2m",
+            # obj/chrome/android/chrome_java__errorprone.stamp step takes too
+            # long.
+            "timeout": "6m",
         },
         {
             "name": "android/compile_kt",
@@ -241,6 +243,16 @@ def __step_config(ctx, step_config):
             "remote": remote_run,
             "platform_ref": "large",
             "timeout": "10m",
+        },
+        {
+            "name": "android/proguard/local",
+            "command_prefix": "python3 ../../build/android/gyp/proguard.py",
+            "action_outs": [
+                # http://crbug.com/396004680#comment15: It slows down CQ build.
+                # It's better to run it locally.
+                "./obj/chrome/test/android_browsertests__apk/android_browsertests__apk.r8dex.jar",
+            ],
+            "remote": False,
         },
         {
             "name": "android/proguard",
