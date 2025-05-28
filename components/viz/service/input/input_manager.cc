@@ -159,6 +159,12 @@ void InputManager::SetupRenderInputRouter(
 
   render_input_router->SetupInputRouter(
       GetDeviceScaleFactorForId(frame_sink_id));
+
+  // The input router in Viz is always active.  The active state of renderer
+  // input router determines if input would be transferred to Viz or not.  See
+  // `RenderWidgetHostViewAndroid::OnTouchEvent`
+  render_input_router->input_router()->MakeActive();
+
   render_input_router->SetForceEnableZoom(force_enable_zoom);
   render_input_router->BindRenderInputRouterInterfaces(std::move(rir_client));
   render_input_router->RendererWidgetCreated(/*for_frame_widget=*/true,
