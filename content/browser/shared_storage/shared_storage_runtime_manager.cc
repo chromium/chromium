@@ -105,14 +105,14 @@ void SharedStorageRuntimeManager::CreateWorkletHost(
           ? worklet_hosts_it->second
           : attached_shared_storage_worklet_hosts_[document_service];
 
-  int worklet_ordinal_id = next_worklet_ordinal_id_++;
+  int worklet_ordinal = next_worklet_ordinal_++;
 
   std::unique_ptr<SharedStorageWorkletHost> worklet_host =
       CreateWorkletHostHelper(
           *document_service, frame_origin, data_origin, data_origin_type,
-          script_source_url, credentials_mode, creation_method,
-          worklet_ordinal_id, origin_trial_features,
-          std::move(worklet_host_receiver), std::move(callback));
+          script_source_url, credentials_mode, creation_method, worklet_ordinal,
+          origin_trial_features, std::move(worklet_host_receiver),
+          std::move(callback));
 
   SharedStorageWorkletHost* raw_worklet_host = worklet_host.get();
 
@@ -184,7 +184,7 @@ SharedStorageRuntimeManager::CreateWorkletHostHelper(
     const GURL& script_source_url,
     network::mojom::CredentialsMode credentials_mode,
     blink::mojom::SharedStorageWorkletCreationMethod creation_method,
-    int worklet_ordinal_id,
+    int worklet_ordinal,
     const std::vector<blink::mojom::OriginTrialFeature>& origin_trial_features,
     mojo::PendingAssociatedReceiver<blink::mojom::SharedStorageWorkletHost>
         worklet_host,
@@ -192,7 +192,7 @@ SharedStorageRuntimeManager::CreateWorkletHostHelper(
         callback) {
   return std::make_unique<SharedStorageWorkletHost>(
       document_service, frame_origin, data_origin, data_origin_type,
-      script_source_url, credentials_mode, creation_method, worklet_ordinal_id,
+      script_source_url, credentials_mode, creation_method, worklet_ordinal,
       origin_trial_features, std::move(worklet_host), std::move(callback));
 }
 

@@ -325,7 +325,7 @@ SharedStorageWorkletHost::SharedStorageWorkletHost(
     const GURL& script_source_url,
     network::mojom::CredentialsMode credentials_mode,
     blink::mojom::SharedStorageWorkletCreationMethod creation_method,
-    int worklet_ordinal_id,
+    int worklet_ordinal,
     const std::vector<blink::mojom::OriginTrialFeature>& origin_trial_features,
     mojo::PendingAssociatedReceiver<blink::mojom::SharedStorageWorkletHost>
         worklet_host,
@@ -358,7 +358,7 @@ SharedStorageWorkletHost::SharedStorageWorkletHost(
       saved_queries_enabled_(base::FeatureList::IsEnabled(
           blink::features::kSharedStorageSelectURLSavedQueries)),
       source_id_(page_->GetMainDocument().GetPageUkmSourceId()),
-      worklet_ordinal_id_(worklet_ordinal_id),
+      worklet_ordinal_(worklet_ordinal),
       creation_time_(base::TimeTicks::Now()) {
   GetContentClient()->browser()->OnSharedStorageWorkletHostCreated(
       &(document_service.render_frame_host()));
@@ -435,7 +435,7 @@ SharedStorageWorkletHost::SharedStorageWorkletHost(
         AccessScope::kWindow, AccessMethod::kAddModule,
         document_service_->main_frame_id(), shared_storage_origin_.Serialize(),
         SharedStorageEventParams::CreateForAddModule(
-            script_source_url, worklet_ordinal_id_, GetWorkletDevToolsToken()));
+            script_source_url, worklet_ordinal_, GetWorkletDevToolsToken()));
   } else {
     std::string data_origin_type_string =
         (data_origin_type ==
@@ -450,7 +450,7 @@ SharedStorageWorkletHost::SharedStorageWorkletHost(
         AccessScope::kWindow, AccessMethod::kCreateWorklet,
         document_service_->main_frame_id(), shared_storage_origin_.Serialize(),
         SharedStorageEventParams::CreateForCreateWorklet(
-            script_source_url, data_origin_type_string, worklet_ordinal_id_,
+            script_source_url, data_origin_type_string, worklet_ordinal_,
             GetWorkletDevToolsToken()));
   }
 
@@ -826,7 +826,7 @@ void SharedStorageWorkletHost::SelectURL(
           name, operation_id, keep_alive_after_operation,
           private_aggregation_config, serialized_data,
           std::move(converted_urls), resolve_to_config,
-          base::UTF16ToUTF8(saved_query_name), urn_uuid, worklet_ordinal_id_,
+          base::UTF16ToUTF8(saved_query_name), urn_uuid,
           GetWorkletDevToolsToken()));
 
   if (saved_queries_enabled_ && !saved_query_name.empty()) {
@@ -986,7 +986,7 @@ void SharedStorageWorkletHost::Run(
       document_service_->main_frame_id(), shared_storage_origin_.Serialize(),
       SharedStorageEventParams::CreateForRun(
           name, operation_id, keep_alive_after_operation,
-          private_aggregation_config, serialized_data, worklet_ordinal_id_,
+          private_aggregation_config, serialized_data,
           GetWorkletDevToolsToken()));
 
   GetAndConnectToSharedStorageWorkletService()->RunOperation(
@@ -1035,7 +1035,7 @@ void SharedStorageWorkletHost::SharedStorageUpdate(
   shared_storage_runtime_manager_->lock_manager().SharedStorageUpdate(
       std::move(method_with_options), shared_storage_origin_,
       AccessScope::kSharedStorageWorklet, GetMainFrameIdIfAvailable(),
-      worklet_ordinal_id_, GetWorkletDevToolsToken(), std::move(callback));
+      GetWorkletDevToolsToken(), std::move(callback));
 }
 
 void SharedStorageWorkletHost::SharedStorageBatchUpdate(
@@ -1053,7 +1053,7 @@ void SharedStorageWorkletHost::SharedStorageBatchUpdate(
   shared_storage_runtime_manager_->lock_manager().SharedStorageBatchUpdate(
       std::move(methods_with_options), with_lock, shared_storage_origin_,
       AccessScope::kSharedStorageWorklet, GetMainFrameIdIfAvailable(),
-      worklet_ordinal_id_, GetWorkletDevToolsToken(), std::move(callback));
+      GetWorkletDevToolsToken(), std::move(callback));
 }
 
 void SharedStorageWorkletHost::SharedStorageGet(
@@ -1074,7 +1074,6 @@ void SharedStorageWorkletHost::SharedStorageGet(
         AccessScope::kSharedStorageWorklet, AccessMethod::kGet,
         document_service_->main_frame_id(), shared_storage_origin_.Serialize(),
         SharedStorageEventParams::CreateForGet(base::UTF16ToUTF8(key),
-                                               worklet_ordinal_id_,
                                                GetWorkletDevToolsToken()));
   }
 
@@ -1126,8 +1125,8 @@ void SharedStorageWorkletHost::SharedStorageKeys(
     shared_storage_runtime_manager_->NotifySharedStorageAccessed(
         AccessScope::kSharedStorageWorklet, AccessMethod::kKeys,
         document_service_->main_frame_id(), shared_storage_origin_.Serialize(),
-        SharedStorageEventParams::CreateWithWorkletId(
-            worklet_ordinal_id_, GetWorkletDevToolsToken()));
+        SharedStorageEventParams::CreateWithWorkletToken(
+            GetWorkletDevToolsToken()));
   }
 
   shared_storage_manager_->Keys(shared_storage_origin_,
@@ -1155,8 +1154,8 @@ void SharedStorageWorkletHost::SharedStorageEntries(
         AccessScope::kSharedStorageWorklet,
         values_only ? AccessMethod::kValues : AccessMethod::kEntries,
         document_service_->main_frame_id(), shared_storage_origin_.Serialize(),
-        SharedStorageEventParams::CreateWithWorkletId(
-            worklet_ordinal_id_, GetWorkletDevToolsToken()));
+        SharedStorageEventParams::CreateWithWorkletToken(
+            GetWorkletDevToolsToken()));
   }
 
   shared_storage_manager_->Entries(
@@ -1180,8 +1179,8 @@ void SharedStorageWorkletHost::SharedStorageLength(
     shared_storage_runtime_manager_->NotifySharedStorageAccessed(
         AccessScope::kSharedStorageWorklet, AccessMethod::kLength,
         document_service_->main_frame_id(), shared_storage_origin_.Serialize(),
-        SharedStorageEventParams::CreateWithWorkletId(
-            worklet_ordinal_id_, GetWorkletDevToolsToken()));
+        SharedStorageEventParams::CreateWithWorkletToken(
+            GetWorkletDevToolsToken()));
   }
 
   auto operation_completed_callback = base::BindOnce(
@@ -1223,8 +1222,8 @@ void SharedStorageWorkletHost::SharedStorageRemainingBudget(
     shared_storage_runtime_manager_->NotifySharedStorageAccessed(
         AccessScope::kSharedStorageWorklet, AccessMethod::kRemainingBudget,
         document_service_->main_frame_id(), shared_storage_origin_.Serialize(),
-        SharedStorageEventParams::CreateWithWorkletId(
-            worklet_ordinal_id_, GetWorkletDevToolsToken()));
+        SharedStorageEventParams::CreateWithWorkletToken(
+            GetWorkletDevToolsToken()));
   }
 
   auto operation_completed_callback = base::BindOnce(

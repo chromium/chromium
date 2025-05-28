@@ -56,7 +56,6 @@ class CONTENT_EXPORT SharedStorageLockManager
       const url::Origin& shared_storage_origin,
       AccessScope scope,
       GlobalRenderFrameHostId main_frame_id,
-      std::optional<int> worklet_ordinal_id,
       const base::UnguessableToken& worklet_devtools_token,
       SharedStorageUpdateCallback callback);
 
@@ -71,7 +70,6 @@ class CONTENT_EXPORT SharedStorageLockManager
       const url::Origin& shared_storage_origin,
       AccessScope scope,
       GlobalRenderFrameHostId main_frame_id,
-      std::optional<int> worklet_ordinal_id,
       const base::UnguessableToken& worklet_devtools_token,
       SharedStorageUpdateCallback callback);
 
@@ -155,7 +153,6 @@ class CONTENT_EXPORT SharedStorageLockManager
       const url::Origin& shared_storage_origin,
       AccessScope scope,
       GlobalRenderFrameHostId main_frame_id,
-      std::optional<int> worklet_ordinal_id,
       const base::UnguessableToken& worklet_devtools_token,
       SharedStorageUpdateCallback callback,
       std::optional<int> legacy_batch_update_id);
@@ -165,7 +162,6 @@ class CONTENT_EXPORT SharedStorageLockManager
       url::Origin shared_storage_origin,
       AccessScope scope,
       GlobalRenderFrameHostId main_frame_id,
-      std::optional<int> worklet_ordinal_id,
       const base::UnguessableToken& worklet_devtools_token,
       SharedStorageUpdateCallback callback,
       std::optional<std::string> with_lock,
@@ -179,7 +175,6 @@ class CONTENT_EXPORT SharedStorageLockManager
       url::Origin shared_storage_origin,
       AccessScope scope,
       GlobalRenderFrameHostId main_frame_id,
-      std::optional<int> worklet_ordinal_id,
       const base::UnguessableToken& worklet_devtools_token,
       SharedStorageUpdateCallback callback,
       std::optional<std::string> with_lock,
@@ -199,7 +194,6 @@ class CONTENT_EXPORT SharedStorageLockManager
       const url::Origin& shared_storage_origin,
       AccessScope scope,
       GlobalRenderFrameHostId main_frame_id,
-      std::optional<int> worklet_ordinal_id,
       const base::UnguessableToken& worklet_devtools_token,
       std::optional<std::string> with_lock,
       std::optional<int> batch_update_id);

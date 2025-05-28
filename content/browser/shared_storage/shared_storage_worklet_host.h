@@ -87,7 +87,7 @@ class CONTENT_EXPORT SharedStorageWorkletHost
       const GURL& script_source_url,
       network::mojom::CredentialsMode credentials_mode,
       blink::mojom::SharedStorageWorkletCreationMethod creation_method,
-      int worklet_ordinal_id,
+      int worklet_ordinal,
       const std::vector<blink::mojom::OriginTrialFeature>&
           origin_trial_features,
       mojo::PendingAssociatedReceiver<blink::mojom::SharedStorageWorkletHost>
@@ -388,10 +388,9 @@ class CONTENT_EXPORT SharedStorageWorkletHost
   // Source ID of the page that spawned the worklet.
   ukm::SourceId source_id_;
 
-  // A monotonically increasing ID assigned to each SharedStorageWorkletHost.
-  // TODO(crbug.com/401011862): Use this ID in DevTools reporting for Shared
-  // Storage.
-  int worklet_ordinal_id_ = 0;
+  // A monotonically increasing ordinal assigned to each
+  // SharedStorageWorkletHost.
+  int worklet_ordinal_ = 0;
 
   // A monotonically increasing ID assigned to each run or selectURL call.
   // TODO(crbug.com/401011862): Use this ID in DevTools reporting for Shared

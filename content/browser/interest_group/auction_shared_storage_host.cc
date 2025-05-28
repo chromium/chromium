@@ -75,7 +75,6 @@ void AuctionSharedStorageHost::SharedStorageUpdate(
           std::move(method_with_options),
           receiver_set_.current_context().worklet_origin,
           AccessScope::kProtectedAudienceWorklet, main_frame_id,
-          /*worklet_ordinal_id=*/std::nullopt,
           /*worklet_devtools_token=*/base::UnguessableToken::Null(),
           base::DoNothing());
 
@@ -101,7 +100,6 @@ void AuctionSharedStorageHost::SharedStorageBatchUpdate(
           std::move(methods_with_options), with_lock,
           receiver_set_.current_context().worklet_origin,
           AccessScope::kProtectedAudienceWorklet, main_frame_id,
-          /*worklet_ordinal_id=*/std::nullopt,
           /*worklet_devtools_token=*/base::UnguessableToken::Null(),
           base::DoNothing());
 

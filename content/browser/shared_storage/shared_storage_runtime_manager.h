@@ -158,7 +158,7 @@ class CONTENT_EXPORT SharedStorageRuntimeManager {
       const GURL& script_source_url,
       network::mojom::CredentialsMode credentials_mode,
       blink::mojom::SharedStorageWorkletCreationMethod creation_method,
-      int worklet_ordinal_id,
+      int worklet_ordinal,
       const std::vector<blink::mojom::OriginTrialFeature>&
           origin_trial_features,
       mojo::PendingAssociatedReceiver<blink::mojom::SharedStorageWorkletHost>
@@ -189,7 +189,7 @@ class CONTENT_EXPORT SharedStorageRuntimeManager {
   // A monotonically increasing number assigned to each
   // SharedStorageWorkletHost. This ordinal is assigned during construction of
   // the SharedStorageWorkletHost.
-  int next_worklet_ordinal_id_ = 0;
+  int next_worklet_ordinal_ = 0;
 };
 
 }  // namespace content

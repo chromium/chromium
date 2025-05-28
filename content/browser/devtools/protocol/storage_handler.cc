@@ -1577,8 +1577,8 @@ void StorageHandler::OnSharedStorageAccessed(
   if (params.ignore_if_present) {
     protocol_params->SetIgnoreIfPresent(*params.ignore_if_present);
   }
-  if (params.worklet_ordinal_id) {
-    protocol_params->SetWorkletOrdinal(*params.worklet_ordinal_id);
+  if (params.worklet_ordinal) {
+    protocol_params->SetWorkletOrdinal(*params.worklet_ordinal);
   }
   if (!params.worklet_devtools_token.is_empty()) {
     protocol_params->SetWorkletTargetId(

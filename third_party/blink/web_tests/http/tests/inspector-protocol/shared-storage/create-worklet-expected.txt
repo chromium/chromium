@@ -50,7 +50,6 @@ Events: [
                 filteringIdMaxBytes : 1
             }
             serializedData : <string>
-            workletOrdinal : <number>
             workletTargetId : <string>
         }
         scope : window
@@ -65,7 +64,6 @@ Events: [
             ignoreIfPresent : false
             key : key-set-from-worklet
             value : value
-            workletOrdinal : <number>
             workletTargetId : <string>
         }
         scope : sharedStorageWorklet
