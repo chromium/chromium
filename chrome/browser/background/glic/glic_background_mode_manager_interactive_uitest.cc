@@ -246,12 +246,11 @@ IN_PROC_BROWSER_TEST_F(GlicBackgroundModeManagerUiTest, DeleteEligibleProfile) {
 
   // Create a second browser with a different profile that didn't complete Glic
   // fre yet.
+  glic_test_environment().SetFreStatusForNewProfiles(std::nullopt);
   ProfileManager* const profile_manager = g_browser_process->profile_manager();
   Profile& second_profile = profiles::testing::CreateProfileSync(
       profile_manager, profile_manager->GenerateNextProfileDirectoryPath());
   Browser* const second_browser = CreateBrowser(&second_profile);
-  SigninWithPrimaryAccount(&second_profile);
-  SetModelExecutionCapability(&second_profile, true);
 
   // Delete the first profile and the glic launcher should not be in the
   // background since there are no profiles that are eligible to use glic.

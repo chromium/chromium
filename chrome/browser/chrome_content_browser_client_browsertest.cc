@@ -501,13 +501,6 @@ class PrefersColorSchemeTest
       : theme_client_(&test_theme_),
         color_provider_source_(GetIsDarkColorProviderColorMode()) {
     test_theme_.SetDarkMode(GetIsDarkNativeTheme());
-#if BUILDFLAG(ENABLE_GLIC)
-    feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kGlic, features::kTabstripComboButton,
-                              features::kGlicRollout},
-        /*disabled_features=*/{features::kGlicWarming,
-                               features::kGlicFreWarming});
-#endif
   }
   ~PrefersColorSchemeTest() override {
     CHECK_EQ(&theme_client_, SetBrowserClientForTesting(original_client_));
@@ -554,8 +547,6 @@ class PrefersColorSchemeTest
     command_line->AppendSwitchASCII(
         ::switches::kGlicGuestURL,
         embedded_test_server()->GetURL("/glic/test_client/index.html").spec());
-    glic_test_environment_ =
-        std::make_unique<glic::GlicTestEnvironment>(browser()->profile());
 #endif
 
     guest_view_manager_ =
@@ -570,9 +561,6 @@ class PrefersColorSchemeTest
   }
 
   void TearDownOnMainThread() override {
-#if BUILDFLAG(ENABLE_GLIC)
-    glic_test_environment_.reset();
-#endif
     guest_view_manager_ = nullptr;
     InProcessBrowserTest::TearDownOnMainThread();
   }
@@ -640,11 +628,10 @@ class PrefersColorSchemeTest
     ui::ColorProviderKey key_;
   };
 
-  base::test::ScopedFeatureList feature_list_;
   ChromeContentBrowserClientWithWebTheme theme_client_;
   MockColorProviderSource color_provider_source_;
 #if BUILDFLAG(ENABLE_GLIC)
-  std::unique_ptr<glic::GlicTestEnvironment> glic_test_environment_;
+  glic::GlicTestEnvironment glic_test_environment_;
 #endif
   guest_view::TestGuestViewManagerFactory guest_view_manager_factory_;
   raw_ptr<guest_view::TestGuestViewManager> guest_view_manager_ = nullptr;

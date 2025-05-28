@@ -8,6 +8,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/glic/glic_keyed_service.h"
 #include "chrome/browser/glic/glic_pref_names.h"
+#include "chrome/browser/glic/test_support/glic_test_environment.h"
 #include "chrome/browser/glic/test_support/non_interactive_glic_test.h"
 #include "chrome/browser/lifetime/application_lifetime_desktop.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
@@ -24,19 +25,19 @@ namespace {
 
 class GlicFreControllerBrowserTest : public NonInteractiveGlicTest {
  public:
-  GlicFreControllerBrowserTest() = default;
+  GlicFreControllerBrowserTest()
+      : NonInteractiveGlicTest(
+            {},
+            GlicTestEnvironmentConfig{.fre_status =
+                                          prefs::FreStatus::kNotStarted}) {}
   ~GlicFreControllerBrowserTest() override = default;
 
   void SetUpOnMainThread() override {
-    glic::test::InteractiveGlicTest::SetUpOnMainThread();
-    glic_test_environment().SetFRECompletion(prefs::FreStatus::kNotStarted);
+    NonInteractiveGlicTest::SetUpOnMainThread();
   }
 
   GlicFreController* glic_fre_controller() {
-    return glic_test_environment()
-        .GetService()
-        ->window_controller()
-        .fre_controller();
+    return glic_service()->window_controller().fre_controller();
   }
 
   tabs::TabInterface* GetTabInterfaceForActiveWebContents(Browser* browser) {
@@ -59,7 +60,7 @@ class GlicFreControllerBrowserTest : public NonInteractiveGlicTest {
 
   void WaitForGlicPanelShow() {
     ASSERT_TRUE(base::test::RunUntil([&]() {
-      return glic_test_environment().GetService()->IsWindowShowing();
+      return glic_service()->IsWindowShowing();
     })) << "Glic panel should have been shown";
   }
 
@@ -138,7 +139,7 @@ IN_PROC_BROWSER_TEST_F(GlicFreControllerBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(GlicFreControllerBrowserTest,
                        ShowFreDialogOnFailedCookieSync) {
-  glic_test_environment().SetResultForFutureCookieSyncInFre(false);
+  glic_test_service().SetResultForFutureCookieSyncInFre(false);
   // Open the FRE dialog in a tab.
   chrome::AddTabAt(browser(), GURL("about:blank"), -1, true);
   browser()->tab_strip_model()->ActivateTabAt(0);

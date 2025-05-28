@@ -12,6 +12,7 @@
 #include "chrome/browser/glic/glic_keyed_service_factory.h"
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
+#include "chrome/browser/glic/test_support/glic_test_environment.h"
 #include "chrome/browser/glic/test_support/glic_test_util.h"
 #include "chrome/browser/glic/test_support/interactive_glic_test.h"
 #include "chrome/browser/glic/widget/glic_window_controller.h"
@@ -111,13 +112,7 @@ class GlicAppStateObserver : public Host::Observer {
 
 class GlicPolicyTest : public PolicyTest {
  public:
-  GlicPolicyTest() {
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kGlic, features::kTabstripComboButton,
-                              features::kGlicRollout},
-        /*disabled_features=*/{features::kGlicWarming,
-                               features::kGlicFreWarming});
-  }
+  GlicPolicyTest() = default;
   GlicPolicyTest(const GlicPolicyTest&) = delete;
   GlicPolicyTest& operator=(const GlicPolicyTest&) = delete;
 
@@ -137,12 +132,15 @@ class GlicPolicyTest : public PolicyTest {
         glic::prefs::kGlicLauncherEnabled, true);
 
     profile_1_ = browser()->profile();
-    glic_test_environment_ =
-        std::make_unique<glic::GlicTestEnvironment>(browser()->profile());
 
     // "policy_for_profile_1_" is provider_, setup in PolicyTest.
 
     {
+      // The policy configuration here causes signin::WaitForRefreshTokensLoaded
+      // to hang when run from GlicTestEnvironmentFactory, so disable it here
+      // and run ForceSigninAndModelExecutionCapability() directly afterward.
+
+      glic_test_environment_.SetForceSigninAndModelExecutionCapability(false);
       policy_for_profile_2_.SetDefaultReturns(
           /*is_initialization_complete_return=*/true,
           /*is_first_policy_load_complete_return=*/true);
@@ -167,7 +165,6 @@ class GlicPolicyTest : public PolicyTest {
     }
     profile_1_ = nullptr;
     profile_2_ = nullptr;
-    glic_test_environment_.reset();
   }
 
   GlicButton* GetGlicButtonForBrowser(Browser* browser) {
@@ -218,10 +215,9 @@ class GlicPolicyTest : public PolicyTest {
       static_cast<int>(SettingsPolicyState::kDisabled);
 
  private:
+  GlicTestEnvironment glic_test_environment_;
   testing::NiceMock<policy::MockConfigurationPolicyProvider>
       policy_for_profile_2_;
-
-  std::unique_ptr<glic::GlicTestEnvironment> glic_test_environment_;
 
   base::test::ScopedFeatureList scoped_feature_list_;
 };

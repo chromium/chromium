@@ -10,7 +10,6 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/contextual_cueing/contextual_cueing_features.h"
-#include "chrome/browser/glic/test_support/glic_test_environment.h"
 #include "chrome/browser/optimization_guide/browser_test_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -45,6 +44,7 @@
 #include "chrome/browser/glic/glic_keyed_service_factory.h"
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/glic_profile_manager.h"
+#include "chrome/browser/glic/test_support/glic_test_environment.h"
 #include "chrome/browser/glic/test_support/glic_test_util.h"
 #include "chrome/browser/glic/widget/glic_window_controller.h"
 #endif  // BUILDFLAG(ENABLE_GLIC)
@@ -56,7 +56,6 @@ class TabStripActionContainerBrowserTest : public InProcessBrowserTest {
         {
             features::kTabOrganization,
 #if BUILDFLAG(ENABLE_GLIC)
-            features::kGlic,
             features::kGlicRollout,
             features::kGlicFreWarming,
 #endif
@@ -93,25 +92,15 @@ class TabStripActionContainerBrowserTest : public InProcessBrowserTest {
 
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
-
-    glic_test_environment_ =
-        std::make_unique<glic::GlicTestEnvironment>(browser()->profile());
   }
 
   void TearDownOnMainThread() override {
     InProcessBrowserTest::TearDownOnMainThread();
-    glic_test_environment_.reset();
   }
 #endif
 
   void SetUpInProcessBrowserTestFixture() override {
     InProcessBrowserTest::SetUpInProcessBrowserTestFixture();
-    create_services_subscription_ =
-        BrowserContextDependencyManager::GetInstance()
-            ->RegisterCreateServicesCallbackForTesting(
-                base::BindRepeating(&TabStripActionContainerBrowserTest::
-                                        OnWillCreateBrowserContextServices,
-                                    base::Unretained(this)));
   }
 
   TabStripModel* tab_strip_model() { return browser()->tab_strip_model(); }
@@ -202,21 +191,13 @@ class TabStripActionContainerBrowserTest : public InProcessBrowserTest {
     }
   }
 
- private:
-  void OnWillCreateBrowserContextServices(content::BrowserContext* context) {
-    IdentityTestEnvironmentProfileAdaptor::
-        SetIdentityTestEnvironmentFactoriesOnBrowserContext(context);
-  }
-
-  base::test::ScopedFeatureList feature_list_;
-  std::unique_ptr<IdentityTestEnvironmentProfileAdaptor>
-      identity_test_environment_adaptor_;
-  base::CallbackListSubscription create_services_subscription_;
+ protected:
 #if BUILDFLAG(ENABLE_GLIC)
-  std::unique_ptr<glic::GlicTestEnvironment> glic_test_environment_;
+  glic::GlicTestEnvironment glic_test_environment_;
   net::EmbeddedTestServer fre_server_;
   GURL fre_url_;
 #endif
+  base::test::ScopedFeatureList feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(TabStripActionContainerBrowserTest, ShowsDeclutterChip) {

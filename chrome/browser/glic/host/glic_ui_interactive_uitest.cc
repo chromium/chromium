@@ -14,6 +14,8 @@
 #include "chrome/browser/glic/test_support/interactive_glic_test.h"
 #include "chrome/browser/glic/test_support/interactive_test_util.h"
 #include "chrome/browser/glic/widget/glic_window_controller.h"
+#include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/profiles/profile_test_util.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/common/chrome_features.h"
 #include "content/public/test/browser_test.h"
@@ -544,6 +546,48 @@ IN_PROC_BROWSER_TEST_F(GlicUiFullLoadingSequenceTest, EscapeKeyDismisses) {
       OpenGlicWindow(GlicWindowMode::kAttached, GlicInstrumentMode::kHostOnly),
       WaitForState(kGlicUiStateHistory, IsCurrently(WebUiState::kError)),
       CheckEscapeKeyDismisses(kErrorPanel));
+}
+
+class GlicWithMultipleProfilesTest : public GlicUiInteractiveUiTestBase {
+ public:
+  GlicWithMultipleProfilesTest() : GlicUiInteractiveUiTestBase({}) {}
+  ~GlicWithMultipleProfilesTest() override = default;
+
+  Browser* CreateBrowserWithNewProfile() {
+    ProfileManager* profile_manager = g_browser_process->profile_manager();
+    base::FilePath new_path =
+        profile_manager->GenerateNextProfileDirectoryPath();
+    Profile& new_profile =
+        profiles::testing::CreateProfileSync(profile_manager, new_path);
+
+    return CreateBrowser(&new_profile);
+  }
+};
+
+// Creates two browsers with different profiles. Opens glic in each and verifies
+// it loads, doesn't crash, and hides the other glic window.
+IN_PROC_BROWSER_TEST_F(GlicWithMultipleProfilesTest, OpenGlicInEachProfile) {
+  Browser* first_browser = browser();
+  Browser* second_browser = CreateBrowserWithNewProfile();
+  SetActiveBrowser(second_browser);
+
+  RunTestSequence(
+      // Warning!: `kAttached` really just clicks the glic button, the window
+      // will open in detached mode because `features::kGlicDetached` is
+      // enabled. We do this because InteractiveGlicTestT::ToggleGlicWindow
+      // doesn't work right in detached mode with multiple profiles.
+      // TODO(b/418284946): Fix ToggleGlicWindow.
+      OpenGlicWindow(GlicWindowMode::kAttached, GlicInstrumentMode::kHostOnly));
+
+  SetActiveBrowser(first_browser);
+  RunTestSequence(
+      CheckControllerShowing(false),
+      OpenGlicWindow(GlicWindowMode::kAttached, GlicInstrumentMode::kHostOnly));
+
+  SetActiveBrowser(second_browser);
+  RunTestSequence(
+      CheckControllerShowing(false),
+      OpenGlicWindow(GlicWindowMode::kAttached, GlicInstrumentMode::kHostOnly));
 }
 
 }  // namespace glic

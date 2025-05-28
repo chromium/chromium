@@ -101,13 +101,13 @@ class GlicProfileManagerUiTest
   void SetUpOnMainThread() override {
     test::InteractiveGlicTest::SetUpOnMainThread();
     auto* profile_manager = g_browser_process->profile_manager();
-    auto new_path = profile_manager->GenerateNextProfileDirectoryPath();
-    profiles::testing::CreateProfileSync(profile_manager, new_path);
-    auto* profile = profile_manager->GetProfile(new_path);
-    // Build a test environment for the new profile to ensure that it can work
-    // with glic.
-    test_env_for_second_profile_ =
-        std::make_unique<GlicTestEnvironment>(profile);
+    second_profile_path_ = profile_manager->GenerateNextProfileDirectoryPath();
+    profiles::testing::CreateProfileSync(profile_manager, second_profile_path_);
+  }
+
+  Profile* GetSecondProfile() {
+    return g_browser_process->profile_manager()->GetProfile(
+        second_profile_path_);
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -115,7 +115,6 @@ class GlicProfileManagerUiTest
   }
 
   void TearDownOnMainThread() override {
-    test_env_for_second_profile_.reset();
     test::InteractiveGlicTest::TearDownOnMainThread();
   }
 
@@ -124,20 +123,17 @@ class GlicProfileManagerUiTest
   bool ShouldWarmFRE() const { return std::get<1>(GetParam()); }
 
   GlicKeyedService* GetService(bool primary) {
-    Profile* profile =
-        primary ? browser()->profile()
-                : test_env_for_second_profile_->GetService()->profile();
-    return GlicKeyedServiceFactory::GetGlicKeyedService(profile);
+    return GlicKeyedServiceFactory::GetGlicKeyedService(
+        primary ? browser()->profile() : GetSecondProfile());
   }
 
   auto CreateAndWarmGlic(bool primary_profile) {
     return Do([primary_profile, this]() {
       if (ShouldWarmFRE()) {
         if (primary_profile) {
-          glic_test_environment().SetFRECompletion(
-              prefs::FreStatus::kNotStarted);
+          glic_test_service().SetFRECompletion(prefs::FreStatus::kNotStarted);
         } else {
-          test_env_for_second_profile_->SetFRECompletion(
+          GetTestEnvForSecondProfile().SetFRECompletion(
               prefs::FreStatus::kNotStarted);
         }
         GetService(primary_profile)->TryPreloadFre();
@@ -205,7 +201,7 @@ class GlicProfileManagerUiTest
 
   auto SetNeedsFRE() {
     return Do([this]() {
-      glic_test_environment().SetFRECompletion(prefs::FreStatus::kNotStarted);
+      glic_test_service().SetFRECompletion(prefs::FreStatus::kNotStarted);
     });
   }
 
@@ -223,9 +219,12 @@ class GlicProfileManagerUiTest
   GlicFreController* GetFreController(bool primary_profile) {
     return GetService(true)->window_controller().fre_controller();
   }
+  GlicTestEnvironmentService& GetTestEnvForSecondProfile() {
+    return *glic::GlicTestEnvironment::GetService(GetSecondProfile());
+  }
 
  private:
-  std::unique_ptr<GlicTestEnvironment> test_env_for_second_profile_;
+  base::FilePath second_profile_path_;
   net::EmbeddedTestServer fre_server_;
   raw_ptr<content::WebContents> web_client_contents_ = nullptr;
   GURL fre_url_;

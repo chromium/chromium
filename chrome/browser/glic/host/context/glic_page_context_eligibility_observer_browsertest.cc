@@ -8,6 +8,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/glic/host/context/glic_page_context_eligibility_observer.h"
+#include "chrome/browser/glic/test_support/glic_test_environment.h"
 #include "chrome/browser/optimization_guide/mock_optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
@@ -81,15 +82,12 @@ class GlicPageContextEligibilityObserverBrowserTest
   virtual void InitializeFeatureList() {
     scoped_feature_list_.InitWithFeaturesAndParameters(
         /*enabled_features=*/
-        {{features::kGlic, {}},
-         {features::kTabstripComboButton, {}},
-         {features::kGlicRollout, {}},
-         {
-             features::kGlicPageContextEligibility,
-             {
-                 {"glic-page-context-eligibility-allow-no-metadata", "true"},
-             },
-         }},
+        {{
+            features::kGlicPageContextEligibility,
+            {
+                {"glic-page-context-eligibility-allow-no-metadata", "true"},
+            },
+        }},
         /*disabled_features=*/{});
   }
 
@@ -179,6 +177,7 @@ class GlicPageContextEligibilityObserverBrowserTest
   }
 
  protected:
+  GlicTestEnvironment glic_test_environment_;
   base::test::ScopedFeatureList scoped_feature_list_;
 
  private:
@@ -280,15 +279,12 @@ class GlicPageContextEligibilityMetadataAsFalseBrowserTest
   void InitializeFeatureList() override {
     scoped_feature_list_.InitWithFeaturesAndParameters(
         /*enabled_features=*/
-        {{features::kGlic, {}},
-         {features::kTabstripComboButton, {}},
-         {features::kGlicRollout, {}},
-         {
-             features::kGlicPageContextEligibility,
-             {
-                 {"glic-page-context-eligibility-allow-no-metadata", "false"},
-             },
-         }},
+        {{
+            features::kGlicPageContextEligibility,
+            {
+                {"glic-page-context-eligibility-allow-no-metadata", "false"},
+            },
+        }},
         /*disabled_features=*/{});
   }
 };

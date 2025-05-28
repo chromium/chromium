@@ -4,17 +4,26 @@
 
 #include "chrome/browser/glic/test_support/glic_test_environment.h"
 
+#include "base/no_destructor.h"
 #include "chrome/browser/glic/fre/glic_fre_controller.h"
+#include "chrome/browser/glic/glic_enabling.h"
 #include "chrome/browser/glic/glic_keyed_service.h"
 #include "chrome/browser/glic/glic_keyed_service_factory.h"
-#include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/host/auth_controller.h"
 #include "chrome/browser/glic/host/glic_cookie_synchronizer.h"
 #include "chrome/browser/glic/test_support/glic_test_util.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
+#include "chrome/browser/ui/browser.h"
+#include "components/keyed_service/content/browser_context_dependency_manager.h"
 
 namespace glic {
 namespace internal {
+
+GlicTestEnvironmentConfig& GetConfig() {
+  static GlicTestEnvironmentConfig config;
+  return config;
+}
 
 // A fake GlicCookieSynchronizer.
 class TestCookieSynchronizer : public glic::GlicCookieSynchronizer {
@@ -22,7 +31,7 @@ class TestCookieSynchronizer : public glic::GlicCookieSynchronizer {
   static std::pair<TestCookieSynchronizer*, TestCookieSynchronizer*>
   InjectForProfile(Profile* profile) {
     GlicKeyedService* service =
-        GlicKeyedServiceFactory::GetGlicKeyedService(profile);
+        GlicKeyedServiceFactory::GetGlicKeyedService(profile, true);
     auto cookie_synchronizer = std::make_unique<TestCookieSynchronizer>(
         profile, IdentityManagerFactory::GetForProfile(profile),
         /*for_fre=*/false);
@@ -62,9 +71,92 @@ class TestCookieSynchronizer : public glic::GlicCookieSynchronizer {
   base::WeakPtrFactory<TestCookieSynchronizer> weak_ptr_factory_{this};
 };
 
+class GlicTestEnvironmentServiceFactory : public ProfileKeyedServiceFactory {
+ public:
+  static GlicTestEnvironmentService* GetForProfile(Profile* profile,
+                                                   bool create) {
+    return static_cast<GlicTestEnvironmentService*>(
+        GetInstance()->GetServiceForBrowserContext(profile, create));
+  }
+  static GlicTestEnvironmentServiceFactory* GetInstance() {
+    static base::NoDestructor<GlicTestEnvironmentServiceFactory> instance;
+    return instance.get();
+  }
+
+  // BrowserContextKeyedServiceFactory:
+  std::unique_ptr<KeyedService> BuildServiceInstanceForBrowserContext(
+      content::BrowserContext* context) const override {
+    return std::make_unique<GlicTestEnvironmentService>(
+        Profile::FromBrowserContext(context));
+  }
+
+ private:
+  friend class base::NoDestructor<GlicTestEnvironmentServiceFactory>;
+
+  GlicTestEnvironmentServiceFactory()
+      : ProfileKeyedServiceFactory(
+            "GlicTestEnvironmentService",
+            ProfileSelections::BuildForRegularProfile()) {
+    // It would be sensible to depend on GlicKeyedServiceFactory, but that ends
+    // up creating some service factories too early.
+  }
+  ~GlicTestEnvironmentServiceFactory() override = default;
+};
+
 }  // namespace internal
 
-GlicTestEnvironment::GlicTestEnvironment(Profile* profile) : profile_(profile) {
+GlicTestEnvironment::GlicTestEnvironment(
+    const GlicTestEnvironmentConfig& config,
+    std::vector<base::test::FeatureRef> enabled_features,
+    std::vector<base::test::FeatureRef> disabled_features) {
+  internal::GetConfig() = config;
+
+  scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
+
+  // The service factory needs to be created before any services are created.
+  internal::GlicTestEnvironmentServiceFactory::GetInstance();
+  create_services_subscription_ =
+      BrowserContextDependencyManager::GetInstance()
+          ->RegisterCreateServicesCallbackForTesting(base::BindRepeating(
+              &GlicTestEnvironment::OnWillCreateBrowserContextKeyedServices,
+              base::Unretained(this)));
+}
+
+GlicTestEnvironment::~GlicTestEnvironment() = default;
+
+void GlicTestEnvironment::SetForceSigninAndModelExecutionCapability(
+    bool force) {
+  internal::GetConfig().force_signin_and_model_execution_capability = force;
+}
+
+void GlicTestEnvironment::SetFreStatusForNewProfiles(
+    std::optional<prefs::FreStatus> fre_status) {
+  internal::GetConfig().fre_status = fre_status;
+}
+
+GlicTestEnvironmentService* GlicTestEnvironment::GetService(Profile* profile,
+                                                            bool create) {
+  return internal::GlicTestEnvironmentServiceFactory::GetForProfile(profile,
+                                                                    create);
+}
+
+void GlicTestEnvironment::OnWillCreateBrowserContextKeyedServices(
+    content::BrowserContext* context) {
+  Profile* profile = Profile::FromBrowserContext(context);
+  if (!profile || !GlicEnabling::IsProfileEligible(profile)) {
+    LOG(WARNING) << "Not creating GlicTestEnvironmentService for "
+                    "ineligible profile.";
+    return;
+  }
+  if (internal::GetConfig().force_signin_and_model_execution_capability) {
+    IdentityTestEnvironmentProfileAdaptor::
+        SetIdentityTestEnvironmentFactoriesOnBrowserContext(context);
+  }
+  GetService(profile, true);
+}
+
+GlicTestEnvironmentService::GlicTestEnvironmentService(Profile* profile)
+    : profile_(profile) {
   std::pair<internal::TestCookieSynchronizer*,
             internal::TestCookieSynchronizer*>
       cookie_synchronizers =
@@ -72,24 +164,32 @@ GlicTestEnvironment::GlicTestEnvironment(Profile* profile) : profile_(profile) {
 
   cookie_synchronizer_ = cookie_synchronizers.first->GetWeakPtr();
   fre_cookie_synchronizer_ = cookie_synchronizers.second->GetWeakPtr();
-  ForceSigninAndModelExecutionCapability(profile);
+  const GlicTestEnvironmentConfig& config = internal::GetConfig();
+  if (config.fre_status) {
+    SetFRECompletion(*config.fre_status);
+  }
+  if (config.force_signin_and_model_execution_capability) {
+    SigninWithPrimaryAccount(profile);
+    SetModelExecutionCapability(profile, true);
+  }
 }
 
-GlicTestEnvironment::~GlicTestEnvironment() = default;
+GlicTestEnvironmentService::~GlicTestEnvironmentService() = default;
 
-GlicKeyedService* GlicTestEnvironment::GetService() {
+GlicKeyedService* GlicTestEnvironmentService::GetService() {
   return GlicKeyedServiceFactory::GetGlicKeyedService(profile_);
 }
 
-void GlicTestEnvironment::SetResultForFutureCookieSync(bool result) {
+void GlicTestEnvironmentService::SetResultForFutureCookieSync(bool result) {
   cookie_synchronizer_->set_copy_cookies_result(result);
 }
 
-void GlicTestEnvironment::SetResultForFutureCookieSyncInFre(bool result) {
+void GlicTestEnvironmentService::SetResultForFutureCookieSyncInFre(
+    bool result) {
   fre_cookie_synchronizer_->set_copy_cookies_result(result);
 }
 
-void GlicTestEnvironment::SetFRECompletion(prefs::FreStatus fre_status) {
+void GlicTestEnvironmentService::SetFRECompletion(prefs::FreStatus fre_status) {
   ::glic::SetFRECompletion(profile_, fre_status);
 }
 
