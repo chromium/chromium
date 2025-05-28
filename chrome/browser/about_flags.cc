@@ -598,13 +598,19 @@ const FeatureEntry::Choice KWebXrHandAnonymizationChoices[] = {
 #if BUILDFLAG(IS_ANDROID)
 const FeatureEntry::FeatureParam kCCTAdaptiveButtonEnableOpenInBrowser[] = {
     {"open_in_browser", "true"},
-    {"voice", "false"}};
+    {"voice", "false"},
+    {"default_variant", "0"},
+    {"contextual_only", "false"}};
 const FeatureEntry::FeatureParam kCCTAdaptiveButtonEnableVoice[] = {
     {"open_in_browser", "false"},
-    {"voice", "true"}};
+    {"voice", "true"},
+    {"default_variant", "0"},
+    {"contextual_only", "false"}};
 const FeatureEntry::FeatureParam kCCTAdaptiveButtonEnableBoth[] = {
     {"open_in_browser", "true"},
-    {"voice", "true"}};
+    {"voice", "true"},
+    {"default_variant", "0"},
+    {"contextual_only", "false"}};
 const FeatureEntry::FeatureVariation kCCTAdaptiveButtonVariations[] = {
     {"(+ open in browser)", kCCTAdaptiveButtonEnableOpenInBrowser,
      std::size(kCCTAdaptiveButtonEnableOpenInBrowser), nullptr},

@@ -18,6 +18,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import static org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonVariant.OPEN_IN_BROWSER;
+import static org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonVariant.READER_MODE;
 import static org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonVariant.SHARE;
 import static org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonVariant.TRANSLATE;
 import static org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonVariant.UNKNOWN;
@@ -163,6 +164,16 @@ public class CustomTabAdaptiveToolbarBehaviorUnitTest {
         // Verify that the segmentation results down to the 2nd one can be picked up,
         // and the 3rd one (translate) is ignored.
         initBehavior(List.of(openInBrowser, share));
+        assertEquals(UNKNOWN, mBehavior.resultFilter(segmentationResults));
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.CCT_ADAPTIVE_BUTTON + ":contextual_only/true")
+    public void resultFilter_skipStaticActionInContextualOnlyMode() {
+        List<Integer> segmentationResults = List.of(READER_MODE, SHARE, TRANSLATE);
+        assertEquals(READER_MODE, mBehavior.resultFilter(segmentationResults));
+
+        segmentationResults = List.of(SHARE, TRANSLATE);
         assertEquals(UNKNOWN, mBehavior.resultFilter(segmentationResults));
     }
 

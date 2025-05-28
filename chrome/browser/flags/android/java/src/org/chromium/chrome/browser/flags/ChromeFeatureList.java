@@ -1144,6 +1144,10 @@ public abstract class ChromeFeatureList {
             newBooleanCachedFeatureParam(CCT_ADAPTIVE_BUTTON, "open_in_browser", false);
     public static final BooleanCachedFeatureParam sCctAdaptiveButtonEnableVoice =
             newBooleanCachedFeatureParam(CCT_ADAPTIVE_BUTTON, "voice", false);
+    public static final BooleanCachedFeatureParam sCctAdaptiveButtonContextualOnly =
+            newBooleanCachedFeatureParam(CCT_ADAPTIVE_BUTTON, "contextual_only", false);
+    public static final IntCachedFeatureParam sCctAdaptiveButtonDefaultVariant =
+            newIntCachedFeatureParam(CCT_ADAPTIVE_BUTTON, "default_variant", 0);
     public static final IntCachedFeatureParam sAndroidAppIntegrationV2ContentTtlHours =
             newIntCachedFeatureParam(ANDROID_APP_INTEGRATION_V2, "content_ttl_hours", 168);
 
@@ -1508,8 +1512,10 @@ public abstract class ChromeFeatureList {
                     sAndroidBottomToolbarDefaultToTop,
                     sAndroidThemeModuleForceDependencies,
                     sBatchTabRestoreBatchSize,
+                    sCctAdaptiveButtonContextualOnly,
                     sCctAdaptiveButtonEnableOpenInBrowser,
                     sCctAdaptiveButtonEnableVoice,
+                    sCctAdaptiveButtonDefaultVariant,
                     sCctAuthTabEnableHttpsRedirectsVerificationTimeoutMs,
                     sCctAutoTranslateAllowAllFirstParties,
                     sCctAutoTranslatePackageNamesAllowlist,
