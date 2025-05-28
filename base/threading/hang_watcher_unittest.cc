@@ -630,8 +630,6 @@ class HangWatcherSnapshotTest : public testing::Test {
   // actually took place.
   int reference_capture_count_ = 0;
 
-  std::string seconds_since_last_power_resume_crash_key_;
-
   base::test::ScopedFeatureList feature_list_;
 
   // Used exclusively for MOCK_TIME.
@@ -743,9 +741,10 @@ TEST_F(HangWatcherSnapshotTest, HungThreadIDs) {
 
 TEST_F(HangWatcherSnapshotTest, TimeSinceLastSystemPowerResumeCrashKey) {
   // Override the capture of hangs. Simulate a crash key capture.
-  hang_watcher_.SetOnHangClosureForTesting(base::BindLambdaForTesting([this] {
+  std::string seconds_since_last_power_resume_crash_key;
+  hang_watcher_.SetOnHangClosureForTesting(base::BindLambdaForTesting([&] {
     ++hang_capture_count_;
-    seconds_since_last_power_resume_crash_key_ =
+    seconds_since_last_power_resume_crash_key =
         hang_watcher_.GetTimeSinceLastSystemPowerResumeCrashKeyValue();
   }));
 
@@ -765,7 +764,7 @@ TEST_F(HangWatcherSnapshotTest, TimeSinceLastSystemPowerResumeCrashKey) {
 
     TriggerMonitorAndWaitForCompletion();
     EXPECT_EQ(1, hang_capture_count_);
-    EXPECT_EQ("Never suspended", seconds_since_last_power_resume_crash_key_);
+    EXPECT_EQ("Never suspended", seconds_since_last_power_resume_crash_key);
   }
 
   {
@@ -778,7 +777,7 @@ TEST_F(HangWatcherSnapshotTest, TimeSinceLastSystemPowerResumeCrashKey) {
       task_environment_.AdvanceClock(kSmallCPUQuantum);
       TriggerMonitorAndWaitForCompletion();
       EXPECT_EQ(2, hang_capture_count_);
-      EXPECT_EQ("Power suspended", seconds_since_last_power_resume_crash_key_);
+      EXPECT_EQ("Power suspended", seconds_since_last_power_resume_crash_key);
     }
 
     power_monitor_source.Resume();
@@ -790,7 +789,7 @@ TEST_F(HangWatcherSnapshotTest, TimeSinceLastSystemPowerResumeCrashKey) {
       TriggerMonitorAndWaitForCompletion();
       EXPECT_EQ(3, hang_capture_count_);
       EXPECT_EQ(base::NumberToString(kAfterResumeTime.InSeconds()),
-                seconds_since_last_power_resume_crash_key_);
+                seconds_since_last_power_resume_crash_key);
     }
   }
 }
