@@ -31,7 +31,7 @@ import {assert} from 'chrome://resources/js/assert.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {DomRepeatEvent} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {ModelExecutionEnterprisePolicyValue} from '../ai_page/constants.js';
+import {AiEnterpriseFeaturePrefName, ModelExecutionEnterprisePolicyValue} from '../ai_page/constants.js';
 import type {SettingsToggleButtonElement} from '../controls/settings_toggle_button.js';
 import type {SettingsSimpleConfirmationDialogElement} from '../simple_confirmation_dialog.js';
 
@@ -82,16 +82,18 @@ export class SettingsAutofillAiSectionElement extends
 
       /**
          A "fake" preference object that reflects the state of the opt-in
-         toggle.
+         toggle and the presence/absence of an enterprise policy.
+         This allows leveraging the settings-toggle-button component
+         to reflect enterprise enabled/disabled states.
        */
       optedIn_: {
         type: Object,
-        value: {
+        value: () => ({
           // Does not correspond to an actual pref - this is faked to allow
           // writing it into a GAIA-id keyed dictionary of opt-ins.
           type: chrome.settingsPrivate.PrefType.BOOLEAN,
           value: false,
-        },
+        }),
       },
 
       /**
@@ -157,6 +159,16 @@ export class SettingsAutofillAiSectionElement extends
 
     this.entityDataManager_.getOptInStatus().then(
         optedIn => this.set('optedIn_.value', !this.ineligibleUser && optedIn));
+    const policyDisabled =
+        this.getPref(AiEnterpriseFeaturePrefName.AUTOFILL_AI).value ===
+        ModelExecutionEnterprisePolicyValue.DISABLE;
+    if (policyDisabled) {
+      this.set(
+          'optedIn_.enforcement', chrome.settingsPrivate.Enforcement.ENFORCED);
+      this.set(
+          'optedIn_.controlledBy',
+          chrome.settingsPrivate.ControlledBy.USER_POLICY);
+    }
 
     this.entityInstancesChangedListener_ =
         (entityInstances => this.entityInstances_ =

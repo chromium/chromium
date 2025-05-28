@@ -599,10 +599,8 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
       // such as navigating to the Ai Page when the Ai Page has 0 entries.
       {"showAutofillAiControl",
        autofill::MayPerformAutofillAiAction(
-           autofill_client, autofill::AutofillAiAction::kOptIn) ||
-           autofill::MayPerformAutofillAiAction(
-               autofill_client,
-               autofill::AutofillAiAction::kListEntityInstancesInSettings)},
+           autofill_client,
+           autofill::AutofillAiAction::kListEntityInstancesInSettings)},
   };
 
   const bool show_ai_settings_for_testing = base::FeatureList::IsEnabled(

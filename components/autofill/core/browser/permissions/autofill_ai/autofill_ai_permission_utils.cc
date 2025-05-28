@@ -51,7 +51,6 @@ using FeatureCheck = base::FunctionRef<bool(const base::Feature&)>;
     case AutofillAiAction::kImport:
     case AutofillAiAction::kIphForOptIn:
     case AutofillAiAction::kLogToMqls:
-    case AutofillAiAction::kNavigateToSettings:
     case AutofillAiAction::kOptIn:
     case AutofillAiAction::kServerClassificationModel:
     case AutofillAiAction::kUseCachedServerClassificationModelResults:
@@ -90,7 +89,6 @@ using FeatureCheck = base::FunctionRef<bool(const base::Feature&)>;
     case AutofillAiAction::kImport:
     case AutofillAiAction::kListEntityInstancesInSettings:
     case AutofillAiAction::kLogToMqls:
-    case AutofillAiAction::kNavigateToSettings:
     case AutofillAiAction::kOptIn:
       return true;
   }
@@ -144,7 +142,6 @@ using FeatureCheck = base::FunctionRef<bool(const base::Feature&)>;
     case AutofillAiAction::kEditAndDeleteEntityInstanceInSettings:
     case AutofillAiAction::kFilling:
     case AutofillAiAction::kImport:
-    case AutofillAiAction::kListEntityInstancesInSettings:
     case AutofillAiAction::kLogToMqls:
     case AutofillAiAction::kServerClassificationModel:
     case AutofillAiAction::kUseCachedServerClassificationModelResults:
@@ -157,13 +154,14 @@ using FeatureCheck = base::FunctionRef<bool(const base::Feature&)>;
         MaybeOutputReason(debug_message, "Address Autofill is not enabled.");
       }
       return policy_pref_enabled;
-    case autofill::AutofillAiAction::kNavigateToSettings:
+    case autofill::AutofillAiAction::kListEntityInstancesInSettings:
       return true;
   }
   NOTREACHED();
 }
 
-// Checks whether all requirements for `IdentityManager` state are required.
+// Checks whether all requirements for `IdentityManager` state are
+// met.
 [[nodiscard]] bool SatisfiesAccountRequirements(
     const signin::IdentityManager* identity_manager,
     bool has_entity_data_saved,
@@ -221,7 +219,6 @@ using FeatureCheck = base::FunctionRef<bool(const base::Feature&)>;
     case AutofillAiAction::kIphForOptIn:
     case AutofillAiAction::kListEntityInstancesInSettings:
     case AutofillAiAction::kLogToMqls:
-    case AutofillAiAction::kNavigateToSettings:
     case AutofillAiAction::kOptIn:
     case AutofillAiAction::kServerClassificationModel: {
       if (is_off_the_record) {
