@@ -3722,6 +3722,15 @@ ci.builder(
                     shards = 12,
                 ),
             ),
+            "android_chrome_wpt_tests": targets.remove(
+                reason = "Only run this step on Android 15 for now.",
+            ),
+            "android_webdriver_wpt_tests": targets.remove(
+                reason = "Only run this step on Android 15 for now.",
+            ),
+            "android_webview_wpt_tests": targets.remove(
+                reason = "Only run this step on Android 15 for now.",
+            ),
             "android_sync_integration_tests": targets.mixin(
                 swarming = targets.swarming(
                     shards = 2,
