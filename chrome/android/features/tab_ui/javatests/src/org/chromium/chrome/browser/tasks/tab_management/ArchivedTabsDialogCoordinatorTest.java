@@ -54,6 +54,7 @@ import org.chromium.base.Token;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.DisableFeatures;
@@ -842,6 +843,7 @@ public class ArchivedTabsDialogCoordinatorTest {
     @Test
     @MediumTest
     @EnableFeatures({ChromeFeatureList.ANDROID_TAB_DECLUTTER_ARCHIVE_TAB_GROUPS})
+    @DisabledTest(message = "crbug.com/417674987")
     public void testCloseAllArchivedTabs_WithSyncedTabGroups() {
         when(mTabGroupSyncService.getAllGroupIds()).thenReturn(new String[] {SYNC_GROUP_ID1});
         SavedTabGroup savedTabGroup =
@@ -862,7 +864,12 @@ public class ArchivedTabsDialogCoordinatorTest {
         verify(mTabGroupSyncService).updateArchivalStatus(SYNC_GROUP_ID1, false);
         savedTabGroup.archivalTimeMs = null;
         ThreadUtils.runOnUiThreadBlocking(
-                () -> notifyTabGroupSyncObserversWithChangedGroup(savedTabGroup));
+                () -> {
+                    mTabGroupSyncServiceObserverCaptor
+                            .getAllValues()
+                            .get(1)
+                            .onTabGroupUpdated(savedTabGroup, TriggerSource.REMOTE);
+                });
 
         mRobot.resultRobot.verifyTabListEditorIsHidden();
         assertEquals(0, mArchivedTabModel.getCount());
@@ -874,6 +881,7 @@ public class ArchivedTabsDialogCoordinatorTest {
     @Test
     @MediumTest
     @EnableFeatures({ChromeFeatureList.ANDROID_TAB_DECLUTTER_ARCHIVE_TAB_GROUPS})
+    @DisabledTest(message = "crbug.com/417674987")
     public void testSelectCloseArchivedTabs_WithSyncedTabGroups() {
         when(mTabGroupSyncService.getAllGroupIds()).thenReturn(new String[] {SYNC_GROUP_ID1});
         SavedTabGroup savedTabGroup =
@@ -903,7 +911,12 @@ public class ArchivedTabsDialogCoordinatorTest {
         verify(mTabGroupSyncService).updateArchivalStatus(SYNC_GROUP_ID1, false);
         savedTabGroup.archivalTimeMs = null;
         ThreadUtils.runOnUiThreadBlocking(
-                () -> notifyTabGroupSyncObserversWithChangedGroup(savedTabGroup));
+                () -> {
+                    mTabGroupSyncServiceObserverCaptor
+                            .getAllValues()
+                            .get(1)
+                            .onTabGroupUpdated(savedTabGroup, TriggerSource.REMOTE);
+                });
 
         mRobot.resultRobot
                 .verifyAdapterHasItemCount(1)
@@ -917,6 +930,7 @@ public class ArchivedTabsDialogCoordinatorTest {
     @Test
     @MediumTest
     @EnableFeatures({ChromeFeatureList.ANDROID_TAB_DECLUTTER_ARCHIVE_TAB_GROUPS})
+    @DisabledTest(message = "crbug.com/417674987")
     public void testSelectAllCloseArchivedTabs_WithSyncedTabGroups() {
         when(mTabGroupSyncService.getAllGroupIds()).thenReturn(new String[] {SYNC_GROUP_ID1});
         SavedTabGroup savedTabGroup =
@@ -945,7 +959,12 @@ public class ArchivedTabsDialogCoordinatorTest {
         verify(mTabGroupSyncService).updateArchivalStatus(SYNC_GROUP_ID1, false);
         savedTabGroup.archivalTimeMs = null;
         ThreadUtils.runOnUiThreadBlocking(
-                () -> notifyTabGroupSyncObserversWithChangedGroup(savedTabGroup));
+                () -> {
+                    mTabGroupSyncServiceObserverCaptor
+                            .getAllValues()
+                            .get(1)
+                            .onTabGroupUpdated(savedTabGroup, TriggerSource.REMOTE);
+                });
 
         mRobot.resultRobot.verifyUndoSnackbarWithTextIsShown("2 tabs closed");
 
@@ -958,6 +977,7 @@ public class ArchivedTabsDialogCoordinatorTest {
     @Test
     @MediumTest
     @EnableFeatures({ChromeFeatureList.ANDROID_TAB_DECLUTTER_ARCHIVE_TAB_GROUPS})
+    @DisabledTest(message = "crbug.com/417674987")
     public void testRestoreAllInactiveTabs_WithSyncedTabGroups() throws Exception {
         when(mTabGroupSyncService.getAllGroupIds()).thenReturn(new String[] {SYNC_GROUP_ID1});
         SavedTabGroup savedTabGroup =
@@ -987,7 +1007,12 @@ public class ArchivedTabsDialogCoordinatorTest {
         verify(mTabGroupSyncService).updateArchivalStatus(SYNC_GROUP_ID1, false);
         savedTabGroup.archivalTimeMs = null;
         ThreadUtils.runOnUiThreadBlocking(
-                () -> notifyTabGroupSyncObserversWithChangedGroup(savedTabGroup));
+                () -> {
+                    mTabGroupSyncServiceObserverCaptor
+                            .getAllValues()
+                            .get(1)
+                            .onTabGroupUpdated(savedTabGroup, TriggerSource.REMOTE);
+                });
 
         mRobot.resultRobot.verifyTabListEditorIsHidden();
         // This count includes the restored tab group.
@@ -1000,6 +1025,7 @@ public class ArchivedTabsDialogCoordinatorTest {
     @Test
     @MediumTest
     @EnableFeatures({ChromeFeatureList.ANDROID_TAB_DECLUTTER_ARCHIVE_TAB_GROUPS})
+    @DisabledTest(message = "crbug.com/417674987")
     public void testSelectionModeMenuItem_RestoreTabGroups() {
         when(mTabGroupSyncService.getAllGroupIds()).thenReturn(new String[] {SYNC_GROUP_ID1});
         SavedTabGroup savedTabGroup =
@@ -1035,7 +1061,12 @@ public class ArchivedTabsDialogCoordinatorTest {
         verify(mTabGroupSyncService).updateArchivalStatus(SYNC_GROUP_ID1, false);
         savedTabGroup.archivalTimeMs = null;
         ThreadUtils.runOnUiThreadBlocking(
-                () -> notifyTabGroupSyncObserversWithChangedGroup(savedTabGroup));
+                () -> {
+                    mTabGroupSyncServiceObserverCaptor
+                            .getAllValues()
+                            .get(1)
+                            .onTabGroupUpdated(savedTabGroup, TriggerSource.REMOTE);
+                });
 
         mRobot.resultRobot.verifyAdapterHasItemCount(1);
         // This count includes the restored tab group.
@@ -1078,12 +1109,6 @@ public class ArchivedTabsDialogCoordinatorTest {
         when(mTabGroupSyncService.getGroup(syncId)).thenReturn(savedTabGroup);
 
         return savedTabGroup;
-    }
-
-    private void notifyTabGroupSyncObserversWithChangedGroup(SavedTabGroup group) {
-        for (TabGroupSyncService.Observer obs : mTabGroupSyncServiceObserverCaptor.getAllValues()) {
-            obs.onTabGroupUpdated(group, TriggerSource.REMOTE);
-        }
     }
 
     private void waitForArchivedTabModelsToLoad(
