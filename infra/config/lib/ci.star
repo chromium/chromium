@@ -265,7 +265,8 @@ def thin_tester(
       The `luci.builder` keyset.
     """
     builder_spec = kwargs.get("builder_spec")
-    if builder_spec and builder_spec.execution_mode != builder_config.execution_mode.TEST:
+    if (builder_spec and not builder_config.is_copy_from(builder_spec) and
+        builder_spec.execution_mode != builder_config.execution_mode.TEST):
         fail("thin testers with builder specs must have TEST execution mode")
     cores = defaults.get_value("thin_tester_cores", cores)
     kwargs.setdefault("siso_project", None)
