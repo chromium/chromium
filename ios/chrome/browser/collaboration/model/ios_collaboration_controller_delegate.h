@@ -19,6 +19,7 @@ class ProfileIOS;
 enum class ShareKitFlowOutcome;
 @class ShareKitPreviewItem;
 class ShareKitService;
+@class SigninCoordinator;
 typedef NS_ENUM(NSUInteger, SigninCoordinatorResult);
 @protocol SystemIdentity;
 class TabGroup;
@@ -118,6 +119,9 @@ class IOSCollaborationControllerDelegate
  private:
   using PreviewItemsCallBack =
       base::OnceCallback<void(NSArray<ShareKitPreviewItem*>*)>;
+
+  // Stops the signin coordinator.
+  void StopSigninCoordinator();
 
   // Common implementation of `ShowLeaveDialog:` and `ShowDeleteDialog:`.
   void ShowLeaveOrDeleteDialog(const tab_groups::EitherGroupID& either_id,
@@ -219,6 +223,9 @@ class IOSCollaborationControllerDelegate
   // when the "Share" screen is actually presented. Calling it with success
   // shares the group associated with this delegate and allows link generation.
   ResultWithGroupTokenCallback share_screen_callback_;
+
+  // The signin coordinator if it’s opened.
+  SigninCoordinator* signin_coordinator_;
 
   // The callback to generate the link and continue the share flow (present the
   // share sheet).
