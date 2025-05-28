@@ -115,11 +115,6 @@ void ChromeExtensionsRendererAPIProvider::AddBindingsSystemHooks(
 void ChromeExtensionsRendererAPIProvider::PopulateSourceMap(
     ResourceBundleSourceMap* source_map) const {
   // Custom bindings.
-  // TODO(crbug.com/356905053): Move bindings supported on desktop android here.
-  source_map->RegisterSource("notifications",
-                             IDR_NOTIFICATIONS_CUSTOM_BINDINGS_JS);
-
-#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   source_map->RegisterSource("action", IDR_ACTION_CUSTOM_BINDINGS_JS);
   source_map->RegisterSource("browserAction",
                              IDR_BROWSER_ACTION_CUSTOM_BINDINGS_JS);
@@ -137,6 +132,8 @@ void ChromeExtensionsRendererAPIProvider::PopulateSourceMap(
   source_map->RegisterSource("input.ime", IDR_INPUT_IME_CUSTOM_BINDINGS_JS);
   source_map->RegisterSource("mediaGalleries",
                              IDR_MEDIA_GALLERIES_CUSTOM_BINDINGS_JS);
+  source_map->RegisterSource("notifications",
+                             IDR_NOTIFICATIONS_CUSTOM_BINDINGS_JS);
   source_map->RegisterSource("omnibox", IDR_OMNIBOX_CUSTOM_BINDINGS_JS);
   source_map->RegisterSource("pageAction", IDR_PAGE_ACTION_CUSTOM_BINDINGS_JS);
   source_map->RegisterSource("pageCapture",
@@ -221,7 +218,6 @@ void ChromeExtensionsRendererAPIProvider::PopulateSourceMap(
   source_map->RegisterSource("chromeWebViewInternal",
                              IDR_CHROME_WEB_VIEW_INTERNAL_CUSTOM_BINDINGS_JS);
   source_map->RegisterSource("chromeWebView", IDR_CHROME_WEB_VIEW_JS);
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 }
 
 void ChromeExtensionsRendererAPIProvider::EnableCustomElementAllowlist() const {

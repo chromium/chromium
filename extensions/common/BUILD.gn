@@ -558,6 +558,7 @@ static_library("common") {
     "//crypto",
     "//device/bluetooth",
     "//device/bluetooth/public/cpp",
+    "//extensions:extensions_resources",
     "//extensions/common/api",
     "//extensions/strings",
     "//net",
@@ -576,10 +577,6 @@ static_library("common") {
     "//ui/gfx/ipc/skia",
     "//url",
   ]
-
-  if (enable_extensions) {
-    deps += [ "//extensions:extensions_resources" ]
-  }
 
   if (enable_nacl) {
     sources += [
