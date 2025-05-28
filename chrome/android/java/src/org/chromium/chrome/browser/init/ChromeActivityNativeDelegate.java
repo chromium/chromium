@@ -6,7 +6,8 @@ package org.chromium.chrome.browser.init;
 
 import android.content.Intent;
 
-import androidx.annotation.Nullable;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 /**
  * An activity level delegate to handle native initialization and activity lifecycle related tasks
@@ -15,6 +16,7 @@ import androidx.annotation.Nullable;
  * have not been loaded yet, the calls in ChromeActivityNativeDelegate will be in the right order
  * among themselves, but can be deferred and out of sync wrt to Activity calls.
  */
+@NullMarked
 public interface ChromeActivityNativeDelegate {
     /**
      * Carry out native initialization related tasks and any other java tasks that can be done async

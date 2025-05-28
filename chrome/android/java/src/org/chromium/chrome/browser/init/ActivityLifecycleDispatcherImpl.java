@@ -9,9 +9,9 @@ import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
 
-import androidx.annotation.Nullable;
-
 import org.chromium.base.ObserverList;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.ActivityResultWithNativeObserver;
 import org.chromium.chrome.browser.lifecycle.ConfigurationChangedObserver;
@@ -31,8 +31,9 @@ import org.chromium.chrome.browser.lifecycle.WindowFocusChangedObserver;
  * Dispatches lifecycle events of activities extending {@link AsyncInitializationActivity} to
  * registered observers.
  *
- * All observers will be automatically cleared when the backing activity is destroyed.
+ * <p>All observers will be automatically cleared when the backing activity is destroyed.
  */
+@NullMarked
 public class ActivityLifecycleDispatcherImpl implements ActivityLifecycleDispatcher {
     private final ObserverList<InflationObserver> mInflationObservers = new ObserverList<>();
     private final ObserverList<NativeInitObserver> mNativeInitObservers = new ObserverList<>();
@@ -61,7 +62,7 @@ public class ActivityLifecycleDispatcherImpl implements ActivityLifecycleDispatc
     private boolean mIsNativeInitialized;
     private boolean mDestroyed;
 
-    public ActivityLifecycleDispatcherImpl(Activity activity) {
+    public ActivityLifecycleDispatcherImpl(@Nullable Activity activity) {
         mActivity = activity;
     }
 
