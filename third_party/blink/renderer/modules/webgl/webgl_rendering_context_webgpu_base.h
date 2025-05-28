@@ -1311,7 +1311,7 @@ class MODULES_EXPORT WebGLRenderingContextWebGPUBase
   // Must be called when an operation happens that should cause the drawing
   // buffer to be present to the compositor. See WebGL spec Section 2.2 The
   // Drawing Buffer.
-  void ShouldPresentToCompositor();
+  void EnsureDefaultFramebuffer();
 
   void InitializeContext();
   void Destroy();

@@ -11,12 +11,16 @@
 #include "third_party/blink/public/platform/web_url.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
+#include "third_party/blink/renderer/modules/webgl/webgl_buffer.h"
+#include "third_party/blink/renderer/modules/webgl/webgl_program.h"
+#include "third_party/blink/renderer/modules/webgl/webgl_shader.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/dawn_control_client_holder.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/webgpu_callback.h"
 #include "third_party/blink/renderer/platform/graphics/skia/skia_utils.h"
 #include "third_party/blink/renderer/platform/graphics/web_graphics_context_3d_provider_util.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
+#include "third_party/blink/renderer/platform/wtf/text/code_point_iterator.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "ui/gfx/extension_set.h"
 #include "ui/gl/egl_util.h"
@@ -400,7 +404,7 @@ void WebGLRenderingContextWebGPUBase::InitRequestDeviceCallback(
   InitializeContext();
 
   // We are required to present to the compositor on context creation.
-  ShouldPresentToCompositor();
+  EnsureDefaultFramebuffer();
 
   resolver->Resolve();
 }
@@ -458,9 +462,15 @@ void WebGLRenderingContextWebGPUBase::activeTexture(GLenum texture) {
   NOTIMPLEMENTED();
 }
 
-void WebGLRenderingContextWebGPUBase::attachShader(WebGLProgram*,
-                                                   WebGLShader*) {
-  NOTIMPLEMENTED();
+void WebGLRenderingContextWebGPUBase::attachShader(WebGLProgram* program,
+                                                   WebGLShader* shader) {
+  // TODO(413078308): Validate the objects are for this context and not deleted.
+  driver_gl_.fn.glAttachShaderFn(program->Object(), shader->Object());
+
+  // TODO(413078308): Update the state only if no GL error was produced.
+  bool attachSuccess = program->AttachShader(shader);
+  DCHECK(attachSuccess);
+  shader->OnAttached();
 }
 
 void WebGLRenderingContextWebGPUBase::bindAttribLocation(WebGLProgram*,
@@ -471,7 +481,10 @@ void WebGLRenderingContextWebGPUBase::bindAttribLocation(WebGLProgram*,
 
 void WebGLRenderingContextWebGPUBase::bindBuffer(GLenum target,
                                                  WebGLBuffer* buffer) {
-  NOTIMPLEMENTED();
+  // TODO(413078308): Validate the object is for this context and not deleted.
+  driver_gl_.fn.glBindBufferFn(target, ObjectOrZero(buffer));
+
+  // TODO(413078308): Update the state only if no GL error was produced.
 }
 
 void WebGLRenderingContextWebGPUBase::bindFramebuffer(GLenum target,
@@ -493,47 +506,55 @@ void WebGLRenderingContextWebGPUBase::blendColor(GLfloat red,
                                                  GLfloat green,
                                                  GLfloat blue,
                                                  GLfloat alpha) {
-  NOTIMPLEMENTED();
+  driver_gl_.fn.glBlendColorFn(red, green, blue, alpha);
 }
 
 void WebGLRenderingContextWebGPUBase::blendEquation(GLenum mode) {
-  NOTIMPLEMENTED();
+  driver_gl_.fn.glBlendEquationFn(mode);
 }
 
 void WebGLRenderingContextWebGPUBase::blendEquationSeparate(GLenum mode_rgb,
                                                             GLenum mode_alpha) {
-  NOTIMPLEMENTED();
+  driver_gl_.fn.glBlendEquationSeparateFn(mode_rgb, mode_alpha);
 }
 
 void WebGLRenderingContextWebGPUBase::blendFunc(GLenum sfactor,
                                                 GLenum dfactor) {
-  NOTIMPLEMENTED();
+  driver_gl_.fn.glBlendFuncFn(sfactor, dfactor);
 }
 
 void WebGLRenderingContextWebGPUBase::blendFuncSeparate(GLenum src_rgb,
                                                         GLenum dst_rgb,
                                                         GLenum src_alpha,
                                                         GLenum dst_alpha) {
-  NOTIMPLEMENTED();
+  driver_gl_.fn.glBlendFuncSeparateFn(src_rgb, dst_rgb, src_alpha, dst_alpha);
 }
 
 void WebGLRenderingContextWebGPUBase::bufferData(GLenum target,
                                                  int64_t size,
                                                  GLenum usage) {
-  NOTIMPLEMENTED();
+  // TODO(413078308): Validate that the size fits in i32.
+  driver_gl_.fn.glBufferDataFn(target, static_cast<GLsizeiptr>(size), nullptr,
+                               usage);
 }
 
 void WebGLRenderingContextWebGPUBase::bufferData(GLenum target,
                                                  DOMArrayBufferBase* data,
                                                  GLenum usage) {
-  NOTIMPLEMENTED();
+  // TODO(413078308): Validate that data is not null and the size fits in i32.
+  driver_gl_.fn.glBufferDataFn(target,
+                               static_cast<GLsizeiptr>(data->ByteLength()),
+                               data->DataMaybeShared(), usage);
 }
 
 void WebGLRenderingContextWebGPUBase::bufferData(
     GLenum target,
     MaybeShared<DOMArrayBufferView> data,
     GLenum usage) {
-  NOTIMPLEMENTED();
+  // TODO(413078308): Validate that the size fits in i32.
+  driver_gl_.fn.glBufferDataFn(target,
+                               static_cast<GLsizeiptr>(data->byteLength()),
+                               data->BaseAddressMaybeShared(), usage);
 }
 
 void WebGLRenderingContextWebGPUBase::bufferSubData(
@@ -549,33 +570,36 @@ GLenum WebGLRenderingContextWebGPUBase::checkFramebufferStatus(GLenum target) {
 }
 
 void WebGLRenderingContextWebGPUBase::clear(GLbitfield mask) {
-  NOTIMPLEMENTED();
+  EnsureDefaultFramebuffer();
+  driver_gl_.fn.glClearFn(mask);
 }
 
 void WebGLRenderingContextWebGPUBase::clearColor(GLfloat red,
                                                  GLfloat green,
                                                  GLfloat blue,
                                                  GLfloat alpha) {
-  NOTIMPLEMENTED();
+  // TODO(413078308): Handle NaNs.
+  driver_gl_.fn.glClearColorFn(red, green, blue, alpha);
 }
 
-void WebGLRenderingContextWebGPUBase::clearDepth(GLfloat) {
-  NOTIMPLEMENTED();
+void WebGLRenderingContextWebGPUBase::clearDepth(GLfloat depth) {
+  driver_gl_.fn.glClearDepthFn(depth);
 }
 
-void WebGLRenderingContextWebGPUBase::clearStencil(GLint) {
-  NOTIMPLEMENTED();
+void WebGLRenderingContextWebGPUBase::clearStencil(GLint stencil) {
+  driver_gl_.fn.glClearStencilFn(stencil);
 }
 
 void WebGLRenderingContextWebGPUBase::colorMask(GLboolean red,
                                                 GLboolean green,
                                                 GLboolean blue,
                                                 GLboolean alpha) {
-  NOTIMPLEMENTED();
+  driver_gl_.fn.glColorMaskFn(red, green, blue, alpha);
 }
 
-void WebGLRenderingContextWebGPUBase::compileShader(WebGLShader*) {
-  NOTIMPLEMENTED();
+void WebGLRenderingContextWebGPUBase::compileShader(WebGLShader* shader) {
+  // TODO(413078308): Validate the object is for this context and not deleted.
+  driver_gl_.fn.glCompileShaderFn(shader->Object());
 }
 
 void WebGLRenderingContextWebGPUBase::compressedTexImage2D(
@@ -624,8 +648,7 @@ void WebGLRenderingContextWebGPUBase::copyTexSubImage2D(GLenum target,
 }
 
 WebGLBuffer* WebGLRenderingContextWebGPUBase::createBuffer() {
-  NOTIMPLEMENTED();
-  return nullptr;
+  return MakeGarbageCollected<WebGLBuffer>(this);
 }
 
 WebGLFramebuffer* WebGLRenderingContextWebGPUBase::createFramebuffer() {
@@ -634,8 +657,7 @@ WebGLFramebuffer* WebGLRenderingContextWebGPUBase::createFramebuffer() {
 }
 
 WebGLProgram* WebGLRenderingContextWebGPUBase::createProgram() {
-  NOTIMPLEMENTED();
-  return nullptr;
+  return MakeGarbageCollected<WebGLProgram>(this);
 }
 
 WebGLRenderbuffer* WebGLRenderingContextWebGPUBase::createRenderbuffer() {
@@ -644,8 +666,8 @@ WebGLRenderbuffer* WebGLRenderingContextWebGPUBase::createRenderbuffer() {
 }
 
 WebGLShader* WebGLRenderingContextWebGPUBase::createShader(GLenum type) {
-  NOTIMPLEMENTED();
-  return nullptr;
+  // TODO(413078308) Validate the shader type and return nullptr on error.
+  return MakeGarbageCollected<WebGLShader>(this, type);
 }
 
 WebGLTexture* WebGLRenderingContextWebGPUBase::createTexture() {
@@ -654,7 +676,7 @@ WebGLTexture* WebGLRenderingContextWebGPUBase::createTexture() {
 }
 
 void WebGLRenderingContextWebGPUBase::cullFace(GLenum mode) {
-  NOTIMPLEMENTED();
+  driver_gl_.fn.glCullFaceFn(mode);
 }
 
 void WebGLRenderingContextWebGPUBase::deleteBuffer(WebGLBuffer*) {
@@ -681,17 +703,17 @@ void WebGLRenderingContextWebGPUBase::deleteTexture(WebGLTexture*) {
   NOTIMPLEMENTED();
 }
 
-void WebGLRenderingContextWebGPUBase::depthFunc(GLenum) {
-  NOTIMPLEMENTED();
+void WebGLRenderingContextWebGPUBase::depthFunc(GLenum func) {
+  driver_gl_.fn.glDepthFuncFn(func);
 }
 
-void WebGLRenderingContextWebGPUBase::depthMask(GLboolean) {
-  NOTIMPLEMENTED();
+void WebGLRenderingContextWebGPUBase::depthMask(GLboolean mask) {
+  driver_gl_.fn.glDepthMaskFn(mask);
 }
 
 void WebGLRenderingContextWebGPUBase::depthRange(GLfloat z_near,
                                                  GLfloat z_far) {
-  NOTIMPLEMENTED();
+  driver_gl_.fn.glDepthRangeFn(z_near, z_far);
 }
 
 void WebGLRenderingContextWebGPUBase::detachShader(WebGLProgram*,
@@ -700,16 +722,17 @@ void WebGLRenderingContextWebGPUBase::detachShader(WebGLProgram*,
 }
 
 void WebGLRenderingContextWebGPUBase::disable(GLenum cap) {
-  NOTIMPLEMENTED();
+  driver_gl_.fn.glDisableFn(cap);
 }
 
 void WebGLRenderingContextWebGPUBase::disableVertexAttribArray(GLuint index) {
-  NOTIMPLEMENTED();
+  driver_gl_.fn.glDisableVertexAttribArrayFn(index);
 }
 
 void WebGLRenderingContextWebGPUBase::drawArrays(GLenum mode,
                                                  GLint first,
                                                  GLsizei count) {
+  EnsureDefaultFramebuffer();
   driver_gl_.fn.glDrawArraysFn(mode, first, count);
 }
 
@@ -717,15 +740,20 @@ void WebGLRenderingContextWebGPUBase::drawElements(GLenum mode,
                                                    GLsizei count,
                                                    GLenum type,
                                                    int64_t offset) {
-  NOTIMPLEMENTED();
+  // TODO(413078308): Validate the offset fits in i32.
+  EnsureDefaultFramebuffer();
+  LOG(ERROR);
+  driver_gl_.fn.glDrawElementsFn(
+      mode, count, type,
+      reinterpret_cast<void*>(static_cast<intptr_t>(offset)));
 }
 
 void WebGLRenderingContextWebGPUBase::enable(GLenum cap) {
-  NOTIMPLEMENTED();
+  driver_gl_.fn.glEnableFn(cap);
 }
 
 void WebGLRenderingContextWebGPUBase::enableVertexAttribArray(GLuint index) {
-  NOTIMPLEMENTED();
+  driver_gl_.fn.glEnableVertexAttribArrayFn(index);
 }
 
 void WebGLRenderingContextWebGPUBase::finish() {
@@ -753,7 +781,7 @@ void WebGLRenderingContextWebGPUBase::framebufferTexture2D(GLenum target,
 }
 
 void WebGLRenderingContextWebGPUBase::frontFace(GLenum mode) {
-  NOTIMPLEMENTED();
+  driver_gl_.fn.glFrontFaceFn(mode);
 }
 
 void WebGLRenderingContextWebGPUBase::generateMipmap(GLenum target) {
@@ -780,10 +808,11 @@ WebGLRenderingContextWebGPUBase::getAttachedShaders(WebGLProgram*) {
   return {};
 }
 
-GLint WebGLRenderingContextWebGPUBase::getAttribLocation(WebGLProgram*,
+GLint WebGLRenderingContextWebGPUBase::getAttribLocation(WebGLProgram* program,
                                                          const String& name) {
-  NOTIMPLEMENTED();
-  return 0;
+  // TODO(413078308): Validate the object is for this context and not deleted.
+  return driver_gl_.fn.glGetAttribLocationFn(program->Object(),
+                                             name.Utf8().c_str());
 }
 
 ScriptValue WebGLRenderingContextWebGPUBase::getBufferParameter(ScriptState*,
@@ -950,11 +979,17 @@ bool WebGLRenderingContextWebGPUBase::isTexture(WebGLTexture*) {
   return false;
 }
 
-void WebGLRenderingContextWebGPUBase::lineWidth(GLfloat) {
-  NOTIMPLEMENTED();
+void WebGLRenderingContextWebGPUBase::lineWidth(GLfloat width) {
+  driver_gl_.fn.glLineWidthFn(width);
 }
-void WebGLRenderingContextWebGPUBase::linkProgram(WebGLProgram*) {
-  NOTIMPLEMENTED();
+
+void WebGLRenderingContextWebGPUBase::linkProgram(WebGLProgram* program) {
+  // TODO(413078308): Validate the object is for this context and not deleted.
+  // TODO(413078308): Something to do with transform feedback.
+  // TODO(413078308): Handle KHR_parallel_shader_compile.
+  driver_gl_.fn.glLinkProgramFn(program->Object());
+  // Increase the link count so TFO can know which version it uses.
+  program->IncreaseLinkCount();
 }
 
 void WebGLRenderingContextWebGPUBase::pixelStorei(GLenum pname, GLint param) {
@@ -963,7 +998,7 @@ void WebGLRenderingContextWebGPUBase::pixelStorei(GLenum pname, GLint param) {
 
 void WebGLRenderingContextWebGPUBase::polygonOffset(GLfloat factor,
                                                     GLfloat units) {
-  NOTIMPLEMENTED();
+  driver_gl_.fn.glPolygonModeFn(factor, units);
 }
 
 void WebGLRenderingContextWebGPUBase::readPixels(
@@ -986,54 +1021,67 @@ void WebGLRenderingContextWebGPUBase::renderbufferStorage(GLenum target,
 
 void WebGLRenderingContextWebGPUBase::sampleCoverage(GLfloat value,
                                                      GLboolean invert) {
-  NOTIMPLEMENTED();
+  driver_gl_.fn.glSampleCoverageFn(value, invert);
 }
 
 void WebGLRenderingContextWebGPUBase::scissor(GLint x,
                                               GLint y,
                                               GLsizei width,
                                               GLsizei height) {
-  NOTIMPLEMENTED();
+  driver_gl_.fn.glScissorFn(x, y, width, height);
 }
 
-void WebGLRenderingContextWebGPUBase::shaderSource(WebGLShader*,
-                                                   const String&) {
-  NOTIMPLEMENTED();
+void WebGLRenderingContextWebGPUBase::shaderSource(WebGLShader* shader,
+                                                   const String& source) {
+  // TODO(413078308): Validate the object is for this context and not deleted.
+  shader->SetSource(source);
+
+  // Handle non-ASCII characters (by replacing them with '?').
+  std::vector<char> ascii_source;
+  ascii_source.reserve(source.length());
+  for (auto code_point : source) {
+    ascii_source.push_back(WTF::IsASCII(code_point) ? code_point : '?');
+  }
+
+  GLint c_ascii_size = ascii_source.size();
+  const char* c_ascii_source = ascii_source.data();
+  driver_gl_.fn.glShaderSourceFn(shader->Object(), 1, &c_ascii_source,
+                                 &c_ascii_size);
 }
 
 void WebGLRenderingContextWebGPUBase::stencilFunc(GLenum func,
                                                   GLint ref,
                                                   GLuint mask) {
-  NOTIMPLEMENTED();
+  driver_gl_.fn.glStencilFuncFn(func, ref, mask);
 }
 
 void WebGLRenderingContextWebGPUBase::stencilFuncSeparate(GLenum face,
                                                           GLenum func,
                                                           GLint ref,
                                                           GLuint mask) {
-  NOTIMPLEMENTED();
+  driver_gl_.fn.glStencilFuncSeparateFn(face, func, ref, mask);
 }
 
-void WebGLRenderingContextWebGPUBase::stencilMask(GLuint) {
-  NOTIMPLEMENTED();
+void WebGLRenderingContextWebGPUBase::stencilMask(GLuint mask) {
+  driver_gl_.fn.glStencilMaskFn(mask);
 }
 
 void WebGLRenderingContextWebGPUBase::stencilMaskSeparate(GLenum face,
                                                           GLuint mask) {
-  NOTIMPLEMENTED();
+  driver_gl_.fn.glStencilMaskSeparateFn(face, mask);
 }
 
 void WebGLRenderingContextWebGPUBase::stencilOp(GLenum fail,
                                                 GLenum zfail,
                                                 GLenum zpass) {
-  NOTIMPLEMENTED();
+  driver_gl_.fn.glStencilOpFn(fail, zfail, zpass);
 }
 
 void WebGLRenderingContextWebGPUBase::stencilOpSeparate(GLenum face,
                                                         GLenum fail,
                                                         GLenum zfail,
                                                         GLenum zpass) {
-  NOTIMPLEMENTED();
+  driver_gl_.fn.glStencilOpSeparateFn(face, fail, zfail, zpass);
 }
 
 void WebGLRenderingContextWebGPUBase::texParameterf(GLenum target,
@@ -1318,8 +1366,11 @@ void WebGLRenderingContextWebGPUBase::uniformMatrix4fv(
   NOTIMPLEMENTED();
 }
 
-void WebGLRenderingContextWebGPUBase::useProgram(WebGLProgram*) {
-  NOTIMPLEMENTED();
+void WebGLRenderingContextWebGPUBase::useProgram(WebGLProgram* program) {
+  // TODO(413078308): Validate the object is for this context and not deleted.
+  driver_gl_.fn.glUseProgramFn(ObjectOrZero(program));
+
+  // TODO(413078308): If successful update the state tracking.
 }
 
 void WebGLRenderingContextWebGPUBase::validateProgram(WebGLProgram*) {
@@ -1381,14 +1432,20 @@ void WebGLRenderingContextWebGPUBase::vertexAttribPointer(GLuint index,
                                                           GLboolean normalized,
                                                           GLsizei stride,
                                                           int64_t offset) {
-  NOTIMPLEMENTED();
+  // TODO(413078308): Validate the offset fits in i32.
+  driver_gl_.fn.glVertexAttribPointerFn(
+      index, size, type, normalized, stride,
+      reinterpret_cast<void*>(static_cast<intptr_t>(offset)));
+
+  // TODO(413078308): Update the tracked buffer in the curret VAO if there was
+  // no GL error.
 }
 
 void WebGLRenderingContextWebGPUBase::viewport(GLint x,
                                                GLint y,
                                                GLsizei width,
                                                GLsizei height) {
-  NOTIMPLEMENTED();
+  driver_gl_.fn.glViewportFn(x, y, width, height);
 }
 
 void WebGLRenderingContextWebGPUBase::drawingBufferStorage(GLenum sizedformat,
@@ -2901,7 +2958,7 @@ void WebGLRenderingContextWebGPUBase::Trace(Visitor* visitor) const {
   CanvasRenderingContext::Trace(visitor);
 }
 
-void WebGLRenderingContextWebGPUBase::ShouldPresentToCompositor() {
+void WebGLRenderingContextWebGPUBase::EnsureDefaultFramebuffer() {
   if (current_swap_buffer_) {
     return;
   }
@@ -3058,9 +3115,15 @@ void WebGLRenderingContextWebGPUBase::InitializeContext() {
       PredefinedColorSpace::kSRGB, gfx::HDRMetadata{}));
 
   // Create the default framebuffer and leave it as the bound framebuffer. It
-  // has no texture attached yet, that is done in ShouldPresentToCompositor
+  // has no texture attached yet, that is done in EnsureDefaultFramebuffer
   driver_gl_.fn.glGenFramebuffersEXTFn(1, &default_framebuffer_);
   driver_gl_.fn.glBindFramebufferEXTFn(GL_FRAMEBUFFER, default_framebuffer_);
+
+  // Initialize the default fixed-function state.
+  driver_gl_.fn.glViewportFn(0, 0, Host()->Size().width(),
+                             Host()->Size().height());
+  driver_gl_.fn.glScissorFn(0, 0, Host()->Size().width(),
+                            Host()->Size().height());
 }
 
 void WebGLRenderingContextWebGPUBase::Destroy() {
