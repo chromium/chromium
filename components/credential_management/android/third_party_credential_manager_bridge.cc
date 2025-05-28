@@ -62,6 +62,11 @@ class JniDelegateImpl : public JniDelegate {
   JniDelegateImpl& operator=(const JniDelegateImpl&) = delete;
   ~JniDelegateImpl() override = default;
 
+  void CreateBridge() override {
+    java_bridge_.Reset(Java_ThirdPartyCredentialManagerBridge_Constructor(
+        jni_zero::AttachCurrentThread()));
+  }
+
   void Get(bool is_auto_select_allowed,
            bool include_passwords,
            const std::vector<GURL>& federations,
@@ -76,7 +81,7 @@ class JniDelegateImpl : public JniDelegate {
           url::GURLAndroid::FromNativeGURL(env, federation));
     }
     Java_ThirdPartyCredentialManagerBridge_get(
-        env, GetOrCreateBridge(), is_auto_select_allowed, include_passwords,
+        env, java_bridge_, is_auto_select_allowed, include_passwords,
         federations_array, base::android::ConvertUTF8ToJavaString(env, origin),
         base::android::ToJniCallback(env, std::move(completion_callback)));
   }
@@ -87,7 +92,7 @@ class JniDelegateImpl : public JniDelegate {
              base::OnceCallback<void(bool)> completion_callback) override {
     JNIEnv* env = jni_zero::AttachCurrentThread();
     Java_ThirdPartyCredentialManagerBridge_store(
-        env, GetOrCreateBridge(),
+        env, java_bridge_,
         base::android::ConvertUTF16ToJavaString(env, username),
         base::android::ConvertUTF16ToJavaString(env, password),
         base::android::ConvertUTF8ToJavaString(env, origin),
@@ -95,14 +100,6 @@ class JniDelegateImpl : public JniDelegate {
   }
 
  private:
-  base::android::ScopedJavaLocalRef<jobject> GetOrCreateBridge() {
-    if (!java_bridge_) {
-      java_bridge_.Reset(Java_ThirdPartyCredentialManagerBridge_Constructor(
-          jni_zero::AttachCurrentThread()));
-    }
-    return java_bridge_;
-  }
-
   // The corresponding Java ThirdPartyCredentialManagerBridge.
   base::android::ScopedJavaLocalRef<jobject> java_bridge_;
 };
@@ -117,6 +114,10 @@ ThirdPartyCredentialManagerBridge::ThirdPartyCredentialManagerBridge(
 
 ThirdPartyCredentialManagerBridge::~ThirdPartyCredentialManagerBridge() =
     default;
+
+void ThirdPartyCredentialManagerBridge::Create() {
+  jni_delegate_->CreateBridge();
+}
 
 void ThirdPartyCredentialManagerBridge::Get(
     bool is_auto_select_allowed,

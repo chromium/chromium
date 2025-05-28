@@ -348,11 +348,4 @@ https://chromium.googlesource.com/chromium/src/+/main/build/android/docs/lint.md
     <!-- Discussed in crbug.com/1069204, ignoring this class of errors since these are Q+ constants. -->
     <ignore regexp="Must be one of: LineBreaker.BREAK_STRATEGY_SIMPLE, LineBreaker.BREAK_STRATEGY_HIGH_QUALITY, LineBreaker.BREAK_STRATEGY_BALANCED"/>
   </issue>
-  <!-- Android apps are associated with domains of the same owner.
-  Chrome uses the Credential Manager API to support filling *any* site with a
-  third party password manager. Therefore, the list of sign-in domains would be
-  infinite and this warning must be suppressed. -->
-  <issue id="CredManMissingDal" severity="ignore" />
-  <!-- TODO(crbug.com/420855219): Remove this when we find a way to make linter see we're handling the NoCredentialException. -->
-  <issue id="CredentialManagerMisuse" severity="ignore" />
 </lint>

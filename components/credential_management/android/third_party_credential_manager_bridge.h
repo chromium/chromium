@@ -48,6 +48,9 @@ class ThirdPartyCredentialManagerBridge : public CredentialManagerBridge {
    public:
     virtual ~JniDelegate() = default;
 
+    // Creates the JNI bridge.
+    virtual void CreateBridge() = 0;
+
     // Gets a credential from the Android Credential Manager.
     // The `completion_callback` should always be invoked on completion, passing
     // the PasswordCredentialResponse.
@@ -78,6 +81,8 @@ class ThirdPartyCredentialManagerBridge : public CredentialManagerBridge {
       const ThirdPartyCredentialManagerBridge&) = delete;
 
   ~ThirdPartyCredentialManagerBridge() override;
+
+  void Create();
 
   void Get(bool is_auto_select_allowed,
            bool include_passwords,
