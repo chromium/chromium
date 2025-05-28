@@ -25,3 +25,6 @@
     public <init>(android.content.Context, android.util.AttributeSet);
     public <init>();
 }
+
+# Used as an @IdentifierNameString, but the class exists only for internal builds.
+-dontwarn org.chromium.chrome.modules.google3.Google3ModuleEntryImpl
