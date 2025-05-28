@@ -582,6 +582,7 @@ void SecurePaymentConfirmationAppFactory::DidDownloadAllIcons(
             std::make_unique<SkBitmap>(payment_instrument_icon),
             /*credential_id=*/std::vector<uint8_t>(),
             /*passkey_browser_binder=*/nullptr,
+            /*device_supports_browser_bound_keys_in_hardware=*/false,
             url::Origin::Create(request->delegate->GetTopOrigin()),
             request->delegate->GetSpec()->AsWeakPtr(),
             std::move(request->mojo_request), /*authenticator=*/nullptr,
@@ -592,14 +593,18 @@ void SecurePaymentConfirmationAppFactory::DidDownloadAllIcons(
   }
 
   std::unique_ptr<PasskeyBrowserBinder> passkey_browser_binder;
+  bool device_supports_browser_bound_keys_in_hardware = false;
 #if BUILDFLAG(IS_ANDROID)
   if (base::FeatureList::IsEnabled(
           blink::features::kSecurePaymentConfirmationBrowserBoundKeys)) {
-    passkey_browser_binder = std::make_unique<PasskeyBrowserBinder>(
+    scoped_refptr key_store =
         browser_bound_key_store_for_testing_
             ? std::move(browser_bound_key_store_for_testing_)
-            : GetBrowserBoundKeyStoreInstance(),
-        request->web_data_service);
+            : GetBrowserBoundKeyStoreInstance();
+    device_supports_browser_bound_keys_in_hardware =
+        key_store->GetDeviceSupportsHardwareKeys();
+    passkey_browser_binder = std::make_unique<PasskeyBrowserBinder>(
+        std::move(key_store), request->web_data_service);
   }
 #endif  // BUILDFLAG(IS_ANDROID)
 
@@ -610,6 +615,7 @@ void SecurePaymentConfirmationAppFactory::DidDownloadAllIcons(
           std::make_unique<SkBitmap>(payment_instrument_icon),
           std::move(request->credential->credential_id),
           std::move(passkey_browser_binder),
+          device_supports_browser_bound_keys_in_hardware,
           url::Origin::Create(request->delegate->GetTopOrigin()),
           request->delegate->GetSpec()->AsWeakPtr(),
           std::move(request->mojo_request), std::move(request->authenticator),

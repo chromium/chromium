@@ -234,7 +234,8 @@ TEST_F(PasskeyBrowserBinderTest,
       CreatePasskeyBrowserBinder(/*is_new_bbk=*/false);
   WebDataServiceConsumer* web_data_service_consumer = nullptr;
   WebDataServiceBase::Handle web_data_service_handle = 1234;
-  base::MockCallback<base::OnceCallback<void(std::unique_ptr<BrowserBoundKey>)>>
+  base::MockCallback<
+      base::OnceCallback<void(bool, std::unique_ptr<BrowserBoundKey>)>>
       mock_callback;
 
   EXPECT_CALL(*mock_web_data_service_,
@@ -244,7 +245,9 @@ TEST_F(PasskeyBrowserBinderTest,
                       Return(web_data_service_handle)));
   EXPECT_CALL(*mock_web_data_service_, SetBrowserBoundKey).Times(0);
   EXPECT_CALL(mock_callback,
-              Run(AllOf(NotNull(), Pointee(Property(
+              Run(
+                  /*is_new=*/false,
+                  AllOf(NotNull(), Pointee(Property(
                                        &BrowserBoundKey::GetPublicKeyAsCoseKey,
                                        fake_public_key_)))));
 
@@ -305,7 +308,8 @@ TEST_F(PasskeyBrowserBinderTest,
   std::unique_ptr<PasskeyBrowserBinder> binder = CreatePasskeyBrowserBinder();
   WebDataServiceConsumer* web_data_service_consumer = nullptr;
   WebDataServiceBase::Handle web_data_service_handle = 1234;
-  base::MockCallback<base::OnceCallback<void(std::unique_ptr<BrowserBoundKey>)>>
+  base::MockCallback<
+      base::OnceCallback<void(bool, std::unique_ptr<BrowserBoundKey>)>>
       mock_callback;
 
   EXPECT_CALL(*mock_web_data_service_,
@@ -318,7 +322,9 @@ TEST_F(PasskeyBrowserBinderTest,
       SetBrowserBoundKey(fake_credential_id_, fake_relying_party_, fake_bbk_id_,
                          /*consumer=*/NotNull()));
   EXPECT_CALL(mock_callback,
-              Run(AllOf(NotNull(), Pointee(Property(
+              Run(
+                  /*is_new=*/true,
+                  AllOf(NotNull(), Pointee(Property(
                                        &BrowserBoundKey::GetPublicKeyAsCoseKey,
                                        fake_public_key_)))));
 
@@ -345,7 +351,8 @@ TEST_F(PasskeyBrowserBinderTest,
   std::unique_ptr<PasskeyBrowserBinder> binder = CreatePasskeyBrowserBinder();
   WebDataServiceConsumer* web_data_service_consumer = nullptr;
   WebDataServiceBase::Handle web_data_service_handle = 1234;
-  base::MockCallback<base::OnceCallback<void(std::unique_ptr<BrowserBoundKey>)>>
+  base::MockCallback<
+      base::OnceCallback<void(bool, std::unique_ptr<BrowserBoundKey>)>>
       mock_callback;
 
   EXPECT_CALL(*mock_web_data_service_,
@@ -358,7 +365,9 @@ TEST_F(PasskeyBrowserBinderTest,
       SetBrowserBoundKey(fake_credential_id_, fake_relying_party_, fake_bbk_id_,
                          /*consumer=*/NotNull()));
   EXPECT_CALL(mock_callback,
-              Run(AllOf(NotNull(), Pointee(Property(
+              Run(
+                  /*is_new=*/true,
+                  AllOf(NotNull(), Pointee(Property(
                                        &BrowserBoundKey::GetPublicKeyAsCoseKey,
                                        fake_public_key_)))));
 

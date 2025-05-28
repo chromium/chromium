@@ -135,7 +135,8 @@ class PasskeyBrowserBinder : public WebDataServiceConsumer {
       std::vector<uint8_t> credential_id,
       std::string relying_party,
       const BrowserBoundKeyStore::CredentialInfoList& allowed_algorithms,
-      base::OnceCallback<void(std::unique_ptr<BrowserBoundKey>)> callback);
+      base::OnceCallback<void(bool is_new, std::unique_ptr<BrowserBoundKey>)>
+          callback);
 
   // Stores the association of the `key` to a `credential_id` and
   // `relying_party`. The UnboundKey must be std::moved and is thus
@@ -184,12 +185,13 @@ class PasskeyBrowserBinder : public WebDataServiceConsumer {
   // Called after retrieving the possibly empty `existing_browser_bound_key_id`
   // to retrieve the matching browser bound key. Otherwise creates a new browser
   // bound key and saves its id. The browser bound key is returned by running
-  // `callback`.
+  // `callback` with a boolean indicating whether the browser bound key is new.
   void GetOrCreateBrowserBoundKey(
       std::vector<uint8_t> credential_id,
       std::string relying_party,
       BrowserBoundKeyStore::CredentialInfoList allowed_algorithms,
-      base::OnceCallback<void(std::unique_ptr<BrowserBoundKey>)> callback,
+      base::OnceCallback<void(bool is_new, std::unique_ptr<BrowserBoundKey>)>
+          callback,
       std::vector<uint8_t> existing_browser_bound_key_id);
 
   // Called after internal authenticator was called to find stale BBKs.

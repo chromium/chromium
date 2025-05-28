@@ -26,10 +26,21 @@ enum class SecurePaymentConfirmationBrowserBoundKeyDeviceResult {
   kMaxValue = kFailureWithoutDeviceHardware,
 };
 
+enum class SecurePaymentConfirmationBrowserBoundKeyInclusionResult {
+  kIncludedNew = 0,
+  kIncludedExisting = 1,
+  kNotIncludedWithDeviceHardware = 2,
+  kNotIncludedWithoutDeviceHardware = 3,
+  kMaxValue = kNotIncludedWithoutDeviceHardware,
+};
+
 // LINT.ThenChange(//tools/metrics/histograms/metadata/payment/enums.xml:BrowserBoundKeys)
 
 void RecordEnrollSystemPromptResult(
     SecurePaymentConfirmationEnrollSystemPromptResult result);
+
+void RecordBrowserBoundKeyInclusion(
+    SecurePaymentConfirmationBrowserBoundKeyInclusionResult result);
 
 void RecordBrowserBoundKeyCreation(
     SecurePaymentConfirmationBrowserBoundKeyDeviceResult result);

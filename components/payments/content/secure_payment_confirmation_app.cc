@@ -28,6 +28,7 @@
 #include "components/payments/core/method_strings.h"
 #include "components/payments/core/payer_data.h"
 #include "components/payments/core/payments_experimental_features.h"
+#include "components/payments/core/secure_payment_confirmation_metrics.h"
 #include "components/webauthn/core/browser/internal_authenticator.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/web_contents.h"
@@ -71,6 +72,7 @@ SecurePaymentConfirmationApp::SecurePaymentConfirmationApp(
     std::unique_ptr<SkBitmap> payment_instrument_icon,
     std::vector<uint8_t> credential_id,
     std::unique_ptr<PasskeyBrowserBinder> passkey_browser_binder,
+    bool device_supports_browser_bound_keys_in_hardware,
     const url::Origin& merchant_origin,
     base::WeakPtr<PaymentRequestSpec> spec,
     mojom::SecurePaymentConfirmationRequestPtr request,
@@ -93,6 +95,8 @@ SecurePaymentConfirmationApp::SecurePaymentConfirmationApp(
       request_(std::move(request)),
       authenticator_(std::move(authenticator)),
       passkey_browser_binder_(std::move(passkey_browser_binder)),
+      device_supports_browser_bound_keys_in_hardware_(
+          device_supports_browser_bound_keys_in_hardware),
       network_label_(network_label),
       network_icon_(std::move(network_icon)),
       issuer_label_(issuer_label),
@@ -148,25 +152,27 @@ void SecurePaymentConfirmationApp::InvokePaymentApp(
       credential_parameters =
           base::ToVector(kDefaultBrowserBoundKeyCredentialParameters);
     }
-    auto on_get_browser_bound_key_callback = base::BindOnce(
-        &SecurePaymentConfirmationApp::OnGetBrowserBoundKey,
-        weak_ptr_factory_.GetWeakPtr(), delegate, std::move(options));
     if (web_contents()->GetBrowserContext()->IsOffTheRecord()) {
       passkey_browser_binder_->GetBoundKeyForPasskey(
           credential_id_, effective_relying_party_identity_,
-          std::move(on_get_browser_bound_key_callback));
+          base::BindOnce(&SecurePaymentConfirmationApp::OnGetBrowserBoundKey,
+                         weak_ptr_factory_.GetWeakPtr(), delegate,
+                         std::move(options), /*is_new=*/false));
     } else {
       passkey_browser_binder_->GetOrCreateBoundKeyForPasskey(
           credential_id_, effective_relying_party_identity_,
-          credential_parameters, std::move(on_get_browser_bound_key_callback));
+          credential_parameters,
+          base::BindOnce(&SecurePaymentConfirmationApp::OnGetBrowserBoundKey,
+                         weak_ptr_factory_.GetWeakPtr(), delegate,
+                         std::move(options)));
     }
   } else {
     OnGetBrowserBoundKey(delegate, std::move(options),
-                         /*browser_bound_key=*/nullptr);
+                         /*is_new=*/false, /*browser_bound_key=*/nullptr);
   }
 #else   // BUILDFLAG(IS_ANDROID))
   OnGetBrowserBoundKey(delegate, std::move(options),
-                       /*browser_bound_key=*/nullptr);
+                       /*is_new=*/false, /*browser_bound_key=*/nullptr);
 #endif  // BUILDFLAG(IS_ANDROID))
 }
 
@@ -314,11 +320,24 @@ SecurePaymentConfirmationApp::GetPasskeyBrowserBinderForTesting() {
 void SecurePaymentConfirmationApp::OnGetBrowserBoundKey(
     base::WeakPtr<Delegate> delegate,
     blink::mojom::PublicKeyCredentialRequestOptionsPtr options,
+    bool is_new,
     std::unique_ptr<BrowserBoundKey> browser_bound_key) {
   browser_bound_key_ = std::move(browser_bound_key);
   std::optional<std::vector<uint8_t>> browser_bound_public_key = std::nullopt;
   if (browser_bound_key_) {
     browser_bound_public_key = browser_bound_key_->GetPublicKeyAsCoseKey();
+    RecordBrowserBoundKeyInclusion(
+        is_new ? SecurePaymentConfirmationBrowserBoundKeyInclusionResult::
+                     kIncludedNew
+               : SecurePaymentConfirmationBrowserBoundKeyInclusionResult::
+                     kIncludedExisting);
+  } else if (passkey_browser_binder_) {
+    RecordBrowserBoundKeyInclusion(
+        device_supports_browser_bound_keys_in_hardware_
+            ? SecurePaymentConfirmationBrowserBoundKeyInclusionResult::
+                  kNotIncludedWithDeviceHardware
+            : SecurePaymentConfirmationBrowserBoundKeyInclusionResult::
+                  kNotIncludedWithoutDeviceHardware);
   }
   // TODO(crbug.com/40225659): The 'showOptOut' flag status must also be signed
   // in the assertion, so that the verifier can check that the caller offered

@@ -254,6 +254,21 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="PaymentRequest.SecurePaymentConfirmation.BrowserBoundKeyInclusion"
+    enum="SecurePaymentConfirmationBrowserBoundKeyInclusionResult"
+    expires_after="2025-12-04">
+  <owner>slobodan@chromium.org</owner>
+  <owner>chrome-payments-eng@google.com</owner>
+  <summary>
+    Whether and how browser bound key will be included in a secure payment
+    confirmation response once the authenticator succeeds. Recorded before the
+    browser bound public key is provided to the authenticator. I.e., recorded
+    after the user has clicked [Verify], but before the user has scanned their
+    biometric.
+  </summary>
+</histogram>
+
+<histogram
     name="PaymentRequest.SecurePaymentConfirmation.BrowserBoundKeyStoreCreate"
     enum="SecurePaymentConfirmationBrowserBoundKeyDeviceResult"
     expires_after="2025-12-04">

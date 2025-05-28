@@ -18,6 +18,13 @@ void RecordEnrollSystemPromptResult(
       result);
 }
 
+void RecordBrowserBoundKeyInclusion(
+    SecurePaymentConfirmationBrowserBoundKeyInclusionResult result) {
+  base::UmaHistogramEnumeration(
+      "PaymentRequest.SecurePaymentConfirmation.BrowserBoundKeyInclusion",
+      result);
+}
+
 void RecordBrowserBoundKeyCreation(
     SecurePaymentConfirmationBrowserBoundKeyDeviceResult result) {
   base::UmaHistogramEnumeration(

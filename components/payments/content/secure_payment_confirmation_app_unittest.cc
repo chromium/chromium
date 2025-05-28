@@ -16,6 +16,7 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/gmock_callback_support.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/payments/content/browser_binding/fake_browser_bound_key.h"
 #include "components/payments/content/browser_binding/fake_browser_bound_key_store.h"
@@ -24,6 +25,7 @@
 #include "components/payments/content/payment_request_spec.h"
 #include "components/payments/core/features.h"
 #include "components/payments/core/method_strings.h"
+#include "components/payments/core/secure_payment_confirmation_metrics.h"
 #include "components/webauthn/core/browser/mock_internal_authenticator.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
@@ -148,6 +150,7 @@ TEST_F(SecurePaymentConfirmationAppTest, Smoke) {
       /*payment_instrument_icon=*/std::make_unique<SkBitmap>(),
       std::move(credential_id),
       /*passkey_browser_binder=*/nullptr,
+      /*device_supports_browser_bound_keys_in_hardware=*/true,
       url::Origin::Create(GURL("https://merchant.example")), spec_->AsWeakPtr(),
       MakeRequest(), std::move(authenticator),
       /*network_label=*/u"", /*network_icon=*/std::make_unique<SkBitmap>(),
@@ -187,6 +190,9 @@ struct BrowserBoundKeyTestParams {
   bool is_new_bbk = false;
   bool is_off_the_record = false;
   bool expect_browser_bound_key = false;
+  bool device_supports_browser_bound_keys_in_hardware = false;
+  SecurePaymentConfirmationBrowserBoundKeyInclusionResult
+      expected_inclusion_metric_result;
   std::string test_name_suffix;
 };
 
@@ -207,6 +213,10 @@ INSTANTIATE_TEST_SUITE_P(
             .is_new_bbk = false,
             .is_off_the_record = false,
             .expect_browser_bound_key = true,
+            .device_supports_browser_bound_keys_in_hardware = true,
+            .expected_inclusion_metric_result =
+                SecurePaymentConfirmationBrowserBoundKeyInclusionResult::
+                    kIncludedExisting,
             .test_name_suffix = "WithSpecifiedAlgorithm",
         },
         BrowserBoundKeyTestParams{
@@ -218,6 +228,10 @@ INSTANTIATE_TEST_SUITE_P(
             .is_new_bbk = true,
             .is_off_the_record = false,
             .expect_browser_bound_key = true,
+            .device_supports_browser_bound_keys_in_hardware = true,
+            .expected_inclusion_metric_result =
+                SecurePaymentConfirmationBrowserBoundKeyInclusionResult::
+                    kIncludedNew,
             .test_name_suffix = "WithoutPreExistingKey",
         },
         BrowserBoundKeyTestParams{
@@ -229,6 +243,10 @@ INSTANTIATE_TEST_SUITE_P(
             .is_new_bbk = false,
             .is_off_the_record = true,
             .expect_browser_bound_key = true,
+            .device_supports_browser_bound_keys_in_hardware = true,
+            .expected_inclusion_metric_result =
+                SecurePaymentConfirmationBrowserBoundKeyInclusionResult::
+                    kIncludedExisting,
             .test_name_suffix = "WhenOffTheRecordWithPreExistingKey",
         },
         BrowserBoundKeyTestParams{
@@ -240,6 +258,10 @@ INSTANTIATE_TEST_SUITE_P(
             .is_new_bbk = true,
             .is_off_the_record = true,
             .expect_browser_bound_key = false,
+            .device_supports_browser_bound_keys_in_hardware = true,
+            .expected_inclusion_metric_result =
+                SecurePaymentConfirmationBrowserBoundKeyInclusionResult::
+                    kNotIncludedWithDeviceHardware,
             .test_name_suffix = "WhenOffTheRecordWithoutPreExistingKey",
         },
         BrowserBoundKeyTestParams{
@@ -249,6 +271,10 @@ INSTANTIATE_TEST_SUITE_P(
             .is_new_bbk = true,
             .is_off_the_record = false,
             .expect_browser_bound_key = true,
+            .device_supports_browser_bound_keys_in_hardware = true,
+            .expected_inclusion_metric_result =
+                SecurePaymentConfirmationBrowserBoundKeyInclusionResult::
+                    kIncludedNew,
             .test_name_suffix = "Es256WithDefaults",
         },
         BrowserBoundKeyTestParams{
@@ -258,6 +284,10 @@ INSTANTIATE_TEST_SUITE_P(
             .is_new_bbk = true,
             .is_off_the_record = false,
             .expect_browser_bound_key = true,
+            .device_supports_browser_bound_keys_in_hardware = true,
+            .expected_inclusion_metric_result =
+                SecurePaymentConfirmationBrowserBoundKeyInclusionResult::
+                    kIncludedNew,
             .test_name_suffix = "Rs256WithDefaults",
         },
         BrowserBoundKeyTestParams{
@@ -266,7 +296,23 @@ INSTANTIATE_TEST_SUITE_P(
             .is_new_bbk = true,
             .is_off_the_record = false,
             .expect_browser_bound_key = false,
+            .device_supports_browser_bound_keys_in_hardware = true,
+            .expected_inclusion_metric_result =
+                SecurePaymentConfirmationBrowserBoundKeyInclusionResult::
+                    kNotIncludedWithDeviceHardware,
             .test_name_suffix = "WithNonDefaultAlgorithm",
+        },
+        BrowserBoundKeyTestParams{
+            .credential_parameters = std::nullopt,
+            .algorithm_identifier = kAlgorithmIdentifier,
+            .is_new_bbk = true,
+            .is_off_the_record = false,
+            .expect_browser_bound_key = false,
+            .device_supports_browser_bound_keys_in_hardware = false,
+            .expected_inclusion_metric_result =
+                SecurePaymentConfirmationBrowserBoundKeyInclusionResult::
+                    kNotIncludedWithoutDeviceHardware,
+            .test_name_suffix = "NotIncludedWithoutDeviceHardware",
         }),
     [](const ::testing::TestParamInfo<BrowserBoundKeyTestParams>& info) {
       return info.param.test_name_suffix;
@@ -287,6 +333,7 @@ auto InvokeAuthenticatorCallback(std::vector<uint8_t> client_data_json) {
 
 TEST_P(SecurePaymentConfirmationAppBrowserBindingTest,
        AddsBrowserBoundKeyAndSignature) {
+  base::HistogramTester histograms;
   context_.set_is_off_the_record(GetParam().is_off_the_record);
   base::test::ScopedFeatureList features(
       blink::features::kSecurePaymentConfirmationBrowserBoundKeys);
@@ -309,9 +356,10 @@ TEST_P(SecurePaymentConfirmationAppBrowserBindingTest,
   SecurePaymentConfirmationApp app(
       web_contents_, "effective_rp.example", payment_instrument_label_,
       /*payment_instrument_icon=*/std::make_unique<SkBitmap>(), credential_id,
-      std::move(binder), url::Origin::Create(GURL("https://merchant.example")),
-      spec_->AsWeakPtr(), MakeRequest(GetParam().credential_parameters),
-      std::move(authenticator),
+      std::move(binder),
+      GetParam().device_supports_browser_bound_keys_in_hardware,
+      url::Origin::Create(GURL("https://merchant.example")), spec_->AsWeakPtr(),
+      MakeRequest(GetParam().credential_parameters), std::move(authenticator),
       /*network_label=*/u"", /*network_icon=*/std::make_unique<SkBitmap>(),
       /*issuer_label=*/u"", /*issuer_icon=*/std::make_unique<SkBitmap>());
   browser_bound_key_store_->PutFakeKey(FakeBrowserBoundKey(
@@ -360,6 +408,10 @@ TEST_P(SecurePaymentConfirmationAppBrowserBindingTest,
                     ElementsAreArray(GetParam().expect_browser_bound_key
                                          ? signature
                                          : std::vector<uint8_t>()))));
+  histograms.ExpectUniqueSample(
+      "PaymentRequest.SecurePaymentConfirmation.BrowserBoundKeyInclusion",
+      GetParam().expected_inclusion_metric_result,
+      /*expected_bucket_count=*/1);
 }
 #endif  // BUILDFLAG(IS_ANDROID)
 
@@ -378,6 +430,7 @@ TEST_F(SecurePaymentConfirmationAppTest, OnInstrumentDetailsError) {
       /*payment_instrument_icon=*/std::make_unique<SkBitmap>(),
       std::move(credential_id),
       /*passkey_browser_binder=*/nullptr,
+      /*device_supports_browser_bound_keys_in_hardware=*/false,
       url::Origin::Create(GURL("https://merchant.example")), spec_->AsWeakPtr(),
       MakeRequest(), std::move(authenticator),
       /*network_label=*/u"", /*network_icon=*/std::make_unique<SkBitmap>(),
@@ -412,6 +465,7 @@ TEST_F(SecurePaymentConfirmationAppFallbackTest, NoCredentials) {
       /*payment_instrument_icon=*/std::make_unique<SkBitmap>(),
       /*credential_id=*/std::vector<uint8_t>(),
       /*passkey_browser_binder=*/nullptr,
+      /*device_supports_browser_bound_keys_in_hardware=*/false,
       url::Origin::Create(GURL("https://merchant.example")), spec_->AsWeakPtr(),
       MakeRequest(), /*authenticator=*/nullptr,
       /*network_label=*/u"", /*network_icon=*/std::make_unique<SkBitmap>(),
@@ -430,6 +484,7 @@ TEST_F(SecurePaymentConfirmationAppFallbackTest, WithCredentials) {
       web_contents_, "effective_rp.example", payment_instrument_label_,
       /*payment_instrument_icon=*/std::make_unique<SkBitmap>(), credential_id,
       /*passkey_browser_binder=*/nullptr,
+      /*device_supports_browser_bound_keys_in_hardware=*/false,
       url::Origin::Create(GURL("https://merchant.example")), spec_->AsWeakPtr(),
       MakeRequest(),
       std::make_unique<webauthn::MockInternalAuthenticator>(web_contents_),

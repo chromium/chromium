@@ -247,9 +247,9 @@ void PasskeyBrowserBinder::GetOrCreateBoundKeyForPasskey(
     std::vector<uint8_t> credential_id,
     std::string relying_party,
     const BrowserBoundKeyStore::CredentialInfoList& allowed_algorithms,
-    base::OnceCallback<void(std::unique_ptr<BrowserBoundKey>)> callback) {
+    base::OnceCallback<void(bool, std::unique_ptr<BrowserBoundKey>)> callback) {
   if (!web_data_service_) {
-    std::move(callback).Run(nullptr);
+    std::move(callback).Run(/*is_new=*/false, nullptr);
     return;
   }
   auto handle = web_data_service_->GetBrowserBoundKey(
@@ -326,7 +326,7 @@ void PasskeyBrowserBinder::GetOrCreateBrowserBoundKey(
     std::vector<uint8_t> credential_id,
     std::string relying_party,
     BrowserBoundKeyStore::CredentialInfoList allowed_algorithms,
-    base::OnceCallback<void(std::unique_ptr<BrowserBoundKey>)> callback,
+    base::OnceCallback<void(bool, std::unique_ptr<BrowserBoundKey>)> callback,
     std::vector<uint8_t> browser_bound_key_id) {
   bool needs_to_be_created = browser_bound_key_id.empty();
   if (needs_to_be_created) {
@@ -345,7 +345,8 @@ void PasskeyBrowserBinder::GetOrCreateBrowserBoundKey(
           browser_bound_key_id, allowed_algorithms);
   RecordCreationOrRetrieval(/*is_creation=*/needs_to_be_created,
                             /*did_succeed=*/!!browser_bound_key);
-  std::move(callback).Run(std::move(browser_bound_key));
+  std::move(callback).Run(/*is_new=*/needs_to_be_created,
+                          std::move(browser_bound_key));
 }
 
 void PasskeyBrowserBinder::RecordCreationOrRetrieval(bool is_creation,
