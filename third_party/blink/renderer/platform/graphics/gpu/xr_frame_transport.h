@@ -32,7 +32,7 @@ namespace blink {
 
 class DawnControlClientHolder;
 class ImageToBufferCopier;
-class Image;
+class StaticBitmapImage;
 
 class PLATFORM_EXPORT XRFrameTransport final
     : public GarbageCollected<XRFrameTransport>,
@@ -62,7 +62,7 @@ class PLATFORM_EXPORT XRFrameTransport final
                    gpu::gles2::GLES2Interface*,
                    gpu::SharedImageInterface*,
                    DrawingBuffer::Client*,
-                   scoped_refptr<Image> image_ref,
+                   scoped_refptr<StaticBitmapImage> image_ref,
                    int16_t vr_frame_id);
 
   bool FrameSubmitWebGPU(device::mojom::blink::XRPresentationProvider*,
@@ -96,7 +96,7 @@ class PLATFORM_EXPORT XRFrameTransport final
 
   // Used to keep the image alive until the next frame if using
   // waitForPreviousTransferToFinish.
-  scoped_refptr<Image> previous_image_;
+  scoped_refptr<StaticBitmapImage> previous_image_;
 
   bool waiting_for_previous_frame_transfer_ = false;
   bool last_transfer_succeeded_ = false;
