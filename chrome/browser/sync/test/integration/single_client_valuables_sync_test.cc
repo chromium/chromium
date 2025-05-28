@@ -24,6 +24,7 @@ using autofill::ValuablesDataManagerFactory;
 using autofill::test::CreateLoyaltyCard;
 using autofill::test::CreateLoyaltyCard2;
 using sync_datatype_helper::test;
+using testing::ElementsAre;
 
 namespace {
 
@@ -89,7 +90,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientValuablesSyncTest, InitialSync) {
   ValuablesDataManager* vdm = GetValuablesDataManager(0);
   ASSERT_NE(nullptr, vdm);
   // Make sure the data & metadata is in the DB.
-  EXPECT_THAT(vdm->GetLoyaltyCards(), testing::ElementsAre(loyalty_card));
+  EXPECT_THAT(vdm->GetLoyaltyCards(), ElementsAre(loyalty_card));
 }
 
 // ChromeOS does not support late signin after profile creation, so the test
@@ -103,7 +104,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientValuablesSyncTest, ClearOnSignOut) {
   ValuablesDataManager* vdm = GetValuablesDataManager(0);
   ASSERT_NE(nullptr, vdm);
   // Make sure the data & metadata is in the DB.
-  EXPECT_THAT(vdm->GetLoyaltyCards(), testing::ElementsAre(loyalty_card));
+  EXPECT_THAT(vdm->GetLoyaltyCards(), ElementsAre(loyalty_card));
 
   // Signout, the data & metadata should be gone.
   GetClient(0)->SignOutPrimaryAccount();
@@ -122,7 +123,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientValuablesSyncTest, ClearOnSyncPaused) {
   ValuablesDataManager* vdm = GetValuablesDataManager(0);
   ASSERT_NE(nullptr, vdm);
   // Make sure the data & metadata is in the DB.
-  EXPECT_THAT(vdm->GetLoyaltyCards(), testing::ElementsAre(loyalty_card));
+  EXPECT_THAT(vdm->GetLoyaltyCards(), ElementsAre(loyalty_card));
 
   // Enter sync paused state, the data & metadata should be gone.
   GetClient(0)->EnterSyncPausedStateForPrimaryAccount();
@@ -144,14 +145,14 @@ IN_PROC_BROWSER_TEST_F(SingleClientValuablesSyncTest,
   ASSERT_TRUE(SetupSync());
   ValuablesDataManager* vdm = GetValuablesDataManager(0);
   ASSERT_NE(nullptr, vdm);
-  EXPECT_THAT(vdm->GetLoyaltyCards(), testing::ElementsAre(loyalty_card));
+  EXPECT_THAT(vdm->GetLoyaltyCards(), ElementsAre(loyalty_card));
 
   ValuablesDataChangedWaiter waiter(vdm);
   // Put some completely new data in the sync server.
   const LoyaltyCard loyalty_card2 = CreateLoyaltyCard2();
   GetFakeServer()->SetValuableData({LoyaltyCardToSyncEntity(loyalty_card2)});
   waiter.Wait();
-  EXPECT_THAT(vdm->GetLoyaltyCards(), testing::ElementsAre(loyalty_card2));
+  EXPECT_THAT(vdm->GetLoyaltyCards(), ElementsAre(loyalty_card2));
 }
 
 IN_PROC_BROWSER_TEST_F(SingleClientValuablesSyncTest,
@@ -161,7 +162,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientValuablesSyncTest,
   ASSERT_TRUE(SetupSync());
   ValuablesDataManager* vdm = GetValuablesDataManager(0);
   ASSERT_NE(nullptr, vdm);
-  EXPECT_THAT(vdm->GetLoyaltyCards(), testing::ElementsAre(loyalty_card));
+  EXPECT_THAT(vdm->GetLoyaltyCards(), ElementsAre(loyalty_card));
 
   // Turn off payments sync, the data & metadata should be gone.
   ASSERT_TRUE(
@@ -178,7 +179,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientValuablesSyncTest,
   ASSERT_TRUE(SetupSync());
   ValuablesDataManager* vdm = GetValuablesDataManager(0);
   ASSERT_NE(nullptr, vdm);
-  EXPECT_THAT(vdm->GetLoyaltyCards(), testing::ElementsAre(loyalty_card));
+  EXPECT_THAT(vdm->GetLoyaltyCards(), ElementsAre(loyalty_card));
 
   // Turn off the wallet autofill pref, the data & metadata should be gone as a
   // side effect of the wallet data type controller noticing.

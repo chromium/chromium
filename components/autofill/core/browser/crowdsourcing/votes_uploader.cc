@@ -215,8 +215,7 @@ bool VotesUploader::MaybeStartVoteUploadProcess(
   std::vector<LoyaltyCard> loyalty_cards;
   if (ValuablesDataManager* valuables_data_manager =
           client_->GetValuablesDataManager()) {
-    loyalty_cards = base::ToVector(valuables_data_manager->GetLoyaltyCards(),
-                                   [](LoyaltyCard card) { return card; });
+    loyalty_cards = valuables_data_manager->GetLoyaltyCards();
   }
 
   if (profiles.empty() && credit_cards.empty() && entities.empty() &&

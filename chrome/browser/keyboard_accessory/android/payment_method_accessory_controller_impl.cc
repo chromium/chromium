@@ -501,8 +501,8 @@ std::vector<Iban> PaymentMethodAccessoryControllerImpl::GetIbans() const {
   return paydm()->GetOrderedIbansToSuggest();
 }
 
-base::span<const LoyaltyCard>
-PaymentMethodAccessoryControllerImpl::GetLoyaltyCards() const {
+std::vector<LoyaltyCard> PaymentMethodAccessoryControllerImpl::GetLoyaltyCards()
+    const {
   if (!valuables_data_manager()) {
     return {};
   }

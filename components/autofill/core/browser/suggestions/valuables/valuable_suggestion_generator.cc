@@ -73,7 +73,7 @@ Suggestion CreateLoyaltyCardSuggestion(
 // Creates suggestions from given `loyalty_cards` and adds them to given
 // `suggestions`.
 std::vector<Suggestion> CreateSuggestionsFromLoyaltyCards(
-    base::span<LoyaltyCard> loyalty_cards,
+    base::span<const LoyaltyCard> loyalty_cards,
     const ValuablesDataManager& valuables_manager) {
   std::vector<Suggestion> suggestions;
   for (const LoyaltyCard& loyalty_card : loyalty_cards) {
@@ -99,19 +99,18 @@ bool LoyaltyCardMatchesDomain(const LoyaltyCard& loyalty_card,
 std::vector<Suggestion> GetLoyaltyCardSuggestions(
     const ValuablesDataManager& valuables_manager,
     const GURL& url) {
-  const base::span<const LoyaltyCard> loyalty_cards =
+  std::vector<LoyaltyCard> all_loyalty_cards =
       valuables_manager.GetLoyaltyCards();
-  if (loyalty_cards.empty()) {
+  if (all_loyalty_cards.empty()) {
     return {};
   }
-  std::vector<LoyaltyCard> all_loyalty_cards(loyalty_cards.begin(),
-                                             loyalty_cards.end());
+
   auto non_affiliated_cards = std::ranges::stable_partition(
       all_loyalty_cards, [&](const LoyaltyCard& card) {
         return LoyaltyCardMatchesDomain(card, url);
       });
   // SAFETY: Bounds information contained in vector iterators.
-  UNSAFE_BUFFERS(base::span<LoyaltyCard> affiliated_cards(
+  UNSAFE_BUFFERS(std::vector<LoyaltyCard> affiliated_cards(
       all_loyalty_cards.begin(), non_affiliated_cards.begin()));
   // If no submenu is needed.
   if (affiliated_cards.empty() || non_affiliated_cards.empty()) {
@@ -150,14 +149,12 @@ void ExtendEmailSuggestionsWithLoyaltyCardSuggestions(
     std::vector<Suggestion>& email_suggestions,
     const ValuablesDataManager& valuables_manager,
     const GURL& url) {
-  const base::span<const LoyaltyCard> loyalty_cards =
+  std::vector<LoyaltyCard> all_loyalty_cards =
       valuables_manager.GetLoyaltyCards();
   CHECK(!email_suggestions.empty());
-  if (loyalty_cards.empty()) {
+  if (all_loyalty_cards.empty()) {
     return;
   }
-  std::vector<LoyaltyCard> all_loyalty_cards(loyalty_cards.begin(),
-                                             loyalty_cards.end());
   std::ranges::sort(all_loyalty_cards, CompareByMerchantName);
 #if BUILDFLAG(IS_ANDROID)
   // No submenu on Android. Loyalty card suggestions are listed right after

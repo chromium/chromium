@@ -186,7 +186,7 @@ TouchToFillDelegateAndroidImpl::DryRunForLoyaltyCard() {
   if (!vdm) {
     return DryRunResult(TriggerOutcome::kNoValidPaymentMethods, {});
   }
-  base::span<const LoyaltyCard> loyalty_cards = vdm->GetLoyaltyCards();
+  const std::vector<LoyaltyCard> loyalty_cards = vdm->GetLoyaltyCards();
   if (loyalty_cards.empty()) {
     return DryRunResult(TriggerOutcome::kNoValidPaymentMethods, {});
   }
@@ -206,7 +206,7 @@ TouchToFillDelegateAndroidImpl::DryRunForLoyaltyCard() {
   // Only show the TTF surface if any loyalty card have a matching merchant
   // domain.
   if (std::ranges::any_of(loyalty_cards, HasMatchingMerchantDomain)) {
-    return DryRunResult(TriggerOutcome::kShown, base::ToVector(loyalty_cards));
+    return DryRunResult(TriggerOutcome::kShown, loyalty_cards);
   }
   return DryRunResult(TriggerOutcome::kNoValidPaymentMethods, {});
 }

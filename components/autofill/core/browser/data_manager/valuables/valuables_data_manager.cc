@@ -6,6 +6,7 @@
 
 #include <vector>
 
+#include "base/containers/to_vector.h"
 #include "components/autofill/core/browser/data_model/valuables/loyalty_card.h"
 #include "components/autofill/core/browser/ui/autofill_image_fetcher_base.h"
 #include "components/autofill/core/browser/webdata/autofill_change.h"
@@ -32,7 +33,7 @@ ValuablesDataManager::ValuablesDataManager(
 
 ValuablesDataManager::~ValuablesDataManager() = default;
 
-base::span<const LoyaltyCard> ValuablesDataManager::GetLoyaltyCards() const {
+std::vector<LoyaltyCard> ValuablesDataManager::GetLoyaltyCards() const {
   return loyalty_cards_;
 }
 
