@@ -750,6 +750,13 @@
        {}
       ]
      ],
+     "chrome-420329041-crash.html": [
+      "2b236a371e524da0ac5669ad7fc5f45259c089c5",
+      [
+       null,
+       {}
+      ]
+     ],
      "grid-anchor-center-crash.html": [
       "bab4eed6b66dfb846ef451f14ced6eb2a0867cc1",
       [
@@ -18329,6 +18336,13 @@
        ],
        "relatedTarget-attribute-manual.html": [
         "c5a897d68e4cd79265d99bb0f637feaf144f6cd4",
+        [
+         null,
+         {}
+        ]
+       ],
+       "ua-shadow-contents-manual.html": [
+        "23908ca927426be40895156d26b94fdbc40b090d",
         [
          null,
          {}
@@ -319995,7 +320009,7 @@
   },
   "support": {
    ".config.json": [
-    "835ab9977858a114f58b6ff29c1302155c324d59",
+    "c33318982a7d19e27f7d493ab630d990d9a7fd46",
     []
    ],
    ".gitignore": [
@@ -322866,6 +322880,10 @@
      []
     ],
     "permissions-policy": {
+     "WEB_FEATURES.yml": [
+      "da7599308cc01a95696e952d02553df47ba3f6bf",
+      []
+     ],
      "ch-ua-high-entropy-values-disabled-by-permissions-policy.https.sub.html.headers": [
       "fcf474880843e220faff943f8946f83b514208a4",
       []
@@ -388920,7 +388938,7 @@
      ],
      "resources": {
       "fetch-private-http.html": [
-       "e372d90b26a02bdfa0b9a34c9c8ad956b5d0cc02",
+       "517629b758e89d4e07f2278d0ae7cb1a45b19c17",
        []
       ],
       "fetch-private.html": [
@@ -388928,7 +388946,7 @@
        []
       ],
       "fetch-public-http-wrong-address-space.html": [
-       "1d149d00cb351b9aaa4402b9b8b7d975d56a9acb",
+       "c15a87ff7b9206576710b5763a64ac6a9a704d71",
        []
       ],
       "support.sub.js": [
@@ -389658,18 +389676,6 @@
      ],
      "websocket.tentative.window-expected.txt": [
       "f39de90ff57aaf483cdde713f8d3f9082959654c",
-      []
-     ],
-     "window-open-existing.tentative.https.window_include=from-private-expected.txt": [
-      "a1f71342af938b921068edb09a61ee9f7c7d56af",
-      []
-     ],
-     "window-open-existing.tentative.https.window_include=from-public-expected.txt": [
-      "d14171bc367dbc44dd4e8888d5a9cc1b943ce793",
-      []
-     ],
-     "window-open-existing.tentative.https.window_include=from-treat-as-public-expected.txt": [
-      "aa8c3d8001da1c0aaa3c81d6264ed4bf658725bc",
       []
      ],
      "window-open-existing.tentative.window-expected.txt": [
@@ -408542,6 +408548,10 @@
         "d8cc0d92a52ba500932e55d2e2422eeac4d589bd",
         []
        ],
+       "event-interface-expected.txt": [
+        "57ccc64f83c74b49b55a2651e6d1c40dd4f0c14e",
+        []
+       ],
        "resources": {
         "invoker-utils.js": [
          "4261f9c0d32fa2911a3a8ce252246e55a655655f",
@@ -410603,7 +410613,7 @@
      "system-state-and-capabilities": {
       "the-navigator-object": {
        "WEB_FEATURES.yml": [
-        "a1af3e21a48f5941a078209963d1ae7bc379dd59",
+        "7a364e140958e3cea3be9fd13654afc504006664",
         []
        ],
        "per-global.window-expected.txt": [
@@ -413749,7 +413759,7 @@
     }
    },
    "lint.ignore": [
-    "10b5dadba749857f16dc92f348fff31b4400dca3",
+    "60b0f65a6f43a560c5d86ffe937359d5c9717597",
     []
    ],
    "loading": {
@@ -430382,6 +430392,10 @@
     "META.yml": [
      "c994748e0f27bcc75019ad7a20816ee138d15f91",
      []
+    ],
+    "WEB_FEATURES.yml": [
+     "2d331cf4060d293c912f564e28b8fff089cfeb09",
+     []
     ]
    },
    "uievents": {
@@ -439785,6 +439799,10 @@
     ],
     "README.md": [
      "58ee7cca1ab3e9856e380eaccde042d5700c2603",
+     []
+    ],
+    "WEB_FEATURES.yml": [
+     "1687ef742e2b51872debc6da074022449c2215df",
      []
     ],
     "Worker-creation-happens-in-parallel.https-expected.txt": [
@@ -531666,13 +531684,6 @@
        {}
       ]
      ],
-     "var-ident-function.html": [
-      "3453cd5b64942b9d7bccdde418baa50e8018205a",
-      [
-       null,
-       {}
-      ]
-     ],
      "var-parsing.html": [
       "0c69342f2ee11bdfdbe991be375a70732956bee7",
       [
@@ -582830,185 +582841,6 @@
           "resources/support.sub.js"
          ]
         ]
-       }
-      ]
-     ],
-     "window-open-existing.tentative.https.window.js": [
-      "6a2a624fc8032d03b626109ee7f825f7acf5874c",
-      [
-       "fetch/private-network-access/window-open-existing.tentative.https.window.html?include=from-local",
-       {
-        "script_metadata": [
-         [
-          "script",
-          "/common/subset-tests-by-key.js"
-         ],
-         [
-          "script",
-          "/common/dispatcher/dispatcher.js"
-         ],
-         [
-          "script",
-          "/common/utils.js"
-         ],
-         [
-          "script",
-          "resources/support.sub.js"
-         ],
-         [
-          "timeout",
-          "long"
-         ],
-         [
-          "variant",
-          "?include=from-local"
-         ],
-         [
-          "variant",
-          "?include=from-private"
-         ],
-         [
-          "variant",
-          "?include=from-public"
-         ],
-         [
-          "variant",
-          "?include=from-treat-as-public"
-         ]
-        ],
-        "timeout": "long"
-       }
-      ],
-      [
-       "fetch/private-network-access/window-open-existing.tentative.https.window.html?include=from-private",
-       {
-        "script_metadata": [
-         [
-          "script",
-          "/common/subset-tests-by-key.js"
-         ],
-         [
-          "script",
-          "/common/dispatcher/dispatcher.js"
-         ],
-         [
-          "script",
-          "/common/utils.js"
-         ],
-         [
-          "script",
-          "resources/support.sub.js"
-         ],
-         [
-          "timeout",
-          "long"
-         ],
-         [
-          "variant",
-          "?include=from-local"
-         ],
-         [
-          "variant",
-          "?include=from-private"
-         ],
-         [
-          "variant",
-          "?include=from-public"
-         ],
-         [
-          "variant",
-          "?include=from-treat-as-public"
-         ]
-        ],
-        "timeout": "long"
-       }
-      ],
-      [
-       "fetch/private-network-access/window-open-existing.tentative.https.window.html?include=from-public",
-       {
-        "script_metadata": [
-         [
-          "script",
-          "/common/subset-tests-by-key.js"
-         ],
-         [
-          "script",
-          "/common/dispatcher/dispatcher.js"
-         ],
-         [
-          "script",
-          "/common/utils.js"
-         ],
-         [
-          "script",
-          "resources/support.sub.js"
-         ],
-         [
-          "timeout",
-          "long"
-         ],
-         [
-          "variant",
-          "?include=from-local"
-         ],
-         [
-          "variant",
-          "?include=from-private"
-         ],
-         [
-          "variant",
-          "?include=from-public"
-         ],
-         [
-          "variant",
-          "?include=from-treat-as-public"
-         ]
-        ],
-        "timeout": "long"
-       }
-      ],
-      [
-       "fetch/private-network-access/window-open-existing.tentative.https.window.html?include=from-treat-as-public",
-       {
-        "script_metadata": [
-         [
-          "script",
-          "/common/subset-tests-by-key.js"
-         ],
-         [
-          "script",
-          "/common/dispatcher/dispatcher.js"
-         ],
-         [
-          "script",
-          "/common/utils.js"
-         ],
-         [
-          "script",
-          "resources/support.sub.js"
-         ],
-         [
-          "timeout",
-          "long"
-         ],
-         [
-          "variant",
-          "?include=from-local"
-         ],
-         [
-          "variant",
-          "?include=from-private"
-         ],
-         [
-          "variant",
-          "?include=from-public"
-         ],
-         [
-          "variant",
-          "?include=from-treat-as-public"
-         ]
-        ],
-        "timeout": "long"
        }
       ]
      ],
@@ -658289,6 +658121,13 @@
           "testdriver": true,
           "timeout": "long"
          }
+        ]
+       ],
+       "source-attribute-retargeting.tentative.html": [
+        "885b75a3387a8f61f8f25fdd93d60fe3027b5599",
+        [
+         null,
+         {}
         ]
        ]
       },
