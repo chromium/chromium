@@ -4186,15 +4186,6 @@
     "expires": "Nov 11, 2025"
   },
   {
-    "prefix": "atomic-move-range-preservation",
-    "platforms": ["Linux"],
-    "bases": ["external/wpt/dom/nodes/moveBefore/selection-preserve.html"],
-    "exclusive_tests": "ALL",
-    "args": ["--enable-features=AtomicMoveRangePreservation"],
-    "owners": ["dom@chromium.org", "nrosenthal@chromium.org"],
-    "expires": "May 1, 2025"
-  },
-  {
     "prefix": "sri-message-signatures",
     "platforms": ["Linux"],
     "bases": [
