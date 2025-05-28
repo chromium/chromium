@@ -8,6 +8,12 @@ import("//chrome/process_version_rc_template.gni")
 import("//chrome/updater/zip.gni")
 import("//testing/test.gni")
 
+if (is_win) {
+  # ICU is needed for proxy URL canonicalization. Proxies are only supported on
+  # Windows.
+  import("//third_party/icu/config.gni")
+}
+
 process_version("version_header") {
   sources = [ "//chrome/VERSION" ]
   template_file = "enterprise_companion_version.h.in"
@@ -504,5 +510,10 @@ artifact_zip("enterprise_companion_zip") {
   } else if (is_win) {
     inputs = [ "$root_build_dir/enterprise_companion.exe" ]
     deps = [ ":enterprise_companion" ]
+
+    if (icu_use_data_file) {
+      inputs += [ "$root_out_dir/icudtl.dat" ]
+      deps += [ "//third_party/icu:icudata" ]
+    }
   }
 }
