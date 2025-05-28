@@ -15,6 +15,7 @@
 #include "components/performance_manager/public/decorators/page_live_state_decorator.h"
 #include "components/performance_manager/public/user_tuning/prefs.h"
 #include "components/performance_manager/test_support/graph_test_harness.h"
+#include "testing/gtest/include/gtest/gtest.h"
 
 namespace performance_manager::testing {
 
@@ -45,6 +46,12 @@ void MakePageNodeDiscardable(PageNodeImpl* page_node,
            CanDiscardResult::kEligible);
   CHECK_EQ(eligibility_policy->CanDiscard(page_node, DiscardReason::SUGGESTED),
            CanDiscardResult::kEligible);
+}
+
+void SetAllPagesDiscardableForTest() {
+  auto* policy = policies::DiscardEligibilityPolicy::GetFromGraph();
+  ASSERT_TRUE(policy);
+  policy->set_always_discard_for_testing(true);
 }
 
 GraphTestHarnessWithDiscardablePage::GraphTestHarnessWithDiscardablePage()

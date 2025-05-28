@@ -863,4 +863,15 @@ TEST_F(DiscardEligibilityPolicyTest, TestCannotDiscardWithPictureInPicture) {
   EXPECT_TRUE(reasons_vec.empty());
 }
 
+TEST_F(DiscardEligibilityPolicyTest, TestAlwaysDiscardForTesting) {
+  DiscardEligibilityPolicy::GetFromGraph(graph())
+      ->set_always_discard_for_testing(true);
+  PageLiveStateDecorator::Data::GetOrCreateForPageNode(page_node())
+      ->SetIsActiveTabForTesting(true);
+  std::vector<CannotDiscardReason> reasons_vec;
+  EXPECT_EQ(kEligible,
+            CanDiscard(page_node(), DiscardReason::PROACTIVE, &reasons_vec));
+  EXPECT_TRUE(reasons_vec.empty());
+}
+
 }  // namespace performance_manager::policies
