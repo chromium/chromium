@@ -58,8 +58,7 @@ AutofillCountry::AutofillCountry(const std::string& country_code,
                       : country_code;
 
   required_fields_for_address_import_ =
-      CountryDataMap::GetInstance()->GetRequiredFieldsForAddressImport(
-          country_code_);
+      country_data_map->GetRequiredFieldsForAddressImport(country_code_);
 
   // Translate the country name by the supplied local.
   if (locale)
