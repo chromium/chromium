@@ -79,7 +79,6 @@ import org.chromium.chrome.browser.ui.system.StatusBarColorController;
 import org.chromium.components.browser_ui.edge_to_edge.EdgeToEdgeSystemBarColorHelper;
 import org.chromium.components.browser_ui.modaldialog.AppModalPresenter;
 import org.chromium.components.metrics.OmniboxEventProtos.OmniboxEventProto.PageClassification;
-import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.ui.base.ActivityKeyboardVisibilityDelegate;
 import org.chromium.ui.base.ActivityWindowAndroid;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -410,9 +409,7 @@ public class SearchActivity extends AsyncInitializationActivity
 
         mSearchBoxDataProvider.setCurrentUrl(SearchActivityUtils.getIntentUrl(intent));
 
-        if (OmniboxFeatures.sAndroidHubSearch.isEnabled()) {
-            setColorScheme(mSearchBoxDataProvider.isIncognitoBranded());
-        }
+        setColorScheme(mSearchBoxDataProvider.isIncognitoBranded());
 
         switch (mIntentOrigin) {
             case IntentOrigin.CUSTOM_TAB:
@@ -518,7 +515,7 @@ public class SearchActivity extends AsyncInitializationActivity
     private void finishNativeInitializationWithProfile(Profile profile) {
         refinePageClassWithProfile(profile);
 
-        if (OmniboxFeatures.sAndroidHubSearch.isEnabled() && mIntentOrigin == IntentOrigin.HUB) {
+        if (mIntentOrigin == IntentOrigin.HUB) {
             setHubSearchBoxUrlBarElements();
         }
 
@@ -668,8 +665,7 @@ public class SearchActivity extends AsyncInitializationActivity
             intent.putExtra(SearchWidgetProvider.EXTRA_FROM_SEARCH_WIDGET, true);
         }
 
-        if (OmniboxFeatures.sAndroidHubSearch.isEnabled()
-                && mSearchBoxDataProvider.isIncognitoBranded()) {
+        if (mSearchBoxDataProvider.isIncognitoBranded()) {
             intent.putExtra(Browser.EXTRA_APPLICATION_ID, getApplicationContext().getPackageName());
             intent.putExtra(IntentHandler.EXTRA_OPEN_NEW_INCOGNITO_TAB, true);
             IntentUtils.addTrustedIntentExtras(intent);

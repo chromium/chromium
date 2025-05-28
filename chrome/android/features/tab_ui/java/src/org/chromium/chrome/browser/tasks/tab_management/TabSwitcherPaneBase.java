@@ -64,7 +64,6 @@ import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController.MenuOrKeyboardActionHandler;
 import org.chromium.components.feature_engagement.Tracker;
-import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.ui.base.DeviceFormFactor;
 
 import java.util.List;
@@ -142,16 +141,14 @@ public abstract class TabSwitcherPaneBase implements Pane, TabSwitcher, TabSwitc
                 @Override
                 public void beforeStart() {
                     mIsAnimatingSupplier.set(true);
-                    if (OmniboxFeatures.sAndroidHubSearch.isEnabled()
-                            && mPaneHubController != null) {
+                    if (mPaneHubController != null) {
                         mPaneHubController.setSearchBoxBackgroundProperties(/* shouldShow= */ true);
                     }
                 }
 
                 @Override
                 public void afterEnd() {
-                    if (OmniboxFeatures.sAndroidHubSearch.isEnabled()
-                            && mPaneHubController != null) {
+                    if (mPaneHubController != null) {
                         mPaneHubController.setSearchBoxBackgroundProperties(
                                 /* shouldShow= */ false);
                     }

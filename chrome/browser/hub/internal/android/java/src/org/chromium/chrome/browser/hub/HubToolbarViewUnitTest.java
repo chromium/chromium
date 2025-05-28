@@ -62,12 +62,9 @@ import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRule;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.Features;
-import org.chromium.base.test.util.Features.DisableFeatures;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.hub.HubToolbarProperties.PaneButtonLookup;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
-import org.chromium.components.omnibox.OmniboxFeatureList;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
@@ -307,7 +304,6 @@ public class HubToolbarViewUnitTest {
     }
 
     @Test
-    @EnableFeatures(OmniboxFeatureList.ANDROID_HUB_SEARCH)
     public void testUpdateIncognitoElements() {
         mPropertyModel.set(IS_INCOGNITO, true);
         assertEquals(
@@ -319,7 +315,6 @@ public class HubToolbarViewUnitTest {
     }
 
     @Test
-    @EnableFeatures(OmniboxFeatureList.ANDROID_HUB_SEARCH)
     public void testUpdateSearchBoxColorScheme() {
         forceSetColorScheme(HubColorScheme.INCOGNITO);
         assertEquals(
@@ -343,7 +338,6 @@ public class HubToolbarViewUnitTest {
     }
 
     @Test
-    @EnableFeatures(OmniboxFeatureList.ANDROID_HUB_SEARCH)
     public void testHubSearchEnabledState() {
         mPropertyModel.set(HUB_SEARCH_ENABLED_STATE, false);
         assertFalse(mSearchBox.isEnabled());
@@ -357,15 +351,8 @@ public class HubToolbarViewUnitTest {
     }
 
     @Test
-    @EnableFeatures(OmniboxFeatureList.ANDROID_HUB_SEARCH)
     public void testHubColorMixer_searchBoxEnabled() {
         verify(mColorMixer, times(8)).registerBlend(any());
-    }
-
-    @Test
-    @DisableFeatures(OmniboxFeatureList.ANDROID_HUB_SEARCH)
-    public void testHubColorMixer_searchBoxDisabled() {
-        verify(mColorMixer, times(5)).registerBlend(any());
     }
 
     /**

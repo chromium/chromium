@@ -398,9 +398,6 @@ BASE_FEATURE(kSuppressIntermediateACUpdatesOnLowEndDevices,
              "SuppressIntermediateACUpdatesOnLowEndDevices",
              DISABLED);
 
-// (Android only) Show the search feature in the hub.
-BASE_FEATURE(kAndroidHubSearch, "AndroidHubSearch", ENABLED);
-
 // (Android only) Show tab groups via the search feature in the hub.
 BASE_FEATURE(kAndroidHubSearchTabGroups, "AndroidHubSearchTabGroups", DISABLED);
 
@@ -424,7 +421,6 @@ static jlong JNI_OmniboxFeatureMap_GetNativeMap(JNIEnv* env) {
       &kOmniboxElegantTextHeight,
       &kRetainOmniboxOnFocus,
       &kJumpStartOmnibox,
-      &kAndroidHubSearch,
       &kAndroidHubSearchTabGroups,
       &kPostDelayedTaskFocusTab,
       &kOmniboxMobileParityUpdate};

@@ -39,7 +39,6 @@ import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.chrome.tab_ui.R;
-import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.components.sensitive_content.SensitiveContentFeatures;
 
 import java.lang.annotation.Retention;
@@ -101,9 +100,7 @@ public class IncognitoTabSwitcherPane extends TabSwitcherPaneBase {
 
                     setNewTabButtonEnabledState(/* enabled= */ true);
 
-                    if (OmniboxFeatures.sAndroidHubSearch.isEnabled()) {
-                        mHubSearchEnabledStateSupplier.set(true);
-                    }
+                    mHubSearchEnabledStateSupplier.set(true);
                 }
 
                 @Override
@@ -288,7 +285,7 @@ public class IncognitoTabSwitcherPane extends TabSwitcherPaneBase {
             coordinator.resetWithListOfTabs(null);
             cancelWaitForTabStateInitializedTimer();
 
-            if (OmniboxFeatures.sAndroidHubSearch.isEnabled() && incognitoReauthShowing) {
+            if (incognitoReauthShowing) {
                 mHubSearchEnabledStateSupplier.set(false);
             }
         } else {

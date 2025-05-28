@@ -934,11 +934,7 @@ class AutocompleteMediator
 
         if (mAutocompleteInput.getPageClassification() == PageClassification.ANDROID_HUB_VALUE) {
             RecordUserAction.record("HubSearch.KeyboardEnterPressed");
-
-            if (!OmniboxFeatures.sAndroidHubSearchEnterPerformsSearch.getValue()) {
-                // For Hub Search, searching by keyboard typed query is not allowed so do nothing.
-                return;
-            }
+            // For Hub Search, default behavior kicks off search by pressing enter, do not return.
         }
 
         if (mAutocomplete.isPresent()) {

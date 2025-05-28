@@ -61,7 +61,6 @@ import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.components.browser_ui.desktop_windowing.AppHeaderState;
 import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
 import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager.AppHeaderObserver;
-import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.ui.resources.ResourceManager;
@@ -753,7 +752,7 @@ public class HubLayout extends Layout implements HubLayoutController, AppHeaderO
         if (mTabModelSelector.isIncognitoBrandedModelSelected() != newIsIncognito) {
             // Start from above the toolbar when switching models.
             finalRect.top = containerViewRect.top;
-        } else if (OmniboxFeatures.sAndroidHubSearch.isEnabled()) {
+        } else {
             // Account for the hub's search box container height.
             int searchBoxHeight =
                     HubUtils.getSearchBoxHeight(

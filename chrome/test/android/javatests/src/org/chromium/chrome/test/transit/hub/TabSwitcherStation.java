@@ -36,7 +36,6 @@ import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.transit.page.PageStation;
 import org.chromium.chrome.test.transit.tabmodel.TabCountChangedCondition;
 import org.chromium.chrome.test.util.TabBinningUtil;
-import org.chromium.components.omnibox.OmniboxFeatures;
 
 import java.util.List;
 
@@ -72,22 +71,20 @@ public abstract class TabSwitcherStation extends HubBaseStation {
 
         newTabButtonElement =
                 declareView(toolbarElement.descendant(withId(R.id.toolbar_action_button)));
-        if (OmniboxFeatures.sAndroidHubSearch.isEnabled()) {
-            declareElementFactory(
-                    mActivityElement,
-                    delayedElements -> {
-                        Matcher<View> searchBox = withId(R.id.search_box);
-                        ViewSpec<View> searchLoupe =
-                                toolbarElement.descendant(withId(R.id.search_loupe));
-                        if (shouldHubSearchBoxBeVisible()) {
-                            searchElement = delayedElements.declareView(searchLoupe);
-                            delayedElements.declareNoView(searchBox);
-                        } else {
-                            searchElement = delayedElements.declareView(searchBox);
-                            delayedElements.declareNoView(searchLoupe);
-                        }
-                    });
-        }
+        declareElementFactory(
+                mActivityElement,
+                delayedElements -> {
+                    Matcher<View> searchBox = withId(R.id.search_box);
+                    ViewSpec<View> searchLoupe =
+                            toolbarElement.descendant(withId(R.id.search_loupe));
+                    if (shouldHubSearchBoxBeVisible()) {
+                        searchElement = delayedElements.declareView(searchLoupe);
+                        delayedElements.declareNoView(searchBox);
+                    } else {
+                        searchElement = delayedElements.declareView(searchBox);
+                        delayedElements.declareNoView(searchLoupe);
+                    }
+                });
         recyclerViewElement =
                 declareView(
                         paneHostElement.descendant(
