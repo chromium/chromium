@@ -220,6 +220,10 @@ views::ProposedLayout IconLabelBubbleView::CalculateProposedLayout(
   layout.child_layouts.emplace_back(ink_drop_container(), true,
                                     GetLocalBounds());
 
+  // Allows the label to be displayed even if there's not enough space with the
+  // preferred size of this view, due to an animation being in progress.
+  bool can_expand_label_for_animation = slide_animation_.is_animating();
+
   // First calculate the preferred size of this view, according to the
   // preferred size of the label (i.e. with an expanded label).
   // If that won't fit in the available bounds, then size this view
@@ -234,6 +238,10 @@ views::ProposedLayout IconLabelBubbleView::CalculateProposedLayout(
     if (ShouldShowLabel() && label()->GetElideBehavior() != gfx::NO_ELIDE) {
       preferred_size.set_width(
           std::max(preferred_size.width(), size_bounds.width().value()));
+    } else {
+      // There's not enough space to expand the view if its animating, so
+      // don't allow the label to be expanded either.
+      can_expand_label_for_animation = false;
     }
   }
   if (size_bounds.height().is_bounded() &&
@@ -291,8 +299,7 @@ views::ProposedLayout IconLabelBubbleView::CalculateProposedLayout(
   // accept the "_with_label" image bounds.
   const bool can_label_expand = available_label_width >= preferred_label_width;
   const bool should_use_label_bounds =
-      ShouldShowLabel() &&
-      (can_label_expand || slide_animation_.is_animating());
+      ShouldShowLabel() && (can_label_expand || can_expand_label_for_animation);
   layout.child_layouts.emplace_back(
       const_cast<views::View*>(this->image_container_view()), true,
       should_use_label_bounds ? image_bounds_with_label : image_bounds);
