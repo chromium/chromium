@@ -1854,7 +1854,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientPreferencesGlicTieredRolloutTest, E2E) {
   ASSERT_TRUE(SetupClients()) << "SetupClients() failed.";
 
   // Have user be eligible for Glic from an account perspective.
-  ASSERT_TRUE(GetClient(0)->SignInPrimaryAccount(signin::ConsentLevel::kSync));
+  ASSERT_TRUE(GetClient(0)->SignInPrimaryAccount());
   glic::SetModelExecutionCapability(GetProfile(0), /*enabled=*/true);
 
   // Should not be enabled as profile not eligible for tiered rollout.

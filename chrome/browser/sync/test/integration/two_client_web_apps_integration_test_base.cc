@@ -96,8 +96,7 @@ void TwoClientWebAppsIntegrationTestBase::SyncSignIn(Profile* profile) {
     if (GetProfile(i) != profile) {
       continue;
     }
-    ASSERT_TRUE(
-        GetClient(i)->SignInPrimaryAccount(signin::ConsentLevel::kSync));
+    ASSERT_TRUE(GetClient(i)->SetupSync());
   }
   AwaitWebAppQuiescence();
 #endif

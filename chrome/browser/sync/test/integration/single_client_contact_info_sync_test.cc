@@ -415,7 +415,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientContactInfoSyncTest,
                   .IsAutofillSyncToggleAvailable());
 
   // Turn on Sync.
-  ASSERT_TRUE(GetClient(0)->SignInPrimaryAccount(signin::ConsentLevel::kSync));
+  ASSERT_TRUE(GetClient(0)->SetupSync());
 
   // The toggle is no longer available.
   EXPECT_FALSE(GetPersonalDataManager()

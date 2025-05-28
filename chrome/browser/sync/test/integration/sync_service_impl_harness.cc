@@ -235,30 +235,27 @@ GaiaId SyncServiceImplHarness::GetGaiaIdForDefaultTestAccount() const {
   return signin::GetTestGaiaIdForEmail(username_);
 }
 
-bool SyncServiceImplHarness::SignInPrimaryAccount(
-    signin::ConsentLevel consent_level) {
-  DCHECK(!username_.empty());
+bool SyncServiceImplHarness::SignInPrimaryAccount() {
+  CHECK(!username_.empty());
 
   switch (signin_type_) {
     case SigninType::UI_SIGNIN: {
       if (!signin_delegate_->SigninUI(profile_, username_, password_,
-                                      consent_level)) {
+                                      signin::ConsentLevel::kSignin)) {
         return false;
       }
       break;
     }
 
     case SigninType::FAKE_SIGNIN: {
-      signin_delegate_->SigninFake(profile_, username_, consent_level);
+      signin_delegate_->SigninFake(profile_, username_,
+                                   signin::ConsentLevel::kSignin);
       break;
     }
   }
 
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(profile_);
-  // Note that `consent_level` is not actually guaranteed at this stage. In
-  // particular, live tests require closing the sync confirmation dialog before
-  // signin::ConsentLevel::kSync is granted.
   CHECK(identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin));
   CHECK(identity_manager->HasPrimaryAccountWithRefreshToken(
       signin::ConsentLevel::kSignin));
@@ -369,6 +366,8 @@ bool SyncServiceImplHarness::SetupSyncNoWaitForCompletion() {
 
 bool SyncServiceImplHarness::SetupSyncWithCustomSettingsNoWaitForCompletion(
     SetUserSettingsCallback user_settings_callback) {
+  CHECK(!username_.empty());
+
   if (service() == nullptr) {
     LOG(ERROR) << "SetupSync(): service() is null.";
     return false;
@@ -378,8 +377,22 @@ bool SyncServiceImplHarness::SetupSyncWithCustomSettingsNoWaitForCompletion(
   // until we've finished configuration.
   sync_blocker_ = service()->GetSetupInProgressHandle();
 
-  if (!SignInPrimaryAccount(signin::ConsentLevel::kSync)) {
-    return false;
+  // TODO(crbug.com/368091420): Refactor the code below to avoid code
+  // duplication with`SyncServiceImplHarness::SignInPrimaryAccount()`.
+  switch (signin_type_) {
+    case SigninType::UI_SIGNIN: {
+      if (!signin_delegate_->SigninUI(profile_, username_, password_,
+                                      signin::ConsentLevel::kSync)) {
+        return false;
+      }
+      break;
+    }
+
+    case SigninType::FAKE_SIGNIN: {
+      signin_delegate_->SigninFake(profile_, username_,
+                                   signin::ConsentLevel::kSync);
+      break;
+    }
   }
 
   signin::IdentityManager* identity_manager =
