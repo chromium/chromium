@@ -6,12 +6,13 @@
 #ifndef REMOTING_BASE_TYPED_BUFFER_H_
 #define REMOTING_BASE_TYPED_BUFFER_H_
 
-#include <assert.h>
 #include <stdint.h>
 
 #include <algorithm>
 #include <memory>
 #include <type_traits>
+
+#include "base/check.h"
 
 namespace remoting {
 
@@ -45,24 +46,24 @@ class TypedBuffer {
   }
 
   // Accessors to get the owned buffer.
-  // operator* and operator-> will assert() if there is no current buffer.
+  // operator* and operator-> are fatal if there is no current buffer.
   T& operator*() {
-    assert(buffer_);
+    CHECK(buffer_);
     return *(reinterpret_cast<T*>(buffer_.get()));
   }
   T* operator->() {
-    assert(buffer_);
+    CHECK(buffer_);
     return reinterpret_cast<T*>(buffer_.get());
   }
   T* get() { return buffer_ ? reinterpret_cast<T*>(&buffer_[0]) : nullptr; }
 
   // `const` variants of the above.
   const T& operator*() const {
-    assert(buffer_);
+    CHECK(buffer_);
     return *(reinterpret_cast<const T*>(buffer_.get()));
   }
   const T* operator->() const {
-    assert(buffer_);
+    CHECK(buffer_);
     return reinterpret_cast<const T*>(buffer_.get());
   }
   const T* get() const {
