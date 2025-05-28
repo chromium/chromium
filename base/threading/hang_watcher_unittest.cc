@@ -142,6 +142,14 @@ class HangWatcherTest : public testing::Test {
     HangWatcher::UninitializeOnMainThreadForTesting();
   }
 
+  // Signal the `HangWatcher` to start a monitoring and wait for that monitoring
+  // to be done.
+  void MonitorHangs() {
+    monitor_event_.Reset();
+    hang_watcher_.SignalMonitorEventForTesting();
+    monitor_event_.Wait();
+  }
+
   int GetHangCount() const {
     return hang_count_.load(std::memory_order_relaxed);
   }
@@ -195,16 +203,6 @@ class HangWatcherBlockingThreadTest : public HangWatcherTest {
     monitor_event_.Reset();
   }
 
-  void MonitorHangs() {
-    // HangWatcher::Monitor() should not be set which would mean a call to
-    // HangWatcher::Monitor() happened and was unaccounted for.
-    // ASSERT_FALSE(monitor_event_.IsSignaled());
-
-    // Trigger a monitoring on HangWatcher thread and verify results.
-    hang_watcher_.SignalMonitorEventForTesting();
-    monitor_event_.Wait();
-  }
-
   // Used to unblock the monitored thread. Signaled from the test main thread.
   WaitableEvent unblock_thread_;
 
@@ -226,8 +224,7 @@ TEST_F(HangWatcherTest, InvalidatingExpectationsPreventsCapture) {
 
   // Trigger a monitoring on HangWatcher thread and verify results.
   // Hang is not detected.
-  hang_watcher_.SignalMonitorEventForTesting();
-  monitor_event_.Wait();
+  MonitorHangs();
   EXPECT_EQ(GetHangCount(), 0);
 }
 
@@ -248,8 +245,7 @@ TEST_F(HangWatcherTest, MultipleInvalidateExpectationsDoNotCancelOut) {
 
   // Trigger a monitoring on HangWatcher thread and verify results.
   // Hang is not detected.
-  hang_watcher_.SignalMonitorEventForTesting();
-  monitor_event_.Wait();
+  MonitorHangs();
   EXPECT_EQ(GetHangCount(), 0);
 }
 
@@ -271,25 +267,18 @@ TEST_F(HangWatcherTest,
     task_environment_.FastForwardBy(kHangTime);
 
     // Trigger a monitoring on HangWatcher thread and verify results.
-    hang_watcher_.SignalMonitorEventForTesting();
-    monitor_event_.Wait();
+    MonitorHangs();
 
     // Hang is detected since the new WatchHangsInScope temporarily
     // re-activated hang_watching.
-    monitor_event_.Wait();
     EXPECT_EQ(GetHangCount(), 1);
   }
 
-  // Reset to attempt capture again.
-  monitor_event_.Reset();
-
   // Trigger a monitoring on HangWatcher thread and verify results.
-  hang_watcher_.SignalMonitorEventForTesting();
-  monitor_event_.Wait();
+  MonitorHangs();
 
   // No new hang is detected since execution is back to being covered by
   // |expires_instantly| for which expectations were invalidated.
-  monitor_event_.Wait();
   EXPECT_EQ(GetHangCount(), 1);
 }
 
@@ -311,12 +300,10 @@ TEST_F(HangWatcherTest,
   task_environment_.FastForwardBy(kHangTime);
 
   // Trigger a monitoring on HangWatcher thread and verify results.
-  hang_watcher_.SignalMonitorEventForTesting();
-  monitor_event_.Wait();
+  MonitorHangs();
 
   // Hang is detected since the new WatchHangsInScope did not have its
   // expectations invalidated.
-  monitor_event_.Wait();
   EXPECT_EQ(GetHangCount(), 1);
 }
 
@@ -340,8 +327,7 @@ TEST_F(HangWatcherTest, ScopeDisabledObjectInnerScope) {
   }
 
   // Trigger a monitoring on HangWatcher thread and verify results.
-  hang_watcher_.SignalMonitorEventForTesting();
-  monitor_event_.Wait();
+  MonitorHangs();
 
   // Hang is ignored since it concerns a scope for which one of the inner scope
   // was ignored.
@@ -370,8 +356,7 @@ TEST_F(HangWatcherTest, NewScopeAfterDisabling) {
   task_environment_.FastForwardBy(kHangTime);
 
   // Trigger a monitoring on HangWatcher thread and verify results.
-  hang_watcher_.SignalMonitorEventForTesting();
-  monitor_event_.Wait();
+  MonitorHangs();
 
   // Hang is detected because it's unrelated to the hangs that were disabled.
   EXPECT_EQ(GetHangCount(), 1);
@@ -438,10 +423,8 @@ TEST_F(HangWatcherBlockingThreadTest, HistogramsLoggedOnHang) {
                                              "AnyCritical"),
               ElementsAre(base::Bucket(true, /*count=*/1)));
 
-  // Reset to attempt capture again.
-  monitor_event_.Reset();
-
-  // Hang is logged again even if it would not trigger a crash dump.
+  // Attempt capture again. Hang is logged again even if it would not trigger a
+  // crash dump.
   MonitorHangs();
   EXPECT_THAT(histogram_tester.GetAllSamples("HangWatcher.IsThreadHung."
                                              "BrowserProcess.UIThread.Normal"),
@@ -516,10 +499,8 @@ TEST_F(HangWatcherBlockingThreadTest, HistogramsLoggedWithShutdownFlag) {
                   "HangWatcher.IsThreadHung.BrowserProcess.UIThread.Shutdown"),
               ElementsAre(base::Bucket(true, /*count=*/1)));
 
-  // Reset to attempt capture again.
-  monitor_event_.Reset();
-
-  // Hang is logged again even if it would not trigger a crash dump.
+  // Attempt capture again. Hang is logged again even if it would not trigger a
+  // crash dump.
   MonitorHangs();
   EXPECT_THAT(histogram_tester.GetAllSamples(
                   "HangWatcher.IsThreadHung.BrowserProcess.UIThread.Shutdown"),
@@ -564,11 +545,8 @@ TEST_F(HangWatcherBlockingThreadTest, HangAlreadyRecorded) {
   MonitorHangs();
   EXPECT_EQ(GetHangCount(), 1);
 
-  // Reset to attempt capture again.
-  monitor_event_.Reset();
-
-  // Second monitoring does not record a new hang because a hang that was
-  // already recorded is still live.
+  // Attempt capture again. Second monitoring does not record a new hang because
+  // a hang that was already recorded is still live.
   MonitorHangs();
   EXPECT_EQ(GetHangCount(), 1);
 
