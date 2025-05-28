@@ -2263,9 +2263,6 @@ targets.mixin(
         "--no-xvfb",
         "--additional-driver-flag=--enable-features=Vulkan",
     ],
-    mac_args = [
-        "--platform=mac-mac11",
-    ],
     merge = targets.merge(
         script = "//third_party/blink/tools/merge_web_test_results.py",
         args = [
