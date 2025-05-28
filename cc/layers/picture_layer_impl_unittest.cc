@@ -2087,7 +2087,7 @@ TEST_F(LegacySWPictureLayerImplTest, AllHighResRequiredEvenIfNotChanged) {
   AssertNoTilesRequired(active_layer()->LowResTiling());
 }
 
-TEST_F(LegacySWPictureLayerImplTest, DisallowRequiredForActivation) {
+TEST_F(NoLowResPictureLayerImplTest, DisallowRequiredForActivation) {
   gfx::Size layer_bounds(400, 400);
   gfx::Size tile_size(100, 100);
 
@@ -2098,17 +2098,13 @@ TEST_F(LegacySWPictureLayerImplTest, DisallowRequiredForActivation) {
   EXPECT_FALSE(some_active_tile->draw_info().IsReadyToDraw());
 
   EXPECT_TRUE(pending_layer()->HighResTiling()->AllTilesForTesting().empty());
-  EXPECT_FALSE(pending_layer()->LowResTiling());
   active_layer()->HighResTiling()->set_can_require_tiles_for_activation(false);
-  active_layer()->LowResTiling()->set_can_require_tiles_for_activation(false);
   pending_layer()->HighResTiling()->set_can_require_tiles_for_activation(false);
 
   // If we disallow required for activation, no tiles can be required.
   active_layer()->HighResTiling()->UpdateAllRequiredStateForTesting();
-  active_layer()->LowResTiling()->UpdateAllRequiredStateForTesting();
 
   AssertNoTilesRequired(active_layer()->HighResTiling());
-  AssertNoTilesRequired(active_layer()->LowResTiling());
 }
 
 TEST_F(LegacySWPictureLayerImplTest, NothingRequiredIfActiveMissingTiles) {
