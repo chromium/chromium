@@ -265,6 +265,7 @@ android_library("browser_binding_unit_device_javatests") {
   deps = [
     ":browser_binding_java",
     "//base:base_java_test_support",
+    "//components/payments/content/android/spc:unit_device_javatests",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_test_monitor_java",
     "//third_party/androidx:androidx_test_runner_java",

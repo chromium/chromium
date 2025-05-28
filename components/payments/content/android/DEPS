@@ -1,6 +1,5 @@
 include_rules = [
   "-components/browser_ui/bottomsheet",
-  "-components/payments/content/android/spc",
   "-components/payments/content/android/ui",
   "-components/page_info",
 

@@ -10,11 +10,18 @@ android_library("java") {
     "java/src/org/chromium/components/payments/secure_payment_confirmation/SecurePaymentConfirmationAuthnProperties.java",
     "java/src/org/chromium/components/payments/secure_payment_confirmation/SecurePaymentConfirmationAuthnView.java",
     "java/src/org/chromium/components/payments/secure_payment_confirmation/SecurePaymentConfirmationAuthnViewBinder.java",
+    "java/src/org/chromium/components/payments/secure_payment_confirmation/SecurePaymentConfirmationBottomSheetContent.java",
+    "java/src/org/chromium/components/payments/secure_payment_confirmation/SecurePaymentConfirmationBottomSheetObserver.java",
+    "java/src/org/chromium/components/payments/secure_payment_confirmation/SecurePaymentConfirmationController.java",
     "java/src/org/chromium/components/payments/secure_payment_confirmation/SecurePaymentConfirmationNoMatchingCredController.java",
     "java/src/org/chromium/components/payments/secure_payment_confirmation/SecurePaymentConfirmationNoMatchingCredView.java",
+    "java/src/org/chromium/components/payments/secure_payment_confirmation/SecurePaymentConfirmationProperties.java",
+    "java/src/org/chromium/components/payments/secure_payment_confirmation/SecurePaymentConfirmationView.java",
+    "java/src/org/chromium/components/payments/secure_payment_confirmation/SecurePaymentConfirmationViewBinder.java",
   ]
   deps = [
     "//base:callback_java",
+    "//base:supplier_java",
     "//components/browser_ui/bottomsheet/android:java",
     "//components/payments/content/android:feature_list_java",
     "//components/payments/content/android:java_resources",
@@ -35,6 +42,9 @@ android_library("java") {
 robolectric_library("junit") {
   sources = [
     "junit/src/org/chromium/components/payments/secure_payment_confirmation/SecurePaymentConfirmationAuthnTest.java",
+    "junit/src/org/chromium/components/payments/secure_payment_confirmation/SecurePaymentConfirmationBottomSheetContentTest.java",
+    "junit/src/org/chromium/components/payments/secure_payment_confirmation/SecurePaymentConfirmationBottomSheetObserverTest.java",
+    "junit/src/org/chromium/components/payments/secure_payment_confirmation/SecurePaymentConfirmationControllerTest.java",
     "junit/src/org/chromium/components/payments/secure_payment_confirmation/SecurePaymentConfirmationNoMatchingCredTest.java",
   ]
   deps = [
@@ -66,4 +76,17 @@ robolectric_library("junit") {
     "//url/mojom:url_mojom_origin_java",
   ]
   resources_package = "org.chromium.components.payments"
+}
+
+android_library("unit_device_javatests") {
+  testonly = true
+  sources = [ "javatests/src/org/chromium/components/payments/secure_payment_confirmation/SecurePaymentConfirmationViewBinderTest.java" ]
+  deps = [
+    ":java",
+    "//base:base_java_test_support",
+    "//third_party/androidx:androidx_test_runner_java__classes",
+    "//third_party/junit:junit",
+    "//ui/android:ui_java_test_support",
+    "//ui/android:ui_no_recycler_view_java",
+  ]
 }
