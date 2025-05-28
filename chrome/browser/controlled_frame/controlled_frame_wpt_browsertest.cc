@@ -49,7 +49,7 @@ constexpr char kTestDirectory[] = "chrome/test/data/controlled_frame";
 constexpr char kTestHarnessPath[] =
     "third_party/blink/web_tests/external/wpt/resources/testharness.js";
 constexpr char kTestDriverPath[] =
-    "third_party/blink/web_tests/external/wpt/resources/testdriver.js";
+    "third_party/wpt_tools/wpt/resources/testdriver.js";
 
 constexpr char kHtmlWrapperSrc[] = R"(
   <!doctype html>
