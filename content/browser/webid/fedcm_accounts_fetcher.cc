@@ -373,13 +373,23 @@ void FedCmAccountsFetcher::OnAccountsFetchSucceeded(
     IdpNetworkRequestManager::FetchStatus status,
     std::vector<IdentityRequestAccountPtr> accounts) {
   bool need_client_metadata = false;
-  if (!idp_info->provider->config->from_idp_registration_api &&
+  if (IsFedCmIframeOriginEnabled()) {
+    // For cross-site iframes, we need to fetch client metadata in case the
+    // IDP sends `client_matches_top_frame_origin: false`.
+    url::Origin embedding_origin =
+        render_frame_host_->GetMainFrame()->GetLastCommittedOrigin();
+    url::Origin rp_origin = render_frame_host_->GetLastCommittedOrigin();
+    need_client_metadata |=
+        !net::SchemefulSite::IsSameSite(embedding_origin, rp_origin);
+  }
+  if (!need_client_metadata &&
+      !idp_info->provider->config->from_idp_registration_api &&
       !GetDisclosureFields(idp_info->provider->fields).empty()) {
     for (const auto& account : accounts) {
       // ComputeLoginStates() should have populated the login_state.
       DCHECK(account->login_state);
       if (*account->login_state == LoginState::kSignUp) {
-        need_client_metadata = true;
+        need_client_metadata |= true;
         break;
       }
     }
