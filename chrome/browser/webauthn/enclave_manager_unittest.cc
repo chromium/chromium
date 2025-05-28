@@ -1607,7 +1607,10 @@ TEST_F(EnclaveManagerTest, MAYBE_HardwareKeyLost) {
   // create before testing that it is later deleted.
   EXPECT_EQ(manager_.uv_key_state(/*platform_has_biometrics=*/false),
             EnclaveManager::UvKeyState::kUsesSystemUIDeferredCreation);
-  auto key_creation_callback = manager_.UserVerifyingKeyCreationCallback();
+  std::unique_ptr<EnclaveManager::UvKeyCreationLock> uv_creation_lock;
+  device::enclave::UVKeyCreationCallback key_creation_callback;
+  std::tie(uv_creation_lock, key_creation_callback) =
+      manager_.UserVerifyingKeyCreationCallback();
   quit_closure = task_env_.QuitClosure();
   std::move(key_creation_callback)
       .Run(base::BindLambdaForTesting(
@@ -1965,7 +1968,10 @@ TEST_F(EnclaveUVTest, UserVerifyingKeyLost) {
   // create before testing that it is later deleted.
   EXPECT_EQ(manager_.uv_key_state(/*platform_has_biometrics=*/false),
             EnclaveManager::UvKeyState::kUsesSystemUIDeferredCreation);
-  auto key_creation_callback = manager_.UserVerifyingKeyCreationCallback();
+  std::unique_ptr<EnclaveManager::UvKeyCreationLock> uv_creation_lock;
+  device::enclave::UVKeyCreationCallback key_creation_callback;
+  std::tie(uv_creation_lock, key_creation_callback) =
+      manager_.UserVerifyingKeyCreationCallback();
   quit_closure = task_env_.QuitClosure();
   std::move(key_creation_callback)
       .Run(base::BindLambdaForTesting(
@@ -2124,7 +2130,10 @@ TEST_F(EnclaveUVTest, DeferredUVKeyCreation) {
               user_state.deferred_uv_key_creation());
   EXPECT_TRUE(user_state.wrapped_uv_private_key().empty());
 
-  auto key_creation_callback = manager_.UserVerifyingKeyCreationCallback();
+  std::unique_ptr<EnclaveManager::UvKeyCreationLock> uv_creation_lock;
+  device::enclave::UVKeyCreationCallback key_creation_callback;
+  std::tie(uv_creation_lock, key_creation_callback) =
+      manager_.UserVerifyingKeyCreationCallback();
   auto quit_closure = task_env_.QuitClosure();
   std::move(key_creation_callback)
       .Run(base::BindLambdaForTesting(
@@ -2185,7 +2194,8 @@ TEST_F(EnclaveUVTest, UnregisterOnFailedDeferredUVKeyCreation) {
       [](sync_pb::WebauthnCredentialSpecifics) { NOTREACHED(); });
   ui_request->up_and_uv_bits =
       device::enclave::UserPresentAndVerifiedBits::kPresentAndVerified;
-  ui_request->uv_key_creation_callback =
+  std::unique_ptr<EnclaveManager::UvKeyCreationLock> uv_creation_lock;
+  std::tie(uv_creation_lock, ui_request->uv_key_creation_callback) =
       manager_.UserVerifyingKeyCreationCallback();
   ui_request->unregister_callback =
       base::BindOnce(&EnclaveManager::Unenroll, manager_.GetWeakPtr(),

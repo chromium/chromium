@@ -157,6 +157,16 @@ class EnclaveManager : public EnclaveManagerInterface {
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/webauthn/enums.xml:PinRenewalFailureCauseEnum)
 
+  class UvKeyCreationLock {
+   public:
+    virtual ~UvKeyCreationLock() = default;
+    UvKeyCreationLock(const UvKeyCreationLock&) = delete;
+    UvKeyCreationLock& operator=(const UvKeyCreationLock&) = delete;
+
+   protected:
+    UvKeyCreationLock() = default;
+  };
+
   EnclaveManager(
       const base::FilePath& base_dir,
       signin::IdentityManager* identity_manager,
@@ -255,7 +265,11 @@ class EnclaveManager : public EnclaveManagerInterface {
   // `is_ready` and the user's state has `deferred_uv_key_creation` = true.
   // The callback will create a new UV key and provides the public key to the
   // invoker.
-  device::enclave::UVKeyCreationCallback UserVerifyingKeyCreationCallback();
+  // The `UVKeyCreationLock` prevents any other attempts to create UV keys
+  // while it is alive. Its destruction releases the lock.
+  std::pair<std::unique_ptr<UvKeyCreationLock>,
+            device::enclave::UVKeyCreationCallback>
+  UserVerifyingKeyCreationCallback();
   // Fetch a wrapped security domain secret for the given epoch. Only valid to
   // call if `is_ready`.
   std::optional<std::vector<uint8_t>> GetWrappedSecret(int32_t version);
@@ -294,6 +308,20 @@ class EnclaveManager : public EnclaveManagerInterface {
     kUsesChromeUI,
   };
   UvKeyState uv_key_state(bool platform_has_biometrics) const;
+
+  // Checks whether UserVerifyingKeyCreationCallback() is available to be
+  // called, returning true if not. There should only be one key creation
+  // callback in existence at any one time, or else one could overwrite a
+  // previous caller's keys. Attempting to get a key creation callback
+  // while already locked results in a process crash.
+  bool deferred_uv_key_creation_locked() const {
+    return deferred_uv_key_creation_in_progress_;
+  }
+
+  // Called when `deferred_uv_key_creation_in_progress_` is true, to be
+  // notified when the existing key creation has completed. The boolean
+  // argument indicates whether the key creation was successful.
+  void AddPendingUvRequest(base::OnceCallback<void(bool)> callback);
 
   // Calls the given callback with `true` if the current platform supports
   // making user-verifying keys.
@@ -412,6 +440,17 @@ class EnclaveManager : public EnclaveManagerInterface {
   void ConsiderPinRenewal();
   void OnRenewalComplete(bool success);
 
+  // Take the lock for UV key creation. Only one can exist at a time.
+  std::unique_ptr<UvKeyCreationLock> TakeUvKeyCreationLock();
+
+  // This is a callback for the UvKeyCreationLock.
+  void OnUvKeyCreationLockReleased();
+
+  // These clean up local state on resolution of a callback that was returned
+  // from UserVerifyingKeyCreationCallback();
+  void OnDeferredUvKeyCreationFailure();
+  void OnDeferredUvKeyCreationSuccess();
+
   // Returns true if |state| indicates that the security domain has been reset,
   // i.e. that the local Chrome state no longer matches what's on the security
   // domain.
@@ -452,6 +491,9 @@ class EnclaveManager : public EnclaveManagerInterface {
   unsigned renewal_checks_ = 0;
   unsigned renewal_attempts_ = 0;
   bool is_renewing_ = false;
+  bool deferred_uv_key_creation_in_progress_ = false;
+  std::optional<bool> deferred_uv_key_creation_successful_;
+  std::vector<base::OnceCallback<void(bool)>> pending_uv_key_requests_;
 
   // These fields store the security domain secret immediately after a
   // device has been added to the security domain.

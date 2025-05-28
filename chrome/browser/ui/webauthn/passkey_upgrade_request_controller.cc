@@ -193,7 +193,6 @@ void PasskeyUpgradeRequestController::OnGetPasswordStoreResultsOrErrorFrom(
   enclave_transaction_ = std::make_unique<GPMEnclaveTransaction>(
       /*delegate=*/this, PasskeyModelFactory::GetForProfile(profile()),
       device::FidoRequestType::kMakeCredential, rp_id_,
-      EnclaveUserVerificationMethod::kNoUserVerificationAndNoUserPresence,
       EnclaveManagerFactory::GetAsEnclaveManagerForProfile(profile()),
       /*pin=*/std::nullopt, /*selected_credential_id=*/std::nullopt,
       enclave_request_callback_);
@@ -227,6 +226,10 @@ void PasskeyUpgradeRequestController::OnPasskeyCreated(
   if (manage_passwords_ui_controller) {
     manage_passwords_ui_controller->OnPasskeyUpgrade(rp_id_);
   }
+}
+
+EnclaveUserVerificationMethod PasskeyUpgradeRequestController::GetUvMethod() {
+  return EnclaveUserVerificationMethod::kNoUserVerificationAndNoUserPresence;
 }
 
 content::RenderFrameHost& PasskeyUpgradeRequestController::render_frame_host()
