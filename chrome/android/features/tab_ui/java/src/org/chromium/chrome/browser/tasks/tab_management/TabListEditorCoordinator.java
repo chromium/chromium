@@ -353,8 +353,7 @@ class TabListEditorCoordinator {
             mDisplayGroups = displayGroups;
             mTabActionState = initialTabActionState;
             mTabContentManager = tabContentManager;
-            assert mode == TabListCoordinator.TabListMode.GRID
-                    || mode == TabListCoordinator.TabListMode.LIST;
+            assert mode == TabListCoordinator.TabListMode.GRID;
             mGridCardOnClickListenerProvider = gridCardOnClickListenerProvider;
             mModalDialogManager = modalDialogManager;
             mEdgeToEdgeSupplier = edgeToEdgeSupplier;

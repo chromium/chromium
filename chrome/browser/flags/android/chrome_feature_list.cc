@@ -277,7 +277,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kCpaSpecUpdate,
     &kCrossDeviceTabPaneAndroid,
     &kDeviceAuthenticatorAndroidx,
-    &kDisableListTabSwitcher,
     &kDrawKeyNativeEdgeToEdge,
     &kEdgeToEdgeBottomChin,
     &kEdgeToEdgeDebugging,
@@ -292,7 +291,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kExperimentsForAgsa,
     &kFloatingSnackbar,
     &kForceBrowserControlsUponExitingFullscreen,
-    &kForceListTabSwitcher,
     &kForceTranslucentNotificationTrampoline,
     &kFullscreenInsetsApiMigration,
     &kFullscreenInsetsApiMigrationOnAutomotive,
@@ -474,15 +472,6 @@ BASE_FEATURE(kAdaptiveButtonInTopToolbarPageSummary,
 
 BASE_FEATURE(kAllowTabClosingUponMinimization,
              "AllowTabClosingUponMinimization",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kDisableListTabSwitcher,
-             "DisableListTabSwitcher",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Long-term flag for debugging only.
-BASE_FEATURE(kForceListTabSwitcher,
-             "ForceListTabSwitcher",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kAndroidAppIntegration,

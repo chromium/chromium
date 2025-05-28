@@ -6,9 +6,7 @@ found in the LICENSE file.
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
     <dimen name="tab_list_selected_inset">7dp</dimen>
-    <dimen name="tab_list_selected_inset_low_end">6dp</dimen>
     <dimen name="tab_list_selected_margin">7dp</dimen>
-    <dimen name="tab_list_card_radius">4dp</dimen>
     <dimen name="tab_grid_price_card_radius">4dp</dimen>
     <dimen name="tab_list_mini_card_radius">4dp</dimen>
     <dimen name="tab_list_mini_card_frame_size">1dp</dimen>
@@ -41,8 +39,6 @@ found in the LICENSE file.
     <dimen name="swipe_to_dismiss_threshold">144dp</dimen>
     <dimen name="long_press_cancel_threshold">20dp</dimen>
     <dimen name="selection_tab_grid_toggle_button_inset">14dp</dimen>
-    <dimen name="selection_tab_list_toggle_button_lateral_inset">18dp</dimen>
-    <dimen name="selection_tab_list_toggle_button_vertical_inset">22dp</dimen>
 
     <!-- Dimens for incognito reauth promo message icon -->
     <dimen name="incognito_reauth_promo_message_icon_width">52dp</dimen>
@@ -104,7 +100,6 @@ found in the LICENSE file.
     <dimen name="tab_card_label_icon_inset">3dp</dimen>
     <dimen name="tab_card_label_icon_radius">8dp</dimen>
     <dimen name="tab_card_label_height">24dp</dimen>
-    <dimen name="tab_card_label_list_margin_end">9dp</dimen>
     <dimen name="tab_card_label_elev">6dp</dimen>
 
     <!-- Dimens for TabGroupSync features -->

@@ -70,8 +70,6 @@ class TabGridDialogProperties {
             new WritableIntPropertyKey();
     public static final WritableObjectPropertyKey<String> DIALOG_UNGROUP_BAR_TEXT =
             new WritableObjectPropertyKey<>();
-    public static final WritableObjectPropertyKey<Integer> ANIMATION_BACKGROUND_COLOR =
-            new WritableObjectPropertyKey<>();
 
     /**
      * Integer, but not {@link WritableIntPropertyKey} so that we can force update on the same
@@ -155,7 +153,6 @@ class TabGridDialogProperties {
                 TAB_GROUP_COLOR_ID,
                 IS_INCOGNITO,
                 COLOR_ICON_CLICK_LISTENER,
-                ANIMATION_BACKGROUND_COLOR,
                 HAIRLINE_COLOR,
                 HAIRLINE_VISIBILITY,
                 FORCE_ANIMATION_TO_FINISH,

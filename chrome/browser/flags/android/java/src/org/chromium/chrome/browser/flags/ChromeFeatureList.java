@@ -346,7 +346,6 @@ public abstract class ChromeFeatureList {
     public static final String DETAILED_LANGUAGE_SETTINGS = "DetailedLanguageSettings";
     public static final String DEVICE_AUTHENTICATOR_ANDROIDX = "DeviceAuthenticatorAndroidx";
     public static final String DISABLE_INSTANCE_LIMIT = "DisableInstanceLimit";
-    public static final String DISABLE_LIST_TAB_SWITCHER = "DisableListTabSwitcher";
     public static final String DISCO_FEED_ENDPOINT = "DiscoFeedEndpoint";
     public static final String DISPLAY_WILDCARD_CONTENT_SETTINGS =
             "DisplayWildcardInContentSettings";
@@ -745,11 +744,6 @@ public abstract class ChromeFeatureList {
                     DISABLE_INSTANCE_LIMIT,
                     /* defaultValue= */ false,
                     /* defaultValueInTests= */ true);
-    public static final CachedFlag sDisableListTabSwitcher =
-            newCachedFlag(
-                    DISABLE_LIST_TAB_SWITCHER,
-                    /* defaultValue= */ false,
-                    /* defaultValueInTests= */ true);
     public static final CachedFlag sDrawKeyNativeEdgeToEdge =
             newCachedFlag(DRAW_KEY_NATIVE_EDGE_TO_EDGE, true);
     public static final CachedFlag sEdgeToEdgeBottomChin =
@@ -775,8 +769,6 @@ public abstract class ChromeFeatureList {
     public static final CachedFlag sEnableXAxisActivityTransition =
             newCachedFlag(ENABLE_X_AXIS_ACTIVITY_TRANSITION, false);
     public static final CachedFlag sFloatingSnackbar = newCachedFlag(FLOATING_SNACKBAR, true);
-    public static final CachedFlag sForceListTabSwitcher =
-            newCachedFlag(FORCE_LIST_TAB_SWITCHER, false);
     public static final CachedFlag sForceTranslucentNotificationTrampoline =
             newCachedFlag(FORCE_TRANSLUCENT_NOTIFICATION_TRAMPOLINE, false);
     public static final CachedFlag sFullscreenInsetsApiMigration =
@@ -969,7 +961,6 @@ public abstract class ChromeFeatureList {
                     sCpaSpecUpdate,
                     sCrossDeviceTabPaneAndroid,
                     sDisableInstanceLimit,
-                    sDisableListTabSwitcher,
                     sDrawKeyNativeEdgeToEdge,
                     sEdgeToEdgeBottomChin,
                     sEdgeToEdgeDebugging,
@@ -982,7 +973,6 @@ public abstract class ChromeFeatureList {
                     sEnableDiscountInfoApi,
                     sEnableXAxisActivityTransition,
                     sFloatingSnackbar,
-                    sForceListTabSwitcher,
                     sForceTranslucentNotificationTrampoline,
                     sFullscreenInsetsApiMigration,
                     sFullscreenInsetsApiMigrationOnAutomotive,

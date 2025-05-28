@@ -178,7 +178,6 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.task_manager.TaskManager;
 import org.chromium.chrome.browser.task_manager.TaskManagerFactory;
-import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
 import org.chromium.chrome.browser.tinker_tank.TinkerTankDelegate;
 import org.chromium.chrome.browser.toolbar.ControlContainer;
 import org.chromium.chrome.browser.toolbar.ToolbarManager;
@@ -634,7 +633,7 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
                     new TabContentManager(
                             this,
                             mBrowserControlsManagerSupplier.get(),
-                            !TabUiFeatureUtilities.shouldUseListMode(),
+                            /* snapshotsEnabled= */ true,
                             tabModelSelector != null ? tabModelSelector::getTabById : null,
                             TabWindowManagerSingleton.getInstance()));
 

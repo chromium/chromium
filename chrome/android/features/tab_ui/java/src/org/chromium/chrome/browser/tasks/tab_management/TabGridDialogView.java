@@ -1113,19 +1113,6 @@ public class TabGridDialogView extends FrameLayout {
     }
 
     /**
-     * Updates the background color for the animation card.
-     *
-     * @param colorInt The new color to use.
-     */
-    void updateAnimationBackgroundColor(@ColorInt int colorInt) {
-        assert TabUiFeatureUtilities.shouldUseListMode();
-        updateAnimationCardView(null);
-        Drawable animationBackground =
-                mAnimationCardView.findViewById(R.id.card_view).getBackground();
-        DrawableCompat.setTint(animationBackground, colorInt);
-    }
-
-    /**
      * Update the ungroup bar background color.
      *
      * @param colorInt The new background color to use when ungroup bar is visible.

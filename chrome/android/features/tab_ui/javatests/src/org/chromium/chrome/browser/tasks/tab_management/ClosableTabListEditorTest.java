@@ -22,7 +22,6 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.Callback;
-import org.chromium.base.SysUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.util.Batch;
@@ -99,7 +98,7 @@ public class ClosableTabListEditorTest {
                                     currentTabGroupModelFilterSupplier,
                                     sActivityTestRule.getActivity().getTabContentManager(),
                                     mSetRecyclerViewPosition,
-                                    getMode(),
+                                    TabListCoordinator.TabListMode.GRID,
                                     /* displayGroups= */ true,
                                     mSnackbarManager,
                                     /* bottomSheetController= */ null,
@@ -143,12 +142,6 @@ public class ClosableTabListEditorTest {
                 () -> {
                     mSnackbarManager.dismissAllSnackbars();
                 });
-    }
-
-    private @TabListCoordinator.TabListMode int getMode() {
-        return SysUtils.isLowEndDevice()
-                ? TabListCoordinator.TabListMode.LIST
-                : TabListCoordinator.TabListMode.GRID;
     }
 
     private void prepareBlankTab(int num, boolean isIncognito) {

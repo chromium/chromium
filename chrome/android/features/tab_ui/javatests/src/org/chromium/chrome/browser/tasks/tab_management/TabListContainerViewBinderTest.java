@@ -12,7 +12,6 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -99,14 +98,6 @@ public class TabListContainerViewBinderTest {
                 });
     }
 
-    private void setUpLinearLayoutManager() {
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    mLinearLayoutManager = spy(new LinearLayoutManager(sActivity));
-                    mRecyclerView.setLayoutManager(mLinearLayoutManager);
-                });
-    }
-
     @Test
     @MediumTest
     @UiThreadTest
@@ -157,39 +148,6 @@ public class TabListContainerViewBinderTest {
                 .scrollToPositionWithOffset(
                         eq(5),
                         intThat(allOf(lessThan(mRecyclerView.getHeight() / 2), greaterThan(0))));
-    }
-
-    @Test
-    @MediumTest
-    @UiThreadTest
-    public void testSetInitialScrollIndex_List_NoTabs() {
-        setUpLinearLayoutManager();
-        mRecyclerView.layout(0, 0, 100, 500);
-
-        mContainerModel.set(TabListContainerProperties.MODE, TabListCoordinator.TabListMode.LIST);
-        mContainerModel.set(TabListContainerProperties.INITIAL_SCROLL_INDEX, 7);
-
-        // Offset will be 0 to avoid divide by 0 with no tabs.
-        verify(mLinearLayoutManager, times(1)).scrollToPositionWithOffset(eq(7), eq(0));
-    }
-
-    @Test
-    @MediumTest
-    @UiThreadTest
-    public void testSetInitialScrollIndex_List_WithTabs() {
-        setUpLinearLayoutManager();
-        mRecyclerView.layout(0, 0, 100, 500);
-
-        doReturn(9).when(mLinearLayoutManager).getItemCount();
-        int range = mRecyclerView.computeVerticalScrollRange();
-
-        mContainerModel.set(TabListContainerProperties.MODE, TabListCoordinator.TabListMode.LIST);
-        mContainerModel.set(TabListContainerProperties.INITIAL_SCROLL_INDEX, 5);
-
-        // 9 Tabs at 900 scroll extent = 100 per tab. With view height of 500 the offset is
-        // 500 / 2 - range / 9 / 2 = result.
-        verify(mLinearLayoutManager, times(1))
-                .scrollToPositionWithOffset(eq(5), eq(250 - range / 9 / 2));
     }
 
     @Test

@@ -36,8 +36,6 @@ import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.Features.DisableFeatures;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
 import org.chromium.chrome.browser.bookmarks.TabBookmarker;
@@ -46,7 +44,6 @@ import org.chromium.chrome.browser.collaboration.CollaborationServiceFactory;
 import org.chromium.chrome.browser.data_sharing.DataSharingServiceFactory;
 import org.chromium.chrome.browser.data_sharing.DataSharingTabManager;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.hub.PaneManager;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.LifecycleObserver;
@@ -321,15 +318,7 @@ public class TabSwitcherPaneCoordinatorFactoryUnitTest {
 
     @Test
     @CommandLineFlags.Add({BaseSwitches.ENABLE_LOW_END_DEVICE_MODE})
-    @DisableFeatures(ChromeFeatureList.DISABLE_LIST_TAB_SWITCHER)
     public void testTabListMode_LowEnd() {
-        assertEquals(TabListMode.LIST, mFactory.getTabListMode());
-    }
-
-    @Test
-    @CommandLineFlags.Add({BaseSwitches.ENABLE_LOW_END_DEVICE_MODE})
-    @EnableFeatures(ChromeFeatureList.DISABLE_LIST_TAB_SWITCHER)
-    public void testTabListMode_LowEnd_ListDisabled() {
         assertEquals(TabListMode.GRID, mFactory.getTabListMode());
     }
 

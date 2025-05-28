@@ -39,7 +39,6 @@ import android.os.Build.VERSION_CODES;
 import android.view.View;
 import android.view.ViewGroup;
 
-import androidx.annotation.IdRes;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.content.res.AppCompatResources;
@@ -62,7 +61,6 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.Callback;
 import org.chromium.base.GarbageCollectionTestUtils;
-import org.chromium.base.SysUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.util.Batch;
@@ -217,7 +215,7 @@ public class SelectableTabListEditorTest {
                                     currentTabGroupModelFilterSupplier,
                                     cta.getTabContentManager(),
                                     mSetRecyclerViewPosition,
-                                    getMode(),
+                                    TabListCoordinator.TabListMode.GRID,
                                     /* displayGroups= */ true,
                                     mSnackbarManager,
                                     /* bottomSheetController= */ null,
@@ -264,12 +262,6 @@ public class SelectableTabListEditorTest {
                     mSnackbarManager.dismissAllSnackbars();
                 });
         BookmarkModel.clearLastUsedParent();
-    }
-
-    private @TabListCoordinator.TabListMode int getMode() {
-        return SysUtils.isLowEndDevice()
-                ? TabListCoordinator.TabListMode.LIST
-                : TabListCoordinator.TabListMode.GRID;
     }
 
     private void prepareBlankTab(int num, boolean isIncognito) {
@@ -445,22 +437,22 @@ public class SelectableTabListEditorTest {
 
         mRobot.resultRobot.verifyItemNotSelectedAtAdapterPosition(0);
 
-        mRobot.actionRobot.clickActionButtonAdapterPosition(0, getActionButtonId());
+        mRobot.actionRobot.clickActionButtonAdapterPosition(0, R.id.action_button);
         mRobot.resultRobot
                 .verifyItemSelectedAtAdapterPosition(0)
                 .verifyToolbarSelectionText("1 tab");
 
-        mRobot.actionRobot.clickActionButtonAdapterPosition(1, getActionButtonId());
+        mRobot.actionRobot.clickActionButtonAdapterPosition(1, R.id.action_button);
         mRobot.resultRobot
                 .verifyItemSelectedAtAdapterPosition(1)
                 .verifyToolbarSelectionText("2 tabs");
 
-        mRobot.actionRobot.clickActionButtonAdapterPosition(1, getActionButtonId());
+        mRobot.actionRobot.clickActionButtonAdapterPosition(1, R.id.action_button);
         mRobot.resultRobot
                 .verifyItemNotSelectedAtAdapterPosition(1)
                 .verifyToolbarSelectionText("1 tab");
 
-        mRobot.actionRobot.clickActionButtonAdapterPosition(0, getActionButtonId());
+        mRobot.actionRobot.clickActionButtonAdapterPosition(0, R.id.action_button);
         mRobot.resultRobot
                 .verifyItemNotSelectedAtAdapterPosition(0)
                 .verifyToolbarSelectionTextWithResourceId(
@@ -1788,7 +1780,7 @@ public class SelectableTabListEditorTest {
 
         mRobot.resultRobot.verifyItemNotSelectedAtAdapterPosition(0);
 
-        mRobot.actionRobot.clickActionButtonAdapterPosition(0, getActionButtonId());
+        mRobot.actionRobot.clickActionButtonAdapterPosition(0, R.id.action_button);
         mRobot.resultRobot
                 .verifyAdapterHasItemCount(2)
                 .verifyItemSelectedAtAdapterPosition(0)
@@ -1804,14 +1796,14 @@ public class SelectableTabListEditorTest {
                 .verifyItemNotSelectedAtAdapterPosition(0)
                 .verifyToolbarSelectionText("Select tabs");
 
-        mRobot.actionRobot.clickActionButtonAdapterPosition(0, getActionButtonId());
+        mRobot.actionRobot.clickActionButtonAdapterPosition(0, R.id.action_button);
         mRobot.resultRobot.verifyAdapterHasItemCount(1).verifyItemNotSelectedAtAdapterPosition(0);
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mTabListEditorController.setTabActionState(TabActionState.SELECTABLE);
                 });
-        mRobot.actionRobot.clickActionButtonAdapterPosition(0, getActionButtonId());
+        mRobot.actionRobot.clickActionButtonAdapterPosition(0, R.id.action_button);
         mRobot.resultRobot
                 .verifyAdapterHasItemCount(1)
                 .verifyItemSelectedAtAdapterPosition(0)
@@ -1960,13 +1952,5 @@ public class SelectableTabListEditorTest {
                         mTabListEditorController.configureToolbarWithMenuItems(actions);
                     }
                 });
-    }
-
-    private @IdRes int getActionButtonId() {
-        if (getMode() == TabListCoordinator.TabListMode.GRID) {
-            return R.id.action_button;
-        } else {
-            return R.id.end_button;
-        }
     }
 }

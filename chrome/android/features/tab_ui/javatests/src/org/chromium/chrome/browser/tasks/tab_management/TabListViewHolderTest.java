@@ -177,10 +177,6 @@ public class TabListViewHolderTest {
     private PropertyModel mSelectableModel;
     private PropertyModelChangeProcessor mSelectableMcp;
 
-    private ViewGroup mTabListView;
-    private ViewGroup mSelectableTabListView;
-    private PropertyModelChangeProcessor mListMcp;
-
     @Mock private Profile mProfile;
 
     @Mock private LevelDBPersistedDataStorage.Natives mLevelDbPersistedTabDataStorage;
@@ -294,22 +290,10 @@ public class TabListViewHolderTest {
                                     sActivity
                                             .getLayoutInflater()
                                             .inflate(R.layout.tab_grid_card_item, null);
-                    mSelectableTabListView =
-                            (ViewGroup)
-                                    sActivity
-                                            .getLayoutInflater()
-                                            .inflate(R.layout.tab_list_card_item, null);
-                    mTabListView =
-                            (ViewGroup)
-                                    sActivity
-                                            .getLayoutInflater()
-                                            .inflate(R.layout.tab_list_card_item, null);
 
                     view.addView(mTabGridView);
                     view.addView(mTabStripView);
                     view.addView(mSelectableTabGridView);
-                    view.addView(mSelectableTabListView);
-                    view.addView(mTabListView);
                 });
 
         ThreadUtils.runOnUiThreadBlocking(
@@ -363,11 +347,6 @@ public class TabListViewHolderTest {
                                     mSelectableModel,
                                     mSelectableTabGridView,
                                     TabGridViewBinder::bindTab);
-                    PropertyModelChangeProcessor.create(
-                            mSelectableModel, mSelectableTabListView, TabListViewBinder::bindTab);
-                    mListMcp =
-                            PropertyModelChangeProcessor.create(
-                                    mGridModel, mTabListView, TabListViewBinder::bindTab);
                 });
         LevelDBPersistedDataStorageJni.setInstanceForTesting(mLevelDbPersistedTabDataStorage);
         doNothing()
@@ -401,13 +380,6 @@ public class TabListViewHolderTest {
         Assert.assertFalse(TabUiTestHelper.isTabViewSelected(holder));
     }
 
-    private void tabListSelected(ViewGroup holder, PropertyModel model) {
-        model.set(TabProperties.IS_SELECTED, true);
-        Assert.assertNotNull(holder.getForeground());
-        model.set(TabProperties.IS_SELECTED, false);
-        Assert.assertNull(holder.getForeground());
-    }
-
     @Test
     @MediumTest
     @UiThreadTest
@@ -430,17 +402,6 @@ public class TabListViewHolderTest {
         mSelectableModel.set(TabProperties.IS_SELECTED, false);
         Assert.assertEquals(0, actionButton.getBackground().getLevel());
         Assert.assertEquals(0, actionButton.getDrawable().getAlpha());
-
-        tabListSelected(mSelectableTabListView, mSelectableModel);
-        mSelectableModel.set(TabProperties.IS_SELECTED, true);
-        ImageView endButton = mSelectableTabListView.findViewById(R.id.end_button);
-        Assert.assertEquals(1, endButton.getBackground().getLevel());
-        Assert.assertNotNull(endButton.getDrawable());
-        Assert.assertEquals(255, actionButton.getDrawable().getAlpha());
-
-        mSelectableModel.set(TabProperties.IS_SELECTED, false);
-        Assert.assertEquals(0, endButton.getBackground().getLevel());
-        Assert.assertEquals(0, endButton.getDrawable().getAlpha());
     }
 
     @Test
@@ -483,9 +444,6 @@ public class TabListViewHolderTest {
 
         mSelectableModel.set(TabProperties.TITLE, title);
         textView = mSelectableTabGridView.findViewById(R.id.tab_title);
-        Assert.assertEquals(title, textView.getText());
-
-        textView = mSelectableTabListView.findViewById(R.id.title);
         Assert.assertEquals(title, textView.getText());
     }
 
@@ -706,10 +664,7 @@ public class TabListViewHolderTest {
     @MediumTest
     @UiThreadTest
     public void testCloseButtonDescription() {
-        ImageView listActionButton = mTabListView.findViewById(R.id.end_button);
         ImageView gridActionButton = mTabGridView.findViewById(R.id.action_button);
-
-        Assert.assertNull(listActionButton.getContentDescription());
         Assert.assertNull(gridActionButton.getContentDescription());
 
         String closeTabDescription = "Close tab";
@@ -721,7 +676,6 @@ public class TabListViewHolderTest {
                 TabProperties.ACTION_BUTTON_DESCRIPTION_TEXT_RESOLVER,
                 actionButtonDescriptionTextResolver);
 
-        Assert.assertEquals(closeTabDescription, listActionButton.getContentDescription());
         Assert.assertEquals(closeTabDescription, gridActionButton.getContentDescription());
     }
 
@@ -729,7 +683,6 @@ public class TabListViewHolderTest {
     @MediumTest
     @UiThreadTest
     public void testCloseButtonColor() {
-        ImageView listActionButton = mTabListView.findViewById(R.id.end_button);
         ImageView gridActionButton = mTabGridView.findViewById(R.id.action_button);
 
         // This does not test all permutations as IS_INCOGNITO is a readable property key.
@@ -742,18 +695,13 @@ public class TabListViewHolderTest {
 
         Assert.assertEquals(
                 unselectedColorStateList, ImageViewCompat.getImageTintList(gridActionButton));
-        Assert.assertEquals(
-                unselectedColorStateList, ImageViewCompat.getImageTintList(listActionButton));
 
         isSelected = true;
         mGridModel.set(TabProperties.IS_SELECTED, isSelected);
         ColorStateList selectedColorStateList =
                 TabUiThemeProvider.getActionButtonTintList(sActivity, isIncognito, isSelected);
-        // The listActionButton does not highlight so use unselected always.
         Assert.assertEquals(
                 selectedColorStateList, ImageViewCompat.getImageTintList(gridActionButton));
-        Assert.assertEquals(
-                unselectedColorStateList, ImageViewCompat.getImageTintList(listActionButton));
     }
 
     @Test
@@ -762,7 +710,6 @@ public class TabListViewHolderTest {
     @DisableFeatures(ChromeFeatureList.DATA_SHARING)
     public void testClickToClose() {
         ImageView gridActionButton = mTabGridView.findViewById(R.id.action_button);
-        ImageView listActionButton = mTabListView.findViewById(R.id.end_button);
         ImageButton button = mTabStripView.findViewById(R.id.tab_strip_item_button);
 
         Assert.assertFalse(mCloseClicked.get());
@@ -774,14 +721,6 @@ public class TabListViewHolderTest {
         mCloseClicked.set(false);
         mCloseTabId.set(Tab.INVALID_TAB_ID);
 
-        Assert.assertFalse(mCloseClicked.get());
-        listActionButton.performClick();
-        Assert.assertTrue(mCloseClicked.get());
-        firstCloseId = mCloseTabId.get();
-        Assert.assertEquals(TAB1_ID, firstCloseId);
-
-        mCloseClicked.set(false);
-
         mGridModel.set(TabProperties.TAB_ID, TAB2_ID);
         gridActionButton.performClick();
         Assert.assertTrue(mCloseClicked.get());
@@ -791,11 +730,6 @@ public class TabListViewHolderTest {
         mCloseClicked.set(false);
         mCloseTabId.set(Tab.INVALID_TAB_ID);
 
-        Assert.assertFalse(mCloseClicked.get());
-        listActionButton.performClick();
-        Assert.assertTrue(mCloseClicked.get());
-        secondClosed = mCloseTabId.get();
-        // When TAB_ID in PropertyModel is updated, binder should close tab with updated tab ID.
         Assert.assertEquals(TAB2_ID, secondClosed);
         Assert.assertNotEquals(firstCloseId, secondClosed);
 
@@ -803,8 +737,6 @@ public class TabListViewHolderTest {
 
         mGridModel.set(TabProperties.TAB_ACTION_BUTTON_DATA, null);
         gridActionButton.performClick();
-        Assert.assertFalse(mCloseClicked.get());
-        listActionButton.performClick();
         Assert.assertFalse(mCloseClicked.get());
 
         mStripModel.set(TabProperties.IS_SELECTED, true);
@@ -826,8 +758,6 @@ public class TabListViewHolderTest {
         mGridModel.set(TabProperties.TAB_CARD_LABEL_DATA, null);
 
         assertNull(mTabGridView.findViewById(R.id.tab_card_label));
-        FrameLayout listContainer = mTabListView.findViewById(R.id.before_description_container);
-        assertEquals(0, listContainer.getChildCount());
 
         TabCardLabelData data =
                 new TabCardLabelData(
@@ -840,18 +770,10 @@ public class TabListViewHolderTest {
         TabCardLabelView gridLabel = mTabGridView.findViewById(R.id.tab_card_label);
         assertNotNull(gridLabel);
         assertEquals(View.VISIBLE, gridLabel.getVisibility());
-        assertEquals(1, listContainer.getChildCount());
-        TabCardLabelView listLabel = (TabCardLabelView) listContainer.getChildAt(0);
-        assertNotNull(listLabel);
-        assertEquals(View.VISIBLE, listLabel.getVisibility());
 
         mGridModel.set(TabProperties.TAB_CARD_LABEL_DATA, null);
 
         assertEquals(View.GONE, gridLabel.getVisibility());
-        assertEquals(View.GONE, listLabel.getVisibility());
-
-        TabListViewBinder.onViewRecycled(mGridModel, mTabListView);
-        assertNull(listLabel.getParent());
     }
 
     @Test
@@ -966,23 +888,14 @@ public class TabListViewHolderTest {
     @MediumTest
     @UiThreadTest
     public void testActionButtonImportantForAccessibility() {
-        ImageView closableListActionButton = mTabListView.findViewById(R.id.end_button);
         ImageView closableGridActionButton = mTabGridView.findViewById(R.id.action_button);
 
         Assert.assertEquals(
                 IMPORTANT_FOR_ACCESSIBILITY_YES,
-                closableListActionButton.getImportantForAccessibility());
-        Assert.assertEquals(
-                IMPORTANT_FOR_ACCESSIBILITY_YES,
                 closableGridActionButton.getImportantForAccessibility());
 
-        ImageView selectableListActionButton = mSelectableTabListView.findViewById(R.id.end_button);
         ImageView selectableGridActionButton =
                 mSelectableTabGridView.findViewById(R.id.action_button);
-
-        Assert.assertEquals(
-                IMPORTANT_FOR_ACCESSIBILITY_NO,
-                selectableListActionButton.getImportantForAccessibility());
         Assert.assertEquals(
                 IMPORTANT_FOR_ACCESSIBILITY_NO,
                 selectableGridActionButton.getImportantForAccessibility());
@@ -1094,28 +1007,12 @@ public class TabListViewHolderTest {
                 TabGridViewBinder::onViewRecycled);
 
         testFaviconFetcher(
-                mGridModel,
-                mTabListView,
-                R.id.start_icon,
-                fetcher,
-                tabFavicon,
-                TabListViewBinder::onViewRecycled);
-
-        testFaviconFetcher(
                 mSelectableModel,
                 mSelectableTabGridView,
                 R.id.tab_favicon,
                 fetcher,
                 tabFavicon,
                 TabGridViewBinder::onViewRecycled);
-
-        testFaviconFetcher(
-                mSelectableModel,
-                mSelectableTabListView,
-                R.id.start_icon,
-                fetcher,
-                tabFavicon,
-                TabListViewBinder::onViewRecycled);
 
         testFaviconFetcher(
                 mStripModel,
@@ -1131,9 +1028,6 @@ public class TabListViewHolderTest {
     @MediumTest
     @UiThreadTest
     public void testColorIcon_Grid() {
-        // Prevent errors with duplicate view attachment.
-        mListMcp.destroy();
-
         FrameLayout gridContainer = mTabGridView.findViewById(R.id.tab_group_color_view_container);
         assertEquals(0, gridContainer.getChildCount());
         assertEquals(View.GONE, gridContainer.getVisibility());
@@ -1163,47 +1057,6 @@ public class TabListViewHolderTest {
         TabGridViewBinder.onViewRecycled(mGridModel, mTabGridView);
         assertEquals(0, gridContainer.getChildCount());
         assertEquals(View.GONE, gridContainer.getVisibility());
-
-        mGridModel.set(TabProperties.TAB_GROUP_COLOR_VIEW_PROVIDER, null);
-    }
-
-    @Test
-    @MediumTest
-    @UiThreadTest
-    public void testColorIcon_List() {
-        // Prevent errors with duplicate view attachment.
-        mSelectableMcp.destroy();
-        mGridMcp.destroy();
-
-        FrameLayout listContainer = mTabListView.findViewById(R.id.after_title_container);
-        assertEquals(0, listContainer.getChildCount());
-        assertEquals(View.GONE, listContainer.getVisibility());
-
-        TabGroupColorViewProvider provider =
-                new TabGroupColorViewProvider(
-                        sActivity,
-                        EitherGroupId.createLocalId(new LocalTabGroupId(new Token(1L, 2L))),
-                        /* isIncognito= */ false,
-                        TabGroupColorId.BLUE,
-                        /* tabGroupSyncService= */ null,
-                        /* dataSharingService= */ null,
-                        /* collaborationService= */ null);
-
-        mGridModel.set(TabProperties.TAB_GROUP_COLOR_VIEW_PROVIDER, provider);
-        assertEquals(1, listContainer.getChildCount());
-        assertEquals(View.VISIBLE, listContainer.getVisibility());
-
-        mGridModel.set(TabProperties.TAB_GROUP_COLOR_VIEW_PROVIDER, null);
-        assertEquals(0, listContainer.getChildCount());
-        assertEquals(View.GONE, listContainer.getVisibility());
-
-        mGridModel.set(TabProperties.TAB_GROUP_COLOR_VIEW_PROVIDER, provider);
-        assertEquals(1, listContainer.getChildCount());
-        assertEquals(View.VISIBLE, listContainer.getVisibility());
-
-        TabListViewBinder.onViewRecycled(mGridModel, mTabListView);
-        assertEquals(0, listContainer.getChildCount());
-        assertEquals(View.GONE, listContainer.getVisibility());
 
         mGridModel.set(TabProperties.TAB_GROUP_COLOR_VIEW_PROVIDER, null);
     }

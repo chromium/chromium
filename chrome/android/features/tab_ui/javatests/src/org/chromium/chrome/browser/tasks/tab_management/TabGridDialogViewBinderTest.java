@@ -24,8 +24,6 @@ import static org.mockito.hamcrest.MockitoHamcrest.intThat;
 
 import static org.chromium.chrome.browser.flags.ChromeFeatureList.DATA_SHARING;
 import static org.chromium.chrome.browser.flags.ChromeFeatureList.DATA_SHARING_JOIN_ONLY;
-import static org.chromium.chrome.browser.flags.ChromeFeatureList.DISABLE_LIST_TAB_SWITCHER;
-import static org.chromium.chrome.browser.flags.ChromeFeatureList.FORCE_LIST_TAB_SWITCHER;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGridDialogProperties.BINDING_TOKEN;
 
 import android.app.Activity;
@@ -712,22 +710,6 @@ public class TabGridDialogViewBinderTest {
 
         mColorIconContainer.performClick();
         assertTrue(colorIconClicked.get());
-    }
-
-    @Test
-    @SmallTest
-    @UiThreadTest
-    @EnableFeatures(FORCE_LIST_TAB_SWITCHER)
-    @DisableFeatures(DISABLE_LIST_TAB_SWITCHER)
-    public void testSetAnimationBackgroundColor() {
-        int color = ContextCompat.getColor(sActivity, R.color.baseline_primary_80);
-
-        View cardView = mTabGridDialogView.findViewById(R.id.card_view);
-        cardView.setBackground(mCardViewBackground);
-
-        mModel.set(TabGridDialogProperties.ANIMATION_BACKGROUND_COLOR, color);
-
-        verify(mCardViewBackground).setTint(color);
     }
 
     @Test

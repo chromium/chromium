@@ -84,15 +84,15 @@ public class TabListCoordinator implements PriceWelcomeMessageProvider, DestroyO
     /**
      * Modes of showing the list of tabs.
      *
-     * <p>NOTE: STRIP, LIST, and GRID modes will have height equal to that of the container view.
+     * <p>NOTE: STRIP and GRID modes will have height equal to that of the container view.
      */
-    @IntDef({TabListMode.GRID, TabListMode.STRIP, TabListMode.LIST, TabListMode.NUM_ENTRIES})
+    @IntDef({TabListMode.GRID, TabListMode.STRIP, TabListMode.NUM_ENTRIES})
     @Retention(RetentionPolicy.SOURCE)
     public @interface TabListMode {
         int GRID = 0;
         int STRIP = 1;
         // int CAROUSEL_DEPRECATED = 2;
-        int LIST = 3;
+        // int LIST_DEPRECATED = 3;
         int NUM_ENTRIES = 4;
     }
 
@@ -203,8 +203,6 @@ public class TabListCoordinator implements PriceWelcomeMessageProvider, DestroyO
                         PropertyModel model = viewHolder.model;
                         if (mMode == TabListMode.GRID) {
                             TabGridViewBinder.onViewRecycled(model, viewHolder.itemView);
-                        } else if (mMode == TabListMode.LIST) {
-                            TabListViewBinder.onViewRecycled(model, viewHolder.itemView);
                         } else if (mMode == TabListMode.STRIP) {
                             TabStripViewBinder.onViewRecycled(model, viewHolder.itemView);
                         }
@@ -281,21 +279,6 @@ public class TabListCoordinator implements PriceWelcomeMessageProvider, DestroyO
                                         .inflate(R.layout.tab_strip_item, parentView, false);
                     },
                     TabStripViewBinder::bind);
-        } else if (mMode == TabListMode.LIST) {
-            mAdapter.registerType(
-                    UiType.TAB,
-                    parent -> {
-                        ViewLookupCachingFrameLayout group =
-                                (ViewLookupCachingFrameLayout)
-                                        LayoutInflater.from(activity)
-                                                .inflate(
-                                                        R.layout.tab_list_card_item,
-                                                        parentView,
-                                                        false);
-                        group.setClickable(true);
-                        return group;
-                    },
-                    TabListViewBinder::bindTab);
         } else {
             throw new IllegalArgumentException(
                     "Attempting to create a tab list UI with invalid mode");
@@ -346,8 +329,7 @@ public class TabListCoordinator implements PriceWelcomeMessageProvider, DestroyO
                 parentView.addView(mRecyclerView);
             }
 
-            // GRID and LIST both have fixed size. STRIP has a fixed size only if DATA_SHARING is
-            // off.
+            // GRID has a fixed size. STRIP has a fixed size only if DATA_SHARING is off.
             boolean hasFixedSize =
                     mMode != TabListMode.STRIP || !TabUiUtils.isDataSharingFunctionalityEnabled();
             mRecyclerView.setAdapter(mAdapter);
@@ -372,14 +354,9 @@ public class TabListCoordinator implements PriceWelcomeMessageProvider, DestroyO
                 Rect frame = new Rect();
                 mActivity.getWindow().getDecorView().getWindowVisibleDisplayFrame(frame);
                 updateGridCardLayout(frame.width());
-            } else if (mMode == TabListMode.STRIP || mMode == TabListMode.LIST) {
+            } else if (mMode == TabListMode.STRIP) {
                 LinearLayoutManager layoutManager =
-                        new LinearLayoutManager(
-                                activity,
-                                mMode == TabListMode.LIST
-                                        ? LinearLayoutManager.VERTICAL
-                                        : LinearLayoutManager.HORIZONTAL,
-                                false) {
+                        new LinearLayoutManager(activity, LinearLayoutManager.HORIZONTAL, false) {
                             @Override
                             public void onLayoutCompleted(RecyclerView.State state) {
                                 super.onLayoutCompleted(state);
@@ -529,7 +506,7 @@ public class TabListCoordinator implements PriceWelcomeMessageProvider, DestroyO
     }
 
     private void configureRecyclerViewTouchHelpers() {
-        boolean modeAllowsDragAndDrop = mMode == TabListMode.GRID || mMode == TabListMode.LIST;
+        boolean modeAllowsDragAndDrop = mMode == TabListMode.GRID;
         boolean actionStateAllowsDragAndDrop = mTabActionState != TabActionState.SELECTABLE;
         if (mAllowDragAndDrop && modeAllowsDragAndDrop && actionStateAllowsDragAndDrop) {
             if (mItemTouchHelper == null || mOnItemTouchListener == null) {

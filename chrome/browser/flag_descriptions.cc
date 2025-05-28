@@ -5007,12 +5007,6 @@ const char kFloatingSnackbarName[] = "FloatingSnackbar";
 const char kFloatingSnackbarDescription[] =
     "Enables the snackbar to float on top of the web content.";
 
-const char kForceListTabSwitcherName[] =
-    "Force list tab switcher for low-end devices";
-const char kForceListTabSwitcherDescription[] =
-    "Forces the list mode of the tab switcher intended for low-end devices. "
-    "This flag is intended for debugging only.";
-
 const char kFullscreenInsetsApiMigrationName[] =
     "Migrate to the new fullscreen insets APIs";
 const char kFullscreenInsetsApiMigrationDescription[] =

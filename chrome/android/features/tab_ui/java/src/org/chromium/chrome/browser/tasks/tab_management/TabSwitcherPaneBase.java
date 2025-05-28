@@ -283,7 +283,7 @@ public abstract class TabSwitcherPaneBase implements Pane, TabSwitcher, TabSwitc
             @NonNull HubContainerView hubContainerView) {
         assert !DeviceFormFactor.isNonMultiDisplayContextOnTablet(hubContainerView.getContext());
         @Nullable Tab tab = getCurrentTab();
-        if (getTabListMode() == TabListMode.LIST || tab == null || SysUtils.isLowEndDevice()) {
+        if (tab == null || SysUtils.isLowEndDevice()) {
             return FadeHubLayoutAnimationFactory.createFadeInAnimatorProvider(
                     hubContainerView, HUB_LAYOUT_FADE_DURATION_MS, mOnToolbarAlphaChange);
         }
@@ -304,7 +304,7 @@ public abstract class TabSwitcherPaneBase implements Pane, TabSwitcher, TabSwitc
             @NonNull HubContainerView hubContainerView) {
         assert !DeviceFormFactor.isNonMultiDisplayContextOnTablet(hubContainerView.getContext());
         Tab tab = getCurrentTab();
-        if (getTabListMode() == TabListMode.LIST || tab == null || SysUtils.isLowEndDevice()) {
+        if (tab == null || SysUtils.isLowEndDevice()) {
             return FadeHubLayoutAnimationFactory.createFadeOutAnimatorProvider(
                     hubContainerView, HUB_LAYOUT_FADE_DURATION_MS, mOnToolbarAlphaChange);
         }
