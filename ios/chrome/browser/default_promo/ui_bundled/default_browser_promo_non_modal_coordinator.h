@@ -18,10 +18,10 @@ enum class NonModalDefaultBrowserPromoReason;
                                                promoReason
     NS_DESIGNATED_INITIALIZER;
 
-- (instancetype)initWithInfoBarDelegate:
-                    (infobars::InfoBarDelegate*)infoBarDelegate
-                           badgeSupport:(BOOL)badgeSupport
-                                   type:(InfobarType)infobarType NS_UNAVAILABLE;
+- (instancetype)initWithBaseViewController:(UIViewController*)viewController
+                                   browser:(Browser*)browser
+                                      type:(InfobarType)infobarType
+    NS_UNAVAILABLE;
 
 @end
 

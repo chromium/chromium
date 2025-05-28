@@ -52,12 +52,12 @@ constexpr CGFloat kLogoSize = 22;
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
                                    browser:(Browser*)browser
                                  promoType:(SignInPromoType)promoType {
-  self = [super initWithInfoBarDelegate:nil
-                           badgeSupport:YES
-                                   type:InfobarType::kInfobarTypeSignin];
+  self = [super initWithBaseViewController:viewController
+                                   browser:browser
+                                      type:InfobarType::kInfobarTypeSignin];
   if (self) {
-    self.baseViewController = viewController;
-    self.browser = browser;
+    CHECK(viewController, base::NotFatalUntil::M145);
+    CHECK(browser, base::NotFatalUntil::M145);
     self.shouldUseDefaultDismissal = NO;
     _promoType = promoType;
     _tracker = feature_engagement::TrackerFactory::GetForProfile(self.profile);

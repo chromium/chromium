@@ -3620,8 +3620,6 @@ enum class ToolbarKind {
                              browser:self.browser
                          promoReason:promoReason];
   [self.nonModalPromoCoordinator start];
-  self.nonModalPromoCoordinator.browser = self.browser;
-  self.nonModalPromoCoordinator.baseViewController = self.viewController;
   [self.nonModalPromoCoordinator presentInfobarBannerAnimated:YES
                                                    completion:nil];
 }

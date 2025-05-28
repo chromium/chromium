@@ -42,12 +42,12 @@
                                    browser:(Browser*)browser
                                promoReason:(NonModalDefaultBrowserPromoReason)
                                                promoReason {
-  self = [super initWithInfoBarDelegate:nil
-                           badgeSupport:YES
-                                   type:InfobarType::kInfobarTypeConfirm];
+  self = [super initWithBaseViewController:viewController
+                                   browser:browser
+                                      type:InfobarType::kInfobarTypeConfirm];
   if (self) {
-    self.baseViewController = viewController;
-    self.browser = browser;
+    CHECK(viewController, base::NotFatalUntil::M145);
+    CHECK(browser, base::NotFatalUntil::M145);
     self.shouldUseDefaultDismissal = NO;
     _promoReason = promoReason;
   }
