@@ -191,7 +191,6 @@ source_set("impl") {
     deps += [
       "//chrome/app:command_ids",
       "//chrome/app/vector_icons",
-      "//chrome/browser/accessibility:utils",
       "//chrome/browser/apps/platform_apps",
       "//chrome/browser/feedback",
       "//chrome/browser/promos:utils",
@@ -234,7 +233,6 @@ source_set("unit_tests") {
     "//build:branding_buildflags",
     "//chrome/browser",
     "//chrome/browser:browser_process",
-    "//chrome/browser/accessibility:utils",
     "//chrome/browser/autofill",
     "//chrome/browser/autofill:test_support",
     "//chrome/browser/plus_addresses",

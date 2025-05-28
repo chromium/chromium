@@ -37,15 +37,10 @@ source_set("utils") {
 
   deps = [
     "//base",
-    "//chrome/browser/profiles",
-    "//chrome/common",
-    "//components/prefs",
-    "//services/screen_ai/buildflags",
+    "//ui/accessibility/platform",
   ]
 
   if (is_chromeos) {
     deps += [ "//chrome/browser/ash/accessibility" ]
-  } else {
-    deps += [ "//content/public/browser" ]
   }
 }

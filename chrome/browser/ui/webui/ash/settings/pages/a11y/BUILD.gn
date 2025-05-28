@@ -41,7 +41,6 @@ static_library("a11y") {
     "//base:i18n",
     "//chrome/app:generated_resources",
     "//chrome/browser:browser_process",
-    "//chrome/browser/accessibility:utils",
     "//chrome/browser/ash/accessibility",
     "//chrome/browser/profiles",
     "//chrome/browser/profiles:profile",

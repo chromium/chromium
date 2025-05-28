@@ -1612,7 +1612,6 @@ static_library("ui") {
       "//base",
       "//chrome/app/vector_icons",
       "//chrome/browser:shell_integration",
-      "//chrome/browser/accessibility:utils",
       "//chrome/browser/actor",
       "//chrome/browser/apps/app_service",
       "//chrome/browser/apps/app_service/app_icon",
@@ -2159,7 +2158,6 @@ static_library("ui") {
       "//ash/webui/vc_background_ui",
       "//ash/webui/web_applications",
       "//chrome/app:generated_resources",
-      "//chrome/browser/accessibility:utils",
       "//chrome/browser/apps/app_discovery_service",
       "//chrome/browser/apps/app_preload_service",
       "//chrome/browser/apps/browser_instance",
@@ -4939,7 +4937,6 @@ static_library("ui") {
     deps += [
       "//base",
       "//chrome/browser:main_extra_parts",
-      "//chrome/browser/accessibility:utils",
       "//chrome/browser/apps:icon_standardizer",
       "//chrome/browser/infobars",
       "//chrome/browser/profiles/keep_alive",
