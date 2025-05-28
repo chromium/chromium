@@ -135,7 +135,10 @@ void CastStreamingSession::ReceiverSessionClient::GetAudioBuffer(
     base::OnceClosure no_frames_available_cb) {
   if (preloaded_audio_buffer_) {
     DCHECK(preloaded_audio_buffer_.value());
-    client_->OnAudioBufferReceived(std::move(preloaded_audio_buffer_.value()));
+    if (client_) {
+      client_->OnAudioBufferReceived(
+          std::move(preloaded_audio_buffer_.value()));
+    }
     preloaded_audio_buffer_ = std::nullopt;
     return;
   }
@@ -148,7 +151,10 @@ void CastStreamingSession::ReceiverSessionClient::GetVideoBuffer(
     base::OnceClosure no_frames_available_cb) {
   if (preloaded_video_buffer_) {
     DCHECK(preloaded_video_buffer_.value());
-    client_->OnVideoBufferReceived(std::move(preloaded_video_buffer_.value()));
+    if (client_) {
+      client_->OnVideoBufferReceived(
+          std::move(preloaded_video_buffer_.value()));
+    }
     preloaded_video_buffer_ = std::nullopt;
     return;
   }
@@ -195,7 +201,7 @@ CastStreamingSession::ReceiverSessionClient::~ReceiverSessionClient() {
 void CastStreamingSession::ReceiverSessionClient::OnInitializationTimeout() {
   DVLOG(1) << __func__;
   DCHECK(!is_initialized_);
-  client_->OnSessionEnded();
+  EndSession();
   is_initialized_ = true;
 }
 
@@ -308,7 +314,7 @@ void CastStreamingSession::ReceiverSessionClient::StartStreamingSession(
   // stream.
   if (!initialization_info.audio_stream_info &&
       !initialization_info.video_stream_info) {
-    client_->OnSessionEnded();
+    EndSession();
     return;
   }
 
@@ -328,7 +334,7 @@ void CastStreamingSession::ReceiverSessionClient::StartStreamingSession(
       DLOG(ERROR) << "New streaming session has support for audio or video "
                      "which does not match the ones provided during a prior "
                      "streaming initialization.";
-      client_->OnSessionEnded();
+      EndSession();
       return;
     }
   }
@@ -344,7 +350,7 @@ void CastStreamingSession::ReceiverSessionClient::StartStreamingSession(
                << initialization_info.audio_stream_info->config
                       .AsHumanReadableString();
     } else {
-      client_->OnSessionEnded();
+      EndSession();
       return;
     }
   }
@@ -358,19 +364,23 @@ void CastStreamingSession::ReceiverSessionClient::StartStreamingSession(
                       .AsHumanReadableString();
     } else {
       audio_consumer_.reset();
-      client_->OnSessionEnded();
+      EndSession();
       return;
     }
   }
 
   if (is_new_offer) {
-    client_->OnSessionReinitialization(std::move(initialization_info),
+    if (client_) {
+      client_->OnSessionReinitialization(std::move(initialization_info),
+                                         std::move(audio_pipe_consumer_handle),
+                                         std::move(video_pipe_consumer_handle));
+    }
+  } else {
+    if (client_) {
+      client_->OnSessionInitialization(std::move(initialization_info),
                                        std::move(audio_pipe_consumer_handle),
                                        std::move(video_pipe_consumer_handle));
-  } else {
-    client_->OnSessionInitialization(std::move(initialization_info),
-                                     std::move(audio_pipe_consumer_handle),
-                                     std::move(video_pipe_consumer_handle));
+    }
     data_timeout_timer_.Start(
         FROM_HERE, kNoDataTimeout,
         base::BindOnce(
@@ -411,7 +421,7 @@ void CastStreamingSession::ReceiverSessionClient::OnReceiversDestroying(
 
   switch (reason) {
     case ReceiversDestroyingReason::kEndOfSession:
-      client_->OnSessionEnded();
+      EndSession();
       break;
     case ReceiversDestroyingReason::kRenegotiated:
       if (playback_command_dispatcher_) {
@@ -426,7 +436,9 @@ void CastStreamingSession::ReceiverSessionClient::OnReceiversDestroying(
               weak_factory_.GetWeakPtr()));
         }
       }
-      client_->OnSessionReinitializationPending();
+      if (client_) {
+        client_->OnSessionReinitializationPending();
+      }
       break;
   }
 }
@@ -460,7 +472,7 @@ void CastStreamingSession::ReceiverSessionClient::OnError(
   DCHECK_EQ(session, receiver_session_.get());
   LOG(ERROR) << error;
   if (!is_initialized_) {
-    client_->OnSessionEnded();
+    EndSession();
     is_initialized_ = true;
   }
 }
@@ -468,13 +480,20 @@ void CastStreamingSession::ReceiverSessionClient::OnError(
 void CastStreamingSession::ReceiverSessionClient::OnDataTimeout() {
   DLOG(ERROR) << __func__ << ": Session ended due to timeout";
   receiver_session_.reset();
-  client_->OnSessionEnded();
+  EndSession();
 }
 
 void CastStreamingSession::ReceiverSessionClient::OnCastChannelClosed() {
   DLOG(ERROR) << __func__ << ": Session ended due to cast channel closure";
   receiver_session_.reset();
-  client_->OnSessionEnded();
+  EndSession();
+}
+
+void CastStreamingSession::ReceiverSessionClient::EndSession() {
+  if (client_) {
+    client_->OnSessionEnded();
+    client_ = nullptr;
+  }
 }
 
 base::WeakPtr<CastStreamingSession::ReceiverSessionClient>
