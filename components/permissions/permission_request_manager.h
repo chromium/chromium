@@ -186,6 +186,9 @@ class PermissionRequestManager
   content::WebContents* GetAssociatedWebContents() override;
   bool RecreateView() override;
   const PermissionPrompt* GetCurrentPrompt() const override;
+  // Returns true if there is a request in progress that is initiated by an
+  // embedded permission element.
+  bool IsCurrentRequestEmbeddedPermissionElementInitiated() const;
 
   // Returns the bounds of the active permission prompt view if we're
   // displaying one.
@@ -423,10 +426,6 @@ class PermissionRequestManager
   void DoAutoResponseForTesting();
 
   void PreIgnoreQuietPromptInternal();
-
-  // Returns true if there is a request in progress that is initiated by an
-  // embedded permission element.
-  bool IsCurrentRequestEmbeddedPermissionElementInitiated() const;
 
   // Returns true if there is a request in progress that is for exclusive
   // access.

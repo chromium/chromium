@@ -886,6 +886,12 @@ const PermissionPrompt* PermissionRequestManager::GetCurrentPrompt() const {
   return view_.get();
 }
 
+bool PermissionRequestManager::
+    IsCurrentRequestEmbeddedPermissionElementInitiated() const {
+  return IsRequestInProgress() &&
+         requests_[0]->IsEmbeddedPermissionElementInitiated();
+}
+
 std::optional<gfx::Rect>
 PermissionRequestManager::GetPromptBubbleViewBoundsInScreen() const {
   return view_ ? view_->GetViewBoundsInScreen() : std::nullopt;
@@ -1353,7 +1359,9 @@ void PermissionRequestManager::RequestFinishedIncludingDuplicates(
 }
 
 void PermissionRequestManager::AddObserver(Observer* observer) {
-  observer_list_.AddObserver(observer);
+  if (!observer_list_.HasObserver(observer)) {
+    observer_list_.AddObserver(observer);
+  }
 }
 
 void PermissionRequestManager::RemoveObserver(Observer* observer) {
@@ -1604,11 +1612,6 @@ void PermissionRequestManager::DoAutoResponseForTesting() {
   }
 }
 
-bool PermissionRequestManager::
-    IsCurrentRequestEmbeddedPermissionElementInitiated() const {
-  return IsRequestInProgress() &&
-         requests_[0]->IsEmbeddedPermissionElementInitiated();
-}
 
 bool PermissionRequestManager::IsCurrentRequestExclusiveAccess() const {
 #if !BUILDFLAG(IS_ANDROID)
