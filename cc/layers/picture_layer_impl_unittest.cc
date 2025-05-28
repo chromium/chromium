@@ -5510,7 +5510,7 @@ TEST_F(NoLowResPictureLayerImplTest, UpdateLCDTextPushToActiveTree) {
     EXPECT_FALSE(tile->can_use_lcd_text());
 }
 
-TEST_F(LegacySWPictureLayerImplTest, UpdateLCDTextPushToActiveTreeWith2dScale) {
+TEST_F(NoLowResPictureLayerImplTest, UpdateLCDTextPushToActiveTreeWith2dScale) {
   SetupPendingTree(FakeRasterSource::CreateFilledWithText(gfx::Size(200, 200)));
   gfx::Vector2dF ideal_scale(4.f, 2.f);
   float page_scale = 4.f;
@@ -5525,14 +5525,12 @@ TEST_F(LegacySWPictureLayerImplTest, UpdateLCDTextPushToActiveTreeWith2dScale) {
   ActivateTree();
 
   EXPECT_TRUE(active_layer()->can_use_lcd_text());
-  ASSERT_EQ(2u, active_layer()->tilings()->num_tilings());
+  ASSERT_EQ(1u, active_layer()->tilings()->num_tilings());
   ASSERT_TRUE(active_layer()->HighResTiling()->has_tiles());
   std::vector<Tile*> tiles =
       active_layer()->HighResTiling()->AllTilesForTesting();
   for (Tile* tile : tiles)
     EXPECT_TRUE(tile->can_use_lcd_text());
-  for (Tile* tile : active_layer()->LowResTiling()->AllTilesForTesting())
-    EXPECT_FALSE(tile->can_use_lcd_text());
 
   SetupPendingTree(FakeRasterSource::CreateFilledWithText(gfx::Size(200, 200)));
   SetupDrawPropertiesAndUpdateTiles(pending_layer(), ideal_scale, 1.0f,
@@ -5544,11 +5542,9 @@ TEST_F(LegacySWPictureLayerImplTest, UpdateLCDTextPushToActiveTreeWith2dScale) {
   ActivateTree();
 
   EXPECT_FALSE(active_layer()->can_use_lcd_text());
-  ASSERT_EQ(2u, active_layer()->tilings()->num_tilings());
+  ASSERT_EQ(1u, active_layer()->tilings()->num_tilings());
   ASSERT_TRUE(active_layer()->HighResTiling()->has_tiles());
   for (Tile* tile : active_layer()->HighResTiling()->AllTilesForTesting())
-    EXPECT_FALSE(tile->can_use_lcd_text());
-  for (Tile* tile : active_layer()->LowResTiling()->AllTilesForTesting())
     EXPECT_FALSE(tile->can_use_lcd_text());
 }
 
