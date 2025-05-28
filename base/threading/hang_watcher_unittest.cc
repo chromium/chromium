@@ -123,39 +123,36 @@ class BlockedThread : public DelegateSimpleThread::Delegate {
   base::TimeDelta timeout_;
 };
 
-class HangWatcherTest : public testing::Test {
+// A hang watcher that only does monitoring when requested via
+// `TriggerSynchronousMonitoring` instead of periodically via a timer.
+class ManualHangWatcher : public HangWatcher {
  public:
-  const base::TimeDelta kTimeout = base::Seconds(10);
-  const base::TimeDelta kHangTime = kTimeout + base::Seconds(1);
-
-  HangWatcherTest() {
-    feature_list_.InitWithFeaturesAndParameters(kFeatureAndParams, {});
+  ManualHangWatcher() {
     HangWatcher::InitializeOnMainThread(
         HangWatcher::ProcessType::kBrowserProcess, /*emit_crashes=*/true);
 
-    hang_watcher_.SetAfterMonitorClosureForTesting(base::BindRepeating(
+    SetAfterMonitorClosureForTesting(base::BindRepeating(
         &WaitableEvent::Signal, base::Unretained(&monitor_event_)));
 
-    hang_watcher_.SetOnHangClosureForTesting(base::BindLambdaForTesting(
+    SetOnHangClosureForTesting(base::BindLambdaForTesting(
         [this] { hang_count_.fetch_add(1, std::memory_order_relaxed); }));
 
-    // We're not testing the monitoring loop behavior in this test so we want to
-    // trigger monitoring manually.
-    hang_watcher_.SetMonitoringPeriodForTesting(kVeryLongDelta);
+    // Disable periodic monitoring by setting a very very long monitoring
+    // period. Monitoring will be started manually by calling
+    // `TriggerSynchronousMonitoring()`.
+    SetMonitoringPeriodForTesting(base::Days(365));
 
     // Start the monitoring loop.
-    hang_watcher_.Start();
+    Start();
   }
 
-  void TearDown() override {
-    HangWatcher::UninitializeOnMainThreadForTesting();
-  }
+  ~ManualHangWatcher() override { UninitializeOnMainThreadForTesting(); }
 
   // Signal the `HangWatcher` to start a monitoring and wait for that monitoring
   // to be done.
-  void MonitorHangs() {
+  void TriggerSynchronousMonitoring() {
     monitor_event_.Reset();
-    hang_watcher_.SignalMonitorEventForTesting();
+    SignalMonitorEventForTesting();
     monitor_event_.Wait();
   }
 
@@ -163,30 +160,38 @@ class HangWatcherTest : public testing::Test {
     return hang_count_.load(std::memory_order_relaxed);
   }
 
- protected:
+ private:
   // Used to wait for monitoring. Will be signaled by the HangWatcher thread and
   // so needs to outlive it.
   WaitableEvent monitor_event_;
 
   // Count the number of time the HangWatcher thread detected a hang.
   std::atomic<int> hang_count_ = 0;
+};
 
+class HangWatcherTest : public testing::Test {
+ public:
+  const base::TimeDelta kTimeout = base::Seconds(10);
+  const base::TimeDelta kHangTime = kTimeout + base::Seconds(1);
+
+  HangWatcherTest() {
+    feature_list_.InitWithFeaturesAndParameters(kFeatureAndParams, {});
+  }
+
+ protected:
   base::test::ScopedFeatureList feature_list_;
 
   // Used exclusively for MOCK_TIME. No tasks will be run on the environment.
   // Single threaded to avoid ThreadPool WorkerThreads registering.
   test::SingleThreadTaskEnvironment task_environment_{
       test::TaskEnvironment::TimeSource::MOCK_TIME};
-
-  // This must be declared last (after task_environment_, for example) so that
-  // the watcher thread is joined before objects like the mock timer are
-  // destroyed, causing racy crashes.
-  HangWatcher hang_watcher_;
 };
 
 }  // namespace
 
 TEST_F(HangWatcherTest, InvalidatingExpectationsPreventsCapture) {
+  ManualHangWatcher hang_watcher;
+
   // Register the main test thread for hang watching.
   auto unregister_thread_closure =
       HangWatcher::RegisterThread(base::HangWatcher::ThreadType::kMainThread);
@@ -200,11 +205,13 @@ TEST_F(HangWatcherTest, InvalidatingExpectationsPreventsCapture) {
 
   // Trigger a monitoring on HangWatcher thread and verify results.
   // Hang is not detected.
-  MonitorHangs();
-  EXPECT_EQ(GetHangCount(), 0);
+  hang_watcher.TriggerSynchronousMonitoring();
+  EXPECT_EQ(hang_watcher.GetHangCount(), 0);
 }
 
 TEST_F(HangWatcherTest, MultipleInvalidateExpectationsDoNotCancelOut) {
+  ManualHangWatcher hang_watcher;
+
   // Register the main test thread for hang watching.
   auto unregister_thread_closure =
       HangWatcher::RegisterThread(base::HangWatcher::ThreadType::kMainThread);
@@ -221,13 +228,15 @@ TEST_F(HangWatcherTest, MultipleInvalidateExpectationsDoNotCancelOut) {
 
   // Trigger a monitoring on HangWatcher thread and verify results.
   // Hang is not detected.
-  MonitorHangs();
-  EXPECT_EQ(GetHangCount(), 0);
+  hang_watcher.TriggerSynchronousMonitoring();
+  EXPECT_EQ(hang_watcher.GetHangCount(), 0);
 }
 
 // TODO(crbug.com/385732561): Test is flaky.
 TEST_F(HangWatcherTest,
        DISABLED_NewInnerWatchHangsInScopeAfterInvalidationDetectsHang) {
+  ManualHangWatcher hang_watcher;
+
   // Register the main test thread for hang watching.
   auto unregister_thread_closure =
       HangWatcher::RegisterThread(base::HangWatcher::ThreadType::kMainThread);
@@ -243,23 +252,25 @@ TEST_F(HangWatcherTest,
     task_environment_.FastForwardBy(kHangTime);
 
     // Trigger a monitoring on HangWatcher thread and verify results.
-    MonitorHangs();
+    hang_watcher.TriggerSynchronousMonitoring();
 
     // Hang is detected since the new WatchHangsInScope temporarily
     // re-activated hang_watching.
-    EXPECT_EQ(GetHangCount(), 1);
+    EXPECT_EQ(hang_watcher.GetHangCount(), 1);
   }
 
   // Trigger a monitoring on HangWatcher thread and verify results.
-  MonitorHangs();
+  hang_watcher.TriggerSynchronousMonitoring();
 
   // No new hang is detected since execution is back to being covered by
   // |expires_instantly| for which expectations were invalidated.
-  EXPECT_EQ(GetHangCount(), 1);
+  EXPECT_EQ(hang_watcher.GetHangCount(), 1);
 }
 
 TEST_F(HangWatcherTest,
        NewSeparateWatchHangsInScopeAfterInvalidationDetectsHang) {
+  ManualHangWatcher hang_watcher;
+
   // Register the main test thread for hang watching.
   auto unregister_thread_closure =
       HangWatcher::RegisterThread(base::HangWatcher::ThreadType::kMainThread);
@@ -276,16 +287,18 @@ TEST_F(HangWatcherTest,
   task_environment_.FastForwardBy(kHangTime);
 
   // Trigger a monitoring on HangWatcher thread and verify results.
-  MonitorHangs();
+  hang_watcher.TriggerSynchronousMonitoring();
 
   // Hang is detected since the new WatchHangsInScope did not have its
   // expectations invalidated.
-  EXPECT_EQ(GetHangCount(), 1);
+  EXPECT_EQ(hang_watcher.GetHangCount(), 1);
 }
 
 // Test that invalidating expectations from inner WatchHangsInScope will also
 // prevent hang detection in outer scopes.
 TEST_F(HangWatcherTest, ScopeDisabledObjectInnerScope) {
+  ManualHangWatcher hang_watcher;
+
   // Register the main test thread for hang watching.
   auto unregister_thread_closure =
       HangWatcher::RegisterThread(base::HangWatcher::ThreadType::kMainThread);
@@ -303,14 +316,16 @@ TEST_F(HangWatcherTest, ScopeDisabledObjectInnerScope) {
   }
 
   // Trigger a monitoring on HangWatcher thread and verify results.
-  MonitorHangs();
+  hang_watcher.TriggerSynchronousMonitoring();
 
   // Hang is ignored since it concerns a scope for which one of the inner scope
   // was ignored.
-  EXPECT_EQ(GetHangCount(), 0);
+  EXPECT_EQ(hang_watcher.GetHangCount(), 0);
 }
 
 TEST_F(HangWatcherTest, NewScopeAfterDisabling) {
+  ManualHangWatcher hang_watcher;
+
   // Register the main test thread for hang watching.
   auto unregister_thread_closure =
       HangWatcher::RegisterThread(base::HangWatcher::ThreadType::kMainThread);
@@ -332,13 +347,15 @@ TEST_F(HangWatcherTest, NewScopeAfterDisabling) {
   task_environment_.FastForwardBy(kHangTime);
 
   // Trigger a monitoring on HangWatcher thread and verify results.
-  MonitorHangs();
+  hang_watcher.TriggerSynchronousMonitoring();
 
   // Hang is detected because it's unrelated to the hangs that were disabled.
-  EXPECT_EQ(GetHangCount(), 1);
+  EXPECT_EQ(hang_watcher.GetHangCount(), 1);
 }
 
 TEST_F(HangWatcherTest, NestedScopes) {
+  ManualHangWatcher hang_watcher;
+
   // Create a state object for the test thread since this test is single
   // threaded.
   auto current_hang_watch_state =
@@ -380,13 +397,14 @@ TEST_F(HangWatcherTest, NestedScopes) {
 
 TEST_F(HangWatcherTest, HistogramsLoggedOnHang) {
   base::HistogramTester histogram_tester;
+  ManualHangWatcher hang_watcher;
 
   // Start a blocked thread and simulate a hang.
   BlockedThread thread(base::Seconds(10));
   task_environment_.FastForwardBy(base::Seconds(11));
 
   // First monitoring catches the hang and emits the histogram.
-  MonitorHangs();
+  hang_watcher.TriggerSynchronousMonitoring();
   EXPECT_THAT(histogram_tester.GetAllSamples("HangWatcher.IsThreadHung."
                                              "BrowserProcess.UIThread.Normal"),
               ElementsAre(base::Bucket(true, /*count=*/1)));
@@ -401,7 +419,7 @@ TEST_F(HangWatcherTest, HistogramsLoggedOnHang) {
 
   // Attempt capture again. Hang is logged again even if it would not trigger a
   // crash dump.
-  MonitorHangs();
+  hang_watcher.TriggerSynchronousMonitoring();
   EXPECT_THAT(histogram_tester.GetAllSamples("HangWatcher.IsThreadHung."
                                              "BrowserProcess.UIThread.Normal"),
               ElementsAre(base::Bucket(true, /*count=*/2)));
@@ -430,14 +448,15 @@ TEST_F(HangWatcherTest, HistogramsLoggedOnHang) {
 
 TEST_F(HangWatcherTest, HistogramsLoggedWithoutHangs) {
   base::HistogramTester histogram_tester;
+  ManualHangWatcher hang_watcher;
 
   // Start a blocked thread with a 10 seconds hang limit, but don't fastforward
   // time.
   BlockedThread thread(base::Seconds(10));
 
   // No hang to catch so nothing is recorded.
-  MonitorHangs();
-  EXPECT_EQ(GetHangCount(), 0);
+  hang_watcher.TriggerSynchronousMonitoring();
+  EXPECT_EQ(hang_watcher.GetHangCount(), 0);
 
   // A thread of type ThreadForTesting was monitored but didn't hang. This is
   // logged.
@@ -461,6 +480,7 @@ TEST_F(HangWatcherTest, HistogramsLoggedWithoutHangs) {
 
 TEST_F(HangWatcherTest, HistogramsLoggedWithShutdownFlag) {
   base::HistogramTester histogram_tester;
+  ManualHangWatcher hang_watcher;
 
   // Start a blocked thread and simulate a hang.
   BlockedThread thread(base::Seconds(10));
@@ -470,14 +490,14 @@ TEST_F(HangWatcherTest, HistogramsLoggedWithShutdownFlag) {
   base::HangWatcher::SetShuttingDown();
 
   // First monitoring catches the hang and emits the histogram.
-  MonitorHangs();
+  hang_watcher.TriggerSynchronousMonitoring();
   EXPECT_THAT(histogram_tester.GetAllSamples(
                   "HangWatcher.IsThreadHung.BrowserProcess.UIThread.Shutdown"),
               ElementsAre(base::Bucket(true, /*count=*/1)));
 
   // Attempt capture again. Hang is logged again even if it would not trigger a
   // crash dump.
-  MonitorHangs();
+  hang_watcher.TriggerSynchronousMonitoring();
   EXPECT_THAT(histogram_tester.GetAllSamples(
                   "HangWatcher.IsThreadHung.BrowserProcess.UIThread.Shutdown"),
               ElementsAre(base::Bucket(true, /*count=*/2)));
@@ -497,38 +517,44 @@ TEST_F(HangWatcherTest, HistogramsLoggedWithShutdownFlag) {
 }
 
 TEST_F(HangWatcherTest, Hang) {
+  ManualHangWatcher hang_watcher;
+
   // Start a blocked thread and simulate a hang.
   BlockedThread thread(base::Seconds(10));
   task_environment_.FastForwardBy(base::Seconds(11));
 
   // First monitoring catches and records the hang.
-  MonitorHangs();
-  EXPECT_EQ(GetHangCount(), 1);
+  hang_watcher.TriggerSynchronousMonitoring();
+  EXPECT_EQ(hang_watcher.GetHangCount(), 1);
 }
 
 TEST_F(HangWatcherTest, HangAlreadyRecorded) {
+  ManualHangWatcher hang_watcher;
+
   // Start a blocked thread and simulate a hang.
   BlockedThread thread(base::Seconds(10));
   task_environment_.FastForwardBy(base::Seconds(11));
 
   // First monitoring catches and records the hang.
-  MonitorHangs();
-  EXPECT_EQ(GetHangCount(), 1);
+  hang_watcher.TriggerSynchronousMonitoring();
+  EXPECT_EQ(hang_watcher.GetHangCount(), 1);
 
   // Attempt capture again. Second monitoring does not record a new hang because
   // a hang that was already recorded is still live.
-  MonitorHangs();
-  EXPECT_EQ(GetHangCount(), 1);
+  hang_watcher.TriggerSynchronousMonitoring();
+  EXPECT_EQ(hang_watcher.GetHangCount(), 1);
 }
 
 TEST_F(HangWatcherTest, NoHang) {
+  ManualHangWatcher hang_watcher;
+
   // Start a blocked thread with a 10 seconds hang limit, but don't fastforward
   // time.
   BlockedThread thread(base::Seconds(10));
 
   // No hang to catch so nothing is recorded.
-  MonitorHangs();
-  EXPECT_EQ(GetHangCount(), 0);
+  hang_watcher.TriggerSynchronousMonitoring();
+  EXPECT_EQ(hang_watcher.GetHangCount(), 0);
 }
 
 namespace {
