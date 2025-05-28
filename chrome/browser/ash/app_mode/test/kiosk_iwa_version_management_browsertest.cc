@@ -23,7 +23,6 @@
 #include "chrome/browser/ash/app_mode/kiosk_controller.h"
 #include "chrome/browser/ash/app_mode/test/kiosk_mixin.h"
 #include "chrome/browser/ash/app_mode/test/kiosk_test_utils.h"
-#include "chrome/browser/ash/login/test/test_predicate_waiter.h"
 #include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_update_apply_task.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_update_discovery_task.h"
@@ -34,6 +33,7 @@
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
+#include "chrome/test/base/profile_waiter.h"
 #include "chromeos/ash/components/policy/device_local_account/device_local_account_type.h"
 #include "components/account_id/account_id.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
@@ -112,18 +112,16 @@ webapps::AppId GetTestWebAppId() {
       .app_id();
 }
 
-web_app::WebAppProvider* GetWebAppProviderPtr() {
-  return web_app::WebAppProvider::GetForWebApps(&CurrentProfile());
-}
-
 web_app::WebAppProvider& GetWebAppProvider() {
-  return CHECK_DEREF(GetWebAppProviderPtr());
+  return CHECK_DEREF(web_app::WebAppProvider::GetForTest(&CurrentProfile()));
 }
 
-void WaitForWebAppProvider() {
-  test::TestPredicateWaiter(base::BindRepeating([]() {
-    return GetWebAppProviderPtr() != nullptr;
-  })).Wait();
+void WaitForKioskProfile() {
+  ProfileWaiter waiter;
+  Profile* profile = waiter.WaitForProfileAdded();
+
+  // Checks that it's the same profile used in kiosk test utils.
+  ASSERT_TRUE(CurrentProfile().IsSameOrParent(profile));
 }
 
 web_app::IsolatedWebAppUpdateDiscoveryTask::CompletionStatus
@@ -503,7 +501,7 @@ IN_PROC_BROWSER_TEST_F(KioskIwaSimpleUpdateTest, UpdatesToLatestBeforeLaunch) {
   auto scoped_launch_blocker = BlockKioskLaunch();
   ASSERT_TRUE(LaunchAppManually(TheKioskApp()));
 
-  WaitForWebAppProvider();
+  WaitForKioskProfile();
   ExpectTestAppUpdatedToVersion(expected_version);
 
   scoped_launch_blocker.reset();
@@ -616,7 +614,7 @@ IN_PROC_BROWSER_TEST_P(KioskIwaUpdateChannelChangeTest, ProcessChannelChange) {
     auto scoped_launch_blocker = BlockKioskLaunch();
     ASSERT_TRUE(LaunchAppManually(TheKioskApp()));
 
-    WaitForWebAppProvider();
+    WaitForKioskProfile();
     CheckUpdateStatusForTestCase();
   }
 
@@ -624,7 +622,6 @@ IN_PROC_BROWSER_TEST_P(KioskIwaUpdateChannelChangeTest, ProcessChannelChange) {
   ExpectTestAppInstalledAtVersion(GetExpectedNewVersion());
 }
 
-// TODO(crbug.com/420609781): Fix update discovery race and restore test params.
 INSTANTIATE_TEST_SUITE_P(
     All,
     KioskIwaUpdateChannelChangeTest,
@@ -653,10 +650,34 @@ INSTANTIATE_TEST_SUITE_P(
             .initial_channel_name = kChannelNameBeta,
             .expected_initial_version = base::Version(kTestIwaVersion2),
             .new_channel_name = kChannelNameAlpha,
-            .expected_new_version = base::Version(kTestIwaVersion3)}
+            .expected_new_version = base::Version(kTestIwaVersion3)},
 
         // Switching to a channel with an older version skips the update.
+        // Switch from "beta" to "default".
+        KioskIwaUpdateChannelChangeTestParams{
+            .test_case =
+                KioskIwaUpdateChannelChangeTestParams::TestCase::kUpdateSkipped,
+            .initial_channel_name = kChannelNameBeta,
+            .expected_initial_version = base::Version(kTestIwaVersion2),
+            .new_channel_name = kChannelNameDefault,
+            .expected_new_version = base::Version(kTestIwaVersion2)},
+        // Switch from "alpha" to "default".
+        KioskIwaUpdateChannelChangeTestParams{
+            .test_case =
+                KioskIwaUpdateChannelChangeTestParams::TestCase::kUpdateSkipped,
+            .initial_channel_name = kChannelNameAlpha,
+            .expected_initial_version = base::Version(kTestIwaVersion3),
+            .new_channel_name = kChannelNameDefault,
+            .expected_new_version = base::Version(kTestIwaVersion3)},
+
         // Switching to an unknown channel skips the update with an error.
-        ));
+        // Switch from "beta" to "unknown".
+        KioskIwaUpdateChannelChangeTestParams{
+            .test_case =
+                KioskIwaUpdateChannelChangeTestParams::TestCase::kUpdateError,
+            .initial_channel_name = kChannelNameBeta,
+            .expected_initial_version = base::Version(kTestIwaVersion2),
+            .new_channel_name = kChannelNameUnknown,
+            .expected_new_version = base::Version(kTestIwaVersion2)}));
 
 }  // namespace ash
