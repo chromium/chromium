@@ -1,4 +1,4 @@
-// Copyright 2023 The Chromium Authors
+// Copyright 2025 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,6 +16,20 @@
 
 /** @const */
 chrome.extensionTypes = {};
+
+/**
+ * @type {!Array<number>}
+ * @see https://developer.chrome.com/extensions/extensionTypes#type-ColorArray
+ */
+chrome.extensionTypes.ColorArray;
+
+/**
+ * Pixel data for an image. Must be an ImageData object; for example, from a
+ * <code>canvas</code> element.
+ * @typedef {Object}
+ * @see https://developer.chrome.com/extensions/extensionTypes#type-ImageDataType
+ */
+chrome.extensionTypes.ImageDataType;
 
 /**
  * @enum {string}
