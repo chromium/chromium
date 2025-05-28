@@ -64,27 +64,31 @@ constexpr uint64_t kZeroesThenOnes = 0x5555555555555555u;
 // Waits on provided WaitableEvent before executing and signals when done.
 class BlockedThread : public DelegateSimpleThread::Delegate {
  public:
-  explicit BlockedThread(base::WaitableEvent* unblock_thread,
-                         base::TimeDelta timeout)
-      : thread_(this, "BlockedThread"),
-        unblock_thread_(unblock_thread),
-        timeout_(timeout) {
+  explicit BlockedThread(TimeDelta timeout)
+      : thread_(this, "BlockedThread"), timeout_(timeout) {
     StartAndWaitForScopeEntered();
   }
 
-  ~BlockedThread() override = default;
+  ~BlockedThread() override {
+    Unblock();
+    thread_.Join();
+  }
 
   void Run() override {
-    // (Un)Register the thread here instead of in ctor/dtor so that the action
-    // happens on the right thread.
-    base::ScopedClosureRunner unregister_closure =
-        base::HangWatcher::RegisterThread(
-            base::HangWatcher::ThreadType::kMainThread);
+    // Open a scope so that `unregister_closure` is destroyed before signaling
+    // `run_event_`.
+    {
+      // (Un)Register the thread here instead of in ctor/dtor so that the action
+      // happens on the right thread.
+      base::ScopedClosureRunner unregister_closure =
+          base::HangWatcher::RegisterThread(
+              base::HangWatcher::ThreadType::kMainThread);
 
-    WatchHangsInScope scope(timeout_);
-    wait_until_entered_scope_.Signal();
+      WatchHangsInScope scope(timeout_);
+      wait_until_entered_scope_.Signal();
 
-    unblock_thread_->Wait();
+      unblock_thread_.Wait();
+    }
     run_event_.Signal();
   }
 
@@ -97,7 +101,9 @@ class BlockedThread : public DelegateSimpleThread::Delegate {
     wait_until_entered_scope_.Wait();
   }
 
-  void Join() { thread_.Join(); }
+  void Unblock() { unblock_thread_.Signal(); }
+
+  void WaitDone() { run_event_.Wait(); }
 
   PlatformThreadId GetId() { return thread_.tid(); }
 
@@ -111,7 +117,8 @@ class BlockedThread : public DelegateSimpleThread::Delegate {
   // Will be signaled once ThreadMain has run.
   WaitableEvent run_event_;
 
-  const raw_ptr<base::WaitableEvent> unblock_thread_;
+  // Used to unblock the monitored thread. Signaled from the test main thread.
+  base::WaitableEvent unblock_thread_;
 
   base::TimeDelta timeout_;
 };
@@ -179,24 +186,12 @@ class HangWatcherTest : public testing::Test {
 
 class HangWatcherBlockingThreadTest : public HangWatcherTest {
  public:
-  HangWatcherBlockingThreadTest() : thread_(&unblock_thread_, kTimeout) {}
+  HangWatcherBlockingThreadTest() : thread_(kTimeout) {}
 
  protected:
-  void JoinThread() {
-    unblock_thread_.Signal();
-
-    // Thread is joinable since we signaled |unblock_thread_|.
-    thread_.Join();
-
-    // If thread is done then it signaled.
-    CHECK(thread_.IsDone());
-  }
-
-  // Used to unblock the monitored thread. Signaled from the test main thread.
-  WaitableEvent unblock_thread_;
-
   BlockedThread thread_;
 };
+
 }  // namespace
 
 TEST_F(HangWatcherTest, InvalidatingExpectationsPreventsCapture) {
@@ -438,8 +433,6 @@ TEST_F(HangWatcherBlockingThreadTest, HistogramsLoggedOnHang) {
   EXPECT_THAT(histogram_tester.GetAllSamples(
                   "HangWatcher.IsThreadHung.BrowserProcess.IOThread.Shutdown"),
               IsEmpty());
-
-  JoinThread();
 }
 
 TEST_F(HangWatcherBlockingThreadTest, HistogramsLoggedWithoutHangs) {
@@ -467,7 +460,6 @@ TEST_F(HangWatcherBlockingThreadTest, HistogramsLoggedWithoutHangs) {
   EXPECT_THAT(histogram_tester.GetAllSamples("HangWatcher.IsThreadHung."
                                              "AnyCritical"),
               ElementsAre(base::Bucket(false, /*count=*/1)));
-  JoinThread();
 }
 
 TEST_F(HangWatcherBlockingThreadTest, HistogramsLoggedWithShutdownFlag) {
@@ -504,8 +496,6 @@ TEST_F(HangWatcherBlockingThreadTest, HistogramsLoggedWithShutdownFlag) {
   EXPECT_THAT(histogram_tester.GetAllSamples(
                   "HangWatcher.IsThreadHung.BrowserProcess.IOThread.Normal"),
               IsEmpty());
-
-  JoinThread();
 }
 
 TEST_F(HangWatcherBlockingThreadTest, Hang) {
@@ -515,8 +505,6 @@ TEST_F(HangWatcherBlockingThreadTest, Hang) {
   // First monitoring catches and records the hang.
   MonitorHangs();
   EXPECT_EQ(GetHangCount(), 1);
-
-  JoinThread();
 }
 
 TEST_F(HangWatcherBlockingThreadTest, HangAlreadyRecorded) {
@@ -531,16 +519,12 @@ TEST_F(HangWatcherBlockingThreadTest, HangAlreadyRecorded) {
   // a hang that was already recorded is still live.
   MonitorHangs();
   EXPECT_EQ(GetHangCount(), 1);
-
-  JoinThread();
 }
 
 TEST_F(HangWatcherBlockingThreadTest, NoHang) {
   // No hang to catch so nothing is recorded.
   MonitorHangs();
   EXPECT_EQ(GetHangCount(), 0);
-
-  JoinThread();
 }
 
 namespace {
@@ -689,7 +673,7 @@ TEST_F(HangWatcherSnapshotTest, HungThreadIDs) {
   auto unregister_thread_closure =
       HangWatcher::RegisterThread(base::HangWatcher::ThreadType::kMainThread);
 
-  BlockedThread blocked_thread(&monitor_event_, base::TimeDelta{});
+  BlockedThread blocked_thread(base::TimeDelta{});
   {
     // Ensure the blocking thread entered the scope before the main thread. This
     // will guarantee an ordering while reporting the list of hung threads.
@@ -710,9 +694,9 @@ TEST_F(HangWatcherSnapshotTest, HungThreadIDs) {
     // but already recorded so should be ignored.
     ExpectNoCapture();
 
-    // Thread is joinable since we signaled |monitor_event_|. This closes the
-    // scope in |blocked_thread|.
-    blocked_thread.Join();
+    // Unblock and join the thread to close the scope in |blocked_thread|.
+    blocked_thread.Unblock();
+    blocked_thread.WaitDone();
 
     // |expires_instantly| is still live but already recorded so should be
     // ignored.
