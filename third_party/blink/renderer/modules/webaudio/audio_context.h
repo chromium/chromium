@@ -466,6 +466,11 @@ class MODULES_EXPORT AudioContext final
   HeapMojoAssociatedRemote<media::mojom::blink::MediaPlayerObserver>
       media_player_observer_;
 
+  // The timestamp when the audio context most recently became audible.
+  base::TimeTicks audible_start_timestamp_;
+  // Total accumulated time this audio context has been audible.
+  base::TimeDelta total_audible_duration_;
+
   SEQUENCE_CHECKER(main_thread_sequence_checker_);
 };
 

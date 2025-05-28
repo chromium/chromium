@@ -391,6 +391,16 @@ AudioContext::~AudioContext() {
 
   RecordAudioContextOperation(AudioContextOperation::kDelete);
 
+  // If the context is destroyed while still audible, account for the
+  // remaining audible time until destruction.
+  if (!audible_start_timestamp_.is_null()) {
+    total_audible_duration_ +=
+        base::TimeTicks::Now() - audible_start_timestamp_;
+  }
+  UMA_HISTOGRAM_EXACT_LINEAR("WebAudio.AudioContext.AudibleTime",
+                             total_audible_duration_.InSeconds(),
+                             /*exclusive_max=*/8);
+
   // TODO(crbug.com/945379) Disable this DCHECK for now.  It's not terrible if
   // the autoplay metrics aren't recorded in some odd situations.  haraken@ said
   // that we shouldn't get here without also calling `Uninitialize()`, but it
@@ -952,6 +962,9 @@ bool AudioContext::HandlePreRenderTasks(
 }
 
 void AudioContext::NotifyAudibleAudioStarted() {
+  DCHECK(audible_start_timestamp_.is_null());
+  audible_start_timestamp_ = base::TimeTicks::Now();
+
   EnsureAudioContextManagerService();
   if (audio_context_manager_.is_bound()) {
     audio_context_manager_->AudioContextAudiblePlaybackStarted(context_id_);
@@ -1040,6 +1053,10 @@ AudioIOPosition AudioContext::OutputPosition() const {
 }
 
 void AudioContext::NotifyAudibleAudioStopped() {
+  DCHECK(!audible_start_timestamp_.is_null());
+  total_audible_duration_ += base::TimeTicks::Now() - audible_start_timestamp_;
+  audible_start_timestamp_ = base::TimeTicks();
+
   EnsureAudioContextManagerService();
   if (audio_context_manager_.is_bound()) {
     audio_context_manager_->AudioContextAudiblePlaybackStopped(context_id_);
