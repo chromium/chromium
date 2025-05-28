@@ -13,6 +13,10 @@
 #include "components/regional_capabilities/regional_capabilities_service.h"
 #include "components/variations/service/variations_service.h"
 
+#if BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/regional_capabilities/regional_capabilities_service_client_android.h"
+#endif
+
 namespace regional_capabilities {
 
 // static
@@ -52,9 +56,15 @@ std::unique_ptr<KeyedService>
 RegionalCapabilitiesServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   Profile* profile = Profile::FromBrowserContext(context);
+
   auto regional_capabilities_service_client =
+#if BUILDFLAG(IS_ANDROID)
+      std::make_unique<RegionalCapabilitiesServiceClientAndroid>(
+          g_browser_process->variations_service());
+#else
       std::make_unique<RegionalCapabilitiesServiceClient>(
           g_browser_process->variations_service());
+#endif
 
   return std::make_unique<RegionalCapabilitiesService>(
       CHECK_DEREF(profile->GetPrefs()),
