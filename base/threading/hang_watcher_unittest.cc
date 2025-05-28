@@ -42,11 +42,6 @@ using testing::IsEmpty;
 namespace base {
 namespace {
 
-// Use with a FeatureList to activate crash dumping for threads marked as
-// threadpool threads.
-const std::vector<base::test::FeatureRefAndParams> kFeatureAndParams{
-    {base::kEnableHangWatcher, {{"ui_thread_log_level", "2"}}}};
-
 // Use this value to mark things very far off in the future. Adding this
 // to TimeTicks::Now() gives a point that will never be reached during the
 // normal execution of a test.
@@ -186,12 +181,8 @@ class HangWatcherTest : public testing::Test {
   const base::TimeDelta kTimeout = base::Seconds(10);
   const base::TimeDelta kHangTime = kTimeout + base::Seconds(1);
 
-  HangWatcherTest() {
-    feature_list_.InitWithFeaturesAndParameters(kFeatureAndParams, {});
-  }
-
  protected:
-  base::test::ScopedFeatureList feature_list_;
+  base::test::ScopedFeatureList feature_list_{base::kEnableHangWatcher};
 
   // Used exclusively for MOCK_TIME. No tasks will be run on the environment.
   // Single threaded to avoid ThreadPool WorkerThreads registering.
@@ -571,11 +562,6 @@ TEST_F(HangWatcherTest, NoHang) {
 
 namespace {
 class HangWatcherSnapshotTest : public testing::Test {
- public:
-  void SetUp() override {
-    feature_list_.InitWithFeaturesAndParameters(kFeatureAndParams, {});
-  }
-
  protected:
   // Verify that a capture takes place and that at the time of the capture the
   // list of hung thread ids is correct.
@@ -618,7 +604,7 @@ class HangWatcherSnapshotTest : public testing::Test {
   // actually took place.
   int reference_capture_count_ = 0;
 
-  base::test::ScopedFeatureList feature_list_;
+  base::test::ScopedFeatureList feature_list_{base::kEnableHangWatcher};
 
   // Used exclusively for MOCK_TIME.
   test::SingleThreadTaskEnvironment task_environment_{
@@ -939,7 +925,6 @@ namespace {
 class WatchHangsInScopeBlockingTest : public testing::Test {
  public:
   WatchHangsInScopeBlockingTest() {
-    feature_list_.InitWithFeaturesAndParameters(kFeatureAndParams, {});
     HangWatcher::InitializeOnMainThread(
         HangWatcher::ProcessType::kBrowserProcess, /*emit_crashes=*/true);
 
@@ -1006,7 +991,7 @@ class WatchHangsInScopeBlockingTest : public testing::Test {
   base::WaitableEvent continue_capture_;
   bool completed_capture_{false};
 
-  base::test::ScopedFeatureList feature_list_;
+  base::test::ScopedFeatureList feature_list_{base::kEnableHangWatcher};
   HangWatcher hang_watcher_;
   base::ScopedClosureRunner unregister_thread_closure_;
 };
