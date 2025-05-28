@@ -129,9 +129,8 @@ class BlockedThread : public DelegateSimpleThread::Delegate {
 // `TriggerSynchronousMonitoring` instead of periodically via a timer.
 class ManualHangWatcher : public HangWatcher {
  public:
-  ManualHangWatcher() {
-    HangWatcher::InitializeOnMainThread(
-        HangWatcher::ProcessType::kBrowserProcess, /*emit_crashes=*/true);
+  explicit ManualHangWatcher(ProcessType process_type) {
+    HangWatcher::InitializeOnMainThread(process_type, /*emit_crashes=*/true);
 
     SetAfterMonitorClosureForTesting(base::BindRepeating(
         &WaitableEvent::Signal, base::Unretained(&monitor_event_)));
@@ -203,7 +202,7 @@ class HangWatcherTest : public testing::Test {
 }  // namespace
 
 TEST_F(HangWatcherTest, InvalidatingExpectationsPreventsCapture) {
-  ManualHangWatcher hang_watcher;
+  ManualHangWatcher hang_watcher(HangWatcher::ProcessType::kBrowserProcess);
 
   // Register the main test thread for hang watching.
   auto unregister_thread_closure =
@@ -223,7 +222,7 @@ TEST_F(HangWatcherTest, InvalidatingExpectationsPreventsCapture) {
 }
 
 TEST_F(HangWatcherTest, MultipleInvalidateExpectationsDoNotCancelOut) {
-  ManualHangWatcher hang_watcher;
+  ManualHangWatcher hang_watcher(HangWatcher::ProcessType::kBrowserProcess);
 
   // Register the main test thread for hang watching.
   auto unregister_thread_closure =
@@ -248,7 +247,7 @@ TEST_F(HangWatcherTest, MultipleInvalidateExpectationsDoNotCancelOut) {
 // TODO(crbug.com/385732561): Test is flaky.
 TEST_F(HangWatcherTest,
        DISABLED_NewInnerWatchHangsInScopeAfterInvalidationDetectsHang) {
-  ManualHangWatcher hang_watcher;
+  ManualHangWatcher hang_watcher(HangWatcher::ProcessType::kBrowserProcess);
 
   // Register the main test thread for hang watching.
   auto unregister_thread_closure =
@@ -282,7 +281,7 @@ TEST_F(HangWatcherTest,
 
 TEST_F(HangWatcherTest,
        NewSeparateWatchHangsInScopeAfterInvalidationDetectsHang) {
-  ManualHangWatcher hang_watcher;
+  ManualHangWatcher hang_watcher(HangWatcher::ProcessType::kBrowserProcess);
 
   // Register the main test thread for hang watching.
   auto unregister_thread_closure =
@@ -310,7 +309,7 @@ TEST_F(HangWatcherTest,
 // Test that invalidating expectations from inner WatchHangsInScope will also
 // prevent hang detection in outer scopes.
 TEST_F(HangWatcherTest, ScopeDisabledObjectInnerScope) {
-  ManualHangWatcher hang_watcher;
+  ManualHangWatcher hang_watcher(HangWatcher::ProcessType::kBrowserProcess);
 
   // Register the main test thread for hang watching.
   auto unregister_thread_closure =
@@ -337,7 +336,7 @@ TEST_F(HangWatcherTest, ScopeDisabledObjectInnerScope) {
 }
 
 TEST_F(HangWatcherTest, NewScopeAfterDisabling) {
-  ManualHangWatcher hang_watcher;
+  ManualHangWatcher hang_watcher(HangWatcher::ProcessType::kBrowserProcess);
 
   // Register the main test thread for hang watching.
   auto unregister_thread_closure =
@@ -367,7 +366,7 @@ TEST_F(HangWatcherTest, NewScopeAfterDisabling) {
 }
 
 TEST_F(HangWatcherTest, NestedScopes) {
-  ManualHangWatcher hang_watcher;
+  ManualHangWatcher hang_watcher(HangWatcher::ProcessType::kBrowserProcess);
 
   // Create a state object for the test thread since this test is single
   // threaded.
@@ -410,7 +409,7 @@ TEST_F(HangWatcherTest, NestedScopes) {
 
 TEST_F(HangWatcherTest, HistogramsLoggedOnHang) {
   base::HistogramTester histogram_tester;
-  ManualHangWatcher hang_watcher;
+  ManualHangWatcher hang_watcher(HangWatcher::ProcessType::kBrowserProcess);
 
   // Start a blocked thread and simulate a hang.
   BlockedThread thread(HangWatcher::ThreadType::kMainThread, base::Seconds(10));
@@ -461,7 +460,7 @@ TEST_F(HangWatcherTest, HistogramsLoggedOnHang) {
 
 TEST_F(HangWatcherTest, HistogramsLoggedWithoutHangs) {
   base::HistogramTester histogram_tester;
-  ManualHangWatcher hang_watcher;
+  ManualHangWatcher hang_watcher(HangWatcher::ProcessType::kBrowserProcess);
 
   // Start a blocked thread with a 10 seconds hang limit, but don't fastforward
   // time.
@@ -493,7 +492,7 @@ TEST_F(HangWatcherTest, HistogramsLoggedWithoutHangs) {
 
 TEST_F(HangWatcherTest, HistogramsLoggedWithShutdownFlag) {
   base::HistogramTester histogram_tester;
-  ManualHangWatcher hang_watcher;
+  ManualHangWatcher hang_watcher(HangWatcher::ProcessType::kBrowserProcess);
 
   // Start a blocked thread and simulate a hang.
   BlockedThread thread(HangWatcher::ThreadType::kMainThread, base::Seconds(10));
@@ -530,7 +529,7 @@ TEST_F(HangWatcherTest, HistogramsLoggedWithShutdownFlag) {
 }
 
 TEST_F(HangWatcherTest, Hang) {
-  ManualHangWatcher hang_watcher;
+  ManualHangWatcher hang_watcher(HangWatcher::ProcessType::kBrowserProcess);
 
   // Start a blocked thread and simulate a hang.
   BlockedThread thread(HangWatcher::ThreadType::kMainThread, base::Seconds(10));
@@ -542,7 +541,7 @@ TEST_F(HangWatcherTest, Hang) {
 }
 
 TEST_F(HangWatcherTest, HangAlreadyRecorded) {
-  ManualHangWatcher hang_watcher;
+  ManualHangWatcher hang_watcher(HangWatcher::ProcessType::kBrowserProcess);
 
   // Start a blocked thread and simulate a hang.
   BlockedThread thread(HangWatcher::ThreadType::kMainThread, base::Seconds(10));
@@ -559,7 +558,7 @@ TEST_F(HangWatcherTest, HangAlreadyRecorded) {
 }
 
 TEST_F(HangWatcherTest, NoHang) {
-  ManualHangWatcher hang_watcher;
+  ManualHangWatcher hang_watcher(HangWatcher::ProcessType::kBrowserProcess);
 
   // Start a blocked thread with a 10 seconds hang limit, but don't fastforward
   // time.
@@ -632,7 +631,7 @@ class HangWatcherSnapshotTest : public testing::Test {
 // was detected and the time it is recorded which would create a non-actionable
 // report.
 TEST_F(HangWatcherSnapshotTest, NonActionableReport) {
-  ManualHangWatcher hang_watcher;
+  ManualHangWatcher hang_watcher(HangWatcher::ProcessType::kBrowserProcess);
 
   // Register the main test thread for hang watching.
   auto unregister_thread_closure =
@@ -665,7 +664,7 @@ TEST_F(HangWatcherSnapshotTest, NonActionableReport) {
 }
 
 TEST_F(HangWatcherSnapshotTest, HungThreadIDs) {
-  ManualHangWatcher hang_watcher;
+  ManualHangWatcher hang_watcher(HangWatcher::ProcessType::kBrowserProcess);
 
   // During hang capture the list of hung threads should be populated.
   // When hang capture is over the list should be empty.
@@ -720,7 +719,7 @@ TEST_F(HangWatcherSnapshotTest, HungThreadIDs) {
 }
 
 TEST_F(HangWatcherSnapshotTest, TimeSinceLastSystemPowerResumeCrashKey) {
-  ManualHangWatcher hang_watcher;
+  ManualHangWatcher hang_watcher(HangWatcher::ProcessType::kBrowserProcess);
 
   // Override the capture of hangs. Simulate a crash key capture.
   std::string seconds_since_last_power_resume_crash_key;
