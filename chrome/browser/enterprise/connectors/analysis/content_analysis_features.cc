@@ -25,4 +25,15 @@ BASE_FEATURE_PARAM(size_t,
                    "max_parallel_requests",
                    /*default_value=*/5);
 
+// Controls the new upload/download limit for content analysis.
+BASE_FEATURE(kEnableNewUploadDownloadLimit,
+             "EnableNewUploadDownloadLimit",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE_PARAM(size_t,
+                   kMaxContentAnalysisFileSizeMB,
+                   &kEnableNewUploadDownloadLimit,
+                   "max_file_size_mb",
+                   /*default_value=*/50);
+
 }  // namespace enterprise_connectors

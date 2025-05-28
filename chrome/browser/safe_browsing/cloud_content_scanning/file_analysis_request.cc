@@ -13,6 +13,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/thread_pool.h"
+#include "chrome/browser/enterprise/connectors/analysis/content_analysis_features.h"
 #include "chrome/browser/file_util_service.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/binary_upload_service.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_utils.h"
@@ -145,7 +146,14 @@ GetFileDataBlocking(const base::FilePath& path,
   base::UmaHistogramCustomCounts(
       "Enterprise.FileAnalysisRequest.FileSize", file_data.size / 1024, 1,
       kMaxUploadSizeMetricsKB, 50);
-  return {file_data.size <= BinaryUploadService::kMaxUploadSizeBytes
+
+  size_t max_file_size_bytes = BinaryUploadService::kMaxUploadSizeBytes;
+  if (base::FeatureList::IsEnabled(
+          enterprise_connectors::kEnableNewUploadDownloadLimit)) {
+    max_file_size_bytes =
+        1024 * 1024 * enterprise_connectors::kMaxContentAnalysisFileSizeMB.Get();
+  }
+  return {file_data.size <= max_file_size_bytes
               ? BinaryUploadService::Result::SUCCESS
               : BinaryUploadService::Result::FILE_TOO_LARGE,
           std::move(file_data)};
