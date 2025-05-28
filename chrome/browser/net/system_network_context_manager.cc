@@ -44,6 +44,7 @@
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/google_url_loader_throttle.h"
 #include "chrome/common/pref_names.h"
+#include "chrome/common/request_header_integrity/buildflags.h"
 #include "components/certificate_transparency/ct_known_logs.h"
 #include "components/embedder_support/user_agent_utils.h"
 #include "components/net_log/net_export_file_writer.h"
@@ -104,6 +105,10 @@
 #if BUILDFLAG(IS_WIN)
 #include "chrome/browser/net/chrome_mojo_proxy_resolver_win.h"
 #endif  // BUILDFLAG(IS_WIN)
+
+#if BUILDFLAG(ENABLE_REQUEST_HEADER_INTEGRITY)
+#include "chrome/common/request_header_integrity/request_header_integrity_url_loader_throttle.h"  // nogncheck crbug.com/1125897
+#endif
 
 namespace {
 // Enumeration of possible sandbox states. These values are persisted to logs,
@@ -859,6 +864,10 @@ void SystemNetworkContextManager::ConfigureDefaultNetworkContextParams(
     network::mojom::NetworkContextParams* network_context_params) {
   variations::UpdateCorsExemptHeaderForVariations(network_context_params);
   GoogleURLLoaderThrottle::UpdateCorsExemptHeader(network_context_params);
+#if BUILDFLAG(ENABLE_REQUEST_HEADER_INTEGRITY)
+  request_header_integrity::RequestHeaderIntegrityURLLoaderThrottle::
+      UpdateCorsExemptHeaders(network_context_params);
+#endif  // BUILDFLAG(ENABLE_REQUEST_HEADER_INTEGRITY)
 
   network_context_params->enable_brotli = true;
 
