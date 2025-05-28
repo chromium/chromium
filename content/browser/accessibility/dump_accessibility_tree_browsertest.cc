@@ -1992,8 +1992,9 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
   RunAriaTest(FILE_PATH_LITERAL("aria-tree-discontinuous.html"));
 }
 
-// https://crbug.com/367650908: flaky on Linux
-#if BUILDFLAG(IS_LINUX)
+// TODO(crbug.com/367650908): Flaky on Linux and sanitizer bots.
+#if BUILDFLAG(IS_LINUX) || defined(ADDRESS_SANITIZER) || \
+    defined(LEAK_SANITIZER) || defined(MEMORY_SANITIZER)
 #define MAYBE_AccessibilityAriaTreeitemNestedInLists \
   DISABLED_AccessibilityAriaTreeitemNestedInLists
 #else
