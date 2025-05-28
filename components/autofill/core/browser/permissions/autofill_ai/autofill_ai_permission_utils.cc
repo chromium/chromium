@@ -31,6 +31,13 @@ namespace autofill {
 
 namespace {
 
+// Helper function for debugging why a permissions check failed.
+void MaybeOutputReason(std::string* out, std::string_view message) {
+  if (out) {
+    *out = std::string(message);
+  }
+}
+
 using FeatureCheck = base::FunctionRef<bool(const base::Feature&)>;
 
 // Returns whether `action` is relevant for data transparency, i.e. viewing
@@ -59,9 +66,12 @@ using FeatureCheck = base::FunctionRef<bool(const base::Feature&)>;
 // Checks whether all requirements for `base::Feature` state are satisfied
 // (`kAutofillAiWithDataSchema`, `kAutofillAiServerModel`).
 [[nodiscard]] bool SatisfiesFeatureRequirements(FeatureCheck is_enabled,
-                                                AutofillAiAction action) {
+                                                AutofillAiAction action,
+                                                std::string* debug_message) {
   // Everything requires that `kAutofillAiWithDataSchema` is enabled.
   if (!is_enabled(features::kAutofillAiWithDataSchema)) {
+    MaybeOutputReason(debug_message,
+                      "AutofillAiWithDataSchema is not enabled.");
     return false;
   }
 
@@ -90,7 +100,8 @@ using FeatureCheck = base::FunctionRef<bool(const base::Feature&)>;
 // Checks whether preference-related requirements are satisfied.
 [[nodiscard]] bool SatisfiesPreferenceRequirements(const AutofillClient& client,
                                                    bool has_entity_data_saved,
-                                                   AutofillAiAction action) {
+                                                   AutofillAiAction action,
+                                                   std::string* debug_message) {
   // No pref state can prevent actions that are relevant for data transparency
   // (i.e., showing/updating/removing existing data in settings).
   if (IsRelevantForDataTransparency(action) && has_entity_data_saved) {
@@ -99,11 +110,13 @@ using FeatureCheck = base::FunctionRef<bool(const base::Feature&)>;
 
   const PrefService* const prefs = client.GetPrefs();
   if (!prefs) {
+    MaybeOutputReason(debug_message, "Prefs are not available.");
     return false;
   }
 
   // State of the Address-Autofill pref.
   if (!prefs->GetBoolean(prefs::kAutofillProfileEnabled)) {
+    MaybeOutputReason(debug_message, "Address Autofill is not enabled.");
     return false;
   }
 
@@ -140,6 +153,9 @@ using FeatureCheck = base::FunctionRef<bool(const base::Feature&)>;
       // IPH should only show if the user has not opted in yet.
       return policy_pref_enabled && !user_opted_in;
     case AutofillAiAction::kOptIn:
+      if (!policy_pref_enabled) {
+        MaybeOutputReason(debug_message, "Address Autofill is not enabled.");
+      }
       return policy_pref_enabled;
     case autofill::AutofillAiAction::kNavigateToSettings:
       return true;
@@ -151,18 +167,21 @@ using FeatureCheck = base::FunctionRef<bool(const base::Feature&)>;
 [[nodiscard]] bool SatisfiesAccountRequirements(
     const signin::IdentityManager* identity_manager,
     bool has_entity_data_saved,
-    AutofillAiAction action) {
+    AutofillAiAction action,
+    std::string* debug_message) {
   if (IsRelevantForDataTransparency(action) && has_entity_data_saved) {
     return true;
   }
 
   // The user is signed out.
   if (!identity_manager) {
+    MaybeOutputReason(debug_message, "User is signed out.");
     return false;
   }
 
   // The user is only signed in on the web.
   if (!identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
+    MaybeOutputReason(debug_message, "User is signed in only on the web.");
     return false;
   }
 
@@ -170,11 +189,17 @@ using FeatureCheck = base::FunctionRef<bool(const base::Feature&)>;
   // are sufficient for us to validate the user's account information.
   // TODO(crbug.com/397881703): Decide whether to implement overrides similar
   // to `kModelExecutionCapabilityDisable`.
-  return identity_manager
-             ->FindExtendedAccountInfo(identity_manager->GetPrimaryAccountInfo(
-                 signin::ConsentLevel::kSignin))
-             .capabilities.can_use_model_execution_features() ==
-         signin::Tribool::kTrue;
+  bool result =
+      identity_manager
+          ->FindExtendedAccountInfo(identity_manager->GetPrimaryAccountInfo(
+              signin::ConsentLevel::kSignin))
+          .capabilities.can_use_model_execution_features() ==
+      signin::Tribool::kTrue;
+  if (!result) {
+    MaybeOutputReason(debug_message,
+                      "User cannot use model execution features.");
+  }
+  return result;
 }
 
 // Checks whether miscellaneous "other" requirements (OTR, app-locale, Geo-IP)
@@ -185,7 +210,8 @@ using FeatureCheck = base::FunctionRef<bool(const base::Feature&)>;
     bool has_entity_data_saved,
     const GeoIpCountryCode& country_code,
     std::string_view app_locale,
-    AutofillAiAction action) {
+    AutofillAiAction action,
+    std::string* debug_message) {
   // Off-the-record.
   switch (action) {
     case AutofillAiAction::kAddEntityInstanceInSettings:
@@ -199,6 +225,7 @@ using FeatureCheck = base::FunctionRef<bool(const base::Feature&)>;
     case AutofillAiAction::kOptIn:
     case AutofillAiAction::kServerClassificationModel: {
       if (is_off_the_record) {
+        MaybeOutputReason(debug_message, "Off the record.");
         return false;
       }
       break;
@@ -214,12 +241,14 @@ using FeatureCheck = base::FunctionRef<bool(const base::Feature&)>;
     // If the user changes their app-locale, the feature might stop working,
     // but the data should not disappear.
     if (!(IsRelevantForDataTransparency(action) && has_entity_data_saved)) {
+      MaybeOutputReason(debug_message, "Unsupported locale.");
       return false;
     }
   }
 
   if (country_code != GeoIpCountryCode("US") &&
       !is_enabled(features::kAutofillAiIgnoreGeoIp)) {
+    MaybeOutputReason(debug_message, "Unsupported GeoIp.");
     return false;
   }
 
@@ -229,7 +258,8 @@ using FeatureCheck = base::FunctionRef<bool(const base::Feature&)>;
 }  // namespace
 
 bool MayPerformAutofillAiAction(const AutofillClient& client,
-                                AutofillAiAction action) {
+                                AutofillAiAction action,
+                                std::string* debug_message) {
 #if !BUILDFLAG(IS_FUCHSIA)
   const GoogleGroupsManager* const google_groups_manager =
       client.GetGoogleGroupsManager();
@@ -244,27 +274,31 @@ bool MayPerformAutofillAiAction(const AutofillClient& client,
 #endif
   };
 
-  if (!SatisfiesFeatureRequirements(feature_check, action)) {
+  if (!SatisfiesFeatureRequirements(feature_check, action, debug_message)) {
     return false;
   }
 
   const EntityDataManager* const edm = client.GetEntityDataManager();
   if (!edm) {
+    MaybeOutputReason(debug_message, "No EDM.");
     return false;
   }
   const bool has_entity_data_saved = !edm->GetEntityInstances().empty();
-  if (!SatisfiesPreferenceRequirements(client, has_entity_data_saved, action)) {
+  if (!SatisfiesPreferenceRequirements(client, has_entity_data_saved, action,
+                                       debug_message)) {
     return false;
   }
 
   if (!SatisfiesAccountRequirements(client.GetIdentityManager(),
-                                    has_entity_data_saved, action)) {
+                                    has_entity_data_saved, action,
+                                    debug_message)) {
     return false;
   }
 
   return SatisfiesMiscellaneousRequirements(
       feature_check, client.IsOffTheRecord(), has_entity_data_saved,
-      client.GetVariationConfigCountryCode(), client.GetAppLocale(), action);
+      client.GetVariationConfigCountryCode(), client.GetAppLocale(), action,
+      debug_message);
 }
 
 bool GetAutofillAiOptInStatus(const AutofillClient& client) {

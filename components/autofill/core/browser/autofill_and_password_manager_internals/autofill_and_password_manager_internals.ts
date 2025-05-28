@@ -262,6 +262,7 @@ function setUpAutofillInternals(autofillAiEnabled: boolean) {
   setUpSettingCheckboxe();
   setUpMarker();
   setUpSubmittedFormsJSONDataDownload();
+  setUpCheckAutofillAiPermissions();
   setUpButtonForDomNodeIdCapture();
   setUpDownload('autofill');
   if (autofillAiEnabled) {
@@ -527,6 +528,16 @@ function setUpSubmittedFormsJSONDataDownload() {
   // </if>
 }
 
+function setUpCheckAutofillAiPermissions() {
+  // <if expr="not is_android and not is_ios" >
+  const button = document.getElementById('check-autofill-ai-permissions')!;
+  button.style.display = 'inline';
+  button.addEventListener('click', () => {
+    chrome.send('checkAutofillAiPermissions');
+  });
+  // </if>
+}
+
 function setUpButtonForDomNodeIdCapture() {
   // <if expr="not is_android and not is_ios" >
   const button = document.getElementById('set-dom-node-id')!;
@@ -725,6 +736,9 @@ document.addEventListener('DOMContentLoaded', () => {
   addWebUiListener('notify-about-variations', notifyAboutVariations);
   addWebUiListener(
       'notify-reset-done', (message: string) => showModalDialog(message));
+  addWebUiListener(
+      'on-autofill-ai-permission-check-done',
+      (message: string) => showModalDialog(message));
   addWebUiListener('add-structured-log', addStructuredLog);
   addWebUiListener('display-autofill-ai-cache', displayAutofillAiCache);
   addWebUiListener('setup-autofill-internals', setUpAutofillInternals);
