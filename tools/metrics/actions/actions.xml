@@ -22168,6 +22168,15 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Mobile.LensViewFinder.CameraURLOpen">
+  <owner>radunitescu@google.com</owner>
+  <owner>stkhapugin@google.com</owner>
+  <description>
+    Recorded when the user openes a new URL throught Lens View Finder camera
+    feed (e.g. a QR codde scanned).
+  </description>
+</action>
+
 <action name="Mobile.LensViewFinder.DismissTapped">
   <owner>radunitescu@google.com</owner>
   <owner>stkhapugin@google.com</owner>

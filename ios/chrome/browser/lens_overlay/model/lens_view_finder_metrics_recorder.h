@@ -25,6 +25,9 @@ enum class LensViewFinderImageSource {
 // Records LVF closed.
 - (void)recordLensViewFinderDismissTapped;
 
+// Records LVF detected a new URL (e.g. scanned a QR code).
+- (void)recordLensViewFinderCameraURLOpen;
+
 // Records LVF selected an image.
 - (void)recordImageWithSource:(LensViewFinderImageSource)source;
 
