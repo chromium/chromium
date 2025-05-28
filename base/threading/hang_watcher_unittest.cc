@@ -175,12 +175,12 @@ class HangWatcherBlockingThreadTest : public HangWatcherTest {
     thread_.Join();
 
     // If thread is done then it signaled.
-    ASSERT_TRUE(thread_.IsDone());
+    CHECK(thread_.IsDone());
   }
 
   void StartBlockedThread() {
     // Thread has not run yet.
-    ASSERT_FALSE(thread_.IsDone());
+    CHECK(!thread_.IsDone());
 
     // Start the thread. It will block since |unblock_thread_| was not
     // signaled yet.
@@ -224,7 +224,7 @@ TEST_F(HangWatcherTest, InvalidatingExpectationsPreventsCapture) {
   // Hang is not detected.
   hang_watcher_.SignalMonitorEventForTesting();
   monitor_event_.Wait();
-  ASSERT_FALSE(hang_event_.IsSignaled());
+  EXPECT_FALSE(hang_event_.IsSignaled());
 }
 
 TEST_F(HangWatcherTest, MultipleInvalidateExpectationsDoNotCancelOut) {
@@ -246,7 +246,7 @@ TEST_F(HangWatcherTest, MultipleInvalidateExpectationsDoNotCancelOut) {
   // Hang is not detected.
   hang_watcher_.SignalMonitorEventForTesting();
   monitor_event_.Wait();
-  ASSERT_FALSE(hang_event_.IsSignaled());
+  EXPECT_FALSE(hang_event_.IsSignaled());
 }
 
 // TODO(crbug.com/385732561): Test is flaky.
@@ -273,7 +273,7 @@ TEST_F(HangWatcherTest,
     // Hang is detected since the new WatchHangsInScope temporarily
     // re-activated hang_watching.
     monitor_event_.Wait();
-    ASSERT_TRUE(hang_event_.IsSignaled());
+    EXPECT_TRUE(hang_event_.IsSignaled());
   }
 
   // Reset to attempt capture again.
@@ -287,7 +287,7 @@ TEST_F(HangWatcherTest,
   // Hang is not detected since execution is back to being covered by
   // |expires_instantly| for which expectations were invalidated.
   monitor_event_.Wait();
-  ASSERT_FALSE(hang_event_.IsSignaled());
+  EXPECT_FALSE(hang_event_.IsSignaled());
 }
 
 TEST_F(HangWatcherTest,
@@ -314,7 +314,7 @@ TEST_F(HangWatcherTest,
   // Hang is detected since the new WatchHangsInScope did not have its
   // expectations invalidated.
   monitor_event_.Wait();
-  ASSERT_TRUE(hang_event_.IsSignaled());
+  EXPECT_TRUE(hang_event_.IsSignaled());
 }
 
 // Test that invalidating expectations from inner WatchHangsInScope will also
@@ -342,7 +342,7 @@ TEST_F(HangWatcherTest, ScopeDisabledObjectInnerScope) {
 
   // Hang is ignored since it concerns a scope for which one of the inner scope
   // was ignored.
-  ASSERT_FALSE(hang_event_.IsSignaled());
+  EXPECT_FALSE(hang_event_.IsSignaled());
 }
 
 TEST_F(HangWatcherTest, NewScopeAfterDisabling) {
@@ -371,7 +371,7 @@ TEST_F(HangWatcherTest, NewScopeAfterDisabling) {
   monitor_event_.Wait();
 
   // Hang is detected because it's unrelated to the hangs that were disabled.
-  ASSERT_TRUE(hang_event_.IsSignaled());
+  EXPECT_TRUE(hang_event_.IsSignaled());
 }
 
 TEST_F(HangWatcherTest, NestedScopes) {
@@ -396,22 +396,22 @@ TEST_F(HangWatcherTest, NestedScopes) {
     WatchHangsInScope first_scope(kFirstTimeout);
 
     // We are on mock time. There is no time advancement and as such no hangs.
-    ASSERT_FALSE(current_hang_watch_state->IsOverDeadline());
-    ASSERT_EQ(current_hang_watch_state->GetDeadline(), first_deadline);
+    EXPECT_FALSE(current_hang_watch_state->IsOverDeadline());
+    EXPECT_EQ(current_hang_watch_state->GetDeadline(), first_deadline);
     {
       // Set a yet more restrictive deadline. Still no hang.
       WatchHangsInScope second_scope(kSecondTimeout);
-      ASSERT_FALSE(current_hang_watch_state->IsOverDeadline());
-      ASSERT_EQ(current_hang_watch_state->GetDeadline(), second_deadline);
+      EXPECT_FALSE(current_hang_watch_state->IsOverDeadline());
+      EXPECT_EQ(current_hang_watch_state->GetDeadline(), second_deadline);
     }
     // First deadline we set should be restored.
-    ASSERT_FALSE(current_hang_watch_state->IsOverDeadline());
-    ASSERT_EQ(current_hang_watch_state->GetDeadline(), first_deadline);
+    EXPECT_FALSE(current_hang_watch_state->IsOverDeadline());
+    EXPECT_EQ(current_hang_watch_state->GetDeadline(), first_deadline);
   }
 
   // Original deadline should now be restored.
-  ASSERT_FALSE(current_hang_watch_state->IsOverDeadline());
-  ASSERT_EQ(current_hang_watch_state->GetDeadline(), original_deadline);
+  EXPECT_FALSE(current_hang_watch_state->IsOverDeadline());
+  EXPECT_EQ(current_hang_watch_state->GetDeadline(), original_deadline);
 }
 
 TEST_F(HangWatcherBlockingThreadTest, HistogramsLoggedOnHang) {
@@ -475,7 +475,7 @@ TEST_F(HangWatcherBlockingThreadTest, HistogramsLoggedWithoutHangs) {
 
   // No hang to catch so nothing is recorded.
   MonitorHangs();
-  ASSERT_FALSE(hang_event_.IsSignaled());
+  EXPECT_FALSE(hang_event_.IsSignaled());
 
   // A thread of type ThreadForTesting was monitored but didn't hang. This is
   // logged.
@@ -548,7 +548,7 @@ TEST_F(HangWatcherBlockingThreadTest, Hang) {
 
   // First monitoring catches and records the hang.
   MonitorHangs();
-  ASSERT_TRUE(hang_event_.IsSignaled());
+  EXPECT_TRUE(hang_event_.IsSignaled());
 
   JoinThread();
 }
@@ -561,7 +561,7 @@ TEST_F(HangWatcherBlockingThreadTest, HangAlreadyRecorded) {
 
   // First monitoring catches and records the hang.
   MonitorHangs();
-  ASSERT_TRUE(hang_event_.IsSignaled());
+  EXPECT_TRUE(hang_event_.IsSignaled());
 
   // Reset to attempt capture again.
   hang_event_.Reset();
@@ -570,7 +570,7 @@ TEST_F(HangWatcherBlockingThreadTest, HangAlreadyRecorded) {
   // Second monitoring does not record because a hang that was already recorded
   // is still live.
   MonitorHangs();
-  ASSERT_FALSE(hang_event_.IsSignaled());
+  EXPECT_FALSE(hang_event_.IsSignaled());
 
   JoinThread();
 }
@@ -580,7 +580,7 @@ TEST_F(HangWatcherBlockingThreadTest, NoHang) {
 
   // No hang to catch so nothing is recorded.
   MonitorHangs();
-  ASSERT_FALSE(hang_event_.IsSignaled());
+  EXPECT_FALSE(hang_event_.IsSignaled());
 
   JoinThread();
 }
@@ -615,7 +615,7 @@ class HangWatcherSnapshotTest : public testing::Test {
     list_of_hung_thread_ids_during_capture_ = id_list;
     task_environment_.AdvanceClock(kSmallCPUQuantum);
     TriggerMonitorAndWaitForCompletion();
-    ASSERT_EQ(++reference_capture_count_, hang_capture_count_);
+    EXPECT_EQ(++reference_capture_count_, hang_capture_count_);
   }
 
   // Verify that even if hang monitoring takes place no hangs are detected.
@@ -623,7 +623,7 @@ class HangWatcherSnapshotTest : public testing::Test {
     int old_capture_count = hang_capture_count_;
     task_environment_.AdvanceClock(kSmallCPUQuantum);
     TriggerMonitorAndWaitForCompletion();
-    ASSERT_EQ(old_capture_count, hang_capture_count_);
+    EXPECT_EQ(old_capture_count, hang_capture_count_);
   }
 
   std::string ConcatenateThreadIds(
@@ -704,7 +704,7 @@ TEST_F(HangWatcherSnapshotTest, NonActionableReport) {
     ExpectNoCapture();
 
     // Marking failed.
-    ASSERT_FALSE(current_hang_watch_state->IsFlagSet(
+    EXPECT_FALSE(current_hang_watch_state->IsFlagSet(
         internal::HangWatchDeadline::Flag::kShouldBlockOnHang));
 
     current_hang_watch_state->GetHangWatchDeadlineForTesting()
@@ -955,7 +955,7 @@ TEST_F(HangWatcherPeriodicMonitoringTest, PeriodicCallsTakePlace) {
   }
 
   // No monitored scope means no possible hangs.
-  ASSERT_FALSE(hang_event_.IsSignaled());
+  EXPECT_FALSE(hang_event_.IsSignaled());
 }
 
 // If the HangWatcher detects it slept for longer than expected it will not
@@ -1177,7 +1177,7 @@ class HangWatchDeadlineTest : public testing::Test {
 // Verify that the extract functions don't mangle any bits.
 TEST_F(HangWatchDeadlineTest, BitsPreservedThroughExtract) {
   for (auto bits : {kAllOnes, kAllZeros, kOnesThenZeroes, kZeroesThenOnes}) {
-    ASSERT_TRUE((HangWatchDeadline::ExtractFlags(bits) |
+    EXPECT_TRUE((HangWatchDeadline::ExtractFlags(bits) |
                  HangWatchDeadline::ExtractDeadline(bits)) == bits);
   }
 }
@@ -1198,14 +1198,14 @@ TEST_F(HangWatchDeadlineTest, SetAndClearPersistentFlag) {
   auto [new_flags, new_deadline] = deadline_.GetFlagsAndDeadline();
 
   // Flag was set properly.
-  ASSERT_TRUE(HangWatchDeadline::IsFlagSet(
+  EXPECT_TRUE(HangWatchDeadline::IsFlagSet(
       HangWatchDeadline::Flag::kIgnoreCurrentWatchHangsInScope, new_flags));
 
   // No side-effect on deadline.
-  ASSERT_EQ(new_deadline, old_deadline);
+  EXPECT_EQ(new_deadline, old_deadline);
 
   // No side-effect on other flags.
-  ASSERT_EQ(
+  EXPECT_EQ(
       FlagsMinus(new_flags,
                  HangWatchDeadline::Flag::kIgnoreCurrentWatchHangsInScope),
       old_flags);
@@ -1217,10 +1217,10 @@ TEST_F(HangWatchDeadlineTest, SetAndClearPersistentFlag) {
   std::tie(new_flags, new_deadline) = deadline_.GetFlagsAndDeadline();
 
   // All flags back to original state.
-  ASSERT_EQ(new_flags, old_flags);
+  EXPECT_EQ(new_flags, old_flags);
 
   // Deadline still unaffected.
-  ASSERT_EQ(new_deadline, old_deadline);
+  EXPECT_EQ(new_deadline, old_deadline);
 }
 
 // Verify setting the TimeTicks value works and has no unwanted side-effects.
@@ -1232,7 +1232,7 @@ TEST_F(HangWatchDeadlineTest, SetDeadline) {
 
   // Set the deadline and verify it stuck.
   deadline_.SetDeadline(ticks);
-  ASSERT_EQ(deadline_.GetDeadline(), ticks);
+  EXPECT_EQ(deadline_.GetDeadline(), ticks);
 
   // Only the value was modified, no flags should be set.
   AssertNoFlagsSet();
@@ -1254,14 +1254,14 @@ TEST_F(HangWatchDeadlineTest, SetShouldBlockOnHangDeadlineChanged) {
       base::BindLambdaForTesting([] { return kArbitraryDeadline; }));
 
   // kShouldBlockOnHangs does not persist through value change.
-  ASSERT_FALSE(deadline_.SetShouldBlockOnHang(flags, deadline));
+  EXPECT_FALSE(deadline_.SetShouldBlockOnHang(flags, deadline));
 
   // Flag was not applied.
-  ASSERT_FALSE(
+  EXPECT_FALSE(
       deadline_.IsFlagSet(HangWatchDeadline::Flag::kShouldBlockOnHang));
 
   // New value that was changed concurrently is preserved.
-  ASSERT_EQ(deadline_.GetDeadline(), new_deadline);
+  EXPECT_EQ(deadline_.GetDeadline(), new_deadline);
 }
 
 // Verify that clearing a persistent (kIgnoreCurrentWatchHangsInScope) when
@@ -1287,12 +1287,12 @@ TEST_F(HangWatchDeadlineTest, ClearIgnoreHangsDeadlineChanged) {
 
   // Clearing kIgnoreHang is unaffected by deadline or flags change.
   deadline_.UnsetIgnoreCurrentWatchHangsInScope();
-  ASSERT_FALSE(deadline_.IsFlagSet(
+  EXPECT_FALSE(deadline_.IsFlagSet(
       HangWatchDeadline::Flag::kIgnoreCurrentWatchHangsInScope));
 
   // New deadline that was changed concurrently is preserved.
-  ASSERT_TRUE(deadline_.IsFlagSet(HangWatchDeadline::Flag::kShouldBlockOnHang));
-  ASSERT_EQ(deadline_.GetDeadline(), new_deadline);
+  EXPECT_TRUE(deadline_.IsFlagSet(HangWatchDeadline::Flag::kShouldBlockOnHang));
+  EXPECT_EQ(deadline_.GetDeadline(), new_deadline);
 }
 
 // Verify that setting a persistent (kIgnoreCurrentWatchHangsInScope) when
@@ -1315,12 +1315,12 @@ TEST_F(HangWatchDeadlineTest,
 
   // kIgnoreHang persists through value change.
   deadline_.SetIgnoreCurrentWatchHangsInScope();
-  ASSERT_TRUE(deadline_.IsFlagSet(
+  EXPECT_TRUE(deadline_.IsFlagSet(
       HangWatchDeadline::Flag::kIgnoreCurrentWatchHangsInScope));
 
   // New deadline and flags that changed concurrently are preserved.
-  ASSERT_TRUE(deadline_.IsFlagSet(HangWatchDeadline::Flag::kShouldBlockOnHang));
-  ASSERT_EQ(deadline_.GetDeadline(), new_deadline);
+  EXPECT_TRUE(deadline_.IsFlagSet(HangWatchDeadline::Flag::kShouldBlockOnHang));
+  EXPECT_EQ(deadline_.GetDeadline(), new_deadline);
 }
 
 // Setting a new deadline should wipe flags that a not persistent.
@@ -1339,12 +1339,12 @@ TEST_F(HangWatchDeadlineTest, SetDeadlineWipesFlags) {
 
   // Change the deadline.
   deadline_.SetDeadline(TimeTicks{});
-  ASSERT_EQ(deadline_.GetDeadline(), TimeTicks{});
+  EXPECT_EQ(deadline_.GetDeadline(), TimeTicks{});
 
   // Verify the persistent flag stuck and the non-persistent one was unset.
-  ASSERT_FALSE(
+  EXPECT_FALSE(
       deadline_.IsFlagSet(HangWatchDeadline::Flag::kShouldBlockOnHang));
-  ASSERT_TRUE(deadline_.IsFlagSet(
+  EXPECT_TRUE(deadline_.IsFlagSet(
       HangWatchDeadline::Flag::kIgnoreCurrentWatchHangsInScope));
 }
 
