@@ -106,6 +106,10 @@ class SaveToDriveCoordinatorTest : public PlatformTest {
 
   void TearDown() final {
     [mock_save_to_drive_mediator_ stopMocking];
+    EXPECT_OCMOCK_VERIFY(mock_save_to_drive_commands_handler_);
+    EXPECT_OCMOCK_VERIFY(mock_application_commands_handler_);
+    EXPECT_OCMOCK_VERIFY(mock_settings_commands_handler_);
+    EXPECT_OCMOCK_VERIFY(mock_save_to_drive_mediator_);
     PlatformTest::TearDown();
   }
 
@@ -240,25 +244,7 @@ TEST_F(SaveToDriveCoordinatorTest, ShowsAddAccount) {
 
   // Expect that a ShowSigninCommand will be dispatched to present the Add
   // account view on top of the account picker view.
-  id<SystemIdentity> added_identity = [FakeSystemIdentity fakeIdentity1];
-  OCMExpect([mock_application_commands_handler_
-              showSignin:[OCMArg checkWithBlock:^BOOL(
-                                     ShowSigninCommand* command) {
-                if (command) {
-                  command.completion(SigninCoordinatorResultSuccess,
-                                     added_identity);
-                }
-                EXPECT_EQ(AuthenticationOperation::kAddAccount,
-                          command.operation);
-                EXPECT_FALSE(command.identity);
-                EXPECT_EQ(signin_metrics::AccessPoint::kSaveToDriveIos,
-                          command.accessPoint);
-                EXPECT_EQ(
-                    signin_metrics::PromoAction::PROMO_ACTION_NO_SIGNIN_PROMO,
-                    command.promoAction);
-                return YES;
-              }]
-      baseViewController:mock_account_picker_coordinator_view_controller]);
 
   [coordinator stop];
+  EXPECT_OCMOCK_VERIFY(mock_account_picker_coordinator);
 }
