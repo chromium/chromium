@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/split_tab_menu_model.h"
 #include "chrome/browser/ui/tabs/tab_renderer_data.h"
+#include "chrome/browser/ui/tabs/tab_utils.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/contents_web_view.h"
 #include "chrome/browser/ui/views/frame/top_container_background.h"
@@ -274,8 +275,11 @@ void MultiContentsViewMiniToolbar::OnAlertStatusIndicatorChanged(
         GetAlertStatusColor(new_alert.value(), GetColorProvider());
     alert_state_indicator_->SetImage(
         tabs::GetAlertImageModel(new_alert.value(), color));
+    alert_state_indicator_->SetTooltipText(
+        GetTabAlertStateText(new_alert.value()));
   } else {
     alert_state_indicator_->SetImage(ui::ImageModel());
+    alert_state_indicator_->SetTooltipText(std::u16string());
   }
 }
 
