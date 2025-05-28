@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "media/gpu/av1_decoder.h"
 
 #include <algorithm>
@@ -181,8 +176,7 @@ void AV1Decoder::Reset() {
   // skip it and will keep skipping until we get a sequence header.
   current_sequence_header_.reset();
   stream_id_ = 0;
-  stream_ = nullptr;
-  stream_size_ = 0;
+  stream_ = {};
   on_error_ = false;
 
   state_ = std::make_unique<libgav1::DecoderState>();
@@ -200,15 +194,13 @@ void AV1Decoder::Reset() {
 
 void AV1Decoder::SetStream(int32_t id, const DecoderBuffer& decoder_buffer) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  auto decoder_buffer_span = base::span(decoder_buffer);
+  stream_ = base::span(decoder_buffer);
   stream_id_ = id;
-  stream_ = decoder_buffer_span.data();
-  stream_size_ = decoder_buffer_span.size();
   ClearCurrentFrame();
 
   parser_ = base::WrapUnique(new (std::nothrow) libgav1::ObuParser(
-      decoder_buffer_span.data(), decoder_buffer_span.size(),
-      kDefaultOperatingPoint, buffer_pool_.get(), state_.get()));
+      stream_.data(), stream_.size(), kDefaultOperatingPoint,
+      buffer_pool_.get(), state_.get()));
   if (!parser_) {
     on_error_ = true;
     return;
@@ -226,8 +218,8 @@ void AV1Decoder::SetStream(int32_t id, const DecoderBuffer& decoder_buffer) {
     secure_handle_ = 0;
   }
 
-  const AV1Accelerator::Status status = accelerator_->SetStream(
-      base::span(stream_.get(), stream_size_), decrypt_config_.get());
+  const AV1Accelerator::Status status =
+      accelerator_->SetStream(stream_, decrypt_config_.get());
   if (status != AV1Accelerator::Status::kOk) {
     on_error_ = true;
     return;
@@ -580,10 +572,8 @@ bool AV1Decoder::CheckAndCleanUpReferenceFrames() {
   // For intra frames, we don't need this assertion because they shouldn't
   // depend on reference frames.
   if (!libgav1::IsIntraFrame(current_frame_header_->frame_type)) {
-    for (size_t i = 0; i < libgav1::kNumInterReferenceFrameTypes; ++i) {
-      const auto ref_frame_index =
-          current_frame_header_->reference_frame_index[i];
-
+    for (int8_t ref_frame_index :
+         current_frame_header_->reference_frame_index) {
       // Unless an error occurred in libgav1, |ref_frame_index| should be valid,
       // and since CheckAndCleanUpReferenceFrames() only gets called if parsing
       // succeeded, we can assert that validity.
@@ -604,16 +594,15 @@ AV1Decoder::AV1Accelerator::Status AV1Decoder::DecodeAndOutputPicture(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(pic);
   DCHECK(current_sequence_header_);
-  DCHECK(stream_);
-  DCHECK_GT(stream_size_, 0u);
+  DCHECK(!stream_.empty());
   if (!CheckAndCleanUpReferenceFrames()) {
     DLOG(ERROR) << "The states of reference frames are different between "
                 << "|ref_frames_| and |state_|";
     return AV1Accelerator::Status::kFail;
   }
-  const AV1Accelerator::Status status = accelerator_->SubmitDecode(
-      *pic, *current_sequence_header_, ref_frames_, tile_buffers,
-      base::span(stream_.get(), stream_size_));
+  const AV1Accelerator::Status status =
+      accelerator_->SubmitDecode(*pic, *current_sequence_header_, ref_frames_,
+                                 tile_buffers, base::span(stream_));
   if (status != AV1Accelerator::Status::kOk) {
     if (status == AV1Accelerator::Status::kTryAgain)
       pending_pic_ = std::move(pic);

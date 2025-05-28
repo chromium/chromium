@@ -2,17 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "media/gpu/av1_decoder.h"
 
 #include <string.h>
 
 #include <algorithm>
 #include <array>
+#include <iterator>
 #include <string>
 #include <vector>
 
@@ -212,8 +208,7 @@ void AV1DecoderTest::Reset() {
   EXPECT_FALSE(decoder_->current_frame_header_);
   EXPECT_FALSE(decoder_->current_frame_);
   EXPECT_NE(decoder_->stream_id_, 0);
-  EXPECT_TRUE(decoder_->stream_);
-  EXPECT_GT(decoder_->stream_size_, 0u);
+  EXPECT_FALSE(decoder_->stream_.empty());
 
   decoder_->Reset();
   EXPECT_EQ(decoder_->state_->current_frame_id, -1);
@@ -225,8 +220,7 @@ void AV1DecoderTest::Reset() {
   EXPECT_FALSE(decoder_->current_frame_header_);
   EXPECT_FALSE(decoder_->current_frame_);
   EXPECT_EQ(decoder_->stream_id_, 0);
-  EXPECT_FALSE(decoder_->stream_);
-  EXPECT_EQ(decoder_->stream_size_, 0u);
+  EXPECT_TRUE(decoder_->stream_.empty());
 }
 
 scoped_refptr<DecoderBuffer> AV1DecoderTest::ReadDecoderBuffer(
@@ -273,19 +267,17 @@ std::vector<scoped_refptr<DecoderBuffer>> AV1DecoderTest::ReadWebm(
   InMemoryUrlProtocol protocol(*webm_data, false);
   FFmpegGlue glue(&protocol);
   LOG_ASSERT(glue.OpenContext());
-  int stream_index = -1;
-  for (unsigned int i = 0; i < glue.format_context()->nb_streams; ++i) {
-    const AVStream* stream = glue.format_context()->streams[i];
+  base::span<AVStream*> format_context =
+      AVFormatContextToSpan(glue.format_context());
+  auto iter = std::ranges::find_if(format_context, [](AVStream* stream) {
     const AVCodecParameters* codec_parameters = stream->codecpar;
     const AVMediaType codec_type = codec_parameters->codec_type;
     const AVCodecID codec_id = codec_parameters->codec_id;
-    if (codec_type == AVMEDIA_TYPE_VIDEO && codec_id == AV_CODEC_ID_AV1) {
-      stream_index = i;
-      break;
-    }
-  }
-  EXPECT_NE(stream_index, -1) << "No AV1 data found in " << input_file;
-
+    return codec_type == AVMEDIA_TYPE_VIDEO && codec_id == AV_CODEC_ID_AV1;
+  });
+  EXPECT_NE(iter, format_context.end())
+      << "No AV1 data found in " << input_file;
+  int stream_index = std::distance(format_context.begin(), iter);
   std::vector<scoped_refptr<DecoderBuffer>> buffers;
   auto packet = ScopedAVPacket::Allocate();
   while (av_read_frame(glue.format_context(), packet.get()) >= 0) {
@@ -792,8 +784,11 @@ TEST_F(AV1DecoderTest, InconsistentReferenceFrameState) {
   EXPECT_EQ(av1_picture->frame_header.frame_type, libgav1::kFrameInter);
 
   // Next, let's check the reference frames that frame needs.
-  for (int8_t i = 0; i < libgav1::kNumInterReferenceFrameTypes; ++i)
-    EXPECT_EQ(av1_picture->frame_header.reference_frame_index[i], i);
+  base::span<int8_t> reference_frame_index(
+      av1_picture->frame_header.reference_frame_index);
+  for (size_t i = 0; i < reference_frame_index.size(); ++i) {
+    EXPECT_EQ(static_cast<size_t>(reference_frame_index[i]), i);
+  }
 
   // Finally, let's check that libgav1 thought that all the reference frames
   // were valid.

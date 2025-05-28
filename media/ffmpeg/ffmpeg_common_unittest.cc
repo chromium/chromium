@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "media/ffmpeg/ffmpeg_common.h"
 
 #include <stddef.h>
@@ -37,6 +32,17 @@ class FFmpegCommonTest : public testing::Test {
 
 uint8_t kExtraData[5] = {0x00, 0x01, 0x02, 0x03, 0x04};
 
+inline base::span<uint8_t> AVCodecParametersExtraDataToSpan(
+    const AVCodecParameters* codec_context) {
+  // SAFETY:
+  // https://ffmpeg.org/doxygen/trunk/structAVCodecParameters.html#a9befe0b86412646017afb0051d144d13
+  // ffmpeg documentation: The allocated size of `extradata` must be at least
+  // `extradata_size + AV_INPUT_BUFFER_PADDING_SIZE`.
+  return UNSAFE_BUFFERS(
+      base::span(codec_context->extradata,
+                 base::checked_cast<size_t>(codec_context->extradata_size)));
+}
+
 template <typename T>
 void TestConfigConvertExtraData(
     AVStream* stream,
@@ -63,9 +69,8 @@ void TestConfigConvertExtraData(
   EXPECT_TRUE(converter_fn.Run(stream, decoder_config));
   EXPECT_EQ(static_cast<size_t>(codec_parameters->extradata_size),
             decoder_config->extra_data().size());
-  EXPECT_EQ(
-      0, memcmp(codec_parameters->extradata, &decoder_config->extra_data()[0],
-                decoder_config->extra_data().size()));
+  EXPECT_EQ(AVCodecParametersExtraDataToSpan(codec_parameters),
+            base::span(decoder_config->extra_data()));
 
   // Possible combination: extra_data = nullptr && size != 0, but the converter
   // function considers this valid and having no extra_data, due to behavior of
@@ -95,8 +100,7 @@ void VerifyProfileTest(const char* file_name,
   ASSERT_TRUE(glue.OpenContext());
   AVFormatContext* format_context = glue.format_context();
 
-  for (size_t i = 0; i < format_context->nb_streams; ++i) {
-    AVStream* stream = format_context->streams[i];
+  for (auto* stream : AVFormatContextToSpan(format_context)) {
     AVCodecParameters* codec_parameters = stream->codecpar;
     AVMediaType codec_type = codec_parameters->codec_type;
 
@@ -124,10 +128,11 @@ TEST_F(FFmpegCommonTest, AVStreamToDecoderConfig) {
   // for extradata and extradata_size.
   bool found_audio = false;
   bool found_video = false;
-  for (size_t i = 0;
-       i < format_context->nb_streams && (!found_audio || !found_video);
-       ++i) {
-    AVStream* stream = format_context->streams[i];
+  for (AVStream* stream : AVFormatContextToSpan(format_context)) {
+    if (found_audio && found_video) {
+      break;
+    }
+
     AVCodecParameters* codec_parameters = stream->codecpar;
     AVMediaType codec_type = codec_parameters->codec_type;
 

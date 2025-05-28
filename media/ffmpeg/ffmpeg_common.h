@@ -93,6 +93,28 @@ inline base::span<const uint8_t> AVPacketData(const AVPacket& packet) {
       base::span(packet.data, base::checked_cast<size_t>(packet.size)));
 }
 
+inline base::span<AVStream*> AVFormatContextToSpan(
+    const AVFormatContext* codec_context) {
+  // SAFETY:
+  // https://ffmpeg.org/doxygen/trunk/structAVFormatContext.html#a0b748d924898b08b89ff4974afd17285
+  // ffmpeg documentation: `nb_streams` is the number of elements in
+  // `AVFormatContext.streams`.
+  return UNSAFE_BUFFERS(
+      base::span(codec_context->streams,
+                 base::checked_cast<size_t>(codec_context->nb_streams)));
+}
+
+inline base::span<AVPacketSideData> AVCodecParametersCodedSideToSpan(
+    const AVCodecParameters* codecpar) {
+  // SAFETY:
+  // https://ffmpeg.org/doxygen/trunk/structAVCodecParameters.html#a29643cfd94231e2d148a5d17b08d115b
+  // ffmpeg documentation: `nb_coded_side_data` is the amount of entries in
+  // `coded_side_data`.
+  return UNSAFE_BUFFERS(
+      base::span(codecpar->coded_side_data,
+                 base::checked_cast<size_t>(codecpar->nb_coded_side_data)));
+}
+
 // Converts an int64_t timestamp in |time_base| units to a base::TimeDelta.
 // For example if |timestamp| equals 11025 and |time_base| equals {1, 44100}
 // then the return value will be a base::TimeDelta for 0.25 seconds since that
