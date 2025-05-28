@@ -216,12 +216,12 @@ class CORE_EXPORT CSSMathExpressionNode
                                      double multiplier) const = 0;
   virtual void AccumulateLengthUnitTypes(
       CSSPrimitiveValue::LengthTypeFlags& types) const = 0;
-  virtual scoped_refptr<const CalculationExpressionNode>
-  ToCalculationExpression(const CSSLengthResolver&) const = 0;
+  virtual const CalculationExpressionNode* ToCalculationExpression(
+      const CSSLengthResolver&) const = 0;
   virtual std::optional<PixelsAndPercent> ToPixelsAndPercent(
       const CSSLengthResolver&) const = 0;
 
-  scoped_refptr<const CalculationValue> ToCalcValue(
+  const CalculationValue* ToCalcValue(
       const CSSLengthResolver& length_resolver,
       Length::ValueRange range,
       bool allows_negative_percentage_reference) const;
@@ -382,7 +382,7 @@ class CORE_EXPORT CSSMathExpressionNumericLiteral final
   const CSSMathExpressionNode* ConvertLiteralsFromPercentageToNumber()
       const final;
   String CustomCSSText() const final;
-  scoped_refptr<const CalculationExpressionNode> ToCalculationExpression(
+  const CalculationExpressionNode* ToCalculationExpression(
       const CSSLengthResolver&) const final;
   std::optional<PixelsAndPercent> ToPixelsAndPercent(
       const CSSLengthResolver&) const final;
@@ -459,7 +459,7 @@ class CORE_EXPORT CSSMathExpressionIdentifierLiteral final
     return this;
   }
   String CustomCSSText() const final { return identifier_; }
-  scoped_refptr<const CalculationExpressionNode> ToCalculationExpression(
+  const CalculationExpressionNode* ToCalculationExpression(
       const CSSLengthResolver&) const final;
   std::optional<PixelsAndPercent> ToPixelsAndPercent(
       const CSSLengthResolver&) const final {
@@ -563,7 +563,7 @@ class CORE_EXPORT CSSMathExpressionKeywordLiteral final
   String CustomCSSText() const final {
     return GetCSSValueNameAs<AtomicString>(keyword_);
   }
-  scoped_refptr<const CalculationExpressionNode> ToCalculationExpression(
+  const CalculationExpressionNode* ToCalculationExpression(
       const CSSLengthResolver&) const final;
   std::optional<PixelsAndPercent> ToPixelsAndPercent(
       const CSSLengthResolver&) const final;
@@ -746,7 +746,7 @@ class CORE_EXPORT CSSMathExpressionOperation final
 
   const CSSMathExpressionNode* ConvertLiteralsFromPercentageToNumber()
       const final;
-  scoped_refptr<const CalculationExpressionNode> ToCalculationExpression(
+  const CalculationExpressionNode* ToCalculationExpression(
       const CSSLengthResolver&) const final;
   std::optional<PixelsAndPercent> ToPixelsAndPercent(
       const CSSLengthResolver&) const final;
@@ -851,7 +851,7 @@ class CORE_EXPORT CSSMathExpressionContainerFeature final
     return this;
   }
   String CustomCSSText() const final;
-  scoped_refptr<const CalculationExpressionNode> ToCalculationExpression(
+  const CalculationExpressionNode* ToCalculationExpression(
       const CSSLengthResolver&) const final;
   std::optional<PixelsAndPercent> ToPixelsAndPercent(
       const CSSLengthResolver&) const final;
@@ -967,7 +967,7 @@ class CORE_EXPORT CSSMathExpressionAnchorQuery final
   }
 
   String CustomCSSText() const final;
-  scoped_refptr<const CalculationExpressionNode> ToCalculationExpression(
+  const CalculationExpressionNode* ToCalculationExpression(
       const CSSLengthResolver&) const final;
   bool operator==(const CSSMathExpressionNode& other) const final;
   const CSSMathExpressionNode& PopulateWithTreeScope(
@@ -1060,7 +1060,7 @@ class CORE_EXPORT CSSMathExpressionSiblingFunction final
       CSSPrimitiveValue::LengthTypeFlags& types) const final {}
 
   String CustomCSSText() const final;
-  scoped_refptr<const CalculationExpressionNode> ToCalculationExpression(
+  const CalculationExpressionNode* ToCalculationExpression(
       const CSSLengthResolver&) const final;
   bool operator==(const CSSMathExpressionNode& other) const final;
   const CSSMathExpressionNode& PopulateWithTreeScope(

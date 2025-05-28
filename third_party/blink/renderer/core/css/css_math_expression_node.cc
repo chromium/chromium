@@ -472,7 +472,7 @@ bool IsNaN(PixelsAndPercent value, bool allows_negative_percentage_reference) {
 }
 
 std::optional<PixelsAndPercent> EvaluateValueIfNaNorInfinity(
-    scoped_refptr<const blink::CalculationExpressionNode> value,
+    const blink::CalculationExpressionNode* value,
     bool allows_negative_percentage_reference) {
   if (value->HasColorChannelKeyword()) {
     // We cannot correctly evaluate for NaN or infinity until we know the
@@ -1051,14 +1051,14 @@ CSSMathExpressionNumericLiteral::ToPixelsAndPercent(
   }
 }
 
-scoped_refptr<const CalculationExpressionNode>
+const CalculationExpressionNode*
 CSSMathExpressionNumericLiteral::ToCalculationExpression(
     const CSSLengthResolver& length_resolver) const {
   if (Category() == kCalcNumber) {
-    return base::MakeRefCounted<CalculationExpressionNumberNode>(
+    return MakeGarbageCollected<CalculationExpressionNumberNode>(
         value_->DoubleValue());
   }
-  return base::MakeRefCounted<CalculationExpressionPixelsAndPercentNode>(
+  return MakeGarbageCollected<CalculationExpressionPixelsAndPercentNode>(
       *ToPixelsAndPercent(length_resolver));
 }
 
@@ -1314,10 +1314,10 @@ CSSMathExpressionIdentifierLiteral::CSSMathExpressionIdentifierLiteral(
                             false /* needs_tree_scope_population*/),
       identifier_(std::move(identifier)) {}
 
-scoped_refptr<const CalculationExpressionNode>
+const CalculationExpressionNode*
 CSSMathExpressionIdentifierLiteral::ToCalculationExpression(
     const CSSLengthResolver&) const {
-  return base::MakeRefCounted<CalculationExpressionIdentifierNode>(identifier_);
+  return MakeGarbageCollected<CalculationExpressionIdentifierNode>(identifier_);
 }
 
 // ------ End of CSSMathExpressionIdentifierLiteral member functions ----
@@ -1411,18 +1411,18 @@ CSSMathExpressionKeywordLiteral::CSSMathExpressionKeywordLiteral(
       keyword_(keyword),
       context_(context) {}
 
-scoped_refptr<const CalculationExpressionNode>
+const CalculationExpressionNode*
 CSSMathExpressionKeywordLiteral::ToCalculationExpression(
     const CSSLengthResolver& length_resolver) const {
   switch (context_) {
     case CSSMathExpressionKeywordLiteral::Context::kMediaProgress: {
       switch (keyword_) {
         case CSSValueID::kWidth:
-          return base::MakeRefCounted<
+          return MakeGarbageCollected<
               CalculationExpressionPixelsAndPercentNode>(
               PixelsAndPercent(length_resolver.ViewportWidth()));
         case CSSValueID::kHeight:
-          return base::MakeRefCounted<
+          return MakeGarbageCollected<
               CalculationExpressionPixelsAndPercentNode>(
               PixelsAndPercent(length_resolver.ViewportHeight()));
         default:
@@ -1430,10 +1430,10 @@ CSSMathExpressionKeywordLiteral::ToCalculationExpression(
       }
     }
     case CSSMathExpressionKeywordLiteral::Context::kCalcSize:
-      return base::MakeRefCounted<CalculationExpressionSizingKeywordNode>(
+      return MakeGarbageCollected<CalculationExpressionSizingKeywordNode>(
           CSSValueIDToSizingKeyword(keyword_));
     case CSSMathExpressionKeywordLiteral::Context::kColorChannel:
-      return base::MakeRefCounted<CalculationExpressionColorChannelKeywordNode>(
+      return MakeGarbageCollected<CalculationExpressionColorChannelKeywordNode>(
           CSSValueIDToColorChannelKeyword(keyword_));
   };
 }
@@ -2534,7 +2534,7 @@ std::optional<PixelsAndPercent> CSSMathExpressionOperation::ToPixelsAndPercent(
   return result;
 }
 
-scoped_refptr<const CalculationExpressionNode>
+const CalculationExpressionNode*
 CSSMathExpressionOperation::ToCalculationExpression(
     const CSSLengthResolver& length_resolver) const {
   switch (operator_) {
@@ -2565,7 +2565,7 @@ CSSMathExpressionOperation::ToCalculationExpression(
           CalculationOperator::kInvert);
     case CSSMathOperator::kMin:
     case CSSMathOperator::kMax: {
-      Vector<scoped_refptr<const CalculationExpressionNode>> operands;
+      HeapVector<Member<const CalculationExpressionNode>> operands;
       operands.reserve(operands_.size());
       for (const CSSMathExpressionNode* operand : operands_) {
         operands.push_back(operand->ToCalculationExpression(length_resolver));
@@ -2577,7 +2577,7 @@ CSSMathExpressionOperation::ToCalculationExpression(
           std::move(operands), expression_operator);
     }
     case CSSMathOperator::kClamp: {
-      Vector<scoped_refptr<const CalculationExpressionNode>> operands;
+      HeapVector<Member<const CalculationExpressionNode>> operands;
       operands.reserve(operands_.size());
       for (const CSSMathExpressionNode* operand : operands_) {
         operands.push_back(operand->ToCalculationExpression(length_resolver));
@@ -2609,7 +2609,7 @@ CSSMathExpressionOperation::ToCalculationExpression(
     case CSSMathOperator::kAtan:
     case CSSMathOperator::kAtan2:
     case CSSMathOperator::kPow: {
-      Vector<scoped_refptr<const CalculationExpressionNode>> operands;
+      HeapVector<Member<const CalculationExpressionNode>> operands;
       operands.reserve(operands_.size());
       for (const CSSMathExpressionNode* operand : operands_) {
         operands.push_back(operand->ToCalculationExpression(length_resolver));
@@ -3431,12 +3431,12 @@ String CSSMathExpressionContainerFeature::CustomCSSText() const {
   return builder.ToString();
 }
 
-scoped_refptr<const CalculationExpressionNode>
+const CalculationExpressionNode*
 CSSMathExpressionContainerFeature::ToCalculationExpression(
     const CSSLengthResolver& length_resolver) const {
   double progress =
       EvaluateContainerSize(size_feature_, container_name_, length_resolver);
-  return base::MakeRefCounted<CalculationExpressionPixelsAndPercentNode>(
+  return MakeGarbageCollected<CalculationExpressionPixelsAndPercentNode>(
       PixelsAndPercent(progress));
 }
 
@@ -3606,7 +3606,7 @@ CSSAnchorSizeValue CSSValueIDToAnchorSizeValueEnum(CSSValueID value) {
 
 }  // namespace
 
-scoped_refptr<const CalculationExpressionNode>
+const CalculationExpressionNode*
 CSSMathExpressionAnchorQuery::ToCalculationExpression(
     const CSSLengthResolver& length_resolver) const {
   AnchorQuery query = ToQuery(length_resolver);
@@ -4668,7 +4668,7 @@ class CSSMathExpressionNodeParser {
   const CSSColorChannelMap& color_channel_map_;
 };
 
-scoped_refptr<const CalculationValue> CSSMathExpressionNode::ToCalcValue(
+const CalculationValue* CSSMathExpressionNode::ToCalcValue(
     const CSSLengthResolver& length_resolver,
     Length::ValueRange range,
     bool allows_negative_percentage_reference) const {
@@ -4686,14 +4686,16 @@ scoped_refptr<const CalculationValue> CSSMathExpressionNode::ToCalcValue(
       maybe_pixels_and_percent->percent =
           CSSValueClampingUtils::ClampLength(maybe_pixels_and_percent->percent);
     }
-    return CalculationValue::Create(*maybe_pixels_and_percent, range);
+    return MakeGarbageCollected<CalculationValue>(*maybe_pixels_and_percent,
+                                                  range);
   }
 
-  auto value = ToCalculationExpression(length_resolver);
+  const auto* value = ToCalculationExpression(length_resolver);
   std::optional<PixelsAndPercent> evaluated_value =
       EvaluateValueIfNaNorInfinity(value, allows_negative_percentage_reference);
   if (evaluated_value.has_value()) {
-    return CalculationValue::Create(evaluated_value.value(), range);
+    return MakeGarbageCollected<CalculationValue>(evaluated_value.value(),
+                                                  range);
   }
   return CalculationValue::CreateSimplified(value, range);
 }
@@ -4965,10 +4967,10 @@ String CSSMathExpressionSiblingFunction::CustomCSSText() const {
              : "sibling-count()";
 }
 
-scoped_refptr<const CalculationExpressionNode>
+const CalculationExpressionNode*
 CSSMathExpressionSiblingFunction::ToCalculationExpression(
     const CSSLengthResolver& length_resolver) const {
-  return base::MakeRefCounted<CalculationExpressionNumberNode>(
+  return MakeGarbageCollected<CalculationExpressionNumberNode>(
       ComputeDouble(length_resolver));
 }
 

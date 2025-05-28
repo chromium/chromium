@@ -31,37 +31,42 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_GEOMETRY_CALCULATION_VALUE_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GEOMETRY_CALCULATION_VALUE_H_
 
-#include "base/memory/scoped_refptr.h"
+#include "base/types/pass_key.h"
 #include "third_party/blink/renderer/platform/geometry/length.h"
 #include "third_party/blink/renderer/platform/geometry/length_functions.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
-#include "third_party/blink/renderer/platform/wtf/ref_counted.h"
 
 namespace blink {
 
 class CalculationExpressionNode;
 
-class PLATFORM_EXPORT CalculationValue : public RefCounted<CalculationValue> {
-  USING_FAST_MALLOC(CalculationValue);
-
+class PLATFORM_EXPORT CalculationValue
+    : public GarbageCollected<CalculationValue> {
  public:
-  static scoped_refptr<const CalculationValue> Create(
-      PixelsAndPercent value,
-      Length::ValueRange range) {
-    return base::AdoptRef(new CalculationValue(value, range));
-  }
+  CalculationValue(PixelsAndPercent value, Length::ValueRange range)
+      : value_(value),
+        is_non_negative_(range == Length::ValueRange::kNonNegative) {}
+
+  using PassKey = base::PassKey<CalculationValue>;
+  CalculationValue(PassKey,
+                   const CalculationExpressionNode* expression,
+                   Length::ValueRange range);
 
   // If |expression| simply wraps a |PixelsAndPercent| value, this function
   // takes that value directly and discards |expression|.
-  static scoped_refptr<const CalculationValue> CreateSimplified(
-      scoped_refptr<const CalculationExpressionNode> expression,
+  static const CalculationValue* CreateSimplified(
+      const CalculationExpressionNode* expression,
       Length::ValueRange range);
 
   ~CalculationValue();
 
+  void Trace(Visitor* visitor) const;
+
   float Evaluate(float max_value, const EvaluationInput& = {}) const;
   bool operator==(const CalculationValue& o) const;
-  bool IsExpression() const { return is_expression_; }
+  bool IsExpression() const { return expression_; }
   bool IsNonNegative() const { return is_non_negative_; }
   Length::ValueRange GetValueRange() const {
     return is_non_negative_ ? Length::ValueRange::kNonNegative
@@ -82,56 +87,41 @@ class PLATFORM_EXPORT CalculationValue : public RefCounted<CalculationValue> {
 
   float Pixels() const {
     DCHECK(!IsExpression());
-    return data_.value.pixels;
+    return value_.pixels;
   }
   float Percent() const {
     DCHECK(!IsExpression());
-    return data_.value.percent;
+    return value_.percent;
   }
   PixelsAndPercent GetPixelsAndPercent() const {
     DCHECK(!IsExpression());
-    return data_.value;
+    return value_;
   }
   bool HasExplicitPixels() const {
     DCHECK(!IsExpression());
-    return data_.value.has_explicit_pixels;
+    return value_.has_explicit_pixels;
   }
   bool HasExplicitPercent() const {
     DCHECK(!IsExpression());
-    return data_.value.has_explicit_percent;
+    return value_.has_explicit_percent;
   }
 
   // If |this| is an expression, returns the underlying expression. Otherwise,
   // creates one from the underlying |PixelsAndPercent| value.
-  scoped_refptr<const CalculationExpressionNode> GetOrCreateExpression() const;
+  const CalculationExpressionNode* GetOrCreateExpression() const;
 
-  scoped_refptr<const CalculationValue> Blend(const CalculationValue& from,
-                                              double progress,
-                                              Length::ValueRange) const;
-  scoped_refptr<const CalculationValue> SubtractFromOneHundredPercent() const;
-  scoped_refptr<const CalculationValue> Add(const CalculationValue&) const;
-  scoped_refptr<const CalculationValue> Zoom(double factor) const;
+  const CalculationValue* Blend(const CalculationValue& from,
+                                double progress,
+                                Length::ValueRange) const;
+  const CalculationValue* SubtractFromOneHundredPercent() const;
+  const CalculationValue* Add(const CalculationValue&) const;
+  const CalculationValue* Zoom(double factor) const;
 
  private:
-  CalculationValue(PixelsAndPercent value, Length::ValueRange range)
-      : data_(value),
-        is_expression_(false),
-        is_non_negative_(range == Length::ValueRange::kNonNegative) {}
-
-  CalculationValue(scoped_refptr<const CalculationExpressionNode> expression,
-                   Length::ValueRange range);
-
-  union DataUnion {
-    explicit DataUnion(PixelsAndPercent value) : value(value) {}
-    explicit DataUnion(
-        scoped_refptr<const CalculationExpressionNode> expression);
-    ~DataUnion();
-
-    PixelsAndPercent value;
-    scoped_refptr<const CalculationExpressionNode> expression;
-  } data_;
-  unsigned is_expression_ : 1;
-  unsigned is_non_negative_ : 1;
+  // `value_` and `expression_` are mutually exclusive.
+  PixelsAndPercent value_;
+  Member<const CalculationExpressionNode> expression_ = nullptr;
+  const bool is_non_negative_;
 };
 
 }  // namespace blink

@@ -45,6 +45,10 @@ namespace blink {
 
 struct PixelsAndPercent {
   DISALLOW_NEW();
+
+  // The default constructor places this in an invalid state.
+  PixelsAndPercent() = default;
+
   explicit PixelsAndPercent(float pixels)
       : pixels(pixels),
         percent(0.0f),
@@ -84,10 +88,10 @@ struct PixelsAndPercent {
     return *this;
   }
 
-  float pixels;
-  float percent;
-  bool has_explicit_pixels;
-  bool has_explicit_percent;
+  float pixels = 0.f;
+  float percent = 0.f;
+  bool has_explicit_pixels = false;
+  bool has_explicit_percent = false;
 };
 
 class CalculationValue;
@@ -156,26 +160,26 @@ class PLATFORM_EXPORT Length {
     value_ = ClampTo<float>(v);
   }
 
-  explicit Length(scoped_refptr<const CalculationValue>);
+  explicit Length(const CalculationValue*);
 
   Length(const Length& length) {
     UNSAFE_TODO(memcpy(this, &length, sizeof(Length)));
     if (IsCalculated())
-      IncrementCalculatedRef();
+      IncrementCalculatedCount();
   }
 
   Length& operator=(const Length& length) {
     if (length.IsCalculated())
-      length.IncrementCalculatedRef();
+      length.IncrementCalculatedCount();
     if (IsCalculated())
-      DecrementCalculatedRef();
+      DecrementCalculatedCount();
     UNSAFE_TODO(memcpy(this, &length, sizeof(Length)));
     return *this;
   }
 
   ~Length() {
     if (IsCalculated())
-      DecrementCalculatedRef();
+      DecrementCalculatedCount();
   }
 
   bool operator==(const Length& o) const {
@@ -246,7 +250,7 @@ class PLATFORM_EXPORT Length {
   // If |this| is calculated, returns the underlying |CalculationValue|. If not,
   // returns a |CalculationValue| constructed from |GetPixelsAndPercent()|. Hits
   // a DCHECK if |this| is not a specified value (e.g., 'auto').
-  scoped_refptr<const CalculationValue> AsCalculationValue() const;
+  const CalculationValue* AsCalculationValue() const;
 
   Length::Type GetType() const { return static_cast<Length::Type>(type_); }
   bool Quirk() const { return quirk_; }
@@ -384,6 +388,10 @@ class PLATFORM_EXPORT Length {
 
   Length Zoom(double factor) const;
 
+  unsigned GetCalculatedCountForTest() const;
+
+  static wtf_size_t GetCalcHandleMapSizeForTest();
+
   WTF::String ToString() const;
 
  private:
@@ -401,8 +409,8 @@ class PLATFORM_EXPORT Length {
     DCHECK(IsCalculated());
     return calculation_handle_;
   }
-  void IncrementCalculatedRef() const;
-  void DecrementCalculatedRef() const;
+  void IncrementCalculatedCount() const;
+  void DecrementCalculatedCount() const;
 
   union {
     // If kType == kCalculated.
