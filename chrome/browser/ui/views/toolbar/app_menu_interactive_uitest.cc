@@ -7,11 +7,13 @@
 #include "base/test/bind.h"
 #include "build/buildflag.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
+#include "chrome/browser/lifetime/application_lifetime_desktop.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/toolbar/bookmark_sub_menu_model.h"
 #include "chrome/browser/ui/views/toolbar/browser_app_menu_button.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_model_observer.h"
@@ -302,4 +304,17 @@ IN_PROC_BROWSER_TEST_F(AppMenuDragAndDropInteractiveTest,
       CheckViewProperty(kBNodeMenuId, &views::MenuItemView::title, u"b"),
       NameSubmenuChild(AppMenuModel::kBookmarksMenuItem, kBNodeMenuId, 9u),
       CheckViewProperty(kBNodeMenuId, &views::MenuItemView::title, u"a"));
+}
+
+using AppMenuInteractiveTest = InteractiveBrowserTest;
+
+IN_PROC_BROWSER_TEST_F(AppMenuInteractiveTest, DoNotCrashOnBrowserClose) {
+  RunTestSequence(
+      // Open the App menu.
+      PressButton(kToolbarAppMenuButtonElementId),
+      // Close all browsers, ensure the browser process does not crash.
+      Do([]() {
+        chrome::CloseAllBrowsers();
+        ui_test_utils::WaitForBrowserToClose();
+      }));
 }

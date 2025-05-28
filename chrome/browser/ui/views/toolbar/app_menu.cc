@@ -1356,8 +1356,12 @@ void AppMenu::OnMenuClosed(views::MenuItemView* menu) {
     }
   }
 
-  auto* browser_view = BrowserView::GetBrowserViewForBrowser(browser_);
-  browser_view->toolbar_button_provider()->GetAppMenuButton()->OnMenuClosed();
+  // This can be called if the app menu was open during browser destruction, at
+  // which point BrowserView may be in the process of being torn down.
+  // Null-check BrowserView to guard against such cases.
+  if (auto* browser_view = BrowserView::GetBrowserViewForBrowser(browser_)) {
+    browser_view->toolbar_button_provider()->GetAppMenuButton()->OnMenuClosed();
+  }
 
   if (bookmark_menu_delegate_.get()) {
     BookmarkMergedSurfaceService* service =
