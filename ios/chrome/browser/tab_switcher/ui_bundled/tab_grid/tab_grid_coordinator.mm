@@ -1043,8 +1043,6 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
     self.remoteTabsMediator.tabGridHandler = self;
     baseViewController.remoteTabsViewController.imageDataSource =
         self.remoteTabsMediator;
-    baseViewController.remoteTabsViewController.delegate =
-        self.remoteTabsMediator;
     baseViewController.remoteTabsViewController.applicationHandler =
         applicationCommandsHandler;
     baseViewController.remoteTabsViewController.loadStrategy =

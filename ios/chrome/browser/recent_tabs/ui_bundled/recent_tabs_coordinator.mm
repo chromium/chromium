@@ -145,7 +145,6 @@
   // then [self.mediator configureConsumer].
   self.mediator.consumer = self.recentTabsTableViewController;
   self.recentTabsTableViewController.imageDataSource = self.mediator;
-  self.recentTabsTableViewController.delegate = self.mediator;
   [self.mediator initObservers];
   [self.mediator configureConsumer];
 
@@ -173,7 +172,6 @@
   [self.recentTabsTableViewController dismissModals];
   self.recentTabsTableViewController.imageDataSource = nil;
   self.recentTabsTableViewController.browser = nil;
-  self.recentTabsTableViewController.delegate = nil;
   self.recentTabsTableViewController = nil;
   [self.recentTabsNavigationController
       dismissViewControllerAnimated:YES

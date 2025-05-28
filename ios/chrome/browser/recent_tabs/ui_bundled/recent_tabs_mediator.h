@@ -8,7 +8,6 @@
 #import <Foundation/Foundation.h>
 
 #import "ios/chrome/browser/recent_tabs/ui_bundled/closed_tabs_observer_bridge.h"
-#import "ios/chrome/browser/recent_tabs/ui_bundled/recent_tabs_table_view_controller_delegate.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_favicon_data_source.h"
 #import "ios/chrome/browser/synced_sessions/model/synced_sessions_bridge.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_grid_activity_observer.h"
@@ -49,7 +48,6 @@ class TabRestoreService;
 // RecentTabsMediator listens for notifications about Chrome Sync and
 // ChromeToDevice and changes/updates the RecentTabsConsumer accordingly.
 @interface RecentTabsMediator : NSObject <ClosedTabsObserving,
-                                          RecentTabsTableViewControllerDelegate,
                                           TabGridActivityObserver,
                                           TabGridPageMutator,
                                           TableViewFaviconDataSource>
@@ -89,6 +87,8 @@ class TabRestoreService;
 // Configures the consumer with current data. Intended to be called immediately
 // after initialization.
 - (void)configureConsumer;
+
+- (void)refreshSessionsView;
 
 @end
 
