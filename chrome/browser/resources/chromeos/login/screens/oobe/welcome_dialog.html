@@ -261,15 +261,17 @@ found in the LICENSE file.
       >
         <div slot="text">[[currentLanguage]]</div>
       </oobe-icon-button>
-      <oobe-icon-button
-        class="bg-transparent"
-        id="accessibilitySettingsButton"
-        text-key="accessibilityLink"
-        icon1x="oobe-20:welcome-accessibility"
-        icon2x="oobe-40:welcome-accessibility"
-        on-click="onAccessibilityClicked"
-      >
-      </oobe-icon-button>
+      <template is="dom-if" if="[[!isFjord]]">
+        <oobe-icon-button
+          class="bg-transparent"
+          id="accessibilitySettingsButton"
+          text-key="accessibilityLink"
+          icon1x="oobe-20:welcome-accessibility"
+          icon2x="oobe-40:welcome-accessibility"
+          on-click="onAccessibilityClicked"
+        >
+        </oobe-icon-button>
+      </template>
       <oobe-icon-button
         class="bg-transparent"
         id="timezoneSettingsButton"

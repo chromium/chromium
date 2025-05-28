@@ -28,6 +28,7 @@
 #include "chrome/browser/ui/ash/login/input_events_blocker.h"
 #include "chrome/browser/ui/ash/login/login_display_host.h"
 #include "chrome/browser/ui/webui/ash/login/core_oobe_handler.h"
+#include "chrome/browser/ui/webui/ash/login/fjord_oobe_util.h"
 #include "chrome/browser/ui/webui/ash/login/l10n_util.h"
 #include "chrome/browser/ui/webui/ash/login/oobe_ui.h"
 #include "chrome/browser/ui/webui/ash/login/reset_screen_handler.h"
@@ -102,7 +103,10 @@ void WelcomeScreenHandler::ShowRemoraRequisitionDialog() {
 
 void WelcomeScreenHandler::DeclareLocalizedValues(
     ::login::LocalizedValuesBuilder* builder) {
-  if (policy::EnrollmentRequisitionManager::IsMeetDevice()) {
+  if (fjord_util::ShouldShowFjordOobe()) {
+    builder->Add("welcomeScreenGreeting", IDS_FJORD_WELCOME_MESSAGE);
+    builder->Add("welcomeScreenGreetingSubtitle", IDS_EMPTY_STRING);
+  } else if (policy::EnrollmentRequisitionManager::IsMeetDevice()) {
     builder->Add("welcomeScreenGreeting", IDS_REMORA_CONFIRM_MESSAGE);
     builder->Add("welcomeScreenGreetingSubtitle", IDS_EMPTY_STRING);
   } else if (switches::IsRevenBranding()) {

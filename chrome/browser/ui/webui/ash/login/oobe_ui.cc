@@ -75,6 +75,7 @@
 #include "chrome/browser/ui/webui/ash/login/error_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/family_link_notice_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/fingerprint_setup_screen_handler.h"
+#include "chrome/browser/ui/webui/ash/login/fjord_oobe_util.h"
 #include "chrome/browser/ui/webui/ash/login/gaia_info_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/gaia_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/gemini_intro_screen_handler.h"
@@ -793,7 +794,8 @@ void OobeUI::AddOobeComponents(content::WebUIDataSource* source) {
   // Add Gaia Authenticator resources
   source->AddResourcePaths(kGaiaAuthHostResources);
 
-  if (policy::EnrollmentRequisitionManager::IsMeetDevice()) {
+  if (policy::EnrollmentRequisitionManager::IsMeetDevice() &&
+      !fjord_util::ShouldShowFjordOobe()) {
     source->AddResourcePath(
         kOobeCustomVarsCssJs,
         IDR_OOBE_COMPONENTS_OOBE_VARS_OOBE_CUSTOM_VARS_REMORA_CSS_JS);
