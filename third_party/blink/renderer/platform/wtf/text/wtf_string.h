@@ -733,5 +733,5 @@ using WTF::g_empty_string16_bit;
 using WTF::String;
 using WTF::Utf8ConversionMode;
 
-#include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_operators.h"
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_TEXT_WTF_STRING_H_

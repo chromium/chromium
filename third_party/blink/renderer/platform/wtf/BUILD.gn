@@ -148,6 +148,7 @@ component("wtf") {
     "text/string_impl.cc",
     "text/string_impl.h",
     "text/string_operators.h",
+    "text/string_operators_atomic.h",
     "text/string_statics.cc",
     "text/string_statics.h",
     "text/string_to_number.cc",

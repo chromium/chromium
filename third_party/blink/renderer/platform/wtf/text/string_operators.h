@@ -29,6 +29,13 @@
 
 namespace WTF {
 
+template <>
+class StringTypeAdapter<String> : public StringTypeAdapter<StringView> {
+ public:
+  explicit StringTypeAdapter(const String& string)
+      : StringTypeAdapter<StringView>(string) {}
+};
+
 template <typename StringType1, typename StringType2>
 class StringAppend final {
   STACK_ALLOCATED();
@@ -142,12 +149,6 @@ inline StringAppend<const char*, String> operator+(const char* string1,
   return StringAppend<const char*, String>(string1, string2);
 }
 
-inline StringAppend<const char*, AtomicString> operator+(
-    const char* string1,
-    const AtomicString& string2) {
-  return StringAppend<const char*, AtomicString>(string1, string2);
-}
-
 inline StringAppend<const char*, StringView> operator+(
     const char* string1,
     const StringView& string2) {
@@ -159,12 +160,6 @@ inline StringAppend<const UChar*, String> operator+(const UChar* string1,
   return StringAppend<const UChar*, String>(string1, string2);
 }
 
-inline StringAppend<const UChar*, AtomicString> operator+(
-    const UChar* string1,
-    const AtomicString& string2) {
-  return StringAppend<const UChar*, AtomicString>(string1, string2);
-}
-
 inline StringAppend<const UChar*, StringView> operator+(
     const UChar* string1,
     const StringView& string2) {
@@ -174,12 +169,6 @@ inline StringAppend<const UChar*, StringView> operator+(
 template <typename T>
 StringAppend<String, T> operator+(const String& string1, T string2) {
   return StringAppend<String, T>(string1, string2);
-}
-
-template <typename T>
-StringAppend<AtomicString, T> operator+(const AtomicString& string1,
-                                        T string2) {
-  return StringAppend<AtomicString, T>(string1, string2);
 }
 
 template <typename T>

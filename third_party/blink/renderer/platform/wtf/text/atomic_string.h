@@ -346,5 +346,5 @@ using WTF::g_xml_atom;
 using WTF::g_xmlns_atom;
 using WTF::g_xlink_atom;
 
-#include "third_party/blink/renderer/platform/wtf/text/string_concatenate.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_operators_atomic.h"
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_TEXT_ATOMIC_STRING_H_
