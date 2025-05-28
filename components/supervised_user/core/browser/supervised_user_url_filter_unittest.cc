@@ -19,10 +19,26 @@
 #include "components/supervised_user/core/browser/supervised_user_test_environment.h"
 #include "components/supervised_user/core/browser/supervised_user_utils.h"
 #include "components/supervised_user/core/common/pref_names.h"
+#include "supervised_user_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
 namespace supervised_user {
+
+void PrintTo(FilteringBehavior behavior, std::ostream* os) {
+  switch (behavior) {
+    case supervised_user::FilteringBehavior::kAllow:
+      *os << "kAllow";
+      break;
+    case supervised_user::FilteringBehavior::kBlock:
+      *os << "kBlock";
+      break;
+    case supervised_user::FilteringBehavior::kInvalid:
+      *os << "kInvalid";
+      break;
+  }
+}
+
 namespace {
 
 using safe_search_api::ClassificationDetails;
@@ -49,10 +65,11 @@ class SupervisedUserURLFilterTest : public ::testing::Test,
   }
 
  protected:
-  bool IsURLAllowlisted(const std::string& url) {
+  // Calls GetFilteringBehavior of the underlying url filter.
+  FilteringBehavior GetFilteringBehavior(std::string_view url) const {
     return supervised_user_test_environment_.url_filter()
         ->GetFilteringBehavior(GURL(url))
-        .IsAllowed();
+        .behavior;
   }
 
   void ExpectURLInDefaultAllowlist(const std::string& url) {
@@ -103,23 +120,40 @@ TEST_F(SupervisedUserURLFilterTest, Basic) {
   supervised_user_test_environment_.SetWebFilterType(
       WebFilterType::kCertainSites);
 
-  EXPECT_TRUE(IsURLAllowlisted("http://google.com"));
-  EXPECT_TRUE(IsURLAllowlisted("http://google.com/"));
-  EXPECT_TRUE(IsURLAllowlisted("http://google.com/whatever"));
-  EXPECT_TRUE(IsURLAllowlisted("https://google.com/"));
-  EXPECT_FALSE(IsURLAllowlisted("http://notgoogle.com/"));
-  EXPECT_TRUE(IsURLAllowlisted("http://mail.google.com"));
-  EXPECT_TRUE(IsURLAllowlisted("http://x.mail.google.com"));
-  EXPECT_TRUE(IsURLAllowlisted("https://x.mail.google.com/"));
-  EXPECT_TRUE(IsURLAllowlisted("http://x.y.google.com/a/b"));
-  EXPECT_FALSE(IsURLAllowlisted("http://youtube.com/"));
+  EXPECT_EQ(GetFilteringBehavior("http://google.com"),
+            FilteringBehavior::kAllow);
+  EXPECT_EQ(GetFilteringBehavior("http://google.com/whatever"),
+            FilteringBehavior::kAllow);
+  EXPECT_EQ(GetFilteringBehavior("https://google.com/"),
+            FilteringBehavior::kAllow);
+  EXPECT_EQ(GetFilteringBehavior("https://google.com/"),
+            FilteringBehavior::kAllow);
 
-  EXPECT_TRUE(IsURLAllowlisted("bogus://youtube.com/"));
-  EXPECT_TRUE(IsURLAllowlisted("chrome://youtube.com/"));
-  EXPECT_TRUE(IsURLAllowlisted("chrome://extensions/"));
-  EXPECT_TRUE(IsURLAllowlisted("chrome-extension://foo/main.html"));
-  EXPECT_TRUE(
-      IsURLAllowlisted("file:///home/chronos/user/MyFiles/Downloads/img.jpg"));
+  EXPECT_EQ(GetFilteringBehavior("http://mail.google.com"),
+            FilteringBehavior::kAllow);
+  EXPECT_EQ(GetFilteringBehavior("http://x.mail.google.com"),
+            FilteringBehavior::kAllow);
+  EXPECT_EQ(GetFilteringBehavior("https://x.mail.google.com/"),
+            FilteringBehavior::kAllow);
+  EXPECT_EQ(GetFilteringBehavior("http://x.y.google.com/a/b"),
+            FilteringBehavior::kAllow);
+
+  EXPECT_EQ(GetFilteringBehavior("http://youtube.com/"),
+            FilteringBehavior::kBlock);
+  EXPECT_EQ(GetFilteringBehavior("http://notgoogle.com/"),
+            FilteringBehavior::kBlock);
+
+  EXPECT_EQ(GetFilteringBehavior("bogus://youtube.com/"),
+            FilteringBehavior::kAllow);
+  EXPECT_EQ(GetFilteringBehavior("chrome://youtube.com/"),
+            FilteringBehavior::kAllow);
+  EXPECT_EQ(GetFilteringBehavior("chrome://extensions/"),
+            FilteringBehavior::kAllow);
+  EXPECT_EQ(GetFilteringBehavior("chrome-extension://foo/main.html"),
+            FilteringBehavior::kAllow);
+  EXPECT_EQ(GetFilteringBehavior(
+                "file:///home/chronos/user/MyFiles/Downloads/img.jpg"),
+            FilteringBehavior::kAllow);
 }
 
 TEST_F(SupervisedUserURLFilterTest, EffectiveURL) {
@@ -127,74 +161,114 @@ TEST_F(SupervisedUserURLFilterTest, EffectiveURL) {
   supervised_user_test_environment_.SetWebFilterType(
       WebFilterType::kCertainSites);
 
-  ASSERT_TRUE(IsURLAllowlisted("http://example.com"));
-  ASSERT_TRUE(IsURLAllowlisted("https://example.com"));
+  ASSERT_EQ(GetFilteringBehavior("http://example.com"),
+            FilteringBehavior::kAllow);
+  ASSERT_EQ(GetFilteringBehavior("https://example.com"),
+            FilteringBehavior::kAllow);
 
   // AMP Cache URLs.
-  EXPECT_FALSE(IsURLAllowlisted("https://cdn.ampproject.org"));
-  EXPECT_TRUE(IsURLAllowlisted("https://cdn.ampproject.org/c/example.com"));
-  EXPECT_TRUE(IsURLAllowlisted("https://cdn.ampproject.org/c/www.example.com"));
-  EXPECT_TRUE(
-      IsURLAllowlisted("https://cdn.ampproject.org/c/example.com/path"));
-  EXPECT_TRUE(IsURLAllowlisted("https://cdn.ampproject.org/c/s/example.com"));
-  EXPECT_FALSE(IsURLAllowlisted("https://cdn.ampproject.org/c/other.com"));
+  EXPECT_EQ(GetFilteringBehavior("https://cdn.ampproject.org"),
+            FilteringBehavior::kBlock);
+  EXPECT_EQ(GetFilteringBehavior("https://cdn.ampproject.org/c/example.com"),
+            FilteringBehavior::kAllow);
+  EXPECT_EQ(
+      GetFilteringBehavior("https://cdn.ampproject.org/c/www.example.com"),
+      FilteringBehavior::kAllow);
+  EXPECT_EQ(
+      GetFilteringBehavior("https://cdn.ampproject.org/c/example.com/path"),
+      FilteringBehavior::kAllow);
+  EXPECT_EQ(GetFilteringBehavior("https://cdn.ampproject.org/c/s/example.com"),
+            FilteringBehavior::kAllow);
+  EXPECT_EQ(GetFilteringBehavior("https://cdn.ampproject.org/c/other.com"),
+            FilteringBehavior::kBlock);
 
-  EXPECT_FALSE(IsURLAllowlisted("https://sub.cdn.ampproject.org"));
-  EXPECT_TRUE(IsURLAllowlisted("https://sub.cdn.ampproject.org/c/example.com"));
-  EXPECT_TRUE(
-      IsURLAllowlisted("https://sub.cdn.ampproject.org/c/www.example.com"));
-  EXPECT_TRUE(
-      IsURLAllowlisted("https://sub.cdn.ampproject.org/c/example.com/path"));
-  EXPECT_TRUE(
-      IsURLAllowlisted("https://sub.cdn.ampproject.org/c/s/example.com"));
-  EXPECT_FALSE(IsURLAllowlisted("https://sub.cdn.ampproject.org/c/other.com"));
+  EXPECT_EQ(GetFilteringBehavior("https://sub.cdn.ampproject.org"),
+            FilteringBehavior::kBlock);
+  EXPECT_EQ(
+      GetFilteringBehavior("https://sub.cdn.ampproject.org/c/example.com"),
+      FilteringBehavior::kAllow);
+  EXPECT_EQ(
+      GetFilteringBehavior("https://sub.cdn.ampproject.org/c/www.example.com"),
+      FilteringBehavior::kAllow);
+  EXPECT_EQ(
+      GetFilteringBehavior("https://sub.cdn.ampproject.org/c/example.com/path"),
+      FilteringBehavior::kAllow);
+  EXPECT_EQ(
+      GetFilteringBehavior("https://sub.cdn.ampproject.org/c/s/example.com"),
+      FilteringBehavior::kAllow);
+  EXPECT_EQ(GetFilteringBehavior("https://sub.cdn.ampproject.org/c/other.com"),
+            FilteringBehavior::kBlock);
 
   // Google AMP viewer URLs.
-  EXPECT_FALSE(IsURLAllowlisted("https://www.google.com"));
-  EXPECT_FALSE(IsURLAllowlisted("https://www.google.com/amp/"));
-  EXPECT_TRUE(IsURLAllowlisted("https://www.google.com/amp/example.com"));
-  EXPECT_TRUE(IsURLAllowlisted("https://www.google.com/amp/www.example.com"));
-  EXPECT_TRUE(IsURLAllowlisted("https://www.google.com/amp/s/example.com"));
-  EXPECT_TRUE(
-      IsURLAllowlisted("https://www.google.com/amp/s/example.com/path"));
-  EXPECT_FALSE(IsURLAllowlisted("https://www.google.com/amp/other.com"));
+  EXPECT_EQ(GetFilteringBehavior("https://www.google.com"),
+            FilteringBehavior::kBlock);
+  EXPECT_EQ(GetFilteringBehavior("https://www.google.com/amp/"),
+            FilteringBehavior::kBlock);
+  EXPECT_EQ(GetFilteringBehavior("https://www.google.com/amp/example.com"),
+            FilteringBehavior::kAllow);
+  EXPECT_EQ(GetFilteringBehavior("https://www.google.com/amp/www.example.com"),
+            FilteringBehavior::kAllow);
+  EXPECT_EQ(GetFilteringBehavior("https://www.google.com/amp/s/example.com"),
+            FilteringBehavior::kAllow);
+  EXPECT_EQ(
+      GetFilteringBehavior("https://www.google.com/amp/s/example.com/path"),
+      FilteringBehavior::kAllow);
+  EXPECT_EQ(GetFilteringBehavior("https://www.google.com/amp/other.com"),
+            FilteringBehavior::kBlock);
 
   // Google web cache URLs.
-  EXPECT_FALSE(IsURLAllowlisted("https://webcache.googleusercontent.com"));
-  EXPECT_FALSE(
-      IsURLAllowlisted("https://webcache.googleusercontent.com/search"));
-  EXPECT_FALSE(IsURLAllowlisted(
-      "https://webcache.googleusercontent.com/search?q=example.com"));
-  EXPECT_TRUE(IsURLAllowlisted(
-      "https://webcache.googleusercontent.com/search?q=cache:example.com"));
-  EXPECT_TRUE(
-      IsURLAllowlisted("https://webcache.googleusercontent.com/"
-                       "search?q=cache:example.com+search_query"));
-  EXPECT_TRUE(
-      IsURLAllowlisted("https://webcache.googleusercontent.com/"
-                       "search?q=cache:123456789-01:example.com+search_query"));
-  EXPECT_FALSE(IsURLAllowlisted(
-      "https://webcache.googleusercontent.com/search?q=cache:other.com"));
-  EXPECT_FALSE(
-      IsURLAllowlisted("https://webcache.googleusercontent.com/"
-                       "search?q=cache:other.com+example.com"));
-  EXPECT_FALSE(
-      IsURLAllowlisted("https://webcache.googleusercontent.com/"
-                       "search?q=cache:123456789-01:other.com+example.com"));
+  EXPECT_EQ(GetFilteringBehavior("https://webcache.googleusercontent.com"),
+            FilteringBehavior::kBlock);
+  EXPECT_EQ(
+      GetFilteringBehavior("https://webcache.googleusercontent.com/search"),
+      FilteringBehavior::kBlock);
+  EXPECT_EQ(GetFilteringBehavior(
+                "https://webcache.googleusercontent.com/search?q=example.com"),
+            FilteringBehavior::kBlock);
+  EXPECT_EQ(
+      GetFilteringBehavior(
+          "https://webcache.googleusercontent.com/search?q=cache:example.com"),
+      FilteringBehavior::kAllow);
+  EXPECT_EQ(GetFilteringBehavior("https://webcache.googleusercontent.com/"
+                                 "search?q=cache:example.com+search_query"),
+            FilteringBehavior::kAllow);
+  EXPECT_EQ(GetFilteringBehavior(
+                "https://webcache.googleusercontent.com/"
+                "search?q=cache:123456789-01:example.com+search_query"),
+            FilteringBehavior::kAllow);
+  EXPECT_EQ(
+      GetFilteringBehavior(
+          "https://webcache.googleusercontent.com/search?q=cache:other.com"),
+      FilteringBehavior::kBlock);
+  EXPECT_EQ(GetFilteringBehavior("https://webcache.googleusercontent.com/"
+                                 "search?q=cache:other.com+example.com"),
+            FilteringBehavior::kBlock);
+  EXPECT_EQ(
+      GetFilteringBehavior("https://webcache.googleusercontent.com/"
+                           "search?q=cache:123456789-01:other.com+example.com"),
+      FilteringBehavior::kBlock);
 
   // Google Translate URLs.
-  EXPECT_FALSE(IsURLAllowlisted("https://translate.google.com"));
-  EXPECT_FALSE(IsURLAllowlisted("https://translate.googleusercontent.com"));
-  EXPECT_TRUE(
-      IsURLAllowlisted("https://translate.google.com/translate?u=example.com"));
-  EXPECT_TRUE(IsURLAllowlisted(
-      "https://translate.googleusercontent.com/translate?u=example.com"));
-  EXPECT_TRUE(IsURLAllowlisted(
-      "https://translate.google.com/translate?u=www.example.com"));
-  EXPECT_TRUE(IsURLAllowlisted(
-      "https://translate.google.com/translate?u=https://example.com"));
-  EXPECT_FALSE(
-      IsURLAllowlisted("https://translate.google.com/translate?u=other.com"));
+  EXPECT_EQ(GetFilteringBehavior("https://translate.google.com"),
+            FilteringBehavior::kBlock);
+  EXPECT_EQ(GetFilteringBehavior("https://translate.googleusercontent.com"),
+            FilteringBehavior::kBlock);
+  EXPECT_EQ(GetFilteringBehavior(
+                "https://translate.google.com/translate?u=example.com"),
+            FilteringBehavior::kAllow);
+  EXPECT_EQ(
+      GetFilteringBehavior(
+          "https://translate.googleusercontent.com/translate?u=example.com"),
+      FilteringBehavior::kAllow);
+  EXPECT_EQ(GetFilteringBehavior(
+                "https://translate.google.com/translate?u=www.example.com"),
+            FilteringBehavior::kAllow);
+  EXPECT_EQ(GetFilteringBehavior(
+                "https://translate.google.com/translate?u=https://example.com"),
+            FilteringBehavior::kAllow);
+  EXPECT_EQ(GetFilteringBehavior(
+                "https://translate.google.com/translate?u=other.com"),
+            FilteringBehavior::kBlock);
 }
 
 TEST_F(SupervisedUserURLFilterTest, Inactive) {
@@ -203,8 +277,10 @@ TEST_F(SupervisedUserURLFilterTest, Inactive) {
       WebFilterType::kAllowAllSites);
 
   // If the filter is inactive, every URL should be allowed.
-  EXPECT_TRUE(IsURLAllowlisted("http://google.com"));
-  EXPECT_TRUE(IsURLAllowlisted("https://www.example.com"));
+  EXPECT_EQ(GetFilteringBehavior("http://google.com"),
+            FilteringBehavior::kAllow);
+  EXPECT_EQ(GetFilteringBehavior("https://www.example.com"),
+            FilteringBehavior::kAllow);
 }
 
 TEST_F(SupervisedUserURLFilterTest, IPAddress) {
@@ -214,8 +290,10 @@ TEST_F(SupervisedUserURLFilterTest, IPAddress) {
   supervised_user_test_environment_.SetManualFilterForHost("123.123.123.123",
                                                            true);
 
-  EXPECT_TRUE(IsURLAllowlisted("http://123.123.123.123/"));
-  EXPECT_FALSE(IsURLAllowlisted("http://123.123.123.124/"));
+  EXPECT_EQ(GetFilteringBehavior("http://123.123.123.123/"),
+            FilteringBehavior::kAllow);
+  EXPECT_EQ(GetFilteringBehavior("http://123.123.123.124/"),
+            FilteringBehavior::kBlock);
 }
 
 TEST_F(SupervisedUserURLFilterTest, Canonicalization) {
@@ -230,45 +308,64 @@ TEST_F(SupervisedUserURLFilterTest, Canonicalization) {
       "http://www.example.com/%C3%85t%C3%B8mstr%C3%B6m", true);
 
   // Base cases.
-  EXPECT_TRUE(IsURLAllowlisted("http://www.example.com/foo/"));
-  EXPECT_TRUE(
-      IsURLAllowlisted("http://www.example.com/%C3%85t%C3%B8mstr%C3%B6m"));
+  EXPECT_EQ(GetFilteringBehavior("http://www.example.com/foo/"),
+            FilteringBehavior::kAllow);
+  EXPECT_EQ(
+      GetFilteringBehavior("http://www.example.com/%C3%85t%C3%B8mstr%C3%B6m"),
+      FilteringBehavior::kAllow);
 
   // Verify that non-URI characters are escaped.
-  EXPECT_TRUE(IsURLAllowlisted(
-      "http://www.example.com/\xc3\x85t\xc3\xb8mstr\xc3\xb6m"));
+  EXPECT_EQ(GetFilteringBehavior(
+                "http://www.example.com/\xc3\x85t\xc3\xb8mstr\xc3\xb6m"),
+            FilteringBehavior::kAllow);
 
   // Verify that unnecessary URI escapes remain escaped.
-  EXPECT_TRUE(!IsURLAllowlisted("http://www.example.com/%66%6F%6F/"));
+  EXPECT_EQ(GetFilteringBehavior("http://www.example.com/%66%6F%6F/"),
+            FilteringBehavior::kBlock);
 
   // Verify that the default port are removed.
-  EXPECT_TRUE(IsURLAllowlisted("http://www.example.com:80/foo/"));
+  EXPECT_EQ(GetFilteringBehavior("http://www.example.com:80/foo/"),
+            FilteringBehavior::kAllow);
 
   // Verify that scheme and hostname are lowercased.
-  EXPECT_TRUE(IsURLAllowlisted("htTp://wWw.eXamPle.com/foo/"));
-  EXPECT_TRUE(IsURLAllowlisted("HttP://WwW.mOOsE.orG/blurp/"));
+  EXPECT_EQ(GetFilteringBehavior("htTp://wWw.eXamPle.com/foo/"),
+            FilteringBehavior::kAllow);
+  EXPECT_EQ(GetFilteringBehavior("HttP://WwW.mOOsE.orG/blurp/"),
+            FilteringBehavior::kAllow);
 
   // Verify that UTF-8 in hostnames are converted to punycode.
-  EXPECT_TRUE(IsURLAllowlisted("http://www.\xe2\x98\x83\x0a.net/bla/"));
+  EXPECT_EQ(GetFilteringBehavior("http://www.\xe2\x98\x83\x0a.net/bla/"),
+            FilteringBehavior::kAllow);
 
   // Verify that query and ref are stripped.
-  EXPECT_TRUE(IsURLAllowlisted("http://www.example.com/foo/?bar=baz#ref"));
+  EXPECT_EQ(GetFilteringBehavior("http://www.example.com/foo/?bar=baz#ref"),
+            FilteringBehavior::kAllow);
 }
 
 TEST_F(SupervisedUserURLFilterTest, UrlWithNonStandardUrlSchemeAllowed) {
   // Non-standard url scheme.
-  EXPECT_TRUE(IsURLAllowlisted("file://example.com"));
-  EXPECT_TRUE(IsURLAllowlisted("filesystem://80cols.com"));
-  EXPECT_TRUE(IsURLAllowlisted("chrome://example.com"));
-  EXPECT_TRUE(IsURLAllowlisted("wtf://example.com"));
-  EXPECT_TRUE(IsURLAllowlisted("gopher://example.com"));
+  EXPECT_EQ(GetFilteringBehavior("file://example.com"),
+            FilteringBehavior::kAllow);
+  EXPECT_EQ(GetFilteringBehavior("filesystem://80cols.com"),
+            FilteringBehavior::kAllow);
+  EXPECT_EQ(GetFilteringBehavior("chrome://example.com"),
+            FilteringBehavior::kAllow);
+  EXPECT_EQ(GetFilteringBehavior("wtf://example.com"),
+            FilteringBehavior::kAllow);
+  EXPECT_EQ(GetFilteringBehavior("gopher://example.com"),
+            FilteringBehavior::kAllow);
 
   // Standard url scheme.
-  EXPECT_FALSE(IsURLAllowlisted(("http://example.com")));
-  EXPECT_FALSE(IsURLAllowlisted("https://example.com"));
-  EXPECT_FALSE(IsURLAllowlisted("ftp://example.com"));
-  EXPECT_FALSE(IsURLAllowlisted("ws://example.com"));
-  EXPECT_FALSE(IsURLAllowlisted("wss://example.com"));
+  EXPECT_EQ(GetFilteringBehavior(("http://example.com")),
+            FilteringBehavior::kBlock);
+  EXPECT_EQ(GetFilteringBehavior("https://example.com"),
+            FilteringBehavior::kBlock);
+  EXPECT_EQ(GetFilteringBehavior("ftp://example.com"),
+            FilteringBehavior::kBlock);
+  EXPECT_EQ(GetFilteringBehavior("ws://example.com"),
+            FilteringBehavior::kBlock);
+  EXPECT_EQ(GetFilteringBehavior("wss://example.com"),
+            FilteringBehavior::kBlock);
 }
 
 TEST_F(SupervisedUserURLFilterTest, HostMatchesPattern) {
@@ -365,18 +462,29 @@ TEST_F(SupervisedUserURLFilterTest, PatternsWithoutConflicts) {
   supervised_user_test_environment_.SetWebFilterType(
       WebFilterType::kCertainSites);
 
-  EXPECT_TRUE(IsURLAllowlisted("http://www.google.com/foo/"));
-  EXPECT_FALSE(IsURLAllowlisted("http://calendar.google.com/bar/"));
-  EXPECT_TRUE(IsURLAllowlisted("http://mail.google.com/moose/"));
-  EXPECT_FALSE(IsURLAllowlisted("http://www.google.co.uk/blurp/"));
+  EXPECT_EQ(GetFilteringBehavior("http://www.google.com/foo/"),
+            FilteringBehavior::kAllow)
+      << "Manual allow list should take precendence";
+  EXPECT_EQ(GetFilteringBehavior("http://calendar.google.com/bar/"),
+            FilteringBehavior::kBlock);
+  EXPECT_EQ(GetFilteringBehavior("http://mail.google.com/moose/"),
+            FilteringBehavior::kAllow)
+      << "Manual allow list should take precendence";
+  EXPECT_EQ(GetFilteringBehavior("http://www.google.co.uk/blurp/"),
+            FilteringBehavior::kBlock);
 
   supervised_user_test_environment_.SetWebFilterType(
       WebFilterType::kAllowAllSites);
 
-  EXPECT_TRUE(IsURLAllowlisted("http://www.google.com/foo/"));
-  EXPECT_FALSE(IsURLAllowlisted("http://calendar.google.com/bar/"));
-  EXPECT_TRUE(IsURLAllowlisted("http://mail.google.com/moose/"));
-  EXPECT_TRUE(IsURLAllowlisted("http://www.google.co.uk/blurp/"));
+  EXPECT_EQ(GetFilteringBehavior("http://www.google.com/foo/"),
+            FilteringBehavior::kAllow);
+  EXPECT_EQ(GetFilteringBehavior("http://calendar.google.com/bar/"),
+            FilteringBehavior::kBlock)
+      << "Manual block list should take precendence";
+  EXPECT_EQ(GetFilteringBehavior("http://mail.google.com/moose/"),
+            FilteringBehavior::kAllow);
+  EXPECT_EQ(GetFilteringBehavior("http://www.google.co.uk/blurp/"),
+            FilteringBehavior::kAllow);
 }
 
 TEST_F(SupervisedUserURLFilterTest, PatternsWithConflicts) {
@@ -397,24 +505,28 @@ TEST_F(SupervisedUserURLFilterTest, PatternsWithConflicts) {
   supervised_user_test_environment_.SetWebFilterType(
       WebFilterType::kCertainSites);
 
-  EXPECT_FALSE(IsURLAllowlisted("http://www.google.com/foo/"));
+  EXPECT_EQ(GetFilteringBehavior("http://www.google.com/foo/"),
+            FilteringBehavior::kBlock);
   histogram_tester.ExpectBucketCount(
       SupervisedUserURLFilter::GetManagedSiteListConflictHistogramNameForTest(),
       1, 1);
   // Match with conflicting first and second rule.
-  EXPECT_FALSE(IsURLAllowlisted("http://calendar.google.com/bar/"));
+  EXPECT_EQ(GetFilteringBehavior("http://calendar.google.com/bar/"),
+            FilteringBehavior::kBlock);
   histogram_tester.ExpectBucketCount(
       SupervisedUserURLFilter::GetManagedSiteListConflictHistogramNameForTest(),
       1, 2);
 
   // Match with first and third rule both allowed, no conflict.
-  EXPECT_TRUE(IsURLAllowlisted("http://mail.google.com/moose/"));
+  EXPECT_EQ(GetFilteringBehavior("http://mail.google.com/moose/"),
+            FilteringBehavior::kAllow);
   histogram_tester.ExpectBucketCount(
       SupervisedUserURLFilter::GetManagedSiteListConflictHistogramNameForTest(),
       0, 1);
 
   // Match with fourth rule.
-  EXPECT_FALSE(IsURLAllowlisted("http://www.google.co.uk/blurp/"));
+  EXPECT_EQ(GetFilteringBehavior("http://www.google.co.uk/blurp/"),
+            FilteringBehavior::kBlock);
   histogram_tester.ExpectBucketCount(
       SupervisedUserURLFilter::GetManagedSiteListConflictHistogramNameForTest(),
       0, 2);
@@ -422,10 +534,14 @@ TEST_F(SupervisedUserURLFilterTest, PatternsWithConflicts) {
   supervised_user_test_environment_.SetWebFilterType(
       WebFilterType::kAllowAllSites);
 
-  EXPECT_FALSE(IsURLAllowlisted("http://www.google.com/foo/"));
-  EXPECT_FALSE(IsURLAllowlisted("http://calendar.google.com/bar/"));
-  EXPECT_TRUE(IsURLAllowlisted("http://mail.google.com/moose/"));
-  EXPECT_FALSE(IsURLAllowlisted("http://www.google.co.uk/blurp/"));
+  EXPECT_EQ(GetFilteringBehavior("http://www.google.com/foo/"),
+            FilteringBehavior::kBlock);
+  EXPECT_EQ(GetFilteringBehavior("http://calendar.google.com/bar/"),
+            FilteringBehavior::kBlock);
+  EXPECT_EQ(GetFilteringBehavior("http://mail.google.com/moose/"),
+            FilteringBehavior::kAllow);
+  EXPECT_EQ(GetFilteringBehavior("http://www.google.co.uk/blurp/"),
+            FilteringBehavior::kBlock);
   histogram_tester.ExpectBucketCount(
       SupervisedUserURLFilter::GetManagedSiteListConflictHistogramNameForTest(),
       1, 4);
@@ -434,7 +550,8 @@ TEST_F(SupervisedUserURLFilterTest, PatternsWithConflicts) {
       0, 4);
 
   // No known rule, the metric is not recorded.
-  EXPECT_TRUE(IsURLAllowlisted("https://youtube.com"));
+  EXPECT_EQ(GetFilteringBehavior("https://youtube.com"),
+            FilteringBehavior::kAllow);
   histogram_tester.ExpectTotalCount(
       SupervisedUserURLFilter::GetManagedSiteListConflictHistogramNameForTest(),
       8);
@@ -470,48 +587,77 @@ TEST_F(SupervisedUserURLFilterTest, Reason) {
 TEST_F(SupervisedUserURLFilterTest, UrlsNotRequiringGuardianApprovalAllowed) {
   supervised_user_test_environment_.SetWebFilterType(
       WebFilterType::kCertainSites);
-  EXPECT_TRUE(IsURLAllowlisted("https://families.google.com/"));
-  EXPECT_TRUE(IsURLAllowlisted("https://families.google.com"));
-  EXPECT_TRUE(IsURLAllowlisted("https://families.google.com/something"));
-  EXPECT_TRUE(IsURLAllowlisted("http://families.google.com/"));
-  EXPECT_FALSE(IsURLAllowlisted("https://subdomain.families.google.com/"));
-  EXPECT_TRUE(IsURLAllowlisted("https://myaccount.google.com/"));
-  EXPECT_TRUE(IsURLAllowlisted("https://accounts.google.com/"));
-  EXPECT_TRUE(IsURLAllowlisted("https://familylink.google.com/"));
-  EXPECT_TRUE(IsURLAllowlisted("https://policies.google.com/"));
-  EXPECT_TRUE(IsURLAllowlisted("https://support.google.com/"));
+  EXPECT_EQ(GetFilteringBehavior("https://families.google.com/"),
+            FilteringBehavior::kAllow);
+  EXPECT_EQ(GetFilteringBehavior("https://families.google.com"),
+            FilteringBehavior::kAllow);
+  EXPECT_EQ(GetFilteringBehavior("https://families.google.com/something"),
+            FilteringBehavior::kAllow);
+  EXPECT_EQ(GetFilteringBehavior("http://families.google.com/"),
+            FilteringBehavior::kAllow);
+  EXPECT_EQ(GetFilteringBehavior("https://subdomain.families.google.com/"),
+            FilteringBehavior::kBlock);
+  EXPECT_EQ(GetFilteringBehavior("https://myaccount.google.com/"),
+            FilteringBehavior::kAllow);
+  EXPECT_EQ(GetFilteringBehavior("https://accounts.google.com/"),
+            FilteringBehavior::kAllow);
+  EXPECT_EQ(GetFilteringBehavior("https://familylink.google.com/"),
+            FilteringBehavior::kAllow);
+  EXPECT_EQ(GetFilteringBehavior("https://policies.google.com/"),
+            FilteringBehavior::kAllow);
+  EXPECT_EQ(GetFilteringBehavior("https://support.google.com/"),
+            FilteringBehavior::kAllow);
 
   // Chrome sync dashboard URLs (base initial URL, plus the version with locale
   // appended, and the redirect URL with locale appended).
-  EXPECT_TRUE(IsURLAllowlisted("https://www.google.com/settings/chrome/sync"));
-  EXPECT_TRUE(
-      IsURLAllowlisted("https://www.google.com/settings/chrome/sync?hl=en-US"));
-  EXPECT_TRUE(IsURLAllowlisted("https://chrome.google.com/sync?hl=en-US"));
+  EXPECT_EQ(GetFilteringBehavior("https://www.google.com/settings/chrome/sync"),
+            FilteringBehavior::kAllow);
+  EXPECT_EQ(GetFilteringBehavior(
+                "https://www.google.com/settings/chrome/sync?hl=en-US"),
+            FilteringBehavior::kAllow);
+  EXPECT_EQ(GetFilteringBehavior("https://chrome.google.com/sync?hl=en-US"),
+            FilteringBehavior::kAllow);
 }
 
 TEST_F(SupervisedUserURLFilterTest, PlayTermsAlwaysAllowed) {
   supervised_user_test_environment_.SetWebFilterType(
       WebFilterType::kCertainSites);
-  EXPECT_TRUE(IsURLAllowlisted("https://play.google/play-terms"));
-  EXPECT_FALSE(IsURLAllowlisted("https://play.google.com/about/play-terms"));
-  EXPECT_TRUE(IsURLAllowlisted("https://play.google/play-terms/"));
-  EXPECT_FALSE(IsURLAllowlisted("https://play.google.com/about/play-terms/"));
-  EXPECT_TRUE(
-      IsURLAllowlisted("https://play.google/intl/pt-BR_pt/play-terms/"));
-  EXPECT_FALSE(IsURLAllowlisted(
-      "https://play.google.com/intl/pt-BR_pt/about/play-terms/"));
-  EXPECT_TRUE(IsURLAllowlisted("https://play.google/play-terms/index.html"));
-  EXPECT_FALSE(
-      IsURLAllowlisted("https://play.google.com/about/play-terms/index.html"));
-  EXPECT_FALSE(IsURLAllowlisted("http://play.google/play-terms/"));
-  EXPECT_FALSE(IsURLAllowlisted("http://play.google.com/about/play-terms/"));
-  EXPECT_FALSE(IsURLAllowlisted("https://subdomain.play.google/play-terms/"));
-  EXPECT_FALSE(
-      IsURLAllowlisted("https://subdomain.play.google.com/about/play-terms/"));
-  EXPECT_FALSE(IsURLAllowlisted("https://play.google/"));
-  EXPECT_FALSE(IsURLAllowlisted("https://play.google.com/"));
-  EXPECT_FALSE(IsURLAllowlisted("https://play.google/about"));
-  EXPECT_FALSE(IsURLAllowlisted("https://play.google.com/about"));
+  EXPECT_EQ(GetFilteringBehavior("https://play.google/play-terms"),
+            FilteringBehavior::kAllow);
+  EXPECT_EQ(GetFilteringBehavior("https://play.google.com/about/play-terms"),
+            FilteringBehavior::kBlock);
+  EXPECT_EQ(GetFilteringBehavior("https://play.google/play-terms/"),
+            FilteringBehavior::kAllow);
+  EXPECT_EQ(GetFilteringBehavior("https://play.google.com/about/play-terms/"),
+            FilteringBehavior::kBlock);
+  EXPECT_EQ(
+      GetFilteringBehavior("https://play.google/intl/pt-BR_pt/play-terms/"),
+      FilteringBehavior::kAllow);
+  EXPECT_EQ(GetFilteringBehavior(
+                "https://play.google.com/intl/pt-BR_pt/about/play-terms/"),
+            FilteringBehavior::kBlock);
+  EXPECT_EQ(GetFilteringBehavior("https://play.google/play-terms/index.html"),
+            FilteringBehavior::kAllow);
+  EXPECT_EQ(GetFilteringBehavior(
+                "https://play.google.com/about/play-terms/index.html"),
+            FilteringBehavior::kBlock);
+  EXPECT_EQ(GetFilteringBehavior("http://play.google/play-terms/"),
+            FilteringBehavior::kBlock);
+  EXPECT_EQ(GetFilteringBehavior("http://play.google.com/about/play-terms/"),
+            FilteringBehavior::kBlock);
+  EXPECT_EQ(GetFilteringBehavior("https://subdomain.play.google/play-terms/"),
+            FilteringBehavior::kBlock);
+  EXPECT_EQ(GetFilteringBehavior(
+                "https://subdomain.play.google.com/about/play-terms/"),
+            FilteringBehavior::kBlock);
+  EXPECT_EQ(GetFilteringBehavior("https://play.google/"),
+            FilteringBehavior::kBlock);
+  EXPECT_EQ(GetFilteringBehavior("https://play.google.com/"),
+            FilteringBehavior::kBlock);
+  EXPECT_EQ(GetFilteringBehavior("https://play.google/about"),
+            FilteringBehavior::kBlock);
+  EXPECT_EQ(GetFilteringBehavior("https://play.google.com/about"),
+            FilteringBehavior::kBlock);
 }
 
 TEST_F(SupervisedUserURLFilterTest,
@@ -537,7 +683,8 @@ TEST_F(SupervisedUserURLFilterTest,
 }
 
 class SupervisedUserURLFilteringWithConflictsTest
-    : public testing::TestWithParam<std::tuple<
+    : public SupervisedUserURLFilterTest,
+      public testing::WithParamInterface<std::tuple<
           std::map<std::string, bool>,
           std::optional<
               SupervisedUserURLFilter::FilteringSubdomainConflictType>>> {
@@ -547,20 +694,6 @@ class SupervisedUserURLFilteringWithConflictsTest
     supervised_user_test_environment_.SetWebFilterType(
         WebFilterType::kCertainSites);
   }
-
-  void TearDown() override { supervised_user_test_environment_.Shutdown(); }
-
- protected:
-  bool IsURLAllowlisted(const std::string& url) {
-    GURL gurl = GURL(url);
-    CHECK(gurl.is_valid());
-    return supervised_user_test_environment_.url_filter()
-        ->GetFilteringBehavior(gurl)
-        .IsAllowed();
-  }
-
-  base::test::TaskEnvironment task_environment_;
-  SupervisedUserTestEnvironment supervised_user_test_environment_;
 };
 
 // Tests that the new histogram that records www-subdomain conflicts
@@ -574,7 +707,8 @@ TEST_P(SupervisedUserURLFilteringWithConflictsTest,
   supervised_user_test_environment_.SetManualFilterForHosts(
       std::get<0>(GetParam()));
 
-  EXPECT_FALSE(IsURLAllowlisted("https://www.google.com"));
+  EXPECT_EQ(GetFilteringBehavior("https://www.google.com"),
+            FilteringBehavior::kBlock);
 
   if (conflict_type.has_value()) {
     histogram_tester.ExpectBucketCount(
@@ -599,7 +733,8 @@ TEST_F(SupervisedUserURLFilteringWithConflictsTest,
   supervised_user_test_environment_.SetManualFilterForUrl(
       "https://www.google.com", true);
 
-  EXPECT_TRUE(IsURLAllowlisted("https://www.google.com"));
+  EXPECT_EQ(GetFilteringBehavior("https://www.google.com"),
+            FilteringBehavior::kAllow);
 
   // When there is no conflict, no entries as recorded in the conflict type
   // histogram. A non-conflict entry is recorded on the conflict tracking histogram.
