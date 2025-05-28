@@ -324,6 +324,15 @@ struct GroupSse2Impl {
         _mm_movemask_epi8(_mm_cmpgt_epi8_fixed(special, ctrl))));
   }
 
+  // Returns a bitmask representing the positions of full or sentinel slots.
+  // Note: for `is_small()` tables group may contain the "same" slot twice:
+  // original and mirrored.
+  NonIterableBitMaskType MaskFullOrSentinel() const {
+    auto special = _mm_set1_epi8(static_cast<char>(ctrl_t::kSentinel) - 1);
+    return NonIterableBitMaskType(static_cast<uint16_t>(
+        _mm_movemask_epi8(_mm_cmpgt_epi8_fixed(ctrl, special))));
+  }
+
   // Returns the number of trailing empty or deleted elements in the group.
   uint32_t CountLeadingEmptyOrDeleted() const {
     auto special = _mm_set1_epi8(static_cast<char>(ctrl_t::kSentinel));
@@ -406,6 +415,15 @@ struct GroupAArch64Impl {
     return NonIterableBitMaskType(mask);
   }
 
+  NonIterableBitMaskType MaskFullOrSentinel() const {
+    uint64_t mask = vget_lane_u64(
+        vreinterpret_u64_u8(
+            vcgt_s8(vreinterpret_s8_u8(ctrl),
+                    vdup_n_s8(static_cast<int8_t>(ctrl_t::kSentinel) - 1))),
+        0);
+    return NonIterableBitMaskType(mask);
+  }
+
   uint32_t CountLeadingEmptyOrDeleted() const {
     uint64_t mask =
         vget_lane_u64(vreinterpret_u64_u8(vcle_s8(
@@ -479,6 +497,10 @@ struct GroupPortableImpl {
 
   auto MaskEmptyOrDeleted() const {
     return NonIterableBitMaskType((ctrl & ~(ctrl << 7)) & kMsbs8Bytes);
+  }
+
+  auto MaskFullOrSentinel() const {
+    return NonIterableBitMaskType((~ctrl | (ctrl << 7)) & kMsbs8Bytes);
   }
 
   uint32_t CountLeadingEmptyOrDeleted() const {

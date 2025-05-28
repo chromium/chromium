@@ -789,7 +789,6 @@ EXPORTS
     ??$ToIntVal@_K@FormatArgImpl@str_format_internal@absl@@CAHAEB_K@Z
     ??$ToIntVal@_N@FormatArgImpl@str_format_internal@absl@@CAHAEB_N@Z
     ??$TrailingZeros@G@container_internal@absl@@YAIG@Z
-    ??$TrailingZeros@I@container_internal@absl@@YAII@Z
     ??$TrailingZeros@_K@container_internal@absl@@YAI_K@Z
     ??$TransferNRelocatable@$0BI@@container_internal@absl@@YAXPEAX00_K@Z
     ??$TryFindNewIndexWithoutProbing@X@container_internal@absl@@YA_K_K00PEAW4ctrl_t@01@0@Z
@@ -3000,7 +2999,6 @@ EXPORTS
     ?CopyToArrayImpl@Cord@absl@@AEBAXPEAD@Z
     ?CopyToArraySlowPath@Cord@absl@@AEBAXPEAD@Z
     ?CopyToEndFrom@CordRepBtree@cord_internal@absl@@AEBAPEAV123@_K0@Z
-    ?CountLeadingEmptyOrDeleted@GroupSse2Impl@container_internal@absl@@QEBAIXZ
     ?Crash@Helper@internal_statusor@absl@@SAXAEBVStatus@3@@Z
     ?Crc32CAndCopy@crc_internal@absl@@YA?AVcrc32c_t@2@PEIAXPEIBX_KV32@_N@Z
     ?Crc32c@CRC@crc_internal@absl@@SAPEAV123@XZ
@@ -3631,6 +3629,7 @@ EXPORTS
     ?MaskEmptyOrDeleted@GroupSse2Impl@container_internal@absl@@QEBA?AV?$NonIterableBitMask@G$0BA@$0A@@23@XZ
     ?MaskFull@GroupPortableImpl@container_internal@absl@@QEBA@XZ
     ?MaskFull@GroupSse2Impl@container_internal@absl@@QEBA?AV?$BitMask@G$0BA@$0A@$0A@@23@XZ
+    ?MaskFullOrSentinel@GroupSse2Impl@container_internal@absl@@QEBA?AV?$NonIterableBitMask@G$0BA@$0A@@23@XZ
     ?MaskNonFull@GroupSse2Impl@container_internal@absl@@QEBA@XZ
     ?Match@GroupSse2Impl@container_internal@absl@@QEBA?AV?$BitMask@G$0BA@$0A@$0A@@23@E@Z
     ?MatchesConversions@ParsedFormatBase@str_format_internal@absl@@AEBA_N_NV?$initializer_list@W4FormatConversionCharSet@absl@@@std@@@Z
@@ -3763,7 +3762,8 @@ EXPORTS
     ?Post@StdcppWaiter@synchronization_internal@absl@@QEAAXXZ
     ?Post@Win32Waiter@synchronization_internal@absl@@QEAAXXZ
     ?PrepareForSampling@HashtablezInfo@container_internal@absl@@QEAAX_J_K11G@Z
-    ?PrepareInsertNonSoo@container_internal@absl@@YA_KAEAVCommonFields@12@AEBUPolicyFunctions@12@_KUFindInfo@12@@Z
+    ?PrepareInsertLarge@container_internal@absl@@YA_KAEAVCommonFields@12@AEBUPolicyFunctions@12@_KUFindInfo@12@@Z
+    ?PrepareInsertSmallNonSoo@container_internal@absl@@YA?AU?$pair@PEAW4ctrl_t@container_internal@absl@@PEAX@__Cr@std@@AEAVCommonFields@12@AEBUPolicyFunctions@12@V?$FunctionRef@$$A6A_KXZ@2@@Z
     ?PrepareToDie@LogMessage@log_internal@absl@@AEAAXXZ
     ?PrepareToModify@Status@absl@@CAPEAVStatusRep@status_internal@2@_K@Z
     ?Prepend@Cord@absl@@QEAAXAEBV12@@Z
@@ -4025,7 +4025,6 @@ EXPORTS
     ?SlowIsEnabled@VLogSite@log_internal@absl@@AEAA_NHH@Z
     ?SlowLock@SpinLock@base_internal@absl@@AEAAXXZ
     ?SlowUnlock@SpinLock@base_internal@absl@@AEAAXI@Z
-    ?SmallNonSooPrepareInsert@container_internal@absl@@YA?AU?$pair@PEAW4ctrl_t@container_internal@absl@@PEAX@__Cr@std@@AEAVCommonFields@12@AEBUPolicyFunctions@12@V?$FunctionRef@$$A6A_KXZ@2@@Z
     ?SnprintF@str_format_internal@absl@@YAHPEAD_KVUntypedFormatSpecImpl@12@V?$Span@$$CBVFormatArgImpl@str_format_internal@absl@@@2@@Z
     ?SooCapacity@container_internal@absl@@YA_KXZ
     ?SooControl@container_internal@absl@@YAPEAW4ctrl_t@12@XZ

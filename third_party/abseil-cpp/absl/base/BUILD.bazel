@@ -82,7 +82,6 @@ cc_library(
 
 cc_library(
     name = "nullability",
-    srcs = ["internal/nullability_deprecated.h"],
     hdrs = ["nullability.h"],
     copts = ABSL_DEFAULT_COPTS,
     linkopts = ABSL_DEFAULT_LINKOPTS,

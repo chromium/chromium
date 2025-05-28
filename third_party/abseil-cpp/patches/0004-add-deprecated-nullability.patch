@@ -1,0 +1,270 @@
+TODO: crbug.com/412943761 - Remove deprecated nullability once third_party deps
+stop depending on it.
+
+diff --git a/third_party/abseil-cpp/absl/base/internal/nullability_deprecated.h b/third_party/abseil-cpp/absl/base/internal/nullability_deprecated.h
+new file mode 100644
+index 0000000000000..1cd20c259f4c4
+--- /dev/null
++++ b/third_party/abseil-cpp/absl/base/internal/nullability_deprecated.h
+@@ -0,0 +1,107 @@
++// Copyright 2023 The Abseil Authors.
++//
++// Licensed under the Apache License, Version 2.0 (the "License");
++// you may not use this file except in compliance with the License.
++// You may obtain a copy of the License at
++//
++//      https://www.apache.org/licenses/LICENSE-2.0
++//
++// Unless required by applicable law or agreed to in writing, software
++// distributed under the License is distributed on an "AS IS" BASIS,
++// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++// See the License for the specific language governing permissions and
++// limitations under the License.
++#ifndef ABSL_BASE_INTERNAL_NULLABILITY_DEPRECATED_H_
++#define ABSL_BASE_INTERNAL_NULLABILITY_DEPRECATED_H_
++
++#include "absl/base/attributes.h"
++#include "absl/base/config.h"
++
++namespace absl {
++ABSL_NAMESPACE_BEGIN
++namespace nullability_internal {
++
++template <typename T>
++using NullableImpl
++#if ABSL_HAVE_CPP_ATTRIBUTE(clang::annotate)
++    [[clang::annotate("Nullable")]]
++#endif
++// Don't add the _Nullable attribute in Objective-C compiles. Many Objective-C
++// projects enable the `-Wnullable-to-nonnull-conversion warning`, which is
++// liable to produce false positives.
++#if ABSL_HAVE_FEATURE(nullability_on_classes) && !defined(__OBJC__)
++    = T _Nullable;
++#else
++    = T;
++#endif
++
++template <typename T>
++using NonnullImpl
++#if ABSL_HAVE_CPP_ATTRIBUTE(clang::annotate)
++    [[clang::annotate("Nonnull")]]
++#endif
++#if ABSL_HAVE_FEATURE(nullability_on_classes) && !defined(__OBJC__)
++    = T _Nonnull;
++#else
++    = T;
++#endif
++
++template <typename T>
++using NullabilityUnknownImpl
++#if ABSL_HAVE_CPP_ATTRIBUTE(clang::annotate)
++    [[clang::annotate("Nullability_Unspecified")]]
++#endif
++#if ABSL_HAVE_FEATURE(nullability_on_classes) && !defined(__OBJC__)
++    = T _Null_unspecified;
++#else
++    = T;
++#endif
++
++}  // namespace nullability_internal
++
++// The following template aliases are deprecated forms of nullability
++// annotations. They have some limitations, for example, an incompatibility with
++// `auto*` pointers, as `auto` cannot be used in a template argument.
++//
++// It is important to note that these annotations are not distinct strong
++// *types*. They are alias templates defined to be equal to the underlying
++// pointer type. A pointer annotated `Nonnull<T*>`, for example, is simply a
++// pointer of type `T*`.
++//
++// Prefer the macro style annotations in `absl/base/nullability.h` instead.
++
++// absl::Nonnull, analogous to absl_nonnull
++//
++// Example:
++// absl::Nonnull<int*> foo;
++// Is equivalent to:
++// int* absl_nonnull foo;
++template <typename T>
++using Nonnull =
++    nullability_internal::NonnullImpl<T>;
++
++// absl::Nullable, analogous to absl_nullable
++//
++// Example:
++// absl::Nullable<int*> foo;
++// Is equivalent to:
++// int* absl_nullable foo;
++template <typename T>
++using Nullable =
++    nullability_internal::NullableImpl<T>;
++
++// absl::NullabilityUnknown, analogous to absl_nullability_unknown
++//
++// Example:
++// absl::NullabilityUnknown<int*> foo;
++// Is equivalent to:
++// int* absl_nullability_unknown foo;
++template <typename T>
++using NullabilityUnknown =
++    nullability_internal::NullabilityUnknownImpl<T>;
++
++ABSL_NAMESPACE_END
++}  // namespace absl
++
++#endif  // ABSL_BASE_INTERNAL_NULLABILITY_DEPRECATED_H_
++
+diff --git a/third_party/abseil-cpp/absl/base/nullability.h b/third_party/abseil-cpp/absl/base/nullability.h
+index 2796a36125b60..3a5d6e83e2060 100644
+--- a/third_party/abseil-cpp/absl/base/nullability.h
++++ b/third_party/abseil-cpp/absl/base/nullability.h
+@@ -184,6 +184,7 @@
+ #define ABSL_BASE_NULLABILITY_H_
+ 
+ #include "absl/base/config.h"
++#include "absl/base/internal/nullability_deprecated.h"
+ 
+ // ABSL_POINTERS_DEFAULT_NONNULL
+ //
+diff --git a/third_party/abseil-cpp/absl/base/nullability_test.cc b/third_party/abseil-cpp/absl/base/nullability_test.cc
+index bccf1af45fe2c..bccc388beb9d4 100644
+--- a/third_party/abseil-cpp/absl/base/nullability_test.cc
++++ b/third_party/abseil-cpp/absl/base/nullability_test.cc
+@@ -14,13 +14,16 @@
+ 
+ #include "absl/base/nullability.h"
+ 
++#include <cassert>
+ #include <memory>
+ #include <type_traits>
+ #include <utility>
+ 
+ #include "gtest/gtest.h"
++#include "absl/base/attributes.h"
+ 
+ namespace {
++namespace macro_annotations {
+ void funcWithNonnullArg(int* absl_nonnull /*arg*/) {}
+ template <typename T>
+ void funcWithDeducedNonnullArg(T* absl_nonnull /*arg*/) {}
+@@ -87,4 +90,117 @@ TEST(PassThroughTest, PassesThroughPointerToMemberFunction) {
+   EXPECT_TRUE((std::is_same<absl_nullable T, T>::value));
+   EXPECT_TRUE((std::is_same<absl_nullability_unknown T, T>::value));
+ }
++}  // namespace macro_annotations
++
++// Allow testing of the deprecated type alias annotations.
++ABSL_INTERNAL_DISABLE_DEPRECATED_DECLARATION_WARNING
++
++using ::absl::Nonnull;
++using ::absl::NullabilityUnknown;
++using ::absl::Nullable;
++namespace type_alias_annotations {
++
++void funcWithNonnullArg(Nonnull<int*> /*arg*/) {}
++template <typename T>
++void funcWithDeducedNonnullArg(Nonnull<T*> /*arg*/) {}
++
++TEST(NonnullTest, NonnullArgument) {
++  int var = 0;
++  funcWithNonnullArg(&var);
++  funcWithDeducedNonnullArg(&var);
++}
++
++Nonnull<int*> funcWithNonnullReturn() {
++  static int var = 0;
++  return &var;
++}
++
++TEST(NonnullTest, NonnullReturn) {
++  auto var = funcWithNonnullReturn();
++  (void)var;
++}
++
++TEST(PassThroughTest, PassesThroughRawPointerToInt) {
++  EXPECT_TRUE((std::is_same<Nonnull<int*>, int*>::value));
++  EXPECT_TRUE((std::is_same<Nullable<int*>, int*>::value));
++  EXPECT_TRUE((std::is_same<NullabilityUnknown<int*>, int*>::value));
++}
++
++TEST(PassThroughTest, PassesThroughRawPointerToVoid) {
++  EXPECT_TRUE((std::is_same<Nonnull<void*>, void*>::value));
++  EXPECT_TRUE((std::is_same<Nullable<void*>, void*>::value));
++  EXPECT_TRUE((std::is_same<NullabilityUnknown<void*>, void*>::value));
++}
++
++TEST(PassThroughTest, PassesThroughUniquePointerToInt) {
++  using T = std::unique_ptr<int>;
++  EXPECT_TRUE((std::is_same<Nonnull<T>, T>::value));
++  EXPECT_TRUE((std::is_same<Nullable<T>, T>::value));
++  EXPECT_TRUE((std::is_same<NullabilityUnknown<T>, T>::value));
++}
++
++TEST(PassThroughTest, PassesThroughSharedPointerToInt) {
++  using T = std::shared_ptr<int>;
++  EXPECT_TRUE((std::is_same<Nonnull<T>, T>::value));
++  EXPECT_TRUE((std::is_same<Nullable<T>, T>::value));
++  EXPECT_TRUE((std::is_same<NullabilityUnknown<T>, T>::value));
++}
++
++TEST(PassThroughTest, PassesThroughSharedPointerToVoid) {
++  using T = std::shared_ptr<void>;
++  EXPECT_TRUE((std::is_same<Nonnull<T>, T>::value));
++  EXPECT_TRUE((std::is_same<Nullable<T>, T>::value));
++  EXPECT_TRUE((std::is_same<NullabilityUnknown<T>, T>::value));
++}
++
++TEST(PassThroughTest, PassesThroughPointerToMemberObject) {
++  using T = decltype(&std::pair<int, int>::first);
++  EXPECT_TRUE((std::is_same<Nonnull<T>, T>::value));
++  EXPECT_TRUE((std::is_same<Nullable<T>, T>::value));
++  EXPECT_TRUE((std::is_same<NullabilityUnknown<T>, T>::value));
++}
++
++TEST(PassThroughTest, PassesThroughPointerToMemberFunction) {
++  using T = decltype(&std::unique_ptr<int>::reset);
++  EXPECT_TRUE((std::is_same<Nonnull<T>, T>::value));
++  EXPECT_TRUE((std::is_same<Nullable<T>, T>::value));
++  EXPECT_TRUE((std::is_same<NullabilityUnknown<T>, T>::value));
++}
++
++}  // namespace type_alias_annotations
++}  // namespace
++
++// Nullable ADL lookup test
++namespace util {
++// Helper for NullableAdlTest.  Returns true, denoting that argument-dependent
++// lookup found this implementation of DidAdlWin.  Must be in namespace
++// util itself, not a nested anonymous namespace.
++template <typename T>
++bool DidAdlWin(T*) {
++  return true;
++}
++
++// Because this type is defined in namespace util, an unqualified call to
++// DidAdlWin with a pointer to MakeAdlWin will find the above implementation.
++struct MakeAdlWin {};
++}  // namespace util
++
++namespace {
++// Returns false, denoting that ADL did not inspect namespace util.  If it
++// had, the better match (T*) above would have won out over the (...) here.
++bool DidAdlWin(...) { return false; }
++
++TEST(NullableAdlTest, NullableAddsNothingToArgumentDependentLookup) {
++  // Treatment: util::Nullable<int*> contributes nothing to ADL because
++  // int* itself doesn't.
++  EXPECT_FALSE(DidAdlWin((int*)nullptr));
++  EXPECT_FALSE(DidAdlWin((Nullable<int*>)nullptr));
++
++  // Control: Argument-dependent lookup does find the implementation in
++  // namespace util when the underlying pointee type resides there.
++  EXPECT_TRUE(DidAdlWin((util::MakeAdlWin*)nullptr));
++  EXPECT_TRUE(DidAdlWin((Nullable<util::MakeAdlWin*>)nullptr));
++}
++
++ABSL_INTERNAL_RESTORE_DEPRECATED_DECLARATION_WARNING
+ }  // namespace
+-- 
+2.49.0.1164.gab81da1b16-goog
+

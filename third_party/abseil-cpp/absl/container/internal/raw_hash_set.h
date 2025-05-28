@@ -282,10 +282,8 @@ void SwapAlloc(AllocType& lhs, AllocType& rhs,
   swap(lhs, rhs);
 }
 template <typename AllocType>
-void SwapAlloc(AllocType& lhs, AllocType& rhs,
+void SwapAlloc([[maybe_unused]] AllocType& lhs, [[maybe_unused]] AllocType& rhs,
                std::false_type /* propagate_on_container_swap */) {
-  (void)lhs;
-  (void)rhs;
   assert(lhs == rhs &&
          "It's UB to call swap with unequal non-propagating allocators.");
 }
@@ -949,6 +947,7 @@ class CommonFields : public CommonFieldsGenerationInfo {
   void* soo_data() { return heap_or_soo_.get_soo_data(); }
 
   ctrl_t* control() const {
+    ABSL_SWISSTABLE_ASSERT(capacity() > 0);
     ABSL_SWISSTABLE_IGNORE_UNINITIALIZED_RETURN(heap_or_soo_.control().get());
   }
 
@@ -1796,7 +1795,7 @@ size_t GrowSooTableToNextCapacityAndPrepareInsert(CommonFields& common,
 // Returns the new control and the new slot.
 // Hash is only computed if the table is sampled or grew to large size
 // (is_small()==false).
-std::pair<ctrl_t*, void*> SmallNonSooPrepareInsert(
+std::pair<ctrl_t*, void*> PrepareInsertSmallNonSoo(
     CommonFields& common, const PolicyFunctions& policy,
     absl::FunctionRef<size_t()> get_hash);
 
@@ -1845,11 +1844,11 @@ void* GetRefForEmptyClass(CommonFields& common);
 // When the table has deleted slots (according to GrowthInfo), the target
 // position will be searched one more time using `find_first_non_full`.
 //
-// REQUIRES: Table is not SOO.
+// REQUIRES: `!common.is_small()`.
 // REQUIRES: At least one non-full slot available.
 // REQUIRES: `target` is a valid empty position to insert.
-size_t PrepareInsertNonSoo(CommonFields& common, const PolicyFunctions& policy,
-                           size_t hash, FindInfo target);
+size_t PrepareInsertLarge(CommonFields& common, const PolicyFunctions& policy,
+                          size_t hash, FindInfo target);
 
 // A SwissTable.
 //
@@ -2067,10 +2066,20 @@ class raw_hash_set {
     // `slot_` until they reach one.
     void skip_empty_or_deleted() {
       while (IsEmptyOrDeleted(*ctrl_)) {
-        uint32_t shift =
-            GroupFullEmptyOrDeleted{ctrl_}.CountLeadingEmptyOrDeleted();
-        ctrl_ += shift;
-        slot_ += shift;
+        auto mask = GroupFullEmptyOrDeleted{ctrl_}.MaskFullOrSentinel();
+        // Generally it is possible to compute `shift` branchless.
+        // This branch is useful to:
+        // 1. Avoid checking `IsEmptyOrDeleted` after the shift for the most
+        //    common dense table case.
+        // 2. Avoid the cost of `LowestBitSet` for extremely sparse tables.
+        if (ABSL_PREDICT_TRUE(mask)) {
+          auto shift = mask.LowestBitSet();
+          ctrl_ += shift;
+          slot_ += shift;
+          return;
+        }
+        ctrl_ += Group::kWidth;
+        slot_ += Group::kWidth;
       }
     }
 
@@ -2806,12 +2815,12 @@ class raw_hash_set {
   // NOTE: This is a very low level operation and should not be used without
   // specific benchmarks indicating its importance.
   template <class K = key_type>
-  void prefetch(const key_arg<K>& key) const {
+  void prefetch([[maybe_unused]] const key_arg<K>& key) const {
     if (capacity() == DefaultCapacity()) return;
-    (void)key;
     // Avoid probing if we won't be able to prefetch the addresses received.
 #ifdef ABSL_HAVE_PREFETCH
     prefetch_heap_block();
+    if (is_small()) return;
     auto seq = probe(common(), hash_of(key));
     PrefetchToLocalCache(control() + seq.offset());
     PrefetchToLocalCache(slot_array() + seq.offset());
@@ -3249,7 +3258,7 @@ class raw_hash_set {
       }
     }
     return {iterator_at_ptr(
-                SmallNonSooPrepareInsert(common(), GetPolicyFunctions(),
+                PrepareInsertSmallNonSoo(common(), GetPolicyFunctions(),
                                          HashKey<hasher, K>{hash_ref(), key})),
             true};
   }
@@ -3274,10 +3283,10 @@ class raw_hash_set {
       auto mask_empty = g.MaskEmpty();
       if (ABSL_PREDICT_TRUE(mask_empty)) {
         size_t target = seq.offset(mask_empty.LowestBitSet());
-        return {iterator_at(PrepareInsertNonSoo(common(), GetPolicyFunctions(),
-                                                hash,
-                                                FindInfo{target, seq.index()})),
-                true};
+        return {
+            iterator_at(PrepareInsertLarge(common(), GetPolicyFunctions(), hash,
+                                           FindInfo{target, seq.index()})),
+            true};
       }
       seq.next();
       ABSL_SWISSTABLE_ASSERT(seq.index() <= capacity() && "full table!");
