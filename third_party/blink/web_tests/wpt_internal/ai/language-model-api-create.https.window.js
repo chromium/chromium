@@ -72,6 +72,11 @@ promise_test(async t => {
 }, 'Create with initialPrompts');
 
 promise_test(async t => {
+  let session = await LanguageModel.create({initialPrompts: []});
+  assert_true(!!session);
+}, 'Create with empty initialPrompts');
+
+promise_test(async t => {
   let session = await LanguageModel.create({
     initialPrompts: [
       {role: 'user', content: 'hello'}, {role: 'assistant', content: 'hello'}
