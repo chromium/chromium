@@ -11,6 +11,7 @@
 
 struct AutocompleteMatch;
 class AutocompleteResult;
+class GURL;
 
 namespace omnibox {
 
@@ -30,6 +31,11 @@ void RecordActionShownForAllActions(
     const AutocompleteResult& result,
     OmniboxPopupSelection executed_selection =
         OmniboxPopupSelection(OmniboxPopupSelection::kNoMatch));
+
+// Counts and logs the number of IPV4 parts.
+void LogIPv4PartsCount(const std::u16string& user_text,
+                       const GURL& destination_url,
+                       size_t completed_length);
 
 }  // namespace omnibox
 

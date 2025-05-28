@@ -9,6 +9,7 @@
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/autocomplete_result.h"
 #include "components/omnibox/browser/omnibox_metrics_provider.h"
+#include "url/gurl.h"
 
 namespace {
 
@@ -20,6 +21,35 @@ void LogHistogramMediumTimes(const std::string& histogram_name,
                              base::TimeDelta elapsed) {
   base::UmaHistogramCustomTimes(histogram_name, elapsed, base::Milliseconds(10),
                                 base::Minutes(3), 50);
+}
+
+// Find the number of IPv4 parts if the user inputs a URL with an IP address
+// host. Returns 0 if the user does not manually types the full IP address.
+size_t CountNumberOfIPv4Parts(const std::u16string& text,
+                              const GURL& url,
+                              size_t completed_length) {
+  if (!url.HostIsIPAddress() || !url.SchemeIsHTTPOrHTTPS() ||
+      completed_length > 0) {
+    return 0;
+  }
+
+  url::Parsed parsed = url::ParseStandardURL(text);
+  if (!parsed.host.is_valid()) {
+    return 0;
+  }
+
+  size_t parts = 1;
+  bool potential_part = false;
+  for (int i = parsed.host.begin; i < parsed.host.end(); i++) {
+    if (text[i] == '.') {
+      potential_part = true;
+    }
+    if (potential_part && text[i] >= '0' && text[i] <= '9') {
+      parts++;
+      potential_part = false;
+    }
+  }
+  return parts;
 }
 
 }  // namespace
@@ -127,6 +157,20 @@ void RecordActionShownForAllActions(const AutocompleteResult& result,
                           executed_selection.state ==
                               OmniboxPopupSelection::FOCUSED_BUTTON_ACTION);
     }
+  }
+}
+
+void LogIPv4PartsCount(const std::u16string& user_text,
+                       const GURL& destination_url,
+                       size_t completed_length) {
+  size_t ipv4_parts_count =
+      CountNumberOfIPv4Parts(user_text, destination_url, completed_length);
+  // The histogram is collected to decide if shortened IPv4 addresses
+  // like 127.1 should be deprecated.
+  // Only valid IP addresses manually inputted by the user will be counted.
+  if (ipv4_parts_count > 0) {
+    base::UmaHistogramCounts100("Omnibox.IPv4AddressPartsCount",
+                                ipv4_parts_count);
   }
 }
 
