@@ -1534,9 +1534,9 @@
     "messages": [10080],
   },
 
-  "third_party/search_engines_data/resources/search_engines_scaled_resources.grd": {
+  "third_party/search_engines_data/resources_internal/search_engines_scaled_resources.grd": {
     "structures": [10100],
-  }
+  },
 
   # END "everything else" section.
   # Everything but chrome/, components/, content/, and ios/

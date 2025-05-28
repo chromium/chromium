@@ -40,7 +40,7 @@ if (enable_builtin_search_provider_assets) {
   }
 
   grit("search_engines_scaled_resources") {
-    source = "resources/search_engines_scaled_resources.grd"
+    source = "resources_internal/search_engines_scaled_resources.grd"
     outputs = [
       "search_engines_scaled_resources.h",
       "search_engines_scaled_resources_map.cc",
