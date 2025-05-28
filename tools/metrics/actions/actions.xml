@@ -9618,6 +9618,15 @@ should be able to be added at any place in this file.
   <description>Please enter the description of this user action.</description>
 </action>
 
+<action name="DemoMode.CloudPolicyConnectionTimeout">
+  <owner>xiqiruan@chromium.org</owner>
+  <owner>cros-demo-mode-eng@google.com</owner>
+  <description>
+    Recorded on cloud policy connection timeout and fallback to MGS when demo
+    account sign in is enabled.
+  </description>
+</action>
+
 <action name="DemoMode.DemoSessionStarts">
   <owner>wanghaifan@google.com</owner>
   <owner>cros-demo-mode-eng@google.com</owner>

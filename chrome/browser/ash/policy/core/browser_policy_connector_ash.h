@@ -269,7 +269,8 @@ class BrowserPolicyConnectorAsh : public ChromeBrowserPolicyConnector,
            std::variant<std::unique_ptr<AffiliatedInvalidationServiceProvider>,
                         std::unique_ptr<invalidation::InvalidationListener>>>
       invalidation_service_provider_or_listener_per_project_;
-  raw_ptr<DeviceCloudPolicyManagerAsh> device_cloud_policy_manager_ = nullptr;
+  raw_ptr<DeviceCloudPolicyManagerAsh, DanglingUntriaged>
+      device_cloud_policy_manager_ = nullptr;
   raw_ptr<PrefService, DanglingUntriaged> local_state_ = nullptr;
   std::unique_ptr<DeviceCloudPolicyInitializer>
       device_cloud_policy_initializer_;
