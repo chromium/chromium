@@ -69,20 +69,7 @@ class TabMatcher {
   // opened.
   // Returns true, if the URL can be matched to existing tab, otherwise false.
   virtual bool IsTabOpenWithURL(const GURL& gurl,
-                                const AutocompleteInput* input,
-                                bool exclude_active_tab = true) const = 0;
-
-  // For a given tab, check if another tab already exists with the same title or
-  // if another tab exists with the same stripped URL. Allows affordance for
-  // replacing any other components of the URL before stripping it.
-  // ** NOTE: Only implemented in Desktop **
-  // TOOD(crbug.com/419058674): Clean up up unused functions / params in
-  // TabMatcher.
-  virtual bool IsTabOpenWithSameTitleOrSimilarURL(
-      const std::u16string& title,
-      const GURL& url,
-      const GURL::Replacements& replacements,
-      bool exclude_active_tab) const;
+                                const AutocompleteInput* input) const = 0;
 
   // For a given input GURLToTabInfoMap, in-place update the map with the
   // TabInfo details.

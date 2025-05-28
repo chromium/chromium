@@ -14,8 +14,7 @@ void FakeTabMatcher::AddOpenTab(TabMatcher::TabWrapper open_tab) {
 }
 
 bool FakeTabMatcher::IsTabOpenWithURL(const GURL& url,
-                                      const AutocompleteInput* input,
-                                      bool exclude_active_tab) const {
+                                      const AutocompleteInput* input) const {
   return !substring_to_match_.empty() &&
          url.spec().find(substring_to_match_) != std::string::npos;
 }

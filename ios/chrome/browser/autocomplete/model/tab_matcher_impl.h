@@ -15,8 +15,7 @@ class TabMatcherImpl : public TabMatcher {
   explicit TabMatcherImpl(ProfileIOS* profile);
 
   bool IsTabOpenWithURL(const GURL& gurl,
-                        const AutocompleteInput* input,
-                        bool unused_exclude_active_tab = true) const override;
+                        const AutocompleteInput* input) const override;
 
  private:
   raw_ptr<ProfileIOS> profile_ = nullptr;
