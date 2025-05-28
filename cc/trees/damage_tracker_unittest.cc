@@ -381,8 +381,8 @@ class DamageTrackerTest : public LayerTreeImplTestBase, public testing::Test {
   // Store result of CreateTestTreeWithTwoSurfaces().
   raw_ptr<TestLayerImpl> child1_ = nullptr;
   raw_ptr<TestLayerImpl> child2_ = nullptr;
-  raw_ptr<TestLayerImpl, DanglingUntriaged> grand_child1_ = nullptr;
-  raw_ptr<TestLayerImpl, DanglingUntriaged> grand_child2_ = nullptr;
+  raw_ptr<TestLayerImpl> grand_child1_ = nullptr;
+  raw_ptr<TestLayerImpl> grand_child2_ = nullptr;
   raw_ptr<TestLayerImpl> grand_child3_ = nullptr;
   raw_ptr<TestLayerImpl> grand_child4_ = nullptr;
 };
@@ -2370,20 +2370,24 @@ TEST_F(DamageTrackerTest, CanUseCachedBackdropFilterResultTest) {
   // backdrop-filtered result. Removing grand_child1_ at 300,300 6x8 which
   // doesn't intersect 280,280 15x16.
   ClearDamageForAllSurfaces(root);
-  OwnedLayerImplList layers =
-      host_impl()->active_tree()->DetachLayersKeepingRootLayerForTesting();
-  ASSERT_EQ(7u, layers.size());
-  ASSERT_EQ(child1_, layers[1].get());
-  ASSERT_EQ(grand_child1_, layers[2].get());
-  ASSERT_EQ(grand_child2_, layers[3].get());
-  ASSERT_EQ(grand_child3_, layers[4].get());
-  ASSERT_EQ(grand_child4_, layers[5].get());
-  ASSERT_EQ(child2_, layers[6].get());
-  host_impl()->active_tree()->AddLayer(std::move(layers[1]));
-  host_impl()->active_tree()->AddLayer(std::move(layers[3]));
-  host_impl()->active_tree()->AddLayer(std::move(layers[4]));
-  host_impl()->active_tree()->AddLayer(std::move(layers[5]));
-  host_impl()->active_tree()->AddLayer(std::move(layers[6]));
+  {
+    OwnedLayerImplList layers =
+        host_impl()->active_tree()->DetachLayersKeepingRootLayerForTesting();
+    ASSERT_EQ(7u, layers.size());
+    ASSERT_EQ(child1_, layers[1].get());
+    ASSERT_EQ(grand_child1_, layers[2].get());
+    ASSERT_EQ(grand_child2_, layers[3].get());
+    ASSERT_EQ(grand_child3_, layers[4].get());
+    ASSERT_EQ(grand_child4_, layers[5].get());
+    ASSERT_EQ(child2_, layers[6].get());
+    // Prevent dangling pointer when `layers` is deleted.
+    grand_child1_ = nullptr;
+    host_impl()->active_tree()->AddLayer(std::move(layers[1]));
+    host_impl()->active_tree()->AddLayer(std::move(layers[3]));
+    host_impl()->active_tree()->AddLayer(std::move(layers[4]));
+    host_impl()->active_tree()->AddLayer(std::move(layers[5]));
+    host_impl()->active_tree()->AddLayer(std::move(layers[6]));
+  }
   EmulateDrawingOneFrame(root);
   EXPECT_FALSE(GetRenderSurface(grand_child4_)->intersects_damage_under());
 
@@ -2391,18 +2395,22 @@ TEST_F(DamageTrackerTest, CanUseCachedBackdropFilterResultTest) {
   // with the backdrop filter invalidates cached backdrop-filtered result.
   // Removing grand_child2_ at 290,290 6x8 which intersects 280,280 15x16.
   ClearDamageForAllSurfaces(root);
-  layers = host_impl()->active_tree()->DetachLayersKeepingRootLayerForTesting();
-  ASSERT_EQ(6u, layers.size());
-  ASSERT_EQ(child1_, layers[1].get());
-  ASSERT_EQ(grand_child2_, layers[2].get());
-  ASSERT_EQ(grand_child3_, layers[3].get());
-  ASSERT_EQ(grand_child4_, layers[4].get());
-  ASSERT_EQ(child2_, layers[5].get());
-  host_impl()->active_tree()->AddLayer(std::move(layers[1]));
-  host_impl()->active_tree()->AddLayer(std::move(layers[3]));
-  host_impl()->active_tree()->AddLayer(std::move(layers[4]));
-  host_impl()->active_tree()->AddLayer(std::move(layers[5]));
-
+  {
+    OwnedLayerImplList layers =
+        host_impl()->active_tree()->DetachLayersKeepingRootLayerForTesting();
+    ASSERT_EQ(6u, layers.size());
+    ASSERT_EQ(child1_, layers[1].get());
+    ASSERT_EQ(grand_child2_, layers[2].get());
+    ASSERT_EQ(grand_child3_, layers[3].get());
+    ASSERT_EQ(grand_child4_, layers[4].get());
+    ASSERT_EQ(child2_, layers[5].get());
+    // Prevent dangling pointer when `layers` is deleted.
+    grand_child2_ = nullptr;
+    host_impl()->active_tree()->AddLayer(std::move(layers[1]));
+    host_impl()->active_tree()->AddLayer(std::move(layers[3]));
+    host_impl()->active_tree()->AddLayer(std::move(layers[4]));
+    host_impl()->active_tree()->AddLayer(std::move(layers[5]));
+  }
   EmulateDrawingOneFrame(root);
   EXPECT_TRUE(GetRenderSurface(grand_child4_)->intersects_damage_under());
 
