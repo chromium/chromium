@@ -361,6 +361,11 @@ struct BLINK_COMMON_EXPORT StructTraits<blink::mojom::WebPreferencesDataView,
     return r.allow_non_empty_navigator_plugins;
   }
 
+  static bool ignore_permission_for_device_changed_event(
+      const blink::web_pref::WebPreferences& r) {
+    return r.ignore_permission_for_device_changed_event;
+  }
+
   static uint32_t number_of_cpu_cores(
       const blink::web_pref::WebPreferences& r) {
     return r.number_of_cpu_cores;
