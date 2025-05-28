@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/views/chrome_views_export.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/base/models/menu_model.h"
 #include "ui/base/mojom/menu_source_type.mojom-forward.h"
 #include "ui/base/pointer/touch_ui_controller.h"
 #include "ui/base/theme_provider.h"
@@ -176,6 +177,10 @@ class ToolbarButton : public views::LabelButton,
 
   // Function to show the dropdown menu.
   virtual void ShowDropDownMenu(ui::mojom::MenuSourceType source_type);
+
+  // Shows the given `menu_model` anchored to this button.
+  void ShowMenuForModel(ui::mojom::MenuSourceType source_type,
+                        ui::MenuModel* menu_model);
 
   // Updates the button's background and border.
   virtual void UpdateColorsAndInsets();

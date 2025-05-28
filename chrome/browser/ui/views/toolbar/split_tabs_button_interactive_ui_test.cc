@@ -36,6 +36,7 @@
 #include "ui/base/test/ui_controls.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/views/controls/menu/menu_item_view.h"
+#include "ui/views/controls/menu/submenu_view.h"
 #include "url/gurl.h"
 
 namespace {
@@ -115,8 +116,7 @@ class SplitTabButtonInteractiveTest
         expected_split_state);
   }
 
-  auto CheckMenuString(ui::ElementIdentifier identifier,
-                       int expected_string_id) {
+  auto CheckMenuString(ElementSpecifier identifier, int expected_string_id) {
     return CheckView(
         identifier,
         [](views::MenuItemView* menu_item_view) {
@@ -125,8 +125,7 @@ class SplitTabButtonInteractiveTest
         l10n_util::GetStringUTF16(expected_string_id));
   }
 
-  auto CheckMenuIcon(ui::ElementIdentifier identifier,
-                     const gfx::VectorIcon& icon) {
+  auto CheckMenuIcon(ElementSpecifier identifier, const gfx::VectorIcon& icon) {
     return CheckView(
         identifier,
         [](views::MenuItemView* menu_item_view) {
@@ -143,6 +142,27 @@ class SplitTabButtonInteractiveTest
                        .CenterPoint();
                  })),
                  ClickMouse());
+  }
+
+  auto CheckSplitTabButtonPinState(bool should_pin) {
+    return CheckResult(
+        [=, this]() {
+          return browser()->profile()->GetPrefs()->GetBoolean(
+              prefs::kPinSplitTabButton);
+        },
+        should_pin);
+  }
+
+  auto RightClickSplitTabsButton() {
+    return Steps(MoveMouseTo(kToolbarSplitTabsToolbarButtonElementId),
+                 ClickMouse(ui_controls::RIGHT));
+  }
+
+  auto NamePinStateMenuItem(std::string_view name, int menu_index) {
+    return NameViewRelative(SplitTabsToolbarButton::kUpdatePinStateMenu, name,
+                            [=](views::SubmenuView* root_item) {
+                              return root_item->GetMenuItemAt(menu_index);
+                            });
   }
 };
 
@@ -167,6 +187,81 @@ IN_PROC_BROWSER_TEST_F(SplitTabButtonInteractiveTest,
                   EnsurePresent(kToolbarSplitTabsToolbarButtonElementId),
                   UpdateSplitTabButtonPinState(false),
                   EnsurePresent(kToolbarSplitTabsToolbarButtonElementId));
+}
+
+IN_PROC_BROWSER_TEST_F(SplitTabButtonInteractiveTest, PinButtonWithMenu) {
+  const GURL url1 = embedded_test_server()->GetURL("/title1.html");
+  constexpr char kPinMenuItem[] = "pin_menu_item";
+  constexpr char kUnpinMenuItem[] = "unpin_menu_item";
+  RunTestSequence(
+      AddInstrumentedTab(kWebContents2Id, url1),
+      SelectTab(kTabStripElementId, 0), EnterSplitView(0, 1),
+      WaitForShow(kToolbarSplitTabsToolbarButtonElementId),
+      // The split tab button should be unpinned and the menu should reflect
+      // that.
+      MayInvolveNativeContextMenu(
+          RightClickSplitTabsButton(),
+          WaitForShow(SplitTabsToolbarButton::kUpdatePinStateMenu),
+          CheckSplitTabButtonPinState(false),
+          NamePinStateMenuItem(kPinMenuItem, 0),
+          CheckMenuString(kPinMenuItem,
+                          IDS_SIDE_PANEL_TOOLBAR_BUTTON_CXMENU_PIN),
+          CheckMenuIcon(kPinMenuItem, kKeepIcon), SelectMenuItem(kPinMenuItem)),
+      WaitForHide(kPinMenuItem),
+      // Verify that the split tab button is pinned.
+      MayInvolveNativeContextMenu(
+          RightClickSplitTabsButton(),
+          WaitForShow(SplitTabsToolbarButton::kUpdatePinStateMenu),
+          CheckSplitTabButtonPinState(true),
+          NamePinStateMenuItem(kUnpinMenuItem, 1),
+          CheckMenuString(kUnpinMenuItem,
+                          IDS_SIDE_PANEL_TOOLBAR_BUTTON_CXMENU_UNPIN),
+          CheckMenuIcon(kUnpinMenuItem, kKeepOffIcon)));
+}
+
+IN_PROC_BROWSER_TEST_F(SplitTabButtonInteractiveTest, UnpinButtonWithMenu) {
+  const GURL url1 = embedded_test_server()->GetURL("/title1.html");
+  constexpr char kPinMenuItem[] = "pin_menu_item";
+  constexpr char kUnpinMenuItem[] = "unpin_menu_item";
+  RunTestSequence(AddInstrumentedTab(kWebContents2Id, url1),
+                  UpdateSplitTabButtonPinState(true),
+                  WaitForShow(kToolbarSplitTabsToolbarButtonElementId),
+                  SelectTab(kTabStripElementId, 0), EnterSplitView(0, 1),
+                  // Unpin the split tab button with the menu item
+                  MayInvolveNativeContextMenu(
+                      RightClickSplitTabsButton(),
+                      WaitForShow(SplitTabsToolbarButton::kUpdatePinStateMenu),
+                      NamePinStateMenuItem(kUnpinMenuItem, 1),
+                      SelectMenuItem(kUnpinMenuItem)),
+                  WaitForHide(kUnpinMenuItem),
+                  // Verify the button is now unpinned and the menu should have
+                  // the pin option
+                  MayInvolveNativeContextMenu(
+                      RightClickSplitTabsButton(),
+                      WaitForShow(SplitTabsToolbarButton::kUpdatePinStateMenu),
+                      NamePinStateMenuItem(kPinMenuItem, 0),
+                      CheckSplitTabButtonPinState(false),
+                      CheckMenuString(kPinMenuItem,
+                                      IDS_SIDE_PANEL_TOOLBAR_BUTTON_CXMENU_PIN),
+                      CheckMenuIcon(kPinMenuItem, kKeepIcon)));
+}
+
+IN_PROC_BROWSER_TEST_F(SplitTabButtonInteractiveTest,
+                       OpenCustomizedChromeSidePanel) {
+  const GURL url1 = embedded_test_server()->GetURL("/title1.html");
+  constexpr char kCustomizeChromeMenuItem[] = "customize_chrome_menu_item";
+  RunTestSequence(
+      AddInstrumentedTab(kWebContents2Id, url1),
+      SelectTab(kTabStripElementId, 0), EnterSplitView(0, 1),
+      WaitForShow(kToolbarSplitTabsToolbarButtonElementId),
+      MayInvolveNativeContextMenu(
+          RightClickSplitTabsButton(),
+          WaitForShow(SplitTabsToolbarButton::kUpdatePinStateMenu),
+          NamePinStateMenuItem(kCustomizeChromeMenuItem, 2),
+          EnsureNotPresent(kCustomizeChromeSidePanelWebViewElementId),
+          SelectMenuItem(kCustomizeChromeMenuItem)),
+      WaitForHide(SplitTabsToolbarButton::kUpdatePinStateMenu),
+      WaitForShow(kCustomizeChromeSidePanelWebViewElementId));
 }
 
 IN_PROC_BROWSER_TEST_F(SplitTabButtonInteractiveTest, DefaultButtonIcon) {
@@ -207,7 +302,7 @@ IN_PROC_BROWSER_TEST_F(SplitTabButtonInteractiveTest, OpenMenu) {
                   // Pressing the button while we are in a split should open the
                   // menu instead.
                   PressButton(kToolbarSplitTabsToolbarButtonElementId),
-                  WaitForShow(SplitTabsToolbarButton::kSplitTabButtonMenu),
+                  WaitForShow(SplitTabMenuModel::kReversePositionMenuItem),
                   CheckTabCount(2));
 }
 
@@ -224,7 +319,7 @@ IN_PROC_BROWSER_TEST_F(SplitTabButtonInteractiveTest,
                   CheckMenuIcon(SplitTabMenuModel::kReversePositionMenuItem,
                                 kSplitSceneRightIcon),
                   ClickActiveTabInSplit(),
-                  WaitForHide(SplitTabsToolbarButton::kSplitTabButtonMenu),
+                  WaitForHide(SplitTabMenuModel::kReversePositionMenuItem),
                   // Change the focus and reopen the menu
                   FocusInactiveTabInSplit(),
                   PressButton(kToolbarSplitTabsToolbarButtonElementId),
@@ -246,7 +341,7 @@ IN_PROC_BROWSER_TEST_F(SplitTabButtonInteractiveTest, ReverseSplitTabPosition) {
       NavigateWebContents(kWebContents1Id, GetTestUrl()),
       // Reversing the tab positions should move the active tab to the left.
       PressButton(kToolbarSplitTabsToolbarButtonElementId),
-      WaitForShow(SplitTabsToolbarButton::kSplitTabButtonMenu),
+      WaitForShow(SplitTabMenuModel::kReversePositionMenuItem),
       ObserveState(kActiveTabChanged, browser()->tab_strip_model()),
       SelectMenuItem(SplitTabMenuModel::kReversePositionMenuItem),
       WaitForState(kActiveTabChanged, true),
@@ -268,7 +363,7 @@ IN_PROC_BROWSER_TEST_F(SplitTabButtonInteractiveTest, CloseActiveTab) {
                   WaitForShow(kToolbarSplitTabsToolbarButtonElementId),
                   // Open the button's context menu.
                   PressButton(kToolbarSplitTabsToolbarButtonElementId),
-                  WaitForShow(SplitTabsToolbarButton::kSplitTabButtonMenu),
+                  WaitForShow(SplitTabMenuModel::kReversePositionMenuItem),
                   // Selecting close menu item should close the active tab
                   SelectMenuItem(SplitTabMenuModel::kCloseMenuItem),
                   WaitForHide(kWebContents2Id),
@@ -283,7 +378,7 @@ IN_PROC_BROWSER_TEST_F(SplitTabButtonInteractiveTest, ExitSplit) {
       WaitForShow(kToolbarSplitTabsToolbarButtonElementId),
       // Open the button's context menu.
       PressButton(kToolbarSplitTabsToolbarButtonElementId),
-      WaitForShow(SplitTabsToolbarButton::kSplitTabButtonMenu),
+      WaitForShow(SplitTabMenuModel::kReversePositionMenuItem),
       CheckTabInSplit(0, true), CheckTabInSplit(1, true),
       // The split tabs should be separated after selecting the menu item.
       SelectMenuItem(SplitTabMenuModel::kExitSplitMenuItem),

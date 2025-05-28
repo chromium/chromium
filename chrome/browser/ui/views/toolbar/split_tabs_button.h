@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_TOOLBAR_SPLIT_TABS_BUTTON_H_
 #define CHROME_BROWSER_UI_VIEWS_TOOLBAR_SPLIT_TABS_BUTTON_H_
 
+#include <memory>
 #include <optional>
 
 #include "base/memory/raw_ptr.h"
@@ -15,19 +16,20 @@
 
 class Browser;
 
+namespace ui {
+class SimpleMenuModel;
+}
+
 class SplitTabsToolbarButton : public ToolbarButton, TabStripModelObserver {
   METADATA_HEADER(SplitTabsToolbarButton, ToolbarButton)
 
  public:
-  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kSplitTabButtonMenu);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kUpdatePinStateMenu);
 
   explicit SplitTabsToolbarButton(Browser* browser);
   SplitTabsToolbarButton(const SplitTabsToolbarButton&) = delete;
   SplitTabsToolbarButton& operator=(const SplitTabsToolbarButton&) = delete;
   ~SplitTabsToolbarButton() override;
-
-  // ToolbarButton override:
-  bool ShouldShowMenu() override;
 
   // TabStripModelObserver implementation:
   void OnTabStripModelChanged(
@@ -46,6 +48,7 @@ class SplitTabsToolbarButton : public ToolbarButton, TabStripModelObserver {
 
   BooleanPrefMember pin_state_;
   raw_ptr<Browser> browser_;
+  std::unique_ptr<ui::SimpleMenuModel> split_tab_menu_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TOOLBAR_SPLIT_TABS_BUTTON_H_

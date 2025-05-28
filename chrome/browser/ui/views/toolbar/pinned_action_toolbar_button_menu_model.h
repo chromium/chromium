@@ -70,7 +70,21 @@ class PinnedActionToolbarButtonMenuModel final : public ui::MenuModel {
     ItemType type = TYPE_COMMAND;
   };
 
+  // Adds menu items specific to the action item to the menu.
+  void AddActionSpecificItems();
+
   actions::ActionItem* GetActionItemFor(actions::ActionId id) const;
+
+  // Returns true if the toolbar button can be pinned and false otherwise.
+  bool IsPinnable() const;
+
+  // Returns true if the toolbar button is pinned to the toolbar and false
+  // otherwise.
+  bool IsPinned() const;
+
+  // Updates the pin state of the toolbar button to match that of
+  // `pin_unpin_action`.
+  void UpdatePinState(actions::ActionId pin_unpin_action);
 
   const raw_ptr<BrowserWindowInterface> browser_;
   actions::ActionId action_id_;
