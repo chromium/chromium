@@ -17,10 +17,15 @@ AutofillInternalsUI::AutofillInternalsUI(content::WebUI* web_ui)
     : WebUIController(web_ui) {
   autofill::CreateAndAddInternalsHTMLSource(
       Profile::FromWebUI(web_ui), chrome::kChromeUIAutofillInternalsHost);
+  base::Value::Dict on_load_argument;
+  on_load_argument.Set("autofillAiServerModelEnabled",
+                       base::Value(base::FeatureList::IsEnabled(
+                           autofill::features::kAutofillAiServerModel)));
+  on_load_argument.Set("showDomNodeIDsEnabled",
+                       base::Value(base::FeatureList::IsEnabled(
+                           autofill::features::test::kShowDomNodeIDs)));
   web_ui->AddMessageHandler(std::make_unique<autofill::InternalsUIHandler>(
-      "setup-autofill-internals",
-      base::Value(base::FeatureList::IsEnabled(
-          autofill::features::kAutofillAiServerModel)),
+      "setup-autofill-internals", base::Value(std::move(on_load_argument)),
       base::BindRepeating(
           &autofill::AutofillLogRouterFactory::GetForBrowserContext)));
 }

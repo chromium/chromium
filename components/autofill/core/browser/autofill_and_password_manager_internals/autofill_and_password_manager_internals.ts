@@ -250,7 +250,12 @@ function setUpStopRecording() {
   resetTimeout();
 }
 
-function setUpAutofillInternals(autofillAiEnabled: boolean) {
+interface OnLoadArgument {
+  autofillAiServerModelEnabled: boolean;
+  showDomNodeIDsEnabled: boolean;
+}
+
+function setUpAutofillInternals(onLoadArgument: OnLoadArgument) {
   document.title = 'Autofill Internals';
   getRequiredElement('h1-title').textContent = 'Autofill Internals';
   getRequiredElement('logging-note').innerText =
@@ -263,9 +268,11 @@ function setUpAutofillInternals(autofillAiEnabled: boolean) {
   setUpMarker();
   setUpSubmittedFormsJSONDataDownload();
   setUpCheckAutofillAiPermissions();
-  setUpButtonForDomNodeIdCapture();
+  if (onLoadArgument.showDomNodeIDsEnabled) {
+    setUpButtonForDomNodeIdCapture();
+  }
   setUpDownload('autofill');
-  if (autofillAiEnabled) {
+  if (onLoadArgument.autofillAiServerModelEnabled) {
     addAutofillTabs();
   }
   setUpStopRecording();
