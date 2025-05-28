@@ -369,8 +369,7 @@ class SessionRestorationServiceImplTest : public PlatformTest {
 
     // Create the service, force enabling features support.
     service_ = std::make_unique<SessionRestorationServiceImpl>(
-        kSaveDelay, /*enable_pinned_web_states=*/true,
-        /*enable_tab_groups=*/true, profile_->GetStatePath(),
+        kSaveDelay, /*enable_pinned_web_states=*/true, profile_->GetStatePath(),
         base::SequencedTaskRunner::GetCurrentDefault());
   }
 

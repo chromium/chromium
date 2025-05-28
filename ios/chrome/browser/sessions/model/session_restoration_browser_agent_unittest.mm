@@ -178,8 +178,7 @@ class SessionRestorationBrowserAgentTest : public PlatformTest {
   void CreateSessionRestorationBrowserAgent() {
     SessionRestorationBrowserAgent::CreateForBrowser(
         browser_.get(), test_session_service_,
-        /*enable_pinned_web_states*/ true,
-        /*enable_tab_groups*/ true);
+        /*enable_pinned_web_states*/ true);
     session_restoration_agent_ =
         SessionRestorationBrowserAgent::FromBrowser(browser_.get());
     session_restoration_agent_->SetSessionID(session_identifier_);

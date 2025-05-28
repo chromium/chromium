@@ -280,14 +280,12 @@ std::unique_ptr<web::WebState> CreateWebState(
 SessionRestorationBrowserAgent::SessionRestorationBrowserAgent(
     Browser* browser,
     SessionServiceIOS* session_service,
-    bool enable_pinned_web_states,
-    bool enable_tab_groups)
+    bool enable_pinned_web_states)
     : BrowserUserData(browser),
       session_service_(session_service),
       session_window_ios_factory_([[SessionWindowIOSFactory alloc]
           initWithWebStateList:browser_->GetWebStateList()]),
       enable_pinned_web_states_(enable_pinned_web_states),
-      enable_tab_groups_(enable_tab_groups),
       all_web_state_observer_(std::make_unique<AllWebStateObservationForwarder>(
           browser_->GetWebStateList(),
           this)) {
@@ -341,7 +339,7 @@ void SessionRestorationBrowserAgent::RestoreSessionWindow(
   const std::vector<web::WebState*> restored_web_states =
       DeserializeWebStateList(
           browser_->GetWebStateList(), FilterInvalidTabs(window),
-          enable_pinned_web_states_, enable_tab_groups_,
+          enable_pinned_web_states_,
           base::BindRepeating(&CreateWebState, web::WebState::CreateParams(
                                                    browser_->GetProfile())));
 

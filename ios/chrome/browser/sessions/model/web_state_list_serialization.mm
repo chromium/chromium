@@ -391,7 +391,6 @@ DeserializedGroup DeserializeFromProto::GetDeserializedGroupAt(
 std::vector<web::WebState*> DeserializeWebStateListInternal(
     WebStateList* web_state_list,
     bool enable_pinned_web_states,
-    bool enable_tab_groups,
     const Deserializer& deserializer) {
   DCHECK(web_state_list);
   DCHECK(web_state_list->empty());
@@ -472,37 +471,35 @@ std::vector<web::WebState*> DeserializeWebStateListInternal(
   }
 
   // Deserialize and create tab groups.
-  if (enable_tab_groups) {
-    const int tab_group_count = deserializer.GetTabGroupsCount();
-    std::set<tab_groups::TabGroupId> tab_group_ids;
-    for (int i = 0; i < tab_group_count; ++i) {
-      DeserializedGroup group = deserializer.GetDeserializedGroupAt(i);
-      if (group.range_start < restored_pinned_tabs_count ||
-          group.range_start > restored_tabs_count) {
-        continue;
-      }
-      if (group.range_count <= 0 ||
-          group.range_start + group.range_count > restored_tabs_count) {
-        continue;
-      }
-
-      tab_groups::TabGroupId tab_group_id = group.tab_group_id;
-      if (!tab_group_id.is_empty()) {
-        // Check that there is no duplicate  of `tab_group_id`.
-        // It is improbable, but not impossible, for this to occur.
-        if (tab_group_ids.contains(tab_group_id)) {
-          base::debug::DumpWithoutCrashing();
-          continue;
-        }
-        tab_group_ids.insert(tab_group_id);
-      } else {
-        tab_group_id = tab_groups::TabGroupId::GenerateNew();
-      }
-
-      web_state_list->CreateGroup(
-          TabGroupRange(group.range_start, group.range_count).AsSet(),
-          group.visual_data, tab_group_id);
+  const int tab_group_count = deserializer.GetTabGroupsCount();
+  std::set<tab_groups::TabGroupId> tab_group_ids;
+  for (int i = 0; i < tab_group_count; ++i) {
+    DeserializedGroup group = deserializer.GetDeserializedGroupAt(i);
+    if (group.range_start < restored_pinned_tabs_count ||
+        group.range_start > restored_tabs_count) {
+      continue;
     }
+    if (group.range_count <= 0 ||
+        group.range_start + group.range_count > restored_tabs_count) {
+      continue;
+    }
+
+    tab_groups::TabGroupId tab_group_id = group.tab_group_id;
+    if (!tab_group_id.is_empty()) {
+      // Check that there is no duplicate  of `tab_group_id`.
+      // It is improbable, but not impossible, for this to occur.
+      if (tab_group_ids.contains(tab_group_id)) {
+        base::debug::DumpWithoutCrashing();
+        continue;
+      }
+      tab_group_ids.insert(tab_group_id);
+    } else {
+      tab_group_id = tab_groups::TabGroupId::GenerateNew();
+    }
+
+    web_state_list->CreateGroup(
+        TabGroupRange(group.range_start, group.range_count).AsSet(),
+        group.visual_data, tab_group_id);
   }
 
   return restored_web_states;
@@ -681,10 +678,9 @@ std::vector<web::WebState*> DeserializeWebStateList(
     WebStateList* web_state_list,
     SessionWindowIOS* session_window,
     bool enable_pinned_web_states,
-    bool enable_tab_groups,
     const WebStateFactory& factory) {
   return DeserializeWebStateListInternal(
-      web_state_list, enable_pinned_web_states, enable_tab_groups,
+      web_state_list, enable_pinned_web_states,
       DeserializeFromSessionWindow(session_window, factory));
 }
 
@@ -692,9 +688,8 @@ std::vector<web::WebState*> DeserializeWebStateList(
     WebStateList* web_state_list,
     ios::proto::WebStateListStorage storage,
     bool enable_pinned_web_states,
-    bool enable_tab_groups,
     const WebStateFactoryFromProto& factory) {
   return DeserializeWebStateListInternal(
-      web_state_list, enable_pinned_web_states, enable_tab_groups,
+      web_state_list, enable_pinned_web_states,
       DeserializeFromProto(std::move(storage), factory));
 }

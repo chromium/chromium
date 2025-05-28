@@ -29,11 +29,9 @@ class WebStateList;
 // write down those changes to storage.
 class SessionRestorationServiceImpl final : public SessionRestorationService {
  public:
-  // TODO(crbug.com/420408187): Remove `enable_tab_groups` from constructor.
   SessionRestorationServiceImpl(
       base::TimeDelta save_delay,
       bool enable_pinned_web_states,
-      bool enable_tab_groups,
       const base::FilePath& storage_path,
       scoped_refptr<base::SequencedTaskRunner> task_runner);
 
@@ -99,7 +97,6 @@ class SessionRestorationServiceImpl final : public SessionRestorationService {
   // allow easily testing code controlled by this boolean independently of
   // whether the feature is enabled in the application).
   const bool enable_pinned_web_states_;
-  const bool enable_tab_groups_;
 
   // Root directory in which the data should be written to or loaded from.
   const base::FilePath storage_path_;
