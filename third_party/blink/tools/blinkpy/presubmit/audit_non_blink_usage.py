@@ -1625,6 +1625,7 @@ _CONFIG = [
             'gl::GetDebugSeverityString',
             'gl::GetDebugSourceString',
             'gl::GetDebugTypeString',
+            'gpu::gles2::GLES2InterfaceStub',
             'ui::LogEGLDebugMessage',
         ],
     },

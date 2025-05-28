@@ -7,6 +7,7 @@
 #include <dawn/wire/WireClient.h>
 
 #include "base/notimplemented.h"
+#include "gpu/command_buffer/client/gles2_interface_stub.h"
 #include "third_party/blink/public/platform/web_url.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
@@ -176,7 +177,125 @@ class ScopedBindFramebuffer {
   GLint prev_read_fbo_ = 0;
 };
 
-}  // namespace
+// A partial implementation of GLES2Interface with only the calls used by WebGL
+// objects implemented. The call directly proxy to the gl::DriverGL. It isn't
+// possible to autogenerate an interface that 100% proxies the call to a
+// gl::DriverGL because 1) GLES2Interface has special function that don't exist
+// in real GL, and 2) a number of gl::DriverGL procs use a different extension
+// suffix, seemingly at random.
+class PartialGLES2ForObjects : public gpu::gles2::GLES2InterfaceStub {
+ public:
+  explicit PartialGLES2ForObjects(gl::DriverGL* gl) : gl_(gl) {}
+
+  void BeginQueryEXT(GLenum target, GLuint id) override {
+    gl_->fn.glBeginQueryFn(target, id);
+  }
+  GLuint CreateProgram() override { return gl_->fn.glCreateProgramFn(); }
+  GLuint CreateShader(GLenum type) override {
+    return gl_->fn.glCreateShaderFn(type);
+  }
+  void DeleteBuffers(GLsizei n, const GLuint* buffers) override {
+    gl_->fn.glDeleteBuffersARBFn(n, buffers);
+  }
+  void DeleteFramebuffers(GLsizei n, const GLuint* framebuffers) override {
+    gl_->fn.glDeleteFramebuffersEXTFn(n, framebuffers);
+  }
+  void DeleteProgram(GLuint program) override {
+    gl_->fn.glDeleteProgramFn(program);
+  }
+  void DeleteQueriesEXT(GLsizei n, const GLuint* queries) override {
+    gl_->fn.glDeleteQueriesFn(n, queries);
+  }
+  void DeleteRenderbuffers(GLsizei n, const GLuint* renderbuffers) override {
+    gl_->fn.glDeleteRenderbuffersEXTFn(n, renderbuffers);
+  }
+  void DeleteSamplers(GLsizei n, const GLuint* samplers) override {
+    gl_->fn.glDeleteSamplersFn(n, samplers);
+  }
+  void DeleteSync(GLsync sync) override { gl_->fn.glDeleteSyncFn(sync); }
+  void DeleteShader(GLuint shader) override {
+    gl_->fn.glDeleteShaderFn(shader);
+  }
+  void DeleteTextures(GLsizei n, const GLuint* textures) override {
+    gl_->fn.glDeleteTexturesFn(n, textures);
+  }
+  void DeleteTransformFeedbacks(GLsizei n, const GLuint* ids) override {
+    gl_->fn.glDeleteTransformFeedbacksFn(n, ids);
+  }
+  void DeleteVertexArraysOES(GLsizei n, const GLuint* arrays) override {
+    gl_->fn.glDeleteVertexArraysOESFn(n, arrays);
+  }
+  void DrawBuffersEXT(GLsizei count, const GLenum* bufs) override {
+    gl_->fn.glDrawBuffersARBFn(count, bufs);
+  }
+  void EndQueryEXT(GLenum target) override { gl_->fn.glEndQueryFn(target); }
+  void FramebufferRenderbuffer(GLenum target,
+                               GLenum attachment,
+                               GLenum renderbuffertarget,
+                               GLuint renderbuffer) override {
+    gl_->fn.glFramebufferRenderbufferEXTFn(target, attachment,
+                                           renderbuffertarget, renderbuffer);
+  }
+  void FramebufferTexture2D(GLenum target,
+                            GLenum attachment,
+                            GLenum textarget,
+                            GLuint texture,
+                            GLint level) override {
+    gl_->fn.glFramebufferTexture2DEXTFn(target, attachment, textarget, texture,
+                                        level);
+  }
+  void FramebufferTextureLayer(GLenum target,
+                               GLenum attachment,
+                               GLuint texture,
+                               GLint level,
+                               GLint layer) override {
+    gl_->fn.glFramebufferTextureLayerFn(target, attachment, texture, level,
+                                        layer);
+  }
+  void GenBuffers(GLsizei n, GLuint* buffers) override {
+    gl_->fn.glGenBuffersARBFn(n, buffers);
+  }
+  void GenFramebuffers(GLsizei n, GLuint* framebuffers) override {
+    gl_->fn.glGenFramebuffersEXTFn(n, framebuffers);
+  }
+  void GenQueriesEXT(GLsizei n, GLuint* queries) override {
+    gl_->fn.glGenQueriesFn(n, queries);
+  }
+  void GenRenderbuffers(GLsizei n, GLuint* renderbuffers) override {
+    gl_->fn.glGenRenderbuffersEXTFn(n, renderbuffers);
+  }
+  void GenSamplers(GLsizei n, GLuint* samplers) override {
+    gl_->fn.glGenSamplersFn(n, samplers);
+  }
+  void GenTextures(GLsizei n, GLuint* textures) override {
+    gl_->fn.glGenTexturesFn(n, textures);
+  }
+  void GenTransformFeedbacks(GLsizei n, GLuint* ids) override {
+    gl_->fn.glGenTransformFeedbacksFn(n, ids);
+  }
+  void GenVertexArraysOES(GLsizei n, GLuint* arrays) override {
+    gl_->fn.glGenVertexArraysOESFn(n, arrays);
+  }
+  void GetIntegerv(GLenum pname, GLint* params) override {
+    gl_->fn.glGetIntegervFn(pname, params);
+  }
+  void GetProgramiv(GLuint program, GLenum pname, GLint* params) override {
+    gl_->fn.glGetProgramivFn(program, pname, params);
+  }
+  void GetQueryObjectuivEXT(GLuint id, GLenum pname, GLuint* params) override {
+    gl_->fn.glGetQueryObjectuivFn(id, pname, params);
+  }
+  void GetQueryObjectui64vEXT(GLuint id,
+                              GLenum pname,
+                              GLuint64* params) override {
+    gl_->fn.glGetQueryObjectui64vFn(id, pname, params);
+  }
+
+ private:
+  raw_ptr<gl::DriverGL> gl_;
+};
+
+}  // anonymous namespace
 
 WebGLRenderingContextWebGPUBase::WebGLRenderingContextWebGPUBase(
     CanvasRenderingContextHost* host,
@@ -279,10 +398,6 @@ void WebGLRenderingContextWebGPUBase::InitRequestDeviceCallback(
   device_ = std::move(device);
 
   InitializeContext();
-
-  // TODO(413078308): Fill in with a GLES2Interface that will be used by WebGL
-  // objects.
-  WebGLContextObjectSupport::OnContextRestored(nullptr);
 
   // We are required to present to the compositor on context creation.
   ShouldPresentToCompositor();
@@ -2908,6 +3023,11 @@ void WebGLRenderingContextWebGPUBase::InitializeContext() {
   // check glGetError
   InitializeGLDebugLogging(driver_gl_, true, LogGLDebugMessage, nullptr);
 
+  // Initialize the GLES2 interface used for WebGL objects that just proxies to
+  // the gl::DriverGL.
+  gles2_for_objects_ = std::make_unique<PartialGLES2ForObjects>(&driver_gl_);
+  WebGLContextObjectSupport::OnContextRestored(gles2_for_objects_.get());
+
   // Create the underlying WebGPUSwapBufferProvider. Usages are based on what
   // ANGLE needs to be able to use this for texturing and rendering.
   constexpr wgpu::TextureUsage kDefaultFBOUsages =
@@ -2942,6 +3062,7 @@ void WebGLRenderingContextWebGPUBase::Destroy() {
     context_ = EGL_NO_CONTEXT;
   }
   driver_gl_.ClearBindings();
+  gles2_for_objects_ = nullptr;
 
   if (display_) {
     driver_egl_.fn.eglTerminateFn(display_);

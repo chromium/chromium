@@ -5,6 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_WEBGL_WEBGL_RENDERING_CONTEXT_WEBGPU_BASE_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_WEBGL_WEBGL_RENDERING_CONTEXT_WEBGPU_BASE_H_
 
+#include <memory>
+
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_predefined_color_space.h"
@@ -1317,6 +1319,7 @@ class MODULES_EXPORT WebGLRenderingContextWebGPUBase
   scoped_refptr<DawnControlClientHolder> dawn_control_client_;
   wgpu::Adapter adapter_;
   wgpu::Device device_;
+  std::unique_ptr<gpu::gles2::GLES2Interface> gles2_for_objects_;
 
   gl::DriverEGL driver_egl_;
   gl::DriverGL driver_gl_;
