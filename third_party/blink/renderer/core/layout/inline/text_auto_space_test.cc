@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/core/layout/inline/inline_text_auto_space.h"
+#include "third_party/blink/renderer/core/layout/inline/text_auto_space.h"
 
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
@@ -18,10 +18,9 @@ namespace {
 using testing::ElementsAre;
 using testing::ElementsAreArray;
 
-class InlineTextAutoSpaceTest : public RenderingTest,
-                                ScopedCSSTextAutoSpaceForTest {
+class TextAutoSpaceTest : public RenderingTest, ScopedCSSTextAutoSpaceForTest {
  public:
-  struct AutoSpaceCallback : public InlineTextAutoSpace::Callback {
+  struct AutoSpaceCallback : public TextAutoSpace::Callback {
     void DidApply(base::span<const OffsetWithSpacing> applied_offsets) final {
       for (const OffsetWithSpacing& offset : applied_offsets) {
         offsets.push_back(offset.offset);
@@ -31,7 +30,7 @@ class InlineTextAutoSpaceTest : public RenderingTest,
     Vector<wtf_size_t> offsets;
   };
 
-  explicit InlineTextAutoSpaceTest() : ScopedCSSTextAutoSpaceForTest(true) {}
+  explicit TextAutoSpaceTest() : ScopedCSSTextAutoSpaceForTest(true) {}
 
   LayoutBlockFlow* PreparePageLayoutBlock(String html,
                                           String container_css = String()) {
@@ -54,7 +53,7 @@ class InlineTextAutoSpaceTest : public RenderingTest,
     const LayoutBlockFlow* container =
         PreparePageLayoutBlock(html, container_css);
     InlineNodeData* node_data = container->GetInlineNodeData();
-    InlineTextAutoSpace auto_space(*node_data);
+    TextAutoSpace auto_space(*node_data);
     AutoSpaceCallback callback;
     auto_space.SetCallbackForTesting(&callback);
     auto_space.ApplyIfNeeded(*node_data);
@@ -79,9 +78,9 @@ struct MayApplyData {
     // CJK ideographic characters.
     {nullptr, u"水", true},
 };
-class MayApplyTest : public InlineTextAutoSpaceTest,
+class MayApplyTest : public TextAutoSpaceTest,
                      public testing::WithParamInterface<MayApplyData> {};
-INSTANTIATE_TEST_SUITE_P(InlineTextAutoSpaceTest,
+INSTANTIATE_TEST_SUITE_P(TextAutoSpaceTest,
                          MayApplyTest,
                          testing::ValuesIn(g_may_apply_data));
 
@@ -90,12 +89,12 @@ TEST_P(MayApplyTest, MayApply) {
   const String string = test.ToString();
   LayoutBlockFlow* block_flow = PreparePageLayoutBlock(string);
   const InlineNodeData* inline_node_data = block_flow->GetInlineNodeData();
-  InlineTextAutoSpace auto_space(*inline_node_data);
+  TextAutoSpace auto_space(*inline_node_data);
   EXPECT_EQ(auto_space.MayApply(), test.may_apply);
 }
 
 // End to end test for text-autospace
-TEST_F(InlineTextAutoSpaceTest, InsertSpacing) {
+TEST_F(TextAutoSpaceTest, InsertSpacing) {
   LoadAhem();
   String test_string = u"AAAあああa";
   LayoutBlockFlow* container = PreparePageLayoutBlock(test_string);
@@ -160,9 +159,9 @@ struct HtmlData {
     {u"\u05D0ああ\u05D0あ", {1, 3, 4}},
 
 };
-class HtmlTest : public InlineTextAutoSpaceTest,
+class HtmlTest : public TextAutoSpaceTest,
                  public testing::WithParamInterface<HtmlData> {};
-INSTANTIATE_TEST_SUITE_P(InlineTextAutoSpaceTest,
+INSTANTIATE_TEST_SUITE_P(TextAutoSpaceTest,
                          HtmlTest,
                          testing::ValuesIn(g_html_data));
 

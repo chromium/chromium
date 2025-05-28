@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/core/layout/inline/inline_text_auto_space.h"
+#include "third_party/blink/renderer/core/layout/inline/text_auto_space.h"
 
 #include <unicode/uchar.h>
 #include <unicode/uscript.h>
@@ -36,7 +36,7 @@ class SpacingApplier {
   SpacingApplier(wtf_size_t offset,
                  InlineItemList items,
 
-                 InlineTextAutoSpace::Callback* callback)
+                 TextAutoSpace::Callback* callback)
       : item_iter_(items.begin()),
         item_end_(items.end()),
         callback_for_testing_(callback) {
@@ -99,7 +99,7 @@ class SpacingApplier {
   }
 
   void Apply(const ComputedStyle& style, InlineItem& item) {
-    const float spacing = TextAutoSpace::GetSpacingWidth(style.GetFont());
+    const float spacing = style.GetFont()->TextAutoSpaceInlineSize();
     for (OffsetWithSpacing& offset_with_spacing : offsets_with_spacing_) {
       offset_with_spacing.spacing = spacing;
     }
@@ -153,12 +153,12 @@ class SpacingApplier {
   InlineItemList::iterator item_iter_;
   const InlineItemList::iterator item_end_;
   Vector<OffsetWithSpacing, 16> offsets_with_spacing_;
-  InlineTextAutoSpace::Callback* callback_for_testing_ = nullptr;
+  TextAutoSpace::Callback* callback_for_testing_ = nullptr;
 };
 
 }  // namespace
 
-void InlineTextAutoSpace::Apply(InlineItemsData& data) {
+void TextAutoSpace::Apply(InlineItemsData& data) {
   const String& text = data.text_content;
   DCHECK(!text.Is8Bit());
   DCHECK_EQ(text.length(), data.items.back()->EndOffset());

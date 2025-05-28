@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_INLINE_INLINE_TEXT_AUTO_SPACE_H_
-#define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_INLINE_INLINE_TEXT_AUTO_SPACE_H_
+#ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_INLINE_TEXT_AUTO_SPACE_H_
+#define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_INLINE_TEXT_AUTO_SPACE_H_
 
 #include <unicode/umachine.h>
 
@@ -12,7 +12,6 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/inline/inline_item_segment.h"
 #include "third_party/blink/renderer/core/layout/inline/inline_items_data.h"
-#include "third_party/blink/renderer/platform/fonts/shaping/text_auto_space.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
@@ -21,17 +20,17 @@ namespace blink {
 struct InlineItemsData;
 
 // A wrapper of TextAutoSpace for the inline layout.
-class CORE_EXPORT InlineTextAutoSpace : public TextAutoSpace {
+class CORE_EXPORT TextAutoSpace {
   STACK_ALLOCATED();
 
  public:
-  // A class for testing to inspect what `InlineTextAutoSpace` did.
+  // A class for testing to inspect what `TextAutoSpace` did.
   class CORE_EXPORT Callback {
    public:
     virtual void DidApply(base::span<const OffsetWithSpacing>) = 0;
   };
 
-  explicit InlineTextAutoSpace(const InlineItemsData& data);
+  explicit TextAutoSpace(const InlineItemsData& data);
 
   // True if this may apply auto-spacing. If this is false, it's safe to skip
   // calling `Apply()`.
@@ -58,7 +57,7 @@ class CORE_EXPORT InlineTextAutoSpace : public TextAutoSpace {
   Callback* callback_for_testing_ = nullptr;
 };
 
-inline InlineTextAutoSpace::InlineTextAutoSpace(const InlineItemsData& data) {
+inline TextAutoSpace::TextAutoSpace(const InlineItemsData& data) {
   if (!RuntimeEnabledFeatures::CSSTextAutoSpaceEnabled()) {
     return;
   }
@@ -75,4 +74,4 @@ inline InlineTextAutoSpace::InlineTextAutoSpace(const InlineItemsData& data) {
 
 }  // namespace blink
 
-#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_INLINE_INLINE_TEXT_AUTO_SPACE_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_INLINE_TEXT_AUTO_SPACE_H_
