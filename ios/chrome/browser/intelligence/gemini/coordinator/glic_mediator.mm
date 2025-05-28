@@ -55,8 +55,12 @@
     return;
   }
 
-  // TODO(crbug.com/419064727): Determine what flow should be shown.
-  [self.delegate presentGlicFRE];
+  BOOL didPresentGlicFRE = [self.delegate maybePresentGlicFRE];
+  // Not presenting the FRE implies that the promo was shown and user consent
+  // was given which means we can navigate to the GLIC overlay immediately.
+  if (!didPresentGlicFRE) {
+    [self prepareGLICOverlay];
+  }
 }
 
 #pragma mark - GLICConsentMutator

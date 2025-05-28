@@ -12,6 +12,11 @@
 // UINavigationController that owns GLICPromo and GLICConsent view controllers.
 @interface GLICNavigationController : UINavigationController
 
+// Initializes the navigation controller. If `showPromo` is YES, the navigation
+// controller will display the promo. If NO, the navigation controller will
+// display the consent view.
+- (instancetype)initWithPromo:(BOOL)showPromo;
+
 // The mutator for this view controller to communicate to the mediator.
 @property(nonatomic, weak) id<GLICConsentMutator> mutator;
 

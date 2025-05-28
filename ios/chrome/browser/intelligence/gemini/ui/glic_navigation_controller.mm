@@ -39,6 +39,17 @@ constexpr NSString* const kAppleLogoName = @"applelogo";
 @implementation GLICNavigationController {
   GLICPromoViewController* _promoViewController;
   GLICConsentViewController* _consentViewController;
+  // If YES, `_showPromo` will show the promo view. Otherwise, it will skip the
+  // promo view.
+  BOOL _showPromo;
+}
+
+- (instancetype)initWithPromo:(BOOL)showPromo {
+  self = [super init];
+  if (self) {
+    _showPromo = showPromo;
+  }
+  return self;
 }
 
 #pragma mark - UIViewController
@@ -46,10 +57,16 @@ constexpr NSString* const kAppleLogoName = @"applelogo";
 - (void)viewDidLoad {
   [self configureNavigationController];
   [super viewDidLoad];
-  _promoViewController = [[GLICPromoViewController alloc] init];
-  _promoViewController.glicPromoDelegate = self;
-  _promoViewController.mutator = self.mutator;
-  [self pushViewController:_promoViewController animated:NO];
+
+  if (!_showPromo) {
+    [self createConsentView];
+    [self pushViewController:_consentViewController animated:NO];
+  } else {
+    _promoViewController = [[GLICPromoViewController alloc] init];
+    _promoViewController.glicPromoDelegate = self;
+    _promoViewController.mutator = self.mutator;
+    [self pushViewController:_promoViewController animated:NO];
+  }
   [self createLogos];
 }
 
@@ -126,11 +143,16 @@ constexpr NSString* const kAppleLogoName = @"applelogo";
   ]];
 }
 
+// Initialize consent view controller.
+- (void)createConsentView {
+  _consentViewController = [[GLICConsentViewController alloc] init];
+  _consentViewController.mutator = self.mutator;
+}
+
 #pragma mark - GLICPromoViewControllerDelegate
 
 - (void)didAcceptPromo {
-  _consentViewController = [[GLICConsentViewController alloc] init];
-  _consentViewController.mutator = self.mutator;
+  [self createConsentView];
   [self pushViewController:_consentViewController animated:YES];
 }
 

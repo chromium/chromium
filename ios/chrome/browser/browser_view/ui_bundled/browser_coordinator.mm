@@ -2887,9 +2887,11 @@ enum class ToolbarKind {
 #pragma mark - GlicCommands
 
 - (void)startGlicFlow {
-  _glicCoordinator =
-      [[GLICCoordinator alloc] initWithBaseViewController:self.viewController
-                                                  browser:self.browser];
+  _glicCoordinator = [[GLICCoordinator alloc]
+      initWithBaseViewController:self.viewController
+                         browser:self.browser
+                  fromEntryPoint:glic::EntryPointOverflow];
+  _glicCoordinator.promosUIHandler = self.promosManagerCoordinator;
 
   [_glicCoordinator start];
 }
@@ -2987,9 +2989,11 @@ enum class ToolbarKind {
 
 - (void)showGLICPromo {
   if (IsPageActionMenuEnabled()) {
-    _glicCoordinator =
-        [[GLICCoordinator alloc] initWithBaseViewController:self.viewController
-                                                    browser:self.browser];
+    _glicCoordinator = [[GLICCoordinator alloc]
+        initWithBaseViewController:self.viewController
+                           browser:self.browser
+                    fromEntryPoint:glic::EntryPointPromo];
+    _glicCoordinator.promosUIHandler = self.promosManagerCoordinator;
     [_glicCoordinator start];
   }
 }

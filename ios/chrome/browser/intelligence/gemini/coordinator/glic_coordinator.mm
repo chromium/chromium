@@ -4,7 +4,9 @@
 
 #import "ios/chrome/browser/intelligence/gemini/coordinator/glic_coordinator.h"
 
+#import "components/feature_engagement/public/tracker.h"
 #import "components/prefs/pref_service.h"
+#import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/intelligence/gemini/coordinator/glic_mediator.h"
 #import "ios/chrome/browser/intelligence/gemini/coordinator/glic_mediator_delegate.h"
 #import "ios/chrome/browser/intelligence/gemini/ui/glic_navigation_controller.h"
@@ -28,6 +30,19 @@
 
   // Handler for sending GLIC commands.
   id<GlicCommands> _handler;
+
+  // Returns the `_entryPoint` the coordinator was intialized from.
+  glic::EntryPoint _entryPoint;
+}
+
+- (instancetype)initWithBaseViewController:(UIViewController*)viewController
+                                   browser:(Browser*)browser
+                            fromEntryPoint:(glic::EntryPoint)entryPoint {
+  self = [super initWithBaseViewController:viewController browser:browser];
+  if (self) {
+    _entryPoint = entryPoint;
+  }
+  return self;
 }
 
 #pragma mark - ChromeCoordinator
@@ -35,6 +50,15 @@
 - (void)start {
   PrefService* pref_service = self.profile->GetPrefs();
   CHECK(pref_service);
+
+  // If the user sees the GLIC feature, we can consider this feature as
+  // discovered. Therefore, we can mark the GLIC feature as used.
+  feature_engagement::Tracker* engagementTracker =
+      feature_engagement::TrackerFactory::GetForProfile(self.profile);
+  if (engagementTracker) {
+    engagementTracker->NotifyUsedEvent(
+        feature_engagement::kIPHIOSGLICPromoFeature);
+  }
 
   _handler =
       HandlerForProtocol(self.browser->GetCommandDispatcher(), GlicCommands);
@@ -54,16 +78,25 @@
   [super stop];
 }
 
-#pragma mark - GLICConsentMediatorDelegate
+#pragma mark - GLICMediatorDelegate
 
-- (void)presentGlicFRE {
-  _navigationController = [[GLICNavigationController alloc] init];
+- (BOOL)maybePresentGlicFRE {
+  BOOL showPromo = _entryPoint == glic::EntryPointPromo;
+  BOOL showConsent = [self shouldShowGLICConsent];
+
+  if (!showPromo && !showConsent) {
+    return NO;
+  }
+
+  _navigationController =
+      [[GLICNavigationController alloc] initWithPromo:showPromo];
   _navigationController.sheetPresentationController.delegate = self;
   _navigationController.mutator = _mediator;
 
   [self.baseViewController presentViewController:_navigationController
                                         animated:YES
                                       completion:nil];
+  return YES;
 }
 
 #pragma mark - UISheetPresentationControllerDelegate
@@ -82,13 +115,20 @@
   [_handler dismissGlicFlow];
 }
 
-#pragma mark - Private
-
-// Decides whether GLIC consent should be shown.
 - (BOOL)shouldShowGLICConsent {
   PrefService* prefService = self.profile->GetPrefs();
   CHECK(prefService);
   return !prefService->GetBoolean(prefs::kIOSGLICConsent);
+}
+
+#pragma mark - Private
+
+// TODO(crbug.com/419064727): Create a promo view delegate and turn this method
+// into a delegate method. Calls additional promo dismiss methods.
+- (void)promoWasDismissed {
+  if (_entryPoint == glic::EntryPointPromo) {
+    [self.promosUIHandler promoWasDismissed];
+  }
 }
 
 @end

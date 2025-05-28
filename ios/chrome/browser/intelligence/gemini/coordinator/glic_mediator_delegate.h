@@ -10,11 +10,16 @@
 // Delegate for the GLICMediator.
 @protocol GLICMediatorDelegate
 
-// Presents the Glic first run experience.
-- (void)presentGlicFRE;
+// Potentially presents the Glic first run experience(FRE) based on eligibility
+// such as if the FRE promo was shown. Returns YES if the Glic FRE was
+// presented.
+- (BOOL)maybePresentGlicFRE;
 
 // Dismisses the GLIC consent UI.
 - (void)dismissGLICConsentUI;
+
+// Decides whether GLIC consent should be shown.
+- (BOOL)shouldShowGLICConsent;
 
 @end
 

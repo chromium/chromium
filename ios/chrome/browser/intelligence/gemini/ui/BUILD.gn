@@ -18,6 +18,7 @@ source_set("ui") {
   deps = [
     ":constants",
     "//base",
+    "//components/feature_engagement/public",
     "//components/feature_engagement/public:feature_constants",
     "//ios/chrome/app/strings:ios_strings_grit",
     "//ios/chrome/browser/intelligence/gemini/metrics",

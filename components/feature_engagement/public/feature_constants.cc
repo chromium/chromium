@@ -772,7 +772,7 @@ BASE_FEATURE(kIPHiOSWelcomeBackFeature,
 
 BASE_FEATURE(kIPHIOSGLICPromoFeature,
              "IPH_IOSGLICPromo",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Non-FET feature.
 BASE_FEATURE(kDefaultBrowserEligibilitySlidingWindow,
