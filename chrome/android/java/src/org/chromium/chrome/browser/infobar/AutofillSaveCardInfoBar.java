@@ -15,11 +15,11 @@ import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import androidx.annotation.Nullable;
-
 import org.jni_zero.CalledByNative;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.components.autofill.payments.CardDetail;
 import org.chromium.components.autofill.payments.LegalMessageLine;
@@ -34,6 +34,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 /** An infobar for saving credit card information. */
+@NullMarked
 public class AutofillSaveCardInfoBar extends ConfirmInfoBar {
 
     private final @Nullable String mAccountFooterEmail;
@@ -42,7 +43,7 @@ public class AutofillSaveCardInfoBar extends ConfirmInfoBar {
     private final List<CardDetail> mCardDetails = new ArrayList<>();
     private int mIconDrawableId = -1;
     private final String mTitleText;
-    private String mDescriptionText;
+    private @Nullable String mDescriptionText;
     private final boolean mIsGooglePayBrandingEnabled;
     private final LinkedList<LegalMessageLine> mLegalMessageLines =
             new LinkedList<LegalMessageLine>();

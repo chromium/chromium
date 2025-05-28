@@ -3,7 +3,10 @@
 // found in the LICENSE file.
 package org.chromium.chrome.browser.infobar;
 
+import org.chromium.build.annotations.NullMarked;
+
 /** A listener to interact with the different subpanels of the translate infobar. */
+@NullMarked
 public interface SubPanelListener {
 
     /**

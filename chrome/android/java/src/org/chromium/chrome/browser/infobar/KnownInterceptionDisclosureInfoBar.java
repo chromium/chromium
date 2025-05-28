@@ -10,13 +10,15 @@ import androidx.annotation.ColorRes;
 
 import org.jni_zero.CalledByNative;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.infobars.ConfirmInfoBar;
 import org.chromium.components.infobars.InfoBarLayout;
 
 /**
- * An infobar to disclose known monitoring to the user. This is a thin veneer over
- * standard ConfirmInfoBar to provide a description as well as a title.
+ * An infobar to disclose known monitoring to the user. This is a thin veneer over standard
+ * ConfirmInfoBar to provide a description as well as a title.
  */
+@NullMarked
 public class KnownInterceptionDisclosureInfoBar extends ConfirmInfoBar {
     private final String mDescription;
 

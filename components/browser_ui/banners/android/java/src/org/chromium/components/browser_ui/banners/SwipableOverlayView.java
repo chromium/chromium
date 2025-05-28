@@ -104,12 +104,14 @@ public abstract class SwipableOverlayView extends FrameLayout {
 
     /**
      * Creates a SwipableOverlayView.
+     *
      * @param context Context for acquiring resources.
      * @param attrs Attributes from the XML layout inflation.
      * @param hideOnScroll Whether this view should observe user's gesture and then auto-hide when
-     *                     page is scrolled down.
+     *     page is scrolled down.
      */
-    public SwipableOverlayView(Context context, AttributeSet attrs, boolean hideOnScroll) {
+    public SwipableOverlayView(
+            Context context, @Nullable AttributeSet attrs, boolean hideOnScroll) {
         super(context, attrs);
         mGestureStateListener = hideOnScroll ? createGestureStateListener() : null;
         mGestureState = Gesture.NONE;
@@ -144,7 +146,7 @@ public abstract class SwipableOverlayView extends FrameLayout {
         return mTotalHeight;
     }
 
-    protected void addToParentView(ViewGroup parentView) {
+    protected void addToParentView(@Nullable ViewGroup parentView) {
         if (parentView == null) return;
         if (getParent() == null) {
             parentView.addView(this, createLayoutParams());

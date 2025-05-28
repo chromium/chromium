@@ -10,10 +10,12 @@ import android.view.LayoutInflater;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.R;
 import org.chromium.components.browser_ui.widget.RoundedCornerImageView;
 
 /** Provides helper methods for Android Infobars. */
+@NullMarked
 class PasswordInfoBarUtils {
     private PasswordInfoBarUtils() {}
 
