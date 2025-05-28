@@ -78,7 +78,7 @@ message LogAiDataRequest {
 
     WritingAssistanceApiLoggingData writing_assistance_api = 23;
 
-    ProofreaderApiLoggingData proofreader_api = 24;
+    ProofreaderApiLoggingData proofreader_api = 25;
 
     DefaultLoggingData default = 1000;
   }
