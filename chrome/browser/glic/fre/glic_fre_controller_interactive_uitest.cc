@@ -25,6 +25,8 @@ namespace {
 
 using glic::test::internal::kGlicFreShowingDialogState;
 
+DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kFirstTab);
+
 const InteractiveBrowserTestApi::DeepQuery kMockFreClientNoThanksButton = {
     "#noThanks"};
 const InteractiveBrowserTestApi::DeepQuery kMockFreClientContinueButton = {
@@ -113,6 +115,14 @@ class GlicFreControllerUiTest : public test::InteractiveGlicTest {
 
     AddDescriptionPrefix(steps, "WaitForAndInstrumentGlicFre");
     return steps;
+  }
+
+  auto ForceInvalidateAccount() {
+    return Do([this]() { InvalidateAccount(GetFreController()->profile()); });
+  }
+
+  auto ForceReauthAccount() {
+    return Do([this]() { ReauthAccount(GetFreController()->profile()); });
   }
 
   auto CheckFreDialogIsShowing(bool is_showing) {
@@ -224,6 +234,27 @@ IN_PROC_BROWSER_TEST_F(GlicFreControllerUiTest, PressContinueButton) {
       ClickMockFreElement(kMockFreClientContinueButton, true),
       WaitForHide(GlicFreDialogView::kWebViewElementIdForTesting),
       CheckFreDialogIsShowing(false), CheckControllerHasWidget(true));
+}
+
+IN_PROC_BROWSER_TEST_F(GlicFreControllerUiTest,
+                       InvalidatedAccountSignInOnGlicFreOpenFlow) {
+  auto server_running = fre_server().StartAcceptingConnectionsAndReturnHandle();
+
+  // Tests that, when FRE is required and the glic button is pressed while
+  // signed out, the FRE dialog is shown after reauthorization is completed.
+  RunTestSequence(
+      ObserveState(kFreWebUiState,
+                   base::BindOnce(&GlicFreControllerUiTest::GetFreController,
+                                  base::Unretained(this))),
+      ForceInvalidateAccount(), PressButton(kGlicButtonElementId),
+      CheckFreDialogIsShowing(false), InstrumentTab(kFirstTab),
+      WaitForWebContentsReady(kFirstTab),
+      // Without a pause here, we will 'sign-in' before the callback is
+      // registered to listen for it. This isn't a bug because it takes real
+      // users finite time to actually sign-in.
+      Wait(base::Milliseconds(500)), ForceReauthAccount(),
+      WaitForState(kFreWebUiState, mojom::FreWebUiState::kReady),
+      StopObservingState(kFreWebUiState));
 }
 
 }  // namespace
