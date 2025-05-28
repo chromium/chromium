@@ -492,6 +492,8 @@ public final class SafetyHubTest {
     @Test
     @LargeTest
     @Feature({"SafetyHubNotifications"})
+    // Disruptive notification revocation disables the notification review module.
+    @Features.DisableFeatures(ChromeFeatureList.SAFETY_HUB_DISRUPTIVE_NOTIFICATION_REVOCATION)
     @DisableIf.Build(supported_abis_includes = "x86_64", message = "https://crbug.com/382238797")
     public void testResetAllNotifications() {
         mNotificationPermissionReviewBridge.setNotificationPermissionsForReview(
@@ -554,6 +556,8 @@ public final class SafetyHubTest {
     @Test
     @LargeTest
     @Feature({"SafetyHubNotifications"})
+    // Disruptive notification revocation disables the notification review module.
+    @Features.DisableFeatures(ChromeFeatureList.SAFETY_HUB_DISRUPTIVE_NOTIFICATION_REVOCATION)
     public void testNotificationsBottomButtonState() {
         mNotificationPermissionReviewBridge.setNotificationPermissionsForReview(
                 new NotificationPermissions[] {NOTIFICATION_PERMISSIONS_1});
@@ -732,6 +736,8 @@ public final class SafetyHubTest {
     @Policies.Add({@Policies.Item(key = "SafeBrowsingEnabled", string = "false")})
     @Restriction(GmsCoreVersionRestriction.RESTRICTION_TYPE_VERSION_GE_24W15)
     @RequiresRestart
+    // Disruptive notification revocation disables the notification review module.
+    @Features.DisableFeatures(ChromeFeatureList.SAFETY_HUB_DISRUPTIVE_NOTIFICATION_REVOCATION)
     public void testMultiplePreferenceExpand() {
         // Set a module with an unmanaged warning state.
         int compromisedPasswordsCount = 5;
@@ -1864,6 +1870,8 @@ public final class SafetyHubTest {
     @Test
     @MediumTest
     @Feature({"SafetyHubNotifications"})
+    // Disruptive notification revocation disables the notification review module.
+    @Features.DisableFeatures(ChromeFeatureList.SAFETY_HUB_DISRUPTIVE_NOTIFICATION_REVOCATION)
     public void testNotificationReviewModule_ResetAll() {
         mNotificationPermissionReviewBridge.setNotificationPermissionsForReview(
                 new NotificationPermissions[] {
@@ -1922,6 +1930,8 @@ public final class SafetyHubTest {
     @Test
     @MediumTest
     @Feature({"SafetyHubNotifications"})
+    // Disruptive notification revocation disables the notification review module.
+    @Features.DisableFeatures(ChromeFeatureList.SAFETY_HUB_DISRUPTIVE_NOTIFICATION_REVOCATION)
     public void testNotificationReviewModule_SafeState() {
         mNotificationPermissionReviewBridge.setNotificationPermissionsForReview(
                 new NotificationPermissions[] {});
