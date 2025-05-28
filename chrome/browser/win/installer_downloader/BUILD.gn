@@ -108,6 +108,7 @@ source_set("unit_tests") {
     ":prefs",
     "//base",
     "//base/test:test_support",
+    "//chrome/browser/ui/views/infobars",
     "//chrome/browser/win:cloud_synced_folder_checker",
     "//chrome/test:test_support",
     "//components/infobars/content",
@@ -118,6 +119,7 @@ source_set("unit_tests") {
     "//content/test:test_support",
     "//testing/gtest",
     "//ui/base",
+    "//ui/events:test_support",
   ]
 }
 
