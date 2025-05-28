@@ -1164,6 +1164,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
     enum="ChromeOSFallbackCountry" expires_after="2026-03-20">
   <owner>cschlosser@chromium.org</owner>
   <owner>chromeos-privacyhub@google.com</owner>
+  <owner>chrome-regionalcapabilities@google.com</owner>
   <summary>
     Records an enum when constructing the regional capabilities service during
     browser startup and there is no variations country available. On ChromeOS
@@ -1172,6 +1173,20 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
     updates and then have to fallback onto other mechanisms. This histogram
     tracks if the fallback mechanism was triggered and whether it also failed to
     determine a country and if so, why.
+  </summary>
+</histogram>
+
+<histogram name="ChromeOS.CountryCode.VPDRegionSplittingOutcome"
+    enum="BooleanSuccess" expires_after="2026-03-20">
+  <owner>cschlosser@chromium.org</owner>
+  <owner>chromeos-privacyhub@google.com</owner>
+  <owner>chrome-regionalcapabilities@google.com</owner>
+  <summary>
+    Records an enum when constructing the regional capabilities service during
+    browser startup and the fallback country is being computed from the VPD
+    region. This histogram tracks whether the 2-letters string obtained after
+    splitting the region read from VPD ends up being recognized as a valid
+    country code or not.
   </summary>
 </histogram>
 
