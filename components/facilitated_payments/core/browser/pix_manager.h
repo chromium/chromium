@@ -231,6 +231,7 @@ class PixManager {
   void OnPurchaseActionResult(base::TimeTicks start_time,
                               PurchaseActionResult result);
 
+  // TODO(crbug.com/420735186): Rename to OnUiScreenEvent.
   // Called by the view to communicate UI events.
   void OnUiEvent(UiEvent ui_event_type);
 
