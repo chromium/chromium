@@ -253,6 +253,9 @@
       <message name="IDS_IPH_KEYBOARD_ACCESSORY_PAYMENT_OFFER" desc="Text used for the In-Product-Help bubble suggesting that the current credit card suggestion has a card linked offer attached.">
         Cashback linked
       </message>
+      <message name="IDS_IPH_KEYBOARD_ACCESSORY_ENABLE_LOYALTY_CARDS" desc="Text used for the In-Product-Help bubble suggesting that there is loyalty card info that can be filled.">
+        Now you can autofill loyalty cards. You can turn these suggestions off in Google Wallet.
+      </message>
       <message name="IDS_MORE_PASSKEYS" desc="Title of the chip that opens Android Credential Manager UI. The user can select passkeys from other providers there.">
         More passkeys
       </message>

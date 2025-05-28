@@ -79,6 +79,10 @@ public final class EventConstants {
     public static final String KEYBOARD_ACCESSORY_HOME_AND_WORK_ADDRESS_AUTOFILLED =
             "keyboard_accessory_home_and_work_address_autofilled";
 
+    /** The keyboard accessory was used to fill loyalty card info into a form. */
+    public static final String KEYBOARD_ACCESSORY_LOYALTY_CARDS_AUTOFILLED =
+            "keyboard_accessory_loyalty_cards_autofilled";
+
     /** The keyboard accessory was used to create a new plus address. */
     public static final String KEYBOARD_ACCESSORY_PLUS_ADDRESS_CREATE_SUGGESTION =
             "keyboard_accessory_plus_address_create_suggestion";

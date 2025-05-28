@@ -401,7 +401,6 @@ TEST_F(ValuableSuggestionGeneratorTest,
                                        IDS_AUTOFILL_MANAGE_ADDRESSES))));
 }
 
-#if !BUILDFLAG(IS_ANDROID)
 TEST_F(ValuableSuggestionGeneratorTest,
        GetLoyaltyCardSuggestions_SuggestionsIPH) {
   test_api(valuables_data_manager())
@@ -421,6 +420,5 @@ TEST_F(ValuableSuggestionGeneratorTest,
       testing::ElementsAre(HasIphFeature(kIphFeature), HasNoIphFeature(),
                            HasNoIphFeature()));
 }
-#endif  // BUILDFLAG(IS_ANDROID)
 }  // namespace
 }  // namespace autofill
