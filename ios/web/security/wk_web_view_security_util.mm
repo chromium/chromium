@@ -159,6 +159,14 @@ SecurityStyle GetSecurityStyleFromTrustResult(SecTrustResultType result) {
     case kSecTrustResultFatalTrustFailure:
     case kSecTrustResultOtherError:
       return SECURITY_STYLE_AUTHENTICATION_BROKEN;
+
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+    // "This return value is no longer used, but may occur in older versions of
+    // macOS."
+    case kSecTrustResultConfirm:
+      NOTREACHED();
+#pragma clang diagnostic pop
   }
 }
 
