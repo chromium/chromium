@@ -74,7 +74,6 @@ class CORE_EXPORT SVGElement : public Element {
   }
 
   String title() const override;
-  static bool IsAnimatableCSSProperty(const QualifiedName&);
 
   bool HasMotionTransform() const { return HasSVGRareData(); }
   // Apply any "motion transform" contribution (if existing.)
