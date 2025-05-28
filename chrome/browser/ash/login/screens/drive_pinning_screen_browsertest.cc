@@ -20,6 +20,7 @@
 #include "chrome/browser/ash/login/test/oobe_screen_waiter.h"
 #include "chrome/browser/ash/login/test/oobe_screens_utils.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/webui/ash/login/drive_pinning_screen_handler.h"
@@ -211,7 +212,7 @@ class DrivePinningIntegrationServiceTest : public DrivePinningBaseScreenTest {
     fake_drivefs_helpers_[profile] =
         std::make_unique<drive::FakeDriveFsHelper>(profile, mount_path);
     auto* integration_service = new drive::DriveIntegrationService(
-        profile, std::string(), mount_path,
+        g_browser_process->local_state(), profile, std::string(), mount_path,
         fake_drivefs_helpers_[profile]->CreateFakeDriveFsListenerFactory());
     return integration_service;
   }

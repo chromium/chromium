@@ -1469,8 +1469,8 @@ class DriveFsTestVolume : public TestVolume {
 
     EXPECT_FALSE(integration_service_);
     integration_service_ = new drive::DriveIntegrationService(
-        profile, std::string(), root_path().Append("v1"),
-        CreateDriveFsBootstrapListener());
+        g_browser_process->local_state(), profile, std::string(),
+        root_path().Append("v1"), CreateDriveFsBootstrapListener());
 
     return integration_service_;
   }

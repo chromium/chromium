@@ -127,7 +127,9 @@ class DriveIntegrationService : public KeyedService,
   // test_drivefs_mojo_listener_factory are used by tests to inject customized
   // instances.
   // Pass NULL or the empty value when not interested.
+  // `local_state` must be non-null and must outlive `this`.
   DriveIntegrationService(
+      PrefService* local_state,
       Profile* profile,
       const std::string& test_mount_point_name,
       const base::FilePath& test_cache_root,

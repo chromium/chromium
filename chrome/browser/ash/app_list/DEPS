@@ -121,7 +121,7 @@ specific_include_rules = {
     "+ash/shell.h",
   ],
 
-  "app_list_client_impl_browsertest\\.cc": [
+  ".*browsertest\\.cc": [
     "+chrome/browser/browser_process.h",
   ],
 

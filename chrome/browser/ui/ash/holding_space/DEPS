@@ -34,3 +34,9 @@ include_rules = [
   "+chrome/common",
   "+chrome/test",
 ]
+
+specific_include_rules = {
+  ".*browsertest\\.cc": [
+    "+chrome/browser/browser_process.h",
+  ],
+}

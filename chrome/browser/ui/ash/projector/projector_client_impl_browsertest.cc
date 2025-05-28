@@ -28,6 +28,7 @@
 #include "chrome/browser/ash/login/test/device_state_mixin.h"
 #include "chrome/browser/ash/login/test/logged_in_user_mixin.h"
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/projector/projector_app_client_impl.h"
 #include "chrome/browser/ui/ash/projector/projector_utils.h"
@@ -152,7 +153,8 @@ class ProjectorClientTest : public InProcessBrowserTest {
         std::make_unique<drive::FakeDriveFsHelper>(profile, mount_path);
     // The integration service is owned by `KeyedServiceFactory`.
     auto* integration_service = new drive::DriveIntegrationService(
-        profile, /*test_mount_point_name=*/std::string(), mount_path,
+        g_browser_process->local_state(), profile,
+        /*test_mount_point_name=*/std::string(), mount_path,
         fake_drivefs_helpers_[profile]->CreateFakeDriveFsListenerFactory());
     return integration_service;
   }

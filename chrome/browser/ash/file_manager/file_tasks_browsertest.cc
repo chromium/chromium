@@ -57,6 +57,7 @@
 #include "chrome/browser/ash/login/test/logged_in_user_mixin.h"
 #include "chrome/browser/ash/policy/dlp/dlp_files_controller_ash.h"
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager_factory.h"
 #include "chrome/browser/chromeos/policy/dlp/test/mock_dlp_rules_manager.h"
@@ -1236,7 +1237,7 @@ class DriveTest : public TestAccountBrowserTest {
         std::make_unique<test::FakeSimpleDriveFsHelper>(profile,
                                                         drive_mount_point_);
     return new DriveIntegrationService(
-        profile, "", drive_mount_point_,
+        g_browser_process->local_state(), profile, "", drive_mount_point_,
         fake_drivefs_helpers_[profile]->CreateFakeDriveFsListenerFactory());
   }
 

@@ -125,8 +125,8 @@ std::unique_ptr<KeyedService> BuildTestDriveIntegrationService(
   fake_drivefs_helper =
       std::make_unique<drive::FakeDriveFsHelper>(profile, mount_path);
   auto service = std::make_unique<drive::DriveIntegrationService>(
-      profile, "drivefs", mount_path,
-      fake_drivefs_helper->CreateFakeDriveFsListenerFactory());
+      TestingBrowserProcess::GetGlobal()->local_state(), profile, "drivefs",
+      mount_path, fake_drivefs_helper->CreateFakeDriveFsListenerFactory());
 
   // Wait until the DriveIntegrationService is initialized.
   while (!service->IsMounted() || !service->GetDriveFsInterface()) {

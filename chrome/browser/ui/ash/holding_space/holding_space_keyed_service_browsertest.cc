@@ -34,6 +34,7 @@
 #include "chrome/browser/ash/drive/drivefs_test_support.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ash/file_manager/volume_manager.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/component_loader.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_keyed_service_factory.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_test_util.h"
@@ -312,7 +313,8 @@ class HoldingSpaceKeyedServiceBrowserTest : public InProcessBrowserTest {
     fake_drivefs_helper_ =
         std::make_unique<drive::FakeDriveFsHelper>(profile, test_mount_point_);
     drive_integration_service_ = new drive::DriveIntegrationService(
-        profile, "", test_cache_root_.GetPath(),
+        g_browser_process->local_state(), profile, "",
+        test_cache_root_.GetPath(),
         fake_drivefs_helper_->CreateFakeDriveFsListenerFactory());
     return drive_integration_service_;
   }

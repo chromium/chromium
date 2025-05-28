@@ -13,6 +13,7 @@
 #include "base/memory/singleton.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chrome/browser/ash/drive/drive_integration_service_factory.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/download/download_core_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_selections.h"
@@ -78,8 +79,9 @@ DriveIntegrationServiceFactory::BuildServiceInstanceForBrowserContext(
   Profile* profile = Profile::FromBrowserContext(context);
 
   if (!factory_for_test_) {
-    return std::make_unique<DriveIntegrationService>(profile, std::string(),
-                                                     base::FilePath());
+    return std::make_unique<DriveIntegrationService>(
+        g_browser_process->local_state(), profile, std::string(),
+        base::FilePath());
   } else {
     return base::WrapUnique(factory_for_test_->Run(profile));
   }

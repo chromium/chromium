@@ -16,6 +16,7 @@
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ash/file_manager/volume_manager.h"
 #include "chrome/browser/ash/policy/skyvault/local_files_migration_constants.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/notifications/notification_display_service_tester.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -226,7 +227,7 @@ DriveIntegrationService* SkyvaultGoogleDriveTest::CreateDriveIntegrationService(
       std::make_unique<file_manager::test::FakeSimpleDriveFsHelper>(
           profile, drive_mount_point_);
   return new DriveIntegrationService(
-      profile, "", drive_mount_point_,
+      g_browser_process->local_state(), profile, "", drive_mount_point_,
       fake_drivefs_helpers_[profile]->CreateFakeDriveFsListenerFactory());
 }
 

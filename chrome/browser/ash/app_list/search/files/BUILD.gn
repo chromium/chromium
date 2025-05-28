@@ -124,6 +124,7 @@ source_set("browser_tests") {
   sources = [ "drive_search_browsertest.cc" ]
 
   deps = [
+    "//chrome/browser:browser_process",
     "//chrome/browser/ash/app_list/search",
     "//chrome/browser/ash/app_list/search/test:browser_test_support",
     "//chrome/browser/ash/drive",

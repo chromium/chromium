@@ -339,6 +339,7 @@ class VolumeManagerTest : public testing::Test {
                   extension_registry_.get())),
           drive_integration_service_(
               std::make_unique<drive::DriveIntegrationService>(
+                  TestingBrowserProcess::GetGlobal()->local_state(),
                   profile_,
                   std::string(),
                   base::FilePath())),

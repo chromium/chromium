@@ -81,6 +81,7 @@ static_library("test_support") {
 
   deps = [
     "//base/test:test_support",
+    "//chrome/browser:browser_process",
     "//chrome/browser/ash/profiles",
     "//chrome/browser/profiles:profile",
     "//chrome/common:constants",
@@ -105,6 +106,7 @@ source_set("browser_tests") {
     "//base",
     "//base/test:test_support",
     "//chrome/browser",
+    "//chrome/browser:browser_process",
     "//chrome/browser/ash/file_manager",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui",

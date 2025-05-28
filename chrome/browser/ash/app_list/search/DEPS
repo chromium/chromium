@@ -75,3 +75,9 @@ include_rules = [
   "+chromeos/ash/components/system_info",
   "+third_party/omnibox_proto",
 ]
+
+specific_include_rules = {
+  ".*browsertest\\.cc": [
+    "+chrome/browser/browser_process.h",
+  ],
+}

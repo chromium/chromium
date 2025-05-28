@@ -225,6 +225,7 @@ class DriveRecentFileSuggestionProviderTest : public ::testing::Test {
     fake_drivefs_helper_ = std::make_unique<drive::FakeDriveFsHelper>(
         Profile::FromBrowserContext(context), mount_point_path);
     auto service = std::make_unique<drive::DriveIntegrationService>(
+        TestingBrowserProcess::GetGlobal()->local_state(),
         Profile::FromBrowserContext(context), mount_point_name,
         base::FilePath(),
         fake_drivefs_helper_->CreateFakeDriveFsListenerFactory());
