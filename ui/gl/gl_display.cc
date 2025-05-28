@@ -368,49 +368,6 @@ const char* DisplayTypeString(DisplayType display_type) {
   }
 }
 
-const char* GetDebugMessageTypeString(EGLint source) {
-  switch (source) {
-    case EGL_DEBUG_MSG_CRITICAL_KHR:
-      return "Critical";
-    case EGL_DEBUG_MSG_ERROR_KHR:
-      return "Error";
-    case EGL_DEBUG_MSG_WARN_KHR:
-      return "Warning";
-    case EGL_DEBUG_MSG_INFO_KHR:
-      return "Info";
-    default:
-      return "UNKNOWN";
-  }
-}
-
-void EGLAPIENTRY LogEGLDebugMessage(EGLenum error,
-                                    const char* command,
-                                    EGLint message_type,
-                                    EGLLabelKHR thread_label,
-                                    EGLLabelKHR object_label,
-                                    const char* message) {
-  std::string formatted_message = std::string("EGL Driver message (") +
-                                  GetDebugMessageTypeString(message_type) +
-                                  ") " + command + ": " + message;
-
-  // Assume that all labels that have been set are strings
-  if (thread_label) {
-    formatted_message += " thread: ";
-    formatted_message += static_cast<const char*>(thread_label);
-  }
-  if (object_label) {
-    formatted_message += " object: ";
-    formatted_message += static_cast<const char*>(object_label);
-  }
-
-  if (message_type == EGL_DEBUG_MSG_CRITICAL_KHR ||
-      message_type == EGL_DEBUG_MSG_ERROR_KHR) {
-    LOG(ERROR) << formatted_message;
-  } else {
-    DVLOG(1) << formatted_message;
-  }
-}
-
 void SetEglDebugMessageControl() {
   static bool egl_debug_message_control_is_set = false;
   if (!egl_debug_message_control_is_set) {
@@ -427,7 +384,7 @@ void SetEglDebugMessageControl() {
         EGL_NONE,
     };
 
-    eglDebugMessageControlKHR(&LogEGLDebugMessage, controls);
+    eglDebugMessageControlKHR(&ui::LogEGLDebugMessage, controls);
   }
 }
 

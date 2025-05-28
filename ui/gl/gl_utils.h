@@ -144,6 +144,9 @@ class GL_EXPORT ScopedPixelStore {
   const int value_;
 };
 
+GL_EXPORT const char* GetDebugSourceString(unsigned int source);
+GL_EXPORT const char* GetDebugTypeString(unsigned int type);
+GL_EXPORT const char* GetDebugSeverityString(unsigned int severity);
 }  // namespace gl
 
 #endif  // UI_GL_GL_UTILS_H_
