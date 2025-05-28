@@ -13,6 +13,7 @@
 #include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
+#include "base/numerics/checked_math.h"
 #include "base/run_loop.h"
 #include "base/task/thread_pool.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
@@ -38,65 +39,67 @@ bool File::IsValid() const {
   return base_file_.IsValid();
 }
 
-bool File::Read(void* buffer, size_t buffer_len, size_t offset) {
+bool File::Read(base::span<uint8_t> buffer, size_t offset) {
   DCHECK(base_file_.IsValid());
-  if (buffer_len > static_cast<size_t>(std::numeric_limits<int32_t>::max()) ||
-      offset > static_cast<size_t>(std::numeric_limits<int32_t>::max())) {
+  if (!base::IsValueInRangeForNumericType<int32_t>(buffer.size()) ||
+      !base::IsValueInRangeForNumericType<int32_t>(offset)) {
     return false;
   }
 
-  int ret = UNSAFE_TODO(
-      base_file_.Read(offset, static_cast<char*>(buffer), buffer_len));
-  return (static_cast<size_t>(ret) == buffer_len);
+  std::optional<size_t> ret = base_file_.Read(offset, buffer);
+  return ret == buffer.size();
 }
 
-bool File::Write(const void* buffer, size_t buffer_len, size_t offset) {
+bool File::Write(base::span<const uint8_t> buffer, size_t offset) {
   DCHECK(base_file_.IsValid());
-  if (buffer_len > static_cast<size_t>(std::numeric_limits<int32_t>::max()) ||
-      offset > static_cast<size_t>(std::numeric_limits<int32_t>::max())) {
+  if (!base::IsValueInRangeForNumericType<int32_t>(buffer.size()) ||
+      !base::IsValueInRangeForNumericType<int32_t>(offset)) {
     return false;
   }
 
-  int ret = UNSAFE_TODO(
-      base_file_.Write(offset, static_cast<const char*>(buffer), buffer_len));
-  return (static_cast<size_t>(ret) == buffer_len);
+  std::optional<size_t> ret = base_file_.Write(offset, buffer);
+  return ret == buffer.size();
 }
 
-bool File::Read(void* buffer, size_t buffer_len, size_t offset,
-                FileIOCallback* callback, bool* completed) {
+bool File::Read(base::span<uint8_t> buffer,
+                size_t offset,
+                FileIOCallback* callback,
+                bool* completed) {
   DCHECK(base_file_.IsValid());
   if (!callback) {
     if (completed)
       *completed = true;
-    return Read(buffer, buffer_len, offset);
+    return Read(buffer, offset);
   }
 
-  if (buffer_len > static_cast<size_t>(std::numeric_limits<int32_t>::max()) ||
-      offset > static_cast<size_t>(std::numeric_limits<int32_t>::max())) {
+  if (!base::IsValueInRangeForNumericType<int32_t>(buffer.size()) ||
+      !base::IsValueInRangeForNumericType<int32_t>(offset)) {
     return false;
   }
 
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::TaskPriority::USER_BLOCKING, base::MayBlock()},
-      base::BindOnce(&File::DoRead, base::Unretained(this), buffer, buffer_len,
-                     offset),
+      base::BindOnce(&File::DoRead, base::Unretained(this), buffer, offset),
       base::BindOnce(&File::OnOperationComplete, this, callback));
 
   *completed = false;
   return true;
 }
 
-bool File::Write(const void* buffer, size_t buffer_len, size_t offset,
-                 FileIOCallback* callback, bool* completed) {
+bool File::Write(base::span<const uint8_t> buffer,
+                 size_t offset,
+                 FileIOCallback* callback,
+                 bool* completed) {
   DCHECK(base_file_.IsValid());
   if (!callback) {
-    if (completed)
+    if (completed) {
       *completed = true;
-    return Write(buffer, buffer_len, offset);
+    }
+    return Write(buffer, offset);
   }
 
-  if (buffer_len > static_cast<size_t>(std::numeric_limits<int32_t>::max()) ||
-      offset > static_cast<size_t>(std::numeric_limits<int32_t>::max())) {
+  if (!base::IsValueInRangeForNumericType<int32_t>(buffer.size()) ||
+      !base::IsValueInRangeForNumericType<int32_t>(offset)) {
     return false;
   }
 
@@ -106,8 +109,7 @@ bool File::Write(const void* buffer, size_t buffer_len, size_t offset,
   // requests and changing the priority to BACKGROUND.
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::TaskPriority::USER_BLOCKING, base::MayBlock()},
-      base::BindOnce(&File::DoWrite, base::Unretained(this), buffer, buffer_len,
-                     offset),
+      base::BindOnce(&File::DoWrite, base::Unretained(this), buffer, offset),
       base::BindOnce(&File::OnOperationComplete, this, callback));
 
   *completed = false;
@@ -155,17 +157,19 @@ base::PlatformFile File::platform_file() const {
 }
 
 // Runs on a worker thread.
-int File::DoRead(void* buffer, size_t buffer_len, size_t offset) {
-  if (Read(const_cast<void*>(buffer), buffer_len, offset))
-    return static_cast<int>(buffer_len);
+int File::DoRead(base::raw_span<uint8_t> buffer, size_t offset) {
+  if (Read(buffer, offset)) {
+    return static_cast<int>(buffer.size());
+  }
 
   return net::ERR_CACHE_READ_FAILURE;
 }
 
 // Runs on a worker thread.
-int File::DoWrite(const void* buffer, size_t buffer_len, size_t offset) {
-  if (Write(const_cast<void*>(buffer), buffer_len, offset))
-    return static_cast<int>(buffer_len);
+int File::DoWrite(base::raw_span<const uint8_t> buffer, size_t offset) {
+  if (Write(buffer, offset)) {
+    return static_cast<int>(buffer.size());
+  }
 
   return net::ERR_CACHE_WRITE_FAILURE;
 }

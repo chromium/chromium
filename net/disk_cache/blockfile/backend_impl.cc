@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "net/disk_cache/blockfile/backend_impl.h"
 
 #include <algorithm>
@@ -16,6 +11,7 @@
 #include <utility>
 
 #include "base/containers/heap_array.h"
+#include "base/containers/span.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -1307,8 +1303,9 @@ bool BackendImpl::CreateBackingStore(disk_cache::File* file) {
   header.table_len = DesiredIndexTableLen(max_size_);
   header.create_time = Time::Now().ToInternalValue();
 
-  if (!file->Write(&header, sizeof(header), 0))
+  if (!file->Write(base::byte_span_from_ref(header), 0)) {
     return false;
+  }
 
   size_t size = GetIndexSize(header.table_len);
   if (!file->SetLength(size))
@@ -1322,17 +1319,16 @@ bool BackendImpl::CreateBackingStore(disk_cache::File* file) {
   // header), to force allocation now and fail cleanly if there is no space.
   //
   // See https://crbug.com/1097518
-  const int kPageSize = 4096;
+  static constexpr size_t kPageSize = 4096;
   static_assert(sizeof(disk_cache::IndexHeader) < kPageSize,
                 "Code below assumes it wouldn't overwrite header by starting "
                 "at kPageSize");
-  auto page = std::make_unique<char[]>(kPageSize);
-  memset(page.get(), 0, kPageSize);
-
+  auto page = base::HeapArray<uint8_t>::WithSize(kPageSize);
   for (size_t offset = kPageSize; offset < size; offset += kPageSize) {
     size_t end = std::min(offset + kPageSize, size);
-    if (!file->Write(page.get(), end - offset, offset))
+    if (!file->Write(page.first(end - offset), offset)) {
       return false;
+    }
   }
   return true;
 }
@@ -1919,8 +1915,12 @@ bool BackendImpl::CheckIndex() {
     return false;
   }
 
-  if (!mask_)
-    mask_ = data_->header.table_len - 1;
+  if (!mask_) {
+    // `data_->header.table_len` may be larger than `kIndexTablesize`. This will
+    // cause a memory out of bounds error.
+    mask_ = std::min(static_cast<int>(kIndexTablesize) - 1,
+                     data_->header.table_len - 1);
+  }
 
   // Load the table into memory.
   return index_->Preload();
@@ -1969,16 +1969,20 @@ int BackendImpl::CheckAllEntries() {
 bool BackendImpl::CheckEntry(EntryImpl* cache_entry) {
   bool ok = block_files_.IsValid(cache_entry->entry()->address());
   ok = ok && block_files_.IsValid(cache_entry->rankings()->address());
-  EntryStore* data = cache_entry->entry()->Data();
-  for (size_t i = 0; i < std::size(data->data_addr); i++) {
-    if (data->data_addr[i]) {
-      Addr address(data->data_addr[i]);
-      if (address.is_block_file())
-        ok = ok && block_files_.IsValid(address);
-    }
-  }
+  ok = ok && cache_entry->rankings()->VerifyHash();
+  ok = ok && std::ranges::all_of(
+                 cache_entry->entry()->Data()->data_addr,
+                 [&block_files = block_files_](const CacheAddr& cache_addr) {
+                   if (cache_addr) {
+                     Addr address(cache_addr);
+                     if (address.is_block_file()) {
+                       return block_files.IsValid(address);
+                     }
+                   }
 
-  return ok && cache_entry->rankings()->VerifyHash();
+                   return true;
+                 });
+  return ok;
 }
 
 // static

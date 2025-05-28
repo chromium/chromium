@@ -49,55 +49,58 @@
 #include <stdint.h>
 #include <string.h>
 
+#include <array>
+
 #include "net/base/net_export.h"
 #include "net/disk_cache/blockfile/disk_format_base.h"
 
 namespace disk_cache {
 
-const int kIndexTablesize = 0x10000;
-const uint32_t kIndexMagic = 0xC103CAC3;
-const uint32_t kVersion2_0 = 0x20000;
-const uint32_t kVersion2_1 = 0x20001;
-const uint32_t kVersion3_0 = 0x30000;
-const uint32_t kCurrentVersion = kVersion3_0;
+inline constexpr size_t kIndexTablesize = 0x10000;
+inline constexpr uint32_t kIndexMagic = 0xC103CAC3;
+inline constexpr uint32_t kVersion2_0 = 0x20000;
+inline constexpr uint32_t kVersion2_1 = 0x20001;
+inline constexpr uint32_t kVersion3_0 = 0x30000;
+inline constexpr uint32_t kCurrentVersion = kVersion3_0;
 
 struct LruData {
-  int32_t pad1[2];
-  int32_t filled;  // Flag to tell when we filled the cache.
-  int32_t sizes[5];
-  CacheAddr heads[5];
-  CacheAddr tails[5];
-  CacheAddr transaction;     // In-flight operation target.
-  int32_t operation;         // Actual in-flight operation.
-  int32_t operation_list;    // In-flight operation list.
-  int32_t pad2[7];
+  std::array<int32_t, 2> pad1 = {};
+  int32_t filled = 0;  // Flag to tell when we filled the cache.
+  std::array<int32_t, 5> sizes = {};
+  std::array<CacheAddr, 5> heads = {};
+  std::array<CacheAddr, 5> tails = {};
+  CacheAddr transaction = 0;   // In-flight operation target.
+  int32_t operation = 0;       // Actual in-flight operation.
+  int32_t operation_list = 0;  // In-flight operation list.
+  std::array<int32_t, 7> pad2 = {};
 };
 
 // Header for the master index file.
 struct NET_EXPORT_PRIVATE IndexHeader {
   IndexHeader();
 
-  uint32_t magic;
-  uint32_t version;
-  int32_t num_entries;       // Number of entries currently stored.
-  int32_t old_v2_num_bytes;  // Total size of the stored data, in versions 2.x
-  int32_t last_file;         // Last external file created.
-  int32_t this_id;           // Id for all entries being changed (dirty flag).
-  CacheAddr   stats;         // Storage for usage data.
-  int32_t table_len;         // Actual size of the table (0 == kIndexTablesize).
-  int32_t crash;             // Signals a previous crash.
-  int32_t experiment;        // Id of an ongoing test.
-  uint64_t create_time;      // Creation time for this set of files.
-  int64_t num_bytes;         // Total size of the stored data, in version 3.0
-  int32_t pad[50];
+  uint32_t magic = kIndexMagic;
+  uint32_t version = kCurrentVersion;
+  int32_t num_entries = 0;  // Number of entries currently stored.
+  int32_t old_v2_num_bytes =
+      0;                     // Total size of the stored data, in versions 2.x
+  int32_t last_file = 0;     // Last external file created.
+  int32_t this_id = 0;       // Id for all entries being changed (dirty flag).
+  CacheAddr stats = 0;       // Storage for usage data.
+  int32_t table_len = 0;     // Actual size of the table (0 == kIndexTablesize).
+  int32_t crash = 0;         // Signals a previous crash.
+  int32_t experiment = 0;    // Id of an ongoing test.
+  uint64_t create_time = 0;  // Creation time for this set of files.
+  int64_t num_bytes = 0;     // Total size of the stored data, in version 3.0
+  std::array<int32_t, 50> pad = {};
   LruData     lru;           // Eviction control data.
 };
 
 // The structure of the whole index file.
 struct Index {
   IndexHeader header;
-  CacheAddr   table[kIndexTablesize];  // Default size. Actual size controlled
-                                       // by header.table_len.
+  // Default size. Actual size controlled by header.table_len.
+  std::array<CacheAddr, kIndexTablesize> table = {};
 };
 
 // Main structure for an entry on the backing storage. If the key is longer than
@@ -116,7 +119,7 @@ struct EntryStore {
   int32_t key_len;
   CacheAddr   long_key;           // Optional address of a long key.
   int32_t data_size[4];           // We can store up to 4 data streams for each
-  CacheAddr   data_addr[4];       // entry.
+  std::array<CacheAddr, 4> data_addr;  // entry.
   uint32_t flags;                 // Any combination of EntryFlags.
   int32_t pad[4];
   uint32_t self_hash;             // The hash of EntryStore up to this point.

@@ -12,10 +12,6 @@ namespace disk_cache {
 
 static_assert(sizeof(IndexHeader) == 368);
 
-IndexHeader::IndexHeader() {
-  std::ranges::fill(base::byte_span_from_ref(*this), 0);
-  magic = kIndexMagic;
-  version = kCurrentVersion;
-}
+IndexHeader::IndexHeader() = default;
 
 }  // namespace disk_cache
