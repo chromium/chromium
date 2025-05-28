@@ -25,7 +25,6 @@ font-types = "0.8"
 hex = "0.4"
 lazy_static = "1"
 libc = "0.2"
-llguidance = { version = "0.7.13", default-features = false, features = ["lark"] }
 png = "=0.18.0-rc"
 proc-macro2 = "1"
 prost = "0.13.3"
@@ -37,9 +36,21 @@ skrifa = "0.29"
 small_ctor = "0.1"
 static_assertions = "1"
 
+[dependencies.bytemuck]
+version = "1"
+features = ["nightly_portable_simd"]  # For std::simd coverage.
+
 [dependencies.crc32fast]
 version = "1.4.2"
 features = ["nightly"]  # For optimized aarch64 implementation.
+
+# Without the `artifact` field Cargo will only build the `[lib]` target from a
+# dependency.  Specifying `artifact = "bin"` below allows Cargo (and `gnrt`) to
+# also cover `cxxbridge-cmd` when analyzing the dependency tree.  See also
+# https://doc.rust-lang.org/nightly/cargo/reference/unstable.html#artifact-dependencies
+[dependencies.cxxbridge-cmd]
+version = "1"
+artifact = "bin"
 
 [dependencies.icu_casemap]
 version = "2.0.0"
@@ -69,19 +80,16 @@ features = ["compiled_data"]
 version = "2.0.0"
 default-features = false
 
-# Without the `artifact` field Cargo will only build the `[lib]` target from a
-# dependency.  Specifying `artifact = "bin"` below allows Cargo (and `gnrt`) to
-# also cover `cxxbridge-cmd` when analyzing the dependency tree.  See also
-# https://doc.rust-lang.org/nightly/cargo/reference/unstable.html#artifact-dependencies
-[dependencies.cxxbridge-cmd]
-version = "1"
-artifact = "bin"
+[dependencies.llguidance]
+version = "0.7.13"
+default-features = false
+features = ["lark"]
 
 [dependencies.log]
 version = "0.4"
 # `release_max_level_info` disables debug and trace logs at compile time
 # when debug asserts are off, which is when DCHECK_IS_ON() is false.
-features = [ "std", "release_max_level_info" ]
+features = ["std", "release_max_level_info"]
 
 # Temporarily inform our cargo tooling that we care about
 # the new version of serde_json_lenient. We are in the midst
@@ -104,10 +112,6 @@ features = ["full"]
 [dependencies.temporal_capi]
 version = "0.0.8"
 features = ["compiled_data"]
-
-[dependencies.bytemuck]
-version = "1"
-features = ["nightly_portable_simd"]  # For std::simd coverage.
 
 [dependencies.zip]
 version = "3.0.0"

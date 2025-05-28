@@ -75,11 +75,8 @@
 #     allow_unsafe: If true, then the crate is allowed to use `unsafe` Rust.
 #
 #     allow_unstable_features: A list of unstable feature names to allow
-#       in a given crate.  (Using unstable features adds extra risk
-#       to `rustc` rolls - please justify the risk and think about
-#       mitigation strategies.  See
-#       https://docs.google.com/document/d/1lh9x43gtqXFh5bP1LeYevWj0EcIRgIu0XGahHY08aeY/edit?usp=sharing
-#       as an example.)
+#       in a given crate.  (This should be used sparingly - please see
+#       tools/rust/unstable_rust_feature_usage.md for more details.)
 #
 #     configs_to_remove / configs_to_add: A list of GN config labels.
 #
@@ -120,13 +117,13 @@ allow_unsafe = false
 [crate.bitflags.extra_kv]
 allow_unsafe = false
 
-[crate.bytemuck_derive.extra_kv]
-allow_unsafe = false
-
 [crate.bytemuck.extra_kv]
 allow_unsafe = true
 # This allows using `std::simd` helpers, which are needed by first-party code.
 allow_unstable_features = ["portable_simd"]
+
+[crate.bytemuck_derive.extra_kv]
+allow_unsafe = false
 
 [crate.bytes]
 extra_kv = { allow_unsafe = true }
@@ -154,11 +151,11 @@ allow_unsafe = true
 [crate.codespan-reporting]
 extra_kv = { allow_unsafe = false }
 
-[crate.core_maths.extra_kv]
-allow_unsafe = false
-
 [crate.combine.extra_kv]
 allow_unsafe = true
+
+[crate.core_maths.extra_kv]
+allow_unsafe = false
 
 [crate.crc32fast.extra_kv]
 allow_unsafe = true
@@ -187,11 +184,11 @@ allow_unsafe = false
 [crate.diplomat.extra_kv]
 allow_unsafe = false
 
-[crate.diplomat_core.extra_kv]
-allow_unsafe = false
-
 [crate.diplomat-runtime.extra_kv]
 allow_unsafe = true
+
+[crate.diplomat_core.extra_kv]
+allow_unsafe = false
 
 [crate.displaydoc.extra_kv]
 allow_unsafe = false
@@ -231,6 +228,9 @@ configs_to_remove = ['//build/config/compiler:default_optimization']
 configs_to_add = ['//build/config/compiler:optimize']
 allow_unsafe = false
 
+[crate.foldhash.extra_kv]
+allow_unsafe = true
+
 [crate.font-types.extra_kv]
 allow_unsafe = true
 
@@ -255,16 +255,36 @@ extra_input_roots = ['../data']
 extra_src_roots = ['../data']
 extra_kv = { allow_unsafe = false }
 
+[crate.icu_casemap.extra_kv]
+allow_unsafe = false
+
 [crate.icu_casemap_data]
 extra_input_roots = ['../data']
 extra_src_roots = ['../data']
+extra_kv = { allow_unsafe = false }
 
 [crate.icu_collections]
 extra_kv = { allow_unsafe = true }
 
+[crate.icu_decimal.extra_kv]
+allow_unsafe = false
+
 [crate.icu_decimal_data]
 extra_input_roots = ['../data']
 extra_src_roots = ['../data']
+extra_kv = { allow_unsafe = false }
+
+[crate.icu_experimental.extra_kv]
+allow_unsafe = false
+
+[crate.icu_experimental_data.extra_kv]
+allow_unsafe = false
+
+[crate.icu_list.extra_kv]
+allow_unsafe = false
+
+[crate.icu_list_data.extra_kv]
+allow_unsafe = false
 
 [crate.icu_experimental_data]
 extra_input_roots = ['../data']
@@ -283,54 +303,15 @@ extra_kv = { allow_unsafe = true }
 [crate.icu_locale_data]
 extra_input_roots = ['../data']
 extra_src_roots = ['../data']
-
-[crate.icu_normalizer_data]
-extra_input_roots = ['../data']
-extra_src_roots = ['../data']
-
-[crate.icu_plurals_data]
-extra_input_roots = ['../data']
-extra_src_roots = ['../data']
-
-[crate.icu_properties_data]
-extra_input_roots = ['../data']
-extra_src_roots = ['../data']
-
-[crate.icu_provider]
-extra_kv = { allow_unsafe = true }
-
-[crate.icu_casemap.extra_kv]
-allow_unsafe = false
-
-[crate.icu_casemap_data.extra_kv]
-allow_unsafe = false
-
-[crate.icu_decimal.extra_kv]
-allow_unsafe = false
-
-[crate.icu_decimal_data.extra_kv]
-allow_unsafe = false
-
-[crate.icu_experimental.extra_kv]
-allow_unsafe = false
-
-[crate.icu_experimental_data.extra_kv]
-allow_unsafe = false
-
-[crate.icu_list.extra_kv]
-allow_unsafe = false
-
-[crate.icu_list_data.extra_kv]
-allow_unsafe = false
-
-[crate.icu_locale_data.extra_kv]
-allow_unsafe = false
+extra_kv = { allow_unsafe = false }
 
 [crate.icu_normalizer.extra_kv]
 allow_unsafe = true
 
-[crate.icu_normalizer_data.extra_kv]
-allow_unsafe = false
+[crate.icu_normalizer_data]
+extra_input_roots = ['../data']
+extra_src_roots = ['../data']
+extra_kv = { allow_unsafe = false }
 
 [crate.icu_pattern.extra_kv]
 allow_unsafe = true
@@ -338,24 +319,28 @@ allow_unsafe = true
 [crate.icu_plurals.extra_kv]
 allow_unsafe = false
 
-[crate.icu_plurals_data.extra_kv]
-allow_unsafe = false
+[crate.icu_plurals_data]
+extra_input_roots = ['../data']
+extra_src_roots = ['../data']
+extra_kv = { allow_unsafe = false }
 
 [crate.icu_properties.extra_kv]
 allow_unsafe = false
 
-[crate.icu_properties_data.extra_kv]
-allow_unsafe = false
+[crate.icu_properties_data]
+extra_input_roots = ['../data']
+extra_src_roots = ['../data']
+extra_kv = { allow_unsafe = false }
 
-[crate.foldhash.extra_kv]
+[crate.icu_provider]
+extra_kv = { allow_unsafe = true }
+
+[crate.indexmap.extra_kv]
 allow_unsafe = true
 
 [crate.itertools]
 extra_kv = { allow_unsafe = true }
 group = 'test'
-
-[crate.indexmap.extra_kv]
-allow_unsafe = true
 
 [crate.itoa.extra_kv]
 allow_unsafe = true
@@ -461,18 +446,18 @@ allow_unsafe = false
 [crate.regex-syntax.extra_kv]
 allow_unsafe = false
 
-[crate.rustversion]
-allow_first_party_usage = false
-build_script_outputs = [ "version.expr" ]
-extra_build_script_src_roots = ['../build/rustc.rs']
-extra_kv = { allow_unsafe = false }
-
 [crate.rustc-demangle.extra_kv]
 allow_unsafe = false
 
 [crate.rustc-demangle-capi]
 extra_kv = { allow_unsafe = true }
 shipped = false
+
+[crate.rustversion]
+allow_first_party_usage = false
+build_script_outputs = [ "version.expr" ]
+extra_build_script_src_roots = ['../build/rustc.rs']
+extra_kv = { allow_unsafe = false }
 
 [crate.ryu.extra_kv]
 allow_unsafe = true
@@ -539,22 +524,23 @@ license_files = ["LICENSE-MIT", "LICENSE-APACHE"]
 extra_kv = { allow_unsafe = true }
 license_files = ["LICENSE-MIT", "LICENSE-APACHE"]
 
+[crate.termcolor.extra_kv]
+allow_unsafe = false
+
 [crate.timezone_provider]
 license_files = ["LICENSE-MIT", "LICENSE-APACHE"]
 
 [crate.timezone_provider.extra_kv]
 allow_unsafe = true
-[crate.tzif.extra_kv]
-allow_unsafe = false
 
-[crate.termcolor.extra_kv]
-allow_unsafe = false
+[crate.tinystr.extra_kv]
+allow_unsafe = true
 
 [crate.toktrie.extra_kv]
 allow_unsafe = false
 
-[crate.tinystr.extra_kv]
-allow_unsafe = true
+[crate.tzif.extra_kv]
+allow_unsafe = false
 
 [crate.unicode-ident.extra_kv]
 allow_unsafe = true

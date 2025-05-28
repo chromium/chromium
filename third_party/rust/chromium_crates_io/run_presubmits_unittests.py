@@ -11,10 +11,82 @@ import crate_utils
 from run_presubmits import (
     # Functions under test:
     _GetExtraKvForCrateName,
+    CheckCargoTomlIsSorted,
+    CheckGnrtConfigTomlIsSorted,
     CheckExplicitAllowUnsafeForAllCrates,
     CheckMultiversionCrates,
     CheckNonapplicableGnrtConfigEntries,
 )
+
+
+class CheckCargoTomlIsSortedTests(unittest.TestCase):
+
+    def testSortedSimple(self):
+        cargo_toml = {
+            "dependencies": {
+                "abc": "1.2.3",
+                "def": "1.2.3",
+                "xyz": "1.2.3",
+            }
+        }
+        self.assertEqual("", CheckCargoTomlIsSorted(cargo_toml))
+
+    def testNotSortedSimple(self):
+        cargo_toml = {
+            "dependencies": {
+                "def": "1.2.3",
+                "xyz": "1.2.3",
+                "abc": "1.2.3",
+            }
+        }
+        msg = CheckCargoTomlIsSorted(cargo_toml)
+        self.assertTrue("`abc` should appear before `xyz`" in msg)
+
+    def testNotSortedElaborateMixedIn(self):
+        cargo_toml = {
+            "dependencies": {
+                "abc": "1.2.3",
+                "def": {
+                    "version": "1.2.3"
+                },
+                "xyz": "1.2.3",
+            }
+        }
+        msg = CheckCargoTomlIsSorted(cargo_toml)
+        self.assertTrue(
+            "Simple string entries should appear before table entries" in msg)
+        self.assertTrue("`xyz` should appear after `def`" in msg)
+
+    def testSortedSimpleAndElaborate(self):
+        cargo_toml = {
+            "dependencies": {
+                "abc": "1.2.3",
+                "def": "1.2.3",
+                "yyy": {
+                    "version": "1.2.3"
+                },
+                "zzz": {
+                    "version": "1.2.3"
+                },
+            }
+        }
+        self.assertEqual("", CheckCargoTomlIsSorted(cargo_toml))
+
+    def testNotSortedElaborate(self):
+        cargo_toml = {
+            "dependencies": {
+                "abc": "1.2.3",
+                "def": "1.2.3",
+                "zzz": {
+                    "version": "1.2.3"
+                },
+                "yyy": {
+                    "version": "1.2.3"
+                },
+            }
+        }
+        msg = CheckCargoTomlIsSorted(cargo_toml)
+        self.assertTrue("`yyy` should appear before `zzz`" in msg)
 
 
 class CheckExplicitAllowUnsafeForAllCratesTests(unittest.TestCase):
@@ -47,6 +119,36 @@ class CheckExplicitAllowUnsafeForAllCratesTests(unittest.TestCase):
         gnrt_config = {}
         self.assertEqual(
             "", CheckExplicitAllowUnsafeForAllCrates(crate_ids, gnrt_config))
+
+
+class CheckGnrtConfigTomlIsSortedTests(unittest.TestCase):
+
+    def testSorted(self):
+        gnrt_config = {
+            "crate": {
+                "aaa": {
+                    "extra_kv": {}
+                },
+                "bbb": {
+                    "extra_kv": {}
+                },
+            }
+        }
+        self.assertEqual("", CheckGnrtConfigTomlIsSorted(None, gnrt_config))
+
+    def testNotSortedElaborate(self):
+        gnrt_config = {
+            "crate": {
+                "bbb": {
+                    "extra_kv": {}
+                },
+                "aaa": {
+                    "extra_kv": {}
+                },
+            }
+        }
+        msg = CheckGnrtConfigTomlIsSorted(None, gnrt_config)
+        self.assertTrue("`aaa` should appear before `bbb`" in msg)
 
 
 class CheckMultiversionCratesTests(unittest.TestCase):
