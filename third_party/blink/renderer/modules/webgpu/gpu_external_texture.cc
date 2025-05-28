@@ -171,8 +171,13 @@ void ExternalTextureCache::ReferenceUntilGPUIsFinished(
 
   // Keep mailbox texture alive until callback returns.
   auto* callback = BindWGPUOnceCallback(
+#if defined(WGPU_BREAKING_CHANGE_QUEUE_WORK_DONE_CALLBACK_MESSAGE)
+      [](scoped_refptr<WebGPUMailboxTexture> mailbox_texture,
+         wgpu::QueueWorkDoneStatus, wgpu::StringView) {},
+#else   // defined(WGPU_BREAKING_CHANGE_QUEUE_WORK_DONE_CALLBACK_MESSAGE)
       [](scoped_refptr<WebGPUMailboxTexture> mailbox_texture,
          wgpu::QueueWorkDoneStatus) {},
+#endif  // defined(WGPU_BREAKING_CHANGE_QUEUE_WORK_DONE_CALLBACK_MESSAGE)
       std::move(mailbox_texture));
 
   device()->queue()->GetHandle().OnSubmittedWorkDone(
