@@ -72,6 +72,32 @@ TEST(IsolationInfoMojomTraitsTest, SerializeAndDeserialize) {
           net::SiteForCookies(), /*nonce=*/std::nullopt,
           /*network_isolation_partition=*/
           net::NetworkIsolationPartition::kProtectedAudienceSellerWorklet),
+      net::IsolationInfo::Create(
+          net::IsolationInfo::RequestType::kOther, kOrigin1,
+          kOrigin1, net::SiteForCookies(), /*nonce=*/std::nullopt,
+          /*network_isolation_partition=*/
+          net::NetworkIsolationPartition::kGeneral, std::nullopt),
+      net::IsolationInfo::Create(
+          net::IsolationInfo::RequestType::kOther, kOrigin1,
+          kOrigin1, net::SiteForCookies(), /*nonce=*/std::nullopt,
+          /*network_isolation_partition=*/
+          net::NetworkIsolationPartition::kGeneral,
+          /*frame_ancestor_relation=*/
+          net::IsolationInfo::FrameAncestorRelation::kSameOrigin),
+      net::IsolationInfo::Create(
+          net::IsolationInfo::RequestType::kOther, kOrigin1,
+          kOrigin1, net::SiteForCookies(), /*nonce=*/std::nullopt,
+          /*network_isolation_partition=*/
+          net::NetworkIsolationPartition::kGeneral,
+          /*frame_ancestor_relation=*/
+          net::IsolationInfo::FrameAncestorRelation::kSameSite),
+      net::IsolationInfo::Create(
+          net::IsolationInfo::RequestType::kOther, kOrigin1,
+          kOrigin1, net::SiteForCookies(), /*nonce=*/std::nullopt,
+          /*network_isolation_partition=*/
+          net::NetworkIsolationPartition::kGeneral,
+          /*frame_ancestor_relation=*/
+          net::IsolationInfo::FrameAncestorRelation::kCrossSite),
   };
 
   for (auto original : keys) {
@@ -80,6 +106,20 @@ TEST(IsolationInfoMojomTraitsTest, SerializeAndDeserialize) {
         mojo::test::SerializeAndDeserialize<network::mojom::IsolationInfo>(
             original, copied));
     EXPECT_TRUE(original.IsEqualForTesting(copied));
+  }
+}
+
+TEST(IsolationInfoMojomTraitsTest, Roundtrips_FrameAncestorRelation) {
+  for (net::IsolationInfo::FrameAncestorRelation frame_ancestor_relation : {
+           net::IsolationInfo::FrameAncestorRelation::kSameOrigin,
+           net::IsolationInfo::FrameAncestorRelation::kSameSite,
+           net::IsolationInfo::FrameAncestorRelation::kCrossSite,
+       }) {
+    net::IsolationInfo::FrameAncestorRelation roundtrip;
+    ASSERT_TRUE(mojo::test::SerializeAndDeserialize<
+                network::mojom::IsolationInfoFrameAncestorRelation>(
+        frame_ancestor_relation, roundtrip));
+    EXPECT_EQ(frame_ancestor_relation, roundtrip);
   }
 }
 

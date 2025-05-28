@@ -8,6 +8,13 @@ option optimize_for = LITE_RUNTIME;
 
 package net.proto;
 
+// This enum must be kept in sync with net::IsolationInfo::FrameAncestorRelation
+enum FrameAncestorRelation {
+  SAME_ORIGIN = 1;
+  SAME_SITE = 2;
+  CROSS_SITE = 3;
+}
+
 message IsolationInfo {
   optional int32 request_type = 1;  // net::IsolationInfo::RequestType
   optional string top_frame_origin = 2;
@@ -15,6 +22,7 @@ message IsolationInfo {
   optional string site_for_cookies = 4;
   optional int32 network_isolation_partition =
       6;  // net::NetworkIsolationPartition. Defaults to kGeneral.
+  optional FrameAncestorRelation frame_ancestor_relation = 7;
 
   reserved 5;
   reserved "party_context";

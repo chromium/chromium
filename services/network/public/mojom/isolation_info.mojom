@@ -18,6 +18,14 @@ enum IsolationInfoRequestType {
   kOther,
 };
 
+// Mapped to IsolationInfo::FrameAncestorRelation, which is what consumers
+// should use instead of using this directly.
+enum IsolationInfoFrameAncestorRelation {
+  kSameOrigin,
+  kSameSite,
+  kCrossSite,
+};
+
 // Mapped to net::IsolationInfo.
 struct IsolationInfo {
   // These fields should not be used directly, but rather through the mapped
@@ -28,4 +36,5 @@ struct IsolationInfo {
   mojo_base.mojom.UnguessableToken? nonce;
   SiteForCookies site_for_cookies;
   NetworkIsolationPartition network_isolation_partition;
+  IsolationInfoFrameAncestorRelation? frame_ancestor_relation;
 };
