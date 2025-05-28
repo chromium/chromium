@@ -394,7 +394,7 @@ bool HTMLCanvasElement::PrepareTransferableResource(
   }
 
   scoped_refptr<CanvasResource> frame =
-      ResourceProvider()->ProduceCanvasResource(reason);
+      GetResourceProviderForCanvas2D()->ProduceCanvasResource(reason);
   if (!frame || !frame->IsValid()) {
     return false;
   }
@@ -434,7 +434,8 @@ bool HTMLCanvasElement::IsCanvas2DResourceValid() {
     return false;
   }
 
-  if (ResourceProvider() && !ResourceProvider()->IsValid()) {
+  if (GetResourceProviderForCanvas2D() &&
+      !GetResourceProviderForCanvas2D()->IsValid()) {
     return false;
   }
 
@@ -1240,7 +1241,7 @@ void HTMLCanvasElement::PaintInternal(GraphicsContext& context,
   // all contexts other than canvas 2D, get a snapshot directly from the
   // context.
   if (IsRenderingContext2D()) {
-    if (ResourceProvider()) {
+    if (GetResourceProviderForCanvas2D()) {
       snapshot = context_->GetImage(FlushReason::kPaint);
     }
   } else {
