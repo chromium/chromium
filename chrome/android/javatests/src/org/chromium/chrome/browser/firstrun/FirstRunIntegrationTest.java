@@ -313,7 +313,7 @@ public class FirstRunIntegrationTest {
 
     private FakeAccountManagerFacade.UpdateBlocker blockOnFlowIsKnown() {
         AccountManagerFacadeProvider.setInstanceForTests(mFakeAccountManagerFacade);
-        return mFakeAccountManagerFacade.blockGetCoreAccountInfos(/* populateCache= */ false);
+        return mFakeAccountManagerFacade.blockGetAccounts(/* populateCache= */ false);
     }
 
     @Test
@@ -782,15 +782,15 @@ public class FirstRunIntegrationTest {
 
         // Inspired by https://crbug.com/1207683 where a notification was dropped because native
         // initialized before the first fragment was attached to the activity.
-        var blocker = blockOnFlowIsKnown();
+        FirstRunActivity firstRunActivity;
+        try (var ignored = blockOnFlowIsKnown()) {
+            launchViewIntent(TEST_URL);
+            firstRunActivity = waitForFirstRunActivity();
+            CriteriaHelper.pollUiThread(
+                    () -> firstRunActivity.getNativeInitializationPromise().isFulfilled(),
+                    "native never initialized.");
+        }
 
-        launchViewIntent(TEST_URL);
-        FirstRunActivity firstRunActivity = waitForFirstRunActivity();
-        CriteriaHelper.pollUiThread(
-                () -> firstRunActivity.getNativeInitializationPromise().isFulfilled(),
-                "native never initialized.");
-
-        blocker.close();
         clickThroughFirstRun(firstRunActivity, testCase);
         verifyUrlEquals(TEST_URL, waitAndGetUriFromChromeActivity(ChromeTabbedActivity.class));
     }
@@ -821,29 +821,32 @@ public class FirstRunIntegrationTest {
     public void testSigninFirstRunPageShownBeforeChildStatusFetch() throws Exception {
         // ChildAccountStatusSupplier uses AppRestrictions to quickly detect non-supervised cases,
         // so pretend there are AppRestrictions set by FamilyLink.
-        var ignored = blockOnFlowIsKnown();
-        initializePreferences(new FirstRunPagesTestCase());
+        try (var ignored = blockOnFlowIsKnown()) {
+            initializePreferences(new FirstRunPagesTestCase());
 
-        FirstRunActivity firstRunActivity = launchFirstRunActivity();
-        new FirstRunNavigationHelper(firstRunActivity).ensureWelcomePageIsCurrentPage();
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    ProgressBar progressBar =
-                            ((SigninFirstRunFragment)
-                                            firstRunActivity.getCurrentFragmentForTesting())
-                                    .getView()
-                                    .findViewById(R.id.fre_native_and_policy_load_progress_spinner);
-                    // Replace the progress bar with a placeholder to allow other checks. Currently
-                    // the progress bar cannot be stopped otherwise due to some espresso issues
-                    // (crbug/1115067).
-                    progressBar.setIndeterminateDrawable(
-                            new ColorDrawable(
-                                    SemanticColorUtils.getDefaultBgColor(firstRunActivity)));
-                });
+            FirstRunActivity firstRunActivity = launchFirstRunActivity();
+            new FirstRunNavigationHelper(firstRunActivity).ensureWelcomePageIsCurrentPage();
+            ThreadUtils.runOnUiThreadBlocking(
+                    () -> {
+                        ProgressBar progressBar =
+                                ((SigninFirstRunFragment)
+                                                firstRunActivity.getCurrentFragmentForTesting())
+                                        .getView()
+                                        .findViewById(
+                                                R.id.fre_native_and_policy_load_progress_spinner);
+                        // Replace the progress bar with a placeholder to allow other checks.
+                        // Currently
+                        // the progress bar cannot be stopped otherwise due to some espresso issues
+                        // (crbug.com/1115067).
+                        progressBar.setIndeterminateDrawable(
+                                new ColorDrawable(
+                                        SemanticColorUtils.getDefaultBgColor(firstRunActivity)));
+                    });
 
-        onView(withId(R.id.fre_logo)).check(matches(isDisplayed()));
-        onView(withId(R.id.fre_native_and_policy_load_progress_spinner))
-                .check(matches(isDisplayed()));
+            onView(withId(R.id.fre_logo)).check(matches(isDisplayed()));
+            onView(withId(R.id.fre_native_and_policy_load_progress_spinner))
+                    .check(matches(isDisplayed()));
+        }
     }
 
     @Test
@@ -873,15 +876,16 @@ public class FirstRunIntegrationTest {
         FirstRunPagesTestCase testCase = new FirstRunPagesTestCase().withoutSignIn();
         initializePreferences(testCase);
         skipTosDialogViaPolicy();
-        var blocker = blockOnFlowIsKnown();
 
-        launchCustomTabs(TEST_URL);
-        FirstRunActivity firstRunActivity = waitForFirstRunActivity();
-        CriteriaHelper.pollUiThread(
-                () -> firstRunActivity.getNativeInitializationPromise().isFulfilled(),
-                "native never initialized.");
+        FirstRunActivity firstRunActivity;
+        try (var ignored = blockOnFlowIsKnown()) {
+            launchCustomTabs(TEST_URL);
+            firstRunActivity = waitForFirstRunActivity();
+            CriteriaHelper.pollUiThread(
+                    () -> firstRunActivity.getNativeInitializationPromise().isFulfilled(),
+                    "native never initialized.");
+        }
 
-        blocker.close();
         clickThroughFirstRun(firstRunActivity, testCase);
         verifyUrlEquals(TEST_URL, waitAndGetUriFromChromeActivity(CustomTabActivity.class));
     }

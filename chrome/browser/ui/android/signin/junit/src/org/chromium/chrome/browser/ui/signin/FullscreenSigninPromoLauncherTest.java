@@ -100,7 +100,7 @@ public class FullscreenSigninPromoLauncherTest {
     public void whenAccountCacheNotPopulated() {
         mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
         mPrefManager.setSigninPromoLastShownVersion(38);
-        mFakeAccountManagerFacade.blockGetCoreAccountInfos(/* populateCache= */ false);
+        mFakeAccountManagerFacade.blockGetAccounts(/* populateCache= */ false);
         Assert.assertFalse(
                 FullscreenSigninPromoLauncher.launchPromoIfNeeded(
                         mContext, mProfile, mFullscreenSigninLauncherMock, CURRENT_MAJOR_VERSION));

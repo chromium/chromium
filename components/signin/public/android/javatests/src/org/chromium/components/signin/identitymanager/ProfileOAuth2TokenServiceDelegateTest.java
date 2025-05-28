@@ -69,8 +69,7 @@ public class ProfileOAuth2TokenServiceDelegateTest {
     @Test
     @SmallTest
     public void testHasOAuth2RefreshTokenWhenCacheIsNotPopulated() {
-        try (var block =
-                mAccountManagerFacade.blockGetCoreAccountInfos(/* populateCache= */ false)) {
+        try (var block = mAccountManagerFacade.blockGetAccounts(/* populateCache= */ false)) {
             mAccountManagerFacade.addAccount(TestAccounts.ACCOUNT1);
             ThreadUtils.runOnUiThreadBlocking(
                     () -> {
