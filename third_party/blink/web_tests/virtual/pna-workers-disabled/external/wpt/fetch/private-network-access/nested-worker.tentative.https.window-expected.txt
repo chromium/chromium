@@ -1,9 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] treat-as-public to local: failure.
-  nestedWorkerScriptTest is not defined
-[FAIL] treat-as-public to private: failure.
-  nestedWorkerScriptTest is not defined
-[FAIL] public to public: success.
-  nestedWorkerScriptTest is not defined
-Harness: the test ran to completion.
-

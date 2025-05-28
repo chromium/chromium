@@ -1,19 +1,15 @@
 This is a testharness.js-based test.
-[FAIL] local to local: success.
-  makeServiceWorkerTest is not defined
 [FAIL] private to local: failed preflight.
-  makeServiceWorkerTest is not defined
+  assert_equals: fetch error expected (string) "TypeError" but got (undefined) undefined
 [FAIL] private to local: success.
-  makeServiceWorkerTest is not defined
-[FAIL] private to private: success.
-  makeServiceWorkerTest is not defined
+  assert_equals: fetch error expected (undefined) undefined but got (string) "TypeError"
 [FAIL] public to local: failed preflight.
-  makeServiceWorkerTest is not defined
+  assert_equals: fetch error expected (string) "TypeError" but got (undefined) undefined
 [FAIL] public to local: success.
-  makeServiceWorkerTest is not defined
+  assert_equals: fetch error expected (undefined) undefined but got (string) "TypeError"
 [FAIL] public to private: failed preflight.
-  makeServiceWorkerTest is not defined
+  assert_equals: fetch error expected (string) "TypeError" but got (undefined) undefined
 [FAIL] public to private: success.
-  makeServiceWorkerTest is not defined
+  assert_equals: fetch error expected (undefined) undefined but got (string) "TypeError"
 Harness: the test ran to completion.
 
