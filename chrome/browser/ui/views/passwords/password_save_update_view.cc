@@ -221,6 +221,12 @@ bool PasswordSaveUpdateView::CloseOrReplaceWithPromo() {
   SetLayoutManager(std::make_unique<views::FillLayout>());
   SetShowIcon(false);
   SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
+  // SetExtraView is not designed to be called multiple times, so hide the
+  // extra button if it exists.
+  if (extra_view_) {
+    extra_view_->SetVisible(false);
+  }
+
   GetBubbleFrameView()->SetFootnoteView(nullptr);
   SetTitle(IDS_AUTOFILL_SIGNIN_PROMO_TITLE_PASSWORD);
 
