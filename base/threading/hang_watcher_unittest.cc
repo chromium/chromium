@@ -134,8 +134,12 @@ class ManualHangWatcher : public HangWatcher {
     SetAfterMonitorClosureForTesting(base::BindRepeating(
         &WaitableEvent::Signal, base::Unretained(&monitor_event_)));
 
-    SetOnHangClosureForTesting(base::BindLambdaForTesting(
-        [this] { hang_count_.fetch_add(1, std::memory_order_relaxed); }));
+    SetOnHangClosureForTesting(base::BindLambdaForTesting([this] {
+      hang_count_.fetch_add(1, std::memory_order_relaxed);
+      if (on_hang_closure_) {
+        on_hang_closure_.Run();
+      }
+    }));
 
     // Disable periodic monitoring by setting a very very long monitoring
     // period. Monitoring will be started manually by calling
@@ -147,6 +151,10 @@ class ManualHangWatcher : public HangWatcher {
   }
 
   ~ManualHangWatcher() override { UninitializeOnMainThreadForTesting(); }
+
+  void SetOnHangClosure(base::RepeatingClosure closure) {
+    on_hang_closure_ = std::move(closure);
+  }
 
   // Signal the `HangWatcher` to start a monitoring and wait for that monitoring
   // to be done.
@@ -167,6 +175,9 @@ class ManualHangWatcher : public HangWatcher {
 
   // Count the number of time the HangWatcher thread detected a hang.
   std::atomic<int> hang_count_ = 0;
+
+  // If specified by a test, this closure is invoked when a hang is detected.
+  RepeatingClosure on_hang_closure_;
 };
 
 class HangWatcherTest : public testing::Test {
@@ -562,40 +573,24 @@ class HangWatcherSnapshotTest : public testing::Test {
  public:
   void SetUp() override {
     feature_list_.InitWithFeaturesAndParameters(kFeatureAndParams, {});
-    HangWatcher::InitializeOnMainThread(
-        HangWatcher::ProcessType::kBrowserProcess, /*emit_crashes=*/true);
-
-    // The monitoring loop behavior is not verified in this test so we want to
-    // trigger monitoring manually.
-    hang_watcher_.SetMonitoringPeriodForTesting(kVeryLongDelta);
-  }
-
-  void TearDown() override {
-    HangWatcher::UninitializeOnMainThreadForTesting();
   }
 
  protected:
-  void TriggerMonitorAndWaitForCompletion() {
-    monitor_event_.Reset();
-    hang_watcher_.SignalMonitorEventForTesting();
-    monitor_event_.Wait();
-  }
-
   // Verify that a capture takes place and that at the time of the capture the
   // list of hung thread ids is correct.
-  void TestIDList(const std::string& id_list) {
+  void TestIDList(ManualHangWatcher& hang_watcher, const std::string& id_list) {
     list_of_hung_thread_ids_during_capture_ = id_list;
     task_environment_.AdvanceClock(kSmallCPUQuantum);
-    TriggerMonitorAndWaitForCompletion();
-    EXPECT_EQ(++reference_capture_count_, hang_capture_count_);
+    hang_watcher.TriggerSynchronousMonitoring();
+    EXPECT_EQ(++reference_capture_count_, hang_watcher.GetHangCount());
   }
 
   // Verify that even if hang monitoring takes place no hangs are detected.
-  void ExpectNoCapture() {
-    int old_capture_count = hang_capture_count_;
+  void ExpectNoCapture(ManualHangWatcher& hang_watcher) {
+    int old_capture_count = hang_watcher.GetHangCount();
     task_environment_.AdvanceClock(kSmallCPUQuantum);
-    TriggerMonitorAndWaitForCompletion();
-    EXPECT_EQ(old_capture_count, hang_capture_count_);
+    hang_watcher.TriggerSynchronousMonitoring();
+    EXPECT_EQ(old_capture_count, hang_watcher.GetHangCount());
   }
 
   std::string ConcatenateThreadIds(
@@ -610,9 +605,6 @@ class HangWatcherSnapshotTest : public testing::Test {
     return result;
   }
 
-  // Will be signaled once monitoring took place. Marks the end of the test.
-  WaitableEvent monitor_event_;
-
   const PlatformThreadId test_thread_id_ = PlatformThread::CurrentId();
 
   // This is written to by the test main thread and read from the hang watching
@@ -620,11 +612,6 @@ class HangWatcherSnapshotTest : public testing::Test {
   // synchronized by always setting before triggering the execution of the
   // reading code through HangWatcher::SignalMonitorEventForTesting().
   std::string list_of_hung_thread_ids_during_capture_;
-
-  // This is written to by from the hang watching thread and read the test main
-  // thread. It does not need to be protected because access to it is
-  // synchronized by always reading  after monitor_event_ has been signaled.
-  int hang_capture_count_ = 0;
 
   // Increases at the same time as |hang_capture_count_| to test that capture
   // actually took place.
@@ -635,8 +622,6 @@ class HangWatcherSnapshotTest : public testing::Test {
   // Used exclusively for MOCK_TIME.
   test::SingleThreadTaskEnvironment task_environment_{
       test::TaskEnvironment::TimeSource::MOCK_TIME};
-
-  HangWatcher hang_watcher_;
 };
 }  // namespace
 
@@ -645,12 +630,7 @@ class HangWatcherSnapshotTest : public testing::Test {
 // was detected and the time it is recorded which would create a non-actionable
 // report.
 TEST_F(HangWatcherSnapshotTest, NonActionableReport) {
-  hang_watcher_.SetOnHangClosureForTesting(
-      base::BindLambdaForTesting([this] { ++hang_capture_count_; }));
-  hang_watcher_.SetAfterMonitorClosureForTesting(
-      base::BindLambdaForTesting([this] { monitor_event_.Signal(); }));
-
-  hang_watcher_.Start();
+  ManualHangWatcher hang_watcher;
 
   // Register the main test thread for hang watching.
   auto unregister_thread_closure =
@@ -671,7 +651,7 @@ TEST_F(HangWatcherSnapshotTest, NonActionableReport) {
         ->SetSwitchBitsClosureForTesting(
             base::BindLambdaForTesting([] { return kArbitraryDeadline; }));
 
-    ExpectNoCapture();
+    ExpectNoCapture(hang_watcher);
 
     // Marking failed.
     EXPECT_FALSE(current_hang_watch_state->IsFlagSet(
@@ -683,18 +663,14 @@ TEST_F(HangWatcherSnapshotTest, NonActionableReport) {
 }
 
 TEST_F(HangWatcherSnapshotTest, HungThreadIDs) {
+  ManualHangWatcher hang_watcher;
+
   // During hang capture the list of hung threads should be populated.
-  hang_watcher_.SetOnHangClosureForTesting(base::BindLambdaForTesting([this] {
-    EXPECT_EQ(hang_watcher_.GetHungThreadListCrashKeyForTesting(),
-              list_of_hung_thread_ids_during_capture_);
-    ++hang_capture_count_;
-  }));
-
   // When hang capture is over the list should be empty.
-  hang_watcher_.SetAfterMonitorClosureForTesting(
-      base::BindLambdaForTesting([this] { monitor_event_.Signal(); }));
-
-  hang_watcher_.Start();
+  hang_watcher.SetOnHangClosure(base::BindLambdaForTesting([&] {
+    EXPECT_EQ(hang_watcher.GetHungThreadListCrashKeyForTesting(),
+              list_of_hung_thread_ids_during_capture_);
+  }));
 
   // Register the main test thread for hang watching.
   auto unregister_thread_closure =
@@ -715,11 +691,12 @@ TEST_F(HangWatcherSnapshotTest, HungThreadIDs) {
     // Hung thread list should contain the id the blocking thread and then the
     // id of the test main thread since that is the order of increasing
     // deadline.
-    TestIDList(ConcatenateThreadIds({blocked_thread.GetId(), test_thread_id_}));
+    TestIDList(hang_watcher,
+               ConcatenateThreadIds({blocked_thread.GetId(), test_thread_id_}));
 
     // |expires_instantly| and the scope from |blocked_thread| are still live
     // but already recorded so should be ignored.
-    ExpectNoCapture();
+    ExpectNoCapture(hang_watcher);
 
     // Unblock and join the thread to close the scope in |blocked_thread|.
     blocked_thread.Unblock();
@@ -727,32 +704,27 @@ TEST_F(HangWatcherSnapshotTest, HungThreadIDs) {
 
     // |expires_instantly| is still live but already recorded so should be
     // ignored.
-    ExpectNoCapture();
+    ExpectNoCapture(hang_watcher);
   }
 
   // All HangWatchScopeEnables are over. There should be no capture.
-  ExpectNoCapture();
+  ExpectNoCapture(hang_watcher);
 
   // Once all recorded scopes are over creating a new one and monitoring will
   // trigger a hang detection.
   WatchHangsInScope expires_instantly(base::TimeDelta{});
-  TestIDList(ConcatenateThreadIds({test_thread_id_}));
+  TestIDList(hang_watcher, ConcatenateThreadIds({test_thread_id_}));
 }
 
 TEST_F(HangWatcherSnapshotTest, TimeSinceLastSystemPowerResumeCrashKey) {
+  ManualHangWatcher hang_watcher;
+
   // Override the capture of hangs. Simulate a crash key capture.
   std::string seconds_since_last_power_resume_crash_key;
-  hang_watcher_.SetOnHangClosureForTesting(base::BindLambdaForTesting([&] {
-    ++hang_capture_count_;
+  hang_watcher.SetOnHangClosure(base::BindLambdaForTesting([&] {
     seconds_since_last_power_resume_crash_key =
-        hang_watcher_.GetTimeSinceLastSystemPowerResumeCrashKeyValue();
+        hang_watcher.GetTimeSinceLastSystemPowerResumeCrashKeyValue();
   }));
-
-  // When hang capture is over, unblock the main thread.
-  hang_watcher_.SetAfterMonitorClosureForTesting(
-      base::BindLambdaForTesting([this] { monitor_event_.Signal(); }));
-
-  hang_watcher_.Start();
 
   // Register the main test thread for hang watching.
   auto unregister_thread_closure =
@@ -762,8 +734,8 @@ TEST_F(HangWatcherSnapshotTest, TimeSinceLastSystemPowerResumeCrashKey) {
     WatchHangsInScope expires_instantly(base::TimeDelta{});
     task_environment_.AdvanceClock(kSmallCPUQuantum);
 
-    TriggerMonitorAndWaitForCompletion();
-    EXPECT_EQ(1, hang_capture_count_);
+    hang_watcher.TriggerSynchronousMonitoring();
+    EXPECT_EQ(1, hang_watcher.GetHangCount());
     EXPECT_EQ("Never suspended", seconds_since_last_power_resume_crash_key);
   }
 
@@ -775,8 +747,8 @@ TEST_F(HangWatcherSnapshotTest, TimeSinceLastSystemPowerResumeCrashKey) {
     {
       WatchHangsInScope expires_instantly(base::TimeDelta{});
       task_environment_.AdvanceClock(kSmallCPUQuantum);
-      TriggerMonitorAndWaitForCompletion();
-      EXPECT_EQ(2, hang_capture_count_);
+      hang_watcher.TriggerSynchronousMonitoring();
+      EXPECT_EQ(2, hang_watcher.GetHangCount());
       EXPECT_EQ("Power suspended", seconds_since_last_power_resume_crash_key);
     }
 
@@ -786,8 +758,8 @@ TEST_F(HangWatcherSnapshotTest, TimeSinceLastSystemPowerResumeCrashKey) {
 
     {
       WatchHangsInScope expires_instantly(base::TimeDelta{});
-      TriggerMonitorAndWaitForCompletion();
-      EXPECT_EQ(3, hang_capture_count_);
+      hang_watcher.TriggerSynchronousMonitoring();
+      EXPECT_EQ(3, hang_watcher.GetHangCount());
       EXPECT_EQ(base::NumberToString(kAfterResumeTime.InSeconds()),
                 seconds_since_last_power_resume_crash_key);
     }
