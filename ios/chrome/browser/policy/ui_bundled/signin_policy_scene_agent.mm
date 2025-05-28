@@ -12,7 +12,8 @@
 #import "ios/chrome/app/profile/profile_state.h"
 #import "ios/chrome/app/profile/profile_state_observer.h"
 #import "ios/chrome/browser/authentication/ui_bundled/continuation.h"
-#import "ios/chrome/browser/authentication/ui_bundled/signin/fullscreen_signin/coordinator/fullscreen_signin_coordinator.h"
+#import "ios/chrome/browser/authentication/ui_bundled/fullscreen_signin/coordinator/fullscreen_signin_coordinator.h"
+#import "ios/chrome/browser/authentication/ui_bundled/fullscreen_signin/coordinator/fullscreen_signin_coordinator_delegate.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_screen_provider.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_utils.h"
 #import "ios/chrome/browser/policy/model/policy_util.h"
@@ -34,6 +35,7 @@
 
 @interface SigninPolicySceneAgent () <AuthenticationServiceObserving,
                                       IdentityManagerObserverBridgeDelegate,
+                                      FullscreenSigninCoordinatorDelegate,
                                       ProfileStateObserver,
                                       UIBlockerManagerObserver> {
   // Observes changes in identity to make sure that the sign-in state matches
@@ -273,11 +275,7 @@
                             accessPoint:signin_metrics::AccessPoint::
                                             kForcedSignin
       changeProfileContinuationProvider:DoNothingContinuationProvider()];
-  __weak __typeof(self) weakSelf = self;
-  _fullscreenSigninCoordinator.signinCompletion =
-      ^(SigninCoordinatorResult result, id<SystemIdentity> completionIdentity) {
-        [weakSelf stopFullScreenSigninCoordinator];
-      };
+  _fullscreenSigninCoordinator.delegate = self;
   [_fullscreenSigninCoordinator start];
 }
 
@@ -309,10 +307,21 @@
   return YES;
 }
 
+#pragma mark - FullscreenSigninCoordinatorDelegate
+
+- (void)fullscreenSigninCoordinatorWantsToBeStopped:
+            (FullscreenSigninCoordinator*)coordinator
+                                             result:(SigninCoordinatorResult)
+                                                        result {
+  CHECK_EQ(coordinator, _fullscreenSigninCoordinator);
+  [self stopFullScreenSigninCoordinator];
+}
+
 #pragma mark - Private
 
 - (void)stopFullScreenSigninCoordinator {
   [_fullscreenSigninCoordinator stop];
+  _fullscreenSigninCoordinator.delegate = nil;
   _fullscreenSigninCoordinator = nil;
 }
 

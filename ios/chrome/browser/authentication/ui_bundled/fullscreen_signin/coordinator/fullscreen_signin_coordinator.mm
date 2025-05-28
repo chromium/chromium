@@ -2,20 +2,23 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/authentication/ui_bundled/signin/fullscreen_signin/coordinator/fullscreen_signin_coordinator.h"
+#import "ios/chrome/browser/authentication/ui_bundled/fullscreen_signin/coordinator/fullscreen_signin_coordinator.h"
 
 #import <UIKit/UIKit.h>
 
 #import "base/notreached.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
+#import "ios/chrome/browser/authentication/ui_bundled/fullscreen_signin/coordinator/fullscreen_signin_coordinator_delegate.h"
 #import "ios/chrome/browser/authentication/ui_bundled/fullscreen_signin_screen/coordinator/fullscreen_signin_screen_coordinator.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_constants.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_coordinator+protected.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin/signin_in_progress.h"
 #import "ios/chrome/browser/first_run/ui_bundled/first_run_screen_delegate.h"
 #import "ios/chrome/browser/first_run/ui_bundled/first_run_util.h"
 #import "ios/chrome/browser/screen/ui_bundled/screen_provider.h"
 #import "ios/chrome/browser/screen/ui_bundled/screen_type.h"
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/animated_coordinator.h"
+#import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
@@ -34,6 +37,9 @@
 
 @implementation FullscreenSigninCoordinator {
   ChangeProfileContinuationProvider _changeProfileContinuationProvider;
+  SigninContextStyle _contextStyle;
+  signin_metrics::AccessPoint _accessPoint;
+  std::unique_ptr<SigninInProgress> _signinInProgress;
 }
 
 - (instancetype)
@@ -45,16 +51,19 @@
     changeProfileContinuationProvider:(const ChangeProfileContinuationProvider&)
                                           changeProfileContinuationProvider {
   DCHECK(!browser->GetProfile()->IsOffTheRecord());
-  self = [super initWithBaseViewController:viewController
-                                   browser:browser
-                              contextStyle:contextStyle
-                               accessPoint:accessPoint];
+  self = [super initWithBaseViewController:viewController browser:browser];
   if (self) {
     CHECK(changeProfileContinuationProvider);
     _screenProvider = screenProvider;
     _changeProfileContinuationProvider = changeProfileContinuationProvider;
+    _contextStyle = contextStyle;
+    _accessPoint = accessPoint;
   }
   return self;
+}
+
+- (void)dealloc {
+  CHECK(!_changeProfileContinuationProvider, base::NotFatalUntil::M146);
 }
 
 #pragma mark - ChromeCoordinator
@@ -65,6 +74,7 @@
       IdentityManagerFactory::GetForProfile(self.profile);
   CHECK(!identityManager->HasPrimaryAccount(signin::ConsentLevel::kSignin),
         base::NotFatalUntil::M142);
+  _signinInProgress = [self.sceneState createSigninInProgress];
   self.navigationController =
       [[UINavigationController alloc] initWithNavigationBarClass:nil
                                                     toolbarClass:nil];
@@ -85,20 +95,19 @@
                                       completion:nil];
 }
 
-#pragma mark - AnimatedCoordinator
-
-- (void)stopAnimated:(BOOL)animated {
+- (void)stop {
   // Stop the child coordinator UI first before dismissing the forced
   // sign-in navigation controller.
   [self stopChildCoordinator];
   self.screenProvider = nil;
 
   [self.navigationController.presentingViewController
-      dismissViewControllerAnimated:animated
+      dismissViewControllerAnimated:NO
                          completion:nil];
   self.navigationController = nil;
-
-  [super stopAnimated:animated];
+  _signinInProgress.reset();
+  _changeProfileContinuationProvider.Reset();
+  [super stop];
 }
 
 #pragma mark - Private
@@ -147,8 +156,8 @@
            initWithBaseNavigationController:self.navigationController
                                     browser:self.browser
                                    delegate:self
-                               contextStyle:self.contextStyle
-                                accessPoint:self.accessPoint
+                               contextStyle:_contextStyle
+                                accessPoint:_accessPoint
                                 promoAction:signin_metrics::PromoAction::
                                                 PROMO_ACTION_NO_SIGNIN_PROMO
           changeProfileContinuationProvider:_changeProfileContinuationProvider];
@@ -169,9 +178,8 @@
   [self stopChildCoordinator];
   self.navigationController = nil;
   self.screenProvider = nil;
-  id<SystemIdentity> completionIdentity = identity;
-  [self runCompletionWithSigninResult:result
-                   completionIdentity:completionIdentity];
+  [self.delegate fullscreenSigninCoordinatorWantsToBeStopped:self
+                                                      result:result];
 }
 
 #pragma mark - FirstRunScreenDelegate

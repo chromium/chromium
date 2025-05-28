@@ -2,18 +2,22 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_AUTHENTICATION_UI_BUNDLED_SIGNIN_FULLSCREEN_SIGNIN_COORDINATOR_FULLSCREEN_SIGNIN_COORDINATOR_H_
-#define IOS_CHROME_BROWSER_AUTHENTICATION_UI_BUNDLED_SIGNIN_FULLSCREEN_SIGNIN_COORDINATOR_FULLSCREEN_SIGNIN_COORDINATOR_H_
+#ifndef IOS_CHROME_BROWSER_AUTHENTICATION_UI_BUNDLED_FULLSCREEN_SIGNIN_COORDINATOR_FULLSCREEN_SIGNIN_COORDINATOR_H_
+#define IOS_CHROME_BROWSER_AUTHENTICATION_UI_BUNDLED_FULLSCREEN_SIGNIN_COORDINATOR_FULLSCREEN_SIGNIN_COORDINATOR_H_
 
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_coordinator.h"
-#import "ios/chrome/browser/shared/coordinator/chrome_coordinator/animated_coordinator.h"
+#import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
 
+@protocol FullscreenSigninCoordinatorDelegate;
 @class ScreenProvider;
 
 // Main coordinator that manages the overall fullscreen sign-in flow.
 // It contains a child coordinator, FullscreenSigninScreenCoordinator,
 // which is responsible for presenting the actual fullscreen sign-in screen.
-@interface FullscreenSigninCoordinator : SigninCoordinator
+@interface FullscreenSigninCoordinator : ChromeCoordinator
+
+// The delegate of the FullscreenSigninCoordinator
+@property(nonatomic, weak) id<FullscreenSigninCoordinatorDelegate> delegate;
 
 // Initiate the coordinator.
 // `browser` used for authentication. It must not be off the record (incognito).
@@ -29,12 +33,8 @@
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
-                                   browser:(Browser*)browser
-                              contextStyle:(SigninContextStyle)contextStyle
-                               accessPoint:
-                                   (signin_metrics::AccessPoint)accessPoint
-    NS_UNAVAILABLE;
+                                   browser:(Browser*)browser NS_UNAVAILABLE;
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_AUTHENTICATION_UI_BUNDLED_SIGNIN_FULLSCREEN_SIGNIN_COORDINATOR_FULLSCREEN_SIGNIN_COORDINATOR_H_
+#endif  // IOS_CHROME_BROWSER_AUTHENTICATION_UI_BUNDLED_FULLSCREEN_SIGNIN_COORDINATOR_FULLSCREEN_SIGNIN_COORDINATOR_H_

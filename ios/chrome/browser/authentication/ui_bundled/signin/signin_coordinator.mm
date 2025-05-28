@@ -12,7 +12,6 @@
 #import "components/signin/public/base/signin_metrics.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/add_account_signin/add_account_signin_coordinator.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/consistency_promo_signin/consistency_promo_signin_coordinator.h"
-#import "ios/chrome/browser/authentication/ui_bundled/signin/fullscreen_signin/coordinator/fullscreen_signin_coordinator.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/history_sync/history_sync_signin_coordinator.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/instant_signin/instant_signin_coordinator.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/logging/first_run_signin_logger.h"
@@ -126,16 +125,6 @@ using signin_metrics::PromoAction;
                                      command.changeProfileContinuationProvider];
       break;
     }
-    case AuthenticationOperation::kForcedSigninAndSync: {
-      signinCoordinator = [SigninCoordinator
-          fullscreenSigninCoordinatorWithBaseViewController:baseViewController
-                                                    browser:browser
-                                               contextStyle:command.contextStyle
-                                                accessPoint:command.accessPoint
-                          changeProfileContinuationProvider:
-                              command.changeProfileContinuationProvider];
-      break;
-    }
     case AuthenticationOperation::kInstantSignin: {
       signinCoordinator = [SigninCoordinator
           instantSigninCoordinatorWithBaseViewController:baseViewController
@@ -206,28 +195,6 @@ using signin_metrics::PromoAction;
                      accessPoint:accessPoint
                      promoAction:promoAction
             continuationProvider:continuationProvider];
-}
-
-+ (SigninCoordinator*)
-    fullscreenSigninCoordinatorWithBaseViewController:
-        (UIViewController*)viewController
-                                              browser:(Browser*)browser
-                                         contextStyle:
-                                             (SigninContextStyle)contextStyle
-                                          accessPoint:
-                                              (signin_metrics::AccessPoint)
-                                                  accessPoint
-                    changeProfileContinuationProvider:
-                        (const ChangeProfileContinuationProvider&)
-                            changeProfileContinuationProvider {
-  CHECK(changeProfileContinuationProvider);
-  return [[FullscreenSigninCoordinator alloc]
-             initWithBaseViewController:viewController
-                                browser:browser
-                         screenProvider:[[SigninScreenProvider alloc] init]
-                           contextStyle:contextStyle
-                            accessPoint:accessPoint
-      changeProfileContinuationProvider:changeProfileContinuationProvider];
 }
 
 + (SigninCoordinator*)
