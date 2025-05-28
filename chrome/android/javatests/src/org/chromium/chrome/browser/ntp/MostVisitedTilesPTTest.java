@@ -18,7 +18,10 @@ import org.junit.runners.MethodSorters;
 
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.suggestions.SiteSuggestion;
 import org.chromium.chrome.browser.util.BrowserUiUtils.ModuleTypeOnStartAndNtp;
@@ -33,7 +36,9 @@ import org.chromium.chrome.test.util.browser.suggestions.SuggestionsDependencies
 import org.chromium.chrome.test.util.browser.suggestions.mostvisited.FakeMostVisitedSites;
 import org.chromium.net.test.EmbeddedTestServerRule;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /** Tests the Most Visited Tiles in the NTP. */
 @RunWith(ChromeJUnit4ClassRunner.class)
@@ -63,19 +68,43 @@ public class MostVisitedTilesPTTest {
 
     @Test
     @MediumTest
-    public void test010_ClickFirstMVT() {
+    @DisableFeatures({ChromeFeatureList.MOST_VISITED_TILES_CUSTOMIZATION})
+    public void test010_ClickFirstMVT_DisableMvtCustomization() {
         doClickMVTTest(0);
     }
 
     @Test
     @MediumTest
-    public void test020_ClickLastMVT() {
+    @EnableFeatures({ChromeFeatureList.MOST_VISITED_TILES_CUSTOMIZATION})
+    public void test010_ClickFirstMVT_EnableMvtCustomization() {
+        doClickMVTTest(0);
+    }
+
+    @Test
+    @MediumTest
+    @DisableFeatures({ChromeFeatureList.MOST_VISITED_TILES_CUSTOMIZATION})
+    public void test020_ClickLastMVT_DisableMvtCustomization() {
+        doClickMVTTest(7);
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures({ChromeFeatureList.MOST_VISITED_TILES_CUSTOMIZATION})
+    public void test020_ClickLastMVT_EnableMvtCustomization() {
         doClickMVTTest(7);
     }
 
     private void doClickMVTTest(int index) {
         RegularNewTabPageStation page = mCtaTestRule.start();
-        MvtsFacility mvts = page.focusOnMvts(sSiteSuggestions);
+
+        Set<Integer> nonTileIndices;
+        // Populate with the "Add new" button at the end.
+        nonTileIndices = new HashSet<Integer>();
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.MOST_VISITED_TILES_CUSTOMIZATION)) {
+            nonTileIndices.add(sSiteSuggestions.size());
+        }
+
+        MvtsFacility mvts = page.focusOnMvts(sSiteSuggestions, nonTileIndices);
         WebPageStation mostVisitedPage;
         try (var histogram =
                 HistogramWatcher.newSingleRecordWatcher(

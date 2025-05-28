@@ -808,7 +808,10 @@ public abstract class ChromeFeatureList {
     public static final CachedFlag sMagicStackAndroid = newCachedFlag(MAGIC_STACK_ANDROID, true);
     public static final CachedFlag sMiniOriginBar = newCachedFlag(MINI_ORIGIN_BAR, false, true);
     public static final CachedFlag sMostVisitedTilesCustomization =
-            newCachedFlag(MOST_VISITED_TILES_CUSTOMIZATION, false);
+            newCachedFlag(
+                    MOST_VISITED_TILES_CUSTOMIZATION,
+                    /* defaultValue= */ false,
+                    /* defaultValueInTests= */ true);
     public static final CachedFlag sMostVisitedTilesReselect =
             newCachedFlag(MOST_VISITED_TILES_RESELECT, false);
     public static final CachedFlag sMultiInstanceApplicationStatusCleanup =

@@ -27,6 +27,7 @@ import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.omnibox.OmniboxFeatures;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * The New Tab Page screen, with an omnibox, most visited tiles, and the Feed instead of the
@@ -82,9 +83,11 @@ public class RegularNewTabPageStation extends PageStation {
      * @param siteSuggestions the expected SiteSuggestions to be displayed. Use fakes ones for
      *     testing.
      */
-    public MvtsFacility focusOnMvts(List<SiteSuggestion> siteSuggestions) {
+    public MvtsFacility focusOnMvts(
+            List<SiteSuggestion> siteSuggestions, Set<Integer> nonTileIndices) {
         // Assume MVTs are on the screen; if this assumption changes, make sure to scroll to them.
-        return enterFacilitySync(new MvtsFacility(siteSuggestions), /* trigger= */ null);
+        return enterFacilitySync(
+                new MvtsFacility(siteSuggestions, nonTileIndices), /* trigger= */ null);
     }
 
     /** Click the URL bar to enter the Omnibox. */

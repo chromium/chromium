@@ -37,7 +37,10 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.native_page.ContextMenuManager;
 import org.chromium.chrome.browser.offlinepages.OfflinePageBridge;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -163,7 +166,18 @@ public class MostVisitedMediatorUnitTest {
     }
 
     @Test
-    public void testMvtContainerOnTileCountChanged() {
+    @DisableFeatures({ChromeFeatureList.MOST_VISITED_TILES_CUSTOMIZATION})
+    public void testMvtContainerOnTileCountChanged_DisableMvtCustomization() {
+        doTestMvtContainerOnTileCountChanged();
+    }
+
+    @Test
+    @EnableFeatures({ChromeFeatureList.MOST_VISITED_TILES_CUSTOMIZATION})
+    public void testMvtContainerOnTileCountChanged_EndableMvtCustomization() {
+        doTestMvtContainerOnTileCountChanged();
+    }
+
+    private void doTestMvtContainerOnTileCountChanged() {
         ArrayList<SiteSuggestion> array = new ArrayList<>();
         array.add(mData);
         mMostVisitedSites.setTileSuggestions(array);
@@ -171,10 +185,16 @@ public class MostVisitedMediatorUnitTest {
 
         Assert.assertTrue(mModel.get(IS_CONTAINER_VISIBLE));
 
-        // When there's no mv tile, the mv tiles container should be hidden.
         mMostVisitedSites.setTileSuggestions(new ArrayList<>());
         mMediator.onTileCountChanged();
-        Assert.assertFalse(mModel.get(IS_CONTAINER_VISIBLE));
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.MOST_VISITED_TILES_CUSTOMIZATION)) {
+            // When there's no mv tile, the mv tiles container should show (with the "Add new"
+            // button).
+            Assert.assertTrue(mModel.get(IS_CONTAINER_VISIBLE));
+        } else {
+            // When there's no mv tile, the mv tiles container should be hidden.
+            Assert.assertFalse(mModel.get(IS_CONTAINER_VISIBLE));
+        }
 
         // When there is mv tile, the mv tiles container should be shown.
         mMostVisitedSites.setTileSuggestions(JUnitTestGURLs.HTTP_URL.getSpec());

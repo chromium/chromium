@@ -55,7 +55,8 @@ public class MvtsFacility extends ScrollableFacility<RegularNewTabPageStation> {
         tilesLayoutElement =
                 declareView(withId(R.id.mv_tiles_layout), ViewElement.displayingAtLeastOption(1));
         declareEnterCondition(
-                new ViewHasChildrenCountCondition(tilesLayoutElement, mSiteSuggestions.size()));
+                new ViewHasChildrenCountCondition(
+                        tilesLayoutElement, mSiteSuggestions.size() + mNonTileIndices.size()));
 
         // Will call declareItems()
         super.declareExtraElements();

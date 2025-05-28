@@ -28,6 +28,8 @@ import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;
 import android.graphics.Color;
 import android.view.ContextThemeWrapper;
+import android.view.View;
+import android.widget.TextView;
 
 import androidx.test.annotation.UiThreadTest;
 import androidx.test.filters.SmallTest;
@@ -46,6 +48,8 @@ import org.chromium.base.FeatureOverrides;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.DisabledTest;
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.native_page.ContextMenuManager;
 import org.chromium.chrome.browser.offlinepages.OfflinePageBridge;
@@ -326,8 +330,22 @@ public class TileGroupUnitTest {
     @Test
     @UiThreadTest
     @SmallTest
+    @DisableFeatures({ChromeFeatureList.MOST_VISITED_TILES_CUSTOMIZATION})
     // If this flakes again, refer to https://crbug.com/1330627, https://crbug.com/1293208.
-    public void testRenderTileView() {
+    public void testRenderTileView_DisableMvtCustomization() {
+        doRenderTileViewTest();
+    }
+
+    @Test
+    @UiThreadTest
+    @SmallTest
+    @EnableFeatures({ChromeFeatureList.MOST_VISITED_TILES_CUSTOMIZATION})
+    // If this flakes again, refer to https://crbug.com/1330627, https://crbug.com/1293208.
+    public void testRenderTileView_EnableMvtCustomization() {
+        doRenderTileViewTest();
+    }
+
+    private void doRenderTileViewTest() {
         SuggestionsUiDelegate uiDelegate = mSuggestionsUiDelegate;
         when(uiDelegate.getImageFetcher()).thenReturn(mImageFetcher);
         TileGroup tileGroup =
@@ -348,9 +366,20 @@ public class TileGroupUnitTest {
 
         // Render them to the layout.
         refreshData(tileGroup, layout);
-        assertThat(layout.getChildCount(), is(2));
-        assertThat(((SuggestionsTileView) layout.getChildAt(0)).getUrl().getSpec(), is(URLS[0]));
-        assertThat(((SuggestionsTileView) layout.getChildAt(1)).getUrl().getSpec(), is(URLS[1]));
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.MOST_VISITED_TILES_CUSTOMIZATION)) {
+            assertThat(layout.getChildCount(), is(3));
+            assertThat(
+                    ((SuggestionsTileView) layout.getChildAt(0)).getUrl().getSpec(), is(URLS[0]));
+            assertThat(
+                    ((SuggestionsTileView) layout.getChildAt(1)).getUrl().getSpec(), is(URLS[1]));
+            assertTrue(isAddNewButton(layout.getChildAt(2)));
+        } else {
+            assertThat(layout.getChildCount(), is(2));
+            assertThat(
+                    ((SuggestionsTileView) layout.getChildAt(0)).getUrl().getSpec(), is(URLS[0]));
+            assertThat(
+                    ((SuggestionsTileView) layout.getChildAt(1)).getUrl().getSpec(), is(URLS[1]));
+        }
         // Rerun to test SuggestionsTileView caching.
         refreshData(tileGroup, layout);
     }
@@ -386,8 +415,22 @@ public class TileGroupUnitTest {
     @Test
     @UiThreadTest
     @SmallTest
+    @DisableFeatures({ChromeFeatureList.MOST_VISITED_TILES_CUSTOMIZATION})
     // If this flakes again, refer to https://crbug.com/1286755.
-    public void testRenderTileViewReplacing() {
+    public void testRenderTileViewReplacing_DisableMvtCustomization() {
+        doRenderTileViewReplacingTest();
+    }
+
+    @Test
+    @UiThreadTest
+    @SmallTest
+    @EnableFeatures({ChromeFeatureList.MOST_VISITED_TILES_CUSTOMIZATION})
+    // If this flakes again, refer to https://crbug.com/1286755.
+    public void testRenderTileViewReplacing_EnableMvtCustomization() {
+        doRenderTileViewReplacingTest();
+    }
+
+    private void doRenderTileViewReplacingTest() {
         SuggestionsUiDelegate uiDelegate = mSuggestionsUiDelegate;
         when(uiDelegate.getImageFetcher()).thenReturn(mMockImageFetcher);
         TileGroup tileGroup =
@@ -412,9 +455,16 @@ public class TileGroupUnitTest {
 
         // The tiles should be updated, the old ones removed.
         refreshData(tileGroup, layout);
-        assertThat(layout.getChildCount(), is(2));
-        assertThat(layout.indexOfChild(view1), is(-1));
-        assertThat(layout.indexOfChild(view2), is(-1));
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.MOST_VISITED_TILES_CUSTOMIZATION)) {
+            assertThat(layout.getChildCount(), is(3));
+            assertThat(layout.indexOfChild(view1), is(-1));
+            assertThat(layout.indexOfChild(view2), is(-1));
+            assertTrue(isAddNewButton(layout.getChildAt(2)));
+        } else {
+            assertThat(layout.getChildCount(), is(2));
+            assertThat(layout.indexOfChild(view1), is(-1));
+            assertThat(layout.indexOfChild(view2), is(-1));
+        }
         // Rerun to test SuggestionsTileView caching.
         refreshData(tileGroup, layout);
     }
@@ -603,6 +653,13 @@ public class TileGroupUnitTest {
         reset(mTileGroupObserver);
         reset(mTileGroupDelegate);
         return tileGroup;
+    }
+
+    private boolean isAddNewButton(View view) {
+        View tileView = view.findViewById(R.id.tile_view_title);
+        return tileView != null
+                && (tileView instanceof TextView)
+                && ((TextView) tileView).getText().toString().equals("Add new");
     }
 
     private static class FakeImageFetcher extends ImageFetcher {

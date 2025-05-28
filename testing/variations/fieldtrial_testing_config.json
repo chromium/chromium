@@ -5232,6 +5232,21 @@
             ]
         }
     ],
+    "ClankMostVisitedTilesCustomization": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "MostVisitedTilesCustomization"
+                    ]
+                }
+            ]
+        }
+    ],
     "ClankMostVisitedTilesNewScoring": [
         {
             "platforms": [
