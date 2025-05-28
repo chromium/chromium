@@ -107,6 +107,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &autofill::features::kAutofillEnableVirtualCardJavaPaymentsDataManager,
     &autofill::features::kAutofillEnableSupportForHomeAndWork,
     &autofill::features::kAutofillRetryImageFetchOnFailure,
+    &base::features::kBackgroundThreadPoolFieldTrial,
     &blink::features::kBackForwardTransitions,
     &blink::features::kDynamicSafeAreaInsets,
     &blink::features::kForceWebContentsDarkMode,
@@ -218,7 +219,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kAsyncNotificationManager,
     &kAsyncNotificationManagerForDownload,
     &kAuxiliarySearchDonation,
-    &kBackgroundThreadPool,
     &kBatchTabRestore,
     &kBlockIntentsWhileLocked,
     &kBookmarkPaneAndroid,
@@ -624,10 +624,6 @@ BASE_FEATURE(kAuxiliarySearchDonation,
 
 BASE_FEATURE(kTinkerTankBottomSheet,
              "TinkerTankBottomSheet",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kBackgroundThreadPool,
-             "BackgroundThreadPool",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kBatchTabRestore,

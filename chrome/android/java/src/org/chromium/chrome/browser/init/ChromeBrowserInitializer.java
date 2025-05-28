@@ -162,6 +162,9 @@ public class ChromeBrowserInitializer {
                     "ChromeBrowserInitializer.handlePostNativeStartup called before "
                             + "ChromeBrowserInitializer.postInflationStartup has been run.");
         }
+
+        ProcessInitializationHandler.getInstance().onPostNativeStartup();
+
         final ChainedTasks tasks = new ChainedTasks();
         ProcessInitializationHandler.getInstance()
                 .enqueuePostNativeTasksToRunBeforeActivityNativeInit(

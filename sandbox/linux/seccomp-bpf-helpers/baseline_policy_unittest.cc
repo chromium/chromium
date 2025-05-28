@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/feature_list.h"
+#include "base/android/background_thread_pool_field_trial.h"
 #include "base/synchronization/lock_impl.h"
 #ifdef UNSAFE_BUFFERS_BUILD
 // TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
@@ -31,12 +31,9 @@
 
 #include <tuple>
 
-#include "base/allocator/partition_alloc_features.h"
 #include "base/clang_profiling_buildflags.h"
-#include "base/features.h"
 #include "base/files/scoped_file.h"
 #include "base/posix/eintr_wrapper.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/threading/thread.h"
 #include "build/build_config.h"
 #include "sandbox/linux/seccomp-bpf-helpers/baseline_policy.h"
@@ -377,8 +374,9 @@ BPF_TEST_C(BaselinePolicy, FutexEINVAL, BaselinePolicy) {
   }
 
 #if BUILDFLAG(ENABLE_MUTEX_PRIORITY_INHERITANCE)
-// PI futexes are only allowed by the sandbox on kernels >= 6.1 and if the
-// kUsePriorityInheritanceMutex is enabled. In order to test this,
+// PI futexes are only allowed by the sandbox on kernels >= 6.1 iff the
+// background thread pool field trial is active and configured to use priority
+// inheritance locks. In order to test this,
 // |_TEST_BASELINE_PI_FUTEX| generates a test which has two parts:
 //  - The first part of the test enables the feature and performs the futex
 //    syscall in a child process with the provided futex operation. Then it
@@ -387,28 +385,21 @@ BPF_TEST_C(BaselinePolicy, FutexEINVAL, BaselinePolicy) {
 //  - The second part of the test disables the feature and performs the futex
 //    syscall in a child process with the provided futex operation. Then it
 //    asserts that the syscall always crashes the process.
-#define _TEST_BASELINE_PI_FUTEX(test_case_name, test_name)                  \
-  void BPF_TEST_PI_FUTEX_##test_name();                                     \
-  TEST(test_case_name, DISABLE_ON_TSAN(test_name)) {                        \
-    __TEST_BASELINE_PI_FUTEX(BPF_TEST_PI_FUTEX_##test_name,                 \
-                             base::features::kUsePriorityInheritanceMutex,  \
-                             true);                                         \
-    __TEST_BASELINE_PI_FUTEX(BPF_TEST_PI_FUTEX_##test_name,                 \
-                             base::features::kUsePriorityInheritanceMutex,  \
-                             false);                                        \
-    __TEST_BASELINE_PI_FUTEX(                                               \
-        BPF_TEST_PI_FUTEX_##test_name,                                      \
-        base::features::kPartitionAllocUsePriorityInheritanceLocks, true);  \
-    __TEST_BASELINE_PI_FUTEX(                                               \
-        BPF_TEST_PI_FUTEX_##test_name,                                      \
-        base::features::kPartitionAllocUsePriorityInheritanceLocks, false); \
-  }                                                                         \
+#define _TEST_BASELINE_PI_FUTEX(test_case_name, test_name)                     \
+  void BPF_TEST_PI_FUTEX_##test_name();                                        \
+  TEST(test_case_name, DISABLE_ON_TSAN(test_name)) {                           \
+    {                                                                          \
+      base::android::ScopedUsePriorityInheritanceLocksForTesting use_pi_locks; \
+      __TEST_BASELINE_PI_FUTEX(BPF_TEST_PI_FUTEX_##test_name);                 \
+    }                                                                          \
+    {                                                                          \
+      __TEST_BASELINE_PI_FUTEX(BPF_TEST_PI_FUTEX_##test_name);                 \
+    }                                                                          \
+  }                                                                            \
   void BPF_TEST_PI_FUTEX_##test_name()
 
-#define __TEST_BASELINE_PI_FUTEX(test_name, feature, enable)              \
+#define __TEST_BASELINE_PI_FUTEX(test_name)                               \
   {                                                                       \
-    base::test::ScopedFeatureList feature_;                               \
-    feature_.InitWithFeatureState(feature, enable);                       \
     sandbox::SandboxBPFTestRunner bpf_test_runner(                        \
         new BPFTesterSimpleDelegate<BaselinePolicy>(test_name));          \
     sandbox::UnitTests::RunTestInProcess(                                 \
@@ -417,11 +408,8 @@ BPF_TEST_C(BaselinePolicy, FutexEINVAL, BaselinePolicy) {
   }
 
 void PIFutexDeath(int status, const std::string& msg, const void* aux) {
-  if (base::KernelSupportsPriorityInheritanceFutex() &&
-      (base::FeatureList::IsEnabled(
-           base::features::kUsePriorityInheritanceMutex) ||
-       base::FeatureList::IsEnabled(
-           base::features::kPartitionAllocUsePriorityInheritanceLocks))) {
+  if (base::android::BackgroundThreadPoolFieldTrial::
+          ShouldUsePriorityInheritanceLocks()) {
     sandbox::UnitTests::DeathSuccess(status, msg, nullptr);
   } else {
     sandbox::UnitTests::DeathSEGVMessage(status, msg, aux);

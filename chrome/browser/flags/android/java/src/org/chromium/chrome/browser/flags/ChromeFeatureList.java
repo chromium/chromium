@@ -249,7 +249,8 @@ public abstract class ChromeFeatureList {
             "AutofillVirtualViewStructureAndroid";
     public static final String AVOID_RELAYOUT_DURING_FOCUS_ANIMATION =
             "AvoidRelayoutDuringFocusAnimation";
-    public static final String BACKGROUND_THREAD_POOL = "BackgroundThreadPool";
+    public static final String BACKGROUND_THREAD_POOL_FIELD_TRIAL =
+            "BackgroundThreadPoolFieldTrial";
     public static final String BACK_FORWARD_CACHE = "BackForwardCache";
     public static final String BACK_FORWARD_TRANSITIONS = "BackForwardTransitions";
     public static final String BATCH_TAB_RESTORE = "BatchTabRestore";
@@ -666,6 +667,8 @@ public abstract class ChromeFeatureList {
             newCachedFlag(ASYNC_NOTIFICATION_MANAGER, false, true);
     public static final CachedFlag sAsyncNotificationManagerForDownload =
             newCachedFlag(ASYNC_NOTIFICATION_MANAGER_FOR_DOWNLOAD, false, true);
+    public static final CachedFlag sBackgroundThreadPoolFieldTrial =
+            newCachedFlag(BACKGROUND_THREAD_POOL_FIELD_TRIAL, false);
     public static final CachedFlag sBatchTabRestore =
             newCachedFlag(
                     BATCH_TAB_RESTORE, /* defaultValue= */ false, /* defaultValueInTests= */ true);
@@ -1025,6 +1028,7 @@ public abstract class ChromeFeatureList {
                     sUseChimeAndroidSdk,
                     sUseActivityManagerForTabActivation,
                     sUseLibunwindstackNativeUnwinderAndroid,
+                    sBackgroundThreadPoolFieldTrial,
                     sWebApkMinShellApkVersion);
 
     public static final List<CachedFlag> sFlagsCachedInMinimalBrowser =
@@ -1188,6 +1192,9 @@ public abstract class ChromeFeatureList {
 
     public static final BooleanCachedFeatureParam sAndroidBottomToolbarDefaultToTop =
             newBooleanCachedFeatureParam(ANDROID_BOTTOM_TOOLBAR, "default_to_top", true);
+
+    public static final IntCachedFeatureParam sBackgroundThreadPoolFieldTrialConfig =
+            newIntCachedFeatureParam(BACKGROUND_THREAD_POOL_FIELD_TRIAL, "config", 0);
 
     public static final IntCachedFeatureParam sBatchTabRestoreBatchSize =
             newIntCachedFeatureParam(BATCH_TAB_RESTORE, "batch_tab_restore_batch_size", 5);
@@ -1501,6 +1508,7 @@ public abstract class ChromeFeatureList {
                     sAndroidAppIntegrationWithFaviconZeroStateFaviconNumber,
                     sAndroidBottomToolbarDefaultToTop,
                     sAndroidThemeModuleForceDependencies,
+                    sBackgroundThreadPoolFieldTrialConfig,
                     sBatchTabRestoreBatchSize,
                     sCctAdaptiveButtonContextualOnly,
                     sCctAdaptiveButtonEnableOpenInBrowser,

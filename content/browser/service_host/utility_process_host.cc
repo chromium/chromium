@@ -401,7 +401,7 @@ bool UtilityProcessHost::StartProcess() {
       sandbox::policy::switches::kDisableMetalShaderCache,
       sandbox::policy::switches::kEnableSandboxLogging,
 #endif
-      switches::kEnableBackgroundThreadPool,
+      switches::kBackgroundThreadPoolFieldTrial,
       switches::kEnableExperimentalCookieFeatures,
       switches::kForceTextDirection,
       switches::kForceUIDirection,

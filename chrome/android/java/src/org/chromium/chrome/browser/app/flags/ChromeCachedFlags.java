@@ -13,7 +13,6 @@ import org.jni_zero.CalledByNative;
 import org.jni_zero.JniType;
 
 import org.chromium.base.ApplicationStatus;
-import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.build.BuildConfig;
 import org.chromium.chrome.browser.firstrun.FirstRunUtils;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -148,10 +147,6 @@ public class ChromeCachedFlags {
      * <p>Do not add new simple boolean flags here, add them to {@link #cacheNativeFlags} instead.
      */
     public static void cacheAdditionalNativeFlags() {
-        // Propagate the BACKGROUND_THREAD_POOL feature value to LibraryLoader.
-        LibraryLoader.setBackgroundThreadPoolEnabledOnNextRuns(
-                ChromeFeatureList.isEnabled(ChromeFeatureList.BACKGROUND_THREAD_POOL));
-
         // Propagate the CACHE_ACTIVITY_TASKID feature value to ApplicationStatus.
         ApplicationStatus.setCachingEnabled(
                 ChromeFeatureList.isEnabled(ChromeFeatureList.CACHE_ACTIVITY_TASKID));

@@ -38,11 +38,11 @@ BASE_EXPORT BASE_DECLARE_FEATURE(
     kPostPowerMonitorBroadcastReceiverInitToBackground);
 BASE_EXPORT BASE_DECLARE_FEATURE(kPostGetMyMemoryStateToBackground);
 BASE_EXPORT BASE_DECLARE_FEATURE(kUseSharedRebindServiceConnection);
-#endif
 
-#if BUILDFLAG(ENABLE_MUTEX_PRIORITY_INHERITANCE)
-BASE_EXPORT BASE_DECLARE_FEATURE(kUsePriorityInheritanceMutex);
-#endif  // BUILDFLAG(ENABLE_MUTEX_PRIORITY_INHERITANCE)
+BASE_EXPORT BASE_DECLARE_FEATURE(kBackgroundThreadPoolFieldTrial);
+BASE_EXPORT BASE_DECLARE_FEATURE_PARAM(int,
+                                       kBackgroundThreadPoolFieldTrialConfig);
+#endif
 
 // Policy for emitting profiler metadata from `ThreadController`.
 enum class EmitThreadControllerProfilerMetadata {

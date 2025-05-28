@@ -22,6 +22,7 @@
 #include <unistd.h>
 
 #include "base/allocator/partition_alloc_features.h"
+#include "base/android/background_thread_pool_field_trial.h"
 #include "base/feature_list.h"
 #include "base/features.h"
 #include "base/notreached.h"
@@ -352,22 +353,19 @@ ResultExpr RestrictFutex() {
       .Cases({FUTEX_WAIT, FUTEX_WAKE, FUTEX_REQUEUE, FUTEX_CMP_REQUEUE,
               FUTEX_WAKE_OP, FUTEX_WAIT_BITSET, FUTEX_WAKE_BITSET},
              Allow())
-#if BUILDFLAG(ENABLE_MUTEX_PRIORITY_INHERITANCE)
+#if BUILDFLAG(ENABLE_MUTEX_PRIORITY_INHERITANCE) && BUILDFLAG(IS_ANDROID)
       // Priority-inheritance futex operations are enabled only on Android
       // kernels 6.1+. Bionic uses the PI variants of the futex operations
       // (FUTEX_LOCK_PI2, FUTEX_UNLOCK_PI) to implement priority inheriting
       // mutexes.
       .Cases({FUTEX_LOCK_PI, FUTEX_UNLOCK_PI, FUTEX_TRYLOCK_PI,
               FUTEX_WAIT_REQUEUE_PI, FUTEX_CMP_REQUEUE_PI, FUTEX_LOCK_PI2},
-             (base::KernelSupportsPriorityInheritanceFutex() &&
-                      (base::FeatureList::IsEnabled(
-                           base::features::kUsePriorityInheritanceMutex) ||
-                       base::FeatureList::IsEnabled(
-                           base::features::
-                               kPartitionAllocUsePriorityInheritanceLocks))
-                  ? Allow()
-                  : error))
-#endif  // BUILDFLAG(ENABLE_MUTEX_PRIORITY_INHERITANCE)
+             base::android::BackgroundThreadPoolFieldTrial::
+                     ShouldUsePriorityInheritanceLocks()
+                 ? Allow()
+                 : error)
+#endif  // BUILDFLAG(ENABLE_MUTEX_PRIORITY_INHERITANCE)  &&
+        // BUILDFLAG(IS_ANDROID)
       .Default(error);
 }
 

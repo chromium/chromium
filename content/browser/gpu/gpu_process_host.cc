@@ -253,6 +253,7 @@ static const char* const kSwitchNames[] = {
     switches::kRaiseTimerFrequency,
     switches::kUseRedistributableDirectML,
 #endif  // BUILDFLAG(IS_WIN)
+    switches::kBackgroundThreadPoolFieldTrial,
     switches::kEnableANGLEFeatures,
     switches::kDelegatedInkRenderer,
     switches::kDisableANGLEFeatures,
@@ -263,7 +264,6 @@ static const char* const kSwitchNames[] = {
     switches::kDisableShaderNameHashing,
     switches::kDisableSkiaRuntimeOpts,
     switches::kDRMVirtualConnectorIsExternal,
-    switches::kEnableBackgroundThreadPool,
     switches::kEnableGpuMainTimeKeeperMetrics,
     switches::kEnableGpuRasterization,
     switches::kEnableSkiaGraphite,

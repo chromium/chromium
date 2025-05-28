@@ -1152,6 +1152,8 @@ component("base") {
       "android/apk_info.h",
       "android/application_status_listener.cc",
       "android/application_status_listener.h",
+      "android/background_thread_pool_field_trial.cc",
+      "android/background_thread_pool_field_trial.h",
       "android/base_feature_map.cc",
       "android/build_info.cc",
       "android/build_info.h",

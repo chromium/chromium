@@ -13,6 +13,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/android/background_thread_pool_field_trial.h"
 #include "base/check.h"
 #include "base/compiler_specific.h"
 #include "base/dcheck_is_on.h"
@@ -568,23 +569,6 @@ class PriorityInheritanceTest {
   };
 };
 
-class ScopedConfigureUsePriorityInheritanceMutex {
- public:
-  explicit ScopedConfigureUsePriorityInheritanceMutex(bool enabled) {
-    feature_list_.InitWithFeatureState(features::kUsePriorityInheritanceMutex,
-                                       enabled);
-    ResetUsePriorityInheritanceMutexForTesting();
-  }
-
-  ~ScopedConfigureUsePriorityInheritanceMutex() {
-    feature_list_.Reset();
-    ResetUsePriorityInheritanceMutexForTesting();
-  }
-
- private:
-  test::ScopedFeatureList feature_list_;
-};
-
 }  // namespace
 
 // Tests that the time taken by a higher-priority thread to acquire a lock held
@@ -592,23 +576,24 @@ class ScopedConfigureUsePriorityInheritanceMutex {
 TEST(LockTest, PriorityIsInherited) {
   TimeDelta avg_test_run_time_with_pi, avg_test_run_time_without_pi;
 
+  // Priority inheritance mutexes are not supported on Android kernels < 6.1
+  if (!base::KernelSupportsPriorityInheritanceFutex()) {
+    GTEST_SKIP() << "base::Lock does not handle multiple thread priorities "
+                 << "(Kernel version: "
+                 << base::SysInfo::KernelVersionNumber::Current() << ")";
+  }
+
   {
-    ScopedConfigureUsePriorityInheritanceMutex config_use_pi_mutex(true);
-
-    // Priority inheritance mutexes are not supported on Android kernels < 6.1
-    if (!Lock::HandlesMultipleThreadPriorities()) {
-      GTEST_SKIP() << "base::Lock does not handle multiple thread priorities "
-                   << "(Kernel version: "
-                   << base::SysInfo::KernelVersionNumber::Current() << ")";
-    }
-
+    base::android::ScopedUsePriorityInheritanceLocksForTesting use_pi_locks;
+    ASSERT_TRUE(base::android::BackgroundThreadPoolFieldTrial::
+               ShouldUsePriorityInheritanceLocks());
     avg_test_run_time_with_pi =
         PriorityInheritanceTest::MeasureAverageRunTime();
   }
 
   {
-    ScopedConfigureUsePriorityInheritanceMutex config_use_pi_mutex(false);
-
+    ASSERT_TRUE(!base::android::BackgroundThreadPoolFieldTrial::
+               ShouldUsePriorityInheritanceLocks());
     avg_test_run_time_without_pi =
         PriorityInheritanceTest::MeasureAverageRunTime();
   }

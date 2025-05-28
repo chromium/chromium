@@ -65,6 +65,7 @@
 #include "partition_alloc/thread_cache.h"
 
 #if BUILDFLAG(IS_ANDROID)
+#include "base/android/background_thread_pool_field_trial.h"
 #include "base/system/sys_info.h"
 #endif
 
@@ -1175,13 +1176,14 @@ void PartitionAllocSupport::ReconfigureAfterFeatureListInit(
   }
 #endif  // PA_BUILDFLAG(HAS_MEMORY_TAGGING)
 
-#if PA_BUILDFLAG(ENABLE_PARTITION_LOCK_PRIORITY_INHERITANCE)
-  if (base::KernelSupportsPriorityInheritanceFutex() &&
-      base::FeatureList::IsEnabled(
-          features::kPartitionAllocUsePriorityInheritanceLocks)) {
+#if PA_BUILDFLAG(ENABLE_PARTITION_LOCK_PRIORITY_INHERITANCE) && \
+    PA_BUILDFLAG(IS_ANDROID)
+  if (base::android::BackgroundThreadPoolFieldTrial::
+          ShouldUsePriorityInheritanceLocks()) {
     partition_alloc::internal::SpinningMutex::EnableUsePriorityInheritance();
   }
-#endif  // PA_BUILDFLAG(ENABLE_PARTITION_LOCK_PRIORITY_INHERITANCE)
+#endif  // PA_BUILDFLAG(ENABLE_PARTITION_LOCK_PRIORITY_INHERITANCE) &&
+        // PA_BUILDFLAG(IS_ANDROID)
 
   allocator_shim::UseSmallSingleSlotSpans use_small_single_slot_spans(
       base::FeatureList::IsEnabled(
