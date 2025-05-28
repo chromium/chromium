@@ -380,7 +380,7 @@ IN_PROC_BROWSER_TEST_F(BtmShortVisitObserverBrowserTest,
   // Record an interaction an hour ago.
   btm_service->storage()
       ->AsyncCall(&BtmStorage::RecordUserActivation)
-      .WithArgs(url2, clock_.Now(), BtmCookieMode::kBlock3PC);
+      .WithArgs(url2, clock_.Now());
   clock_.Advance(base::Hours(1));
 
   ASSERT_TRUE(NavigateToURL(web_contents(), url1));
@@ -419,8 +419,7 @@ IN_PROC_BROWSER_TEST_F(BtmShortVisitObserverBrowserTest,
   // Record a "future" interaction by setting the clock backwards.
   btm_service->storage()
       ->AsyncCall(&BtmStorage::RecordUserActivation)
-      .WithArgs(url2, clock_.Now() + base::Minutes(1),
-                BtmCookieMode::kBlock3PC);
+      .WithArgs(url2, clock_.Now() + base::Minutes(1));
   clock_.Advance(-base::Hours(1));
 
   ASSERT_TRUE(NavigateToURL(web_contents(), url1));

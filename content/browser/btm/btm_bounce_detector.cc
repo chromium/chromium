@@ -496,19 +496,19 @@ void BtmWebContentsObserver::RecordEvent(BtmRecordedEvent event,
     case BtmRecordedEvent::kStorage: {
       btm_service_->storage()
           ->AsyncCall(&BtmStorage::RecordStorage)
-          .WithArgs(url, time, btm_service_->GetCookieMode());
+          .WithArgs(url, time);
       return;
     }
     case BtmRecordedEvent::kUserActivation: {
       btm_service_->storage()
           ->AsyncCall(&BtmStorage::RecordUserActivation)
-          .WithArgs(url, time, btm_service_->GetCookieMode());
+          .WithArgs(url, time);
       return;
     }
     case BtmRecordedEvent::kWebAuthnAssertion: {
       btm_service_->storage()
           ->AsyncCall(&BtmStorage::RecordWebAuthnAssertion)
-          .WithArgs(url, time, btm_service_->GetCookieMode());
+          .WithArgs(url, time);
       return;
     }
   }

@@ -155,9 +155,7 @@ void BtmStorage::RemoveRowsWithoutProtectiveEvent(
 
 // BtmTabHelper Function Impls ------------------------------------------------
 
-void BtmStorage::RecordStorage(const GURL& url,
-                               base::Time time,
-                               BtmCookieMode mode) {
+void BtmStorage::RecordStorage(const GURL& url, base::Time time) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(db_);
 
@@ -165,9 +163,7 @@ void BtmStorage::RecordStorage(const GURL& url,
   state.update_site_storage_time(time);
 }
 
-void BtmStorage::RecordUserActivation(const GURL& url,
-                                      base::Time time,
-                                      BtmCookieMode mode) {
+void BtmStorage::RecordUserActivation(const GURL& url, base::Time time) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(db_);
 
@@ -175,9 +171,7 @@ void BtmStorage::RecordUserActivation(const GURL& url,
   state.update_user_activation_time(time);
 }
 
-void BtmStorage::RecordWebAuthnAssertion(const GURL& url,
-                                         base::Time time,
-                                         BtmCookieMode mode) {
+void BtmStorage::RecordWebAuthnAssertion(const GURL& url, base::Time time) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(db_);
 

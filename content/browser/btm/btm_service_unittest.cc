@@ -578,7 +578,7 @@ TEST_F(BtmServiceStateRemovalTest,
   GetService()
       ->storage()
       ->AsyncCall(&BtmStorage::RecordUserActivation)
-      .WithArgs(redirect_url_3, bounce, GetService()->GetCookieMode());
+      .WithArgs(redirect_url_3, bounce);
   WaitOnStorage(GetService());
 
   // Expect no recorded BtmState for redirect_url_1, since every
@@ -666,7 +666,7 @@ TEST_F(BtmServiceStateRemovalTest,
   GetService()
       ->storage()
       ->AsyncCall(&BtmStorage::RecordUserActivation)
-      .WithArgs(redirect_url_3, bounce, GetService()->GetCookieMode());
+      .WithArgs(redirect_url_3, bounce);
   WaitOnStorage(GetService());
 
   // Expect no recorded BtmState for redirect_url_1, since every
@@ -735,7 +735,7 @@ TEST_F(
   GetService()
       ->storage()
       ->AsyncCall(&BtmStorage::RecordUserActivation)
-      .WithArgs(redirect_url_2, bounce, GetService()->GetCookieMode());
+      .WithArgs(redirect_url_2, bounce);
   WaitOnStorage(GetService());
   // Record a bounce through redirect_url_3 that starts on a non-blocked URL.
   RecordBounce(redirect_url_3.spec(), non_blocked_url.spec(),

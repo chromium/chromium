@@ -652,7 +652,7 @@ void BtmServiceImpl::RemoveObserver(const Observer* observer) {
 
 void BtmServiceImpl::RecordUserActivationForTesting(const GURL& url) {
   storage_.AsyncCall(&BtmStorage::RecordUserActivation)
-      .WithArgs(url, base::Time::Now(), GetCookieMode());
+      .WithArgs(url, base::Time::Now());
 }
 
 void BtmServiceImpl::DidSiteHaveUserActivationSince(
@@ -668,7 +668,7 @@ void BtmServiceImpl::RecordBrowserSignIn(std::string_view domain) {
   storage()
       ->AsyncCall(&BtmStorage::RecordUserActivation)
       .WithArgs(url::SchemeHostPort("http", domain, 80).GetURL(),
-                base::Time::Now(), GetCookieMode());
+                base::Time::Now());
 }
 
 void BtmServiceImpl::NotifyStatefulBounce(WebContents* web_contents) {
