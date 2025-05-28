@@ -32,7 +32,7 @@ namespace glic::test {
 
 namespace internal {
 
-// Observes FRE showing dialog for changes to state().
+// Observes FRE controller for changes to dialog being shown.
 class GlicFreShowingDialogObserver
     : public ui::test::PollingStateObserver<bool> {
  public:
