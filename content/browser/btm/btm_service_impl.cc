@@ -9,6 +9,7 @@
 #include <set>
 #include <string>
 #include <string_view>
+#include <utility>
 #include <vector>
 
 #include "base/check_deref.h"
@@ -359,7 +360,7 @@ void BtmServiceImpl::RemoveEvents(const base::Time& delete_begin,
 void BtmServiceImpl::HandleRedirectChain(
     std::vector<BtmRedirectInfoPtr> redirects,
     BtmRedirectChainInfoPtr chain,
-    base::RepeatingCallback<void(const GURL&)> stateful_bounce_callback) {
+    StatefulBounceCallback stateful_bounce_callback) {
   DCHECK_LE(redirects.size(), chain->length);
 
   if (redirects.empty()) {
@@ -386,89 +387,76 @@ void BtmServiceImpl::HandleRedirectChain(
         .Record(ukm::UkmRecorder::Get());
   }
 
+  std::set<std::string> redirect_sites;
   base::TimeDelta total_server_bounce_delay;
   for (const auto& redirect : redirects) {
     if (redirect->redirect_type == BtmRedirectType::kServer) {
       total_server_bounce_delay += redirect->server_bounce_delay;
     }
+    redirect_sites.insert(GetSiteForBtm(redirect->redirecting_url.url));
   }
   UmaHistogramBounceChainDelay(total_server_bounce_delay);
 
   chain->cookie_mode = GetCookieMode();
-  // Copy the URL out before |redirects| is moved, to avoid use-after-move.
-  GURL url = redirects[0]->redirecting_url.url;
-  storage_.AsyncCall(&BtmStorage::Read)
-      .WithArgs(url)
-      .Then(base::BindOnce(&BtmServiceImpl::GotState,
+  storage_.AsyncCall(&BtmStorage::FilterSitesWithProtectiveEvent)
+      .WithArgs(redirect_sites)
+      .Then(base::BindOnce(&BtmServiceImpl::HandleRedirects,
                            weak_factory_.GetWeakPtr(), std::move(redirects),
-                           std::move(chain), 0, stateful_bounce_callback));
+                           std::move(chain), stateful_bounce_callback));
 }
 
-void BtmServiceImpl::RecordUserActivationForTesting(const GURL& url) {
-  storage_.AsyncCall(&BtmStorage::RecordUserActivation)
-      .WithArgs(url, base::Time::Now(), GetCookieMode());
-}
-
-void BtmServiceImpl::DidSiteHaveUserActivationSince(
-    const GURL& url,
-    base::Time bound,
-    CheckUserActivationCallback callback) const {
-  storage_.AsyncCall(&BtmStorage::DidSiteHaveUserActivationSince)
-      .WithArgs(url, bound)
-      .Then(std::move(callback));
-}
-
-void BtmServiceImpl::GotState(
+void BtmServiceImpl::HandleRedirects(
     std::vector<BtmRedirectInfoPtr> redirects,
     BtmRedirectChainInfoPtr chain,
-    size_t index,
-    base::RepeatingCallback<void(const GURL&)> stateful_bounce_callback,
-    const BtmState url_state) {
-  DCHECK_LT(index, redirects.size());
+    StatefulBounceCallback stateful_bounce_callback,
+    std::pair<std::set<std::string>, std::set<std::string>>
+        sites_with_protective_events) {
+  const std::set<std::string>& sites_with_user_activation =
+      sites_with_protective_events.first;
+  for (size_t index = 0; index < redirects.size(); index++) {
+    auto& redirect = *redirects[index];
 
-  BtmRedirectInfo* redirect = redirects[index].get();
-  // If there's any user activation recorded in the DIPS DB, that's engagement.
-  DCHECK(!redirect->site_had_user_activation.has_value());
-  redirect->site_had_user_activation =
-      url_state.user_activation_times().has_value();
-  DCHECK(!redirect->chain_id.has_value());
-  redirect->chain_id = chain->chain_id;
-  DCHECK(!redirect->chain_index.has_value());
-  // If the chain was too long, some redirects may have been trimmed already,
-  // which would make `index` not the "true" index of the redirect in the whole
-  // chain. `chain->length` is accurate though. `chain->length -
-  // redirects.size()` is then the number of trimmed redirects; so add that to
-  // `index` to get the "true" index to report in our metrics.
-  redirect->chain_index = chain->length - redirects.size() + index;
-  HandleRedirect(*redirect, *chain,
-                 base::BindRepeating(&BtmServiceImpl::RecordBounce,
-                                     base::Unretained(this)),
-                 stateful_bounce_callback);
+    // If there's any user activation recorded in the BTM database, that's
+    // engagement.
+    DCHECK(!redirect.site_had_user_activation.has_value());
+    redirect.site_had_user_activation = sites_with_user_activation.contains(
+        GetSiteForBtm(redirect.redirecting_url.url));
+    DCHECK(!redirect.chain_id.has_value());
+    redirect.chain_id = chain->chain_id;
+    // If the chain was too long, some redirects may have been trimmed already,
+    // which would make `index` not the "true" index of the redirect in the
+    // whole chain. `chain->length` is accurate though. `chain->length -
+    // redirects.size()` is then the number of trimmed redirects; so add that to
+    // `index` to get the "true" index to report in our metrics.
+    DCHECK(!redirect.chain_index.has_value());
+    redirect.chain_index = chain->length - redirects.size() + index;
 
-  if (index + 1 >= redirects.size()) {
-    // All redirects handled.
-    if (!chain->is_partial_chain) {
-      for (auto& observer : observers_) {
-        observer.OnChainHandled(redirects, chain);
-      }
-    }
-    return;
+    // TODO(https://crbug.com/414361732): Can `BtmServiceImpl::HandleRedirect`
+    // be inlined? For the most part, it's only recording metrics; the
+    // interesting work happens in the callback. And it's only being used
+    // separately for one test. If inlined, this function could be able to
+    // invoke `BtmServiceImpl::RecordBounce` directly without having to pass it
+    // as an argument.
+    HandleRedirect(
+        redirect, *chain,
+        // Unretained is safe here because the callback is called synchronously
+        // in `HandleRedirect`.
+        base::BindRepeating(&BtmServiceImpl::RecordBounce,
+                            base::Unretained(this), stateful_bounce_callback));
   }
 
-  // Copy the URL out before `redirects` is moved, to avoid use-after-move.
-  GURL url = redirects[index + 1]->redirecting_url.url;
-  storage_.AsyncCall(&BtmStorage::Read)
-      .WithArgs(url)
-      .Then(base::BindOnce(&BtmServiceImpl::GotState,
-                           weak_factory_.GetWeakPtr(), std::move(redirects),
-                           std::move(chain), index + 1,
-                           stateful_bounce_callback));
+  // All redirects handled.
+  if (!chain->is_partial_chain) {
+    for (auto& observer : observers_) {
+      observer.OnChainHandled(redirects, chain);
+    }
+  }
 }
 
 void BtmServiceImpl::RecordBounce(
+    StatefulBounceCallback stateful_bounce_callback,
     const BtmRedirectInfo& redirect,
-    const BtmRedirectChainInfo& chain,
-    base::RepeatingCallback<void(const GURL&)> stateful_bounce_callback) {
+    const BtmRedirectChainInfo& chain) {
   const GURL& url = redirect.redirecting_url.url;
   bool stateful = redirect.access_type > BtmDataAccessType::kRead;
 
@@ -529,11 +517,9 @@ void BtmServiceImpl::RecordBounce(
 }
 
 /*static*/
-void BtmServiceImpl::HandleRedirect(
-    const BtmRedirectInfo& redirect,
-    const BtmRedirectChainInfo& chain,
-    RecordBounceCallback record_bounce,
-    base::RepeatingCallback<void(const GURL&)> stateful_bounce_callback) {
+void BtmServiceImpl::HandleRedirect(const BtmRedirectInfo& redirect,
+                                    const BtmRedirectChainInfo& chain,
+                                    RecordBounceCallback record_bounce) {
   bool initial_site_same = (redirect.site == chain.initial_site);
   bool final_site_same = (redirect.site == chain.final_site);
   DCHECK_LT(redirect.chain_index.value(), chain.length);
@@ -566,7 +552,7 @@ void BtmServiceImpl::HandleRedirect(
 
   // Record this bounce in the BTM database.
   if (redirect.access_type != BtmDataAccessType::kUnknown) {
-    record_bounce.Run(redirect, chain, stateful_bounce_callback);
+    record_bounce.Run(redirect, chain);
   }
 
   BtmRedirectCategory category = ClassifyRedirect(
@@ -662,6 +648,20 @@ void BtmServiceImpl::AddObserver(Observer* observer) {
 
 void BtmServiceImpl::RemoveObserver(const Observer* observer) {
   observers_.RemoveObserver(observer);
+}
+
+void BtmServiceImpl::RecordUserActivationForTesting(const GURL& url) {
+  storage_.AsyncCall(&BtmStorage::RecordUserActivation)
+      .WithArgs(url, base::Time::Now(), GetCookieMode());
+}
+
+void BtmServiceImpl::DidSiteHaveUserActivationSince(
+    const GURL& url,
+    base::Time bound,
+    CheckUserActivationCallback callback) const {
+  storage_.AsyncCall(&BtmStorage::DidSiteHaveUserActivationSince)
+      .WithArgs(url, bound)
+      .Then(std::move(callback));
 }
 
 void BtmServiceImpl::RecordBrowserSignIn(std::string_view domain) {

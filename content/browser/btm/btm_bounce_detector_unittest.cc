@@ -167,10 +167,8 @@ class TestBounceDetectorDelegate : public BtmBounceDetectorDelegate {
   int stateful_bounce_count() const { return stateful_bounce_count_; }
 
  private:
-  void RecordBounce(
-      const BtmRedirectInfo& redirect,
-      const BtmRedirectChainInfo& chain,
-      base::RepeatingCallback<void(const GURL&)> increment_bounce_callback) {
+  void RecordBounce(const BtmRedirectInfo& redirect,
+                    const BtmRedirectChainInfo& chain) {
     bool stateful = redirect.access_type > BtmDataAccessType::kRead;
 
     recorded_bounces_.insert(
