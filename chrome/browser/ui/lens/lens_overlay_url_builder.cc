@@ -308,11 +308,9 @@ GURL BuildTextOnlySearchURL(
     url_with_query_params = net::AppendOrReplaceQueryParameter(
         url_with_query_params, kLensModeParameterKey,
         kLensModeParameterTextValue);
-    if (lens::features::IsUpdatedClientContextEnabled()) {
-      url_with_query_params = net::AppendOrReplaceQueryParameter(
-          url_with_query_params, kLensSurfaceParameterKey,
-          kLensSurfaceParameterLensOverlayValue);
-    }
+    url_with_query_params = net::AppendOrReplaceQueryParameter(
+        url_with_query_params, kLensSurfaceParameterKey,
+        kLensSurfaceParameterLensOverlayValue);
   }
   url_with_query_params =
       AppendCommonSearchParametersToURL(url_with_query_params, use_dark_mode);
@@ -363,11 +361,9 @@ GURL BuildLensSearchURL(
   url_with_query_params = net::AppendOrReplaceQueryParameter(
       url_with_query_params, kLensFootprintParameterKey,
       kLensFootprintParameterValue);
-  if (lens::features::IsUpdatedClientContextEnabled()) {
-    url_with_query_params = net::AppendOrReplaceQueryParameter(
-        url_with_query_params, kLensSurfaceParameterKey,
-        kLensSurfaceParameterLensOverlayValue);
-  }
+  url_with_query_params = net::AppendOrReplaceQueryParameter(
+      url_with_query_params, kLensSurfaceParameterKey,
+      kLensSurfaceParameterLensOverlayValue);
 
   // The search url should use the search session id from the cluster info.
   url_with_query_params = net::AppendOrReplaceQueryParameter(
