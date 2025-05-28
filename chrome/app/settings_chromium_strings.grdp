@@ -124,6 +124,9 @@
   <message name="IDS_SETTINGS_MANAGE_OTHER_GOOGLE_DATA_SUB_LABEL" desc="Sub-label for the 'Manage other Google Data' option in the 'Delete Browsing Data' dialog, explaining to the user that search history and passwords can only be deleted outside of Chromium." translateable="false">
     Search history and passwords can only be deleted outside Chromium.
   </message>
+   <message name="IDS_SETTINGS_OTHER_DATA_DESCRIPTION" desc="Description text at the top of the 'Other data' subpage." translateable="false">
+    This data is managed outside Chromium. To delete it, go to its management settings.
+  </message>
 
   <!-- Preloading Page-->
   <message name="IDS_SETTINGS_PRELOAD_PAGES_STANDARD_PRELOADING_WHEN_ON_BULLET_TWO" desc="Bullet point in the standard preloading and when on column. Informs the user about what the standard preloading setting does.">

@@ -1,0 +1,26 @@
+<style include="cr-icons"></style>
+<cr-dialog id="dialog" show-on-attach>
+  <div slot="title">
+<!-- TODO(crbug.com/417692423): Add autofocus for DBD and Other Google Data. -->
+    <cr-icon-button class="icon-arrow-back" aria-label="$i18n{back}"
+        on-click="onBackOrCancelClick_"></cr-icon-button>
+    <span class="title-text">$i18n{otherDataTitle}</span>
+  </div>
+  <div slot="body">
+    <div class="subpage-description">$i18n{otherDataDescription}</div>
+    <div>
+      <cr-link-row label="$i18n{passwordsAndPasskeys}"
+          sub-label="$i18n{manageInGooglePasswordManager}" external>
+      </cr-link-row>
+      <cr-link-row label="$i18n{myActivity}"
+          sub-label="$i18n{manageInYourGoogleAccount}" external>
+      </cr-link-row>
+      <cr-link-row label="$i18n{searchHistory}" external></cr-link-row>
+    </div>
+  </div>
+  <div slot="button-container">
+    <cr-button class="cancel-button" on-click="onBackOrCancelClick_">
+      $i18n{cancel}
+    </cr-button>
+  </div>
+</cr-dialog>

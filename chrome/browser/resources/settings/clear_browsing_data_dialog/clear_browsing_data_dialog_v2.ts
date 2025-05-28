@@ -16,6 +16,7 @@ import './clear_browsing_data_account_indicator.js';
 // </if>
 import './clear_browsing_data_time_picker.js';
 import './history_deletion_dialog.js';
+import './other_google_data_dialog.js';
 
 import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
 import type {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
@@ -159,6 +160,11 @@ export class SettingsClearBrowsingDataDialogV2Element extends
         value: false,
       },
 
+      showOtherGoogleDataDialog_: {
+        type: Boolean,
+        value: false,
+      },
+
       expandedBrowsingDataTypeOptionsList_: Array,
 
       moreBrowsingDataTypeOptionsList_: Array,
@@ -169,6 +175,7 @@ export class SettingsClearBrowsingDataDialogV2Element extends
   declare private isDeletionInProgress_: boolean;
   declare private isNoDatatypeSelected_: boolean;
   declare private showHistoryDeletionDialog_: boolean;
+  declare private showOtherGoogleDataDialog_: boolean;
   declare private expandedBrowsingDataTypeOptionsList_:
       BrowsingDataTypeOption[];
   declare private moreBrowsingDataTypeOptionsList_: BrowsingDataTypeOption[];
@@ -326,6 +333,15 @@ export class SettingsClearBrowsingDataDialogV2Element extends
 
   private onHistoryDeletionDialogClose_() {
     this.showHistoryDeletionDialog_ = false;
+  }
+
+  private onManageOtherGoogleDataRowClick_() {
+    this.showOtherGoogleDataDialog_ = true;
+  }
+
+  private onOtherGoogleDataDialogClose_(e: Event) {
+    e.stopPropagation();
+    this.showOtherGoogleDataDialog_ = false;
   }
 }
 

@@ -641,7 +641,16 @@ void AddClearBrowsingDataStrings(content::WebUIDataSource* html_source,
        IDS_CLEAR_BROWSING_DATA_PASSWORDS_NOTICE_OK},
       {"notificationWarning", IDS_SETTINGS_NOTIFICATION_WARNING},
       {"clearBrowsingDataShowMore", IDS_SETTINGS_CLEAR_BROWSING_DATA_SHOW_MORE},
-      {"clearBrowsingDataMore", IDS_SETTINGS_CLEAR_BROWSING_DATA_MORE}};
+      {"clearBrowsingDataMore", IDS_SETTINGS_CLEAR_BROWSING_DATA_MORE},
+      {"otherDataTitle", IDS_SETTINGS_OTHER_DATA_TITLE},
+      {"otherDataDescription", IDS_SETTINGS_OTHER_DATA_DESCRIPTION},
+      {"passwordsAndPasskeys", IDS_SETTINGS_PASSWORDS_AND_PASSKEYS},
+      {"manageInGooglePasswordManager",
+       IDS_SETTINGS_MANAGE_IN_GOOGLE_PASSWORD_MANAGER},
+      {"searchHistory", IDS_SETTINGS_SEARCH_HISTORY},
+      {"myActivity", IDS_SETTINGS_MY_ACTIVITY},
+      {"manageInYourGoogleAccount",
+       IDS_SETTINGS_MANAGE_IN_YOUR_GOOGLE_ACCOUNT}};
 
   html_source->AddString(
       "clearGoogleSearchHistoryGoogleDse",

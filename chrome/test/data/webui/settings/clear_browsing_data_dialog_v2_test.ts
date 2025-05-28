@@ -501,6 +501,38 @@ suite('DeleteBrowsingDataDialog', function() {
     assertFalse(dialog.$.deleteBrowsingDataDialog.open);
   });
 
+  test('NavigationToAndFromOtherGoogleData', async function() {
+    let otherGoogleDataDialog =
+        dialog.shadowRoot!.querySelector('settings-other-google-data-dialog');
+    assertFalse(!!otherGoogleDataDialog);
+
+    dialog.$.manageOtherGoogleDataRow.click();
+    await flushTasks();
+
+    otherGoogleDataDialog =
+        dialog.shadowRoot!.querySelector('settings-other-google-data-dialog');
+    assertTrue(!!otherGoogleDataDialog);
+    assertTrue(otherGoogleDataDialog.$.dialog.open);
+    assertTrue(dialog.$.deleteBrowsingDataDialog.hidden);
+
+    const cancelButton =
+        otherGoogleDataDialog.shadowRoot!.querySelector<HTMLElement>(
+            '.cancel-button');
+    assertTrue(!!cancelButton);
+    cancelButton.click();
+
+    await eventToPromise('close', otherGoogleDataDialog);
+    await flushTasks();
+
+    assertFalse(otherGoogleDataDialog.$.dialog.open);
+
+    otherGoogleDataDialog =
+        dialog.shadowRoot!.querySelector('settings-other-google-data-dialog');
+    assertFalse(!!otherGoogleDataDialog);
+    assertTrue(dialog.$.deleteBrowsingDataDialog.open);
+    assertFalse(dialog.$.deleteBrowsingDataDialog.hidden);
+  });
+
   test('showHistoryDeletionDialog', async function() {
     // Select a datatype for deletion to enable the delete button.
     const historyCheckbox = getCheckboxForDataType(BrowsingDataType.HISTORY);
