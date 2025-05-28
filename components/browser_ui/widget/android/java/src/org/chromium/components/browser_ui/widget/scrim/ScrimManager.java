@@ -131,7 +131,9 @@ public class ScrimManager {
      * @param animate Whether the scrim should animate.
      */
     public void showScrim(PropertyModel model, boolean animate) {
-        ScrimCoordinator coordinator = new ScrimCoordinator(mContext, mParent);
+        ViewGroup customParent = model.get(ScrimProperties.CUSTOM_PARENT);
+        ViewGroup parent = customParent == null ? mParent : customParent;
+        ScrimCoordinator coordinator = new ScrimCoordinator(mContext, parent);
         mModelToScrim.put(model, coordinator);
         mScrimVisibilitySupplier.set(true);
         coordinator.showScrim(model, animate);
@@ -259,13 +261,32 @@ public class ScrimManager {
      */
     private List<ScrimCoordinator> orderedScrims() {
         List<ScrimCoordinator> list = new ArrayList<>(mModelToScrim.values());
-        Collections.sort(list, ScrimManager::compareScrimCoordinators);
+        Collections.sort(list, (c1, c2) -> ScrimManager.compareScrimCoordinators(mParent, c1, c2));
         return list;
     }
 
-    private static int compareScrimCoordinators(ScrimCoordinator c1, ScrimCoordinator c2) {
-        // Flip order to get ascending, as smaller indexes are drawn (and we should apply) first.
-        return Integer.compare(c1.getIndexInParent(), c2.getIndexInParent());
+    private static int compareScrimCoordinators(
+            ViewGroup root, ScrimCoordinator c1, ScrimCoordinator c2) {
+        // Because scrims may have different parents due to custom parent we recurse up the tree
+        // until we reach the root. Indices are listed in order from root down. We
+        // compare level-wise in the tree until the scrims have a clear relative ordering.
+        List<Integer> indicesC1 = c1.getIndicesRelativeTo(root);
+        List<Integer> indicesC2 = c2.getIndicesRelativeTo(root);
+        int indicesMinSize = Math.min(indicesC1.size(), indicesC2.size());
+        assert indicesMinSize > 0;
+        int compare = 0;
+        for (int i = 0; i < indicesMinSize; i++) {
+            compare = Integer.compare(indicesC1.get(i), indicesC2.get(i));
+
+            // Flip order to get ascending, as smaller indexes are drawn (and we should apply)
+            // first.
+            if (compare != 0) return compare;
+        }
+        // If we still have a tie one of the scrims is a child of the other this isn't a valid
+        // state.
+        assert compare != 0 : "Scrims have same index in tree.";
+        // This is effectively unreachable as we'd be in an invalid state.
+        return compare;
     }
 
     public @Nullable ScrimView getViewForTesting() {
