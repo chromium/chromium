@@ -22,10 +22,9 @@ GURL UseFixedLogoUrl(const GURL& logo_url, const std::string& fingerprint);
 
 // Implements ParseLogoResponse, defined in logo_common.h,
 // for static logos.
-std::unique_ptr<EncodedLogo> ParseFixedLogoResponse(
-    std::unique_ptr<std::string> response,
-    base::Time response_time,
-    bool* parsing_failed);
+std::unique_ptr<EncodedLogo> ParseFixedLogoResponse(std::string response,
+                                                    base::Time response_time,
+                                                    bool* parsing_failed);
 
 }  // namespace search_provider_logos
 

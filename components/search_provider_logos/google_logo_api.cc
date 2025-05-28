@@ -149,16 +149,13 @@ ParseEncodedImageData(const std::string& encoded_image_data) {
 
 }  // namespace
 
-std::unique_ptr<EncodedLogo> ParseDoodleLogoResponse(
-    const GURL& base_url,
-    std::unique_ptr<std::string> response,
-    base::Time response_time,
-    bool* parsing_failed) {
+std::unique_ptr<EncodedLogo> ParseDoodleLogoResponse(const GURL& base_url,
+                                                     std::string response,
+                                                     base::Time response_time,
+                                                     bool* parsing_failed) {
   // The response may start with )]}'. Ignore this.
-  std::string_view response_sp(*response);
-  if (base::StartsWith(response_sp, kResponsePreamble)) {
-    response_sp.remove_prefix(strlen(kResponsePreamble));
-  }
+  std::string_view response_sp =
+      base::RemovePrefix(response, kResponsePreamble).value_or(response);
 
   // Default parsing failure to be true.
   *parsing_failed = true;

@@ -170,7 +170,7 @@ class LogoServiceImpl : public LogoService,
 
   // Invoked by |loader|.
   void OnURLLoadComplete(const network::SimpleURLLoader* source,
-                         std::unique_ptr<std::string> body);
+                         std::optional<std::string> body);
 
   // Constructor arguments.
   const base::FilePath cache_directory_;
