@@ -70,7 +70,7 @@ BrowserDelegate* BrowserControllerImpl::GetDelegate(Browser* browser) {
 
 BrowserDelegate* BrowserControllerImpl::GetLastUsedVisibleBrowser() {
   for (Browser* browser : BrowserList::GetInstance()->OrderedByActivation()) {
-    if (browser->window()->GetNativeWindow()->IsVisible()) {
+    if (browser->window()->IsVisible()) {
       return GetDelegate(browser);
     }
   }
