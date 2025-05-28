@@ -2512,3 +2512,42 @@ IN_PROC_BROWSER_TEST_P(
   EXPECT_FALSE(HasCscIndicator(capture_session.initially_captured_tab()));
   EXPECT_FALSE(HasCscIndicator(capture_session.other_tab()));
 }
+
+class WebRtcScreenCaptureBrowserTestUserRejection
+    : public WebRtcScreenCaptureBrowserTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  WebRtcScreenCaptureBrowserTestUserRejection()
+      : prefer_current_tab_(GetParam()) {}
+  ~WebRtcScreenCaptureBrowserTestUserRejection() override = default;
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    WebRtcScreenCaptureBrowserTest::SetUpCommandLine(command_line);
+    command_line->AppendSwitch(prefer_current_tab_
+                                   ? switches::kThisTabCaptureAutoReject
+                                   : switches::kCaptureAutoReject);
+  }
+
+  bool PreferCurrentTab() const override { return prefer_current_tab_; }
+
+ private:
+  const bool prefer_current_tab_;
+};
+
+INSTANTIATE_TEST_SUITE_P(, WebRtcScreenCaptureBrowserTestUserRejection, Bool());
+
+IN_PROC_BROWSER_TEST_P(WebRtcScreenCaptureBrowserTestUserRejection,
+                       CorrectErrorReported) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  OpenTestPageInNewTab(kCapturedPageMain);
+  content::WebContents* capturing_tab = OpenTestPageInNewTab(kMainHtmlPage);
+
+  RunGetDisplayMedia(
+      capturing_tab,
+      GetConstraints(
+          /*video=*/true, /*audio=*/false),
+      /*is_fake_ui=*/false,
+      /*expect_success=*/false,
+      /*is_tab_capture=*/true,
+      /*expected_error=*/"NotAllowedError: Permission denied by user");
+}

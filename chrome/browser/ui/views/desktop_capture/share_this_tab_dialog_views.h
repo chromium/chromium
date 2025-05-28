@@ -8,9 +8,11 @@
 #include <string>
 
 #include "base/memory/raw_ptr.h"
+#include "base/types/expected.h"
 #include "build/build_config.h"
 #include "chrome/browser/media/webrtc/desktop_media_picker.h"
 #include "chrome/browser/ui/views/desktop_capture/share_this_tab_source_view.h"
+#include "third_party/blink/public/mojom/mediastream/media_stream.mojom.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/button/toggle_button.h"
@@ -86,7 +88,9 @@ class ShareThisTabMediaPicker : public DesktopMediaPicker {
   ShareThisTabMediaPicker& operator=(const ShareThisTabMediaPicker&) = delete;
   ~ShareThisTabMediaPicker() override;
 
-  void NotifyDialogResult(const content::DesktopMediaID& source);
+  void NotifyDialogResult(
+      base::expected<content::DesktopMediaID,
+                     blink::mojom::MediaStreamRequestResult> result);
 
   // DesktopMediaPicker:
   void Show(const DesktopMediaPicker::Params& params,

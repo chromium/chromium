@@ -119,6 +119,8 @@ const char* MediaStreamRequestResultToString(MediaStreamRequestResult value) {
       return "REQUEST_CANCELLED";
     case MediaStreamRequestResult::START_TIMEOUT:
       return "START_TIMEOUT";
+    case MediaStreamRequestResult::PERMISSION_DENIED_BY_USER:
+      return "PERMISSION_DENIED_BY_USER";
     case MediaStreamRequestResult::NUM_MEDIA_REQUEST_RESULTS:
       break;
   }
@@ -291,6 +293,8 @@ String ErrorCodeToString(MediaStreamRequestResult result) {
       return "Timeout starting video source";
     case MediaStreamRequestResult::CONSTRAINT_NOT_SATISFIED:
       return "Constraint not satisfied";
+    case MediaStreamRequestResult::PERMISSION_DENIED_BY_USER:
+      return "Permission denied by user";
     case MediaStreamRequestResult::NUM_MEDIA_REQUEST_RESULTS:
       break;  // Not a valid enum value.
   }

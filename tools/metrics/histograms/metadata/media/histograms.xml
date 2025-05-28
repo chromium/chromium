@@ -4289,6 +4289,30 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Media.MediaDevices.GetAllScreensMedia.Latency" units="ms"
+    expires_after="2023-05-01">
+  <owner>simonha@google.com</owner>
+  <owner>video-cmi-apis@google.com</owner>
+  <summary>
+    The latency of calls to the navigator.mediaDevices.GetAllScreensMedia() API
+    which resolve, including both successes and failures. Note very long calls
+    which record a GetAllScreensMedia.Result of kTimedOut but do eventually
+    resolve will have their latency recorded.
+  </summary>
+</histogram>
+
+<histogram name="Media.MediaDevices.GetAllScreensMedia.Result2"
+    enum="UserMediaRequestResult" expires_after="2023-05-01">
+  <owner>simonha@google.com</owner>
+  <owner>video-cmi-apis@google.com</owner>
+  <summary>
+    The results of all calls to the navigator.mediaDevices.GetAllScreensMedia()
+    API, including successful promise resolutions, error codes, or kTimedOut, if
+    the promise was still pending after 6 seconds. The suffix 2 was added at
+    milestone 138, after kNotAllowedByUserError was added.
+  </summary>
+</histogram>
+
 <histogram name="Media.MediaDevices.GetDisplayMedia.Latency" units="ms"
     expires_after="2025-11-02">
   <owner>toprice@chromium.org</owner>
@@ -4302,7 +4326,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Media.MediaDevices.GetDisplayMedia.Result"
+<histogram name="Media.MediaDevices.GetDisplayMedia.Result2"
     enum="UserMediaRequestResult" expires_after="2025-11-09">
   <owner>toprice@chromium.org</owner>
   <owner>agpalak@chromium.org</owner>
@@ -4310,30 +4334,8 @@ chromium-metrics-reviews@google.com.
   <summary>
     The results of all calls to the navigator.mediaDevices.GetDisplayMedia()
     API, including successful promise resolutions, error codes, or kTimedOut, if
-    the promise was still pending after 6 seconds.
-  </summary>
-</histogram>
-
-<histogram name="Media.MediaDevices.GetDisplayMediaSet.Latency" units="ms"
-    expires_after="2023-05-01">
-  <owner>simonha@google.com</owner>
-  <owner>video-cmi-apis@google.com</owner>
-  <summary>
-    The latency of calls to the navigator.mediaDevices.GetDisplayMediaSet() API
-    which resolve, including both successes and failures. Note very long calls
-    which record a GetDisplayMediaSet.Result of kTimedOut but do eventually
-    resolve will have their latency recorded.
-  </summary>
-</histogram>
-
-<histogram name="Media.MediaDevices.GetDisplayMediaSet.Result"
-    enum="UserMediaRequestResult" expires_after="2023-05-01">
-  <owner>simonha@google.com</owner>
-  <owner>video-cmi-apis@google.com</owner>
-  <summary>
-    The results of all calls to the navigator.mediaDevices.GetDisplayMediaSet()
-    API, including successful promise resolutions, error codes, or kTimedOut, if
-    the promise was still pending after 6 seconds.
+    the promise was still pending after 6 seconds. The suffix 2 was added at
+    milestone 138, after kNotAllowedByUserError was added.
   </summary>
 </histogram>
 
@@ -4361,7 +4363,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Media.MediaDevices.GetUserMedia.Result"
+<histogram name="Media.MediaDevices.GetUserMedia.Result2"
     enum="UserMediaRequestResult" expires_after="2025-10-26">
   <owner>toprice@chromium.org</owner>
   <owner>agpalak@chromium.org</owner>
@@ -4370,6 +4372,9 @@ chromium-metrics-reviews@google.com.
     The results of all calls to the navigator.mediaDevices.GetUserMedia() API,
     including successful promise resolutions, error codes, or kTimedOut, if the
     promise was still pending after 8 seconds.
+
+    The suffix 2 was added at milestone 138, after kNotAllowedByUserError was
+    added.
   </summary>
 </histogram>
 

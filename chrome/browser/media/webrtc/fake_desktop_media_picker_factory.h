@@ -9,10 +9,12 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
+#include "base/types/expected.h"
 #include "chrome/browser/media/webrtc/desktop_media_list.h"
 #include "chrome/browser/media/webrtc/desktop_media_picker.h"
 #include "chrome/browser/media/webrtc/desktop_media_picker_factory.h"
 #include "content/public/browser/desktop_media_id.h"
+#include "third_party/blink/public/mojom/mediastream/media_stream.mojom.h"
 
 class FakeDesktopMediaPicker;
 
@@ -26,7 +28,9 @@ class FakeDesktopMediaPickerFactory : public DesktopMediaPickerFactory {
     bool expect_tabs = false;
     bool expect_current_tab = false;
     bool expect_audio = false;
-    content::DesktopMediaID selected_source;
+    std::optional<base::expected<content::DesktopMediaID,
+                                 blink::mojom::MediaStreamRequestResult>>
+        picker_result;
     bool cancelled = false;
 
     // Following flags are set by FakeDesktopMediaPicker when it's created and

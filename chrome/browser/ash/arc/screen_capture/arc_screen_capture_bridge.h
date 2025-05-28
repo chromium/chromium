@@ -10,10 +10,12 @@
 #include <unordered_map>
 
 #include "base/memory/raw_ptr.h"
+#include "base/types/expected.h"
 #include "chrome/browser/media/webrtc/desktop_media_picker.h"
 #include "chromeos/ash/experiences/arc/mojom/screen_capture.mojom.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "content/public/browser/desktop_media_id.h"
+#include "third_party/blink/public/mojom/mediastream/media_stream.mojom.h"
 
 namespace content {
 class BrowserContext;
@@ -75,8 +77,10 @@ class ArcScreenCaptureBridge : public KeyedService,
     const bool enable_notification;
   };
 
-  void PermissionPromptCallback(const std::string& package_name,
-                                content::DesktopMediaID desktop_id);
+  void PermissionPromptCallback(
+      const std::string& package_name,
+      base::expected<content::DesktopMediaID,
+                     blink::mojom::MediaStreamRequestResult> result);
 
   const raw_ptr<ArcBridgeService>
       arc_bridge_service_;  // Owned by ArcServiceManager.

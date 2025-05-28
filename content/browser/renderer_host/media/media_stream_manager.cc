@@ -309,6 +309,8 @@ const char* RequestResultToString(
       return "REQUEST_CANCELLED";
     case blink::mojom::MediaStreamRequestResult::START_TIMEOUT:
       return "START_TIMEOUT";
+    case blink::mojom::MediaStreamRequestResult::PERMISSION_DENIED_BY_USER:
+      return "PERMISSION_DENIED_BY_USER";
     case blink::mojom::MediaStreamRequestResult::NUM_MEDIA_REQUEST_RESULTS:
       break;  // Not a valid enum value.
   }

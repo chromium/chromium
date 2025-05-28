@@ -77,7 +77,8 @@ DesktopMediaPicker::Params FakeDesktopMediaPicker::GetParams() {
 }
 
 void FakeDesktopMediaPicker::CallCallback(DoneCallback done_callback) {
-  std::move(done_callback).Run(expectation_->selected_source);
+  CHECK(expectation_->picker_result.has_value());
+  std::move(done_callback).Run(expectation_->picker_result.value());
 }
 
 FakeDesktopMediaPickerFactory::FakeDesktopMediaPickerFactory() = default;

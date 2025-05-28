@@ -8,11 +8,13 @@
 #include <string>
 
 #include "base/memory/raw_ptr.h"
+#include "base/types/expected.h"
 #include "build/build_config.h"
 #include "chrome/browser/media/webrtc/desktop_media_picker.h"
 #include "chrome/browser/ui/views/desktop_capture/desktop_media_list_controller.h"
 #include "chrome/browser/ui/views/desktop_capture/desktop_media_pane_view.h"
 #include "chrome/browser/ui/views/desktop_capture/screen_capture_permission_checker.h"
+#include "third_party/blink/public/mojom/mediastream/media_stream.mojom.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/mojom/dialog_button.mojom.h"
@@ -220,7 +222,9 @@ class DesktopMediaPickerImpl : public DesktopMediaPicker {
   DesktopMediaPickerImpl& operator=(const DesktopMediaPickerImpl&) = delete;
   ~DesktopMediaPickerImpl() override;
 
-  void NotifyDialogResult(const content::DesktopMediaID& source);
+  void NotifyDialogResult(
+      base::expected<content::DesktopMediaID,
+                     blink::mojom::MediaStreamRequestResult> result);
 
   // DesktopMediaPicker:
   void Show(const DesktopMediaPicker::Params& params,

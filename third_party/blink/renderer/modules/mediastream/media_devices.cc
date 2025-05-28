@@ -476,9 +476,11 @@ ScriptPromise<MediaStream> MediaDevices::getUserMedia(
 
   // This timeout of base::Seconds(8) is an initial value and based on the data
   // in Media.MediaDevices.GetUserMedia.Latency, it should be iterated upon.
+  // Records the `Media.MediaDevices.GetUserMedia.Result2` histogram.
   auto* resolver = MakeGarbageCollected<
       ScriptPromiseResolverWithTracker<UserMediaRequestResult, MediaStream>>(
       script_state, "Media.MediaDevices.GetUserMedia", base::Seconds(8));
+  resolver->SetResultSuffix("Result2");
   const auto promise = resolver->Promise();
 
   DCHECK(options);  // Guaranteed by the default value in the IDL.
@@ -607,9 +609,11 @@ ScriptPromise<IDLSequence<MediaStream>> MediaDevices::getAllScreensMedia(
   // This timeout of base::Seconds(6) is an initial value and based on the data
   // in Media.MediaDevices.GetAllScreensMedia.Latency, it should be iterated
   // upon.
+  // Records the `Media.MediaDevices.GetAllScreensMedia.Result2` histogram.
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolverWithTracker<
       UserMediaRequestResult, IDLSequence<MediaStream>>>(
       script_state, "Media.MediaDevices.GetAllScreensMedia", base::Seconds(6));
+  resolver->SetResultSuffix("Result2");
   auto promise = resolver->Promise();
 
   ExecutionContext* const context = GetExecutionContext();
@@ -661,9 +665,11 @@ ScriptPromise<MediaStream> MediaDevices::getDisplayMedia(
 
   // Using timeout of base::Seconds(12) based on the
   // Media.MediaDevices.GetDisplayMedia.Latency values.
+  // Records the `Media.MediaDevices.GetDisplayMedia.Result2` histogram.
   auto* resolver = MakeGarbageCollected<
       ScriptPromiseResolverWithTracker<UserMediaRequestResult, MediaStream>>(
       script_state, "Media.MediaDevices.GetDisplayMedia", base::Seconds(12));
+  resolver->SetResultSuffix("Result2");
   auto promise = resolver->Promise();
 
   if (!window) {

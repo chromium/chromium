@@ -13,6 +13,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/types/expected.h"
 #include "build/build_config.h"
 #include "chrome/browser/bad_message.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
@@ -274,6 +275,10 @@ void DisplayMediaAccessHandler::HandleRequest(
     // before sending IPC, but just to be sure double check here as well. This
     // is not treated as a BadMessage because it is possible for the transient
     // user activation to expire between the renderer side check and this check.
+    //
+    // TODO(crbug.com/416448339): Introduce and use a new result value,
+    // MediaStreamRequestResult::NO_TRANSIENT_ACTIVATION. In JS, it should map
+    // to `InvalidStateError`, not to `NotAllowedError`.
     if (!rfh->HasTransientUserActivation() &&
         capture_policy::IsTransientActivationRequiredForGetDisplayMedia(
             web_contents)) {
@@ -621,7 +626,7 @@ void DisplayMediaAccessHandler::AcceptRequest(WebContents* web_contents,
 
 void DisplayMediaAccessHandler::OnDisplaySurfaceSelected(
     base::WeakPtr<WebContents> web_contents,
-    DesktopMediaID media_id) {
+    base::expected<DesktopMediaID, MediaStreamRequestResult> result) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   if (!web_contents) {
@@ -630,11 +635,13 @@ void DisplayMediaAccessHandler::OnDisplaySurfaceSelected(
     return;
   }
 
-  if (media_id.is_null()) {
-    RejectRequest(web_contents.get(),
-                  MediaStreamRequestResult::PERMISSION_DENIED);
+  if (!result.has_value()) {
+    RejectRequest(web_contents.get(), result.error());
     return;
   }
+
+  const DesktopMediaID media_id = result.value();
+  CHECK(!media_id.is_null());
 
   // If the media id is tied to a tab, check that it hasn't been destroyed.
   if (media_id.type == DesktopMediaID::TYPE_WEB_CONTENTS &&

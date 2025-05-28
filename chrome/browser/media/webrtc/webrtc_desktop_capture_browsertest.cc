@@ -256,7 +256,7 @@ class WebRtcDesktopCaptureBrowserTest : public WebRtcTestBase {
         .expect_screens = true,
         .expect_windows = true,
         .expect_tabs = true,
-        .selected_source = std::move(media_id_callback).Run(),
+        .picker_result = std::move(media_id_callback).Run(),
     };
     picker_factory_.SetTestFlags(&test_flags, /*tests_count=*/1);
 

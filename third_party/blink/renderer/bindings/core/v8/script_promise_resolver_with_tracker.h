@@ -127,8 +127,8 @@ class CORE_EXPORT ScriptPromiseResolverWithTracker
       return;
 
     is_result_recorded_ = true;
-    base::UmaHistogramEnumeration(metric_name_prefix_ + "." + result_suffix_,
-                                  result);
+    base::UmaHistogramEnumeration(
+        base::StrCat({metric_name_prefix_, ".", result_suffix_}), result);
   }
 
   void RecordLatency() {

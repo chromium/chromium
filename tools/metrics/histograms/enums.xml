@@ -20086,6 +20086,7 @@ from previous Chrome versions.
   <int value="16" label="Device In Use (NotReadableError)"/>
   <int value="17" label="Request cancelled (?)"/>
   <int value="18" label="Start timeout (AbortError)"/>
+  <int value="19" label="Permission denied by user (NotAllowedError)"/>
 </enum>
 
 <enum name="MediaStreamType">

@@ -59,7 +59,7 @@ class DesktopMediaTabListTest : public testing::Test {
                                          "DesktopMediaPickerDialogView");
 
     picker_views_->Show(picker_params, std::move(source_lists),
-                        base::BindOnce([](content::DesktopMediaID id) {}));
+                        base::DoNothing());
     test_api_.set_picker(picker_views_.get());
 
     tab_list_ =

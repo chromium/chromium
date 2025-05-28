@@ -2001,6 +2001,7 @@ chromium-metrics-reviews@google.com.
   <int value="10" label="Not Supported Error"/>
   <int value="11" label="Insecure Context"/>
   <int value="12" label="Invalid State Error"/>
+  <int value="13" label="Explicit User Rejection"/>
 </enum>
 
 <enum name="V4l2VideoDecoderFunctions">

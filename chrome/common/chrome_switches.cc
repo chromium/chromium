@@ -629,10 +629,13 @@ const char kStoragePressureNotificationInterval[] =
 // testing purposes.
 const char kSystemLogUploadFrequency[] = "system-log-upload-frequency";
 
-// This flag makes Chrome auto-accept/reject requests to capture the current
+// These flags make Chrome auto-accept/reject requests to capture the current
 // tab. It should only be used for tests.
 const char kThisTabCaptureAutoAccept[] = "auto-accept-this-tab-capture";
 const char kThisTabCaptureAutoReject[] = "auto-reject-this-tab-capture";
+
+// This flag makes Chrome auto-reject requests capture a tab/window/screen.
+const char kCaptureAutoReject[] = "auto-reject-capture";
 
 // Custom delay for memory log. This should be used only for testing purpose.
 const char kTestMemoryLogDelayInMinutes[] = "test-memory-log-delay-in-minutes";
