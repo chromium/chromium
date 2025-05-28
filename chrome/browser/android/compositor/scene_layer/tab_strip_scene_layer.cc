@@ -130,17 +130,22 @@ void TabStripSceneLayer::SetContentTree(
   }
 }
 
-void TabStripSceneLayer::BeginBuildingFrame(JNIEnv* env,
-                                            const JavaParamRef<jobject>& jobj,
-                                            jboolean visible) {
+void TabStripSceneLayer::BeginBuildingFrame(
+    JNIEnv* env,
+    const JavaParamRef<jobject>& jobj,
+    jboolean visible,
+    const JavaParamRef<jobject>& jresource_manager) {
   write_index_ = 0;
   group_write_index_ = 0;
   background_layer_->SetHideLayerAndSubtree(!visible);
+  resource_manager_ =
+      ui::ResourceManagerImpl::FromJavaObject(jresource_manager);
 }
 
 void TabStripSceneLayer::FinishBuildingFrame(
     JNIEnv* env,
     const JavaParamRef<jobject>& jobj) {
+  resource_manager_ = nullptr;
   if (background_layer_->hide_layer_and_subtree()) {
     return;
   }
@@ -240,17 +245,15 @@ void TabStripSceneLayer::UpdateNewTabButton(
     jfloat button_alpha,
     jboolean is_keyboard_focused,
     jint keyboard_focus_ring_resource_id,
-    jint keyboard_focus_ring_color,
-    const JavaParamRef<jobject>& jresource_manager) {
-  ui::ResourceManager* resource_manager =
-      ui::ResourceManagerImpl::FromJavaObject(jresource_manager);
+    jint keyboard_focus_ring_color) {
+  DCHECK(resource_manager_);
   ui::Resource* button_resource =
-      resource_manager->GetStaticResourceWithTint(resource_id, tint);
+      resource_manager_->GetStaticResourceWithTint(resource_id, tint);
   ui::Resource* background_resource =
-      resource_manager->GetStaticResourceWithTint(bg_resource_id,
-                                                  background_tint, true);
+      resource_manager_->GetStaticResourceWithTint(bg_resource_id,
+                                                   background_tint, true);
   ui::Resource* keyboard_focus_ring_drawable =
-      resource_manager->GetStaticResourceWithTint(
+      resource_manager_->GetStaticResourceWithTint(
           keyboard_focus_ring_resource_id, keyboard_focus_ring_color, true);
 
   x += touch_target_offset;
@@ -276,17 +279,15 @@ void TabStripSceneLayer::UpdateModelSelectorButton(
     jfloat button_alpha,
     jboolean is_keyboard_focused,
     jint keyboard_focus_ring_resource_id,
-    jint keyboard_focus_ring_color,
-    const JavaParamRef<jobject>& jresource_manager) {
-  ui::ResourceManager* resource_manager =
-      ui::ResourceManagerImpl::FromJavaObject(jresource_manager);
+    jint keyboard_focus_ring_color) {
+  DCHECK(resource_manager_);
   ui::Resource* button_resource =
-      resource_manager->GetStaticResourceWithTint(resource_id, tint);
+      resource_manager_->GetStaticResourceWithTint(resource_id, tint);
   ui::Resource* background_resource =
-      resource_manager->GetStaticResourceWithTint(bg_resource_id,
-                                                  background_tint, true);
+      resource_manager_->GetStaticResourceWithTint(bg_resource_id,
+                                                   background_tint, true);
   ui::Resource* keyboard_focus_ring_drawable =
-      resource_manager->GetStaticResourceWithTint(
+      resource_manager_->GetStaticResourceWithTint(
           keyboard_focus_ring_resource_id, keyboard_focus_ring_color, true);
 
   UpdateCompositorButton(model_selector_button_,
@@ -361,7 +362,6 @@ void TabStripSceneLayer::UpdateTabStripLeftFade(
     const JavaParamRef<jobject>& jobj,
     jint resource_id,
     jfloat opacity,
-    const JavaParamRef<jobject>& jresource_manager,
     jint left_fade_color,
     jfloat left_padding) {
   // Hide layer if it's not visible.
@@ -370,11 +370,9 @@ void TabStripSceneLayer::UpdateTabStripLeftFade(
     return;
   }
 
-  // Set UI resource.
-  ui::ResourceManager* resource_manager =
-      ui::ResourceManagerImpl::FromJavaObject(jresource_manager);
-  ui::Resource* fade_resource = resource_manager->GetStaticResourceWithTint(
-        resource_id, left_fade_color);
+  DCHECK(resource_manager_);
+  ui::Resource* fade_resource = resource_manager_->GetStaticResourceWithTint(
+      resource_id, left_fade_color);
   left_fade_->SetUIResourceId(fade_resource->ui_resource()->id());
 
   // The same resource is used for both left and right fade, so the
@@ -404,7 +402,6 @@ void TabStripSceneLayer::UpdateTabStripRightFade(
     const JavaParamRef<jobject>& jobj,
     jint resource_id,
     jfloat opacity,
-    const JavaParamRef<jobject>& jresource_manager,
     jint right_fade_color,
     jfloat right_padding) {
   // Hide layer if it's not visible.
@@ -413,11 +410,9 @@ void TabStripSceneLayer::UpdateTabStripRightFade(
     return;
   }
 
-  // Set UI resource.
-  ui::ResourceManager* resource_manager =
-      ui::ResourceManagerImpl::FromJavaObject(jresource_manager);
-  ui::Resource* fade_resource = resource_manager->GetStaticResourceWithTint(
-        resource_id, right_fade_color);
+  DCHECK(resource_manager_);
+  ui::Resource* fade_resource = resource_manager_->GetStaticResourceWithTint(
+      resource_id, right_fade_color);
   right_fade_->SetUIResourceId(fade_resource->ui_resource()->id());
 
   // Set opacity.
@@ -478,8 +473,7 @@ void TabStripSceneLayer::PutStripTabLayer(
     jint keyboard_focus_ring_offset,
     jint stroke_width,
     jfloat folio_foot_length,
-    const JavaParamRef<jobject>& jlayer_title_cache,
-    const JavaParamRef<jobject>& jresource_manager) {
+    const JavaParamRef<jobject>& jlayer_title_cache) {
   LayerTitleCache* layer_title_cache =
       LayerTitleCache::FromJavaObject(jlayer_title_cache);
   scoped_refptr<TabHandleLayer> layer = GetNextTabLayer(layer_title_cache);
@@ -492,28 +486,27 @@ void TabStripSceneLayer::PutStripTabLayer(
     }
   }
 
-  ui::ResourceManager* resource_manager =
-      ui::ResourceManagerImpl::FromJavaObject(jresource_manager);
+  DCHECK(resource_manager_);
   ui::NinePatchResource* tab_handle_resource =
-      ui::NinePatchResource::From(resource_manager->GetStaticResourceWithTint(
+      ui::NinePatchResource::From(resource_manager_->GetStaticResourceWithTint(
           handle_resource_id, handle_tint, true));
   ui::NinePatchResource* tab_handle_outline_resource =
-      ui::NinePatchResource::From(resource_manager->GetStaticResourceWithTint(
+      ui::NinePatchResource::From(resource_manager_->GetStaticResourceWithTint(
           handle_outline_resource_id, handle_outline_tint));
   ui::Resource* close_button_resource =
-      resource_manager->GetStaticResourceWithTint(close_resource_id,
-                                                  close_tint);
+      resource_manager_->GetStaticResourceWithTint(close_resource_id,
+                                                   close_tint);
   ui::Resource* close_button_hover_resource =
-      resource_manager->GetStaticResourceWithTint(close_hover_bg_resource_id,
-                                                  close_hover_bg_tint, true);
+      resource_manager_->GetStaticResourceWithTint(close_hover_bg_resource_id,
+                                                   close_hover_bg_tint, true);
   ui::Resource* close_button_keyboard_focus_ring_resource =
-      resource_manager->GetStaticResourceWithTint(
+      resource_manager_->GetStaticResourceWithTint(
           close_keyboard_focus_ring_resource_id, keyboard_focus_ring_color,
           true);
-  ui::Resource* divider_resource = resource_manager->GetStaticResourceWithTint(
+  ui::Resource* divider_resource = resource_manager_->GetStaticResourceWithTint(
       divider_resource_id, divider_tint, true);
   ui::NinePatchResource* keyboard_focus_ring_drawable =
-      ui::NinePatchResource::From(resource_manager->GetStaticResourceWithTint(
+      ui::NinePatchResource::From(resource_manager_->GetStaticResourceWithTint(
           keyboard_focus_ring_resource_id, keyboard_focus_ring_color));
 
   layer->SetProperties(
@@ -556,8 +549,7 @@ void TabStripSceneLayer::PutGroupIndicatorLayer(
     jint keyboard_focus_ring_color,
     jint keyboard_focus_ring_offset,
     jint keyboard_focus_ring_width,
-    const JavaParamRef<jobject>& jlayer_title_cache,
-    const JavaParamRef<jobject>& jresource_manager) {
+    const JavaParamRef<jobject>& jlayer_title_cache) {
   LayerTitleCache* layer_title_cache =
       LayerTitleCache::FromJavaObject(jlayer_title_cache);
 
@@ -565,10 +557,8 @@ void TabStripSceneLayer::PutGroupIndicatorLayer(
   scoped_refptr<GroupIndicatorLayer> layer =
       GetNextGroupIndicatorLayer(layer_title_cache);
 
-  ui::ResourceManager* resource_manager =
-      ui::ResourceManagerImpl::FromJavaObject(jresource_manager);
   ui::NinePatchResource* keyboard_focus_ring_drawable =
-      ui::NinePatchResource::From(resource_manager->GetStaticResourceWithTint(
+      ui::NinePatchResource::From(resource_manager_->GetStaticResourceWithTint(
           keyboard_focus_ring_resource_id, keyboard_focus_ring_color));
 
   // Foreground if needed.
