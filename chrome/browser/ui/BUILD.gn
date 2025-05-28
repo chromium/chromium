@@ -6003,9 +6003,6 @@ static_library("browser_element_identifiers") {
 }
 
 if (is_android) {
-  java_cpp_enum("tab_model_enums_java") {
-    sources = [ "android/tab_model/tab_model.h" ]
-  }
   java_cpp_enum("adaptive_toolbar_enums_java") {
     sources = [ "android/toolbar/adaptive_toolbar_enums.h" ]
   }
