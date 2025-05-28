@@ -2,12 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ash/sensor_info/sensor_types.h"
+
+#include <limits>
+#include <optional>
+#include <vector>
 
 #include "base/check_op.h"
 
@@ -36,7 +35,8 @@ SensorUpdate& SensorUpdate::operator=(const SensorUpdate& update) = default;
 SensorUpdate::~SensorUpdate() = default;
 
 std::vector<float> SensorUpdate::GetReadingAsVector(SensorType source) const {
-  const std::optional<SensorReading>& reading = data_[static_cast<int>(source)];
+  const std::optional<SensorReading>& reading =
+      data_.at(static_cast<int>(source));
   if (source == SensorType::kLidAngle) {
     return reading.has_value() ? std::vector<float>{reading->x}
                                : std::vector<float>{0.0};
@@ -48,12 +48,12 @@ std::vector<float> SensorUpdate::GetReadingAsVector(SensorType source) const {
 
 void SensorUpdate::Set(SensorType source, float x, float y, float z) {
   CHECK_NE(source, SensorType::kLidAngle);
-  data_[static_cast<int>(source)] = SensorReading(x, y, z);
+  data_.at(static_cast<int>(source)) = SensorReading(x, y, z);
 }
 
 void SensorUpdate::Set(SensorType source, float x) {
   DCHECK_EQ(source, SensorType::kLidAngle);
-  data_[static_cast<int>(source)] = SensorReading(x);
+  data_.at(static_cast<int>(source)) = SensorReading(x);
 }
 
 void SensorUpdate::Reset() {

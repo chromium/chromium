@@ -2,11 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
+#include <array>
 #include <memory>
 #include <string>
 
@@ -540,8 +536,8 @@ TEST_P(TabSliderTest, TabSliderLayout) {
       std::make_unique<TabSlider>(/*max_tab_num=*/tab_num, params);
 
   // The texts for tabs.
-  const std::u16string labels_text[] = {u"one", u"one two three",
-                                        u"one two three four five"};
+  const std::array<std::u16string, 3> labels_text = {
+      u"one", u"one two three", u"one two three four five"};
   // Add slider buttons according to the testing parameters.
   std::vector<TabSliderButton*> buttons(tab_num, nullptr);
   int max_button_width = 0;

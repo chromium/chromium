@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 
+#include <array>
 #include <map>
 #include <memory>
 
@@ -71,7 +72,7 @@ class ASH_EXPORT TouchHudDebug : public TouchObserverHud {
 
   raw_ptr<TouchHudCanvas> canvas_;
   raw_ptr<views::View> label_container_;
-  views::Label* touch_labels_[kMaxTouchPoints];
+  std::array<views::Label*, kMaxTouchPoints> touch_labels_;
 };
 
 }  // namespace ash

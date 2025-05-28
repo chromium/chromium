@@ -2,14 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ash/quick_pair/fast_pair_handshake/fast_pair_gatt_service_client_impl.h"
 
 #include <algorithm>
+#include <iterator>
 
 #include "ash/constants/ash_features.h"
 #include "ash/quick_pair/common/constants.h"
@@ -208,13 +204,17 @@ const std::array<uint8_t, kBlockByteSize> CreateActionRequest(
   if (flags == kActionRequestDeviceActionFlags) {
     // `data_id_or_size` will contain the additional data size in this case.
     if (data_id_or_size.value() < kAdditionalDataMaxSizeBytes) {
-      RAND_bytes(request.data() + kAdditionalDataStartIndex +
-                     additional_data.value().size(),
-                 kAdditionalDataMaxSizeBytes - data_id_or_size.value());
+      auto start_it =
+          std::next(std::begin(request),
+                    kAdditionalDataStartIndex + additional_data.value().size());
+      auto end_it = std::next(
+          start_it, kAdditionalDataMaxSizeBytes - data_id_or_size.value());
+      RAND_bytes(&(*start_it), std::distance(start_it, end_it));
     }
   } else {
-    RAND_bytes(request.data() + kAdditionalDataStartIndex,
-               kAdditionalDataMaxSizeBytes);
+    auto start_it = std::next(std::begin(request), kAdditionalDataStartIndex);
+    auto end_it = std::next(start_it, kAdditionalDataMaxSizeBytes);
+    RAND_bytes(&(*start_it), std::distance(start_it, end_it));
   }
 
   return request;
