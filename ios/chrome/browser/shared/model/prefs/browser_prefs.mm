@@ -676,6 +676,8 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
   // Deprecated 03/2025, migrated to profile pref.
   registry->RegisterIntegerPref(
       prefs::kHomeCustomizationMagicStackSafetyCheckIssuesCount, 0);
+
+  registry->RegisterTimePref(prefs::kLensOverlayLastPresented, base::Time());
 }
 
 void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {

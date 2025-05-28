@@ -532,6 +532,10 @@ inline constexpr char kLensCameraAssistedSearchPolicyAllowed[] =
 // Date of the last time the user opened the Lens UI.
 inline constexpr char kLensLastOpened[] = "ios.lens.last_opened";
 
+// Date when the Lens Overlay was last presented.
+inline constexpr char kLensOverlayLastPresented[] =
+    "ios.lens_overlay.last_presented";
+
 // Number of times the NTP Lens button "new" IPH badge has been shown.
 // This is set to INT_MAX when the user taps the button.
 inline constexpr char kNTPLensEntryPointNewBadgeShownCount[] =
