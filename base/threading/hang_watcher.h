@@ -241,6 +241,14 @@ class BASE_EXPORT HangWatcher : public DelegateSimpleThread::Delegate {
   // sleeping. Use only for testing.
   void SetTickClockForTesting(const base::TickClock* tick_clock);
 
+  // Grabs a watch state snapshot and returns the hung thread IDs, as produced
+  // by `PrepareHungThreadListCrashKey()`.
+  // NO_THREAD_SAFETY_ANALYSIS is needed because the analyzer can't figure out
+  // that calls to this function done from |on_hang_closure_| are properly
+  // locked.
+  std::string GetHungThreadListCrashKeyForTesting() const
+      NO_THREAD_SAFETY_ANALYSIS;
+
   // Use to block until the hang is recorded. Allows the caller to halt
   // execution so it does not overshoot the hang watch target and result in a
   // non-actionable stack trace in the crash recorded.
@@ -338,13 +346,6 @@ class BASE_EXPORT HangWatcher : public DelegateSimpleThread::Delegate {
     std::vector<WatchStateCopy> hung_watch_state_copies_;
   };
 
-  // Return a watch state snapshot taken Now() to be inspected in tests.
-  // NO_THREAD_SAFETY_ANALYSIS is needed because the analyzer can't figure out
-  // that calls to this function done from |on_hang_closure_| are properly
-  // locked.
-  WatchStateSnapShot GrabWatchStateSnapshotForTesting() const
-      NO_THREAD_SAFETY_ANALYSIS;
-
   // Inspects the state of all registered threads to check if they are hung and
   // invokes the appropriate closure if so.
   void Monitor() LOCKS_EXCLUDED(watch_state_lock_);
@@ -410,10 +411,6 @@ class BASE_EXPORT HangWatcher : public DelegateSimpleThread::Delegate {
   // The time after which all deadlines in |watch_states_| need to be for a hang
   // to be reported.
   base::TimeTicks deadline_ignore_threshold_;
-
-  FRIEND_TEST_ALL_PREFIXES(HangWatcherTest, NestedScopes);
-  FRIEND_TEST_ALL_PREFIXES(HangWatcherSnapshotTest, HungThreadIDs);
-  FRIEND_TEST_ALL_PREFIXES(HangWatcherSnapshotTest, NonActionableReport);
 };
 
 // Classes here are exposed in the header only for testing. They are not

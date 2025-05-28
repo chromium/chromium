@@ -687,8 +687,7 @@ TEST_F(HangWatcherSnapshotTest, NonActionableReport) {
 TEST_F(HangWatcherSnapshotTest, HungThreadIDs) {
   // During hang capture the list of hung threads should be populated.
   hang_watcher_.SetOnHangClosureForTesting(base::BindLambdaForTesting([this] {
-    EXPECT_EQ(hang_watcher_.GrabWatchStateSnapshotForTesting()
-                  .PrepareHungThreadListCrashKey(),
+    EXPECT_EQ(hang_watcher_.GetHungThreadListCrashKeyForTesting(),
               list_of_hung_thread_ids_during_capture_);
     ++hang_capture_count_;
   }));
