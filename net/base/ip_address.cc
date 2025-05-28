@@ -173,10 +173,6 @@ bool IPAddressBytes::operator==(const IPAddressBytes& other) const {
   return std::ranges::equal(*this, other);
 }
 
-bool IPAddressBytes::operator!=(const IPAddressBytes& other) const {
-  return !(*this == other);
-}
-
 void IPAddressBytes::Append(base::span<const uint8_t> data) {
   CHECK_LE(data.size(), static_cast<size_t>(16 - size_));
   size_ += data.size();

@@ -176,10 +176,6 @@ class Interval {
     return a.min() == b.min() && a.max() == b.max();
   }
 
-  friend bool operator!=(const Interval& a, const Interval& b) {
-    return !(a == b);
-  }
-
   // Defines a comparator which can be used to induce an order on Intervals, so
   // that, for example, they can be stored in an ordered container such as
   // std::set. The ordering is arbitrary, but does provide the guarantee that,
