@@ -29,7 +29,21 @@ void PixAccountLinkingManager::ShowPixAccountLinkingPrompt() {
   client_->SetUiEventListener(
       base::BindRepeating(&PixAccountLinkingManager::OnUiScreenEvent,
                           weak_ptr_factory_.GetWeakPtr()));
-  client_->ShowPixAccountLinkingPrompt();
+  client_->ShowPixAccountLinkingPrompt(
+      base::BindOnce(&PixAccountLinkingManager::OnAccepted,
+                     weak_ptr_factory_.GetWeakPtr()),
+      base::BindOnce(&PixAccountLinkingManager::OnDeclined,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
+void PixAccountLinkingManager::OnAccepted() {
+  // TODO(crbug.com/419108993): Add metrics.
+  client_->OnPixAccountLinkingPromptAccepted();
+}
+
+void PixAccountLinkingManager::OnDeclined() {
+  // TODO(crbug.com/419108993): Add metrics.
+  // TODO(crbug.com/419682918): Update pref.
 }
 
 void PixAccountLinkingManager::OnUiScreenEvent(UiEvent ui_event_type) {

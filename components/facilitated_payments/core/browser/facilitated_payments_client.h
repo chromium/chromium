@@ -121,7 +121,13 @@ class FacilitatedPaymentsClient : public autofill::RiskDataLoader {
 
   // Shows the PIX account linking prompt. Virtual so it can be overridden in
   // tests.
-  virtual void ShowPixAccountLinkingPrompt();
+  virtual void ShowPixAccountLinkingPrompt(
+      base::OnceCallback<void()> on_accepted,
+      base::OnceCallback<void()> on_declined);
+
+  // Action to be performed when the user accepts the Pix account linking
+  // prompt.
+  virtual void OnPixAccountLinkingPromptAccepted();
 
   void SetPixAccountLinkingManagerForTesting(
       std::unique_ptr<PixAccountLinkingManager> pix_account_linking_manager);

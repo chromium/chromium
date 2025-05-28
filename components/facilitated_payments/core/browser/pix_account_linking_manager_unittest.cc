@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "components/facilitated_payments/core/browser/mock_facilitated_payments_client.h"
+#include "components/facilitated_payments/core/browser/pix_account_linking_manager_test_api.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -20,6 +21,9 @@ class PixAccountLinkingManagerTest : public testing::Test {
  protected:
   MockFacilitatedPaymentsClient& client() { return client_; }
   PixAccountLinkingManager* manager() { return manager_.get(); }
+  inline PixAccountLinkingManagerTestApi test_api() {
+    return PixAccountLinkingManagerTestApi(manager_.get());
+  }
 
  private:
   // Order matters here because `manager_` keeps a reference to `client_`.
@@ -45,6 +49,12 @@ TEST_F(PixAccountLinkingManagerTest,
   EXPECT_CALL(client(), ShowPixAccountLinkingPrompt).Times(0);
 
   manager()->MaybeShowPixAccountLinkingPrompt();
+}
+
+TEST_F(PixAccountLinkingManagerTest, OnAccepted) {
+  EXPECT_CALL(client(), OnPixAccountLinkingPromptAccepted);
+
+  test_api().OnAccepted();
 }
 
 }  // namespace payments::facilitated

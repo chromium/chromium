@@ -16,4 +16,8 @@ bool IsWalletEligibleForPixAccountLinking() {
   return Java_DeviceDelegate_isWalletEligibleForPixAccountLinking(env);
 }
 
+void OpenPixAccountLinkingPageInWallet() {
+  // TODO(crbug.com/419728706): Open the account linking page in Wallet.
+}
+
 }  // namespace payments::facilitated

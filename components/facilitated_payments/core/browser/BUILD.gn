@@ -87,6 +87,7 @@ static_library("test_support") {
     "mock_facilitated_payments_client.h",
     "network_api/mock_facilitated_payments_network_interface.cc",
     "network_api/mock_facilitated_payments_network_interface.h",
+    "pix_account_linking_manager_test_api.h",
   ]
 
   deps = [

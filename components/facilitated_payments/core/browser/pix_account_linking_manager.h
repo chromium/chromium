@@ -31,9 +31,15 @@ class PixAccountLinkingManager {
   virtual void MaybeShowPixAccountLinkingPrompt();
 
  private:
+  friend class PixAccountLinkingManagerTestApi;
+
   // Sets the UI event listener and triggers showing the Pix account linking
   // prompt.
   void ShowPixAccountLinkingPrompt();
+
+  void OnAccepted();
+
+  void OnDeclined();
 
   // Called by the view to communicate UI events.
   void OnUiScreenEvent(UiEvent ui_event_type);

@@ -130,7 +130,34 @@ TEST_F(FacilitatedPaymentsControllerTest, ShowErrorScreen) {
 TEST_F(FacilitatedPaymentsControllerTest, ShowPixAccountLinkingPrompt) {
   EXPECT_CALL(*mock_view_, ShowPixAccountLinkingPrompt);
 
-  controller_->ShowPixAccountLinkingPrompt();
+  controller_->ShowPixAccountLinkingPrompt(base::DoNothing(),
+                                           base::DoNothing());
+}
+
+TEST_F(FacilitatedPaymentsControllerTest, OnPixAccountLinkingPromptAccepted) {
+  base::MockCallback<base::OnceCallback<void()>> mock_on_accepted;
+  base::MockCallback<base::OnceCallback<void()>> mock_on_declined;
+  controller_->ShowPixAccountLinkingPrompt(mock_on_accepted.Get(),
+                                           mock_on_declined.Get());
+
+  // When the Pix account linking prompt is accepted, callback should be called.
+  EXPECT_CALL(mock_on_accepted, Run());
+  EXPECT_CALL(mock_on_declined, Run).Times(0);
+
+  controller_->OnPixAccountLinkingPromptAccepted(nullptr);
+}
+
+TEST_F(FacilitatedPaymentsControllerTest, OnPixAccountLinkingPromptDeclined) {
+  base::MockCallback<base::OnceCallback<void()>> mock_on_accepted;
+  base::MockCallback<base::OnceCallback<void()>> mock_on_declined;
+  controller_->ShowPixAccountLinkingPrompt(mock_on_accepted.Get(),
+                                           mock_on_declined.Get());
+
+  // When the Pix account linking prompt is declined, callback should be called.
+  EXPECT_CALL(mock_on_accepted, Run).Times(0);
+  EXPECT_CALL(mock_on_declined, Run());
+
+  controller_->OnPixAccountLinkingPromptDeclined(nullptr);
 }
 
 // Test that the view is able to process requests to show different screens back

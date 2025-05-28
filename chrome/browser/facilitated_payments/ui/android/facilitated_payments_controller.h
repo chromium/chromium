@@ -70,7 +70,9 @@ class FacilitatedPaymentsController {
 
   // Asks the `view_` to show the PIX account linking prompt. Virtual for
   // overriding in tests.
-  virtual void ShowPixAccountLinkingPrompt();
+  virtual void ShowPixAccountLinkingPrompt(
+      base::OnceCallback<void()> on_accepted,
+      base::OnceCallback<void()> on_declined);
 
   // Called by the Java view to communicate acceptance of Pix account linking
   // prompt.
@@ -107,6 +109,9 @@ class FacilitatedPaymentsController {
   // Callback used to communicate view events to the feature.
   base::RepeatingCallback<void(payments::facilitated::UiEvent)>
       ui_event_listener_;
+
+  base::OnceCallback<void()> on_pix_account_linking_prompt_accepted_;
+  base::OnceCallback<void()> on_pix_account_linking_prompt_declined_;
 };
 
 #endif  // CHROME_BROWSER_FACILITATED_PAYMENTS_UI_ANDROID_FACILITATED_PAYMENTS_CONTROLLER_H_

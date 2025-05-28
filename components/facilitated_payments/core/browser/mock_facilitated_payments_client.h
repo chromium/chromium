@@ -73,7 +73,12 @@ class MockFacilitatedPaymentsClient : public FacilitatedPaymentsClient {
   MOCK_METHOD(autofill::StrikeDatabase*, GetStrikeDatabase, (), (override));
   MOCK_METHOD(void, InitPixAccountLinkingFlow, (), (override));
   MOCK_METHOD(bool, IsPixAccountLinkingSupported, (), (const, override));
-  MOCK_METHOD(void, ShowPixAccountLinkingPrompt, (), (override));
+  MOCK_METHOD(void,
+              ShowPixAccountLinkingPrompt,
+              (base::OnceCallback<void()> on_accepted,
+               base::OnceCallback<void()> on_declined),
+              (override));
+  MOCK_METHOD(void, OnPixAccountLinkingPromptAccepted, (), (override));
 };
 
 }  // namespace payments::facilitated
