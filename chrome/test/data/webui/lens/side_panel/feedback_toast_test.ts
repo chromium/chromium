@@ -16,10 +16,16 @@ import {isVisible} from 'chrome-untrusted://webui-test/test_util.js';
 
 import {TestLensSidePanelBrowserProxy} from './test_side_panel_browser_proxy.js';
 
+// The delay in milliseconds to reshow the feedback toast after it was hidden by
+// another toast. This is only used if the feedback toast was not already
+// dismissed.
+const RESHOW_FEEDBACK_TOAST_DELAY_MS = 4100;
+
 suite('FeedbackToast', () => {
   let testBrowserProxy: TestLensSidePanelBrowserProxy;
   let lensSidePanelElement: LensSidePanelAppElement;
   let callbackRouterRemote: LensSidePanelPageRemote;
+  let reshowFeedbackToastCallback: Function;
 
   function isRendered(el: HTMLElement) {
     // isVisible only checks if the bounding client rect is not empty and
@@ -32,12 +38,31 @@ suite('FeedbackToast', () => {
         'cr-toast')!;
   }
 
+  function getMessageToast(): CrToastElement {
+    return lensSidePanelElement.$.messageToast;
+  }
+
   setup(() => {
     testBrowserProxy = new TestLensSidePanelBrowserProxy();
     SidePanelBrowserProxyImpl.setInstance(testBrowserProxy);
 
     // Enable the new feedback feature.
     loadTimeData.overrideValues({'newFeedbackEnabled': true});
+
+
+    // Override setTimeout, and only alter behavior for the text received
+    // timeout. Using MockTimer did not work here, as it interfered with many
+    // other, unrelated timers causing tests to crash.
+    const origSetTimeout = window.setTimeout;
+    window.setTimeout = function(
+        handler: TimerHandler, timeout: number|undefined): number {
+      if (timeout === RESHOW_FEEDBACK_TOAST_DELAY_MS) {
+        const callback = handler as Function;
+        reshowFeedbackToastCallback = callback;
+        return 0;
+      }
+      return origSetTimeout(handler, timeout);
+    };
 
     callbackRouterRemote =
         testBrowserProxy.callbackRouter.$.bindNewPipeAndPassRemote();
@@ -109,5 +134,120 @@ suite('FeedbackToast', () => {
     // Verify the handler method was called and toast was hidden.
     await testBrowserProxy.handler.whenCalled('requestSendFeedback');
     assertFalse(isRendered(getFeedbackToast()));
+  });
+
+  test('MessageToastHidesFeedbackToast', async () => {
+    // Show the feedback toast first.
+    callbackRouterRemote.setIsLoadingResults(false);
+    await waitAfterNextRender(lensSidePanelElement);
+    assertTrue(isRendered(getFeedbackToast()));
+
+    // Show a message toast.
+    callbackRouterRemote.showToast('Test message');
+    await waitAfterNextRender(lensSidePanelElement);
+
+    // Feedback toast should be hidden.
+    assertFalse(isRendered(getFeedbackToast()));
+    assertTrue(isRendered(getMessageToast()));
+  });
+
+  test('FeedbackToastReshowsAfterMessageToastHidesAutomatically', async () => {
+    // Show the feedback toast first.
+    callbackRouterRemote.setIsLoadingResults(false);
+    await waitAfterNextRender(lensSidePanelElement);
+    assertTrue(isRendered(getFeedbackToast()));
+
+    // Show a message toast.
+    callbackRouterRemote.showToast('Test message');
+    await waitAfterNextRender(lensSidePanelElement);
+    assertFalse(isRendered(getFeedbackToast()));
+    assertTrue(isRendered(getMessageToast()));
+
+    // Call the timeout.
+    reshowFeedbackToastCallback();
+    await waitAfterNextRender(lensSidePanelElement);
+
+    // Feedback toast should reappear.
+    assertTrue(isRendered(getFeedbackToast()));
+    assertFalse(isRendered(getMessageToast()));
+  });
+
+  test(
+      'FeedbackToastReshowsImmediatelyAfterMessageToastDismissed', async () => {
+        // Show the feedback toast first.
+        callbackRouterRemote.setIsLoadingResults(false);
+        await waitAfterNextRender(lensSidePanelElement);
+        assertTrue(isRendered(getFeedbackToast()));
+
+        // Show a message toast.
+        callbackRouterRemote.showToast('Test message');
+        await waitAfterNextRender(lensSidePanelElement);
+        assertFalse(isRendered(getFeedbackToast()));
+        assertTrue(isRendered(getMessageToast()));
+
+        // Dismiss the message toast.
+        lensSidePanelElement.$.messageToastDismissButton.click();
+        await waitAfterNextRender(lensSidePanelElement);
+
+        // Feedback toast should reappear immediately.
+        assertTrue(isRendered(getFeedbackToast()));
+        assertFalse(isRendered(getMessageToast()));
+      });
+
+  test('FeedbackToastDoesNotReshowIfDismissedByUser', async () => {
+    // Show the feedback toast first.
+    callbackRouterRemote.setIsLoadingResults(false);
+    await waitAfterNextRender(lensSidePanelElement);
+    assertTrue(isRendered(getFeedbackToast()));
+
+    // Click the close button, which should hide the feedback toast.
+    const closeButton =
+        lensSidePanelElement.$.feedbackToast.shadowRoot.querySelector(
+            'cr-icon-button');
+    assertTrue(closeButton !== null);
+    closeButton.click();
+    await waitAfterNextRender(lensSidePanelElement);
+    assertFalse(isRendered(getFeedbackToast()));
+
+    // Show a message toast.
+    callbackRouterRemote.showToast('Test message');
+    await waitAfterNextRender(lensSidePanelElement);
+    assertFalse(isRendered(getFeedbackToast()));
+    assertTrue(isRendered(getMessageToast()));
+
+    // Call the timeout.
+    reshowFeedbackToastCallback();
+    await waitAfterNextRender(lensSidePanelElement);
+
+    // Feedback toast should not reappear.
+    assertFalse(isRendered(getFeedbackToast()));
+  });
+
+  test('FinishingLoadResetsDismissedStateAndShowsFeedbackToast', async () => {
+    // Show the feedback toast first.
+    callbackRouterRemote.setIsLoadingResults(false);
+    await waitAfterNextRender(lensSidePanelElement);
+    assertTrue(isRendered(getFeedbackToast()));
+
+    // Click the close button, which should hide the feedback toast.
+    const closeButton =
+        lensSidePanelElement.$.feedbackToast.shadowRoot.querySelector(
+            'cr-icon-button');
+    assertTrue(closeButton !== null);
+    closeButton.click();
+    await waitAfterNextRender(lensSidePanelElement);
+    assertFalse(isRendered(getFeedbackToast()));
+
+    // Start and finish a new load.
+    callbackRouterRemote.setIsLoadingResults(true);
+    await waitAfterNextRender(lensSidePanelElement);
+    assertFalse(isRendered(getFeedbackToast()));
+
+    callbackRouterRemote.setIsLoadingResults(false);
+    await waitAfterNextRender(lensSidePanelElement);
+
+    // Feedback toast should reappear because the dismissed state was reset on
+    // load finish.
+    assertTrue(isRendered(getFeedbackToast()));
   });
 });
