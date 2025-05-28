@@ -184,14 +184,6 @@ class HangWatcherTest : public testing::Test {
   HangWatcher hang_watcher_;
 };
 
-class HangWatcherBlockingThreadTest : public HangWatcherTest {
- public:
-  HangWatcherBlockingThreadTest() : thread_(kTimeout) {}
-
- protected:
-  BlockedThread thread_;
-};
-
 }  // namespace
 
 TEST_F(HangWatcherTest, InvalidatingExpectationsPreventsCapture) {
@@ -386,11 +378,12 @@ TEST_F(HangWatcherTest, NestedScopes) {
   EXPECT_EQ(current_hang_watch_state->GetDeadline(), original_deadline);
 }
 
-TEST_F(HangWatcherBlockingThreadTest, HistogramsLoggedOnHang) {
+TEST_F(HangWatcherTest, HistogramsLoggedOnHang) {
   base::HistogramTester histogram_tester;
 
-  // Simulate hang.
-  task_environment_.FastForwardBy(kHangTime);
+  // Start a blocked thread and simulate a hang.
+  BlockedThread thread(base::Seconds(10));
+  task_environment_.FastForwardBy(base::Seconds(11));
 
   // First monitoring catches the hang and emits the histogram.
   MonitorHangs();
@@ -435,8 +428,12 @@ TEST_F(HangWatcherBlockingThreadTest, HistogramsLoggedOnHang) {
               IsEmpty());
 }
 
-TEST_F(HangWatcherBlockingThreadTest, HistogramsLoggedWithoutHangs) {
+TEST_F(HangWatcherTest, HistogramsLoggedWithoutHangs) {
   base::HistogramTester histogram_tester;
+
+  // Start a blocked thread with a 10 seconds hang limit, but don't fastforward
+  // time.
+  BlockedThread thread(base::Seconds(10));
 
   // No hang to catch so nothing is recorded.
   MonitorHangs();
@@ -462,11 +459,12 @@ TEST_F(HangWatcherBlockingThreadTest, HistogramsLoggedWithoutHangs) {
               ElementsAre(base::Bucket(false, /*count=*/1)));
 }
 
-TEST_F(HangWatcherBlockingThreadTest, HistogramsLoggedWithShutdownFlag) {
+TEST_F(HangWatcherTest, HistogramsLoggedWithShutdownFlag) {
   base::HistogramTester histogram_tester;
 
-  // Simulate hang.
-  task_environment_.FastForwardBy(kHangTime);
+  // Start a blocked thread and simulate a hang.
+  BlockedThread thread(base::Seconds(10));
+  task_environment_.FastForwardBy(base::Seconds(11));
 
   // Make this process emit *.Shutdown instead of *.Normal histograms.
   base::HangWatcher::SetShuttingDown();
@@ -498,18 +496,20 @@ TEST_F(HangWatcherBlockingThreadTest, HistogramsLoggedWithShutdownFlag) {
               IsEmpty());
 }
 
-TEST_F(HangWatcherBlockingThreadTest, Hang) {
-  // Simulate hang.
-  task_environment_.FastForwardBy(kHangTime);
+TEST_F(HangWatcherTest, Hang) {
+  // Start a blocked thread and simulate a hang.
+  BlockedThread thread(base::Seconds(10));
+  task_environment_.FastForwardBy(base::Seconds(11));
 
   // First monitoring catches and records the hang.
   MonitorHangs();
   EXPECT_EQ(GetHangCount(), 1);
 }
 
-TEST_F(HangWatcherBlockingThreadTest, HangAlreadyRecorded) {
-  // Simulate hang.
-  task_environment_.FastForwardBy(kHangTime);
+TEST_F(HangWatcherTest, HangAlreadyRecorded) {
+  // Start a blocked thread and simulate a hang.
+  BlockedThread thread(base::Seconds(10));
+  task_environment_.FastForwardBy(base::Seconds(11));
 
   // First monitoring catches and records the hang.
   MonitorHangs();
@@ -521,7 +521,11 @@ TEST_F(HangWatcherBlockingThreadTest, HangAlreadyRecorded) {
   EXPECT_EQ(GetHangCount(), 1);
 }
 
-TEST_F(HangWatcherBlockingThreadTest, NoHang) {
+TEST_F(HangWatcherTest, NoHang) {
+  // Start a blocked thread with a 10 seconds hang limit, but don't fastforward
+  // time.
+  BlockedThread thread(base::Seconds(10));
+
   // No hang to catch so nothing is recorded.
   MonitorHangs();
   EXPECT_EQ(GetHangCount(), 0);
