@@ -33,6 +33,7 @@
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/simple_url_loader.h"
+#include "services/network/public/mojom/fetch_api.mojom-data-view.h"
 #include "skia/ext/image_operations.h"
 #include "ui/gfx/image/image_skia.h"
 
@@ -72,8 +73,17 @@ class WebKioskAppData::IconFetcher : public ImageDecoder::ImageRequest {
             "download the image located at this url."
           trigger:
             "User clicks on the menu button with the list of kiosk apps"
+          internal {
+            contacts {
+              owners: "//chromeos/components/kiosk/OWNERS"
+            }
+          }
           data: "None"
+          user_data {
+            type: NONE
+          }
           destination: WEBSITE
+          last_reviewed: "2025-05-21"
         }
         policy {
           cookies_allowed: NO
