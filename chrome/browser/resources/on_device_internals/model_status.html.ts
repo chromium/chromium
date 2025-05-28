@@ -62,24 +62,44 @@ export function getHtml(this: OnDeviceInternalsModelStatusElement) {
           </div>
         </div>
       </div>` :
-     html`
-       <div>
-         <table id="criteria-table">
-           <thead>
-             <tr>
-               <th>Property</th>
-               <th>Value</th>
-             </tr>
-           </thead>
-           <tbody>
-             ${Object.keys(criteria).map(key => html`
-               <tr>
-                 <td>${key}</td>
-                 <td>${criteria[key]}</td>
-               </tr>`)}
-           </tbody>
-         </table>
-       </div>`}
+    html`
+      <div>
+        <table id="criteria-table">
+          <thead>
+            <tr>
+              <th>Property</th>
+              <th>Value</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${Object.keys(criteria).map(key => html`
+              <tr>
+                <td>${key}</td>
+                <td>${criteria[key]}</td>
+              </tr>`)}
+          </tbody>
+        </table>
+      </div>`}
+  <h3>Feature Adaptations</h3>
+  <div>
+    <table id="feature-adaptations-table">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Version</th>
+          <th>Recently Used</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${this.pageData_.featureAdaptations.map(adaptation => html`
+          <tr>
+            <td>${adaptation.featureName}</td>
+            <td>${adaptation.version}</td>
+            <td>${adaptation.isRecentlyUsed}</td>
+          </tr>`)}
+      </tbody>
+    </table>
+  </div>
   <h3>Supplementary Models</h3>
   <div>
     <table id="supp-models-table">

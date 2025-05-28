@@ -86,6 +86,10 @@ class ModelExecutionManager final {
   // no model is available.
   on_device_model::Capabilities GetOnDeviceCapabilities();
 
+  OnDeviceModelServiceController* GetOnDeviceModelServiceController() {
+    return on_device_model_service_controller_.get();
+  }
+
   // Records a fake model execution response to be returned when ExecuteModel is
   // called for the given feature.
   void AddExecutionResultForTesting(

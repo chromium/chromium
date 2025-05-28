@@ -140,6 +140,12 @@ class OnDeviceModelServiceController
   OnDeviceModelAdaptationMetadata* GetFeatureMetadata(
       ModelBasedCapabilityKey feature);
 
+  const base::flat_map<ModelBasedCapabilityKey,
+                       OnDeviceModelAdaptationMetadata>&
+  model_adaptation_metadata() const {
+    return model_adaptation_metadata_;
+  }
+
   void BindBroker(mojo::PendingReceiver<mojom::ModelBroker> receiver) {
     receivers_.Add(this, std::move(receiver));
   }

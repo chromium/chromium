@@ -43,6 +43,7 @@ export class OnDeviceInternalsModelStatusElement extends CrLitElement {
     suppModels: [],
     modelCrashCount: 0,
     maxModelCrashCount: 0,
+    featureAdaptations: [],
   };
 
   protected accessor mayRestartBrowser_: boolean = false;
