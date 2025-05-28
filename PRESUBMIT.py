@@ -2076,9 +2076,6 @@ _BANNED_CPP_FUNCTIONS: Sequence[BanRule] = (
             # string_views.
             r'^base/strings/string_util_unittest\.cc',
             r'^base/strings/utf_string_conversions_unittest\.cc',
-            r'^chrome/browser/ash/crosapi/browser_data_back_migrator_unittest\.cc',
-            r'^chrome/browser/ash/crosapi/browser_data_migrator_util_unittest\.cc',
-            r'^chrome/browser/ash/crosapi/move_migrator_unittest\.cc',
             r'^chromeos/ash/experiences/arc/session/serial_number_util_unittest\.cc',
             r'^components/history/core/browser/visit_annotations_database\.cc',
             r'^components/history/core/browser/visit_annotations_database_unittest\.cc',
