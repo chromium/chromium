@@ -38,12 +38,9 @@
 #include "content/public/common/referrer.h"
 #include "ui/base/window_open_disposition.h"
 #include "url/gurl.h"
-
-#if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "components/tabs/public/tab_interface.h"
-#endif
 
 namespace {
 
@@ -76,17 +73,14 @@ std::u16string GeneratePassword(
 
 void NotifyPasswordChangeFinishedSuccessfully(
     base::WeakPtr<content::WebContents> web_contents) {
-#if !BUILDFLAG(IS_ANDROID)
   if (web_contents) {
     ManagePasswordsUIController::FromWebContents(web_contents.get())
         ->OnPasswordChangeFinishedSuccessfully();
   }
-#endif
 }
 
 void DisplayChangePasswordBubbleAutomatically(
     base::WeakPtr<content::WebContents> web_contents) {
-#if !BUILDFLAG(IS_ANDROID)
   if (!web_contents) {
     return;
   }
@@ -94,7 +88,6 @@ void DisplayChangePasswordBubbleAutomatically(
           ManagePasswordsUIController::FromWebContents(web_contents.get())) {
     manage_controller->ShowChangePasswordBubble();
   }
-#endif
 }
 
 std::unique_ptr<BrowserSavePasswordProgressLogger> GetLoggerIfAvailable(
@@ -275,7 +268,6 @@ void PasswordChangeDelegateImpl::OnOtpFieldDetected(
   UpdateState(State::kOtpDetected);
 }
 
-#if !BUILDFLAG(IS_ANDROID)
 void PasswordChangeDelegateImpl::OpenPasswordChangeTab() {
   CHECK(originator_);
   auto* tab_interface = tabs::TabInterface::GetFromContents(originator_.get());
@@ -285,7 +277,6 @@ void PasswordChangeDelegateImpl::OpenPasswordChangeTab() {
       tab_interface->GetBrowserWindowInterface()->GetTabStripModel();
   tabs_strip->AppendWebContents(std::move(executor_), /*foreground*/ true);
 }
-#endif
 
 void PasswordChangeDelegateImpl::AddObserver(Observer* observer) {
   observers_.AddObserver(observer);

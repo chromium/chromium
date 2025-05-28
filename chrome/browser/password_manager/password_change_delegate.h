@@ -83,11 +83,10 @@ class PasswordChangeDelegate {
   // find change password form. In all other scenarios it's unsafe to restart.
   virtual void Restart() = 0;
 
-#if !BUILDFLAG(IS_ANDROID)
   // Brings a tab where password change is ongoing. Does nothing if the tab
   // doesn't exist anymore.
   virtual void OpenPasswordChangeTab() = 0;
-#endif
+
   // To be executed after a password form was submitted
   virtual void OnPasswordFormSubmission(content::WebContents* web_contents) = 0;
 
