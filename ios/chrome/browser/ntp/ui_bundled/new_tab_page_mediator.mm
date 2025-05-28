@@ -392,7 +392,8 @@
 
 - (void)updateAccountErrorBadge {
   if (!base::FeatureList::IsEnabled(
-          switches::kEnableErrorBadgeOnIdentityDisc)) {
+          switches::kEnableErrorBadgeOnIdentityDisc) &&
+      !base::FeatureList::IsEnabled(switches::kEnableIdentityInAuthError)) {
     return;
   }
   BOOL primaryIdentityHasError =

@@ -860,7 +860,8 @@ const CGFloat kIdentityDiscMaxFontSize = 24;
                                 name:(NSString*)name
                                email:(NSString*)email {
   CHECK(
-      base::FeatureList::IsEnabled(switches::kEnableErrorBadgeOnIdentityDisc));
+      base::FeatureList::IsEnabled(switches::kEnableErrorBadgeOnIdentityDisc) ||
+      base::FeatureList::IsEnabled(switches::kEnableIdentityInAuthError));
 
   if (hasAccountError == _hasAccountError) {
     return;
