@@ -301,7 +301,7 @@ AccountProfileMapper* TestingApplicationContext::GetAccountProfileMapper() {
   if (!default_account_profile_mapper_) {
     default_account_profile_mapper_ = std::make_unique<AccountProfileMapper>(
         GetSystemIdentityManager(), /*profile_manager=*/nullptr,
-        GetLocalState());
+        /*local_state=*/nullptr);
   }
   return default_account_profile_mapper_.get();
 }
