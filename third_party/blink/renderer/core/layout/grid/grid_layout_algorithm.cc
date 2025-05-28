@@ -2360,8 +2360,8 @@ class GapAccumulator {
   void MarkBlockedStatusForGapIntersections(
       const GridItemData& grid_item) const {
     auto MarkIntersectionPoints = [&](GridTrackSizingDirection track_direction,
-                                      const GridItemIndices main_span,
-                                      const GridItemIndices cross_span) {
+                                      const GridSpan& main_span,
+                                      const GridSpan& cross_span) {
       const auto& intersections =
           gap_geometry_->GetGapIntersections(track_direction);
 
@@ -2373,10 +2373,10 @@ class GapAccumulator {
       // example, if the same item spans rows 0 to 2, then intersections 0, 1,
       // and 2 within the first column gap will have their blocked status
       // affected.
-      for (wtf_size_t gap_index = main_span.begin;
-           gap_index < main_span.end - 1; ++gap_index) {
-        for (wtf_size_t intersection_index = cross_span.begin;
-             intersection_index < cross_span.end; ++intersection_index) {
+      for (wtf_size_t gap_index = main_span.StartLine();
+           gap_index < main_span.EndLine() - 1; ++gap_index) {
+        for (wtf_size_t intersection_index = cross_span.StartLine();
+             intersection_index < cross_span.EndLine(); ++intersection_index) {
           // Mark the current intersection point as blocked `kAfter` since
           // the grid item spans across the gap.
           gap_geometry_->MarkGapIntersectionBlocked(
@@ -2394,8 +2394,8 @@ class GapAccumulator {
       }
     };
 
-    const GridItemIndices& col_span = grid_item.SetIndices(kForColumns);
-    const GridItemIndices& row_span = grid_item.SetIndices(kForRows);
+    const GridSpan& col_span = grid_item.Span(kForColumns);
+    const GridSpan& row_span = grid_item.Span(kForRows);
 
     if (grid_item.SpanSize(kForColumns) > 1) {
       MarkIntersectionPoints(kForColumns, col_span, row_span);
