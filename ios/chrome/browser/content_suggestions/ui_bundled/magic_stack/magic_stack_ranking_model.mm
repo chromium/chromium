@@ -609,6 +609,9 @@ using segmentation_platform::home_modules::SavePasswordsEphemeralModule;
 
   NSArray<MagicStackModule*>* rank = [self latestMagicStackConfigRank];
   NSUInteger index = [rank indexOfObject:_shopCardMediator.shopCardItemToShow];
+  if (index == NSNotFound) {
+    return;
+  }
   [self.delegate magicStackRankingModel:self
                           didInsertItem:_shopCardMediator.shopCardItemToShow
                                 atIndex:index];
