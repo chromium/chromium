@@ -5124,24 +5124,6 @@
             ]
         }
     ],
-    "ChromnientMoreTranslateLanguages": [
-        {
-            "platforms": [
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "MoreTranslateLanguagesEnabled",
-                    "enable_features": [
-                        "LensOverlayTranslateLanguages"
-                    ]
-                }
-            ]
-        }
-    ],
     "ChromnientNewFeedback": [
         {
             "platforms": [
@@ -5155,25 +5137,6 @@
                     "name": "NewFeedbackEnabled",
                     "enable_features": [
                         "LensSearchSidePanelNewFeedback"
-                    ]
-                }
-            ]
-        }
-    ],
-    "ChromnientPostLaunchTranslate": [
-        {
-            "platforms": [
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "TranslateButtonEnabled",
-                    "enable_features": [
-                        "IPH_LensOverlayTranslateButton",
-                        "LensOverlayTranslateButton"
                     ]
                 }
             ]
