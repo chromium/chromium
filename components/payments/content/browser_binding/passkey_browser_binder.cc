@@ -150,13 +150,13 @@ PasskeyBrowserBinder::UnboundKey::~UnboundKey() {
   // When browser_bound_key_ is still present, then we have not yet bound the
   // key, (in PasskeyBrowserBinder::BindKey()). To prevent this key from being
   // orphaned we delete it now.
-  if (browser_bound_key_) {
-    key_store_->DeleteBrowserBoundKey(browser_bound_key_->GetIdentifier());
+  if (!browser_bound_key_id_.empty()) {
+    key_store_->DeleteBrowserBoundKey(browser_bound_key_id_);
   }
 }
 
 void PasskeyBrowserBinder::UnboundKey::MarkKeyBoundAndReset() {
-  browser_bound_key_ = nullptr;
+  browser_bound_key_id_.clear();
 }
 
 std::optional<PasskeyBrowserBinder::UnboundKey>
@@ -187,7 +187,7 @@ void PasskeyBrowserBinder::BindKey(UnboundKey key,
                                    const std::string& relying_party) {
   if (web_data_service_) {
     WebDataServiceBase::Handle handle = web_data_service_->SetBrowserBoundKey(
-        credential_id, relying_party, std::move(key.browser_bound_key_id_),
+        credential_id, relying_party, key.browser_bound_key_id_,
         /*consumer=*/this);
     set_browser_bound_key_handlers_[handle] = base::BindOnce(
         [](UnboundKey key, bool success) {
@@ -332,17 +332,15 @@ void PasskeyBrowserBinder::GetOrCreateBrowserBoundKey(
   if (needs_to_be_created) {
     browser_bound_key_id =
         random_bytes_as_vector_callback_.Run(kBrowserBoundKeyIdLength);
-    // TODO(crbug.com/384954763): Delete the browser bound key from the key
-    // store if the result was false (not successful).
-    WebDataServiceBase::Handle handle = web_data_service_->SetBrowserBoundKey(
-        std::move(credential_id), std::move(relying_party),
-        browser_bound_key_id,
-        /*consumer=*/this);
-    set_browser_bound_key_handlers_[handle] = base::DoNothing();
   }
   std::unique_ptr<BrowserBoundKey> browser_bound_key =
       key_store_->GetOrCreateBrowserBoundKeyForCredentialId(
           browser_bound_key_id, allowed_algorithms);
+  if (needs_to_be_created && browser_bound_key) {
+    BindKey(UnboundKey(std::move(browser_bound_key_id),
+                       /*browser_bound_key=*/{}, key_store_),
+            std::move(credential_id), std::move(relying_party));
+  }
   RecordCreationOrRetrieval(/*is_creation=*/needs_to_be_created,
                             /*did_succeed=*/!!browser_bound_key);
   std::move(callback).Run(/*is_new=*/needs_to_be_created,
