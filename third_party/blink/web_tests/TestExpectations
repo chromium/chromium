@@ -6129,8 +6129,6 @@ crbug.com/40778608 http/tests/devtools/elements/css-rule-hover-highlights-select
 # Sheriff 2022-03-03
 crbug.com/40217024 virtual/threaded/http/tests/devtools/isolated-code-cache/cross-origin-test.js [ Crash Failure Pass Timeout ]
 
-# Sheriff 2022-03-04
-
 crbug.com/1298836 external/wpt/fetch/api/basic/response-null-body.any.* [ Failure Pass ]
 
 # Sheriff 2022-03-10
