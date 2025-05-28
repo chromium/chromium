@@ -169,8 +169,7 @@ constexpr int kInvalidPDFIndex = -2;
 constexpr uint32_t kMaxSaveBufferSize = 16 * 1000 * 1000;
 
 // Enumeration of pinch states.
-// This should match PinchPhase enum in
-// chrome/browser/resources/pdf/viewport.ts.
+// LINT.IfChange(PinchPhase)
 enum class PinchPhase {
   kNone = 0,
   kStart = 1,
@@ -178,6 +177,7 @@ enum class PinchPhase {
   kUpdateZoomIn = 3,
   kEnd = 4,
 };
+// LINT.ThenChange(//chrome/browser/resources/pdf/viewport.ts:PinchPhase)
 
 // Initialization performed per renderer process. Initialization may be
 // triggered from multiple plugin instances, but should only execute once.

@@ -1934,8 +1934,8 @@ export class Viewport {
 
 /**
  * Enumeration of pinch states.
- * This should match PinchPhase enum in pdf/pdf_view_web_plugin.cc.
  */
+// LINT.IfChange(PinchPhase)
 export enum PinchPhase {
   NONE = 0,
   START = 1,
@@ -1943,6 +1943,7 @@ export enum PinchPhase {
   UPDATE_ZOOM_IN = 3,
   END = 4,
 }
+// LINT.ThenChange(//pdf/pdf_view_web_plugin.cc:PinchPhase)
 
 /**
  * The increment to scroll a page by in pixels when up/down/left/right arrow
