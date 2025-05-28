@@ -141,7 +141,7 @@ BASE_FEATURE(kDCompSurfacesForDelegatedInk,
 // user resizes the window.
 BASE_FEATURE(kRemoveRedirectionBitmap,
              "RemoveRedirectionBitmap",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
