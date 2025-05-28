@@ -273,6 +273,15 @@ void Event::SetRelatedTargetIfExists(EventTarget* related_target) {
 
 void Event::ReceivedTarget() {}
 
+Element* Event::Retarget(const Element* element) const {
+  CHECK(RuntimeEnabledFeatures::ImprovedSourceRetargetingEnabled());
+  EventTarget* retarget_against = currentTarget() ? currentTarget() : target();
+  if (element && retarget_against && retarget_against->ToNode()) {
+    return &retarget_against->ToNode()->GetTreeScope().Retarget(*element);
+  }
+  return nullptr;
+}
+
 void Event::SetUnderlyingEvent(const Event* ue) {
   // Prohibit creation of a cycle -- just do nothing in that case.
   for (const Event* e = ue; e; e = e->UnderlyingEvent())

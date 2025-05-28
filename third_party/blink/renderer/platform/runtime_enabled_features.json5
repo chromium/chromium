@@ -2650,6 +2650,13 @@
       name: "ImportMapIntegrity",
       status: "stable"
     },
+    {
+      // Improved retargeting behavior of ToggleEvent.source and
+      // CommandEvent.source to match Event.relatedTarget.
+      // crbug.com/420639769
+      name: "ImprovedSourceRetargeting",
+      status: "experimental",
+    },
     // This ensures that table tag is included in extended selection.
     // https://crbug.com/40833812
     {

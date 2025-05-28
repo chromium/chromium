@@ -41,6 +41,10 @@ Element* CommandEvent::source() const {
     return nullptr;
   }
 
+  if (RuntimeEnabledFeatures::ImprovedSourceRetargetingEnabled()) {
+    return Retarget(source);
+  }
+
   if (current) {
     return &current->ToNode()->GetTreeScope().Retarget(*source);
   }
