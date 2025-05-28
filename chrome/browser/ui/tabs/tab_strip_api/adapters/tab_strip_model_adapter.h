@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_TABS_TAB_STRIP_API_ADAPTERS_TAB_STRIP_MODEL_ADAPTER_H_
 
 #include "chrome/browser/ui/tabs/tab_renderer_data.h"
+#include "chrome/browser/ui/tabs/tab_strip_api/tab_strip_api.mojom.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "components/tabs/public/tab_interface.h"
 
@@ -25,6 +26,7 @@ class TabStripModelAdapter {
   virtual void CloseTab(size_t tab_index) = 0;
   virtual std::optional<int> GetIndexForHandle(tabs::TabHandle tab_handle) = 0;
   virtual void ActivateTab(size_t index) = 0;
+  virtual mojom::TabCollectionContainerPtr GetTabStripCollection() = 0;
 };
 
 }  // namespace tabs_api

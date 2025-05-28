@@ -7,6 +7,7 @@
 #include <optional>
 
 #include "base/types/expected.h"
+#include "base/types/pass_key.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_api/adapters/browser_adapter_impl.h"
@@ -32,7 +33,8 @@ TabStripServiceImpl::TabStripServiceImpl(BrowserWindowInterface* browser,
     : TabStripServiceImpl(
           std::make_unique<tabs_api::BrowserAdapterImpl>(browser),
           std::make_unique<tabs_api::TabStripModelAdapterImpl>(
-              tab_strip_model)) {}
+              tab_strip_model,
+              base::PassKey<TabStripServiceImpl>())) {}
 
 TabStripServiceImpl::TabStripServiceImpl(
     std::unique_ptr<tabs_api::BrowserAdapter> browser_adapter,
@@ -71,17 +73,16 @@ TabStripServiceImpl::~TabStripServiceImpl() {
 }
 
 void TabStripServiceImpl::GetTabs(GetTabsCallback callback) {
-  auto snapshot = tabs_api::mojom::TabsSnapshot::New();
-
-  std::vector<tabs_api::mojom::TabPtr> result;
-  auto tabs = tab_strip_model_adapter_->GetTabs();
-  for (unsigned int i = 0; i < tabs.size(); ++i) {
-    auto& handle = tabs.at(i);
-    auto renderer_data = tab_strip_model_adapter_->GetTabRendererData(i);
-    auto entry = tabs_api::converters::BuildMojoTab(handle, renderer_data);
-    result.push_back(std::move(entry));
+  tabs_api::mojom::TabCollectionContainerPtr result =
+      tab_strip_model_adapter_->GetTabStripCollection();
+  if (!result) {
+    std::move(callback).Run(base::unexpected(mojo_base::mojom::Error::New(
+        mojo_base::mojom::Code::kInternal,
+        "invalid or missing tabstrip collection")));
+    return;
   }
-  snapshot->tabs = std::move(result);
+  auto snapshot = tabs_api::mojom::TabsSnapshot::New();
+  snapshot->tab_strip = std::move(result);
 
   // Now that we have a snapshot, create a event stream that will capture all
   // subsequent updates.

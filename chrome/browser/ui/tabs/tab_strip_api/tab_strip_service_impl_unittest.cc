@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_api/testing/toy_tab_strip.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/tabs/public/tab_collection.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/test/browser_task_environment.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -53,6 +54,30 @@ class FakeTabStripAdapter : public tabs_api::TabStripModelAdapter {
   void ActivateTab(size_t idx) override {
     const auto tab = tab_strip_->GetTabs().at(idx);
     tab_strip_->ActivateTab(tab);
+  }
+
+  mojom::TabCollectionContainerPtr GetTabStripCollection() override {
+    auto tab_collection = tabs_api::mojom::TabCollection::New();
+    tab_collection->id =
+        tabs_api::TabId(tabs_api::TabId::Type::kCollection, "0");
+    tab_collection->collection_type =
+        tabs_api::mojom::TabCollection::CollectionType::kTabStrip;
+
+    auto result = tabs_api::mojom::TabCollectionContainer::New();
+    result->collection = std::move(tab_collection);
+
+    std::vector<tabs::TabHandle> tabs = tab_strip_->GetTabs();
+    for (auto& handle : tabs) {
+      auto tab = tabs_api::mojom::Tab::New();
+      tab->id = tabs_api::TabId(tabs_api::TabId::Type::kContent,
+                                base::NumberToString(handle.raw_value()));
+      auto tab_container = tabs_api::mojom::TabContainer::New();
+      tab_container->tab = std::move(tab);
+      auto element =
+          tabs_api::mojom::Container::NewTabContainer(std::move(tab_container));
+      result->elements.push_back(std::move(element));
+    }
+    return result;
   }
 
  private:
@@ -127,9 +152,18 @@ TEST_F(TabStripServiceImplTest, GetTabs) {
   bool success = client_->GetTabs(&result);
 
   ASSERT_TRUE(success);
-  ASSERT_EQ(1u, result.value()->tabs.size());
-  ASSERT_EQ("888", result.value()->tabs[0]->id.Id());
-  ASSERT_EQ(TabId::Type::kContent, result.value()->tabs[0]->id.Type());
+  ASSERT_EQ(tabs_api::mojom::TabCollection::CollectionType::kTabStrip,
+            result.value()->tab_strip->collection->collection_type);
+  ASSERT_EQ(1u, result.value()->tab_strip->elements.size());
+  ASSERT_TRUE(result.value()->tab_strip->elements[0]->is_tab_container());
+  ASSERT_EQ("888", result.value()
+                       ->tab_strip->elements[0]
+                       ->get_tab_container()
+                       ->tab->id.Id());
+  ASSERT_EQ(TabId::Type::kContent, result.value()
+                                       ->tab_strip->elements[0]
+                                       ->get_tab_container()
+                                       ->tab->id.Type());
   // TODO(crbug.com/412709270): we can probably easily test the observation
   // in unit test as well. But it is already covered by the browser
   // test, so skipping for now.

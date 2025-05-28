@@ -11,6 +11,8 @@ source_set("adapters") {
   public_deps = [
     "//chrome/browser/ui/tabs",
     "//chrome/browser/ui/tabs:tab_strip_model_observer",
+    "//chrome/browser/ui/tabs/tab_strip_api:mojom",
+    "//components/tabs:public",
     "//content/public/browser",
   ]
 }
@@ -29,6 +31,8 @@ source_set("impl") {
     "//chrome/browser/ui/browser_window:browser_window",
     "//chrome/browser/ui/tabs:tab_strip",
     "//chrome/browser/ui/tabs:tab_strip_model_observer",
+    "//chrome/browser/ui/tabs/tab_strip_api/tree_builder:impl",
+    "//chrome/browser/ui/tabs/tab_strip_api/tree_builder:tree_builder",
     "//content/public/browser",
   ]
 }

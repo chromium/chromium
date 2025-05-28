@@ -6,6 +6,7 @@
 
 #include "chrome/browser/ui/tabs/tab_renderer_data.h"
 #include "chrome/browser/ui/tabs/tab_strip_api/tab_id.h"
+#include "components/tabs/public/tab_collection.h"
 #include "components/tabs/public/tab_interface.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -25,6 +26,18 @@ TEST(TabStripServiceConverters, ConvertTab) {
   ASSERT_EQ(TabId::Type::kContent, mojo->id.Type());
   ASSERT_EQ(GURL("http://nowhere"), mojo->url);
   ASSERT_EQ("title", mojo->title);
+}
+
+TEST(TabStripServiceConverters, ConvertTabCollection) {
+  tabs::TabCollectionHandle handle(888);
+  tabs::TabCollection::Type collection_type =
+      tabs::TabCollection::Type::TABSTRIP;
+
+  auto mojo = BuildMojoTabCollection(handle, collection_type);
+  ASSERT_EQ("888", mojo->id.Id());
+  ASSERT_EQ(TabId::Type::kCollection, mojo->id.Type());
+  ASSERT_EQ(tabs_api::mojom::TabCollection::CollectionType::kTabStrip,
+            mojo->collection_type);
 }
 
 }  // namespace
