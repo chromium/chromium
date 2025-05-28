@@ -6234,7 +6234,7 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled_NoAutoFocus_20250421",
+                    "name": "Enabled_NoAutoFocus_PdfChunking_20250527_10pc",
                     "params": {
                         "auto-focus-searchbox": "false",
                         "page-content-request-id-fix": "true",
@@ -6253,7 +6253,8 @@
                         "use-webpage-vit-param": "true"
                     },
                     "enable_features": [
-                        "LensOverlayContextualSearchbox"
+                        "LensOverlayContextualSearchbox",
+                        "LensOverlayUploadChunking"
                     ]
                 }
             ]
