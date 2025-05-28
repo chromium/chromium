@@ -8,12 +8,34 @@
 #include <concepts>
 #include <functional>
 #include <optional>
+#include <type_traits>
 #include <utility>
 
 #include "base/compiler_specific.h"
 #include "base/types/expected.h"
+#include "base/types/is_instantiation.h"
 
 namespace base {
+
+namespace internal_optional_util {
+
+template <typename Opt>
+concept IsOptional =
+    base::is_instantiation<std::optional, std::remove_cvref_t<Opt>>;
+
+template <typename Exp>
+concept IsExpected =
+    base::is_instantiation<base::expected, std::remove_cvref_t<Exp>>;
+
+template <typename Opt>
+  requires(IsOptional<Opt>)
+using OptionalValueType = typename std::remove_cvref_t<Opt>::value_type;
+
+template <typename Exp>
+  requires(IsExpected<Exp>)
+using ExpectedValueType = typename std::remove_cvref_t<Exp>::value_type;
+
+}  // namespace internal_optional_util
 
 // Helper for converting an `std::optional<T>` to a pointer suitable for
 // passing as a function argument (alternatively, consider using
@@ -68,42 +90,35 @@ std::optional<T> OptionalFromPtr(const T* value) {
 
 // Helper for creating a `base::expected<U, F>` from an `std::optional<T>` and
 // an error of type E, where T is convertible to U and E is convertible to F. If
-// `opt` contains a value, this copies it into the `base::expected`, otherwise
-// it moves `err` in.
-template <class T, class E, class U = T, class F = E>
-base::expected<U, F> OptionalToExpected(const std::optional<T>& opt, E&& err)
-  requires(std::convertible_to<T, U> && std::copyable<T> &&
-           std::convertible_to<E, F> && std::movable<E>)
+// `opt` contains a value, this moves or copies it into the `base::expected`,
+// otherwise it moves or copies `err` in.
+template <class Opt,
+          class E,
+          class U = internal_optional_util::OptionalValueType<Opt>,
+          class F = std::remove_cvref_t<E>>
+base::expected<U, F> OptionalToExpected(Opt&& opt, E&& err)
+  requires(
+      internal_optional_util::IsOptional<Opt> &&
+      std::convertible_to<internal_optional_util::OptionalValueType<Opt>, U> &&
+      std::convertible_to<E, F>)
 {
   if (opt.has_value()) {
-    return base::ok(opt.value());
+    return base::ok(std::forward<Opt>(opt).value());
   }
-  return base::unexpected(std::move(err));
-}
-
-// As above, but copies `err` into the `base:expected` if `opt` doesn't contain
-// a value.
-template <class T, class E, class U = T, class F = E>
-base::expected<U, F> OptionalToExpected(const std::optional<T>& opt,
-                                        const E& err)
-  requires(std::convertible_to<T, U> && std::copyable<T> &&
-           std::convertible_to<E, F> && std::copyable<E>)
-{
-  if (opt.has_value()) {
-    return base::ok(opt.value());
-  }
-  return base::unexpected(err);
+  return base::unexpected(std::forward<E>(err));
 }
 
 // Helper for creating an `std::optional<U>` from a `base::expected<T, E>`,
-// where T is convertible to U. If `exp` contains a value, this copies it into
-// the `std::optional`, otherwise it returns std::nullopt.
-template <class T, class E, class U = T>
-std::optional<U> OptionalFromExpected(const base::expected<T, E>& exp)
-  requires(std::convertible_to<T, U>)
+// where T is convertible to U. If `exp` contains a value, this moves or copies
+// it into the `std::optional`, otherwise it returns std::nullopt.
+template <class Exp, class U = internal_optional_util::ExpectedValueType<Exp>>
+std::optional<U> OptionalFromExpected(Exp&& exp)
+  requires(
+      internal_optional_util::IsExpected<Exp> &&
+      std::convertible_to<internal_optional_util::ExpectedValueType<Exp>, U>)
 {
   if (exp.has_value()) {
-    return std::optional(exp.value());
+    return std::optional(std::forward<Exp>(exp).value());
   }
   return std::nullopt;
 }
