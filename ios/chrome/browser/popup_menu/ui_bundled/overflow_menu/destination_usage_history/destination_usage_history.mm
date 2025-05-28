@@ -145,9 +145,14 @@ DestinationRanking SortByUsage(
     }
 
     for (auto&& [destinationName, clicks] : *dayHistory) {
-      _usageHistory[entryDay]
-                   [overflow_menu::DestinationForStringName(destinationName)] =
-                       clicks.GetIfInt().value_or(0);
+      std::optional<overflow_menu::Destination> destination =
+          overflow_menu::DestinationForStringName(destinationName);
+      if (!destination) {
+        // If no `destination` enum value matches `destinationName`, ignore this
+        // entry.
+        continue;
+      }
+      _usageHistory[entryDay][*destination] = clicks.GetIfInt().value_or(0);
     }
   }
 }
