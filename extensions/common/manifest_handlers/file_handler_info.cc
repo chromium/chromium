@@ -161,13 +161,11 @@ FileHandlersParser::FileHandlersParser() = default;
 
 FileHandlersParser::~FileHandlersParser() = default;
 
-bool FileHandlersParser::Validate(const Extension* extension,
+bool FileHandlersParser::Validate(const Extension& extension,
                                   std::string* error,
                                   std::vector<InstallWarning>* warnings) const {
-  DCHECK(extension);
-
   // Web File Handlers.
-  if (extension->manifest_version() >= 3) {
+  if (extension.manifest_version() >= 3) {
     return WebFileHandlersParser().Validate(extension, error, warnings);
   }
 

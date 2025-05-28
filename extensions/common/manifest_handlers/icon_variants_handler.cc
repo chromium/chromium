@@ -194,7 +194,7 @@ bool IconVariantsHandler::Parse(Extension* extension, std::u16string* error) {
 }
 
 bool IconVariantsHandler::Validate(
-    const Extension* extension,
+    const Extension& extension,
     std::string* error,
     std::vector<InstallWarning>* warnings) const {
   // TODO(crbug.com/41419485): Validate icon existence.

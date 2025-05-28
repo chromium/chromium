@@ -228,14 +228,14 @@ bool SharedModuleHandler::Parse(Extension* extension, std::u16string* error) {
 }
 
 bool SharedModuleHandler::Validate(
-    const Extension* extension,
+    const Extension& extension,
     std::string* error,
     std::vector<InstallWarning>* warnings) const {
   // Extensions that export resources should not have any permissions of their
   // own, instead they rely on the permissions of the extensions which import
   // them.
-  if (SharedModuleInfo::IsSharedModule(extension) &&
-      !extension->permissions_data()->active_permissions().IsEmpty()) {
+  if (SharedModuleInfo::IsSharedModule(&extension) &&
+      !extension.permissions_data()->active_permissions().IsEmpty()) {
     *error = errors::kInvalidExportPermissions;
     return false;
   }

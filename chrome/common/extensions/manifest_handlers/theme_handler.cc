@@ -260,19 +260,19 @@ bool ThemeHandler::Parse(Extension* extension, std::u16string* error) {
   return true;
 }
 
-bool ThemeHandler::Validate(const Extension* extension,
+bool ThemeHandler::Validate(const Extension& extension,
                             std::string* error,
                             std::vector<InstallWarning>* warnings) const {
   // Validate that theme images exist.
-  if (extension->is_theme()) {
+  if (extension.is_theme()) {
     const base::Value::Dict* images_value =
-        extensions::ThemeInfo::GetImages(extension);
+        extensions::ThemeInfo::GetImages(&extension);
     if (images_value) {
       for (const auto [key, value] : *images_value) {
         const std::string* val = value.GetIfString();
         if (val) {
           base::FilePath image_path =
-              extension->path().Append(base::FilePath::FromUTF8Unsafe(*val));
+              extension.path().Append(base::FilePath::FromUTF8Unsafe(*val));
           if (!base::PathExists(image_path)) {
             *error =
                 l10n_util::GetStringFUTF8(IDS_EXTENSION_INVALID_IMAGE_PATH,

@@ -75,10 +75,10 @@ bool StorageSchemaManifestHandler::Parse(Extension* extension,
 }
 
 bool StorageSchemaManifestHandler::Validate(
-    const Extension* extension,
+    const Extension& extension,
     std::string* error,
     std::vector<InstallWarning>* warnings) const {
-  RETURN_IF_ERROR(GetSchema(extension), [&error](const auto& e) {
+  RETURN_IF_ERROR(GetSchema(&extension), [&error](const auto& e) {
     *error = e;
     return false;
   });

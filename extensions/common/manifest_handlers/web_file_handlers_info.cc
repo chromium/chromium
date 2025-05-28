@@ -269,7 +269,7 @@ base::span<const char* const> WebFileHandlersParser::Keys() const {
 }
 
 bool WebFileHandlersParser::Validate(
-    const Extension* extension,
+    const Extension& extension,
     std::string* error,
     std::vector<InstallWarning>* warnings) const {
   // TODO(crbug.com/40832486): Verify that icons exist.

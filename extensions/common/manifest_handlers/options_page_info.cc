@@ -189,19 +189,19 @@ bool OptionsPageHandler::Parse(Extension* extension, std::u16string* error) {
   return true;
 }
 
-bool OptionsPageHandler::Validate(const Extension* extension,
+bool OptionsPageHandler::Validate(const Extension& extension,
                                   std::string* error,
                                   std::vector<InstallWarning>* warnings) const {
   // Validate path to the options page.  Don't check the URL for hosted apps,
   // because they are expected to refer to an external URL.
-  if (!OptionsPageInfo::HasOptionsPage(extension) ||
-      extension->is_hosted_app()) {
+  if (!OptionsPageInfo::HasOptionsPage(&extension) ||
+      extension.is_hosted_app()) {
     return true;
   }
 
   base::FilePath options_path = file_util::ExtensionURLToRelativeFilePath(
-      OptionsPageInfo::GetOptionsPage(extension));
-  base::FilePath path = extension->GetResource(options_path).GetFilePath();
+      OptionsPageInfo::GetOptionsPage(&extension));
+  base::FilePath path = extension.GetResource(options_path).GetFilePath();
   if (path.empty() || !base::PathExists(path)) {
     *error = l10n_util::GetStringFUTF8(IDS_EXTENSION_LOAD_OPTIONS_PAGE_FAILED,
                                        options_path.LossyDisplayName());
