@@ -351,27 +351,30 @@ bool OSMetrics::FillOSMemoryDump(base::ProcessHandle handle,
 
 #if BUILDFLAG(IS_ANDROID)
 #if BUILDFLAG(SUPPORTS_CODE_ORDERING)
-  if (!base::android::AreAnchorsSane()) {
-    DLOG(WARNING) << "Incorrect code ordering";
-    return false;
+  if (flags.Has(mojom::MemDumpFlags::MEM_DUMP_PAGES_BITMAP)) {
+    if (!base::android::AreAnchorsSane()) {
+      DLOG(WARNING) << "Incorrect code ordering";
+      return false;
+    }
+
+    std::vector<uint8_t> accessed_pages_bitmap;
+    OSMetrics::MappedAndResidentPagesDumpState state =
+        OSMetrics::GetMappedAndResidentPages(base::android::kStartOfText,
+                                             base::android::kEndOfText,
+                                             &accessed_pages_bitmap);
+    UMA_HISTOGRAM_ENUMERATION(
+        "Memory.NativeLibrary.MappedAndResidentMemoryFootprintCollectionStatus",
+        state);
+
+    // MappedAndResidentPagesDumpState |state| can be |kAccessPagemapDenied|
+    // for Android devices running a kernel version < 4.4 or because the process
+    // is not "dumpable", as described in proc(5).
+    if (state != OSMetrics::MappedAndResidentPagesDumpState::kSuccess) {
+      return state != OSMetrics::MappedAndResidentPagesDumpState::kFailure;
+    }
+
+    dump->native_library_pages_bitmap = std::move(accessed_pages_bitmap);
   }
-
-  std::vector<uint8_t> accessed_pages_bitmap;
-  OSMetrics::MappedAndResidentPagesDumpState state =
-      OSMetrics::GetMappedAndResidentPages(base::android::kStartOfText,
-                                           base::android::kEndOfText,
-                                           &accessed_pages_bitmap);
-  UMA_HISTOGRAM_ENUMERATION(
-      "Memory.NativeLibrary.MappedAndResidentMemoryFootprintCollectionStatus",
-      state);
-
-  // MappedAndResidentPagesDumpState |state| can be |kAccessPagemapDenied|
-  // for Android devices running a kernel version < 4.4 or because the process
-  // is not "dumpable", as described in proc(5).
-  if (state != OSMetrics::MappedAndResidentPagesDumpState::kSuccess)
-    return state != OSMetrics::MappedAndResidentPagesDumpState::kFailure;
-
-  dump->native_library_pages_bitmap = std::move(accessed_pages_bitmap);
 #endif  // BUILDFLAG(SUPPORTS_CODE_ORDERING)
 #endif  //  BUILDFLAG(IS_ANDROID)
 

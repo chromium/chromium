@@ -57,6 +57,8 @@ enum MemDumpFlags {
   // On Linux platforms, populate the pss_kb and swap_pss_kb fields of
   // RawOSMemDump.
   MEM_DUMP_PSS = 1,
+  // On Android, populate the native_library_pages_bitmap field of RawOSMemDump.
+  MEM_DUMP_PAGES_BITMAP = 2,
 };
 
 // These structs are internal only (only for the communication between

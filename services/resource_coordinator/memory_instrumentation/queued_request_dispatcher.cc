@@ -561,8 +561,12 @@ void QueuedRequestDispatcher::Finalize(QueuedRequest* request,
 
     global_dump->process_dumps.push_back(std::move(pmd));
   }
-  global_dump->aggregated_metrics =
-      ComputeGlobalNativeCodeResidentMemoryKb(pid_to_os_dump);
+  if (!request->args.memory_footprint_only) {
+    global_dump->aggregated_metrics =
+        ComputeGlobalNativeCodeResidentMemoryKb(pid_to_os_dump);
+  } else {
+    global_dump->aggregated_metrics = mojom::AggregatedMetrics::New();
+  }
 
   const bool global_success = request->failed_memory_dump_count == 0;
 
