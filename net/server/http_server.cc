@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "net/server/http_server.h"
 
 #include <array>
@@ -279,9 +274,7 @@ int HttpServer::HandleReadResult(HttpConnection* connection, int rv) {
     // request body.
     HttpServerRequestInfo request;
     size_t pos = 0;
-    if (!ParseHeaders(
-            reinterpret_cast<const char*>(read_buf->readable_bytes().data()),
-            read_buf->readable_bytes().size(), &request, &pos)) {
+    if (!ParseHeaders(read_buf->readable_bytes(), &request, &pos)) {
       // An error has occured. Close the connection.
       Close(connection->id());
       return ERR_CONNECTION_CLOSED;
@@ -451,8 +444,7 @@ int CharToInputType(char ch) {
 
 }  // namespace
 
-bool HttpServer::ParseHeaders(const char* data,
-                              size_t data_len,
+bool HttpServer::ParseHeaders(base::span<const uint8_t> data,
                               HttpServerRequestInfo* info,
                               size_t* ppos) {
   // Copy *ppos to avoid the compiler having to think about pointer aliasing.
@@ -461,12 +453,9 @@ bool HttpServer::ParseHeaders(const char* data,
   // added to the function.
   absl::Cleanup set_ppos = [&pos, ppos]() { *ppos = pos; };
   int state = ST_METHOD;
-  // Technically a base::span<const uint8_t> would be more correct, but using a
-  // std::string_view makes integration with the rest of the code easier.
-  const std::string_view data_view(data, data_len);
   size_t token_start = pos;
   std::string header_name;
-  for (; pos < data_len; ++pos) {
+  for (; pos < data.size(); ++pos) {
     const char ch = data[pos];
     if (ch == '\0') {
       // Lots of code assumes strings don't contain null characters, so disallow
@@ -482,8 +471,8 @@ bool HttpServer::ParseHeaders(const char* data,
 
     const bool transition = (next_state != state);
     if (transition) {
-      const std::string_view token =
-          data_view.substr(token_start, pos - token_start);
+      const auto token =
+          base::as_string_view(data.subspan(token_start, pos - token_start));
       token_start = pos + 1;  // Skip the whitespace or separator.
       // Do any actions based on state transitions.
       switch (state) {
