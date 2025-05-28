@@ -90,9 +90,7 @@ class VideoFrameStructTraitsTest : public testing::Test,
                       EchoVideoFrameCallback callback) override {
     // Touch all data in the received frame to ensure that it is valid.
     if (f && f->IsMappable()) {
-      base::MD5Context md5_context;
-      base::MD5Init(&md5_context);
-      VideoFrame::HashFrameForTesting(&md5_context, *f);
+      VideoFrame::HexHashOfFrameForTesting(*f);
     }
 
     std::move(callback).Run(f);
