@@ -55,7 +55,6 @@ import org.chromium.base.Callback;
 import org.chromium.base.FeatureOverrides;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType;
@@ -338,9 +337,6 @@ public class HomeModulesCoordinatorUnitTest {
 
     @Test
     @SmallTest
-    @DisableFeatures({
-        ChromeFeatureList.TAB_RESUMPTION_MODULE_ANDROID,
-    })
     public void testRecordMagicStackScroll_Scrolled() {
         mCoordinator = createCoordinator(/* skipInitProfile= */ true);
         mCoordinator.setMediatorForTesting(mMediator);
@@ -358,9 +354,6 @@ public class HomeModulesCoordinatorUnitTest {
 
     @Test
     @SmallTest
-    @DisableFeatures({
-        ChromeFeatureList.TAB_RESUMPTION_MODULE_ANDROID,
-    })
     public void testRecordMagicStackScroll_NotScrolled() {
         when(mModuleDelegateHost.isHomeSurface()).thenReturn(true);
         mCoordinator = createCoordinator(/* skipInitProfile= */ true);
@@ -376,9 +369,6 @@ public class HomeModulesCoordinatorUnitTest {
 
     @Test
     @SmallTest
-    @DisableFeatures({
-        ChromeFeatureList.TAB_RESUMPTION_MODULE_ANDROID,
-    })
     public void testOnModuleChangedCallback() {
         when(mModuleDelegateHost.isHomeSurface()).thenReturn(true);
         mCoordinator = createCoordinator(/* skipInitProfile= */ true);

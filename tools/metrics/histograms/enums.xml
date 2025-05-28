@@ -12372,7 +12372,6 @@ from previous Chrome versions.
   <int value="-582570706" label="PPAPISharedImagesSwapChain:disabled"/>
   <int value="-582300629" label="UserNotes:enabled"/>
   <int value="-581236612" label="ConnectivityDiagnosticsWebUi:disabled"/>
-  <int value="-581218894" label="TabResumptionModuleAndroid:disabled"/>
   <int value="-580897686" label="SharedHighlightingAmp:enabled"/>
   <int value="-580051880" label="BirchWeather:disabled"/>
   <int value="-579897981" label="EnableEdgeDetection:enabled"/>
@@ -16435,7 +16434,6 @@ from previous Chrome versions.
   <int value="957333504" label="OmniboxSteadyStateHeight:enabled"/>
   <int value="957458620" label="MediaRouterOTRInstance:enabled"/>
   <int value="960413971" label="GlanceablesV2CalendarView:disabled"/>
-  <int value="960696967" label="TabResumptionModuleAndroid:enabled"/>
   <int value="960883599" label="IPH_SupervisedUserProfileSignin:enabled"/>
   <int value="961019394" label="IOSPromoRefreshedPasswordBubble:disabled"/>
   <int value="962191833" label="StopAppIndexingReport:disabled"/>

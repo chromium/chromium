@@ -576,7 +576,6 @@ public abstract class ChromeFeatureList {
     public static final String TAB_GROUP_SYNC_AUTO_OPEN_KILL_SWITCH =
             "TabGroupSyncAutoOpenKillSwitch";
     public static final String TABLET_TAB_STRIP_ANIMATION = "TabletTabStripAnimation";
-    public static final String TAB_RESUMPTION_MODULE_ANDROID = "TabResumptionModuleAndroid";
     public static final String TAB_STATE_FLAT_BUFFER = "TabStateFlatBuffer";
     public static final String TAB_STRIP_CONTEXT_MENU = "TabStripContextMenuAndroid";
     public static final String TAB_STRIP_DENSITY_CHANGE_ANDROID = "TabStripDensityChangeAndroid";
