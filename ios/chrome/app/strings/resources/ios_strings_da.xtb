@@ -383,6 +383,7 @@ Websites kan ikke bruge cookies til at se din browseraktivitet på forskellige w
 <translation id="2513103768503127042">Her kan du se dine fanegrupper</translation>
 <translation id="251837347827266434">Du logges ud, fanerne lukkes, og browserdataene slettes</translation>
 <translation id="2520787026086861736">Du kan deaktivere funktionen ved at gå til <ph name="BEGIN_LINK" />Autofyld og adgangskoder<ph name="END_LINK" /></translation>
+<translation id="2523295204312809179">Når du lukker en fanegruppe, gemmes den automatisk her</translation>
 <translation id="2529021024822217800">Åbn alle</translation>
 <translation id="2536991091671391962">Du kan bruge gemte adgangskoder på alle enheder. De er gemt i Google Adgangs­kode­admin­istrator for <ph name="EMAIL" />.</translation>
 <translation id="2538103551183528357">Skjult, adgangskode</translation>
@@ -1035,6 +1036,7 @@ Se din søgemaskines vejledning i, hvordan du sletter din søgehistorik, hvis de
 <translation id="5275912569557792098"><ph name="USER_NAME" /> (<ph name="USER_EMAIL" />) vil gerne invitere dig til en fanegruppe. Alle med linket kan redigere alle faner, så vær opmærksom på det, når du deltager. Linket udløber om 48 timer.</translation>
 <translation id="5279600392753459966">Bloker alle</translation>
 <translation id="5282340693022193851">Du kan få notifikationer om prissporing ved at aktivere notifikationer i iOS-indstillingerne.</translation>
+<translation id="528857768909044842">Fanegrupper gemmes her</translation>
 <translation id="5294624619177114121">Mobilnotifikationer</translation>
 <translation id="5295239312320826323">Vil du fjerne kontoen <ph name="USER_EMAIL" />?</translation>
 <translation id="5300589172476337783">Vis</translation>
@@ -1230,6 +1232,7 @@ Handoff skal være aktiveret i afsnittet Generelt i Indstillinger, og dine enhed
 <translation id="6100617279104942061">Logget ind som <ph name="USER_EMAIL" />. Åbner indstillinger.</translation>
 <translation id="6103540626693881831">Kryptering på enheden</translation>
 <translation id="611361228753138223">Websites, du har besøgt for nylig på denne enhed</translation>
+<translation id="611705554202268369">Foretag et langt tryk for at føje til en fanegruppe</translation>
 <translation id="6122191549521593678">Online</translation>
 <translation id="6122831415929794347">Vil du deaktivere Beskyttet browsing?</translation>
 <translation id="6123514585040403489">Dine faner lukkes</translation>
@@ -1855,6 +1858,7 @@ Websites kan bruge cookies til at se din browseraktivitet på forskellige websit
 <translation id="8535368836838588657">Vis adgangskode</translation>
 <translation id="8545276357312221485">Tjek dine standardbrowserindstillinger</translation>
 <translation id="854938212724803178">Du har 1 kompromitteret adgangskode. Løs problemet nu for at forblive beskyttet.</translation>
+<translation id="8551311254462607218">Tryk på Google Lens-kameraikonet i adresselinjen</translation>
 <translation id="8556590991644167667">{count,plural, =1{Du har afvist {count} advarsel}one{Du har afvist {count} advarsel}other{Du har afvist {count} advarsler}}</translation>
 <translation id="8558046478684552694">Luk gruppe.</translation>
 <translation id="8560253818350321773">Vis ofte benyttede elementer først.</translation>
@@ -1998,6 +2002,7 @@ Websites kan bruge cookies til at se din browseraktivitet på forskellige websit
 <translation id="9032405509996909363">Bekræft sletning af browserdata</translation>
 <translation id="9039373489628511875">Båndbredde</translation>
 <translation id="9042893549633094279">Privatliv og sikkerhed</translation>
+<translation id="9055291197094969722">Opret fanegrupper for at organisere dine åbne faner og få mere fra hånden</translation>
 <translation id="9055580485132823283">Du er ved at slette {password_count} adgangskoder, {passkey_count} adgangsnøgler og listen over websites og apps, hvor du har valgt aldrig at gemme loginoplysninger. Alle konti, du har oprettet til websites og apps, slettes ikke.</translation>
 <translation id="9057030985451135243">Få flere oplysninger om delte fanegrupper</translation>
 <translation id="9057972802061533987">Indholdet kan ikke følges. Der gik noget galt.</translation>

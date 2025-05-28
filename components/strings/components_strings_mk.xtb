@@ -367,6 +367,7 @@
 <translation id="1612199629998703524">Управувајте со теми</translation>
 <translation id="1615178538289490617">Повлечете го пристапот за <ph name="PORT_NAME" /></translation>
 <translation id="1615402009686901181">Администраторското правило оневозможува снимање на екранот кога се видливи доверливи содржини</translation>
+<translation id="161612500287664753">Побарајте помош од „Пребарување на Google“ за страницава</translation>
 <translation id="1617276713587758852">Кросовери</translation>
 <translation id="1619007254056372606">Управувајте со податоци од сајт на уредот</translation>
 <translation id="1619648179761984213"><ph name="USER_DISPLAY_NAME" /> отстрани картичка</translation>
@@ -1508,6 +1509,7 @@
 <translation id="3586931643579894722">Скриј детали</translation>
 <translation id="3587725436724465984">Вашата организација го препозна <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> како сајт кој можеби прекршува правило. <ph name="BEGIN_LEARN_MORE_LINK" />Дознајте повеќе за предупредувањево<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3587738293690942763">Средна</translation>
+<translation id="3589519427766620380">Побарајте помош од Google Lens за страницава</translation>
 <translation id="3596918995172292499">Состојба на регистарската таблица</translation>
 <translation id="3600106876108433070">Дознајте повеќе за табелите за споредба</translation>
 <translation id="3600246354004376029"><ph name="TITLE" />, <ph name="DOMAIN" />, <ph name="TIME" /></translation>
@@ -3444,6 +3446,7 @@
 <translation id="6925267999184670015">Северноамерикански B+</translation>
 <translation id="6926216138694948720">Уметност на тело</translation>
 <translation id="692638818576287323">Комерцијални возила</translation>
+<translation id="6930607614725241390">Пребарувајте во страничната табла</translation>
 <translation id="6934236486840930310"><ph name="BEGIN_BOLD" />Вашиот стандарден пребарувач ви овозможува да пребарувате на интернет и ги обезбедува функциите на Chrome<ph name="END_BOLD" /> како пребарување од лентата за адреси и од слики на веб-страници. Конкретна функција може да биде недостапна ако не ја поддржува вашиот пребарувач.</translation>
 <translation id="6934672428414710184">Ова име е од вашата сметка на Google</translation>
 <translation id="6935077351544118151">Отсега може да ги пополнувате картичките за лојалност автоматски од Google Wallet</translation>

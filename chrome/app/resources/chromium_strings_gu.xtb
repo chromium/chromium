@@ -227,6 +227,7 @@
 <translation id="4019629340646866719"><ph name="BEGIN_LINK_LINUX_OSS" />Linux ડેવલપમેન્ટ એન્વાયરમેન્ટ<ph name="END_LINK_LINUX_OSS" />ની જેમ, ChromiumOSને વધારાના <ph name="BEGIN_LINK_CROS_OSS" />ઓપન સૉર્સ સૉફ્ટવેર<ph name="END_LINK_CROS_OSS" /> દ્વારા શક્ય બનાવવામાં આવ્યું છે.</translation>
 <translation id="4022972681110646219">સ્ક્રીનનો અનુવાદ કરો</translation>
 <translation id="4023601594785368013">મૂળ ભાષા: <ph name="LANGUAGE" /></translation>
+<translation id="4023845192681161785">કોઈપણ ઍપમાંથી લિંકને Chromiumમાં ખોલો. વધુમાં, સરળ ઍક્સેસ માટે તે તમારા ટાસ્કબારમાં પિન કરવામાં આવે છે.</translation>
 <translation id="4036079820698952681"><ph name="BEGIN_LINK" />વર્તમાન સેટિંગ<ph name="END_LINK" />ની જાણ કરીને Chromiumને બહેતર બનાવવામાં સહાય કરો</translation>
 <translation id="4050175100176540509">નવીનતમ વર્ઝનમાં મહત્ત્વપૂર્ણ સુરક્ષા સુધારણાઓ અને નવી સુવિધાઓ ઉપલબ્ધ છે.</translation>
 <translation id="4055805654398742145">P&amp;assword Manager</translation>
@@ -328,6 +329,7 @@
 <translation id="5524890928877629608">શોધ વિસ્તારના સૌથી ઉપર ડાબા ખૂણે: ડાબી બાજુ <ph name="LEFT" />%, સૌથી ઉપર <ph name="TOP" />%</translation>
 <translation id="5527463683072221100">Chromiumમાં PDFs ખોલો</translation>
 <translation id="5579324208890605088">સ્ટાર્ટઅપ દરમિયાન ભૂલ: કૃપા કરીને ઇન્સ્ટૉલરને નિયમિત વપરાશકર્તા તરીકે ચલાવો, ઍડમિનિસ્ટ્રેટર તરીકે નહીં.</translation>
+<translation id="5580770360767802657">ડિફૉલ્ટ તરીકે Chromiumનો ઉપયોગ કરો અને તેને પિન કરો</translation>
 <translation id="5596627076506792578">વધુ વિકલ્પો</translation>
 <translation id="5605834417512968703">'છબી વડે શોધ' સુવિધા વડે શોધવા માટે કંઈપણ પસંદ કરો અથવા 'છબી વડે શોધ' સુવિધામાંથી બહાર નીકળવા માટે Escape કી દબાવો</translation>
 <translation id="5618818588972826921">'છબી વડે શોધ' સુવિધા વડે શોધવા માટે કોઈપણ ટેક્સ્ટ અથવા છબી પસંદ કરો અથવા 'છબી વડે શોધ' સુવિધામાંથી બહાર નીકળવા માટે Escape દબાવો</translation>

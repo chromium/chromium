@@ -371,6 +371,7 @@
 <translation id="1612199629998703524">Թեմաների կառավարում</translation>
 <translation id="1615178538289490617">Չեղարկել <ph name="PORT_NAME" /> միացքի հասանելիությունը</translation>
 <translation id="1615402009686901181">Ըստ ադմինիստրատորի սահմանած կանոնի՝ էկրանի տեսագրման հնարավորությունն անջատվում է, երբ գաղտնի բովանդակություն է տեսանելի</translation>
+<translation id="161612500287664753">Հարցրեք Google Որոնմանը այս էջի մասին</translation>
 <translation id="1617276713587758852">Քրոսովերներ</translation>
 <translation id="1619007254056372606">Կառավարել սարքում կայքերի տվյալները</translation>
 <translation id="1619648179761984213"><ph name="USER_DISPLAY_NAME" /> օգտատերը ներդիր է հեռացրել</translation>
@@ -1514,6 +1515,7 @@
 <translation id="3586931643579894722">Թաքցնել մանրամասները</translation>
 <translation id="3587725436724465984">Այս կայքը (<ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" />) ձեր կազմակերպության կողմից ճանաչվել է որպես կայք, որը հավանաբար խախտում է կանոնները։ <ph name="BEGIN_LEARN_MORE_LINK" />Իմանալ ավելին այս նախազգուշացման մասին<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3587738293690942763">Միջին</translation>
+<translation id="3589519427766620380">Հարցրեք Google Տեսապակուն այս էջի մասին</translation>
 <translation id="3596918995172292499">Համարանիշի նահանգ</translation>
 <translation id="3600106876108433070">Իմանալ ավելին համեմատության աղյուսակների մասին</translation>
 <translation id="3600246354004376029"><ph name="TITLE" />, <ph name="DOMAIN" />, <ph name="TIME" /></translation>
@@ -3453,6 +3455,7 @@
 <translation id="6925267999184670015">B+ (Հյուսիսային Ամերիկա)</translation>
 <translation id="6926216138694948720">Բոդի արտ</translation>
 <translation id="692638818576287323">Կոմերցիոն փոխադրամիջոցներ</translation>
+<translation id="6930607614725241390">Որոնեք կողային վահանակում</translation>
 <translation id="6934236486840930310"><ph name="BEGIN_BOLD" />Կանխադրված որոնողական համակարգը թույլ է տալիս որոնել համացանցում և աջակցում է Chrome-ի այնպիսի գործառույթներ<ph name="END_BOLD" />, ինչպիսիք են որոնումը հասցեագոտուց և պատկերների միջոցով վեբ էջերում։ Գործառույթը կարող է հասանելի չլինել, եթե ձեր որոնողական համակարգը չի աջակցում այն։</translation>
 <translation id="6934672428414710184">Այս անունը վերցված է ձեր Google հաշվից</translation>
 <translation id="6935077351544118151">Այժմ կարող եք ավտոմատ լրացնել մշտական հաճախորդի քարտերի տվյալները Google Wallet-ից</translation>

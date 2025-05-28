@@ -224,6 +224,7 @@
 <translation id="4019629340646866719">‏ارائه ChromiumOS به‌کمک <ph name="BEGIN_LINK_CROS_OSS" />نرم‌افزارهای متن‌باز<ph name="END_LINK_CROS_OSS" /> تکمیلی مثل <ph name="BEGIN_LINK_LINUX_OSS" />محیط توسعه نرم‌افزار Linux<ph name="END_LINK_LINUX_OSS" /> ممکن شده است.</translation>
 <translation id="4022972681110646219">ترجمه کردن صفحه‌نمایش</translation>
 <translation id="4023601594785368013">زبان اصلی: <ph name="LANGUAGE" /></translation>
+<translation id="4023845192681161785">‏پیوندها را از هر برنامه‌ای در Chromium باز کنید. همچنین برای دسترسی آسان، Chromium به نوار وظیفه شما سنجاق می‌شود.</translation>
 <translation id="4036079820698952681">‏با گزارش <ph name="BEGIN_LINK" />تنظیمات کنونی<ph name="END_LINK" />، به بهتر شدن Chromium کمک کنید</translation>
 <translation id="4050175100176540509">بهبودهای امنیتی مهم و ویژگی‌های جدید در جدیدترین نسخه در دسترس است.</translation>
 <translation id="4055805654398742145">مدیر گذرواژه</translation>
@@ -325,6 +326,7 @@
 <translation id="5524890928877629608">‏گوشه بالا سمت راست ناحیه جستجو: ‎٪<ph name="LEFT" /> سمت راست، ‎٪<ph name="TOP" /> بالا</translation>
 <translation id="5527463683072221100">‏باز کردن فایل‌های PDF در Chromium</translation>
 <translation id="5579324208890605088">خطای راه‌اندازی: لطفاً نصب‌کننده را با نقش کاربر معمولی اجرا کنید، نه با نقش سرپرست.</translation>
+<translation id="5580770360767802657">‏استفاده کردن از Chromium به‌عنوان مرورگر پیش‌فرض و سنجاق کردن آن</translation>
 <translation id="5596627076506792578">گزینه‌های بیشتر</translation>
 <translation id="5605834417512968703">هرچیزی را که می‌خواهید برای جستجو کردن با «جستجوی تصویر» انتخاب کنید یا برای خارج شدن از «جستجوی تصویر»، کلید «گریز» را فشار دهید</translation>
 <translation id="5618818588972826921">‏نوشتار یا تصویری را برای جستجو کردن با «جستجوی تصویر» انتخاب کنید یا برای خارج شدن از «جستجوی تصویر»، کلید Escape را فشار دهید</translation>
