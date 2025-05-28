@@ -13,7 +13,6 @@
 #include "build/build_config.h"
 #include "content/browser/devtools/devtools_instrumentation.h"
 #include "content/browser/preloading/prefetch/contamination_delay_navigation_throttle.h"
-#include "content/browser/preloading/prefetch/prefetch_features.h"
 #include "content/browser/preloading/prerender/prerender_navigation_throttle.h"
 #include "content/browser/preloading/prerender/prerender_subframe_navigation_throttle.h"
 #include "content/browser/renderer_host/ancestor_throttle.h"
@@ -223,44 +222,34 @@ void NavigationThrottleRunner::RegisterNavigationThrottles() {
   // Check for renderer-inititated main frame navigations to blocked URL schemes
   // (data, filesystem). This is done early as it may block the main frame
   // navigation altogether.
-  MaybeAddThrottle(
-      BlockedSchemeNavigationThrottle::CreateThrottleForNavigation(request));
+  BlockedSchemeNavigationThrottle::MaybeCreateAndAdd(*this);
 
 #if !BUILDFLAG(IS_ANDROID)
   // Prevent cross-document navigations from document picture-in-picture
   // windows.
-  MaybeAddThrottle(
-      DocumentPictureInPictureNavigationThrottle::MaybeCreateThrottleFor(
-          request));
+  DocumentPictureInPictureNavigationThrottle::MaybeCreateAndAdd(*this);
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-  MaybeAddThrottle(AncestorThrottle::MaybeCreateThrottleFor(request));
+  AncestorThrottle::CreateAndAdd(*this);
 
   // Check for mixed content. This is done after the AncestorThrottle and the
   // FormSubmissionThrottle so that when folks block mixed content with a CSP
   // policy, they don't get a warning. They'll still get a warning in the
   // console about CSP blocking the load.
-  AddThrottle(
-      MixedContentNavigationThrottle::CreateThrottleForNavigation(request));
+  MixedContentNavigationThrottle::CreateAndAdd(*this);
 
-  if (base::FeatureList::IsEnabled(
-          features::kPrefetchStateContaminationMitigation)) {
-    // Delay response processing for certain prefetch responses where it might
-    // otherwise reveal information about cross-site state.
-    AddThrottle(
-        std::make_unique<ContaminationDelayNavigationThrottle>(request));
-  }
+  // Delay response processing for certain prefetch responses where it might
+  // otherwise reveal information about cross-site state.
+  ContaminationDelayNavigationThrottle::MaybeCreateAndAdd(*this);
 
   // Block certain requests that are not permitted for prerendering.
-  MaybeAddThrottle(
-      PrerenderNavigationThrottle::MaybeCreateThrottleFor(request));
+  PrerenderNavigationThrottle::MaybeCreateAndAdd(*this);
 
   // Defer cross-origin subframe loading during prerendering state.
-  MaybeAddThrottle(
-      PrerenderSubframeNavigationThrottle::MaybeCreateThrottleFor(request));
+  PrerenderSubframeNavigationThrottle::MaybeCreateAndAdd(*this);
 
   // Prevent navigations to/from Isolated Web Apps.
-  MaybeAddThrottle(IsolatedWebAppThrottle::MaybeCreateThrottleFor(request));
+  IsolatedWebAppThrottle::MaybeCreateAndAdd(*this);
 
   devtools_instrumentation::CreateAndAddNavigationThrottles(*this);
 
@@ -333,8 +322,7 @@ void NavigationThrottleRunner::
       SubframeHistoryNavigationThrottle::MaybeCreateThrottleFor(request));
 
   // Defer cross-origin about:srcdoc subframe loading during prerendering state.
-  MaybeAddThrottle(
-      PrerenderSubframeNavigationThrottle::MaybeCreateThrottleFor(request));
+  PrerenderSubframeNavigationThrottle::MaybeCreateAndAdd(*this);
 
   // Defer subframe navigation in bfcached page.
   MaybeAddThrottle(

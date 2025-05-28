@@ -5,8 +5,6 @@
 #ifndef CONTENT_BROWSER_RENDERER_HOST_MIXED_CONTENT_NAVIGATION_THROTTLE_H_
 #define CONTENT_BROWSER_RENDERER_HOST_MIXED_CONTENT_NAVIGATION_THROTTLE_H_
 
-#include <set>
-
 #include "base/gtest_prod_util.h"
 #include "content/browser/renderer_host/mixed_content_checker.h"
 #include "content/common/content_export.h"
@@ -29,10 +27,9 @@ namespace content {
 // https://w3c.github.io/webappsec-mixed-content/
 class MixedContentNavigationThrottle : public NavigationThrottle {
  public:
-  static std::unique_ptr<NavigationThrottle> CreateThrottleForNavigation(
-      NavigationHandle* navigation_handle);
+  static void CreateAndAdd(NavigationThrottleRegistry& registry);
 
-  MixedContentNavigationThrottle(NavigationHandle* navigation_handle);
+  explicit MixedContentNavigationThrottle(NavigationThrottleRegistry& registry);
 
   MixedContentNavigationThrottle(const MixedContentNavigationThrottle&) =
       delete;

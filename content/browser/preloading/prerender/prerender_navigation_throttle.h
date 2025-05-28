@@ -9,7 +9,6 @@
 
 namespace content {
 
-class NavigationRequest;
 class PrerenderHost;
 enum class PrerenderFinalStatus;
 
@@ -22,10 +21,9 @@ enum class PrerenderFinalStatus;
 // - Cross-origin navigation from a prerendered page
 class PrerenderNavigationThrottle : public NavigationThrottle {
  public:
-  ~PrerenderNavigationThrottle() override;
+  static void MaybeCreateAndAdd(NavigationThrottleRegistry& registry);
 
-  static std::unique_ptr<PrerenderNavigationThrottle> MaybeCreateThrottleFor(
-      NavigationHandle* navigation_handle);
+  ~PrerenderNavigationThrottle() override;
 
   // NavigationThrottle
   const char* GetNameForLogging() override;
@@ -34,7 +32,7 @@ class PrerenderNavigationThrottle : public NavigationThrottle {
   ThrottleCheckResult WillProcessResponse() override;
 
  private:
-  explicit PrerenderNavigationThrottle(NavigationRequest* navigation_request);
+  explicit PrerenderNavigationThrottle(NavigationThrottleRegistry& registry);
 
   ThrottleCheckResult WillStartOrRedirectRequest(bool is_redirection);
 

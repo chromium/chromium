@@ -15,6 +15,8 @@ namespace content {
 // commit would otherwise reveal information about those checks.
 class ContaminationDelayNavigationThrottle : public NavigationThrottle {
  public:
+  static void MaybeCreateAndAdd(NavigationThrottleRegistry& registry);
+
   using NavigationThrottle::NavigationThrottle;
   ~ContaminationDelayNavigationThrottle() override;
 

@@ -23,12 +23,11 @@ class PrerenderSubframeNavigationThrottle : public NavigationThrottle,
  public:
   ~PrerenderSubframeNavigationThrottle() override;
 
-  static std::unique_ptr<PrerenderSubframeNavigationThrottle>
-  MaybeCreateThrottleFor(NavigationHandle* navigation_handle);
+  static void MaybeCreateAndAdd(NavigationThrottleRegistry& registry);
 
  private:
   explicit PrerenderSubframeNavigationThrottle(
-      NavigationHandle* navigation_handle);
+          NavigationThrottleRegistry& registry);
 
   // NavigationThrottle
   const char* GetNameForLogging() override;
