@@ -393,6 +393,7 @@ enum class ToolbarKind {
     ReminderNotificationsCommands,
     RepostFormCoordinatorDelegate,
     RepostFormTabHelperDelegate,
+    ReSigninPresenter,
     SaveToDriveCommands,
     SaveToPhotosCommands,
     SigninPresenter,
@@ -3760,6 +3761,31 @@ enum class ToolbarKind {
                              trigger:trigger];
   _trustedVaultReauthenticationCoordinator.delegate = self;
   [_trustedVaultReauthenticationCoordinator start];
+}
+
+#pragma mark - ReSigninPresenter
+
+- (void)showReSignin {
+  signin_metrics::AccessPoint accessPoint =
+      signin_metrics::AccessPoint::kResigninInfobar;
+  signin_metrics::PromoAction promoAction =
+      signin_metrics::PromoAction::PROMO_ACTION_NO_SIGNIN_PROMO;
+  SigninContextStyle contextStyle = SigninContextStyle::kDefault;
+
+  _signinCoordinator = [SigninCoordinator
+      signinAndSyncReauthCoordinatorWithBaseViewController:self.viewController
+                                                   browser:self.browser
+                                              contextStyle:contextStyle
+                                               accessPoint:accessPoint
+                                               promoAction:promoAction
+                                      continuationProvider:
+                                          DoNothingContinuationProvider()];
+  __weak __typeof(self) weakSelf = self;
+  _signinCoordinator.signinCompletion =
+      ^(SigninCoordinatorResult result, id<SystemIdentity> identity) {
+        [weakSelf stopSigninCoordinator];
+      };
+  [_signinCoordinator start];
 }
 
 #pragma mark - SigninPresenter

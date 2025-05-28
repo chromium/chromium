@@ -97,11 +97,11 @@ SyncErrorBrowserAgent::SyncErrorBrowserAgent(Browser* browser)
 SyncErrorBrowserAgent::~SyncErrorBrowserAgent() = default;
 
 void SyncErrorBrowserAgent::SetUIProviders(
-    id<SigninPresenter> signin_presenter_provider,
+    id<ReSigninPresenter> resignin_presenter_provider,
     id<SyncPresenter> sync_presenter_provider) {
-  DCHECK(signin_presenter_provider);
+  DCHECK(resignin_presenter_provider);
   DCHECK(sync_presenter_provider);
-  signin_presenter_provider_ = signin_presenter_provider;
+  resignin_presenter_provider_ = resignin_presenter_provider;
   sync_presenter_provider_ = sync_presenter_provider;
 
   // Re-evaluate all web states.
@@ -109,7 +109,7 @@ void SyncErrorBrowserAgent::SetUIProviders(
 }
 
 void SyncErrorBrowserAgent::ClearUIProviders() {
-  signin_presenter_provider_ = nil;
+  resignin_presenter_provider_ = nil;
   sync_presenter_provider_ = nil;
 }
 
@@ -226,7 +226,7 @@ void SyncErrorBrowserAgent::CreateReSignInInfoBarDelegate(
     return;
   }
 
-  if (!signin_presenter_provider_ || !sync_presenter_provider_) {
+  if (!resignin_presenter_provider_ || !sync_presenter_provider_) {
     return;
   }
 
@@ -240,7 +240,7 @@ void SyncErrorBrowserAgent::CreateReSignInInfoBarDelegate(
       ReSignInInfoBarDelegate::Create(
           AuthenticationServiceFactory::GetForProfile(profile),
           IdentityManagerFactory::GetForProfile(profile),
-          signin_presenter_provider_);
+          resignin_presenter_provider_);
   if (delegate) {
     InfoBarManagerImpl::FromWebState(web_state)->AddInfoBar(
         CreateConfirmInfoBar(std::move(delegate)));

@@ -15,7 +15,7 @@
 #import "ios/web/public/web_state_observer.h"
 
 class Browser;
-@protocol SigninPresenter;
+@protocol ReSigninPresenter;
 @class SyncErrorBrowserAgentProfileStateObserver;
 @protocol SyncPresenter;
 
@@ -37,7 +37,7 @@ class SyncErrorBrowserAgent
   ~SyncErrorBrowserAgent() override;
 
   // Sets the UI providers to present sign in and sync UI when needed.
-  void SetUIProviders(id<SigninPresenter> signin_presenter_provider,
+  void SetUIProviders(id<ReSigninPresenter> signin_presenter_provider,
                       id<SyncPresenter> sync_presenter_provider);
 
   // Clears the UI providers.
@@ -86,7 +86,7 @@ class SyncErrorBrowserAgent
       web_state_observations_{this};
 
   // Provider to a SignIn presenter
-  __weak id<SigninPresenter> signin_presenter_provider_;
+  __weak id<ReSigninPresenter> resignin_presenter_provider_;
   // Provider to a Sync presenter
   __weak id<SyncPresenter> sync_presenter_provider_;
   // Used to observe the ProfileState.
