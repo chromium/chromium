@@ -465,6 +465,7 @@ public class MiniOriginBarController implements Observer {
         mLocationBar.getContainerView().setScaleX(scale);
         mLocationBar.getContainerView().setScaleY(scale);
         mLocationBar.getContainerView().setPivotY(0.5f);
+        mLocationBar.getContainerView().setPivotX(0.5f);
     }
 
     @VisibleForTesting
