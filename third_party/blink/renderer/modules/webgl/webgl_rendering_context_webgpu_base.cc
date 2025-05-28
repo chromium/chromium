@@ -11,6 +11,9 @@
 #include "third_party/blink/public/platform/web_url.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
+#include "third_party/blink/renderer/core/html/canvas/html_canvas_element.h"
+#include "third_party/blink/renderer/core/inspector/console_message.h"
+#include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/modules/webgl/webgl_buffer.h"
 #include "third_party/blink/renderer/modules/webgl/webgl_program.h"
 #include "third_party/blink/renderer/modules/webgl/webgl_shader.h"
@@ -59,16 +62,20 @@ const DawnProcTable* GetDawnProcs() {
 #endif  // BUILDFLAG(USE_DAWN)
 }
 
-void GL_APIENTRY LogGLDebugMessage(GLenum source,
-                                   GLenum type,
-                                   GLuint id,
-                                   GLenum severity,
-                                   GLsizei length,
-                                   const GLchar* message,
-                                   const GLvoid* user_data) {
-  LOG(ERROR) << "GL Driver Message (" << gl::GetDebugSourceString(source)
-             << ", " << gl::GetDebugTypeString(type) << ", " << id << ", "
-             << gl::GetDebugSeverityString(severity) << "): " << message;
+void GL_APIENTRY
+WebGLRenderingContextWebGPUBaseDebugMessageCallback(GLenum source,
+                                                    GLenum type,
+                                                    GLuint id,
+                                                    GLenum severity,
+                                                    GLsizei length,
+                                                    const GLchar* message,
+                                                    const GLvoid* user_data) {
+  DCHECK(user_data != nullptr);
+  WebGLRenderingContextWebGPUBase* rendering_context =
+      static_cast<WebGLRenderingContextWebGPUBase*>(
+          const_cast<void*>(user_data));
+  rendering_context->OnDebugMessage(source, type, id, severity, length,
+                                    message);
 }
 
 void InitializeGLDebugLogging(const gl::DriverGL& gl,
@@ -180,6 +187,25 @@ class ScopedBindFramebuffer {
   GLint prev_draw_fbo_ = 0;
   GLint prev_read_fbo_ = 0;
 };
+
+const char* GetErrorString(GLenum error) {
+  switch (error) {
+    case GL_INVALID_ENUM:
+      return "INVALID_ENUM";
+    case GL_INVALID_VALUE:
+      return "INVALID_VALUE";
+    case GL_INVALID_OPERATION:
+      return "INVALID_OPERATION";
+    case GL_OUT_OF_MEMORY:
+      return "OUT_OF_MEMORY";
+    case GL_INVALID_FRAMEBUFFER_OPERATION:
+      return "INVALID_FRAMEBUFFER_OPERATION";
+    case GC3D_CONTEXT_LOST_WEBGL:
+      return "CONTEXT_LOST_WEBGL";
+    default:
+      return "UNKNOWN";
+  }
+}
 
 // A partial implementation of GLES2Interface with only the calls used by WebGL
 // objects implemented. The call directly proxy to the gl::DriverGL. It isn't
@@ -312,6 +338,13 @@ WebGLRenderingContextWebGPUBase::WebGLRenderingContextWebGPUBase(
 
 WebGLRenderingContextWebGPUBase::~WebGLRenderingContextWebGPUBase() {
   Destroy();
+}
+
+HTMLCanvasElement* WebGLRenderingContextWebGPUBase::canvas() const {
+  if (Host()->IsOffscreenCanvas()) {
+    return nullptr;
+  }
+  return static_cast<HTMLCanvasElement*>(Host());
 }
 
 ScriptPromise<IDLUndefined> WebGLRenderingContextWebGPUBase::initAsync(
@@ -829,8 +862,14 @@ WebGLContextAttributes* WebGLRenderingContextWebGPUBase::getContextAttributes()
 }
 
 GLenum WebGLRenderingContextWebGPUBase::getError() {
-  NOTIMPLEMENTED();
-  return 0;
+  FlushErrors();
+
+  GLenum error = GL_NO_ERROR;
+  if (!errors_.empty()) {
+    error = errors_.front();
+    errors_.EraseAt(0);
+  }
+  return error;
 }
 
 ScriptObject WebGLRenderingContextWebGPUBase::getExtension(ScriptState*,
@@ -2958,6 +2997,26 @@ void WebGLRenderingContextWebGPUBase::Trace(Visitor* visitor) const {
   CanvasRenderingContext::Trace(visitor);
 }
 
+void WebGLRenderingContextWebGPUBase::OnDebugMessage(GLenum source,
+                                                     GLenum type,
+                                                     GLuint id,
+                                                     GLenum severity,
+                                                     GLsizei length,
+                                                     const GLchar* message) {
+  if (type == GL_DEBUG_TYPE_ERROR && source == GL_DEBUG_SOURCE_API) {
+    had_error_callback_ = true;
+    String formatted_message =
+        String::Format("WebGL: %s: %s", GetErrorString(id), message);
+    PrintGLErrorToConsole(formatted_message);
+  } else {
+    String formatted_message = String::Format(
+        "WebGL: (%s, %s, %s, %d): %s", gl::GetDebugSourceString(source),
+        gl::GetDebugTypeString(type), gl::GetDebugSeverityString(severity), id,
+        message);
+    PrintWarningToConsole(formatted_message);
+  }
+}
+
 void WebGLRenderingContextWebGPUBase::EnsureDefaultFramebuffer() {
   if (current_swap_buffer_) {
     return;
@@ -3086,7 +3145,9 @@ void WebGLRenderingContextWebGPUBase::InitializeContext() {
   // TODO(413078308): Forward debug messages to the JS console and use the
   // callback for determining when GL calls generate errors without having to
   // check glGetError
-  InitializeGLDebugLogging(driver_gl_, true, LogGLDebugMessage, nullptr);
+  InitializeGLDebugLogging(driver_gl_, true,
+                           WebGLRenderingContextWebGPUBaseDebugMessageCallback,
+                           this);
 
   // Initialize the GLES2 interface used for WebGL objects that just proxies to
   // the gl::DriverGL.
@@ -3143,4 +3204,72 @@ void WebGLRenderingContextWebGPUBase::Destroy() {
   driver_egl_.ClearBindings();
 }
 
+bool WebGLRenderingContextWebGPUBase::CheckAndClearErrorCallbackState() {
+  bool had_error_ = had_error_callback_;
+  had_error_callback_ = false;
+  if (had_error_) {
+    // Make sure lose-context-on-OOM logic is triggered as early as possible.
+    FlushErrors();
+  }
+  return had_error_;
+}
+
+void WebGLRenderingContextWebGPUBase::FlushErrors() {
+  GLenum error = driver_gl_.fn.glGetErrorFn();
+  while (error != GL_NO_ERROR) {
+    if (!errors_.Contains(error)) {
+      errors_.push_back(error);
+    }
+
+    // Check for context loss on out-of-memory errors
+    if (error == GL_OUT_OF_MEMORY || error == GL_CONTEXT_LOST) {
+      // TODO(6596816): Handle context loss and OOM
+      break;
+    }
+
+    error = driver_gl_.fn.glGetErrorFn();
+  }
+}
+
+void WebGLRenderingContextWebGPUBase::InsertGLError(GLenum error,
+                                                    const char* function_name,
+                                                    const char* description) {
+  if (!errors_.Contains(error)) {
+    errors_.push_back(error);
+  }
+
+  String error_type = GetErrorString(error);
+  String message = String("WebGL: ") + error_type + ": " +
+                   String(function_name) + ": " + String(description);
+
+  PrintGLErrorToConsole(message);
+  probe::DidFireWebGLError(canvas(), error_type);
+}
+
+void WebGLRenderingContextWebGPUBase::PrintGLErrorToConsole(
+    const String& message) {
+  if (num_gl_errors_to_console_allowed_ == 0) {
+    return;
+  }
+
+  --num_gl_errors_to_console_allowed_;
+  PrintWarningToConsole(message);
+
+  if (num_gl_errors_to_console_allowed_ == 0) {
+    PrintWarningToConsole(
+        "WebGL: too many errors, no more errors will be reported to the "
+        "console for this context.");
+  }
+
+  return;
+}
+void WebGLRenderingContextWebGPUBase::PrintWarningToConsole(
+    const String& message) {
+  blink::ExecutionContext* context = Host()->GetTopExecutionContext();
+  if (context && !context->IsContextDestroyed()) {
+    context->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
+        mojom::blink::ConsoleMessageSource::kRendering,
+        mojom::blink::ConsoleMessageLevel::kWarning, message));
+  }
+}
 }  // namespace blink

@@ -23,6 +23,7 @@
 namespace blink {
 
 class ExceptionState;
+class HTMLCanvasElement;
 class HTMLImageElement;
 class HTMLVideoElement;
 class ImageBitmap;
@@ -61,6 +62,8 @@ class MODULES_EXPORT WebGLRenderingContextWebGPUBase
       delete;
   WebGLRenderingContextWebGPUBase& operator=(
       const WebGLRenderingContextWebGPUBase&) = delete;
+
+  HTMLCanvasElement* canvas() const;
 
   // Extra Web-exposed initAsync while until Dawn operations can be made
   // blocking in the renderer process.
@@ -1296,6 +1299,14 @@ class MODULES_EXPORT WebGLRenderingContextWebGPUBase
 
   void Trace(Visitor*) const override;
 
+  // Debug message callback from KHR_debug
+  void OnDebugMessage(GLenum source,
+                      GLenum type,
+                      GLuint id,
+                      GLenum severity,
+                      GLsizei length,
+                      const GLchar* message);
+
  private:
   void InitRequestAdapterCallback(ScriptState* script_state,
                                   ScriptPromiseResolver<IDLUndefined>* resolver,
@@ -1316,6 +1327,24 @@ class MODULES_EXPORT WebGLRenderingContextWebGPUBase
   void InitializeContext();
   void Destroy();
 
+  // Clears the current state of had_error_callback_ and returns the previous
+  // value. Can be used to clear the state before a critical section and check
+  // if an error was generated afterwards.
+  bool CheckAndClearErrorCallbackState();
+
+  // Query errors from the driver and populate errors_
+  void FlushErrors();
+
+  // Inject an error from the WebGL layer
+  void InsertGLError(GLenum error,
+                     const char* function_name,
+                     const char* description);
+
+  // Print errors and warnings to the console. Errors will stop printing after
+  // the num_gl_errors_to_console_allowed_ limit.
+  void PrintGLErrorToConsole(const String& message);
+  void PrintWarningToConsole(const String& message);
+
   scoped_refptr<DawnControlClientHolder> dawn_control_client_;
   wgpu::Adapter adapter_;
   wgpu::Device device_;
@@ -1332,6 +1361,10 @@ class MODULES_EXPORT WebGLRenderingContextWebGPUBase
   EGLImage default_framebuffer_color_image_ = EGL_NO_IMAGE;
   GLuint default_framebuffer_color_texture_ = 0;
   GLuint default_framebuffer_ = 0;
+
+  int num_gl_errors_to_console_allowed_ = 255;
+  Vector<GLenum> errors_;
+  bool had_error_callback_ = false;
 };
 
 }  // namespace blink
