@@ -16,7 +16,6 @@ import androidx.test.filters.SmallTest;
 import androidx.test.platform.app.InstrumentationRegistry;
 
 import org.junit.Before;
-import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -36,8 +35,8 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
-import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
+import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
+import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.components.browsing_data.content.BrowsingDataInfo;
 import org.chromium.components.browsing_data.content.BrowsingDataModel;
 import org.chromium.content_public.browser.test.util.JavaScriptUtils;
@@ -63,18 +62,15 @@ public class ChromeSiteSettingsDelegateTest {
 
     public static final String BROWSING_DATA_HOST = "browsing-data.com";
 
-    @ClassRule
-    public static ChromeTabbedActivityTestRule sActivityTestRule =
-            new ChromeTabbedActivityTestRule();
-
     @Rule
-    public BlankCTATabInitialStateRule mBlankCTATabInitialStateRule =
-            new BlankCTATabInitialStateRule(sActivityTestRule, false);
+    public AutoResetCtaTransitTestRule mActivityTestRule =
+            ChromeTransitTestRules.fastAutoResetCtaActivityRule();
 
     ChromeSiteSettingsDelegate mSiteSettingsDelegate;
 
     @Before
     public void setUp() throws Exception {
+        mActivityTestRule.startOnBlankPage();
         clearBrowsingData(BrowsingDataType.SITE_DATA, TimePeriod.LAST_HOUR);
     }
 
@@ -90,7 +86,7 @@ public class ChromeSiteSettingsDelegateTest {
                 () -> {
                     mSiteSettingsDelegate =
                             new ChromeSiteSettingsDelegate(
-                                    sActivityTestRule.getActivity(),
+                                    mActivityTestRule.getActivity(),
                                     ProfileManager.getLastUsedRegularProfile());
                 });
 
@@ -171,8 +167,7 @@ public class ChromeSiteSettingsDelegateTest {
         assertEquals(0, result.size());
     }
 
-    private static void setCookie(Scheme scheme, String hostname, String data)
-            throws TimeoutException {
+    private void setCookie(Scheme scheme, String hostname, String data) throws TimeoutException {
         EmbeddedTestServer server =
                 scheme == Scheme.HTTPS
                         ? EmbeddedTestServer.createAndStartHTTPSServer(
@@ -184,7 +179,7 @@ public class ChromeSiteSettingsDelegateTest {
         String url =
                 server.getURLWithHostName(
                         hostname, "/content/test/data/browsing_data/site_data.html");
-        Tab tab = sActivityTestRule.loadUrlInNewTab(url, /* incognito= */ false);
+        Tab tab = mActivityTestRule.loadUrlInNewTab(url, /* incognito= */ false);
 
         JavaScriptUtils.executeJavaScriptAndWaitForResult(
                 tab.getWebContents(), "setCookie(" + data + ")");
@@ -218,7 +213,7 @@ public class ChromeSiteSettingsDelegateTest {
                 () -> {
                     mSiteSettingsDelegate =
                             new ChromeSiteSettingsDelegate(
-                                    sActivityTestRule.getActivity(),
+                                    mActivityTestRule.getActivity(),
                                     ProfileManager.getLastUsedRegularProfile());
                     mSiteSettingsDelegate.getBrowsingDataModel(
                             model -> {

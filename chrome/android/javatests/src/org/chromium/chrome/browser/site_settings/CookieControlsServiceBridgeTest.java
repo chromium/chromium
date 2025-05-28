@@ -9,7 +9,6 @@ import androidx.test.filters.SmallTest;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -24,8 +23,9 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
-import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
+import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
+import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.components.content_settings.CookieControlsEnforcement;
 import org.chromium.components.content_settings.CookieControlsMode;
 import org.chromium.components.content_settings.PrefNames;
@@ -40,6 +40,8 @@ import org.chromium.net.test.EmbeddedTestServer;
 // TODO(crbug.com/370008370): Remove once AlwaysBlock3pcsIncognito launched.
 @DisableFeatures({ChromeFeatureList.ALWAYS_BLOCK_3PCS_INCOGNITO})
 public class CookieControlsServiceBridgeTest {
+    private WebPageStation mInitialPage;
+
     private class TestCallbackHandler
             implements CookieControlsServiceBridge.CookieControlsServiceObserver {
         private final CallbackHelper mHelper;
@@ -57,13 +59,9 @@ public class CookieControlsServiceBridgeTest {
         }
     }
 
-    @ClassRule
-    public static ChromeTabbedActivityTestRule sActivityTestRule =
-            new ChromeTabbedActivityTestRule();
-
     @Rule
-    public BlankCTATabInitialStateRule mBlankCTATabInitialStateRule =
-            new BlankCTATabInitialStateRule(sActivityTestRule, false);
+    public AutoResetCtaTransitTestRule mActivityTestRule =
+            ChromeTransitTestRules.fastAutoResetCtaActivityRule();
 
     private EmbeddedTestServer mTestServer;
     private CallbackHelper mCallbackHelper;
@@ -74,9 +72,11 @@ public class CookieControlsServiceBridgeTest {
 
     @Before
     public void setUp() throws Exception {
+        mInitialPage = mActivityTestRule.startOnBlankPage();
+
         mCallbackHelper = new CallbackHelper();
         mCallbackHandler = new TestCallbackHandler(mCallbackHelper);
-        mTestServer = sActivityTestRule.getTestServer();
+        mTestServer = mActivityTestRule.getTestServer();
     }
 
     @After
@@ -105,7 +105,7 @@ public class CookieControlsServiceBridgeTest {
     public void testCookieSettingsCheckedChanges() throws Exception {
         setCookieControlsMode(CookieControlsMode.OFF);
         final String url = mTestServer.getURL("/chrome/test/data/android/cookie.html");
-        Tab tab = sActivityTestRule.loadUrlInNewTab(url, true); // incognito tab
+        Tab tab = mActivityTestRule.loadUrlInNewTab(url, true); // incognito tab
 
         int currentCallCount = mCallbackHelper.getCallCount();
         // Create cookie settings bridge and wait for desired callbacks.
@@ -153,7 +153,7 @@ public class CookieControlsServiceBridgeTest {
     public void testCookieBridgeWithTPCookiesDisabled() throws Exception {
         setCookieControlsMode(CookieControlsMode.OFF);
         final String url = mTestServer.getURL("/chrome/test/data/android/cookie.html");
-        Tab tab = sActivityTestRule.loadUrlInNewTab(url, true); // incognito tab.
+        Tab tab = mActivityTestRule.loadUrlInNewTab(url, true); // incognito tab.
 
         boolean expectedChecked = true;
         mChecked = false;
