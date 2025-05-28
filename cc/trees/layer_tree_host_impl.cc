@@ -1661,6 +1661,13 @@ void LayerTreeHostImpl::InvalidateContentOnImplSide() {
 
   if (!CommitsToActiveTree()) {
     CreatePendingTree();
+    if (frame_trackers_.GetScrollingThread() ==
+        FrameInfo::SmoothEffectDrivingThread::kRaster) {
+      // If scrolling via raster, take EventMetrics and associate
+      // them with newly-created pending tree.
+      pending_tree()->AppendEventMetricsFromRasterThread(
+          events_metrics_manager_.TakeSavedEventsMetrics());
+    }
     AnimatePendingTreeAfterCommit();
   }
 
@@ -2826,6 +2833,7 @@ std::optional<SubmitInfo> LayerTreeHostImpl::DrawLayers(FrameData* frame) {
     // See b/297940877.
     if (settings_.is_layer_tree_for_ui) {
       std::ignore = active_tree()->TakeEventsMetrics();
+      std::ignore = active_tree()->TakeRasterEventsMetrics();
       std::ignore = events_metrics_manager_.TakeSavedEventsMetrics();
     }
 
@@ -2863,7 +2871,8 @@ std::optional<SubmitInfo> LayerTreeHostImpl::DrawLayers(FrameData* frame) {
 
   EventMetricsSet events_metrics(
       active_tree()->TakeEventsMetrics(),
-      events_metrics_manager_.TakeSavedEventsMetrics());
+      events_metrics_manager_.TakeSavedEventsMetrics(),
+      active_tree()->TakeRasterEventsMetrics());
   lag_tracking_manager_.CollectScrollEventsFromFrame(frame_token,
                                                      events_metrics);
 
@@ -4058,9 +4067,11 @@ void LayerTreeHostImpl::SetVisible(bool visible) {
     // When page is invisible, throw away corresponding EventsMetrics since
     // these metrics will be incorrect due to duration of page being invisible.
     active_tree()->TakeEventsMetrics();
+    active_tree()->TakeRasterEventsMetrics();
     events_metrics_manager_.TakeSavedEventsMetrics();
     if (pending_tree()) {
       pending_tree()->TakeEventsMetrics();
+      pending_tree()->TakeRasterEventsMetrics();
     }
   }
   // Notify reporting controller of transition between visible and invisible

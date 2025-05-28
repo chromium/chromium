@@ -882,9 +882,12 @@ void LayerTreeImpl::PushPropertyTreesTo(LayerTreeImpl* target_tree) {
 
   target_tree->SetPropertyTrees(property_trees_, preserve_change_tracking);
 
-  EventMetrics::List events_metrics;
+  EventMetrics::List events_metrics, raster_event_metrics;
   events_metrics.swap(events_metrics_from_main_thread_);
+  raster_event_metrics.swap(event_metrics_from_raster_thread_);
   target_tree->AppendEventsMetricsFromMainThread(std::move(events_metrics));
+  target_tree->AppendEventMetricsFromRasterThread(
+      std::move(raster_event_metrics));
 }
 
 void LayerTreeImpl::PushSurfaceRangesTo(LayerTreeImpl* target_tree) {
@@ -3000,10 +3003,26 @@ void LayerTreeImpl::AppendEventsMetricsFromMainThread(
       std::make_move_iterator(events_metrics.end()));
 }
 
+void LayerTreeImpl::AppendEventMetricsFromRasterThread(
+    EventMetrics::List event_metrics) {
+  event_metrics_from_raster_thread_.reserve(
+      event_metrics_from_raster_thread_.size() + event_metrics.size());
+  event_metrics_from_raster_thread_.insert(
+      event_metrics_from_raster_thread_.end(),
+      std::make_move_iterator(event_metrics.begin()),
+      std::make_move_iterator(event_metrics.end()));
+}
+
 EventMetrics::List LayerTreeImpl::TakeEventsMetrics() {
   EventMetrics::List main_event_metrics_result;
   main_event_metrics_result.swap(events_metrics_from_main_thread_);
   return main_event_metrics_result;
+}
+
+EventMetrics::List LayerTreeImpl::TakeRasterEventsMetrics() {
+  EventMetrics::List raster_event_metrics_result;
+  raster_event_metrics_result.swap(event_metrics_from_raster_thread_);
+  return raster_event_metrics_result;
 }
 
 bool LayerTreeImpl::TakeForceSendMetadataRequest() {

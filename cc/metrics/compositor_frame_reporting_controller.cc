@@ -371,13 +371,20 @@ void CompositorFrameReportingController::DidSubmitCompositorFrame(
     DCHECK_EQ(main_reporter->frame_id(), current_frame_id);
     submit_info.events_metrics.main_event_metrics.reserve(
         submit_info.events_metrics.main_event_metrics.size() +
-        submit_info.events_metrics.impl_event_metrics.size());
+        submit_info.events_metrics.impl_event_metrics.size() +
+        submit_info.events_metrics.raster_event_metrics.size());
     submit_info.events_metrics.main_event_metrics.insert(
         submit_info.events_metrics.main_event_metrics.end(),
         std::make_move_iterator(
             submit_info.events_metrics.impl_event_metrics.begin()),
         std::make_move_iterator(
             submit_info.events_metrics.impl_event_metrics.end()));
+    submit_info.events_metrics.main_event_metrics.insert(
+        submit_info.events_metrics.main_event_metrics.end(),
+        std::make_move_iterator(
+            submit_info.events_metrics.raster_event_metrics.begin()),
+        std::make_move_iterator(
+            submit_info.events_metrics.raster_event_metrics.end()));
   }
 
   if (main_reporter) {
@@ -403,6 +410,8 @@ void CompositorFrameReportingController::DidSubmitCompositorFrame(
         submit_info.time);
     impl_reporter->AddEventsMetrics(
         std::move(submit_info.events_metrics.impl_event_metrics));
+    impl_reporter->AddEventsMetrics(
+        std::move(submit_info.events_metrics.raster_event_metrics));
     impl_reporter->set_checkerboarded_needs_raster(
         submit_info.checkerboarded_needs_raster);
     impl_reporter->set_checkerboarded_needs_record(
@@ -508,6 +517,7 @@ void CompositorFrameReportingController::MaybePassEventMetricsFromDroppedFrames(
          it = events_metrics_from_dropped_frames_.erase(it)) {
       reporter.AddEventsMetrics(std::move(it->second.main_event_metrics));
       reporter.AddEventsMetrics(std::move(it->second.impl_event_metrics));
+      reporter.AddEventsMetrics(std::move(it->second.raster_event_metrics));
     }
   } else {
     // Main with accompanying impl - just take main events and don't remove them

@@ -849,9 +849,11 @@ std::unique_ptr<EventMetrics> PinchEventMetrics::Clone() const {
 EventMetricsSet::EventMetricsSet() = default;
 EventMetricsSet::~EventMetricsSet() = default;
 EventMetricsSet::EventMetricsSet(EventMetrics::List main_thread_event_metrics,
-                                 EventMetrics::List impl_thread_event_metrics)
+                                 EventMetrics::List impl_thread_event_metrics,
+                                 EventMetrics::List raster_thread_event_metrics)
     : main_event_metrics(std::move(main_thread_event_metrics)),
-      impl_event_metrics(std::move(impl_thread_event_metrics)) {}
+      impl_event_metrics(std::move(impl_thread_event_metrics)),
+      raster_event_metrics(std::move(raster_thread_event_metrics)) {}
 EventMetricsSet::EventMetricsSet(EventMetricsSet&& other) = default;
 EventMetricsSet& EventMetricsSet::operator=(EventMetricsSet&& other) = default;
 
