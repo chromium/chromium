@@ -79,7 +79,7 @@ std::optional<blink::WebFontDescription> PdfFontToBlinkFontMapping(
     int italic,
     int charset,
     int pitch_family,
-    const char* face) {
+    std::string_view face) {
   // Pretend the system does not have the Symbol font to force a fallback to
   // the built in Symbol font in CFX_FontMapper::FindSubstFont().
   static constexpr std::string_view kSymbol("Symbol");
