@@ -846,6 +846,22 @@ class BrowserViewLayoutDelegateImpl : public BrowserViewLayoutDelegate {
     return active_tab && active_tab->IsSplit();
   }
 
+  void UpdateSplitViewInsets() override {
+    CHECK(browser_view_->multi_contents_view());
+
+    browser_view_->multi_contents_view()->start_contents_view_inset().set_left(
+        browser_view_->unified_side_panel()->GetVisible() &&
+                !browser_view_->unified_side_panel()->IsRightAligned()
+            ? 0
+            : MultiContentsView::kSplitViewContentInset);
+
+    browser_view_->multi_contents_view()->end_contents_view_inset().set_right(
+        browser_view_->unified_side_panel()->GetVisible() &&
+                browser_view_->unified_side_panel()->IsRightAligned()
+            ? 0
+            : MultiContentsView::kSplitViewContentInset);
+  }
+
   ExclusiveAccessBubbleViews* GetExclusiveAccessBubble() const override {
     return browser_view_->exclusive_access_bubble();
   }

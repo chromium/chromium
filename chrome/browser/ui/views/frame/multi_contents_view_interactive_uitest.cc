@@ -247,7 +247,7 @@ IN_PROC_BROWSER_TEST_F(MultiContentsViewUiTest, ResizesToMinWidth) {
                   base::BindRepeating([](double start_width, double end_width) {
                     // On large window, uses flat min width.
                     return end_width ==
-                           60 - MultiContentsView::contents_inset_for_testing();
+                           60 - MultiContentsView::kSplitViewContentInset;
                   })));
 }
 
@@ -267,7 +267,7 @@ IN_PROC_BROWSER_TEST_F(MultiContentsViewUiTest,
             // On small window, uses percentage of window size vs. flat width
             // for min. Don't check exact number to avoid rounding issues.
             return end_width <
-                       (60 - MultiContentsView::contents_inset_for_testing()) &&
+                       (60 - MultiContentsView::kSplitViewContentInset) &&
                    end_width > 0;
           })));
 }

@@ -61,6 +61,8 @@ class MultiContentsView : public views::View, public views::ResizeAreaDelegate {
     double end_width = 0;
   };
 
+  static constexpr int kSplitViewContentInset = 8;
+
   MultiContentsView(
       BrowserView* browser_view,
       WebContentsFocusedCallback inactive_contents_focused_callback,
@@ -116,6 +118,12 @@ class MultiContentsView : public views::View, public views::ResizeAreaDelegate {
     return *drop_target_controller_;
   }
 
+  gfx::Insets& start_contents_view_inset() {
+    return start_contents_view_inset_;
+  }
+
+  gfx::Insets& end_contents_view_inset() { return end_contents_view_inset_; }
+
   void SetMinWidthForTesting(int width) {
     min_contents_width_for_testing_ = std::make_optional(width);
   }
@@ -136,15 +144,12 @@ class MultiContentsView : public views::View, public views::ResizeAreaDelegate {
     return contents_container_views_[index]->GetMiniToolbar();
   }
 
-  static int contents_inset_for_testing() { return kSplitViewContentInset; }
-
  private:
   static constexpr int kMinWebContentsWidth = 200;
   static constexpr double kMinWebContentsWidthPercentage = 0.1;
   static constexpr int kContentCornerRadius = 6;
   static constexpr int kContentOutlineCornerRadius = 8;
   static constexpr int kContentOutlineThickness = 1;
-  static constexpr int kSplitViewContentInset = 8;
   static constexpr int kSplitViewContentPadding = 4;
 
   // ContentsContainerView holds the ContentsWebView and the outlines and
@@ -219,6 +224,10 @@ class MultiContentsView : public views::View, public views::ResizeAreaDelegate {
   // Width of `start_contents_.contents_view_` when a resize action began.
   // Nullopt if not currently resizing.
   std::optional<double> initial_start_width_on_resize_;
+
+  // Insets of the start and end contents view when in split view
+  gfx::Insets start_contents_view_inset_;
+  gfx::Insets end_contents_view_inset_;
 
   std::optional<int> min_contents_width_for_testing_ = std::nullopt;
 };

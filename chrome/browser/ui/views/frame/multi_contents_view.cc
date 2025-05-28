@@ -38,7 +38,11 @@ MultiContentsView::MultiContentsView(
     WebContentsResizeCallback contents_resize_callback)
     : browser_view_(browser_view),
       inactive_contents_focused_callback_(inactive_contents_focused_callback),
-      contents_resize_callback_(contents_resize_callback) {
+      contents_resize_callback_(contents_resize_callback),
+      start_contents_view_inset_(
+          gfx::Insets(kSplitViewContentInset).set_top(0).set_right(0)),
+      end_contents_view_inset_(
+          gfx::Insets(kSplitViewContentInset).set_top(0).set_left(0)) {
   contents_container_views_.push_back(
       AddChildView(std::make_unique<ContentsContainerView>(browser_view_)));
   contents_container_views_[0]
@@ -192,8 +196,8 @@ void MultiContentsView::Layout(PassKey) {
                      gfx::Size(widths.end_width, available_space.height()));
   float corner_radius = 0;
   if (IsInSplitView()) {
-    start_rect.Inset(gfx::Insets(kSplitViewContentInset).set_right(0));
-    end_rect.Inset(gfx::Insets(kSplitViewContentInset).set_left(0));
+    start_rect.Inset(start_contents_view_inset_);
+    end_rect.Inset(end_contents_view_inset_);
     corner_radius = kContentCornerRadius;
   }
   for (auto* contents_container_view : contents_container_views_) {

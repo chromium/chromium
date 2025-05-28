@@ -762,6 +762,9 @@ void BrowserViewLayout::LayoutContentsContainerView(int top, int bottom) {
       CalculateContentsContainerLayout(top, bottom);
   const bool is_in_split = delegate_->IsActiveTabSplit();
 
+  if (is_in_split) {
+    delegate_->UpdateSplitViewInsets();
+  }
   contents_container_->SetBoundsRect(layout_result.contents_container_bounds);
 
   if (unified_side_panel_) {
