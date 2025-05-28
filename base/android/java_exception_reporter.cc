@@ -46,6 +46,9 @@ void InitJavaExceptionReporter() {
 }
 
 void InitJavaExceptionReporterForChildProcess() {
+  if (!base::android::IsJavaAvailable()) {
+    return;
+  }
   JNIEnv* env = jni_zero::AttachCurrentThread();
   constexpr bool crash_after_report = true;
   SetJavaExceptionFilter(

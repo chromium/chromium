@@ -14,8 +14,12 @@ namespace stack_unwinder {
 
 // static
 bool Module::IsInstalled() {
-  JNIEnv* env = base::android::AttachCurrentThread();
-  return Java_StackUnwinderModuleProvider_isModuleInstalled(env);
+  if (base::android::IsJavaAvailable()) {
+    JNIEnv* env = base::android::AttachCurrentThread();
+    return Java_StackUnwinderModuleProvider_isModuleInstalled(env);
+  } else {
+    return false;
+  }
 }
 
 // static

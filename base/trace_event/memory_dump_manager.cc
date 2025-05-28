@@ -37,6 +37,7 @@
 #include "third_party/abseil-cpp/absl/base/dynamic_annotations.h"
 
 #if BUILDFLAG(IS_ANDROID)
+#include "base/android/jni_android.h"
 #include "base/trace_event/java_heap_dump_provider_android.h"
 
 #endif  // BUILDFLAG(IS_ANDROID)
@@ -140,8 +141,10 @@ void MemoryDumpManager::Initialize(
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
-  RegisterDumpProvider(JavaHeapDumpProvider::GetInstance(), "JavaHeap",
-                       nullptr);
+  if (base::android::IsJavaAvailable()) {
+    RegisterDumpProvider(JavaHeapDumpProvider::GetInstance(), "JavaHeap",
+                         nullptr);
+  }
 #endif
 }
 

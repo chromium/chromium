@@ -132,9 +132,14 @@ blink::OriginTrialPolicy* AwContentClient::GetOriginTrialPolicy() {
 }
 
 bool IsDisableOriginTrialsSafeModeActionOn() {
-  JNIEnv* env = base::android::AttachCurrentThread();
-  return Java_DisableOriginTrialsSafeModeUtils_isDisableOriginTrialsEnabled(
-      env);
+  // TODO(crbug.com/393461816) - fix origin trial safemode for renderers.
+  if (base::android::IsJavaAvailable()) {
+    JNIEnv* env = base::android::AttachCurrentThread();
+    return Java_DisableOriginTrialsSafeModeUtils_isDisableOriginTrialsEnabled(
+        env);
+  } else {
+    return false;
+  }
 }
 
 }  // namespace android_webview
