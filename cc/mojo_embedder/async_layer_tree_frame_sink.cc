@@ -146,9 +146,6 @@ bool AsyncLayerTreeFrameSink::BindToClient(LayerTreeFrameSinkClient* client) {
             viz::BeginFrameSource::kNotRestartableId);
   }
 
-  compositor_frame_sink_ptr_->InitializeCompositorFrameSinkType(
-      viz::mojom::CompositorFrameSinkType::kLayerTree);
-
 #if BUILDFLAG(IS_ANDROID)
   std::vector<viz::Thread> threads;
   threads.push_back(

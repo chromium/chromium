@@ -187,11 +187,6 @@ void CompositorFrameSinkImpl::NotifyNewLocalSurfaceIdExpectedWhilePaused() {
   support_->NotifyNewLocalSurfaceIdExpectedWhilePaused();
 }
 
-void CompositorFrameSinkImpl::InitializeCompositorFrameSinkType(
-    mojom::CompositorFrameSinkType type) {
-  support_->InitializeCompositorFrameSinkType(type);
-}
-
 void CompositorFrameSinkImpl::BindLayerContext(
     mojom::PendingLayerContextPtr context,
     bool draw_mode_is_gpu) {

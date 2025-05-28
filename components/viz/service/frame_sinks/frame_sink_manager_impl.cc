@@ -611,8 +611,7 @@ void FrameSinkManagerImpl::RegisterCompositorFrameSinkSupport(
   }
 
   if (frame_counter_) {
-    frame_counter_->AddFrameSink(frame_sink_id, support->frame_sink_type(),
-                                 support->is_root(),
+    frame_counter_->AddFrameSink(frame_sink_id, support->is_root(),
                                  GetFrameSinkDebugLabel(frame_sink_id));
   }
 }
@@ -1149,8 +1148,7 @@ void FrameSinkManagerImpl::StartFrameCounting(base::TimeTicks start_time,
 
   for (auto& [sink_id, support] : support_map_) {
     DCHECK_EQ(sink_id, support->frame_sink_id());
-    frame_counter_->AddFrameSink(sink_id, support->frame_sink_type(),
-                                 support->is_root(),
+    frame_counter_->AddFrameSink(sink_id, support->is_root(),
                                  GetFrameSinkDebugLabel(sink_id));
   }
 }

@@ -585,11 +585,6 @@ void RootCompositorFrameSinkImpl::DidNotProduceFrame(
   support_->DidNotProduceFrame(begin_frame_ack);
 }
 
-void RootCompositorFrameSinkImpl::InitializeCompositorFrameSinkType(
-    mojom::CompositorFrameSinkType type) {
-  support_->InitializeCompositorFrameSinkType(type);
-}
-
 void RootCompositorFrameSinkImpl::BindLayerContext(
     mojom::PendingLayerContextPtr context,
     bool draw_mode_is_gpu) {

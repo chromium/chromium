@@ -582,20 +582,6 @@ bool CompositorFrameSinkSupport::WantsAnimateOnlyBeginFrames() const {
   return wants_animate_only_begin_frames_;
 }
 
-void CompositorFrameSinkSupport::InitializeCompositorFrameSinkType(
-    mojom::CompositorFrameSinkType type) {
-  if (frame_sink_type_ != mojom::CompositorFrameSinkType::kUnspecified ||
-      type == mojom::CompositorFrameSinkType::kUnspecified) {
-    return;
-  }
-  frame_sink_type_ = type;
-
-  if (frame_sink_manager_->frame_counter()) {
-    frame_sink_manager_->frame_counter()->SetFrameSinkType(frame_sink_id_,
-                                                           frame_sink_type_);
-  }
-}
-
 void CompositorFrameSinkSupport::BindLayerContext(
     mojom::PendingLayerContext& context,
     bool draw_mode_is_gpu) {
@@ -784,8 +770,7 @@ SubmitResult CompositorFrameSinkSupport::MaybeSubmitCompositorFrame(
   // |frame.metadata.frame_token| instead of maintaining a |last_frame_index_|.
   uint64_t frame_index = ++last_frame_index_;
 
-  if (features::ShouldOnBeginFrameThrottleVideo() &&
-      frame_sink_type_ == mojom::CompositorFrameSinkType::kVideo) {
+  if (features::ShouldOnBeginFrameThrottleVideo()) {
     const auto& interval_info =
         frame.metadata.frame_interval_inputs.content_interval_info;
     auto info_itr =

@@ -117,8 +117,6 @@ class VideoMockCompositorFrameSink
   }
 
   MOCK_METHOD1(DidNotProduceFrame, void(const viz::BeginFrameAck&));
-  MOCK_METHOD1(InitializeCompositorFrameSinkType,
-               void(viz::mojom::CompositorFrameSinkType));
   MOCK_METHOD2(BindLayerContext,
                void(viz::mojom::blink::PendingLayerContextPtr, bool));
   MOCK_METHOD1(SetThreads, void(const WTF::Vector<viz::Thread>&));

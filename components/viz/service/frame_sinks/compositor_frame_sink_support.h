@@ -133,7 +133,6 @@ class VIZ_SERVICE_EXPORT CompositorFrameSinkSupport
   // client.
   void SetBundle(const FrameSinkBundleId& bundle_id);
 
-  void InitializeCompositorFrameSinkType(mojom::CompositorFrameSinkType type);
   void BindLayerContext(mojom::PendingLayerContext& context,
                         bool draw_mode_is_gpu);
   void SetThreads(bool from_untrusted_client,
@@ -262,10 +261,6 @@ class VIZ_SERVICE_EXPORT CompositorFrameSinkSupport
 
   const RegionCaptureBounds& current_capture_bounds() const {
     return current_capture_bounds_;
-  }
-
-  mojom::CompositorFrameSinkType frame_sink_type() const {
-    return frame_sink_type_;
   }
 
   void SetExternalReservedResourceDelegate(ReservedResourceDelegate* delegate);
@@ -526,9 +521,6 @@ class VIZ_SERVICE_EXPORT CompositorFrameSinkSupport
   // This is the last known frame interval for this sink used to decide
   // when to throttle begin frames.
   base::TimeDelta last_known_frame_interval_ = BeginFrameArgs::MinInterval();
-
-  mojom::CompositorFrameSinkType frame_sink_type_ =
-      mojom::CompositorFrameSinkType::kUnspecified;
 
   base::flat_map<blink::ViewTransitionToken,
                  std::unique_ptr<SurfaceAnimationManager>>

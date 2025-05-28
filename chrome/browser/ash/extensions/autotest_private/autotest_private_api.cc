@@ -1067,20 +1067,6 @@ std::string ResolutionToString(
   DCHECK(false);
 }
 
-std::string CompositorFrameSinkTypeToString(
-    viz::mojom::CompositorFrameSinkType type) {
-  switch (type) {
-    case viz::mojom::CompositorFrameSinkType::kUnspecified:
-      return "unspecified";
-    case viz::mojom::CompositorFrameSinkType::kVideo:
-      return "video";
-    case viz::mojom::CompositorFrameSinkType::kMediaStream:
-      return "media-stream";
-    case viz::mojom::CompositorFrameSinkType::kLayerTree:
-      return "layer-tree";
-  }
-}
-
 // Update when `startThroughputTrackerDataCollection` is called.
 base::TimeTicks g_last_start_throughput_data_collection_tick;
 
@@ -6585,8 +6571,7 @@ void AutotestPrivateStopFrameCountingFunction::OnDataReceived(
     }
 
     api::autotest_private::FrameCountingPerSinkData result_per_sink_data;
-    result_per_sink_data.sink_type =
-        CompositorFrameSinkTypeToString(per_sink_data->type);
+    result_per_sink_data.sink_type = "unspecified";
     result_per_sink_data.is_root = per_sink_data->is_root;
     result_per_sink_data.debug_label = per_sink_data->debug_label;
 

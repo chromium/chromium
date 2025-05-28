@@ -122,8 +122,6 @@ class TestLayerTreeFrameSink::TestCompositorFrameSinkImpl
       uint64_t submit_time,
       SubmitCompositorFrameSyncCallback callback) override {}
   void NotifyNewLocalSurfaceIdExpectedWhilePaused() override {}
-  void InitializeCompositorFrameSinkType(
-      viz::mojom::CompositorFrameSinkType type) override {}
   void BindLayerContext(viz::mojom::PendingLayerContextPtr context,
                         bool draw_mode_is_gpu) override;
 #if BUILDFLAG(IS_ANDROID)

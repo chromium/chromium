@@ -129,8 +129,6 @@ class VIZ_SERVICE_EXPORT RootCompositorFrameSinkImpl
       uint64_t submit_time,
       SubmitCompositorFrameSyncCallback callback) override;
   void NotifyNewLocalSurfaceIdExpectedWhilePaused() override;
-  void InitializeCompositorFrameSinkType(
-      mojom::CompositorFrameSinkType type) override;
   void BindLayerContext(mojom::PendingLayerContextPtr context,
                         bool draw_mode_is_gpu) override;
 #if BUILDFLAG(IS_ANDROID)

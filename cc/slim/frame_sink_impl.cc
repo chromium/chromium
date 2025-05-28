@@ -108,8 +108,6 @@ bool FrameSinkImpl::BindToClient(FrameSinkImplClient* client) {
   client_receiver_.Bind(std::move(pending_client_receiver_), task_runner_);
 
   frame_sink_ = frame_sink_remote_.get();
-  frame_sink_->InitializeCompositorFrameSinkType(
-      viz::mojom::CompositorFrameSinkType::kLayerTree);
 
 #if BUILDFLAG(IS_ANDROID)
   std::vector<viz::Thread> threads;

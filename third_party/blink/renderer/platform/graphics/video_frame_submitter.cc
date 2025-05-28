@@ -149,14 +149,6 @@ class VideoFrameSubmitter::FrameSinkBundleProxy
     bundle_->DidNotProduceFrame(frame_sink_id_.sink_id(), ack);
   }
 
-  void InitializeCompositorFrameSinkType(
-      viz::mojom::blink::CompositorFrameSinkType type) override {
-    if (!bundle_) {
-      return;
-    }
-    bundle_->InitializeCompositorFrameSinkType(frame_sink_id_.sink_id(), type);
-  }
-
   void BindLayerContext(viz::mojom::blink::PendingLayerContextPtr context,
                         bool draw_mode_is_gpu) override {}
 
@@ -651,10 +643,6 @@ void VideoFrameSubmitter::StartSubmitting() {
 
   remote_frame_sink_.set_disconnect_handler(base::BindOnce(
       &VideoFrameSubmitter::OnContextLost, base::Unretained(this)));
-
-  compositor_frame_sink_->InitializeCompositorFrameSinkType(
-      is_media_stream_ ? viz::mojom::CompositorFrameSinkType::kMediaStream
-                       : viz::mojom::CompositorFrameSinkType::kVideo);
 
 #if BUILDFLAG(IS_ANDROID)
   WTF::Vector<viz::Thread> threads;
