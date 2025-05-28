@@ -5935,17 +5935,7 @@ static_library("test_support") {
     }
   }
 
-  if (is_android) {
-    # TODO(crbug.com/413572035): Move to c/b/ui/android/tab_model build file.
-    sources += [
-      "android/tab_model/tab_model_test_helper.cc",
-      "android/tab_model/tab_model_test_helper.h",
-    ]
-    deps += [
-      "//chrome/browser/flags:flags_android",
-      "//chrome/browser/ui/android/tab_model",
-    ]
-  } else {
+  if (!is_android) {
     sources += [
       "browser_window/test/mock_browser_window_interface.cc",
       "browser_window/test/mock_browser_window_interface.h",

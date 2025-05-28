@@ -259,6 +259,7 @@ source_set("unit_tests") {
     deps += [
       "//chrome/browser/autofill:test_support",
       "//chrome/browser/keyboard_accessory/test_utils/android",
+      "//chrome/browser/ui/android/tab_model:test_support",
       "//components/autofill/android:autofill_core_browser_java_enums",
       "//components/messages/android:test_support",
       "//components/resources:components_scaled_resources",

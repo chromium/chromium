@@ -60,3 +60,21 @@ source_set("impl") {
 java_cpp_enum("enums_java") {
   sources = [ "tab_model.h" ]
 }
+
+source_set("test_support") {
+  testonly = true
+  sources = [
+    "tab_model_test_helper.cc",
+    "tab_model_test_helper.h",
+  ]
+  public_deps = [
+    ":tab_model",
+    "//chrome/browser",
+    "//content/test:test_support",
+  ]
+  deps = [
+    "//chrome/browser/flags:flags_android",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui/android/tab_model",
+  ]
+}
