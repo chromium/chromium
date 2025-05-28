@@ -30,11 +30,6 @@ constexpr bool IsFileAccessCaseSensitive() {
 #endif
 }
 
-// Returns true if this system/OS ignores (.| )+ suffix in a filepath while
-// accessing the file.
-// TODO(https://crbug.com/400119351): Remove this in M138.
-bool IsDotSpaceFilenameSuffixIgnored();
-
 // Returns platform specific canonicalized version of `relative_path` for
 // content verification system.
 CanonicalRelativePath CanonicalizeRelativePath(

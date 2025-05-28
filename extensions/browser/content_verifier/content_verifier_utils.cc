@@ -7,39 +7,8 @@
 #include "base/i18n/case_conversion.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
-#include "extensions/common/extension_features.h"
 
 namespace extensions::content_verifier_utils {
-
-namespace {
-#if BUILDFLAG(IS_WIN)
-// Returns true if |path| ends with (.| )+.
-// |out_path| will contain "." and/or " " suffix removed from |path|.
-bool TrimDotSpaceSuffix(const base::FilePath::StringType& path,
-                        base::FilePath::StringType* out_path) {
-  base::FilePath::StringType::size_type trim_pos =
-      path.find_last_not_of(FILE_PATH_LITERAL(". "));
-  if (trim_pos == base::FilePath::StringType::npos) {
-    return false;
-  }
-
-  *out_path = path.substr(0, trim_pos + 1);
-  return true;
-}
-#endif  // BUILDFLAG(IS_WIN)
-}  // namespace
-
-bool IsDotSpaceFilenameSuffixIgnored() {
-#if BUILDFLAG(IS_WIN)
-  static_assert(!IsFileAccessCaseSensitive(),
-                "DotSpace suffix should only be ignored in case-insensitive"
-                "systems");
-  return !base::FeatureList::IsEnabled(
-      extensions_features::kWinRejectDotSpaceSuffixFilePaths);
-#else
-  return false;
-#endif
-}
 
 CanonicalRelativePath CanonicalizeRelativePath(
     const base::FilePath& relative_path) {
@@ -56,12 +25,6 @@ CanonicalRelativePath CanonicalizeRelativePath(
         base::i18n::FoldCase(base::UTF8ToUTF16(canonical_path)));
 #endif  // BUILDFLAG(IS_WIN)
   }
-
-#if BUILDFLAG(IS_WIN)
-  if (IsDotSpaceFilenameSuffixIgnored()) {
-    TrimDotSpaceSuffix(canonical_path, &canonical_path);
-  }
-#endif  // BUILDFLAG(IS_WIN)
 
   return CanonicalRelativePath(std::move(canonical_path));
 }
