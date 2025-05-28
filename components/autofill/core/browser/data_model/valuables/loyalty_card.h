@@ -66,6 +66,10 @@ class LoyaltyCard final {
   // valid.
   bool IsValid() const;
 
+  // Returns true if any of the merchant domains matches the provided `url`.
+  // URLs are compared using their public suffix domains.
+  bool HasMatchingMerchantDomain(const GURL& url) const;
+
   friend bool operator==(const LoyaltyCard&, const LoyaltyCard&) = default;
   friend auto operator<=>(const LoyaltyCard&, const LoyaltyCard&) = default;
 

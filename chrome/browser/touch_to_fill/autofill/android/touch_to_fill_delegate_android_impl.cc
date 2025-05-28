@@ -196,12 +196,7 @@ TouchToFillDelegateAndroidImpl::DryRunForLoyaltyCard() {
   // the `current_domain`.
   const auto HasMatchingMerchantDomain =
       [&current_domain](const LoyaltyCard& loyalty_card) {
-        return std::ranges::any_of(
-            loyalty_card.merchant_domains(),
-            [&current_domain](const GURL& merchant_url) {
-              return affiliations::IsExtendedPublicSuffixDomainMatch(
-                  merchant_url, current_domain, {});
-            });
+        return loyalty_card.HasMatchingMerchantDomain(current_domain);
       };
   // Only show the TTF surface if any loyalty card have a matching merchant
   // domain.

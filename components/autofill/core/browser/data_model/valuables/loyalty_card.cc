@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "components/affiliations/core/browser/affiliation_utils.h"
 #include "components/autofill/core/browser/data_model/valuables/valuable_types.h"
 
 namespace autofill {
@@ -31,6 +32,14 @@ LoyaltyCard::~LoyaltyCard() = default;
 bool LoyaltyCard::IsValid() const {
   return !id_->empty() && !loyalty_card_number_.empty() &&
          (program_logo_.is_empty() || program_logo_.is_valid());
+}
+
+bool LoyaltyCard::HasMatchingMerchantDomain(const GURL& url) const {
+  return std::ranges::any_of(
+      merchant_domains(), [url](const GURL& merchant_url) {
+        return affiliations::IsExtendedPublicSuffixDomainMatch(merchant_url,
+                                                               url, {});
+      });
 }
 
 }  // namespace autofill

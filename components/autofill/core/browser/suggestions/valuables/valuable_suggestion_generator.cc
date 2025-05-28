@@ -6,7 +6,6 @@
 #include <vector>
 
 #include "base/strings/utf_string_conversions.h"
-#include "components/affiliations/core/browser/affiliation_utils.h"
 #include "components/autofill/core/browser/data_model/valuables/loyalty_card.h"
 #include "components/autofill/core/browser/suggestions/suggestion.h"
 #include "components/autofill/core/browser/suggestions/suggestion_type.h"
@@ -78,17 +77,6 @@ std::vector<Suggestion> CreateSuggestionsFromLoyaltyCards(
   return suggestions;
 }
 
-// Returns whether given `loyalty_card` any of merchant domains match given
-// `url`.
-bool LoyaltyCardMatchesDomain(const LoyaltyCard& loyalty_card,
-                              const GURL& url) {
-  return std::ranges::any_of(
-      loyalty_card.merchant_domains(), [url](const GURL& merchant_url) {
-        return affiliations::IsExtendedPublicSuffixDomainMatch(merchant_url,
-                                                               url, {});
-      });
-}
-
 }  // namespace
 
 std::vector<Suggestion> GetLoyaltyCardSuggestions(
@@ -102,7 +90,7 @@ std::vector<Suggestion> GetLoyaltyCardSuggestions(
 
   auto non_affiliated_cards = std::ranges::stable_partition(
       all_loyalty_cards, [&](const LoyaltyCard& card) {
-        return LoyaltyCardMatchesDomain(card, url);
+        return card.HasMatchingMerchantDomain(url);
       });
   // SAFETY: Bounds information contained in vector iterators.
   UNSAFE_BUFFERS(std::vector<LoyaltyCard> affiliated_cards(
@@ -168,7 +156,7 @@ void ExtendEmailSuggestionsWithLoyaltyCardSuggestions(
 #endif
   std::ranges::stable_partition(all_loyalty_cards,
                                 [&](const LoyaltyCard& card) {
-                                  return LoyaltyCardMatchesDomain(card, url);
+                                  return card.HasMatchingMerchantDomain(url);
                                 });
   submenu_suggestion.children =
       CreateSuggestionsFromLoyaltyCards(all_loyalty_cards, valuables_manager);
