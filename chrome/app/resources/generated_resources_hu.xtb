@@ -485,6 +485,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="1319983966058170660"><ph name="SUBPAGE_TITLE" /> aloldal vissza gombja</translation>
 <translation id="1322046419516468189">A mentett jelszavakat itt láthatja és kezelheti: <ph name="SAVED_PASSWORDS_STORE" /></translation>
 <translation id="132539964543492755">Az „x” billentyűvel válthat a bal egérgomb, a jobb egérgomb és a kettő együttes használata között.</translation>
+<translation id="1325611581149097457">Segítség az íráshoz</translation>
 <translation id="1325898422473267360"><ph name="PERMISSION_USAGE" /> <ph name="PERMISSION_INDICATOR_DESCRIPTION" /></translation>
 <translation id="1327272175893960498">Kerberos-jegyek</translation>
 <translation id="1327495825214193325">Az ADB-hibakeresés engedélyezéséhez újra kell indítani ezt a(z) <ph name="DEVICE_TYPE" /> eszközt. A letiltásához vissza kell állítani az eszköz gyári beállításait.</translation>
@@ -1999,6 +2000,7 @@ Ha kezelni szeretné a fiók beállításait, telepítse eszközére a Family Li
 <translation id="2359345697448000899">Bővítményeit az Eszközök menü Bővítmények elemére kattintva kezelheti.</translation>
 <translation id="2359556993567737338">Bluetooth-eszköz csatlakoztatása</translation>
 <translation id="2359808026110333948">Tovább</translation>
+<translation id="2360047907847684514">Turbózza fel böngészőjét bővítményekkel és témákkal</translation>
 <translation id="2360792123962658445">Az oldalösszegzés, a kapcsolódó keresések és az oldallal kapcsolatos egyéb hasznos információk megjelenítéséhez kattintson a Google Kereső oldalsó paneljének gombjára az eszköztáron</translation>
 <translation id="2361100938102002520">Kezelt profilt ad hozzá ehhez a böngészőhöz. A profil a rendszergazda irányítása alá kerül, aki a hozzá tartozó adatokhoz is hozzáférhet.</translation>
 <translation id="236117173274098341">Optimalizálás</translation>
@@ -2477,6 +2479,7 @@ Ha kezelni szeretné a fiók beállításait, telepítse eszközére a Family Li
 <translation id="2692503699962701720">Hangmagasság megváltoztatása az elemtípusok és a formázott szövegek kimondásakor</translation>
 <translation id="2692901429679246677">Vízszínű</translation>
 <translation id="2693134906590795721">Töltéshangok</translation>
+<translation id="2695943520968279338">Bővítmények felfedezése</translation>
 <translation id="2698147581454716013">Csomag részét képező eszköz, ezért nem regisztrálható a Kiosk és a Signage Upgrade szolgáltatásra.</translation>
 <translation id="2699911226086014512">A PIN-kóddal végzett művelet sikertelen – hibakód: <ph name="RETRIES" />.</translation>
 <translation id="2701330563083355633">Megosztva a következő eszközről: <ph name="DEVICE_NAME" /></translation>
@@ -2991,6 +2994,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="3043126717220766543">Csoportjavaslatok törlése</translation>
 <translation id="3043218608271070212"><ph name="GROUP_NAME" /> – <ph name="GROUP_CONTENT_STRING" /></translation>
 <translation id="3043581297103810752">A(z) <ph name="ORIGIN" /> webhelyről</translation>
+<translation id="3044066905368192931">Feljavítás AI segítségével</translation>
 <translation id="3045447014237878114">Ez a webhely automatikusan letöltött több fájlt</translation>
 <translation id="3046178388369461825">A Linux számára rendelkezésre álló lemezterület nagyon kevés</translation>
 <translation id="304644035656848980">Mikrofon előnézete</translation>
@@ -4593,6 +4597,7 @@ Elindítja a következőt: <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation
 <translation id="4176864026061939326">Ez az eszköz felügyelt. Az eszköz rendszergazdája új profilt követel meg a következő fiókhoz: <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="4177501066905053472">Hirdetéstémák</translation>
 <translation id="4177668342649553942">Megnyitás: <ph name="SHORTCUT_NAME" /> – <ph name="APP_NAME" /></translation>
+<translation id="4177731895051842298">A bővítmények a Chrome kiegészítői, amelyek segítséget nyújtanak a rendszerezéshez, a feladatok egyszerűsítéséhez és a böngészési élmény személyre szabásához.</translation>
 <translation id="4178220097446335546">Az előfizetés és a hozzá tartozó hálózatok elfelejtéséhez lépjen a Passpoint-előfizetés oldalára az előfizetés eltávolításához.</translation>
 <translation id="4181602000363099176">20×</translation>
 <translation id="4181841719683918333">Nyelvek</translation>
@@ -4726,6 +4731,7 @@ Elindítja a következőt: <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation
 <translation id="4275397969489577657">Esemény streamnaplózásának engedélyezése</translation>
 <translation id="4275788652681621337">Oldalsó panel bezárása</translation>
 <translation id="4275830172053184480">Indítsa újra az eszközt</translation>
+<translation id="4276598757692536305">Nyomtatóhoz használt PPD-fájl</translation>
 <translation id="4276856098224910511">Nem lehet telepíteni, mert az operációs rendszer frissítése függőben van. Alkalmazza a függőben lévő operációsrendszer-frissítéseket, majd indítsa újra az eszközt, és próbálkozzon újra. A hibakód: <ph name="ERROR" />.</translation>
 <translation id="4277434192562187284">XML-konfigurációs forrás</translation>
 <translation id="4278348589087554892">{NUM_SITES,plural, =1{1 webhely engedélyei eltávolítva}other{{NUM_SITES} webhely engedélyei eltávolítva}}</translation>
@@ -5382,6 +5388,7 @@ kicsinyítéshez pedig a Ctrl + Alt + Fényerő csökkentése billentyűpara
 <translation id="4750185073185658673">Néhány további engedély áttekintéséhez vegye kézbe telefonját. Gondoskodjon arról, hogy telefonjának Bluetooth- és a Wi-Fi-kapcsolata be legyen kapcsolva.</translation>
 <translation id="4750394297954878236">Javaslatok</translation>
 <translation id="475088594373173692">Első felhasználó</translation>
+<translation id="4754590344707355551">Tegye hasznosabbá böngészőjét a bővítményekkel</translation>
 <translation id="4756378406049221019">Leállítás/Újratöltés</translation>
 <translation id="4756388243121344051">&amp;Előzmények</translation>
 <translation id="4756671452988984333">Szöveg hanganyaghoz</translation>
@@ -6413,6 +6420,7 @@ Több kapcsolót is hozzárendelhet ehhez a művelethez.</translation>
 <translation id="5490798133083738649">Mikrofon-hozzáférés engedélyezése a Linux számára</translation>
 <translation id="549211519852037402">Bézs-fehér</translation>
 <translation id="5492637351392383067">Eszközalapú titkosítás</translation>
+<translation id="5492780659774694607">A bővítmények a Chrome kiegészítői, amelyek segíthetnek Önnek.</translation>
 <translation id="5493455553805432330">Elfelejtés</translation>
 <translation id="5493792505296048976">képernyő bekapcsolva</translation>
 <translation id="5494016731375030300">Legutóbb bezárt lapok</translation>
@@ -9638,6 +9646,7 @@ Nyomja meg valamelyik hozzárendelt kapcsolót vagy billentyűt a hozzárendelé
 <translation id="7815680994978050279">Veszélyes letöltés letiltva</translation>
 <translation id="7817361223956157679">A képernyő-billentyűzet még nem használható a Linux-alkalmazásokban</translation>
 <translation id="7818135753970109980">Új téma hozzáadva (<ph name="EXTENSION_NAME" />)</translation>
+<translation id="7819839686707222575">A bővítmények a Chrome kiegészítői, amelyek segítségével több mindent elvégezhet.</translation>
 <translation id="7820400255539998692">Törölje a(z) <ph name="FILENAME" /> fájlt, hogy az eszközt használó többi személy ne láthassa az Ön jelszavait</translation>
 <translation id="7820561748632634942">Hozzárendel további kapcsolókat?</translation>
 <translation id="782057141565633384">Vide&amp;ocím másolása</translation>
@@ -10605,6 +10614,7 @@ A kulcsfájlt tartsa biztonságos helyen. Szüksége lesz rá ahhoz, hogy új ve
 <translation id="8477241577829954800">Hatálytalanítva</translation>
 <translation id="8477384620836102176">&amp;Általános</translation>
 <translation id="8477446666255316832">Legközelebb gyorsabban jelentkezhet be</translation>
+<translation id="8478346767369317046">Munkahelyi</translation>
 <translation id="8479176401914456949">Érvénytelen kód. Próbálja újra.</translation>
 <translation id="8480869669560681089">Ismeretlen eszköz a következő gyártótól: <ph name="VENDOR_NAME" /></translation>
 <translation id="8481187309597259238">USB-engedély megerősítése</translation>
@@ -11097,6 +11107,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="8827289157496676362">Bővítmény rögzítése</translation>
 <translation id="8828933418460119530">DNS neve</translation>
 <translation id="8829979393064090868">Lap hozzáadása az osztott nézethez</translation>
+<translation id="8830479210602243906">Hatékonyságnövelés</translation>
 <translation id="883062543841130884">Cserék</translation>
 <translation id="8830779999439981481">Újraindítás a frissítések alkalmazásához…</translation>
 <translation id="8830796635868321089">Nem sikerült a frissítés ellenőrzése a jelenlegi proxybeállítások használatával. Kérjük, módosítsa a <ph name="PROXY_SETTINGS_LINK_START" />proxybeállításait<ph name="PROXY_SETTINGS_LINK_END" />.</translation>

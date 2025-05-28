@@ -52,7 +52,7 @@
 <translation id="1175951029573070619">Trung bình (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1178581264944972037">Tạm dừng</translation>
 <translation id="1180621378971766337">ấm cúng</translation>
-<translation id="1181037720776840403">Xóa</translation>
+<translation id="1181037720776840403">Xoá</translation>
 <translation id="1191518099344003522">APN đã bật.</translation>
 <translation id="1195447618553298278">Lỗi chưa biết.</translation>
 <translation id="1196264380943975940">Không tóm tắt được. Hãy thử một bản chép lời dài hơn.</translation>
@@ -221,6 +221,7 @@
 <translation id="181434555916624618">Hiện tại, các kết quả về con người sẽ không hiển thị. Hãy thử một câu lệnh khác.</translation>
 <translation id="1815850098929213707">Phím được chọn là <ph name="KEYS" />. Nhấn vào nút này để chỉnh sửa chế độ điều khiển</translation>
 <translation id="1818174214124933000">Khi bạn chọn "Gửi", nội dung và ý kiến phản hồi của bạn (như hiển thị bên dưới) sẽ được gửi đến Google, trải qua quy trình đánh giá do con người thực hiện, dùng để đào tạo hoặc cải thiện các sản phẩm cũng như dịch vụ của chúng tôi theo <ph name="LINK_POLICY_BEGIN" />Chính sách quyền riêng tư<ph name="LINK_POLICY_END" /> và <ph name="LINK_TERMS_OF_SERVICE_BEGIN" />Điều khoản dịch vụ của Google<ph name="LINK_TERMS_OF_SERVICE_END" />.</translation>
+<translation id="1821075635029692203">Giáo viên của bạn đã gửi một tài nguyên không được hỗ trợ. Hãy báo cho giáo viên.</translation>
 <translation id="1823120442877418684">Chủ đề</translation>
 <translation id="1827738518074806965">Phòng tranh</translation>
 <translation id="183287940576828840">Phản cảm/Không an toàn</translation>
@@ -477,6 +478,7 @@
 <translation id="3091839911843451378">Không thành công – Đã dừng</translation>
 <translation id="3102119246920354026">Bộ nhớ đệm</translation>
 <translation id="3103783611481501187">huyền ảo</translation>
+<translation id="3119672627216736407">Có bản dịch</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3122614491980756867">hồ nước</translation>
 <translation id="3122883569442693641">Thông tin chi tiết khác</translation>
@@ -1137,6 +1139,7 @@
 <translation id="6058625436358447366">Để hoàn tất, hãy nhập cả mật khẩu cũ và mật khẩu mới của bạn</translation>
 <translation id="6061772781719867950">Yêu cầu HTTP không thành công</translation>
 <translation id="6073292342939316679">giảm độ sáng đèn bàn phím</translation>
+<translation id="6074608334942655098">Ngừng dịch</translation>
 <translation id="6074752328838739425">Ẩn bản tóm tắt</translation>
 <translation id="6075872808778243331">(Android) Độ trễ của yêu cầu HTTP</translation>
 <translation id="6078323886959318429">Thêm lối tắt</translation>

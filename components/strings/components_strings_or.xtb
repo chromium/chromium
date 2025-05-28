@@ -367,6 +367,7 @@
 <translation id="1612199629998703524">ବିଷୟଗୁଡ଼ିକୁ ପରିଚାଳନା କରନ୍ତୁ</translation>
 <translation id="1615178538289490617"><ph name="PORT_NAME" /> ପାଇଁ ଆକ୍ସେସ ପ୍ରତ୍ୟାହାର କରନ୍ତୁ</translation>
 <translation id="1615402009686901181">ଯେତେବେଳେ ଗୋପନୀୟ ବିଷୟବସ୍ତୁ ଦୃଶ୍ୟମାନ ହୁଏ, ଆଡମିନିଷ୍ଟ୍ରେଟର୍ ନୀତି ସ୍କ୍ରିନ୍ କ୍ୟାପଚରକୁ ଅକ୍ଷମ କରିଦିଏ</translation>
+<translation id="161612500287664753">ଏହି ପୃଷ୍ଠା ବିଷୟରେ Google Searchକୁ ପଚାରନ୍ତୁ</translation>
 <translation id="1617276713587758852">କ୍ରସଓଭରଗୁଡ଼ିକ</translation>
 <translation id="1619007254056372606">ଡିଭାଇସରେ ସାଇଟ ଡାଟାକୁ ପରିଚାଳନା କରନ୍ତୁ</translation>
 <translation id="1619648179761984213"><ph name="USER_DISPLAY_NAME" /> ଏକ ଟାବକୁ କାଢ଼ି ଦେଇଛନ୍ତି</translation>
@@ -1506,6 +1507,7 @@
 <translation id="3586931643579894722">ବିବରଣୀଗୁଡ଼ିକ ଲୁଚାନ୍ତୁ</translation>
 <translation id="3587725436724465984">ଆପଣଙ୍କ ସଂସ୍ଥା <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" />କୁ ଏକ ନୀତି ଉଲ୍ଲଙ୍ଘନ କରିପାରୁଥିବା ସାଇଟ ଭାବରେ ଚିହ୍ନଟ କରିଛି। <ph name="BEGIN_LEARN_MORE_LINK" />ଏହି ଚେତାବନୀ ବିଷୟରେ ଅଧିକ ଜାଣନ୍ତୁ<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3587738293690942763">ମଧ୍ୟମ</translation>
+<translation id="3589519427766620380">ଏହି ପୃଷ୍ଠା ବିଷୟରେ Google Lensକୁ ପଚାରନ୍ତୁ</translation>
 <translation id="3596918995172292499">ପ୍ଲେଟର ସ୍ଥିତି</translation>
 <translation id="3600106876108433070">କମ୍ପାରିଜନ ଟେବୁଲ ବିଷୟରେ ଜାଣନ୍ତୁ</translation>
 <translation id="3600246354004376029"><ph name="TITLE" />, <ph name="DOMAIN" />, <ph name="TIME" /></translation>
@@ -3440,6 +3442,7 @@
 <translation id="6925267999184670015">ନର୍ଥ ଆମେରିକାନ B+</translation>
 <translation id="6926216138694948720">ବଡି ଆର୍ଟ</translation>
 <translation id="692638818576287323">କମର୍ସିଆଲ ଗାଡ଼ି</translation>
+<translation id="6930607614725241390">ସାଇଡ ପେନେଲରେ ସର୍ଚ୍ଚ କରନ୍ତୁ</translation>
 <translation id="6934236486840930310"><ph name="BEGIN_BOLD" />ଆପଣଙ୍କ ଡିଫଲ୍ଟ ସର୍ଚ୍ଚ ଇଞ୍ଜିନ ଆପଣଙ୍କୁ ଠିକଣା ବାରରୁ ଏବଂ ୱେବ ପୃଷ୍ଠାରେ ଥିବା ଇମେଜଗୁଡ଼ିକରୁ ସର୍ଚ୍ଚ କରିବା ପରି<ph name="END_BOLD" /> ୱେବରେ ସର୍ଚ୍ଚ କରିବାକୁ ଦିଏ ଏବଂ Chrome ଫିଚରଗୁଡ଼ିକୁ ଶକ୍ତିଶାଳୀ କରେ। ଯଦି ଆପଣଙ୍କ ସର୍ଚ୍ଚ ଇଞ୍ଜିନ ଏହାକୁ ସମର୍ଥନ କରେ ନାହିଁ ତେବେ ଏକ ଫିଚର ଉପଲବ୍ଧ ହୋଇନପାରେ।</translation>
 <translation id="6934672428414710184">ଏହି ନାମ ଆପଣଙ୍କର Google ଆକାଉଣ୍ଟରୁ ଅଟେ</translation>
 <translation id="6935077351544118151">ବର୍ତ୍ତମାନ ଆପଣ Google Walletରୁ ଲୟାଲ୍ଟି କାର୍ଡଗୁଡ଼ିକୁ ଅଟୋଫିଲ କରିପାରିବେ</translation>

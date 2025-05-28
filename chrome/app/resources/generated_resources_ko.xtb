@@ -2248,7 +2248,7 @@
 <translation id="2521835766824839541">이전 트랙입니다</translation>
 <translation id="2521854691574443804"><ph name="FILE_NAME" /> 파일이 조직 보안 정책을 준수하는지 확인하는 중입니다.</translation>
 <translation id="252277619743753687">비밀번호 선택</translation>
-<translation id="2523184218357549926">방문한 페이지의 URL을 Google에 전송</translation>
+<translation id="2523184218357549926">방문한 페이지의 URL을 Google에 전송합니다.</translation>
 <translation id="2524093372979370955">시스템 전반에서 모든 새 USB 주변기기에 대한 알림이 사용 중지됩니다. 계속하시겠습니까?</translation>
 <translation id="252418934079508528"><ph name="DEVICE_OS" /> 설치</translation>
 <translation id="2526590354069164005">데스크톱</translation>
@@ -2455,7 +2455,7 @@
 <translation id="2671451824761031126">북마크와 설정을 가져왔습니다.</translation>
 <translation id="2672142220933875349">잘못된 crx 파일입니다. 압축을 해제하지 못했습니다.</translation>
 <translation id="2672200806060988299">탭 제목과 URL은 Google로 전송되며 기능 개선을 위해 인적 검토자가 이를 확인할 수 있습니다.</translation>
-<translation id="2673135533890720193">인터넷 사용 기록 확인</translation>
+<translation id="2673135533890720193">방문 기록 확인</translation>
 <translation id="2673848446870717676">블루투스 기기를 페어링 모드로 설정하고 가까이 두세요. 신뢰하는 기기만 페어링하세요. 페어링된 기기는 이 Chromebook의 모든 계정에 표시됩니다.</translation>
 <translation id="2673873887296220733">파일 1개를 <ph name="CLOUD_PROVIDER" />에 복사하여 여시겠습니까?</translation>
 <translation id="267442004702508783">새로고침</translation>
@@ -4882,7 +4882,7 @@
 <translation id="438503109373656455">말</translation>
 <translation id="4385146930797718821">클립보드에 스크린샷이 복사되었습니다</translation>
 <translation id="4385905942116811558">블루투스 및 USB 기기 검색 중</translation>
-<translation id="4385985255515673508">{NUM_EXTENSIONS,plural, =1{이 확장 프로그램은 더 이상 지원되지 않아 사용 중지되었습니다}other{이러한 확장 프로그램은 더 이상 지원되지 않아 사용 중지되었습니다}}</translation>
+<translation id="4385985255515673508">{NUM_EXTENSIONS,plural, =1{이 확장 프로그램은 더 이상 지원되지 않아 사용 중지되었습니다}other{이 확장 프로그램은 더 이상 지원되지 않아 사용 중지되었습니다}}</translation>
 <translation id="4386604394450371010">개요</translation>
 <translation id="4387890294700445764">유출된 비밀번호</translation>
 <translation id="4388650384344483842">8자 이상 입력하세요.</translation>
@@ -6916,7 +6916,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5864754048328252126">충전 시 유휴 작업</translation>
 <translation id="5865508026715185451"><ph name="APP_NAME" /> 앱이 곧 일시중지됨</translation>
 <translation id="586567932979200359">디스크 이미지에서 <ph name="PRODUCT_NAME" />을(를) 실행 중입니다. 컴퓨터에 설치하면 디스크 이미지가 없어도 실행이 가능하며 최신 상태로 유지됩니다.</translation>
-<translation id="5865733239029070421">사용 통계 및 비정상 종료 보고서를 Google로 자동 전송</translation>
+<translation id="5865733239029070421">사용 통계 및 비정상 종료 보고서를 Google에 자동으로 전송합니다.</translation>
 <translation id="5866363217037791319">작업 종료</translation>
 <translation id="5868434909835797817">기기의 마이크가 꺼져 있습니다.</translation>
 <translation id="5868479397518301468">로그인 타임아웃</translation>
@@ -7678,7 +7678,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="641867537956679916">관리자가 문제를 조사하기 위해 로그인했습니다. 관리자로부터 제어 권한을 다시 부여받고 나면 기기를 계속 사용할 수 있습니다.</translation>
 <translation id="641899100123938294">새 기기 검색</translation>
 <translation id="6419524191360800346">Debian 11(Bullseye)로 업그레이드할 수 있습니다.</translation>
-<translation id="6419546358665792306">압축해제된 확장 프로그램을 로드합니다.</translation>
+<translation id="6419546358665792306">압축해제된 확장 프로그램 로드</translation>
 <translation id="642469772702851743">소유자가 이 기기(SN: <ph name="SERIAL_NUMBER" />)를 잠갔습니다.</translation>
 <translation id="6425556984042222041">텍스트 음성 변환 속도</translation>
 <translation id="642729974267661262">소리 재생이 허용되지 않음</translation>
@@ -8120,7 +8120,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6745592621698551453">지금 업데이트</translation>
 <translation id="6746124502594467657">아래로 이동</translation>
 <translation id="67465227497040338"><ph name="DOMAIN" /> 비밀번호 표시</translation>
-<translation id="6746834324024491643">모든 기기에서 비밀번호와 기타 정보를 받으려면 <ph name="EMAIL" /> 계정으로 로그인하세요</translation>
+<translation id="6746834324024491643">모든 기기에서 비밀번호 등을 사용하려면 <ph name="EMAIL" /> 계정으로 로그인하세요</translation>
 <translation id="6748980958975836188"><ph name="BEGIN_LINK1" />Google 서비스 약관<ph name="END_LINK1" />, <ph name="BEGIN_LINK2" />Chrome 및 ChromeOS 추가 서비스 약관<ph name="END_LINK2" />을 읽었으며 이에 동의합니다.</translation>
 <translation id="6749077623962119521">권한을 재설정하시겠습니까?</translation>
 <translation id="6749473226660745022">사진</translation>

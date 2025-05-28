@@ -4715,6 +4715,7 @@ Möchtest du <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="4275397969489577657">Ereignisstream-Protokollierung aktivieren</translation>
 <translation id="4275788652681621337">Seitenleiste schließen</translation>
 <translation id="4275830172053184480">Gerät neu starten</translation>
+<translation id="4276598757692536305">Drucker-PPD-Datei</translation>
 <translation id="4276856098224910511">Installation nicht möglich, Betriebssystemupdate steht aus. Führe alle ausstehenden Betriebssystemupdates aus, starte das Gerät neu und versuch es noch einmal. Fehlercode: <ph name="ERROR" />.</translation>
 <translation id="4277434192562187284">XML-Konfigurationsquelle</translation>
 <translation id="4278348589087554892">{NUM_SITES,plural, =1{Berechtigungen von 1 Website entfernt}other{Berechtigungen von {NUM_SITES} Websites entfernt}}</translation>

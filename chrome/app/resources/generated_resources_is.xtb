@@ -4729,6 +4729,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="4275397969489577657">Kveikja á skráningu viðburðarstraums</translation>
 <translation id="4275788652681621337">Loka hliðarglugga</translation>
 <translation id="4275830172053184480">Endurræstu tækið</translation>
+<translation id="4276598757692536305">PPD-skrá prentara</translation>
 <translation id="4276856098224910511">Get ekki sett upp, stýrikerfisuppfærsla er í bið. Notaðu hvaða stýrikerfisuppfærslur sem eru í bið, endurræstu og reyndu aftur. Villukóðinn er <ph name="ERROR" />.</translation>
 <translation id="4277434192562187284">Uppruni XML-stillingar</translation>
 <translation id="4278348589087554892">{NUM_SITES,plural, =1{Heimildir fjarlægðar fyrir eitt vefsvæði}one{Heimildir fjarlægðar fyrir {NUM_SITES} vefsvæði}other{Heimildir fjarlægðar fyrir {NUM_SITES} vefsvæði}}</translation>

@@ -4714,6 +4714,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" /> ?</translation>
 <translation id="4275397969489577657">Activer la journalisation des flux d'événements</translation>
 <translation id="4275788652681621337">Fermer le panneau latéral</translation>
 <translation id="4275830172053184480">Redémarrer l'appareil</translation>
+<translation id="4276598757692536305">PPD de l'imprimante</translation>
 <translation id="4276856098224910511">Installation impossible, mise à jour de l'OS en attente. Veuillez appliquer les mises à jour de l'OS en attente, puis redémarrez et réessayez. Code d'erreur : <ph name="ERROR" />.</translation>
 <translation id="4277434192562187284">Source de configuration XML</translation>
 <translation id="4278348589087554892">{NUM_SITES,plural, =1{Autorisations supprimées pour 1 site}one{Autorisations supprimées pour {NUM_SITES} site}other{Autorisations supprimées pour {NUM_SITES} sites}}</translation>

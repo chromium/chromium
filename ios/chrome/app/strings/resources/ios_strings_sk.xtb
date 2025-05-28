@@ -383,6 +383,7 @@ Weby si nemôžu na základe súborov cookie zobraziť vašu históriu prehliada
 <translation id="2513103768503127042">Tu nájdete svoje skupiny kariet</translation>
 <translation id="251837347827266434">Systém vás odhlási, karty sa zavrú a dáta prehliadania odstránia</translation>
 <translation id="2520787026086861736">Ak chcete túto funkciu vypnúť, prejdite do sekcie <ph name="BEGIN_LINK" />Automatické dopĺňanie a heslá<ph name="END_LINK" /></translation>
+<translation id="2523295204312809179">Keď zatvoríte skupinu kariet, automaticky sa uloží tu</translation>
 <translation id="2529021024822217800">Otvoriť všetky</translation>
 <translation id="2536991091671391962">Uložené heslá môžete používať v ľubovoľnom zariadení. Sú uložené v Správcovi hesiel Google v účte <ph name="EMAIL" />.</translation>
 <translation id="2538103551183528357">Skryté, heslo</translation>
@@ -1035,6 +1036,7 @@ Prečítajte si pokyny vyhľadávača, ako odstrániť históriu vyhľadávania 
 <translation id="5275912569557792098"><ph name="USER_NAME" /> (<ph name="USER_EMAIL" />) chce, aby ste sa pripojili ku skupine kariet. Ktokoľvek s odkazom môže upravovať všetky karty, preto pri pripájaní postupujte opatrne. Odkaz vyprší o 48 h.</translation>
 <translation id="5279600392753459966">Blokovať všetky</translation>
 <translation id="5282340693022193851">Ak chcete dostávať upozornenia na sledovanie cien, zapnite upozornenia v nastaveniach systému iOS.</translation>
+<translation id="528857768909044842">Tu sa ukladajú skupiny kariet</translation>
 <translation id="5294624619177114121">Mobilné upozornenia</translation>
 <translation id="5295239312320826323">Chcete odstrániť účet <ph name="USER_EMAIL" />?</translation>
 <translation id="5300589172476337783">Zobraziť</translation>
@@ -1230,6 +1232,7 @@ Funkciu Handoff musíte povoliť v nastaveniach v časti Všeobecné a vaše zar
 <translation id="6100617279104942061">Prihlásili ste sa ako <ph name="USER_EMAIL" />. Otvorí nastavenia.</translation>
 <translation id="6103540626693881831">Šifrovanie v zariadení</translation>
 <translation id="611361228753138223">Weby, ktoré ste v poslednom čase navštívili v tomto zariadení</translation>
+<translation id="611705554202268369">Dlho stlačte a pridajte do skupiny kariet</translation>
 <translation id="6122191549521593678">Online</translation>
 <translation id="6122831415929794347">Chcete vypnúť Bezpečné prehliadanie?</translation>
 <translation id="6123514585040403489">Karty budú zatvorené</translation>
@@ -1855,6 +1858,7 @@ Na základe súborov cookie si môžu zobraziť vašu históriu prehliadania v 
 <translation id="8535368836838588657">Odhaľte heslo</translation>
 <translation id="8545276357312221485">Skontrolujte nastavenia predvoleného prehliadača</translation>
 <translation id="854938212724803178">Máte jedno odhalené heslo. Tento problém odstráňte, aby ste boli v bezpečí.</translation>
+<translation id="8551311254462607218">Na paneli s adresou klepnite na ikonu kamery funkcie Google Lens</translation>
 <translation id="8556590991644167667">{count,plural, =1{Zavreli ste {count} upozornenie}few{Zavreli ste {count} upozornenia}many{You dismissed {count} warnings}other{Zavreli ste {count} upozornení}}</translation>
 <translation id="8558046478684552694">Zavrieť skupinu.</translation>
 <translation id="8560253818350321773">Zobrazujte si často používané položky ako prvé.</translation>
@@ -1998,6 +2002,7 @@ Na základe súborov cookie si môžu zobraziť vašu históriu prehliadania v 
 <translation id="9032405509996909363">Potvrdiť odstránenie dát prehliadania</translation>
 <translation id="9039373489628511875">Rýchlosť pripojenia</translation>
 <translation id="9042893549633094279">Ochrana súkromia a zabezpečenie</translation>
+<translation id="9055291197094969722">Vytvorte skupinu kariet, aby ste si karty mohli usporiadať a zachovať si produktivitu</translation>
 <translation id="9055580485132823283">Chystáte sa odstrániť niekoľko hesiel ({password_count}) a prístupových kódov ({passkey_count}), ale aj zoznam webov a aplikácií, pre ktoré ste nastavili, aby nikdy neukladali prihlasovacie údaje. Účty, ktoré ste vytvorili pre weby a aplikácie, odstránené nebudú.</translation>
 <translation id="9057030985451135243">Ďalšie informácie o zdieľaných skupinách kariet</translation>
 <translation id="9057972802061533987">Nedá sa sledovať. Niečo sa pokazilo.</translation>

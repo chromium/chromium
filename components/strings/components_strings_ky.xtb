@@ -367,6 +367,7 @@
 <translation id="1612199629998703524">Темаларды тескөө</translation>
 <translation id="1615178538289490617"><ph name="PORT_NAME" /> портун пайдалануу мүмкүнчүлүгүн жоюу</translation>
 <translation id="1615402009686901181">Купуя нерселер көрүнүп турганда, Администратордун эрежеси боюнча экрандагыны сүрөткө тартып алууга болбойт</translation>
+<translation id="161612500287664753">Google Издөөдөн бул бет жөнүндө суроо</translation>
 <translation id="1617276713587758852">Кроссоверлер</translation>
 <translation id="1619007254056372606">Түзмөктөгү сайттын маалыматын башкаруу</translation>
 <translation id="1619648179761984213"><ph name="USER_DISPLAY_NAME" /> өтмөктү өчүрдү</translation>
@@ -1507,6 +1508,7 @@
 <translation id="3586931643579894722">Чоо-жайын жашыруу</translation>
 <translation id="3587725436724465984">Уюмуңуз <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> сайтын эрежелерин бузган сайт катары аныктаган. <ph name="BEGIN_LEARN_MORE_LINK" />Бул эскертүү жөнүндө кеңири маалымат алыңыз<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3587738293690942763">Орто</translation>
+<translation id="3589519427766620380">Google Lens'тен бул бет жөнүндө суроо</translation>
 <translation id="3596918995172292499">Унаанын номери берилген штат</translation>
 <translation id="3600106876108433070">Салыштыруучу таблицалар жөнүндө кеңири маалымат</translation>
 <translation id="3600246354004376029"><ph name="TITLE" />, <ph name="DOMAIN" />, <ph name="TIME" /></translation>
@@ -3443,6 +3445,7 @@
 <translation id="6925267999184670015">Түндүк америкалык B+</translation>
 <translation id="6926216138694948720">Денеге сүрөт тартуу</translation>
 <translation id="692638818576287323">Кесипкөй унаалар</translation>
+<translation id="6930607614725241390">Капталдагы тилкеден издөө</translation>
 <translation id="6934236486840930310"><ph name="BEGIN_BOLD" />Издөө каражатыңыз Интернетте издөөгө мүмкүндүк берип, Chrome функцияларын жакшыртат<ph name="END_BOLD" />, мисалы, дарек тилкесинен жана веб-беттердеги сүрөттөрдөн издей аласыз. Издөө каражатыңыз колдоого албаса, бул функция иштебеши мүмкүн.</translation>
 <translation id="6934672428414710184">Бул ысым Google аккаунтуңуздан алынды</translation>
 <translation id="6935077351544118151">Эми Google Капчыктагы туруктуу кардардын карталарын автоматтык түрдө толтура аласыз</translation>

@@ -314,6 +314,7 @@
 <translation id="4970880042055371251">ChromeOS verziószáma</translation>
 <translation id="4990567037958725628">Google Chrome Canary</translation>
 <translation id="5003967926796347400">Kattintson a „Google Jelszókezelő” lehetőségre</translation>
+<translation id="504867494566807945">A Chrome-ban bármely alkalmazásból megnyithatja a linkeket. A Chrome a tálcára is ki lesz tűzve, így könnyen hozzáférhet.</translation>
 <translation id="5114340746415930644">Adja meg összetett jelszavát, ha a Chrome-adatokat szeretné használni és tárolni a fiókjában (<ph name="USER_EMAIL" />)</translation>
 <translation id="5120334927898581447">Bejelentkezés a Chrome-ba, amikor más Google-szolgáltatásokba is bejelentkezik</translation>
 <translation id="5126049312684316860">A Chrome még több olyan oldalt előtölt, amelyeket Ön valószínűsíthetően fel fog keresni, így amikor valóban felkeresi őket, gyorsabban töltődnek be.</translation>
@@ -390,6 +391,7 @@
 <translation id="6075300983329039771">Szervezete (<ph name="MANAGER" />) megköveteli a Chrome-ba történő bejelentkezést</translation>
 <translation id="6113794647360055231">A Chrome még jobb lett</translation>
 <translation id="6116252277240876590">A Chrome ezt a nyelvet használja a menük, beállítások, figyelmeztetések és egyéb szövegek megjelenítésére</translation>
+<translation id="6127237283587442951">Használja a Chrome-ot alapértelmezett böngészőként, és tűzze ki a tálcára</translation>
 <translation id="6134085236017727171">A mikrofon használatához adjon hozzáférést a Chrome-nak a <ph name="BEGIN_LINK" />rendszerbeállításokban<ph name="END_LINK" /></translation>
 <translation id="6135456723633883042">Ezek a lapok plusz erőforrásokat használnak. A teljesítmény javítása érdekében engedélyezze, hogy a Chrome inaktiválhassa őket.</translation>
 <translation id="6145313976051292476">PDF-fájlok megnyitása a Chrome-ban</translation>

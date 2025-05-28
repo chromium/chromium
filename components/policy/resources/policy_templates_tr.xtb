@@ -6879,6 +6879,7 @@ Politika ayarlanmadan bırakılırsa davranışı <ph name="GEN_AI_DEFAULT_SETTI
 
       Politika Devre Dışı değerine ayarlanır veya ayarlanmadan bırakılırsa sistem günlükleri bildirilmez.</translation>
 <translation id="5861856285460256766">Ebeveyn Erişim Kodu Yapılandırma</translation>
+<translation id="5864898931148094192">Yeni Sekme Sayfası'nda uzantı ilişkilendirmesiyle ilgili bilginin görünürlüğünü kontrol et</translation>
 <translation id="5868414965372171132">Kullanıcı düzeyi ağ yapılandırması</translation>
 <translation id="5868454276721377379"><ph name="PRODUCT_OS_NAME" /> cihazları arasında geçiş yapıldığında, Kayan TOA Hizmeti, kullanıcının web hizmeti kimlik doğrulama durumunu önceki cihazdan yeni cihaza geri yükler. Bu işlem, kullanıcının çerezlerinin cihazdan cihaza taşınmasıyla gerçekleştirilir.
 
@@ -7164,6 +7165,13 @@ Bu politikanın desteği, M124 sürümüyle birlikte sonlandırılmıştır.</tr
 <translation id="604243460476563291">Kurumsal yöneticilerden gelen uzaktan destek bağlantılarında dosya aktarımını devre dışı bırak</translation>
 <translation id="6042629184389251062">URL içeren veya URL'lerle ilişkili metrik toplamaya izin verilmez</translation>
 <translation id="6046615715547751255">Ayrıntılı raporlama kontrollerine izin verme</translation>
+<translation id="6047041034696466581">Bu politika, Yeni Sekme Sayfası'nda (NTP) değişiklik yapan uzantıyı belirten bir bilgilendirmenin, NTP'nin altbilgi bölümünde gösterilip gösterilmeyeceğini belirler.
+
+Varsayılan olarak, bir uzantı standart NTP'yi geçersiz kılmışsa bu değişikliğin söz konusu uzantıdan kaynaklandığını belirten bir mesaj altbilgide görünür. Bu bilgilendirmede genellikle ilgili uzantının Chrome Web Mağazası'ndaki bağlantısı da bulunur.
+
+Bu politika ayarlanmadan bırakılır veya Doğru değerine ayarlanırsa bir uzantı NTP'yi kontrol ederken uzantıyla ilgili bilgilendirme yeni sekme sayfasının altbilgisinde görünür.
+
+Bu politika, Yanlış değerine ayarlanırsa NTP altbilgisinde uzantıyla ilgili bilgilendirme gizlenir.</translation>
 <translation id="6048199181629830227">Güç tüketimi en üst düzeydeyken pil kullanımına geçme güç yönetimini etkinleştir</translation>
 <translation id="6048690591359317353">Kullanıcının manuel olarak VPN bağlantısını kesmesine veya VPN'yi yapılandırmasına izin verme</translation>
 <translation id="6049117606554031363">Cihazın kart durumu raporlamasını etkinleştir</translation>
