@@ -172,6 +172,9 @@ public class Profile {
 
     @UiThread
     public void warmUpRendererProcess() {
-        mBrowserContext.warmUpSpareRenderer();
+        try (TraceEvent event =
+                TraceEvent.scoped("WebView.Profile.ApiCall.WARM_UP_RENDERER_PROCESS")) {
+            mBrowserContext.warmUpSpareRenderer();
+        }
     }
 }

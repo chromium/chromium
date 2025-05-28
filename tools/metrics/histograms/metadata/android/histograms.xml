@@ -8609,6 +8609,26 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.WebView.WarmUpSpareRenderer.Duration" units="ms"
+    expires_after="2026-05-26">
+  <owner>ziadyoussef@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <summary>
+    Reports the sync blocking time for the warm up renderer process API call.
+    Recorded once per call to the warm up renderer process API.
+  </summary>
+</histogram>
+
+<histogram name="Android.WebView.WarmUpSpareRenderer.StartsNewRenderer"
+    enum="Boolean" expires_after="2026-05-26">
+  <owner>ziadyoussef@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <summary>
+    Reports whether or not the warm up renderer process API call starts a new
+    process. Recorded once per call to the warm up renderer process API.
+  </summary>
+</histogram>
+
 <histogram name="AndroidSearchEngineLogo.Events"
     enum="AndroidSearchEngineLogoEvents" expires_after="2025-07-06">
   <owner>wylieb@google.com</owner>

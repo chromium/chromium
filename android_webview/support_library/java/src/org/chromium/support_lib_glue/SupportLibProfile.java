@@ -223,6 +223,7 @@ public class SupportLibProfile implements ProfileBoundaryInterface {
     @Override
     public void warmUpRendererProcess() {
         assert ThreadUtils.runningOnUiThread();
+        recordApiCall(ApiCall.PROFILE_WARM_UP_RENDERER_PROCESS);
         mProfileImpl.warmUpRendererProcess();
     }
 }
