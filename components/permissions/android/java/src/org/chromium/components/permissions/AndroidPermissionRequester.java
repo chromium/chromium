@@ -308,7 +308,7 @@ public class AndroidPermissionRequester {
     public static void showMissingPermissionDialog(
             WindowAndroid windowAndroid,
             String message,
-            Consumer<PropertyModel> onPositiveButtonClicked,
+            Consumer<@Nullable PropertyModel> onPositiveButtonClicked,
             Runnable onCancelled) {
         final ModalDialogManager modalDialogManager = windowAndroid.getModalDialogManager();
         assert modalDialogManager != null : "ModalDialogManager is null";

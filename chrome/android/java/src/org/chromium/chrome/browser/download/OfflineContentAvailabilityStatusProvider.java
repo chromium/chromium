@@ -6,6 +6,8 @@ package org.chromium.chrome.browser.download;
 
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.download.items.OfflineContentAggregatorFactory;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
@@ -23,8 +25,9 @@ import java.util.Set;
  * used to decide whether or not users should see messages in the UI about offline content
  * availability in Chrome.
  */
+@NullMarked
 public class OfflineContentAvailabilityStatusProvider implements OfflineContentProvider.Observer {
-    private static OfflineContentAvailabilityStatusProvider sInstance;
+    private static @Nullable OfflineContentAvailabilityStatusProvider sInstance;
 
     // Keeps track of suggested content.
     private final Set<ContentId> mSuggestedItems = new HashSet<>();
