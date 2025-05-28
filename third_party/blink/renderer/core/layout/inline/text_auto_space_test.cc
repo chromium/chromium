@@ -133,6 +133,7 @@ struct HtmlData {
     {u"ああ1ああ", {2, 3}},
     {u"ああAbcああ", {2, 5}},
     {u"ああA12ああ", {2, 5}},
+    // 10
     {u"ああ123ああ", {2, 5}},
     {u"あ\U000739AD", {}},
     {u"<span>ああ</span>Aああ", {2, 3}},
@@ -143,6 +144,7 @@ struct HtmlData {
     {u"あ<span style='text-autospace: no-autospace'>1</span>2", {}},
     {u"あ<span style='text-autospace: no-autospace'>あ</span>2", {}},
     {u"あAあ", {}, "writing-mode: vertical-rl; text-orientation: upright"},
+    // 20
     {u"あ1あ", {}, "writing-mode: vertical-rl; text-orientation: upright"},
     {u"あ<span style='text-orientation: upright'>1</span>あ",
      {},
@@ -157,6 +159,11 @@ struct HtmlData {
     {u"\u05D0ああ\u05D0あ", {1, 3, 4}},
     {u"ああ<span>\u05D0</span>ああ", {2, 3}},
     {u"\u05D0ああ\u05D0あ", {1, 3, 4}},
+    // Marks
+    {u"あ\u3099X", {2}},  // Combining Katakana-Hiragana Voiced Sound Mark
+    {u"あ\u309BX", {2}},  // Katakana-Hiragana Voiced Sound Mark
+    {u"\u8279\uFE00\u8279\uFE01X", {4}},          // VS
+    {u"\u795E\U000E0100\u793E\U000E0101X", {6}},  // IVS
 
 };
 class HtmlTest : public TextAutoSpaceTest,

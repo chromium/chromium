@@ -175,6 +175,11 @@ void TextAutoSpace::Apply(InlineItemsData& data) {
     const EastAsianSpacingType type = Character::GetEastAsianSpacingType(ch);
     const bool is_wide = type == EastAsianSpacingType::kWide;
     if (is_wide || is_last_wide) [[unlikely]] {
+      if (Character::IsGcMark(ch)) [[unlikely]] {
+        ++char_iter;
+        continue;
+      }
+
       // TODO(crbug.com/40275399): Support `kConditional`.
       const bool needs_space =
           (is_last_wide && type == EastAsianSpacingType::kNarrow) ||
