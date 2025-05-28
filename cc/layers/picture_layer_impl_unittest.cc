@@ -552,12 +552,9 @@ TEST_F(LegacySWPictureLayerImplTest, CloneFullInvalidation) {
   }
 }
 
-TEST_F(LegacySWPictureLayerImplTest, UpdateTilesCreatesTilings) {
+TEST_F(NoLowResPictureLayerImplTest, UpdateTilesCreatesTilings) {
   gfx::Size layer_bounds(1300, 1900);
   SetupDefaultTrees(layer_bounds);
-
-  float low_res_factor = host_impl()->settings().low_res_contents_scale_factor;
-  EXPECT_LT(low_res_factor, 1.f);
 
   active_layer()->ReleaseTileResources();
   EXPECT_TRUE(active_layer()->tilings());
@@ -569,36 +566,27 @@ TEST_F(LegacySWPictureLayerImplTest, UpdateTilesCreatesTilings) {
                                     6.f,   // ideal contents scale
                                     3.f,   // device scale
                                     2.f);  // page scale
-  ASSERT_EQ(2u, active_layer()->tilings()->num_tilings());
+  ASSERT_EQ(1u, active_layer()->tilings()->num_tilings());
   EXPECT_FLOAT_EQ(
       6.f, active_layer()->tilings()->tiling_at(0)->contents_scale_key());
-  EXPECT_FLOAT_EQ(
-      6.f * low_res_factor,
-      active_layer()->tilings()->tiling_at(1)->contents_scale_key());
 
   // If we change the page scale factor, then we should get new tilings.
   SetupDrawPropertiesAndUpdateTiles(active_layer(),
                                     6.6f,   // ideal contents scale
                                     3.f,    // device scale
                                     2.2f);  // page scale
-  ASSERT_EQ(4u, active_layer()->tilings()->num_tilings());
+  ASSERT_EQ(2u, active_layer()->tilings()->num_tilings());
   EXPECT_FLOAT_EQ(
       6.6f, active_layer()->tilings()->tiling_at(0)->contents_scale_key());
-  EXPECT_FLOAT_EQ(
-      6.6f * low_res_factor,
-      active_layer()->tilings()->tiling_at(2)->contents_scale_key());
 
   // If we change the device scale factor, then we should get new tilings.
   SetupDrawPropertiesAndUpdateTiles(active_layer(),
                                     7.26f,  // ideal contents scale
                                     3.3f,   // device scale
                                     2.2f);  // page scale
-  ASSERT_EQ(6u, active_layer()->tilings()->num_tilings());
+  ASSERT_EQ(3u, active_layer()->tilings()->num_tilings());
   EXPECT_FLOAT_EQ(
       7.26f, active_layer()->tilings()->tiling_at(0)->contents_scale_key());
-  EXPECT_FLOAT_EQ(
-      7.26f * low_res_factor,
-      active_layer()->tilings()->tiling_at(3)->contents_scale_key());
 
   // If we change the device scale factor, but end up at the same total scale
   // factor somehow, then we don't get new tilings.
@@ -606,12 +594,9 @@ TEST_F(LegacySWPictureLayerImplTest, UpdateTilesCreatesTilings) {
                                     7.26f,  // ideal contents scale
                                     2.2f,   // device scale
                                     3.3f);  // page scale
-  ASSERT_EQ(6u, active_layer()->tilings()->num_tilings());
+  ASSERT_EQ(3u, active_layer()->tilings()->num_tilings());
   EXPECT_FLOAT_EQ(
       7.26f, active_layer()->tilings()->tiling_at(0)->contents_scale_key());
-  EXPECT_FLOAT_EQ(
-      7.26f * low_res_factor,
-      active_layer()->tilings()->tiling_at(3)->contents_scale_key());
 }
 
 TEST_F(LegacySWPictureLayerImplTest, PendingLayerOnlyHasHighResTiling) {
