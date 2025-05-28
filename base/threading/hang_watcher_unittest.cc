@@ -62,15 +62,17 @@ constexpr uint64_t kOnesThenZeroes = 0xAAAAAAAAAAAAAAAAu;
 constexpr uint64_t kZeroesThenOnes = 0x5555555555555555u;
 
 // Waits on provided WaitableEvent before executing and signals when done.
-class BlockingThread : public DelegateSimpleThread::Delegate {
+class BlockedThread : public DelegateSimpleThread::Delegate {
  public:
-  explicit BlockingThread(base::WaitableEvent* unblock_thread,
-                          base::TimeDelta timeout)
-      : thread_(this, "BlockingThread"),
+  explicit BlockedThread(base::WaitableEvent* unblock_thread,
+                         base::TimeDelta timeout)
+      : thread_(this, "BlockedThread"),
         unblock_thread_(unblock_thread),
-        timeout_(timeout) {}
+        timeout_(timeout) {
+    StartAndWaitForScopeEntered();
+  }
 
-  ~BlockingThread() override = default;
+  ~BlockedThread() override = default;
 
   void Run() override {
     // (Un)Register the thread here instead of in ctor/dtor so that the action
@@ -190,23 +192,10 @@ class HangWatcherBlockingThreadTest : public HangWatcherTest {
     CHECK(thread_.IsDone());
   }
 
-  void StartBlockedThread() {
-    // Thread has not run yet.
-    CHECK(!thread_.IsDone());
-
-    // Start the thread. It will block since |unblock_thread_| was not
-    // signaled yet.
-    thread_.StartAndWaitForScopeEntered();
-
-    // Thread registration triggered a call to HangWatcher::Monitor() which
-    // signaled |monitor_event_|. Reset it so it's ready for waiting later on.
-    monitor_event_.Reset();
-  }
-
   // Used to unblock the monitored thread. Signaled from the test main thread.
   WaitableEvent unblock_thread_;
 
-  BlockingThread thread_;
+  BlockedThread thread_;
 };
 }  // namespace
 
@@ -404,7 +393,6 @@ TEST_F(HangWatcherTest, NestedScopes) {
 
 TEST_F(HangWatcherBlockingThreadTest, HistogramsLoggedOnHang) {
   base::HistogramTester histogram_tester;
-  StartBlockedThread();
 
   // Simulate hang.
   task_environment_.FastForwardBy(kHangTime);
@@ -456,7 +444,6 @@ TEST_F(HangWatcherBlockingThreadTest, HistogramsLoggedOnHang) {
 
 TEST_F(HangWatcherBlockingThreadTest, HistogramsLoggedWithoutHangs) {
   base::HistogramTester histogram_tester;
-  StartBlockedThread();
 
   // No hang to catch so nothing is recorded.
   MonitorHangs();
@@ -485,7 +472,6 @@ TEST_F(HangWatcherBlockingThreadTest, HistogramsLoggedWithoutHangs) {
 
 TEST_F(HangWatcherBlockingThreadTest, HistogramsLoggedWithShutdownFlag) {
   base::HistogramTester histogram_tester;
-  StartBlockedThread();
 
   // Simulate hang.
   task_environment_.FastForwardBy(kHangTime);
@@ -523,8 +509,6 @@ TEST_F(HangWatcherBlockingThreadTest, HistogramsLoggedWithShutdownFlag) {
 }
 
 TEST_F(HangWatcherBlockingThreadTest, Hang) {
-  StartBlockedThread();
-
   // Simulate hang.
   task_environment_.FastForwardBy(kHangTime);
 
@@ -536,8 +520,6 @@ TEST_F(HangWatcherBlockingThreadTest, Hang) {
 }
 
 TEST_F(HangWatcherBlockingThreadTest, HangAlreadyRecorded) {
-  StartBlockedThread();
-
   // Simulate hang.
   task_environment_.FastForwardBy(kHangTime);
 
@@ -554,8 +536,6 @@ TEST_F(HangWatcherBlockingThreadTest, HangAlreadyRecorded) {
 }
 
 TEST_F(HangWatcherBlockingThreadTest, NoHang) {
-  StartBlockedThread();
-
   // No hang to catch so nothing is recorded.
   MonitorHangs();
   EXPECT_EQ(GetHangCount(), 0);
@@ -709,8 +689,7 @@ TEST_F(HangWatcherSnapshotTest, HungThreadIDs) {
   auto unregister_thread_closure =
       HangWatcher::RegisterThread(base::HangWatcher::ThreadType::kMainThread);
 
-  BlockingThread blocking_thread(&monitor_event_, base::TimeDelta{});
-  blocking_thread.StartAndWaitForScopeEntered();
+  BlockedThread blocked_thread(&monitor_event_, base::TimeDelta{});
   {
     // Ensure the blocking thread entered the scope before the main thread. This
     // will guarantee an ordering while reporting the list of hung threads.
@@ -718,23 +697,22 @@ TEST_F(HangWatcherSnapshotTest, HungThreadIDs) {
 
     // Start a WatchHangsInScope that expires right away. Ensures that
     // the first monitor will detect a hang. This scope will naturally have a
-    // later deadline than the one in |blocking_thread_| since it was created
+    // later deadline than the one in |blocked_thread_| since it was created
     // after.
     WatchHangsInScope expires_instantly(base::TimeDelta{});
 
     // Hung thread list should contain the id the blocking thread and then the
     // id of the test main thread since that is the order of increasing
     // deadline.
-    TestIDList(
-        ConcatenateThreadIds({blocking_thread.GetId(), test_thread_id_}));
+    TestIDList(ConcatenateThreadIds({blocked_thread.GetId(), test_thread_id_}));
 
-    // |expires_instantly| and the scope from |blocking_thread| are still live
+    // |expires_instantly| and the scope from |blocked_thread| are still live
     // but already recorded so should be ignored.
     ExpectNoCapture();
 
     // Thread is joinable since we signaled |monitor_event_|. This closes the
-    // scope in |blocking_thread|.
-    blocking_thread.Join();
+    // scope in |blocked_thread|.
+    blocked_thread.Join();
 
     // |expires_instantly| is still live but already recorded so should be
     // ignored.
