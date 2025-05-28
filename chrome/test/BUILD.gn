@@ -86,6 +86,7 @@ if (is_android) {
       ":payment_test_support_jni_headers_java",
       ":test_support_jni_headers_java",
       "//chrome/android:chrome_all_java",
+      "//chrome/browser/autofill/android:test_support_java",
       "//chrome/browser/feedback/android:java",
       "//chrome/browser/profiles/android:java",
       "//chrome/browser/ui/android/hats/test:test_support_java",

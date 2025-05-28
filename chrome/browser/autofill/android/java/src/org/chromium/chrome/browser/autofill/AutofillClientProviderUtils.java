@@ -52,7 +52,7 @@ public class AutofillClientProviderUtils {
      * @param availability The return value for tests.
      */
     public static void setAutofillAvailabilityToUseForTesting(
-            @AndroidAutofillAvailabilityStatus Integer availability) {
+            @Nullable @AndroidAutofillAvailabilityStatus Integer availability) {
         sAndroidAutofillFrameworkAvailabilityForTesting = availability;
         ResettersForTesting.register(() -> sAndroidAutofillFrameworkAvailabilityForTesting = null);
     }

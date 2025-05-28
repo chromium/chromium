@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/autofill/autofill_client_provider.h"
 
+#include "base/check_deref.h"
 #include "base/memory/ptr_util.h"
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
 #include "chrome/browser/ui/autofill/chrome_autofill_client.h"
@@ -25,15 +26,6 @@ namespace autofill {
 namespace {
 
 #if BUILDFLAG(IS_ANDROID)
-AndroidAutofillAvailabilityStatus GetAndroidAutofillAvailabilityStatus(
-    PrefService& prefs) {
-  return static_cast<AndroidAutofillAvailabilityStatus>(
-      Java_AutofillClientProviderUtils_getAndroidAutofillFrameworkAvailability(
-          base::android::AttachCurrentThread(), prefs.GetJavaObject()));
-}
-#endif
-
-#if BUILDFLAG(IS_ANDROID)
 void RecordAvailabilityStatus(AndroidAutofillAvailabilityStatus availability) {
   base::UmaHistogramEnumeration("Autofill.AndroidAutofillAvailabilityStatus",
                                 availability);
@@ -49,6 +41,74 @@ void RecordWhetherAndroidPrefResets(PrefService& prefs,
   base::UmaHistogramBoolean("Autofill.ResetAutofillPrefToChrome",
                             will_reset_pref);
 }
+
+// Retrieves the group for a synthetic trial. The group depends on whether the
+// app package is in a server-provided allowlist for a11y compatibility filling.
+std::string GetTrialGroupForPackage() {
+  JNIEnv* env = base::android::AttachCurrentThread();
+  return base::android::ConvertJavaStringToUTF8(
+      env, Java_AutofillClientProviderUtils_getTrialGroupForPackage(env));
+}
+
+// Sets a ahread pref that allows to learn whether deep-links into Chrome's
+// settings are available to use.
+void SetSharedPrefForDeepLink() {
+  Java_AutofillClientProviderUtils_setAutofillOptionsDeepLinkPref(
+      base::android::AttachCurrentThread(),
+      base::FeatureList::IsEnabled(
+          autofill::features::kAutofillVirtualViewStructureAndroid) &&
+          base::FeatureList::IsEnabled(
+              autofill::features::kAutofillDeepLinkAutofillOptions));
+}
+
+// Sets a shared pref that allows external apps to use a ContentResolver to
+// figure out whether Chrome is using platform autofill over the default.
+void SetSharedPrefForSettingsContentProvider(bool uses_platform_autofill) {
+  if (base::FeatureList::IsEnabled(
+          autofill::features::kAutofillVirtualViewStructureAndroid) &&
+      base::FeatureList::IsEnabled(
+          autofill::features::kAutofillThirdPartyModeContentProvider)) {
+    Java_AutofillClientProviderUtils_setThirdPartyModePref(
+        base::android::AttachCurrentThread(), uses_platform_autofill);
+  } else {
+    Java_AutofillClientProviderUtils_unsetThirdPartyModePref(
+        base::android::AttachCurrentThread());
+  }
+}
+
+AndroidAutofillAvailabilityStatus GetAndroidAutofillAvailabilityStatus(
+    PrefService& prefs) {
+  AndroidAutofillAvailabilityStatus availability = static_cast<
+      AndroidAutofillAvailabilityStatus>(
+      Java_AutofillClientProviderUtils_getAndroidAutofillFrameworkAvailability(
+          base::android::AttachCurrentThread(), prefs.GetJavaObject()));
+  // Check whether the returned availability is affected by feature parameters
+  // that skip some checks on this client.
+  switch (availability) {
+    case AndroidAutofillAvailabilityStatus::kAndroidAutofillServiceIsGoogle:
+      if (features::kAutofillVirtualViewStructureAndroidSkipsCompatibilityCheck
+              .Get() ==
+          features::VirtualViewStructureSkipChecks::kOnlySkipAwGCheck) {
+        availability = AndroidAutofillAvailabilityStatus::kAvailable;
+      }
+      ABSL_FALLTHROUGH_INTENDED;  // No skip-awg-check but skip-all may apply.
+    case AndroidAutofillAvailabilityStatus::kAndroidVersionTooOld:
+    case AndroidAutofillAvailabilityStatus::kAndroidAutofillManagerNotAvailable:
+    case AndroidAutofillAvailabilityStatus::kAndroidAutofillNotSupported:
+    case AndroidAutofillAvailabilityStatus::kUnknownAndroidAutofillService:
+      if (features::kAutofillVirtualViewStructureAndroidSkipsCompatibilityCheck
+              .Get() ==
+          features::VirtualViewStructureSkipChecks::kSkipAllChecks) {
+        availability = AndroidAutofillAvailabilityStatus::kAvailable;
+      }
+      return availability;
+    case AndroidAutofillAvailabilityStatus::kAvailable:
+    case AndroidAutofillAvailabilityStatus::kSettingTurnedOff:
+    case AndroidAutofillAvailabilityStatus::kNotAllowedByPolicy:
+      return availability;
+  }
+  NOTREACHED();
+}
 #endif  // BUILDFLAG(IS_ANDROID)
 
 bool UsesVirtualViewStructureForAutofill(PrefService& prefs) {
@@ -56,69 +116,25 @@ bool UsesVirtualViewStructureForAutofill(PrefService& prefs) {
   const AndroidAutofillAvailabilityStatus availability =
       GetAndroidAutofillAvailabilityStatus(prefs);
   RecordAvailabilityStatus(availability);
-  switch (availability) {
-    case AndroidAutofillAvailabilityStatus::kAvailable:
-      return true;
-    case AndroidAutofillAvailabilityStatus::kSettingTurnedOff:
-    case AndroidAutofillAvailabilityStatus::kNotAllowedByPolicy:
-      return false;
-    case AndroidAutofillAvailabilityStatus::kAndroidVersionTooOld:
-    case AndroidAutofillAvailabilityStatus::kAndroidAutofillManagerNotAvailable:
-    case AndroidAutofillAvailabilityStatus::kAndroidAutofillNotSupported:
-    case AndroidAutofillAvailabilityStatus::kUnknownAndroidAutofillService:
-      return features::
-                 kAutofillVirtualViewStructureAndroidSkipsCompatibilityCheck
-                     .Get() ==
-             features::VirtualViewStructureSkipChecks::kSkipAllChecks;
-    case AndroidAutofillAvailabilityStatus::kAndroidAutofillServiceIsGoogle:
-      return features::
-                     kAutofillVirtualViewStructureAndroidSkipsCompatibilityCheck
-                         .Get() ==
-                 features::VirtualViewStructureSkipChecks::kSkipAllChecks ||
-             features::
-                     kAutofillVirtualViewStructureAndroidSkipsCompatibilityCheck
-                         .Get() ==
-                 features::VirtualViewStructureSkipChecks::kOnlySkipAwGCheck;
-  }
+  return availability == AndroidAutofillAvailabilityStatus::kAvailable;
 #else
   return false;
 #endif  // BUILDFLAG(IS_ANDROID)
 }
 
-#if BUILDFLAG(IS_ANDROID)
-std::string GetTrialGroupForPackage() {
-  JNIEnv* env = base::android::AttachCurrentThread();
-  return base::android::ConvertJavaStringToUTF8(
-      env, Java_AutofillClientProviderUtils_getTrialGroupForPackage(env));
-}
-#endif
-
 }  // namespace
 
 AutofillClientProvider::AutofillClientProvider(PrefService* prefs)
-    : uses_platform_autofill_(UsesVirtualViewStructureForAutofill(*prefs)) {
+    : uses_platform_autofill_(
+          UsesVirtualViewStructureForAutofill(CHECK_DEREF(prefs))) {
 #if BUILDFLAG(IS_ANDROID)
   DelayRegisteringFieldTrialForA11yDeprecation();
   RecordWhetherAndroidPrefResets(*prefs, uses_platform_autofill_);
   // Ensure the pref is reset if platform autofill is restricted.
   prefs->SetBoolean(prefs::kAutofillUsingVirtualViewStructure,
                     uses_platform_autofill_);
-  if (base::FeatureList::IsEnabled(
-          autofill::features::kAutofillVirtualViewStructureAndroid) &&
-      base::FeatureList::IsEnabled(
-          autofill::features::kAutofillThirdPartyModeContentProvider)) {
-    Java_AutofillClientProviderUtils_setThirdPartyModePref(
-        base::android::AttachCurrentThread(), uses_platform_autofill_);
-  } else {
-    Java_AutofillClientProviderUtils_unsetThirdPartyModePref(
-        base::android::AttachCurrentThread());
-  }
-  Java_AutofillClientProviderUtils_setAutofillOptionsDeepLinkPref(
-      base::android::AttachCurrentThread(),
-      base::FeatureList::IsEnabled(
-          autofill::features::kAutofillVirtualViewStructureAndroid) &&
-          base::FeatureList::IsEnabled(
-              autofill::features::kAutofillDeepLinkAutofillOptions));
+  SetSharedPrefForSettingsContentProvider(uses_platform_autofill_);
+  SetSharedPrefForDeepLink();
 #endif  // BUILDFLAG(IS_ANDROID)
 }
 
