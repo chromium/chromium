@@ -8,6 +8,7 @@
 #include "android_webview/browser/aw_browser_context_store.h"
 #include "android_webview/common/aw_features.h"
 #include "base/android/jni_android.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/test/task_environment.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/test/browser_task_environment.h"

@@ -9,6 +9,7 @@
 #include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/memory/shared_memory_mapping.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/win/scoped_handle.h"
 #include "gpu/command_buffer/common/gpu_memory_buffer_support.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"

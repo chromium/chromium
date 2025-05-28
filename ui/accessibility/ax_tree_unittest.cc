@@ -4,6 +4,7 @@
 
 #include "ui/accessibility/ax_tree.h"
 
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 
 #if BUILDFLAG(IS_LINUX)

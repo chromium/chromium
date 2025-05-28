@@ -6,6 +6,7 @@
 
 #include <string_view>
 
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/utf_string_conversions.h"
 #include "extensions/common/api/file_handlers.h"

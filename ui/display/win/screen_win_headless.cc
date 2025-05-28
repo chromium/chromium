@@ -11,6 +11,7 @@
 #include "base/compiler_specific.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_number_conversions_win.h"
 #include "base/strings/string_util_win.h"
 #include "components/headless/screen_info/headless_screen_info.h"

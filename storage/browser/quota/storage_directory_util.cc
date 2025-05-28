@@ -4,6 +4,7 @@
 
 #include "storage/browser/quota/storage_directory_util.h"
 
+#include "base/strings/string_number_conversions.h"
 #include "components/services/storage/public/cpp/constants.h"
 
 namespace storage {

@@ -11,6 +11,7 @@
 
 #include "base/containers/adapters.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/layout/normalized_geometry.h"
 #include "ui/views/view_class_properties.h"

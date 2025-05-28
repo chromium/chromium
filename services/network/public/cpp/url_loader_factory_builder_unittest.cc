@@ -4,6 +4,7 @@
 
 #include "services/network/public/cpp/url_loader_factory_builder.h"
 
+#include "base/strings/string_number_conversions.h"
 #include "base/test/task_environment.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "services/network/public/cpp/resource_request.h"

@@ -9,6 +9,7 @@
 
 #include "base/i18n/time_formatting.h"
 #include "base/rand_util.h"
+#include "base/strings/string_number_conversions.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
 #include "net/base/load_flags.h"
 #include "net/http/http_log_util.h"

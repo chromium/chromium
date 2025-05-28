@@ -5,13 +5,14 @@
 #include "fuchsia_web/webengine/browser/web_engine_browser_main_parts.h"
 
 #include <fuchsia/web/cpp/fidl.h>
+#include <lib/async/default.h>
 #include <lib/inspect/component/cpp/component.h>
 #include <lib/sys/cpp/component_context.h>
 #include <lib/sys/cpp/outgoing_directory.h>
+
 #include <utility>
 #include <vector>
 
-#include <lib/async/default.h>
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/files/important_file_writer_cleaner.h"
@@ -25,6 +26,7 @@
 #include "base/i18n/rtl.h"
 #include "base/logging.h"
 #include "base/no_destructor.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/system/sys_info.h"
 #include "base/task/single_thread_task_runner.h"

@@ -12,6 +12,7 @@
 #include <variant>
 
 #include "base/logging.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/sys_string_conversions.h"
 #include "ui/accessibility/platform/inspect/ax_inspect_utils_auralinux.h"
 #include "ui/accessibility/platform/inspect/ax_property_node.h"

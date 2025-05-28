@@ -6,6 +6,7 @@
 
 #include "base/containers/span.h"
 #include "base/logging.h"
+#include "base/strings/string_number_conversions.h"
 #include "net/base/url_util.h"
 #include "net/test/embedded_test_server/websocket_connection.h"
 

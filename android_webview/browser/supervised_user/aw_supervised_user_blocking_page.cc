@@ -7,6 +7,7 @@
 #include "android_webview/browser/aw_browser_context.h"
 #include "base/android/jni_android.h"
 #include "base/i18n/rtl.h"
+#include "base/strings/string_number_conversions.h"
 #include "components/grit/components_resources.h"
 #include "components/prefs/pref_service.h"
 #include "components/security_interstitials/content/security_interstitial_controller_client.h"

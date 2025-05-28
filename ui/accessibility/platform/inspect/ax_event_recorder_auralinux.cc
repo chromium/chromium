@@ -17,6 +17,7 @@
 
 #include "base/no_destructor.h"
 #include "base/process/process_handle.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "ui/accessibility/platform/ax_platform_tree_manager.h"
