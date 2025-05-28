@@ -7184,6 +7184,9 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_TRANSLATE_SETTING_RESET_NOTIFICATION" desc="Message appearing after the user pressed the button to reset the translate settings. [Length: 30em] [iOS only]">
         Your translate settings have been reset.
       </message>
+      <message name="IDS_IOS_TRUSTED_VAULT_WIDGET_KEEP_USING_AND_SAVING_PASSWORDS_MESSAGE_WITH_EMAIL" desc="The error message in the Password Manager Trusted Vault widget promo related to the error preventing the user from using and saving passwords in their Google account. [iOS only]">
+        Keep using and saving the passwords in your Google Account <ph name="EMAIL">$1<ex>john.doe@gmail.com</ex></ph>
+      </message>
       <message name="IDS_IOS_UI_BLOCKED_USE_OTHER_WINDOW_SWITCH_WINDOW_ACTION" desc="Button label that appears on a button to switch to some other window, when the user has multiple windows open, and one window is showing a dialog that has to be interacted with before any other window can be used.">
           Switch to open window
       </message>

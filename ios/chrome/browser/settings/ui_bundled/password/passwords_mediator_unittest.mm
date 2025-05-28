@@ -123,6 +123,9 @@ std::unique_ptr<KeyedService> BuildFeatureEngagementMockTracker(
   _shouldShowTrustedVaultWidgetPromoCalled = YES;
 }
 
+- (void)setUserEmail:(const std::u16string&)userEmail {
+}
+
 @end
 
 // Tests for Passwords mediator.

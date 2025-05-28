@@ -1344,6 +1344,7 @@ TEST_F(PasswordManagerViewControllerTest,
   AddSavedForm1();
 
   // Make Password Manager show the promo:
+  [GetPasswordManagerViewController() setUserEmail:u"test@egmail.com"];
   GetPasswordManagerViewController().shouldShowTrustedVaultWidgetPromo = YES;
   [GetPasswordManagerViewController() reloadData];
 
@@ -1359,9 +1360,14 @@ TEST_F(PasswordManagerViewControllerTest,
       GetSectionIndex(SectionIdentifierTrustedVaultWidgetPromo), 0));
 
   EXPECT_NSEQ(item.promoImage, [UIImage imageNamed:WidgetPromoImageName()]);
-  EXPECT_NSEQ(item.promoText,
-              @"You should retrieve the Trusted Vault key (TODO: refine)");
-  EXPECT_NSEQ(item.moreInfoButtonTitle, @"Retrieve the key (TODO: refine)");
+  EXPECT_NSEQ(
+      item.promoText,
+      l10n_util::GetNSStringF(
+          IDS_IOS_IDENTITY_ERROR_INFOBAR_KEEP_USING_PASSWORDS_MESSAGE_WITH_EMAIL,
+          u"test@egmail.com"));
+  EXPECT_NSEQ(item.moreInfoButtonTitle,
+              l10n_util::GetNSString(
+                  IDS_IOS_IDENTITY_ERROR_INFOBAR_VERIFY_ITS_YOU_TITLE));
   EXPECT_FALSE(item.shouldShowCloseButton);
   EXPECT_FALSE(GetPasswordManagerViewController().editing);
   EXPECT_TRUE(item.enabled);

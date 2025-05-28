@@ -140,6 +140,8 @@ struct PasswordManagerActiveWidgetPromoData
   }
   _consumer = consumer;
 
+  [self.consumer
+      setUserEmail:base::UTF8ToUTF16(_syncService->GetAccountInfo().email)];
   [self displayOrHideTrustedVaultPasswordManagerWidgetPromo];
   [self providePasswordsToConsumer];
 
