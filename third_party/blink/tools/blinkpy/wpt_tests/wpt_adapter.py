@@ -203,19 +203,16 @@ class WPTAdapter:
         if verbose_level >= 1:
             runner_options.log_mach = '-'
             runner_options.log_mach_level = 'info'
-            runner_options.log_mach_verbose = True
         if verbose_level >= 2:
-            runner_options.log_mach_level = 'debug'
+            # Log individual subtest results and `chromedriver` process output.
+            runner_options.log_mach_verbose = True
         if verbose_level >= 3:
+            # Trace test runner and testdriver events.
+            runner_options.log_mach_level = 'debug'
+            # Trace individual CDP requests and events.
             runner_options.webdriver_args.append('--verbose')
         else:
-            # Disable all `chromedriver` logs except from `chrome_launcher.cc`,
-            # which logs the `chrome` command that `WPTResultsProcessor` will
-            # extract.
-            runner_options.webdriver_args.extend([
-                '--log-level=INFO',
-                '--vmodule=chrome_launcher=0,*/chrome/test/chromedriver/*=-1',
-            ])
+            runner_options.webdriver_args.append('--log-level=WARNING')
 
         if self.options.use_upstream_wpt:
             runner_options.log_wptreport = [

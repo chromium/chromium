@@ -12,11 +12,14 @@ results. See the docs [0] and source code [1] for details.
 
 from datetime import datetime
 import logging
+from typing import Optional
 
 from blinkpy.common import path_finder
+from blinkpy.wpt_tests.test_loader import wpt_url_to_blink_test
 
 path_finder.bootstrap_wpt_imports()
 import mozlog
+from mozlog.formatters.base import BaseFormatter
 
 
 class GroupingFormatter(mozlog.formatters.GroupingFormatter):
@@ -33,15 +36,13 @@ class GroupingFormatter(mozlog.formatters.GroupingFormatter):
         self._start = datetime.now()
 
     def get_test_name_output(self, subsuite, test_name):
-        if not test_name.startswith('/wpt_internal/'):
-            test_name = '/external/wpt' + test_name
-        return f'virtual/{subsuite}{test_name}' if subsuite else test_name[1:]
+        test_name = wpt_url_to_blink_test(test_name)
+        return f'virtual/{subsuite}/{test_name}' if subsuite else test_name
 
     def log(self, data):
-        timestamp = datetime.now().isoformat(sep=' ', timespec='milliseconds')
         # Place mandatory fields first so that logs are vertically aligned as
         # much as possible.
-        message = f'{timestamp} {data["level"]} {data["message"]}'
+        message = f'{format_timestamp()} {data["level"]} {data["message"]}'
         if 'stack' in data:
             message = f'{message}\n{data["stack"]}'
         return self.generate_output(text=message + '\n')
@@ -74,6 +75,20 @@ class MachFormatter(mozlog.formatters.MachFormatter):
         super().__init__(*args, **kwargs)
         self.reset_before_suite = reset_before_suite
 
+    def __call__(self, data):
+        self.summary(data)
+
+        # pylint: disable=bad-super-call; intentional call to grandparent class
+        output = super(BaseFormatter, self).__call__(data)
+        if output is None:
+            return
+
+        timestamp = self.color_formatter.time(format_timestamp())
+        thread = data.get('thread', '')
+        if thread:
+            thread += ' '
+        return f'{timestamp} {thread}{output}\n'
+
     def suite_start(self, data) -> str:
         output = super().suite_start(data)
         if self.reset_before_suite:
@@ -86,6 +101,33 @@ class MachFormatter(mozlog.formatters.MachFormatter):
             self.summary.current['intermittent_logs'].clear()
             self.summary.current['harness_errors'].clear()
         return output
+
+    def process_output(self, data) -> Optional[str]:
+        if not self.verbose:
+            return None
+        return super().process_output(data)
+
+    def test_start(self, data) -> Optional[str]:
+        # Log the test ID as part of `test_end` so that results from different
+        # tests aren't interleaved confusingly.
+        return None
+
+    def test_end(self, data) -> Optional[str]:
+        test_id = self._get_test_id(data)
+        # We need this string replacement hack because the base formatter
+        # doesn't have an overridable hook for this.
+        # TODO(web-platform-tests/wpt#48948): Fork `MachFormatter` and write the
+        # desired format.
+        return super().test_end(data).replace('TEST_END', test_id, 1)
+
+    def _get_test_id(self, data) -> str:
+        test_name = wpt_url_to_blink_test(data['test'])
+        subsuite = data.get('subsuite')
+        return f'virtual/{subsuite}/{test_name}' if subsuite else test_name
+
+
+def format_timestamp() -> str:
+    return datetime.now().isoformat(sep=' ', timespec='milliseconds')
 
 
 class StructuredLogAdapter(logging.Handler):
