@@ -851,8 +851,6 @@ AttributionResolverImpl::MaybeCreateEventLevelReport(
     const AttributionTrigger& trigger,
     std::optional<uint64_t>& dedup_key) {
   if (source.attribution_logic() == StoredSource::AttributionLogic::kFalsely) {
-    DCHECK_EQ(source.active_state(),
-              StoredSource::ActiveState::kReachedEventLevelAttributionLimit);
     return CreateReportResult::FalselyAttributedSource();
   }
 
