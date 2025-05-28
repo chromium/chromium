@@ -4648,6 +4648,46 @@ TEST(CanonicalCookieTest, CreateSanitizedCookie_Logic) {
       {CookieInclusionStatus::ExclusionReason::EXCLUDE_INVALID_DOMAIN}));
 }
 
+// Regression test for https://crbug.com/403967933
+// This test verifies the handling of non-scheme URLs of the form drive://path.
+// On Windows, GURL interprets such paths as file URLs.
+// On non-Windows platforms, GURL treats them as URLs with an unknown scheme.
+// As a result, the behavior of CreateSanitizedCookie differs between these
+// environments.
+TEST(CanonicalCookieTest, CreateSanitizedCookie_UnknownSchemeUrl) {
+  CookieInclusionStatus status;
+
+  std::unique_ptr<CanonicalCookie> cc = CanonicalCookie::CreateSanitizedCookie(
+      GURL("o://%2e"), "name", "value", /*domain=*/"", /*path=*/"",
+      base::Time(), base::Time(), base::Time(), /*secure=*/false,
+      /*httponly=*/false, CookieSameSite::NO_RESTRICTION,
+      COOKIE_PRIORITY_DEFAULT, /*partition_key=*/std::nullopt, &status);
+#if BUILDFLAG(IS_WIN)
+  EXPECT_TRUE(status.IsInclude());
+  EXPECT_TRUE(cc);
+#else
+  EXPECT_FALSE(status.IsInclude());
+  EXPECT_FALSE(cc);
+  EXPECT_TRUE(status.HasExactlyExclusionReasonsForTesting(
+      {CookieInclusionStatus::ExclusionReason::EXCLUDE_INVALID_DOMAIN}));
+#endif  // IS_WIN
+
+  CookieInclusionStatus status2;
+  EXPECT_TRUE(CanonicalCookie::CreateSanitizedCookie(
+      GURL("git://HOST"), "name", "value", /*domain=*/"", /*path=*/"",
+      base::Time(), base::Time(), base::Time(), /*secure=*/false,
+      /*httponly=*/false, CookieSameSite::NO_RESTRICTION,
+      COOKIE_PRIORITY_DEFAULT, /*partition_key=*/std::nullopt, &status2));
+  EXPECT_TRUE(status2.IsInclude());
+
+  EXPECT_FALSE(CanonicalCookie::CreateSanitizedCookie(
+      GURL("git://%2eHOST"), "name", "value", /*domain=*/"", /*path=*/"",
+      base::Time(), base::Time(), base::Time(), /*secure=*/false,
+      /*httponly=*/false, CookieSameSite::NO_RESTRICTION,
+      COOKIE_PRIORITY_DEFAULT, /*partition_key=*/std::nullopt, &status2));
+  EXPECT_FALSE(status2.IsInclude());
+}
+
 // Regression test for https://crbug.com/362535230.
 TEST(CanonicalCookieTest, CreateSanitizedCookie_NoncanonicalDomain) {
   CookieInclusionStatus status;
