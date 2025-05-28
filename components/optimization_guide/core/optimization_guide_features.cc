@@ -187,7 +187,7 @@ BASE_FEATURE(kAiSettingsPageForceAvailable,
 // Enable AI settings page integration with Privacy Guide.
 BASE_FEATURE(kPrivacyGuideAiSettings,
              "PrivacyGuideAiSettings",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kAiSettingsPageEnterpriseDisabledUi,
              "AiSettingsPageEnterpriseDisabledUi",
