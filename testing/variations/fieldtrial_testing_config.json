@@ -8991,6 +8991,25 @@
             ]
         }
     ],
+    "EnhancedFieldsForSecOps": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "EnhancedFieldsForSecOps",
+                        "EnhancedSecurityEventFields"
+                    ]
+                }
+            ]
+        }
+    ],
     "EnterpriseFileObfuscation": [
         {
             "platforms": [
