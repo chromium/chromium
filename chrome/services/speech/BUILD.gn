@@ -59,7 +59,6 @@ source_set("unit_tests") {
   testonly = true
 
   sources = [
-    "fake_speech_recognition_recognizer_client.h",
     "soda_speech_recognizer_impl_unittest.cc",
     "speech_recognition_recognizer_impl_unittest.cc",
   ]
@@ -91,4 +90,16 @@ source_set("unit_tests") {
       "//services/audio/public/cpp:test_support",
     ]
   }
+}
+
+source_set("test_mojo_client") {
+  testonly = true
+
+  sources = [ "fake_speech_recognition_recognizer_client.h" ]
+  deps = [
+    "//base",
+    "//media/mojo/common",
+    "//media/mojo/mojom:speech_recognition",
+    "//mojo/public/cpp/bindings",
+  ]
 }
