@@ -1427,6 +1427,11 @@ void CollaborationController::Exit() {
 
 void CollaborationController::Cancel() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  if (is_deleting_) {
+    // Cancel can be triggered due to identity manager and tab group changes.
+    return;
+  }
+
   delegate()->Cancel(base::IgnoreArgs<Outcome>(base::BindOnce(
       &CollaborationController::Exit, weak_ptr_factory_.GetWeakPtr())));
 }
