@@ -4483,7 +4483,6 @@ ci.builder(
             "chrome_public_test_apk": targets.mixin(
                 args = [
                     "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_15_tablet_landscape.chrome_public_test_apk.filter",
-                    "--emulator-debug-tags=all",
                 ],
             ),
         },
@@ -4554,6 +4553,7 @@ ci.builder(
                 args = [
                     # https://crbug.com/375086487
                     "--gtest_filter=-InstallableManagerBrowserTest.CheckManifestWithIconThatIsTooSmall",
+                    "--emulator-debug-tags=all",
                 ],
                 swarming = targets.swarming(
                     shards = 6,
