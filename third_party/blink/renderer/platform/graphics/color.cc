@@ -55,8 +55,6 @@ const Color Color::kTransparent = Color(0x00000000);
 
 namespace {
 
-const RGBA32 kLightenedBlack = 0xFF545454;
-const RGBA32 kDarkenedWhite = 0xFFABABAB;
 // For lch/oklch colors, the value of chroma underneath which the color is
 // considered to be "achromatic", relevant for color conversions.
 // https://www.w3.org/TR/css-color-4/#lab-to-lch
@@ -150,6 +148,12 @@ constexpr int BlueChannel(RGBA32 color) {
 float AngleToUnitCircleDegrees(float angle) {
   return fmod(fmod(angle, 360.f) + 360.f, 360.f);
 }
+
+float QuantizeTo8Bit(float v) {
+  const float scale_factor = nextafterf(256.0f, 0.0f);
+  return static_cast<int>(v * scale_factor) / 255.0f;
+}
+
 }  // namespace
 
 // The color parameters will use 16 bytes (for 4 floats). Ensure that the
@@ -1169,49 +1173,49 @@ bool Color::SetNamedColor(const String& name) {
 }
 
 Color Color::Light() const {
+  static constexpr Color kLightenedBlack = Color::FromRGB(84, 84, 84);
+
   // Hardcode this common case for speed.
   if (*this == kBlack) {
-    return Color(kLightenedBlack);
+    return kLightenedBlack;
   }
 
-  const float scale_factor = nextafterf(256.0f, 0.0f);
+  Color srgb_color = *this;
+  srgb_color.ConvertToColorSpace(ColorSpace::kSRGB);
 
-  float r, g, b, a;
-  GetRGBA(r, g, b, a);
-
-  float v = std::max(r, std::max(g, b));
-
+  const float v =
+      std::max({srgb_color.Param0(), srgb_color.Param1(), srgb_color.Param2()});
   if (v == 0.0f) {
     // Lightened black with alpha.
-    return Color(RedChannel(kLightenedBlack), GreenChannel(kLightenedBlack),
-                 BlueChannel(kLightenedBlack), AlphaAsInteger());
+    Color lightened_black_with_alpha = kLightenedBlack;
+    lightened_black_with_alpha.SetAlpha(srgb_color.Alpha());
+    return lightened_black_with_alpha;
   }
 
-  float multiplier = std::min(1.0f, v + 0.33f) / v;
-
-  return Color(static_cast<int>(multiplier * r * scale_factor),
-               static_cast<int>(multiplier * g * scale_factor),
-               static_cast<int>(multiplier * b * scale_factor),
-               AlphaAsInteger());
+  const float multiplier = std::min(1.0f, v + 0.33f) / v;
+  srgb_color.param0_ = QuantizeTo8Bit(srgb_color.param0_ * multiplier);
+  srgb_color.param1_ = QuantizeTo8Bit(srgb_color.param1_ * multiplier);
+  srgb_color.param2_ = QuantizeTo8Bit(srgb_color.param2_ * multiplier);
+  return srgb_color;
 }
 
 Color Color::Dark() const {
   // Hardcode this common case for speed.
-  if (*this == kWhite)
-    return Color(kDarkenedWhite);
+  if (*this == kWhite) {
+    static constexpr Color kDarkenedWhite = Color::FromRGB(171, 171, 171);
+    return kDarkenedWhite;
+  }
 
-  const float scale_factor = nextafterf(256.0f, 0.0f);
+  Color srgb_color = *this;
+  srgb_color.ConvertToColorSpace(ColorSpace::kSRGB);
 
-  float r, g, b, a;
-  GetRGBA(r, g, b, a);
-
-  float v = std::max(r, std::max(g, b));
-  float multiplier = (v == 0.0f) ? 0.0f : std::max(0.0f, (v - 0.33f) / v);
-
-  return Color(static_cast<int>(multiplier * r * scale_factor),
-               static_cast<int>(multiplier * g * scale_factor),
-               static_cast<int>(multiplier * b * scale_factor),
-               AlphaAsInteger());
+  const float v =
+      std::max({srgb_color.Param0(), srgb_color.Param1(), srgb_color.Param2()});
+  const float multiplier = (v == 0.0f) ? 0.0f : std::max(0.0f, (v - 0.33f) / v);
+  srgb_color.param0_ = QuantizeTo8Bit(srgb_color.param0_ * multiplier);
+  srgb_color.param1_ = QuantizeTo8Bit(srgb_color.param1_ * multiplier);
+  srgb_color.param2_ = QuantizeTo8Bit(srgb_color.param2_ * multiplier);
+  return srgb_color;
 }
 
 float Color::GetLightness(ColorSpace lightness_colorspace) const {
@@ -1271,22 +1275,6 @@ Color Color::BlendWithWhite() const {
       break;
   }
   return new_color;
-}
-
-void Color::GetRGBA(float& r, float& g, float& b, float& a) const {
-  // TODO(crbug.com/1399566): Check for colorspace.
-  r = Red() / 255.0f;
-  g = Green() / 255.0f;
-  b = Blue() / 255.0f;
-  a = Alpha();
-}
-
-void Color::GetRGBA(double& r, double& g, double& b, double& a) const {
-  // TODO(crbug.com/1399566): Check for colorspace.
-  r = Red() / 255.0;
-  g = Green() / 255.0;
-  b = Blue() / 255.0;
-  a = Alpha();
 }
 
 // From https://www.w3.org/TR/css-color-4/#interpolation
