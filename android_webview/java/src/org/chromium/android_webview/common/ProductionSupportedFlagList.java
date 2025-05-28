@@ -248,6 +248,9 @@ public final class ProductionSupportedFlagList {
                 AutofillFeatures.AUTOFILL_BETTER_LOCAL_HEURISTIC_PLACEHOLDER_SUPPORT,
                 "Treats placeholders as a separate signal for Autofill local heuristics"),
         Flag.baseFeature(
+                AutofillFeatures.AUTOFILL_DETECT_FIELD_VISIBILITY,
+                "Populates FormFieldData::is_visible() with visibility rather than focusability"),
+        Flag.baseFeature(
                 AutofillFeatures.AUTOFILL_ENABLE_EMAIL_HEURISTIC_OUTSIDE_FORMS,
                 "Enables heuristics for detecting email fields outside of forms."),
         Flag.baseFeature(
