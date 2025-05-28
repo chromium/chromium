@@ -1444,11 +1444,6 @@ crbug.com/379233932 [ Win11-arm64 ] external/wpt/ai/translator/* [ Skip Timeout 
 # Failing on Intel Mac11
 crbug.com/379233396 [ Mac11 ] external/wpt/ai/translator/* [ Failure ]
 
-# Failing (PRECONDITION_FAILED) without blink::features::kAIPromptAPIMultimodalInput flag
-crbug.com/419853199 wpt_internal/ai/language-model-api-availability-available-multimodal.https.window.html [ Failure Pass ]
-crbug.com/419853199 wpt_internal/ai/language-model-api-create-multimodal.https.window.html [ Failure Pass ]
-crbug.com/419853199 wpt_internal/ai/language-model-api-prompt-multimodal.https.window.html [ Failure Pass ]
-
 ### sheriff 2018-05-28
 
 crbug.com/767269 [ Win ] inspector-protocol/layout-fonts/cjk-ideograph-fallback-by-lang.js [ Failure Pass ]

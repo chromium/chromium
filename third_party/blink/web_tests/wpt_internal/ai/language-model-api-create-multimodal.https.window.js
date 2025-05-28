@@ -49,7 +49,6 @@ promise_test(async t => {
     { expectedInputs: [{type: 'image'}], initialPrompts: [{role: 'user', content: [audioContent]}] },
   ];
   for (const options of kUnsupportedCreateOptions) {
-    // TODO(crbug.com/419599702): Ensure the model actually gets initialPrompts.
-    await promise_rejects_js(t, TypeError, LanguageModel.create(options), JSON.stringify(options));
+    await promise_rejects_dom(t, 'NotSupportedError', LanguageModel.create(options), JSON.stringify(options));
   }
 }, 'LanguageModel.create() fails with unsupported multimodal initialPrompts');

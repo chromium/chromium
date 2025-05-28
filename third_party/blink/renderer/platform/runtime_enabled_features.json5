@@ -352,6 +352,8 @@
         "Linux": "experimental",
         "default": "",
       },
+      base_feature_status: "enabled",
+      copied_from_base_feature_if: "overridden",
     },
     {
       // Gates access to the responseConstraint enhancement for "AIPromptAPI".
