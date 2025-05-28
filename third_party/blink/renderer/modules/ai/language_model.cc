@@ -596,12 +596,6 @@ LanguageModel::ValidateAndProcessPromptInput(
     return std::nullopt;
   }
 
-  if (!input->IsString() &&
-      !RuntimeEnabledFeatures::AIPromptAPIMultimodalInputEnabled()) {
-    exception_state.ThrowTypeError("Input type not supported");
-    return std::nullopt;
-  }
-
   AbortSignal* signal = options->getSignalOr(nullptr);
   if (HandleAbortSignal(signal, script_state, exception_state)) {
     return std::nullopt;
@@ -643,12 +637,6 @@ ScriptPromise<IDLUndefined> LanguageModel::append(
       MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(script_state);
   auto promise = resolver->Promise();
 
-  // The API impl only accepts a string by default for now, more to come soon!
-  if (!input->IsString() &&
-      !RuntimeEnabledFeatures::AIPromptAPIMultimodalInputEnabled()) {
-    exception_state.ThrowTypeError("Input type not supported");
-    return promise;
-  }
   if (!language_model_remote_) {
     ThrowSessionDestroyedException(exception_state);
     return promise;
@@ -713,13 +701,6 @@ ScriptPromise<IDLDouble> LanguageModel::measureInputUsage(
     ExceptionState& exception_state) {
   if (!script_state->ContextIsValid()) {
     ThrowInvalidContextException(exception_state);
-    return EmptyPromise();
-  }
-
-  // The API impl only accepts a string by default for now, more to come soon!
-  if (!input->IsString() &&
-      !RuntimeEnabledFeatures::AIPromptAPIMultimodalInputEnabled()) {
-    exception_state.ThrowTypeError("Input type not supported");
     return EmptyPromise();
   }
 

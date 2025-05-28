@@ -251,13 +251,19 @@ void LanguageModelPromptBuilder::Build(const V8LanguageModelPrompt* input) {
         break;
       }
     }
-    // Multimodal (non-text) input is not supported for the assistant role.
-    if (message->role() == V8LanguageModelMessageRole::Enum::kAssistant &&
-        is_multimodal) {
-      Reject(DOMException::Create(
-          "Multimodal input is not supported for the assistant role.",
-          DOMException::GetErrorName(DOMExceptionCode::kNotSupportedError)));
-      return;
+    if (is_multimodal) {
+      if (!RuntimeEnabledFeatures::AIPromptAPIMultimodalInputEnabled()) {
+        v8::Isolate* isolate = script_state_->GetIsolate();
+        Reject(ScriptValue(isolate, V8ThrowException::CreateTypeError(
+                                        isolate, "Input type not supported")));
+        return;
+      }
+      if (message->role() == V8LanguageModelMessageRole::Enum::kAssistant) {
+        Reject(DOMException::Create(
+            "Multimodal input is not supported for the assistant role.",
+            DOMException::GetErrorName(DOMExceptionCode::kNotSupportedError)));
+        return;
+      }
     }
   }
 
