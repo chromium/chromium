@@ -587,14 +587,7 @@ void PaymentRequestState::PopulateProfileCache() {
 
   // Remove home and work profiles since they are non-editable.
   std::erase_if(profiles, [](const autofill::AutofillProfile* profile) {
-    switch (profile->record_type()) {
-      case autofill::AutofillProfile::RecordType::kLocalOrSyncable:
-      case autofill::AutofillProfile::RecordType::kAccount:
-        return false;
-      case autofill::AutofillProfile::RecordType::kAccountHome:
-      case autofill::AutofillProfile::RecordType::kAccountWork:
-        return true;
-    }
+    return profile->IsHomeAndWorkProfile();
   });
 
   std::vector<raw_ptr<autofill::AutofillProfile, VectorExperimental>>

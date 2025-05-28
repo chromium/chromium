@@ -142,14 +142,7 @@ void DeduplicateWithAccountProfiles(const AutofillProfileComparator& comparator,
                                     AddressDataManager& adm) {
   // H/W profiles are not supported for deduplication.
   std::erase_if(profiles, [](const AutofillProfile& p) {
-    switch (p.record_type()) {
-      case AutofillProfile::RecordType::kLocalOrSyncable:
-      case AutofillProfile::RecordType::kAccount:
-        return false;
-      case AutofillProfile::RecordType::kAccountHome:
-      case AutofillProfile::RecordType::kAccountWork:
-        return true;
-    }
+    return p.IsHomeAndWorkProfile();
   });
 
   std::set<std::string> guids_to_delete;

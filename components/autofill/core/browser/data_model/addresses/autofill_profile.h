@@ -330,6 +330,9 @@ class AutofillProfile : public FormGroup {
   // profiles are considered local profiles.
   bool IsAccountProfile() const;
 
+  // Whether the profile's record type is kAccountHome or kAccountWork.
+  bool IsHomeAndWorkProfile() const;
+
   int initial_creator_id() const { return initial_creator_id_; }
   void set_initial_creator_id(int creator_id) {
     initial_creator_id_ = creator_id;

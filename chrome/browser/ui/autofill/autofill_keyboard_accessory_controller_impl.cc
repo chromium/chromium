@@ -563,13 +563,8 @@ bool AutofillKeyboardAccessoryControllerImpl::GetRemovalConfirmationText(
                 std::get<Suggestion::AutofillProfilePayload>(payload)
                     .guid.value())) {
       // Home & Work addresses can't be deleted through the chrome UI.
-      switch (profile->record_type()) {
-        case AutofillProfile::RecordType::kAccountHome:
-        case AutofillProfile::RecordType::kAccountWork:
-          return false;
-        case AutofillProfile::RecordType::kLocalOrSyncable:
-        case AutofillProfile::RecordType::kAccount:
-          break;
+      if (profile->IsHomeAndWorkProfile()) {
+        return false;
       }
 
       if (title) {
