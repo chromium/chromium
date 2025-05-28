@@ -55,6 +55,7 @@ source_set("unit_tests") {
     "network_api/facilitated_payments_initiate_payment_request_unittest.cc",
     "network_api/facilitated_payments_network_interface_unittest.cc",
     "network_api/multiple_request_facilitated_payments_network_interface_unittest.cc",
+    "pix_account_linking_manager_unittest.cc",
     "pix_manager_unittest.cc",
   ]
 

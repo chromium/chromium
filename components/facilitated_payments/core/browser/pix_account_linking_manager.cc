@@ -17,6 +17,8 @@ void PixAccountLinkingManager::MaybeShowPixAccountLinkingPrompt() {
   if (!client_->IsPixAccountLinkingSupported()) {
     return;
   }
+
+  client_->ShowPixAccountLinkingPrompt();
 }
 
 }  // namespace payments::facilitated
