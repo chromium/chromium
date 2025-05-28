@@ -1005,19 +1005,22 @@ int ChromeBrowserMainParts::PreCreateThreadsImpl() {
         !base::CommandLine::ForCurrentProcess()->HasSwitch(switches::kAppId)) {
       browser_creator_->AddFirstRunTabs(master_prefs_->new_tabs);
     }
-
-#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
-    // Create directory for user-level Native Messaging manifest files. This
-    // makes it less likely that the directory will be created by third-party
-    // software with incorrect owner or permission. See crbug.com/725513 .
-    base::FilePath user_native_messaging_dir;
-    CHECK(base::PathService::Get(chrome::DIR_USER_NATIVE_MESSAGING,
-                                 &user_native_messaging_dir));
-    if (!base::PathExists(user_native_messaging_dir))
-      base::CreateDirectory(user_native_messaging_dir);
-#endif
   }
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
+
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE) &&                                   \
+    (BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || \
+     BUILDFLAG(IS_ANDROID))
+  // Create directory for user-level Native Messaging manifest files. This
+  // makes it less likely that the directory will be created by third-party
+  // software with incorrect owner or permission. See crbug.com/725513 .
+  base::FilePath user_native_messaging_dir;
+  CHECK(base::PathService::Get(chrome::DIR_USER_NATIVE_MESSAGING,
+                               &user_native_messaging_dir));
+  if (!base::PathExists(user_native_messaging_dir)) {
+    base::CreateDirectory(user_native_messaging_dir);
+  }
+#endif
 
 #if BUILDFLAG(IS_MAC)
 #if defined(ARCH_CPU_X86_64)

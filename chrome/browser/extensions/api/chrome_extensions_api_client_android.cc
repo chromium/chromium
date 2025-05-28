@@ -5,7 +5,6 @@
 #include "chrome/browser/extensions/api/chrome_extensions_api_client.h"
 
 #include "base/notimplemented.h"
-#include "extensions/browser/api/messaging/messaging_delegate.h"
 #include "extensions/browser/api/messaging/native_message_host.h"
 #include "extensions/buildflags/buildflags.h"
 
@@ -47,20 +46,6 @@ ChromeExtensionsAPIClient::CreateDisplayInfoProvider() const {
   // TODO(crbug.com/417786011): Support display APIs on desktop Android.
   NOTIMPLEMENTED();
   return nullptr;
-}
-
-MessagingDelegate* ChromeExtensionsAPIClient::GetMessagingDelegate() {
-  if (!messaging_delegate_) {
-    // The default implementation does nothing, which is fine for now, since
-    // this is mostly needed for:
-    //   a) tab-specifics,
-    //   b) platform apps, and
-    //   c) native messaging
-    // TODO(crbug.com/371432155): Use ChromeMessagingDelegate when we have
-    // better support for tabs.
-    messaging_delegate_ = std::make_unique<MessagingDelegate>();
-  }
-  return messaging_delegate_.get();
 }
 
 std::vector<KeyedServiceBaseFactory*>

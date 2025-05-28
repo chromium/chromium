@@ -7,6 +7,7 @@
 #include "chrome/grit/renderer_resources.h"
 #include "chrome/renderer/extensions/api/extension_hooks_delegate.h"
 #include "chrome/renderer/extensions/api/notifications_native_handler.h"
+#include "chrome/renderer/extensions/api/tabs_hooks_delegate.h"
 #include "components/guest_view/buildflags/buildflags.h"
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/renderer/bindings/api_bindings_system.h"
@@ -21,7 +22,6 @@
 #include "chrome/renderer/extensions/api/media_galleries_custom_bindings.h"
 #include "chrome/renderer/extensions/api/page_capture_custom_bindings.h"
 #include "chrome/renderer/extensions/api/sync_file_system_custom_bindings.h"
-#include "chrome/renderer/extensions/api/tabs_hooks_delegate.h"
 #include "extensions/renderer/dispatcher.h"
 #include "extensions/renderer/lazy_background_page_native_handler.h"
 #include "extensions/renderer/native_handler.h"
@@ -90,14 +90,14 @@ void ChromeExtensionsRendererAPIProvider::AddBindingsSystemHooks(
   bindings->RegisterHooksDelegate(
       "extension", std::make_unique<extensions::ExtensionHooksDelegate>(
                        bindings_system->messaging_service()));
+  bindings->RegisterHooksDelegate(
+      "tabs", std::make_unique<extensions::TabsHooksDelegate>(
+                  bindings_system->messaging_service()));
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   bindings->RegisterHooksDelegate(
       "app", std::make_unique<extensions::AppHooksDelegate>(
                  dispatcher, bindings->request_handler(),
                  bindings_system->GetIPCMessageSender()));
-  bindings->RegisterHooksDelegate(
-      "tabs", std::make_unique<extensions::TabsHooksDelegate>(
-                  bindings_system->messaging_service()));
   bindings->RegisterHooksDelegate(
       "identity", std::make_unique<extensions::IdentityHooksDelegate>());
 #if BUILDFLAG(IS_CHROMEOS)

@@ -13,6 +13,7 @@ source_set("extensions") {
   public = [
     "api/chrome_extensions_renderer_api_provider.h",
     "api/extension_hooks_delegate.h",
+    "api/tabs_hooks_delegate.h",
     "chrome_extensions_renderer_client.h",
     "renderer_permissions_policy_delegate.h",
   ]
@@ -23,6 +24,7 @@ source_set("extensions") {
     "api/extension_hooks_delegate.cc",
     "api/notifications_native_handler.cc",
     "api/notifications_native_handler.h",
+    "api/tabs_hooks_delegate.cc",
     "chrome_extensions_renderer_client.cc",
     "chrome_resource_request_policy_delegate.cc",
     "chrome_resource_request_policy_delegate.h",
@@ -59,7 +61,6 @@ source_set("extensions") {
     public += [
       "api/accessibility_private_hooks_delegate.h",
       "api/identity_hooks_delegate.h",
-      "api/tabs_hooks_delegate.h",
     ]
 
     sources += [
@@ -74,7 +75,6 @@ source_set("extensions") {
       "api/page_capture_custom_bindings.h",
       "api/sync_file_system_custom_bindings.cc",
       "api/sync_file_system_custom_bindings.h",
-      "api/tabs_hooks_delegate.cc",
     ]
 
     public_deps += [ "//v8:v8_headers" ]

@@ -7,7 +7,6 @@
 
 #include "chrome/browser/extensions/api/chrome_device_permissions_prompt.h"
 #include "chrome/browser/extensions/api/chrome_extensions_api_client.h"
-#include "chrome/browser/extensions/api/messaging/chrome_messaging_delegate.h"
 #include "chrome/browser/extensions/api/messaging/chrome_native_message_port_dispatcher.h"
 #include "chrome/browser/extensions/system_display/display_info_provider.h"
 #include "chrome/browser/profiles/profile.h"
@@ -60,13 +59,6 @@ ChromeExtensionsAPIClient::CreateSupervisedUserExtensionsDelegate(
 std::unique_ptr<DisplayInfoProvider>
 ChromeExtensionsAPIClient::CreateDisplayInfoProvider() const {
   return CreateChromeDisplayInfoProvider();
-}
-
-MessagingDelegate* ChromeExtensionsAPIClient::GetMessagingDelegate() {
-  if (!messaging_delegate_) {
-    messaging_delegate_ = std::make_unique<ChromeMessagingDelegate>();
-  }
-  return messaging_delegate_.get();
 }
 
 std::vector<KeyedServiceBaseFactory*>
