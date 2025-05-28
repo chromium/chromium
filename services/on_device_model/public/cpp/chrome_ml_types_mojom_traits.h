@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef SERVICES_ON_DEVICE_MODEL_ML_CHROME_ML_TYPES_TRAITS_H_
-#define SERVICES_ON_DEVICE_MODEL_ML_CHROME_ML_TYPES_TRAITS_H_
+#ifndef SERVICES_ON_DEVICE_MODEL_PUBLIC_CPP_CHROME_ML_TYPES_MOJOM_TRAITS_H_
+#define SERVICES_ON_DEVICE_MODEL_PUBLIC_CPP_CHROME_ML_TYPES_MOJOM_TRAITS_H_
 
 #include "services/on_device_model/ml/chrome_ml_types.h"
 #include "services/on_device_model/public/mojom/on_device_model_service.mojom-shared.h"
@@ -66,7 +66,8 @@ struct EnumTraits<on_device_model::mojom::ModelPerformanceHint,
 };
 
 template <>
-struct StructTraits<on_device_model::mojom::AudioDataDataView, ml::AudioBuffer> {
+struct StructTraits<on_device_model::mojom::AudioDataDataView,
+                    ml::AudioBuffer> {
   static int32_t sample_rate(const ml::AudioBuffer& input) {
     return input.sample_rate_hz;
   }
@@ -83,9 +84,10 @@ struct StructTraits<on_device_model::mojom::AudioDataDataView, ml::AudioBuffer> 
     return input.data;
   }
 
-  static bool Read(on_device_model::mojom::AudioDataDataView in, ml::AudioBuffer* out);
+  static bool Read(on_device_model::mojom::AudioDataDataView in,
+                   ml::AudioBuffer* out);
 };
 
 }  // namespace mojo
 
-#endif  // SERVICES_ON_DEVICE_MODEL_ML_CHROME_ML_TYPES_TRAITS_H_
+#endif  // SERVICES_ON_DEVICE_MODEL_PUBLIC_CPP_CHROME_ML_TYPES_MOJOM_TRAITS_H_

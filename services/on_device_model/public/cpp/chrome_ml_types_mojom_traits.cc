@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "services/on_device_model/ml/chrome_ml_types_traits.h"
+#include "services/on_device_model/public/cpp/chrome_ml_types_mojom_traits.h"
 
 #include <algorithm>
 
@@ -174,9 +174,8 @@ bool EnumTraits<on_device_model::mojom::ModelPerformanceHint,
   return false;
 }
 
-bool StructTraits<on_device_model::mojom::AudioDataDataView, ml::AudioBuffer>::Read(
-    on_device_model::mojom::AudioDataDataView in,
-    ml::AudioBuffer* out) {
+bool StructTraits<on_device_model::mojom::AudioDataDataView, ml::AudioBuffer>::
+    Read(on_device_model::mojom::AudioDataDataView in, ml::AudioBuffer* out) {
   out->sample_rate_hz = in.sample_rate();
   out->num_channels = in.channel_count();
   out->num_frames = in.frame_count();
