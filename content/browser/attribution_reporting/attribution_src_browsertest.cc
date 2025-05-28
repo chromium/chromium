@@ -1751,6 +1751,7 @@ IN_PROC_BROWSER_TEST_P(
 
   run_loop.Run();
 
+  SimulateEndOfPaintHoldingOnPrimaryMainFrame(web_contents());
   SimulateGestureScrollSequence(web_contents(), gfx::Point(100, 100),
                                 gfx::Vector2dF(0, 15));
   RunUntilInputProcessed(

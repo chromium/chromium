@@ -4279,6 +4279,8 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
       embedded_test_server()->GetURL("a.com", "/page_with_input_field.html"));
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
 
+  SimulateEndOfPaintHoldingOnPrimaryMainFrame(web_contents());
+
   FrameTreeNode* root = web_contents()->GetPrimaryFrameTree().root();
 
   EXPECT_EQ(
@@ -4336,6 +4338,8 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest, DocumentActiveElement) {
   GURL main_url(embedded_test_server()->GetURL(
       "a.com", "/cross_site_iframe_factory.html?a(b(c))"));
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
+
+  SimulateEndOfPaintHoldingOnPrimaryMainFrame(web_contents());
 
   FrameTreeNode* root = web_contents()->GetPrimaryFrameTree().root();
 
@@ -5642,6 +5646,8 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
       "a.com", "/cross_site_iframe_factory.html?a(b)"));
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
 
+  SimulateEndOfPaintHoldingOnPrimaryMainFrame(web_contents());
+
   WebContentsImpl* contents = web_contents();
   FrameTreeNode* root = contents->GetPrimaryFrameTree().root();
   EXPECT_EQ(1U, root->child_count());
@@ -5744,6 +5750,8 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   GURL main_url(embedded_test_server()->GetURL(
       "a.com", "/cross_site_iframe_factory.html?a(b)"));
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
+
+  SimulateEndOfPaintHoldingOnPrimaryMainFrame(web_contents());
 
   UserInteractionObserver observer(web_contents());
 
