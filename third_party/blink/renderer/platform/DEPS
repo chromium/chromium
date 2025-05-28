@@ -28,7 +28,6 @@ include_rules = [
     "+base/process/memory.h",
     "+base/run_loop.h",
     "+base/strings/pattern.h",
-    "+base/strings/string_number_conversions.h",
     "+base/strings/string_split.h",
     "+base/strings/stringprintf.h",
     "+base/strings/sys_string_conversions.h",

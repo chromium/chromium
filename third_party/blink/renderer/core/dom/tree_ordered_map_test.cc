@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/dom/tree_ordered_map.h"
 
+#include "base/strings/string_number_conversions.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element.h"

@@ -20,7 +20,6 @@ include_rules = [
 specific_include_rules = {
     "media_capabilities_test\.cc": [
         "+base/run_loop.h",
-        "+base/strings/string_number_conversions.h",
         "+base/test/bind.h",
         "+media/mojo/mojom/watch_time_recorder.mojom-blink.h",
         "+media/video/mock_gpu_video_accelerator_factories.h",

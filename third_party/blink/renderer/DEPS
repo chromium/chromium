@@ -55,6 +55,7 @@ include_rules = [
     "+base/state_transitions.h",
     "+base/stl_util.h",
     "+base/strings/strcat.h",
+    "+base/strings/string_number_conversions.h",
     "+base/strings/string_util.h",
     "+base/strings/stringprintf.h",
     "+base/synchronization",
