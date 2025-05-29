@@ -613,6 +613,11 @@ def _parse_command_arguments():
                           default=LIBFUZZER,
                           help='The type of fuzzer tests to run.')
 
+  arg_parser.add_argument(
+      '--target-list-dir',
+      type=str,
+      help='Directory where the json files for target list will be stored.')
+
   arg_parser.add_argument
   args = arg_parser.parse_args()
   return args
@@ -786,6 +791,14 @@ def main():
 
   logging.info('Successful targets: %s', verified_fuzzer_targets)
   logging.info('Failed targets: %s', failed_targets)
+
+  if args.target_list_dir:
+    json_path = os.path.join(args.target_list_dir, args.fuzzer + '.json')
+    with open(json_path, "w") as fp:
+      json.dump(list(verified_fuzzer_targets), fp)
+    json_path = os.path.join(args.target_list_dir, args.fuzzer + '_all.json')
+    with open(json_path, "w") as fp:
+      json.dump(list(verified_fuzzer_targets) + list(failed_targets), fp)
 
   logging.info('Finished getting coverage information. Copying to %s',
                args.profdata_outdir)
