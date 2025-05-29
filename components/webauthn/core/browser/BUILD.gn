@@ -85,8 +85,8 @@ source_set("unit_tests") {
       ":passkey_model",
       "//components/sync/protocol",
       "//crypto",
-      "//testing/gtest",
       "//testing/gmock",
+      "//testing/gtest",
     ]
     if (!is_ios) {
       deps += [
