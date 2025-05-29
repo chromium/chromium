@@ -4852,11 +4852,6 @@
       name: "TextMetricsBaselines",
       status: "stable",
     },
-    {
-      // crbug.com/396666438
-      name: "TextOffsetMapCrashFix",
-      status: "stable",
-    },
     // This feature is used to inform the renderer of a user bypass from the
     // browser process to disable third-party storage partitioning.
     {
