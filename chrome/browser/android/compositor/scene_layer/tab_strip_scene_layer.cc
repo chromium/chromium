@@ -5,6 +5,7 @@
 #include "chrome/browser/android/compositor/scene_layer/tab_strip_scene_layer.h"
 
 #include "base/android/jni_android.h"
+#include "base/android/scoped_java_ref.h"
 #include "base/android/token_android.h"
 #include "cc/slim/layer.h"
 #include "cc/slim/solid_color_layer.h"
@@ -134,18 +135,21 @@ void TabStripSceneLayer::BeginBuildingFrame(
     JNIEnv* env,
     const JavaParamRef<jobject>& jobj,
     jboolean visible,
-    const JavaParamRef<jobject>& jresource_manager) {
+    const JavaParamRef<jobject>& jresource_manager,
+    const JavaParamRef<jobject>& jlayer_title_cache) {
   write_index_ = 0;
   group_write_index_ = 0;
   background_layer_->SetHideLayerAndSubtree(!visible);
   resource_manager_ =
       ui::ResourceManagerImpl::FromJavaObject(jresource_manager);
+  layer_title_cache_ = LayerTitleCache::FromJavaObject(jlayer_title_cache);
 }
 
 void TabStripSceneLayer::FinishBuildingFrame(
     JNIEnv* env,
     const JavaParamRef<jobject>& jobj) {
   resource_manager_ = nullptr;
+  layer_title_cache_ = nullptr;
   if (background_layer_->hide_layer_and_subtree()) {
     return;
   }
@@ -472,11 +476,9 @@ void TabStripSceneLayer::PutStripTabLayer(
     jint keyboard_focus_ring_color,
     jint keyboard_focus_ring_offset,
     jint stroke_width,
-    jfloat folio_foot_length,
-    const JavaParamRef<jobject>& jlayer_title_cache) {
-  LayerTitleCache* layer_title_cache =
-      LayerTitleCache::FromJavaObject(jlayer_title_cache);
-  scoped_refptr<TabHandleLayer> layer = GetNextTabLayer(layer_title_cache);
+    jfloat folio_foot_length) {
+  DCHECK(layer_title_cache_);
+  scoped_refptr<TabHandleLayer> layer = GetNextTabLayer(layer_title_cache_);
 
   if (foreground != layer->foreground()) {
     if (foreground) {
@@ -548,14 +550,12 @@ void TabStripSceneLayer::PutGroupIndicatorLayer(
     jint keyboard_focus_ring_resource_id,
     jint keyboard_focus_ring_color,
     jint keyboard_focus_ring_offset,
-    jint keyboard_focus_ring_width,
-    const JavaParamRef<jobject>& jlayer_title_cache) {
-  LayerTitleCache* layer_title_cache =
-      LayerTitleCache::FromJavaObject(jlayer_title_cache);
+    jint keyboard_focus_ring_width) {
+  DCHECK(layer_title_cache_);
 
   // Reuse existing layer if it exists.
   scoped_refptr<GroupIndicatorLayer> layer =
-      GetNextGroupIndicatorLayer(layer_title_cache);
+      GetNextGroupIndicatorLayer(layer_title_cache_);
 
   ui::NinePatchResource* keyboard_focus_ring_drawable =
       ui::NinePatchResource::From(resource_manager_->GetStaticResourceWithTint(

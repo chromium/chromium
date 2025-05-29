@@ -188,7 +188,11 @@ public class TabStripSceneLayerTest {
         // Verify JNI calls.
         verify(mTabStripSceneMock)
                 .beginBuildingFrame(
-                        eq(1L), eq(mTabStripSceneLayer), anyBoolean(), eq(mResourceManager));
+                        eq(1L),
+                        eq(mTabStripSceneLayer),
+                        anyBoolean(),
+                        eq(mResourceManager),
+                        eq(mLayerTitleCache));
         verify(mTabStripSceneMock)
                 .updateModelSelectorButton(
                         1L,
@@ -303,8 +307,7 @@ public class TabStripSceneLayerTest {
                                         .getDimensionPixelSize(R.dimen.tabstrip_strokewidth)),
                         eq(
                                 FOLIO_FOOT_LENGTH_DP
-                                        * mContext.getResources().getDisplayMetrics().density),
-                        eq(mLayerTitleCache));
+                                        * mContext.getResources().getDisplayMetrics().density));
     }
 
     @Test
@@ -364,8 +367,7 @@ public class TabStripSceneLayerTest {
                                         .getDimensionPixelSize(R.dimen.tabstrip_strokewidth)),
                         eq(
                                 FOLIO_FOOT_LENGTH_DP
-                                        * mContext.getResources().getDisplayMetrics().density),
-                        eq(mLayerTitleCache));
+                                        * mContext.getResources().getDisplayMetrics().density));
     }
 
     @Test
@@ -427,8 +429,7 @@ public class TabStripSceneLayerTest {
                                         .getDimensionPixelSize(R.dimen.tabstrip_strokewidth)),
                         eq(
                                 FOLIO_FOOT_LENGTH_DP
-                                        * mContext.getResources().getDisplayMetrics().density),
-                        eq(mLayerTitleCache));
+                                        * mContext.getResources().getDisplayMetrics().density));
     }
 
     @Test
@@ -489,8 +490,7 @@ public class TabStripSceneLayerTest {
                                         .getDimensionPixelSize(R.dimen.tabstrip_strokewidth)),
                         eq(
                                 FOLIO_FOOT_LENGTH_DP
-                                        * mContext.getResources().getDisplayMetrics().density),
-                        eq(mLayerTitleCache));
+                                        * mContext.getResources().getDisplayMetrics().density));
     }
 
     @Test
@@ -530,8 +530,7 @@ public class TabStripSceneLayerTest {
                                         .getDimensionPixelSize(R.dimen.tabstrip_keyfocus_offset)),
                         eq(
                                 mContext.getResources()
-                                        .getDimensionPixelSize(R.dimen.tabstrip_strokewidth)),
-                        eq(mLayerTitleCache));
+                                        .getDimensionPixelSize(R.dimen.tabstrip_strokewidth)));
     }
 
     @Test
