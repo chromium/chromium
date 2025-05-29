@@ -39,6 +39,7 @@ source_set("persisted_state_db") {
   } else {
     deps += [
       "//components/commerce/core:coupon_db_content_proto",
+      "//components/commerce/core:discount_infos_db_content_proto",
       "//components/commerce/core:discounts_db_content_proto",
     ]
   }

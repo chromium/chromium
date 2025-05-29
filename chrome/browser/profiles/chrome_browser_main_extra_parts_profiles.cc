@@ -352,6 +352,7 @@
 #include "chrome/browser/user_education/user_education_service_factory.h"
 #include "components/commerce/core/proto/cart_db_content.pb.h"
 #include "components/commerce/core/proto/coupon_db_content.pb.h"
+#include "components/commerce/core/proto/discount_infos_db_content.pb.h"  // nogncheck
 #include "components/commerce/core/proto/discounts_db_content.pb.h"  // nogncheck
 #include "components/optimization_guide/core/model_execution/model_execution_features.h"
 #include "ui/accessibility/accessibility_features.h"
@@ -1298,6 +1299,8 @@ void ChromeBrowserMainExtraPartsProfiles::
 #if !BUILDFLAG(IS_ANDROID)
   SessionProtoDBFactory<coupon_db::CouponContentProto>::GetInstance();
   SessionProtoDBFactory<discounts_db::DiscountsContentProto>::GetInstance();
+  SessionProtoDBFactory<
+      discount_infos_db::DiscountInfosContentProto>::GetInstance();
 #endif
 #if BUILDFLAG(IS_ANDROID)
   SessionProtoDBFactory<

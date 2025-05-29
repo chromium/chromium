@@ -127,6 +127,8 @@ std::string SharedProtoDatabaseClientList::ProtoDbTypeToString(
       return "ClientCertificatesDatabase";
     case ProtoDbType::AUTOFILL_AI_MODEL_CACHE:
       return "AutofillAiModelCache";
+    case ProtoDbType::DISCOUNT_INFOS_DATABASE:
+      return "DiscountInfosDatabase";
     case ProtoDbType::LAST:
       NOTREACHED();
   }

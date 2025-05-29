@@ -30,6 +30,7 @@
 #include "components/commerce/core/compare/cluster_server_proxy.h"
 #include "components/commerce/core/compare/product_group.h"
 #include "components/commerce/core/compare/product_specifications_server_proxy.h"
+#include "components/commerce/core/discount_infos_storage.h"
 #include "components/commerce/core/feature_utils.h"
 #include "components/commerce/core/metrics/metrics_utils.h"
 #include "components/commerce/core/metrics/scheduled_metrics_manager.h"
@@ -184,6 +185,8 @@ ShoppingService::ShoppingService(
     SessionProtoStorage<discounts_db::DiscountsContentProto>*
         discounts_proto_db,
     SessionProtoStorage<cart_db::ChromeCartContentProto>* cart_proto_db,
+    SessionProtoStorage<discount_infos_db::DiscountInfosContentProto>*
+        discount_infos_db,
     SessionProtoStorage<parcel_tracking_db::ParcelTrackingContent>*
         parcel_tracking_proto_db,
     history::HistoryService* history_service,
@@ -310,6 +313,12 @@ ShoppingService::ShoppingService(
   if (product_specifications_service_) {
     product_specifications_observation_.Observe(
         product_specifications_service_);
+  }
+
+  if (discount_infos_db && history_service &&
+      IsDiscountAutofillEnabled(account_checker_.get())) {
+    discount_infos_storage_ = std::make_unique<DiscountInfosStorage>(
+        discount_infos_db, history_service);
   }
 
   // TODO(crbug.com/403323742): This is added in 03/2025 to deprecate
