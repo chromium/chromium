@@ -305,12 +305,13 @@ experimental code and should only be used for analysis.
 [gn_args]
 use_blink = true
 ios_content_shell_bundle_identifier="REPLACE_YOUR_BUNDLE_IDENTIFIER_HERE"
+ios_chromium_bundle_id="REPLACE_YOUR_BUNDLE_IDENTIFIER_HERE"
 ```
-Note that only certain targets support blink. `content_shell` being the
-most useful.
+Note that only certain targets support blink. `content_shell` and `chrome`
+being the most useful.
 
 ```shell
-$ autoninja -C out/Debug-iphonesimulator content_shell
+$ autoninja -C out/Debug-iphonesimulator content_shell chrome
 ```
 
 ## Blink for tvOS builds and running
