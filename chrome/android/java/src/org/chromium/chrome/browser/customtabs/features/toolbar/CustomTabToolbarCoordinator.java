@@ -168,12 +168,19 @@ public class CustomTabToolbarCoordinator {
      * use. ToolbarManager isn't passed directly to the constructor because it's not guaranteed to
      * be initialized yet.
      */
-    public void onToolbarInitialized(ToolbarManager manager) {
+    public void onToolbarInitialized(
+            ToolbarManager manager, CustomTabToolbarButtonsCoordinator toolbarButtonsCoordinator) {
         assert manager != null : "Toolbar manager not initialized";
         mToolbarManager = manager;
         mToolbarColorController.onToolbarInitialized(manager);
-        mCloseButtonVisibilityManager.setVisibility(mIntentDataProvider.isCloseButtonEnabled());
-        mCloseButtonVisibilityManager.onToolbarInitialized(manager);
+
+        if (ChromeFeatureList.sCctToolbarRefactor.isEnabled()) {
+            toolbarButtonsCoordinator.setCloseButtonClickHandler(v -> onCloseButtonClick());
+        } else {
+            mCloseButtonVisibilityManager.setVisibility(mIntentDataProvider.isCloseButtonEnabled());
+        }
+
+        mCloseButtonVisibilityManager.onToolbarInitialized(manager, toolbarButtonsCoordinator);
         updateTitleBarVisibility();
 
         if (CustomTabsConnection.getInstance()

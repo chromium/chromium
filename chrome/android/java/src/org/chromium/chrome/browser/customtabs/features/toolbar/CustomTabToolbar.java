@@ -438,6 +438,8 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
 
     @Override
     protected void setCustomTabCloseClickHandler(OnClickListener listener) {
+        if (ChromeFeatureList.sCctToolbarRefactor.isEnabled()) return;
+
         mCloseButton.setOnClickListener(listener);
     }
 

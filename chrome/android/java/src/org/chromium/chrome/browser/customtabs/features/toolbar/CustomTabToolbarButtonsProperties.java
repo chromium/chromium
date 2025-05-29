@@ -108,21 +108,29 @@ public class CustomTabToolbarButtonsProperties {
         /** The close button position. See {@link CloseButtonPosition}. */
         public final @CloseButtonPosition int position;
 
+        /** The listener for the button click. */
+        public final OnClickListener clickListener;
+
         // TODO: Maybe add default constr for not visible
-        CloseButtonData(boolean visible, Drawable icon, @CloseButtonPosition int position) {
+        CloseButtonData(
+                boolean visible,
+                Drawable icon,
+                @CloseButtonPosition int position,
+                OnClickListener onClickListener) {
             this.visible = visible;
             this.icon = icon;
             this.position = position;
+            this.clickListener = onClickListener;
         }
 
         CloseButtonData() {
-            this(false, null, CLOSE_BUTTON_POSITION_DEFAULT);
+            this(false, null, CLOSE_BUTTON_POSITION_DEFAULT, v -> {});
         }
     }
 
     /** Property key for the close button. */
-    public static final ReadableObjectPropertyKey<CloseButtonData> CLOSE_BUTTON =
-            new ReadableObjectPropertyKey<>();
+    public static final WritableObjectPropertyKey<CloseButtonData> CLOSE_BUTTON =
+            new WritableObjectPropertyKey<>();
 
     /** Property key for whether the menu button is visible. */
     public static final WritableBooleanPropertyKey MENU_BUTTON_VISIBLE =
