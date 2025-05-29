@@ -50,10 +50,15 @@ class CORE_EXPORT AdTracker : public GarbageCollected<AdTracker> {
       // ad script (i.e., the "ancestor") exists in its creation stack.
       kAncestorScript,
 
-      // The ad script has neither an ancestor nor a rule match. This can
-      // happen if a non-filterlisted URL, initially a redirect target from
-      // a filterlisted URL, is later encountered again when loading this
-      // script.
+      // The ad script has neither an ancestor nor a rule match. This can happen
+      // if:
+      // 1) A non-filterlisted URL, initially a redirect target from a
+      //    filterlisted URL, is later encountered again when loading this
+      //    script.
+      // 2) The script's real ancestry spans multiple contexts, and some
+      //    intermediate context is an ad context. In this case, the script ID
+      //    from that intermediate context is not stored. This effectively
+      //    breaks the ancestry chain.
       //
       // TODO(yaoxia): Re-evaluate the necessity of this type once
       // crbug.com/417756984 is fixed.

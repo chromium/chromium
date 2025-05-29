@@ -166,11 +166,21 @@ void AdTracker::WillExecuteScript(ExecutionContext* execution_context,
     } else if (top_level_execution &&
                IsAdScriptInStackHelper(StackType::kBottomAndTop,
                                        &ancestor_ad_script)) {
-      CHECK(ancestor_ad_script.has_value());
+      std::unique_ptr<AdProvenance> ad_provenance;
+      if (ancestor_ad_script.has_value()) {
+        ad_provenance =
+            std::make_unique<AdAncestorProvenance>(*ancestor_ad_script);
+      } else {
+        // This can happen if the async script check (`DidCreateAsyncTask`)
+        // occurred within an ad execution context. In such case,
+        // `running_ad_async_tasks_` will be greater than 0, but
+        // `bottom_most_async_ad_script_` remains null.
+        // TODO(crbug.com/421164512): Add tests to confirm this scenario.
+        ad_provenance = std::make_unique<NoAdProvenance>();
+      }
 
-      AppendToKnownAdScripts(
-          *execution_context, fake_url,
-          std::make_unique<AdAncestorProvenance>(*ancestor_ad_script));
+      AppendToKnownAdScripts(*execution_context, fake_url,
+                             std::move(ad_provenance));
       OnScriptIdAvailableForKnownAdScript(execution_context, v8_context,
                                           fake_url, script_id);
       is_ad = true;
