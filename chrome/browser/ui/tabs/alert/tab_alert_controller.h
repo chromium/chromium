@@ -13,11 +13,10 @@
 #include "base/scoped_observation.h"
 #include "chrome/browser/media/webrtc/media_stream_capture_indicator.h"
 #include "chrome/browser/ui/tabs/alert/tab_alert.h"
-#include "content/public/browser/web_contents_observer.h"
+#include "chrome/browser/ui/tabs/contents_observing_tab_feature.h"
 
 namespace content {
 enum class WebContentsCapabilityType;
-class WebContents;
 }  // namespace content
 
 namespace tabs {
@@ -30,10 +29,10 @@ struct CompareAlerts {
 // Observes the corresponding web contents for the tab to keep track of all
 // active alerts. Callers can subscribe and be notified when the tab alert that
 // should be shown changes.
-class TabAlertController : public content::WebContentsObserver,
+class TabAlertController : public tabs::ContentsObservingTabFeature,
                            public MediaStreamCaptureIndicator::Observer {
  public:
-  explicit TabAlertController(content::WebContents* web_contents);
+  explicit TabAlertController(TabInterface& tab);
   TabAlertController(const TabAlertController&) = delete;
   TabAlertController& operator=(const TabAlertController&) = delete;
   ~TabAlertController() override;

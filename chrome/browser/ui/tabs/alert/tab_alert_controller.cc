@@ -42,8 +42,8 @@ bool CompareAlerts::operator()(TabAlert first, TabAlert second) const {
   return tab_alert_priority.at(first) > tab_alert_priority.at(second);
 }
 
-TabAlertController::TabAlertController(content::WebContents* web_contents)
-    : content::WebContentsObserver(web_contents) {
+TabAlertController::TabAlertController(TabInterface& tab)
+    : tabs::ContentsObservingTabFeature(tab) {
   media_stream_capture_indicator_observation_.Observe(
       MediaCaptureDevicesDispatcher::GetInstance()
           ->GetMediaStreamCaptureIndicator()

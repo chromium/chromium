@@ -332,8 +332,7 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
 
   memory_saver_chip_helper_ = std::make_unique<MemorySaverChipTabHelper>(tab);
 
-  tab_alert_controller_ =
-      std::make_unique<TabAlertController>(tab.GetContents());
+  tab_alert_controller_ = std::make_unique<TabAlertController>(tab);
 
   tab_ui_helper_ = std::make_unique<TabUIHelper>(tab);
 
