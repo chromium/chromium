@@ -11,6 +11,8 @@
 import {EarconId} from '../common/earcon_id.js';
 import {OffscreenCommandType} from '../common/offscreen_command_type.js';
 
+type SendResponse = (value: any) => void;
+
 interface PlayProperties {
   pitch?: number;
   time?: number;
@@ -145,6 +147,10 @@ export class EarconEngine {
 
   private currentTrackedEarcon_?: EarconId;
 
+  /* For testing purpose */
+  private recordForTest_ = false;
+  private recordedEarcons_: EarconId[] = [];
+
   constructor() {
 
     // Initialization: load the base sound data files asynchronously.
@@ -156,8 +162,8 @@ export class EarconEngine {
 
     chrome.runtime.onMessage.addListener(
         (message: any|undefined, _sender: chrome.runtime.MessageSender,
-         _sendResponse: (value: any) => void) =>
-            this.handleMessageFromOffscreen_(message));
+         sendResponse: SendResponse) =>
+            this.handleMessageFromOffscreen_(message, sendResponse));
   }
 
 
@@ -168,7 +174,8 @@ export class EarconEngine {
     EarconEngine.instance = new EarconEngine();
   }
 
-  private handleMessageFromOffscreen_(message: any|undefined): boolean {
+  private handleMessageFromOffscreen_(
+      message: any|undefined, sendResponse: SendResponse): boolean {
     switch (message['command']) {
       case OffscreenCommandType.PLAY_EARCON:
         this.playEarcon(message['earconid']);
@@ -182,13 +189,27 @@ export class EarconEngine {
       case OffscreenCommandType.EARCON_SET_POSITION_FOR_RECT:
         this.setPositionForRect(message['rect'], message['container']);
         break;
+      case OffscreenCommandType.RECORD_EARCONS_FOR_TEST:
+        this.recordEarconsForTest_();
+        break;
+      case OffscreenCommandType.REPORT_EARCONS_FOR_TEST:
+        this.reportEarconsForTest_(sendResponse);
+        break;
     }
     // Returns false as the response is not asynchronous and the callback does
     // not need to be kept alive.
     return false;
   }
 
+  private recordEarconsForTest_(): void {
+    this.recordForTest_ = true;
+  }
 
+  private reportEarconsForTest_(sendResponse: SendResponse): void {
+    sendResponse(this.recordedEarcons_);
+    this.recordForTest_ = false;
+    this.recordedEarcons_ = [];
+  }
 
   /**
    * A high-level way to ask the engine to play a specific earcon.
@@ -234,6 +255,11 @@ export class EarconEngine {
     }
 
     this.currentTrackedEarcon_ = earcon;
+
+    if (this.recordForTest_ && this.currentTrackedEarcon_) {
+      this.recordedEarcons_.push(this.currentTrackedEarcon_);
+    }
+
     switch (earcon) {
       case EarconId.ALERT_MODAL:
       case EarconId.ALERT_NONMODAL:
