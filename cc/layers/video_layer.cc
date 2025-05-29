@@ -17,7 +17,6 @@ scoped_refptr<VideoLayer> VideoLayer::Create(
 VideoLayer::VideoLayer(VideoFrameProvider* provider,
                        media::VideoTransformation transform)
     : provider_(provider), transform_(transform) {
-  SetMayContainVideo(true);
   DCHECK(provider_.Read(*this));
 }
 

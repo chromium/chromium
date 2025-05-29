@@ -10939,59 +10939,6 @@ TEST_P(LayerTreeHostImplTest, BlendingOffWhenDrawingOpaqueLayers) {
   EXPECT_TRUE(layer1->quads_appended());
 }
 
-static bool MayContainVideoBitSetOnFrameData(LayerTreeHostImpl* host_impl) {
-  host_impl->active_tree()->set_needs_update_draw_properties();
-  TestFrameData frame;
-  auto args = viz::CreateBeginFrameArgsForTesting(
-      BEGINFRAME_FROM_HERE, viz::BeginFrameArgs::kManualSourceId, 1,
-      base::TimeTicks() + base::Milliseconds(1));
-  host_impl->WillBeginImplFrame(args);
-  EXPECT_EQ(DrawResult::kSuccess, host_impl->PrepareToDraw(&frame));
-  host_impl->DrawLayers(&frame);
-  host_impl->DidDrawAllLayers(frame);
-  host_impl->DidFinishImplFrame(args);
-  return frame.may_contain_video;
-}
-
-TEST_P(LayerTreeHostImplTest, MayContainVideo) {
-  gfx::Size big_size(1000, 1000);
-  auto* root =
-      SetupRootLayer<DidDrawCheckLayer>(host_impl_->active_tree(), big_size);
-  auto* video_layer = AddLayer<DidDrawCheckLayer>(host_impl_->active_tree());
-  video_layer->SetMayContainVideo(true);
-  CopyProperties(root, video_layer);
-  UpdateDrawProperties(host_impl_->active_tree());
-  EXPECT_TRUE(MayContainVideoBitSetOnFrameData(host_impl_.get()));
-
-  // Test with the video layer occluded.
-  auto* large_layer = AddLayer<DidDrawCheckLayer>(host_impl_->active_tree());
-  large_layer->SetBounds(big_size);
-  large_layer->SetContentsOpaque(true);
-  CopyProperties(root, large_layer);
-  UpdateDrawProperties(host_impl_->active_tree());
-  EXPECT_FALSE(MayContainVideoBitSetOnFrameData(host_impl_.get()));
-
-  {
-    // Remove the large layer.
-    OwnedLayerImplList layers =
-        host_impl_->active_tree()->DetachLayersKeepingRootLayerForTesting();
-    ASSERT_EQ(video_layer, layers[1].get());
-    host_impl_->active_tree()->AddLayer(std::move(layers[1]));
-  }
-  UpdateDrawProperties(host_impl_->active_tree());
-  EXPECT_TRUE(MayContainVideoBitSetOnFrameData(host_impl_.get()));
-
-  // Move the video layer so it goes beyond the root.
-  video_layer->SetOffsetToTransformParent(gfx::Vector2dF(100, 100));
-  UpdateDrawProperties(host_impl_->active_tree());
-  EXPECT_FALSE(MayContainVideoBitSetOnFrameData(host_impl_.get()));
-
-  video_layer->SetOffsetToTransformParent(gfx::Vector2dF(0, 0));
-  video_layer->NoteLayerPropertyChanged();
-  UpdateDrawProperties(host_impl_->active_tree());
-  EXPECT_TRUE(MayContainVideoBitSetOnFrameData(host_impl_.get()));
-}
-
 TEST_P(LayerTreeHostImplTest, MayThrottleIfUnusedFrames) {
   // Make sure that the throttle bit gets set properly.
   viz::CompositorFrameMetadata metadata;

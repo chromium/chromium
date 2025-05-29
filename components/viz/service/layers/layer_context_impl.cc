@@ -600,7 +600,6 @@ base::expected<void, std::string> UpdateLayer(const mojom::Layer& wire,
     layer.SetDynamicRangeLimit(wire.rare_properties->dynamic_range_limit);
     layer.SetCaptureBounds(wire.rare_properties->capture_bounds);
   }
-  layer.SetMayContainVideo(wire.may_contain_video);
 
   if (layer.GetLayerType() == cc::mojom::LayerType::kTileDisplay) {
     auto& tile_display_layer = static_cast<cc::TileDisplayLayerImpl&>(layer);

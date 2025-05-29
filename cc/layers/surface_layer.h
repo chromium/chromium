@@ -61,8 +61,6 @@ class CC_EXPORT SurfaceLayer : public Layer {
 
   void SetOverrideChildPaintFlags(bool override_child_paint_flags);
 
-  using Layer::SetMayContainVideo;
-
   // Layer overrides.
   std::unique_ptr<LayerImpl> CreateLayerImpl(
       LayerTreeImpl* tree_impl) const override;

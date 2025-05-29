@@ -2020,8 +2020,7 @@ bool HTMLCanvasElement::CreateLayer() {
   }
 
   surface_layer_bridge_ = std::make_unique<::blink::SurfaceLayerBridge>(
-      frame->GetPage()->GetChromeClient().GetFrameSinkId(frame),
-      ::blink::SurfaceLayerBridge::ContainsVideo::kNo, this,
+      frame->GetPage()->GetChromeClient().GetFrameSinkId(frame), this,
       base::NullCallback());
   // Creates a placeholder layer first before Surface is created.
   surface_layer_bridge_->CreateSolidColorLayer();

@@ -1494,9 +1494,6 @@ DrawResult LayerTreeHostImpl::CalculateRenderPasses(FrameData* frame) {
         // LayerTreeHostImpl::DidDrawAllLayers().
         frame->will_draw_layers.push_back(layer);
 
-        if (layer->may_contain_video() && output_frame_data) {
-          frame->may_contain_video = true;
-        }
         if (output_frame_data && compute_video_layer_preferred_interval &&
             layer->GetLayerType() == mojom::LayerType::kVideo) {
           VideoLayerImpl* video_layer = static_cast<VideoLayerImpl*>(layer);
@@ -1723,7 +1720,6 @@ DrawResult LayerTreeHostImpl::PrepareToDraw(FrameData* frame) {
   frame->render_passes.clear();
   frame->will_draw_layers.clear();
   frame->has_no_damage = false;
-  frame->may_contain_video = false;
 
   if (active_tree_->RootRenderSurface()) {
     active_tree_->RootRenderSurface()->damage_tracker()->AddDamageNextUpdate(
@@ -3145,7 +3141,6 @@ viz::CompositorFrame LayerTreeHostImpl::GenerateCompositorFrame(
 
   PopulateMetadataContentColorUsage(frame, &metadata);
   metadata.has_shared_element_resources = frame->has_shared_element_resources;
-  metadata.may_contain_video = frame->may_contain_video;
   metadata.deadline = viz::FrameDeadline(
       CurrentBeginFrameArgs().frame_time,
       frame->deadline_in_frames.value_or(0u), CurrentBeginFrameArgs().interval,
