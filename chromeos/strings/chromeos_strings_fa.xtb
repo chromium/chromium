@@ -206,6 +206,7 @@
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1758459542619182298"><ph name="CONTROL_TYPE" /> <ph name="KEY_LIST" /></translation>
 <translation id="1759842336958782510">Chrome</translation>
+<translation id="1762353673362288306">اکنون فقط می‌توانید از «ابزارهای کلاسی» استفاده کنید</translation>
 <translation id="1762483337755424125">ترانویسی</translation>
 <translation id="1765169783255151332">کلیدها را به‌سرعت جابه‌جا کنید</translation>
 <translation id="1768959921651994223">نوع اصالت‌سنجی</translation>
@@ -1613,6 +1614,7 @@
 <translation id="8088963492174775412">برای ضبط کردن، فشار دهید</translation>
 <translation id="8094062939584182041">‏اجازه دادن به Google برای ارسال ایمیل درباره این مشکل</translation>
 <translation id="8104083085214006426">از شبکه‌ای باز و ناامن استفاده می‌کنید</translation>
+<translation id="8108879170356113798">فقط تا <ph name="NUM_SECONDS" /> ثانیه دیگر می‌توانید از «ابزارهای کلاسی» استفاده کنید</translation>
 <translation id="811820734797650957">‏(Android) دروازه را می‌توان پینگ کرد</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> درجه سانتی‌گراد</translation>
 <translation id="8131740175452115882">تأیید</translation>

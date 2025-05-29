@@ -761,6 +761,7 @@ Se non o fas, o panel táctil volverá activarse dentro de <ph name="TIMEOUT_SEC
 <translation id="3552189655002856821">A wifi está desactivada</translation>
 <translation id="3554215588514239132">Mostrar ou ocultar panel de ferramentas para programadores</translation>
 <translation id="3554637740840164787"><ph name="ITEM_TITLE" />(fixouse)</translation>
+<translation id="3554928024630051016">Para engadir máis dispositivos USB, proba a quitar un e, a continuación, enchufar outro</translation>
 <translation id="3558768885091059911">Queres activar o acceso á cámara e ao micrófono?</translation>
 <translation id="3560174576767922131">Gravar vídeo</translation>
 <translation id="3563775809269155755">Activar zona wifi</translation>
@@ -869,6 +870,7 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="3861651314799684201">Premer Introducir para gravar a pantalla completa</translation>
 <translation id="3870197372373144624">Proba a apagar o dispositivo.</translation>
 <translation id="3879748587602334249">Xestor de descargas</translation>
+<translation id="3884007280698606545">Alcanzouse o límite máximo permitido de dispositivos USB</translation>
 <translation id="3886872229787704059">Abriuse hoxe</translation>
 <translation id="3891340733213178823">Preme Ctrl + Maiús + Q dúas veces para pechar sesión.</translation>
 <translation id="3892148308691398805">Copiar texto</translation>
@@ -1487,7 +1489,7 @@ Non hai ningún dispositivo conectado.</translation>
 <translation id="5788127256798019331">Ficheiros de Play</translation>
 <translation id="5788535737706478207">Volver abrir última pestana ou ventá que pechaches</translation>
 <translation id="5790085346892983794">Correcto</translation>
-<translation id="5791926618942305301">En Captura de pantalla, define o seguinte: <ph name="TYPE" />, <ph name="SOURCE" />. Preme Tabulador para elixir o tipo de captura. Preme Introducir para facer a captura. Para seleccionar a área, establece a opción de captura de pantalla parcial. Se aínda non está activa, preme Espazo para seleccionar a rexión.</translation>
+<translation id="5791926618942305301">En Captura de pantalla, define o seguinte: <ph name="TYPE" /> <ph name="SOURCE" />. Preme Tabulador para elixir o tipo de captura. Preme Introducir para facer a captura. Para seleccionar a área, establece a opción de captura de pantalla parcial. Se aínda non está activa, preme Espazo para seleccionar a rexión.</translation>
 <translation id="579415080077680903">Silenciar</translation>
 <translation id="5802516411616338943">Abrir Configuración rápida</translation>
 <translation id="5804651031882187592">Desactivar a opción Bloquear SIM</translation>

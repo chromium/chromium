@@ -206,6 +206,7 @@
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1758459542619182298"><ph name="CONTROL_TYPE" /> <ph name="KEY_LIST" /></translation>
 <translation id="1759842336958782510">Chrome</translation>
+<translation id="1762353673362288306">Сада можете да користите само Алатке у разреду</translation>
 <translation id="1762483337755424125">Транскрипт</translation>
 <translation id="1765169783255151332">Брзо мењајте тастере</translation>
 <translation id="1768959921651994223">Тип потврде идентитета</translation>
@@ -1613,6 +1614,7 @@
 <translation id="8088963492174775412">Притисните да бисте снимили</translation>
 <translation id="8094062939584182041">Дозволите Google-у да вам пошаље имејл о овом проблему</translation>
 <translation id="8104083085214006426">Користите отворену и необезбеђену мрежу</translation>
+<translation id="8108879170356113798">Моћи ћете да користите Алатке у разреду тек за <ph name="NUM_SECONDS" /> сек</translation>
 <translation id="811820734797650957">(Android) Мрежни пролаз може да се пингује</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
 <translation id="8131740175452115882">Потврди</translation>

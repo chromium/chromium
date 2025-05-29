@@ -206,6 +206,7 @@
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1758459542619182298"><ph name="CONTROL_TYPE" /> <ph name="KEY_LIST" /></translation>
 <translation id="1759842336958782510">Chrome</translation>
+<translation id="1762353673362288306">ഇപ്പോൾ നിങ്ങൾക്ക് ക്ലാസ് ടൂളുകൾ ഉപയോഗിക്കാൻ മാത്രമേ കഴിയൂ</translation>
 <translation id="1762483337755424125">ട്രാൻസ്‌ക്രിപ്റ്റ്</translation>
 <translation id="1765169783255151332">വേഗത്തിൽ കീകൾ മാറുക</translation>
 <translation id="1768959921651994223">പരിശോധിച്ചുറപ്പിക്കൽ തരം</translation>
@@ -1613,6 +1614,7 @@
 <translation id="8088963492174775412">റെക്കോർഡ് ചെയ്യാൻ അമർത്തിപ്പിടിക്കുക</translation>
 <translation id="8094062939584182041">ഈ പ്രശ്‌നത്തെ കുറിച്ച് നിങ്ങൾക്ക് ഇമെയിൽ അയയ്ക്കാൻ Google-നെ അനുവദിക്കുക</translation>
 <translation id="8104083085214006426">ഓപ്പണും സുരക്ഷിതമല്ലാത്തതുമായ നെറ്റ്‌വർക്ക് ആണ് നിങ്ങൾ ഉപയോഗിക്കുന്നത്</translation>
+<translation id="8108879170356113798"><ph name="NUM_SECONDS" /> സെക്കൻഡ് കഴിഞ്ഞാൽ മാത്രമേ നിങ്ങൾക്ക് ക്ലാസ് ടൂളുകൾ ഉപയോഗിക്കാനാകൂ</translation>
 <translation id="811820734797650957">(Android) ഗേറ്റ്‌വേ പിംഗ് ചെയ്യാനാകും</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8131740175452115882">സ്ഥിരീകരിക്കുക</translation>

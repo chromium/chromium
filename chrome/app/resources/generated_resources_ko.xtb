@@ -80,6 +80,7 @@
 <translation id="1049743911850919806">시크릿 모드</translation>
 <translation id="1049795001945932310">언어 설정(&amp;L)</translation>
 <translation id="1050693411695664090">나쁨</translation>
+<translation id="1053226848101751430">항목이 삭제되었습니다</translation>
 <translation id="1053898984916097744">새로운 활동을 시작하거나 작업에서 도움을 받으세요</translation>
 <translation id="1054048317165655285">휴대전화에서 설정 완료</translation>
 <translation id="1054153489933238809">새 탭에서 원본 이미지 열기</translation>
@@ -1813,6 +1814,7 @@
 <translation id="2249111429176737533">탭 창으로 열기</translation>
 <translation id="2249605167705922988">예: 1-5, 8, 11-13</translation>
 <translation id="2249635629516220541">사이트에서 광고를 표시하는 데 사용하는 정보를 맞춤설정합니다.</translation>
+<translation id="2250153645770828940">사전 삭제</translation>
 <translation id="22505994009453896">숫자 키패드로 마우스 커서 제어하기</translation>
 <translation id="2250624716625396929">이 탭에서 카메라 및 마이크를 사용 중입니다.</translation>
 <translation id="2251218783371366160">시스템 뷰어로 열기</translation>
@@ -2241,6 +2243,7 @@
 <translation id="2519250377986324805">방법 보기</translation>
 <translation id="2519517390894391510">인증서 프로필 이름</translation>
 <translation id="2520644704042891903">사용 가능한 소켓 대기 중...</translation>
+<translation id="2520961587246779103">분할 뷰 옵션 더보기</translation>
 <translation id="2521427645491031107">앱 동기화는 시스템 설정에서 설정됩니다</translation>
 <translation id="2521835766824839541">이전 트랙입니다</translation>
 <translation id="2521854691574443804"><ph name="FILE_NAME" /> 파일이 조직 보안 정책을 준수하는지 확인하는 중입니다.</translation>
@@ -3186,6 +3189,7 @@
 <translation id="3202578601642193415">최근</translation>
 <translation id="3204648577100496185">앱과 관련된 데이터가 기기에서 삭제될 수 있습니다.</translation>
 <translation id="3204717934117444051">이 기기에만 저장된 데이터는 기존 프로필에 그대로 유지되며, <ph name="EMAIL" />에 동기화되지 않습니다.</translation>
+<translation id="3206289903841621620">사용자 사전 <ph name="NUMBER" /></translation>
 <translation id="3207344462385471911">최근 활동을 바탕으로 내가 관심을 가질 만한 추천 검색어 및 쇼핑 할인이 표시됩니다.
         <ph name="BREAK" />
         <ph name="BREAK" />
@@ -9134,7 +9138,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="747114903913869239">오류: 확장 프로그램을 디코딩할 수 없음</translation>
 <translation id="7471520329163184433">더 느리게</translation>
 <translation id="747312361841682912">표시된 데이터 삭제</translation>
-<translation id="7473891865547856676">건너뛰기</translation>
+<translation id="7473891865547856676">나중에</translation>
 <translation id="7474043404939621342">툴바 맞춤설정</translation>
 <translation id="747459581954555080">모두 복원</translation>
 <translation id="747507174130726364">{NUM_DAYS,plural, =1{즉시 반납 필요}other{{NUM_DAYS}일 이내에 <ph name="DEVICE_TYPE" /> 기기를 반납하세요}}</translation>
@@ -10017,6 +10021,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8073499153683482226"><ph name="BEGIN_PARAGRAPH1" />앱 데이터에는 연락처, 메시지, 사진 등 앱에서 개발자 설정에 따라 저장한 모든 데이터가 포함될 수 있습니다.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />백업 데이터는 자녀의 드라이브 스토리지 용량에 포함되지 않습니다.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />설정에서 이 서비스를 사용 중지할 수 있습니다.<ph name="END_PARAGRAPH3" /></translation>
+<translation id="8075044377771022666">바닥글</translation>
 <translation id="8076835018653442223">관리자가 내 기기의 로컬 파일 액세스를 차단했습니다</translation>
 <translation id="8077120325605624147">어떤 사이트에서나 광고를 게재할 수 있습니다.</translation>
 <translation id="8077579734294125741">기타 Chrome 프로필</translation>
@@ -10370,7 +10375,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8322814362483282060">마이크 액세스가 차단된 페이지입니다.</translation>
 <translation id="8323167517179506834">URL 입력</translation>
 <translation id="8323317289166663449">컴퓨터 및 모든 웹사이트의 전체 데이터 읽기 및 변경</translation>
-<translation id="8323518750352551353">탐색을 분리하시겠습니까?</translation>
+<translation id="8323518750352551353">방문 기록을 별도로 유지하시겠습니까?</translation>
 <translation id="8324158725704657629">다시 묻지 않음</translation>
 <translation id="8324784016256120271">사이트에서 사용자의 다양한 사이트 탐색 활동 정보를 이용해 광고 맞춤설정 등의 작업을 하기 위해 쿠키를 사용할 수 있습니다.</translation>
 <translation id="8325413836429495820">클립보드 확인이 허용되지 않음</translation>
@@ -10952,6 +10957,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8729133765463465108">카메라를 사용하여 QR 코드 스캔</translation>
 <translation id="8730621377337864115">완료</translation>
 <translation id="8731029916209785242">권한(<ph name="FORMATTED_ORIGIN" />)</translation>
+<translation id="8731258351357994801">항목 <ph name="NUMBER" /></translation>
 <translation id="8731268612289859741">보안 코드</translation>
 <translation id="8731629443331803108"><ph name="SITE_NAME" />의 권한 요청: <ph name="PERMISSION" /></translation>
 <translation id="8731787661154643562">포트 번호</translation>

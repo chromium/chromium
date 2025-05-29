@@ -119,6 +119,7 @@
 <translation id="6051432659151380973">Ներդիրների խմբերն ավտոմատ պահվում են</translation>
 <translation id="6054741997831917303">Այս ապրանքի գինը <ph name="PREVIOUS_PRICE" />-ից իջել է <ph name="NEW_PRICE" /></translation>
 <translation id="6109251075362363230">Բոլոր կրկնօրինակ ներդիրները նույնպես կարխիվացվեն՝ բացառությամբ ամենավերջին կրկնօրինակից։</translation>
+<translation id="61924696525243173">{WINDOW_COUNT,plural, =1{Խումբը տեղափոխել նոր պատուհան}one{Խումբը տեղափոխել այլ պատուհան}other{Խումբը տեղափոխել այլ պատուհան}}</translation>
 <translation id="6193448654517602979">Ընտրեք ներդիրներ</translation>
 <translation id="6220820548421939212">Այո</translation>
 <translation id="6228793724645064692">(խանութի վարկանիշը)</translation>

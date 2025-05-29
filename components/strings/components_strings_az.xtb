@@ -367,6 +367,7 @@
 <translation id="1612199629998703524">Mövzuları idarə edin</translation>
 <translation id="1615178538289490617"><ph name="PORT_NAME" /> üçün girişi ləğv edin</translation>
 <translation id="1615402009686901181">Administrator siyasəti məxfi məzmun görünəndə ekran çəkimini deaktiv edir</translation>
+<translation id="161612500287664753">Bu səhifə haqqında Google Axtarışdan soruşun</translation>
 <translation id="1617276713587758852">Krossoverlər</translation>
 <translation id="1619007254056372606">Cihazda sayt datasını idarə edin</translation>
 <translation id="1619648179761984213"><ph name="USER_DISPLAY_NAME" /> tabı sildi</translation>
@@ -1505,6 +1506,7 @@
 <translation id="3586931643579894722">Detalları gizlədin</translation>
 <translation id="3587725436724465984">Təşkilatınız <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> saytını siyasəti poza biləcək sayt kimi müəyyən edib. <ph name="BEGIN_LEARN_MORE_LINK" />Bu xəbərdarlıq haqqında ətraflı məlumat əldə edin<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3587738293690942763">Orta</translation>
+<translation id="3589519427766620380">Bu səhifə haqqında Google Linzadan soruşun</translation>
 <translation id="3596918995172292499">Nişan vəziyyəti</translation>
 <translation id="3600106876108433070">Müqayisə cədvəlləri haqqında ətraflı məlumat</translation>
 <translation id="3600246354004376029"><ph name="TITLE" />, <ph name="DOMAIN" />, <ph name="TIME" /></translation>
@@ -2444,6 +2446,7 @@
 <translation id="519422657042045905">Annotasiya əlçatan deyil</translation>
 <translation id="5200063972779787617">Ünvanı hesabda yadda saxlayın</translation>
 <translation id="5201306358585911203">Bu səhifə daxilində yerləşdirilmiş səhifə deyir:</translation>
+<translation id="5203716867500274632">Administratorunuz aşağıdakıları ChromeOS cihazlarınızda əvvəlki və cari sessiyalar arasında sinxronlaşdırmağa imkan verdi:</translation>
 <translation id="5205114269877707377"><ph name="OMNIBOX_ACTION_FOCUSED_FRIENDLY_MATCH_TEXT" />, əlçatan əməliyyatlara baxmaq üçün Tab, seçilmiş əməliyyatı icra etmək üçün Enter üzərinə basın.</translation>
 <translation id="5205222826937269299">Ad tələb olunur</translation>
 <translation id="5206392433295093945">Yataq otağı</translation>
@@ -2603,6 +2606,7 @@
 <translation id="5472588168895083535">Əl izləmə bloklandı</translation>
 <translation id="547963486735802022">Faylları yenidən ötürün</translation>
 <translation id="5481076368049295676">Bu kontent cihazda məlumatı oğurlayan və ya silən təhlükəli proqram təminatı quraşdırmağa cəhd edə bilər. <ph name="BEGIN_LINK" />Hər bir halda göstərin<ph name="END_LINK" /></translation>
+<translation id="5481604577800516617">Pəncərələrin və tabların düzülüşü</translation>
 <translation id="5481682542063333508">Yazı köməyi təklif edin</translation>
 <translation id="54817484435770891">Etibarlı ünvan əlavə edin</translation>
 <translation id="5483838506518938965">Hər şey hazırdır</translation>
@@ -3438,6 +3442,7 @@
 <translation id="6925267999184670015">Şimali Amerika B+</translation>
 <translation id="6926216138694948720">Bədənin Bəzədilməsi</translation>
 <translation id="692638818576287323">Ticari nəqliyyat vasitələri</translation>
+<translation id="6930607614725241390">Yan paneldə axtarış edin</translation>
 <translation id="6934236486840930310"><ph name="BEGIN_BOLD" />Defolt axtarış mexanizmi vebdə axtarış imkanı verir və Chrome funksiyalarını dəstəkləyir<ph name="END_BOLD" /> (ünvan panelindən və veb-səhifələrdəki şəkillərdən axtarmaq kimi). Axtarış mexanizmi dəstəkləməsə, funksiya əlçatan olmaya bilər.</translation>
 <translation id="6934672428414710184">Bu ad Sizin Google Hesabınızdandır.</translation>
 <translation id="6935077351544118151">Artıq Google Pulqabıdan loyallıq kartlarını avtomatik doldura bilərsiniz</translation>
@@ -4276,6 +4281,7 @@
 <translation id="8352849934814541340">Bu cihazın administratoru əlavə funksiyalar üçün tətbiqlər quraşdırıb. Tətbiqlər müəyyən dataya daxil ola bilər.</translation>
 <translation id="8355270400102541638">Lokal Xəta Konteksti:</translation>
 <translation id="8363502534493474904">Təyyarə rejimi deaktiv edilir</translation>
+<translation id="8363929499301563123">Veb-sayt kukiləri (yaxın zamanda daxil olduğunuz veb-saytlar üzrə giriş vəziyyəti qorunacaq)</translation>
 <translation id="8364627913115013041">Ayarlanmayıb</translation>
 <translation id="8366057325711477500">Dünya Xəbərləri</translation>
 <translation id="836616551641291797">Brauzerinizin necə idarə olunduğu haqqında ətraflı məlumat əldə edin</translation>

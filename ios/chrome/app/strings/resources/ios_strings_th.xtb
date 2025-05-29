@@ -383,6 +383,7 @@
 <translation id="2513103768503127042">คุณจะเห็นกลุ่มแท็บที่นี่</translation>
 <translation id="251837347827266434">คุณจะออกจากระบบ แท็บจะปิดไป ข้อมูลการท่องเว็บจะถูกลบ</translation>
 <translation id="2520787026086861736">หากต้องการปิด ให้ไปที่<ph name="BEGIN_LINK" />การป้อนข้อความอัตโนมัติและรหัสผ่าน<ph name="END_LINK" /></translation>
+<translation id="2523295204312809179">เมื่อคุณปิดกลุ่มแท็บ ระบบจะบันทึกไว้ที่นี่โดยอัตโนมัติ</translation>
 <translation id="2529021024822217800">เปิดทั้งหมด</translation>
 <translation id="2536991091671391962">คุณสามารถใช้รหัสผ่านที่บันทึกไว้ได้ในทุกอุปกรณ์ เพราะระบบได้บันทึกไว้ในเครื่องมือจัดการรหัสผ่านบน Google แล้วสำหรับ <ph name="EMAIL" /></translation>
 <translation id="2538103551183528357">รหัสผ่านแบบซ่อน</translation>
@@ -969,6 +970,7 @@
 <translation id="499122600724363620"><ph name="NAME" />, <ph name="EMAIL" /> จัดการโดยองค์กร</translation>
 <translation id="4992255726304765516">สีของกลุ่มแท็บ <ph name="COLOR" /></translation>
 <translation id="5005498671520578047">คัดลอกรหัสผ่าน</translation>
+<translation id="5009127379503001909">ท่องเว็บต่อ</translation>
 <translation id="5012914568031465281">ติดตามราคาไม่ได้</translation>
 <translation id="5016420433031926653">ส่งไปยัง <ph name="USER_EMAIL" /></translation>
 <translation id="5017529052065664584">15 นาทีที่ผ่านมา</translation>
@@ -1035,6 +1037,7 @@
 <translation id="5275912569557792098"><ph name="USER_NAME" /> (<ph name="USER_EMAIL" />) ต้องการให้คุณเข้าร่วมกลุ่มแท็บ ทุกคนที่มีลิงก์จะแก้ไขแท็บทั้งหมดได้ ดังนั้นโปรดเข้าร่วมอย่างระมัดระวัง ลิงก์จะหมดอายุใน 48 ชม.</translation>
 <translation id="5279600392753459966">บล็อกทั้งหมด</translation>
 <translation id="5282340693022193851">หากต้องการรับการแจ้งเตือนการติดตามราคา ให้เปิดการแจ้งเตือนในการตั้งค่า iOS</translation>
+<translation id="528857768909044842">ระบบจะบันทึกกลุ่มแท็บไว้ที่นี่</translation>
 <translation id="5294624619177114121">การแจ้งเตือนในอุปกรณ์เคลื่อนที่</translation>
 <translation id="5295239312320826323">นำบัญชี <ph name="USER_EMAIL" /> ออกใช่ไหม</translation>
 <translation id="5300589172476337783">แสดง</translation>
@@ -1230,6 +1233,7 @@
 <translation id="6100617279104942061">ลงชื่อเข้าใช้ด้วย <ph name="USER_EMAIL" /> เปิดการตั้งค่า</translation>
 <translation id="6103540626693881831">การเข้ารหัสในอุปกรณ์</translation>
 <translation id="611361228753138223">เว็บไซต์ที่คุณเข้าชมเมื่อเร็วๆ นี้ในอุปกรณ์เครื่องนี้</translation>
+<translation id="611705554202268369">กดค้างเพื่อเพิ่มไปยังกลุ่มแท็บ</translation>
 <translation id="6122191549521593678">ออนไลน์</translation>
 <translation id="6122831415929794347">ปิด Google Safe Browsing ใช่ไหม</translation>
 <translation id="6123514585040403489">แท็บจะปิดไป</translation>
@@ -1266,7 +1270,7 @@
 <translation id="6223816392543092032">ดูบุ๊กมาร์ก ประวัติการเข้าชม รหัสผ่าน และการตั้งค่าอื่นๆ ในอุปกรณ์ทั้งหมด</translation>
 <translation id="6225572914528673855">แถบที่อยู่</translation>
 <translation id="6227126502342367214">การค้นหาด้วยกล้องโดยใช้ Lens</translation>
-<translation id="6227958838185907047">ลงชื่อเข้าใช้ด้วย <ph name="NAME" /> <ph name="EMAIL" /></translation>
+<translation id="6227958838185907047">ลงชื่อเข้าใช้ในชื่อ <ph name="NAME" /> <ph name="EMAIL" /></translation>
 <translation id="6231782223312638214">แนะนำ</translation>
 <translation id="6232329973559504466">ค้นหาในโหมดไม่ระบุตัวตน</translation>
 <translation id="6234310016144827337">ตรวจสอบการเชื่อมต่อแล้วลองอีกครั้ง</translation>
@@ -1478,6 +1482,7 @@
 <translation id="6979158407327259162">Google ไดรฟ์</translation>
 <translation id="6979737339423435258">ตั้งแต่ต้น</translation>
 <translation id="6983306615164277634">คุณยังสามารถแตะแถบที่อยู่ค้างไว้เพื่อเปลี่ยนตำแหน่งได้อีกด้วย</translation>
+<translation id="6987201788018524855">สำรวจฟีเจอร์ที่มีประโยชน์ที่คุณพลาดไป</translation>
 <translation id="6990519590575500580">FaceTime</translation>
 <translation id="6998251471716094661">ติดตามราคาของผลิตภัณฑ์และรับการแจ้งเตือนเมื่อราคาต่ำลงในเว็บไซต์ใดก็ตาม</translation>
 <translation id="7004032350256606903">องค์กรกำหนดให้คุณท่องเว็บแบบส่วนตัว
@@ -1544,7 +1549,7 @@
 <translation id="7346909386216857016">รับทราบ</translation>
 <translation id="7352651011704765696">มีข้อผิดพลาดเกิดขึ้น</translation>
 <translation id="7363349185727752629">คู่มือแนะนำตัวเลือกด้านความเป็นส่วนตัวของคุณ</translation>
-<translation id="736564850024123010">สลับตำแหน่งของแถบที่อยู่เพื่อประสบการณ์ใช้งานที่ปรับแต่งได้</translation>
+<translation id="736564850024123010">สลับตำแหน่งแถบที่อยู่เพื่อประสบการณ์ใช้งานที่เหมาะกับคุณ</translation>
 <translation id="7366909168761621528">ข้อมูลการท่องเว็บ</translation>
 <translation id="7367530036083223701">เข้าถึงรหัสผ่านได้อย่างปลอดภัยจากหน้าจอหลักด้วยวิดเจ็ตเครื่องมือจัดการรหัสผ่าน</translation>
 <translation id="7369285139974632858">เพิ่มลงในบุ๊กมาร์ก</translation>
@@ -1855,6 +1860,7 @@
 <translation id="8535368836838588657">แสดงรหัสผ่าน</translation>
 <translation id="8545276357312221485">ตรวจสอบการตั้งค่าเบราว์เซอร์เริ่มต้น</translation>
 <translation id="854938212724803178">คุณมีรหัสผ่านที่ถูกละเมิด 1 รายการ แก้ไขเลยเพื่อความปลอดภัย</translation>
+<translation id="8551311254462607218">ในแถบที่อยู่ ให้แตะไอคอนกล้อง Google Lens</translation>
 <translation id="8556590991644167667">{count,plural, =1{คุณได้ปิดคำเตือน {count} รายการ}other{คุณได้ปิดคําเตือน {count} รายการ}}</translation>
 <translation id="8558046478684552694">ปิดกลุ่ม</translation>
 <translation id="8560253818350321773">แสดงรายการที่ใช้บ่อยก่อน</translation>
@@ -1998,6 +2004,7 @@
 <translation id="9032405509996909363">ยืนยันการลบข้อมูลการท่องเว็บ</translation>
 <translation id="9039373489628511875">แบนด์วิดท์</translation>
 <translation id="9042893549633094279">ความเป็นส่วนตัวและความปลอดภัย</translation>
+<translation id="9055291197094969722">สร้างกลุ่มแท็บเพื่อจัดระเบียบแท็บที่เปิดอยู่และทำงานได้อย่างมีประสิทธิภาพ</translation>
 <translation id="9055580485132823283">คุณกำลังจะลบรหัสผ่าน {password_count} รายการ พาสคีย์ {passkey_count} รายการ รวมถึงรายการเว็บไซต์และแอปที่คุณเลือกที่จะไม่บันทึกข้อมูลการลงชื่อเข้าใช้ ระบบจะไม่ลบบัญชีใดๆ ที่คุณสร้างไว้สำหรับเว็บไซต์และแอป</translation>
 <translation id="9057030985451135243">ดูข้อมูลเกี่ยวกับกลุ่มแท็บที่ใช้ร่วมกัน</translation>
 <translation id="9057972802061533987">ติดตามไม่ได้ เกิดข้อผิดพลาด</translation>

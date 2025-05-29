@@ -80,6 +80,7 @@
 <translation id="1049743911850919806">Bez arhiviranja</translation>
 <translation id="1049795001945932310">&amp;Podešavanja jezika</translation>
 <translation id="1050693411695664090">Loša</translation>
+<translation id="1053226848101751430">Unos je izbrisan</translation>
 <translation id="1053898984916097744">Započnite novi zadatak ili zatražite pomoć u toku.</translation>
 <translation id="1054048317165655285">Dovršite podešavanje na telefonu</translation>
 <translation id="1054153489933238809">Otvori originalnu sl&amp;iku na novoj kartici</translation>
@@ -1800,6 +1801,7 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="2249111429176737533">Otvori kao prozor sa karticama</translation>
 <translation id="2249605167705922988">npr. 1–5, 8, 11–13</translation>
 <translation id="2249635629516220541">Prilagodite informacije koje sajtovi koriste da bi vam prikazivali oglase</translation>
+<translation id="2250153645770828940">Izbrišite rečnik</translation>
 <translation id="22505994009453896">Kontrolišite kursor miša pomoću numeričke tastature</translation>
 <translation id="2250624716625396929">Ova kartica koristi kameru i mikrofon</translation>
 <translation id="2251218783371366160">Otvori pomoću sistemskog prikazivača</translation>
@@ -2224,6 +2226,7 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="2519250377986324805">Prikaži kako</translation>
 <translation id="2519517390894391510">Naziv profila sertifikata</translation>
 <translation id="2520644704042891903">Čeka se dostupan priključak...</translation>
+<translation id="2520961587246779103">Još opcija za podeljeni prikaz</translation>
 <translation id="2521427645491031107">Sinhronizacija aplikacija je podešena u podešavanjima uređaja</translation>
 <translation id="2521835766824839541">prethodna pesma</translation>
 <translation id="2521854691574443804">Proverava se da li je <ph name="FILE_NAME" /> u skladu sa bezbednosnim smernicama organizacije...</translation>
@@ -3169,6 +3172,7 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="3202578601642193415">Najnovije</translation>
 <translation id="3204648577100496185">Podaci povezani sa ovom aplikacijom će se možda ukloniti sa ovog uređaja</translation>
 <translation id="3204717934117444051">Podaci koji se čuvaju samo na ovom uređaju ostaće na postojećem profilu. Neće se sinhronizovati sa <ph name="EMAIL" /></translation>
+<translation id="3206289903841621620">Korisnički rečnik <ph name="NUMBER" /></translation>
 <translation id="3207344462385471911">Prikazuju vam se predložene pretrage i popusti za kupovinu koji bi mogli da vas zanimaju na osnovu nedavnih aktivnosti.
         <ph name="BREAK" />
         <ph name="BREAK" />
@@ -10004,6 +10008,7 @@ Datoteka ključa: <ph name="KEY_FILE" />
 <translation id="8073499153683482226"><ph name="BEGIN_PARAGRAPH1" />Podaci aplikacija mogu da budu bilo koji podaci koje je aplikacija sačuvala (na osnovu podešavanja programera), uključujući podatke kao što su kontakti, poruke i slike.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Rezervne kopije podataka se ne računaju u odnosu na kvotu memorijskog prostora na Disku deteta.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />Ovu uslugu možete da isključite u Podešavanjima.<ph name="END_PARAGRAPH3" /></translation>
+<translation id="8075044377771022666">Podnožje</translation>
 <translation id="8076835018653442223">Administrator je onemogućio pristup lokalnim datotekama na uređaju</translation>
 <translation id="8077120325605624147">Svaki sajt koji posetite može da vam prikaže bilo koji oglas</translation>
 <translation id="8077579734294125741">Drugi Chrome profili</translation>
@@ -10939,6 +10944,7 @@ Datoteka ključa: <ph name="KEY_FILE" />
 <translation id="8729133765463465108">Skeniraj QR kôd pomoću kamere</translation>
 <translation id="8730621377337864115">Gotovo</translation>
 <translation id="8731029916209785242">Dozvole (<ph name="FORMATTED_ORIGIN" />)</translation>
+<translation id="8731258351357994801"><ph name="NUMBER" />. unos</translation>
 <translation id="8731268612289859741">Bezbednosni kôd</translation>
 <translation id="8731629443331803108"><ph name="SITE_NAME" /> želi da: <ph name="PERMISSION" /></translation>
 <translation id="8731787661154643562">Broj porta</translation>

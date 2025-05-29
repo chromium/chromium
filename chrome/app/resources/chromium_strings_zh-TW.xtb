@@ -36,7 +36,7 @@
 <translation id="1524282610922162960">分享 Chromium 分頁</translation>
 <translation id="1547469039832541117">結束所選工作。</translation>
 <translation id="1553461853655228091">Chromium 需要取得攝影機權限，才能根據你的周遭環境建立 3D 地圖</translation>
-<translation id="1555494096857516577">{NUM_EXTENSIONS,plural, =1{Chromium 不再支援這項擴充功能，因此建議你移除。}other{Chromium 不再支援這些擴充功能，因此建議你移除。}}</translation>
+<translation id="1555494096857516577">{NUM_EXTENSIONS,plural, =1{Chromium 不再支援這項擴充功能，建議你移除。}other{Chromium 不再支援這些擴充功能，建議你移除。}}</translation>
 <translation id="1574377791422810894">Chromium 安全工具</translation>
 <translation id="1594928384848033697">Chromium 要刪除密碼管理工具資料。如果允許，請輸入 Windows 密碼。</translation>
 <translation id="1607715478322902680">{COUNT,plural, =0{系統管理員要求你重新啟動 Chromium，以套用更新}=1{系統管理員要求你重新啟動 Chromium，以套用更新。你的無痕視窗不會重新開啟。}other{系統管理員要求你重新啟動 Chromium，以套用更新。你的 # 個無痕視窗不會重新開啟。}}</translation>
@@ -597,6 +597,7 @@ Chromium 無法復原你的設定。</translation>
 <translation id="9106612006984859720">如要取得日後的 Chromium 更新，必須使用 Windows 10 以上版本。這部電腦目前版本為 Windows 8.1。</translation>
 <translation id="91086099826398415">在新的 Chromium 分頁中開啟連結(&amp;T)</translation>
 <translation id="911206726377975832">你要一併刪除瀏覽資料嗎？</translation>
+<translation id="9134482777260927479">作業幫手</translation>
 <translation id="9148058034647219655">結束</translation>
 <translation id="9158494823179993217">系統管理員已設定 Chromium 開啟替代瀏覽器來存取 <ph name="TARGET_URL_HOSTNAME" />。</translation>
 <translation id="9185526690718004400">重新啟動以更新 &amp;Chromium</translation>

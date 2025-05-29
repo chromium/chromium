@@ -240,6 +240,7 @@
 <translation id="4050175100176540509">Najnovija verzija sadrži važna sigurnosna poboljšanja i nove značajke.</translation>
 <translation id="4053720452172726777">Prilagodite Google Chrome i upravljajte njime</translation>
 <translation id="408393047846373801">Da biste mogli pristupati svojim zaporkama i drugim podacima na svim svojim uređajima, prijavite se na Chrome. Zaporka će se spremiti na vaš Google račun nakon što se prijavite.</translation>
+<translation id="409936259433005390">Uskoro ćete nadograditi na Windows 11? Preuzmite program za instalaciju Chromea na OneDrive kako biste bili spremni od prvog dana.</translation>
 <translation id="4110895483821904099">Postavite novi profil u Chromeu</translation>
 <translation id="4111566860456076004">Chrome ne može provjeriti odakle dolazi ovo proširenje, pa bi moglo biti nesigurno. Uklonite ga iz Chromea kako više ne bi moglo vidjeti i mijenjati vaše podatke na web-lokacijama koje posjećujete, uključujući osobne podatke.</translation>
 <translation id="4128488089242627000">Chrome se pokreće brže, a značajke koje upotrebljavaju JavaScript trebale bi funkcionirati kako je predviđeno (preporučeno)</translation>
@@ -313,6 +314,7 @@
 <translation id="4970880042055371251">Verzija Chrome OS-a</translation>
 <translation id="4990567037958725628">Google Chrome Canary</translation>
 <translation id="5003967926796347400">Kliknite Google upravitelj zaporki</translation>
+<translation id="504867494566807945">Otvorite veze u Chromeu iz bilo koje aplikacije. Osim toga, za lakši pristup prikvačen je na programsku traku.</translation>
 <translation id="5114340746415930644">Unesite šifru kako biste upotrebljavali i spremali podatke iz Chromea na svojem računu, <ph name="USER_EMAIL" /></translation>
 <translation id="5120334927898581447">Prijavite se u Chrome prilikom prijave na druge Googleove usluge</translation>
 <translation id="5126049312684316860">Chrome predučitava još više stranica koje ćete vjerojatno posjetiti kako bi se brže učitale kad ih posjetite.</translation>
@@ -389,6 +391,7 @@
 <translation id="6075300983329039771">Vaša organizacija <ph name="MANAGER" /> zahtijeva da se prijavite u Chrome</translation>
 <translation id="6113794647360055231">Chrome je upravo postao bolji</translation>
 <translation id="6116252277240876590">Taj se jezik koristi za prikazivanje izbornika, postavki, upozorenja i drugog teksta u Chromeu</translation>
+<translation id="6127237283587442951">Koristite Chrome prema zadanim postavkama i prikvačite ga</translation>
 <translation id="6134085236017727171">Da biste upotrebljavali mikrofon, odobrite Chromeu pristup u <ph name="BEGIN_LINK" />sistemskim postavkama<ph name="END_LINK" /></translation>
 <translation id="6135456723633883042">Te kartice upotrebljavaju dodatne resurse. Da biste poboljšali izvedbu, dopustite Chromeu da ih deaktivira.</translation>
 <translation id="6145313976051292476">Otvaranje PDF-ova u Chromeu</translation>
@@ -623,6 +626,7 @@
 <translation id="9090566250983691233">Saznajte zašto Chrome blokira neke datoteke</translation>
 <translation id="9106236359747881194">Odabir teksta za pretraživanje</translation>
 <translation id="911206726377975832">Izbrisati i podatke o pregledavanju?</translation>
+<translation id="9134482777260927479">Pomoć s domaćom zadaćom</translation>
 <translation id="9138603949443464873">Da bi se vaše promjene primijenile, ponovo pokrenite Chrome</translation>
 <translation id="9148058034647219655">Izlaz</translation>
 <translation id="9195993889682885387">Chrome može procijeniti vaše interese na temelju vaše povijesti pregledavanja iz posljednjih nekoliko tjedana. Te informacije ostaju na vašem uređaju.</translation>

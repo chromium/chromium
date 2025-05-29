@@ -80,6 +80,7 @@
 <translation id="1049743911850919806">Inkognito</translation>
 <translation id="1049795001945932310">&amp;Språkinställningar</translation>
 <translation id="1050693411695664090">Dålig</translation>
+<translation id="1053226848101751430">Posten har raderats</translation>
 <translation id="1053898984916097744">Börja med något nytt eller få hjälp under vägen.</translation>
 <translation id="1054048317165655285">Slutför konfigurationen på telefonen</translation>
 <translation id="1054153489933238809">Öppna originalbilden i en ny flik</translation>
@@ -1812,6 +1813,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2249111429176737533">Öppna som fönster med flikar</translation>
 <translation id="2249605167705922988">till exempel 1-5, 8, 11-13</translation>
 <translation id="2249635629516220541">Anpassa informationen som används av webbplatser för att visa annonser</translation>
+<translation id="2250153645770828940">Ta bort ordlista</translation>
 <translation id="22505994009453896">Styr markören med en numerisk knappsats</translation>
 <translation id="2250624716625396929">Den här fliken använder kameran eller mikrofonen</translation>
 <translation id="2251218783371366160">Öppna med systemvisningsprogrammet</translation>
@@ -2239,6 +2241,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2519250377986324805">Se hur det går till</translation>
 <translation id="2519517390894391510">Namn på certifikatprofil</translation>
 <translation id="2520644704042891903">Väntar på tillgänglig plats ...</translation>
+<translation id="2520961587246779103">Fler alternativ för delad vy</translation>
 <translation id="2521427645491031107">Appsynkronisering ställs in i enhetsinställningarna</translation>
 <translation id="2521835766824839541">föregående spår</translation>
 <translation id="2521854691574443804"><ph name="FILE_NAME" /> kontrolleras utifrån organisationens säkerhetspolicy …</translation>
@@ -3184,6 +3187,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="3202578601642193415">Senaste</translation>
 <translation id="3204648577100496185">Data kopplad till den här appen kanske tas bort från enheten</translation>
 <translation id="3204717934117444051">Data som sparas enbart på den här enheten finns kvar i den befintliga profilen. Den synkroniseras inte med <ph name="EMAIL" /></translation>
+<translation id="3206289903841621620">Egen ordlista <ph name="NUMBER" /></translation>
 <translation id="3207344462385471911">Förslag på sökningar och shoppingrabatter som kan intressera dig (baserat på din senaste aktivitet) visas.
         <ph name="BREAK" />
         <ph name="BREAK" />
@@ -3372,7 +3376,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="3345886924813989455">Det gick inte att hitta någon webbläsare som stöds</translation>
 <translation id="3346306152660142597">Anpassa den här sidan med AI</translation>
 <translation id="3347086966102161372">K&amp;opiera bildadress</translation>
-<translation id="3348038390189153836">Flyttbar enhet upptäckt</translation>
+<translation id="3348038390189153836">En mobil enhet har upptäckts</translation>
 <translation id="3348131053948466246">Föreslagen emoji. Tryck upp eller ned för att navigera och retur för att infoga.</translation>
 <translation id="3349933790966648062">Minnesanvändning</translation>
 <translation id="3350450887151703713">Spola bakåt 10 sekunder</translation>
@@ -7673,7 +7677,7 @@ Du kan tilldela flera brytare denna åtgärd.</translation>
 <translation id="641867537956679916">Administratören har loggat in för att undersöka ett problem. Du kan använda enheten igen när administratören har gett tillbaka kontrollen.</translation>
 <translation id="641899100123938294">Sök efter nya enheter</translation>
 <translation id="6419524191360800346">En uppgradering till Debian 11 (Bullseye) är tillgänglig</translation>
-<translation id="6419546358665792306">Läser in okomprimerat tillägg</translation>
+<translation id="6419546358665792306">Läs in okomprimerat tillägg</translation>
 <translation id="642469772702851743">Enheten (serienr: <ph name="SERIAL_NUMBER" />) har låsts av ägaren.</translation>
 <translation id="6425556984042222041">Hastighet för text till tal</translation>
 <translation id="642729974267661262">Får inte spela upp ljud</translation>
@@ -10016,6 +10020,7 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="8073499153683482226"><ph name="BEGIN_PARAGRAPH1" />Appdata är all data som har sparats i en app (utifrån utvecklarens inställningar), till exempel kontakter, meddelanden och foton.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Säkerhetskopierad data tar inte upp något av ditt barns lagringsutrymme på Drive.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />Du kan inaktivera den här tjänsten i inställningarna.<ph name="END_PARAGRAPH3" /></translation>
+<translation id="8075044377771022666">Sidfot</translation>
 <translation id="8076835018653442223">Administratören har inaktiverat åtkomsten till lokala filer på enheten</translation>
 <translation id="8077120325605624147">Alla webbplatser du besöker kan visa alla annonser för dig</translation>
 <translation id="8077579734294125741">Andra Chrome-profiler</translation>
@@ -10951,6 +10956,7 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="8729133765463465108">Skanna QR-koden med kameran</translation>
 <translation id="8730621377337864115">Klart</translation>
 <translation id="8731029916209785242">Behörigheter (<ph name="FORMATTED_ORIGIN" />)</translation>
+<translation id="8731258351357994801">Post <ph name="NUMBER" /></translation>
 <translation id="8731268612289859741">Säkerhetskod</translation>
 <translation id="8731629443331803108"><ph name="SITE_NAME" /> vill <ph name="PERMISSION" /></translation>
 <translation id="8731787661154643562">Portnummer</translation>

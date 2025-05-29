@@ -761,6 +761,7 @@ De lo contrario, el panel táctil integrado se volverá a habilitar dentro de <p
 <translation id="3552189655002856821">La conexión Wi-Fi está desactivada</translation>
 <translation id="3554215588514239132">Ocultar o mostrar el panel Herramientas para desarrolladores</translation>
 <translation id="3554637740840164787">Se fijó <ph name="ITEM_TITLE" /></translation>
+<translation id="3554928024630051016">Para agregar dispositivos USB adicionales, intenta quitar uno y, luego, conectar uno nuevo</translation>
 <translation id="3558768885091059911">¿Quieres activar el acceso a la cámara y al micrófono?</translation>
 <translation id="3560174576767922131">Grabar video</translation>
 <translation id="3563775809269155755">Habilitar el hotspot</translation>
@@ -869,6 +870,7 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="3861651314799684201">Presiona intro para grabar la pantalla completa</translation>
 <translation id="3870197372373144624">Intenta apagar el dispositivo.</translation>
 <translation id="3879748587602334249">Administrador de descargas</translation>
+<translation id="3884007280698606545">Se alcanzó el límite de dispositivos USB</translation>
 <translation id="3886872229787704059">Se abrió hoy</translation>
 <translation id="3891340733213178823">Presiona Ctrl + Mayús + Q dos veces para salir.</translation>
 <translation id="3892148308691398805">Copiar texto</translation>

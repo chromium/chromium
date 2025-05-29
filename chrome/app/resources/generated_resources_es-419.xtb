@@ -80,6 +80,7 @@
 <translation id="1049743911850919806">Incógnito</translation>
 <translation id="1049795001945932310">&amp;Configuración de idiomas</translation>
 <translation id="1050693411695664090">Mala</translation>
+<translation id="1053226848101751430">Se borró la entrada</translation>
 <translation id="1053898984916097744">Comienza una nueva tarea o recibe ayuda en el flujo.</translation>
 <translation id="1054048317165655285">Completa la configuración en tu teléfono</translation>
 <translation id="1054153489933238809">Abrir imagen original en una pestaña nueva</translation>
@@ -1799,6 +1800,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2249111429176737533">Abrir como ventana con pestañas</translation>
 <translation id="2249605167705922988">p. ej. 1-5, 8, 11-13</translation>
 <translation id="2249635629516220541">Personaliza la información que usan los sitios para mostrarte anuncios</translation>
+<translation id="2250153645770828940">Borrar diccionario</translation>
 <translation id="22505994009453896">Controla el cursor del mouse con un teclado numérico</translation>
 <translation id="2250624716625396929">Esta pestaña está utilizando la cámara y el micrófono</translation>
 <translation id="2251218783371366160">Abrir con el lector del sistema</translation>
@@ -2223,6 +2225,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2519250377986324805">Más detalles</translation>
 <translation id="2519517390894391510">Nombre de perfil del certificado</translation>
 <translation id="2520644704042891903">Esperando el socket disponible…</translation>
+<translation id="2520961587246779103">Más opciones para la vista dividida</translation>
 <translation id="2521427645491031107">Se estableció la sincronización de apps en la configuración del dispositivo</translation>
 <translation id="2521835766824839541">pista anterior</translation>
 <translation id="2521854691574443804">Controlando <ph name="FILE_NAME" /> respecto de las políticas de seguridad de tu organización…</translation>
@@ -3168,6 +3171,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3202578601642193415">Más reciente</translation>
 <translation id="3204648577100496185">Es posible que los datos asociados a esta app se quiten de este dispositivo</translation>
 <translation id="3204717934117444051">Los datos que se guarden solo en este dispositivo permanecerán en el perfil existente. No se sincronizarán con <ph name="EMAIL" />.</translation>
+<translation id="3206289903841621620">Diccionario del usuario <ph name="NUMBER" /></translation>
 <translation id="3207344462385471911">Te mostramos búsquedas sugeridas y descuentos para compras que podrían interesarte en función de tu actividad reciente.
         <ph name="BREAK" />
         <ph name="BREAK" />
@@ -6611,7 +6615,7 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="5651308944918885595">Detección de Compartir con Nearby</translation>
 <translation id="5653154844073528838">Tienes <ph name="PRINTER_COUNT" /> impresoras guardadas.</translation>
 <translation id="5654669866168491665">Más información sobre los sitios que podrían no funcionar cuando se bloquean las cookies de terceros</translation>
-<translation id="5654751240928365405">Esta extensión se desactivó porque ya no es compatible</translation>
+<translation id="5654751240928365405">Se desactivó esta extensión porque ya no es compatible</translation>
 <translation id="5654848283274615843">{NUM_SITES,plural, =1{Para proteger tu privacidad, se quitaron los permisos de un sitio}other{Para proteger tu privacidad, se quitaron los permisos de algunos sitios}}</translation>
 <translation id="5655296450510165335">Inscripción del dispositivo</translation>
 <translation id="5655823808357523308">Ajusta cómo se muestran los colores en la pantalla</translation>
@@ -10000,6 +10004,7 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8073499153683482226"><ph name="BEGIN_PARAGRAPH1" />Los datos de las apps pueden incluir cualquier información que haya guardado una app (en función de la configuración del desarrollador), incluso datos como contactos, mensajes y fotos.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Los datos de la copia de seguridad no inciden en la cuota de almacenamiento en Drive de tu hijo.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />Se puede desactivar este servicio en Configuración.<ph name="END_PARAGRAPH3" /></translation>
+<translation id="8075044377771022666">Pie de página</translation>
 <translation id="8076835018653442223">El administrador inhabilitó el acceso a los archivos locales de tu dispositivo</translation>
 <translation id="8077120325605624147">Cualquier sitio que visites puede mostrarte cualquier anuncio</translation>
 <translation id="8077579734294125741">Otros perfiles de Chrome</translation>
@@ -10058,7 +10063,7 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8110489095782891123">Descargando la lista de contactos…</translation>
 <translation id="8114925369073821854">Permiso del micrófono de <ph name="APP_NAME" /></translation>
 <translation id="8116972784401310538">&amp;Administrador de favoritos</translation>
-<translation id="8118276691321086429">El <ph name="PASSWORD_MANAGER_BRAND" /> recuerda cómo ingresaste y te da acceso de forma automática cuando es posible. Si esta función está desactivada, siempre se te solicitará confirmación.</translation>
+<translation id="8118276691321086429"><ph name="PASSWORD_MANAGER_BRAND" /> recuerda cómo ingresaste y te da acceso de forma automática cuando es posible. Si esta función está desactivada, siempre se te solicitará confirmación.</translation>
 <translation id="8118362518458010043">Chrome la inhabilitó. Es posible que esta extensión no sea segura.</translation>
 <translation id="8118448640060360549">{EXTENSIONS_COUNT,plural, =1{# favorito}other{# favoritos}}</translation>
 <translation id="8118488170956489476">Tu organización <ph name="BEGIN_LINK" />administra el navegador<ph name="END_LINK" /></translation>
@@ -10935,6 +10940,7 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8729133765463465108">Usar la cámara para escanear el código QR</translation>
 <translation id="8730621377337864115">Listo</translation>
 <translation id="8731029916209785242">Permisos (<ph name="FORMATTED_ORIGIN" />)</translation>
+<translation id="8731258351357994801">Entrada <ph name="NUMBER" /></translation>
 <translation id="8731268612289859741">Código de seguridad</translation>
 <translation id="8731629443331803108"><ph name="SITE_NAME" /> desea hacer lo siguiente: <ph name="PERMISSION" /></translation>
 <translation id="8731787661154643562">Número de puerto</translation>

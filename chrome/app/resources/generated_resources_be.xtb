@@ -80,6 +80,7 @@
 <translation id="1049743911850919806">Інкогніта</translation>
 <translation id="1049795001945932310">&amp;Налады мовы</translation>
 <translation id="1050693411695664090">Дрэнная</translation>
+<translation id="1053226848101751430">Артыкул выдалены</translation>
 <translation id="1053898984916097744">Атрымаць дапамогу можна, як пачаўшы новую задачу, так і ў працэсе выканання існуючай.</translation>
 <translation id="1054048317165655285">Завяршыце наладжванне на тэлефоне</translation>
 <translation id="1054153489933238809">Адкрыць зыходны &amp;відарыс у новай укладцы</translation>
@@ -487,6 +488,7 @@
 <translation id="1319983966058170660">Кнопка вяртання на ўкладзеную старонку "<ph name="SUBPAGE_TITLE" />"</translation>
 <translation id="1322046419516468189">Праглядзець захаваныя паролі і кіраваць імі можна ў раздзеле <ph name="SAVED_PASSWORDS_STORE" /></translation>
 <translation id="132539964543492755">Каб пераключацца паміж левай, правай і дзвюма кнопкамі мышы, выкарыстоўвайце "x"</translation>
+<translation id="1325611581149097457">Дапамагчы з напісаннем тэксту</translation>
 <translation id="1325898422473267360"><ph name="PERMISSION_USAGE" /> <ph name="PERMISSION_INDICATOR_DESCRIPTION" /></translation>
 <translation id="1327272175893960498">Білеты Kerberos</translation>
 <translation id="1327495825214193325">Уключэнне адладкі ADB патрабуе перазапуску прылады <ph name="DEVICE_TYPE" />. Выключэнне яе патрабуе скіду да заводскіх налад.</translation>
@@ -1803,6 +1805,7 @@
 <translation id="2249111429176737533">Адкрыць як акно з укладкамі</translation>
 <translation id="2249605167705922988">напр., 1-5, 8, 11-13</translation>
 <translation id="2249635629516220541">Кіраванне данымі, якія сайты выкарыстоўваюць для паказу вам рэкламы</translation>
+<translation id="2250153645770828940">Выдаліць слоўнік</translation>
 <translation id="22505994009453896">Кіруйце курсорам мышы з дапамогай панэлі набору лічбаў</translation>
 <translation id="2250624716625396929">На гэтай укладцы выкарыстоўваюцца камера і мікрафон</translation>
 <translation id="2251218783371366160">Адкрыць з дапамогай сістэмнага сродку прагляду</translation>
@@ -1986,6 +1989,7 @@
 <translation id="2359345697448000899">Каб кіраваць пашырэннямі, націсніце "Пашырэнні" ў меню "Інструменты".</translation>
 <translation id="2359556993567737338">Падключыць прыладу Bluetooth</translation>
 <translation id="2359808026110333948">Працягнуць</translation>
+<translation id="2360047907847684514">Павысьце прадукцыйнасць браўзера з дапамогай пашырэнняў і тэм</translation>
 <translation id="2360792123962658445">Каб перайсці да зводкі па старонцы, падобных пошукавых запытаў і іншай карыснай інфармацыі пра яе, націсніце на кнопку бакавой панэлі Google Пошуку на панэлі інструментаў</translation>
 <translation id="2361100938102002520">Вы дадаяце ў гэты браўзер профіль пад кіраваннем. Ваш адміністратар можа кіраваць профілем і мець доступ да даных у ім.</translation>
 <translation id="236117173274098341">Аптымізаваць</translation>
@@ -2227,6 +2231,7 @@
 <translation id="2519250377986324805">Паглядзець як</translation>
 <translation id="2519517390894391510">Назва профілю сертыфіката</translation>
 <translation id="2520644704042891903">Чакаецца даступны сокет...</translation>
+<translation id="2520961587246779103">Дадатковыя параметры раздзялення экрана</translation>
 <translation id="2521427645491031107">Сінхранізацыя праграм зададзена ў наладах прылады</translation>
 <translation id="2521835766824839541">папярэдні трэк</translation>
 <translation id="2521854691574443804">Файл "<ph name="FILE_NAME" />" правяраецца на адпаведнасць палітыкам бяспекі вашай арганізацыі...</translation>
@@ -2463,6 +2468,7 @@
 <translation id="2692503699962701720">Змяняць вышыню голасу пры агучванні тыпаў элементаў і тэксту, да якога прыменена фармаціраванне</translation>
 <translation id="2692901429679246677">Вада</translation>
 <translation id="2693134906590795721">Гукі зарадкі</translation>
+<translation id="2695943520968279338">Праглядзець пашырэнне</translation>
 <translation id="2698147581454716013">Гэта прылада пастаўляецца ў пакеце з іншай ліцэнзіяй, таму яе нельга зарэгістраваць па ліцэнзіі Kiosk &amp; Signage Upgrade.</translation>
 <translation id="2699911226086014512">Не ўдалося выканаць аперацыю з PIN-кодам. Код памылкі: <ph name="RETRIES" />.</translation>
 <translation id="2701330563083355633">Абагулена з прылады <ph name="DEVICE_NAME" /></translation>
@@ -2977,6 +2983,7 @@
 <translation id="3043126717220766543">Ачысціць прапановы па групаванні</translation>
 <translation id="3043218608271070212"><ph name="GROUP_NAME" /> – <ph name="GROUP_CONTENT_STRING" /></translation>
 <translation id="3043581297103810752">Крыніца: <ph name="ORIGIN" /></translation>
+<translation id="3044066905368192931">Палепшыць з дапамогай штучнага інтэлекту</translation>
 <translation id="3045447014237878114">Гэты сайт спампаваў некалькі файлаў аўтаматычна</translation>
 <translation id="3046178388369461825">Вельмі мала месца на дыску Linux</translation>
 <translation id="304644035656848980">Перадпрагляд аўдыяплыні мікрафона</translation>
@@ -3172,6 +3179,7 @@
 <translation id="3202578601642193415">самыя новыя</translation>
 <translation id="3204648577100496185">Даныя, звязаныя з дадзенай праграмай, могуць быць выдалены з гэтай прылады</translation>
 <translation id="3204717934117444051">Даныя, захаваныя толькі на гэтай прыладзе, застануцца ў існуючым профілі. Яны не будуць сінхранізавацца з уліковым запісам <ph name="EMAIL" />.</translation>
+<translation id="3206289903841621620">Карыстальніцкі слоўнік <ph name="NUMBER" /></translation>
 <translation id="3207344462385471911">Вы бачыце рэкамендацыі пошукавых запытаў і скідкі, якія могуць быць вам цікавыя (на падставе вашых нядаўніх дзеянняў).
         <ph name="BREAK" />
         <ph name="BREAK" />
@@ -4577,6 +4585,7 @@
 <translation id="4176864026061939326">Гэта прылада знаходзіцца пад кіраваннем. Яе адміністратар патрабуе стварыць новы профіль для ўліковага запісу <ph name="USER_EMAIL_ADDRESS" />.</translation>
 <translation id="4177501066905053472">Тэмы рэкламы</translation>
 <translation id="4177668342649553942">Адкрыць "<ph name="SHORTCUT_NAME" />" – <ph name="APP_NAME" /></translation>
+<translation id="4177731895051842298">Пашырэнні – гэта дадатковыя кампаненты для браўзера Chrome, якія дапамагаюць вам арганізаваць сваю працу, зрабіць выкананне задач больш простым і наладзіць прагляд у браўзеры</translation>
 <translation id="4178220097446335546">Каб выдаліць даныя падпіскі і звязаных з ёй сетак, перайдзіце на старонку падпіскі Passpoint.</translation>
 <translation id="4181602000363099176">20x</translation>
 <translation id="4181841719683918333">Мовы</translation>
@@ -5366,6 +5375,7 @@
 <translation id="4750185073185658673">Вам трэба даць яшчэ некалькі дазволаў на сваім тэлефоне. Упэўніцеся, што на ім уключаны Bluetooth і Wi-Fi.</translation>
 <translation id="4750394297954878236">Прапановы</translation>
 <translation id="475088594373173692">Першы карыстальнік</translation>
+<translation id="4754590344707355551">Дадайце новыя магчымасці ў браўзер дзякуючы пашырэнням</translation>
 <translation id="4756378406049221019">Спыніць/Перазагрузіць</translation>
 <translation id="4756388243121344051">&amp;Гісторыя</translation>
 <translation id="4756671452988984333">Тэкст для аўдыя</translation>
@@ -6396,6 +6406,7 @@
 <translation id="5490798133083738649">Дазволіць сістэме Linux доступ да мікрафона</translation>
 <translation id="549211519852037402">Бэжавы і белы</translation>
 <translation id="5492637351392383067">Шыфраванне на прыладзе</translation>
+<translation id="5492780659774694607">Пашырэнні – гэта дадатковыя кампаненты для браўзера Chrome, якія дапамагаюць вам</translation>
 <translation id="5493455553805432330">Выдаліць інфармацыю пра прыладу</translation>
 <translation id="5493792505296048976">экран уключаны.</translation>
 <translation id="5494016731375030300">Нядаўна закрытыя ўкладкі</translation>
@@ -9626,6 +9637,7 @@
 <translation id="7815680994978050279">Небяспечная спампоўка заблакіравана</translation>
 <translation id="7817361223956157679">Экранная клавіятура ў праграмах Linux пакуль што не працуе</translation>
 <translation id="7818135753970109980">Дададзена новая тэма (<ph name="EXTENSION_NAME" />)</translation>
+<translation id="7819839686707222575">Пашырэнні – гэта дадатковыя кампаненты для браўзера Chrome, якія даюць вам новыя магчымасці</translation>
 <translation id="7820400255539998692">Выдаліце файл <ph name="FILENAME" />, каб іншыя карыстальнікі прылады не змаглі пабачыць вашы паролі</translation>
 <translation id="7820561748632634942">Прызначыць дадатковыя пераключальнікі?</translation>
 <translation id="782057141565633384">К&amp;апіраваць адрас відэа</translation>
@@ -10005,6 +10017,7 @@
 <translation id="8073499153683482226"><ph name="BEGIN_PARAGRAPH1" />Даныя праграм – гэта любыя даныя, якія захоўваюцца праграмай (у залежнасці ад налад распрацоўшчыка), у тым ліку кантакты, паведамленні і фота.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Даныя рэзервовай копіі не будуць улічвацца ў квоце сховішча вашага дзіцяці на Дыску.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />Гэты сэрвіс можна выключыць у Наладах.<ph name="END_PARAGRAPH3" /></translation>
+<translation id="8075044377771022666">Ніжні калонтытул</translation>
 <translation id="8076835018653442223">Доступ да лакальных файлаў на прыладзе адключаны адміністратарам</translation>
 <translation id="8077120325605624147">Любы наведаны вамі сайт будзе паказваць вам рэкламу</translation>
 <translation id="8077579734294125741">Іншыя профілі Chrome</translation>
@@ -10591,6 +10604,7 @@
 <translation id="8477241577829954800">Заменены</translation>
 <translation id="8477384620836102176">&amp;Агульныя звесткі</translation>
 <translation id="8477446666255316832">У наступны раз вы зможаце ўвайсці хутчэй</translation>
+<translation id="8478346767369317046">Працоўны профіль</translation>
 <translation id="8479176401914456949">Няправільны код. Паўтарыце спробу.</translation>
 <translation id="8480869669560681089">Невядомая прылада ад <ph name="VENDOR_NAME" /></translation>
 <translation id="8481187309597259238">Пацвердзіць дазвол доступу да USB</translation>
@@ -10940,6 +10954,7 @@
 <translation id="8729133765463465108">Адсканіраваць QR-код з дапамогай камеры</translation>
 <translation id="8730621377337864115">Гатова</translation>
 <translation id="8731029916209785242">Дазволы (<ph name="FORMATTED_ORIGIN" />)</translation>
+<translation id="8731258351357994801">Артыкул <ph name="NUMBER" /></translation>
 <translation id="8731268612289859741">Код бяспекі</translation>
 <translation id="8731629443331803108">Сайт <ph name="SITE_NAME" /> запытвае наступны дазвол: <ph name="PERMISSION" /></translation>
 <translation id="8731787661154643562">Нумар порта</translation>
@@ -11085,6 +11100,7 @@
 <translation id="8827289157496676362">Замацаваць пашырэнне</translation>
 <translation id="8828933418460119530">Назва DNS</translation>
 <translation id="8829979393064090868">Дадаць укладку ў рэжыме падзеленага экрана</translation>
+<translation id="8830479210602243906">Павысіць прадукцыйнасць</translation>
 <translation id="883062543841130884">Замены</translation>
 <translation id="8830779999439981481">Для прымянення абнаўленняў ажыццяўляецца перазапуск</translation>
 <translation id="8830796635868321089">Бягучыя налады проксі-сервера не дазваляюць выканаць праверку наяўнасці абнаўленняў. Змяніце <ph name="PROXY_SETTINGS_LINK_START" />налады проксі-сервера<ph name="PROXY_SETTINGS_LINK_END" />.</translation>

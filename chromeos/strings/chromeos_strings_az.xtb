@@ -206,6 +206,7 @@
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1758459542619182298"><ph name="CONTROL_TYPE" /> <ph name="KEY_LIST" /></translation>
 <translation id="1759842336958782510">Chrome</translation>
+<translation id="1762353673362288306">İndi yalnız Sinif Alətlərindən istifadə edə bilərsiniz</translation>
 <translation id="1762483337755424125">Transkript</translation>
 <translation id="1765169783255151332">Düymələri tez dəyişin</translation>
 <translation id="1768959921651994223">Doğrulama növü</translation>
@@ -1613,6 +1614,7 @@ Bu transkripsiyaları əldə etmək üçün transkripsiya modelini (maksimum 100
 <translation id="8088963492174775412">Basaraq qeydə alın</translation>
 <translation id="8094062939584182041">Google'un bu problemlə bağlı sizə e-məktub göndərməsinə icazə verin</translation>
 <translation id="8104083085214006426">Açıq və güvənsiz şəbəkədən istifadə edirsiniz</translation>
+<translation id="8108879170356113798">Sinif Alətlərindən yalnız <ph name="NUM_SECONDS" /> saniyə ərzində istifadə edə biləcəksiniz</translation>
 <translation id="811820734797650957">(Android) Giriş test edilə bilər</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
 <translation id="8131740175452115882">Təsdiq edin</translation>

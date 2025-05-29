@@ -80,6 +80,7 @@
 <translation id="1049743911850919806">„Инкогнито“</translation>
 <translation id="1049795001945932310">&amp;Езикови настройки</translation>
 <translation id="1050693411695664090">лоша</translation>
+<translation id="1053226848101751430">Записът е изтрит</translation>
 <translation id="1053898984916097744">Започнете нещо ново или получете помощ в потока.</translation>
 <translation id="1054048317165655285">Завършване на настройването на телефона ви</translation>
 <translation id="1054153489933238809">Отваряне на оригиналното изображение в нов раздел</translation>
@@ -1808,6 +1809,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2249111429176737533">Отваряне като прозорец с раздели</translation>
 <translation id="2249605167705922988">напр. 1-5, 8, 11-13</translation>
 <translation id="2249635629516220541">Персонализиране на информацията, използвана от сайтовете с цел показване на реклами</translation>
+<translation id="2250153645770828940">Изтриване на речника</translation>
 <translation id="22505994009453896">Контролиране на курсора на мишката с цифрова клавиатура</translation>
 <translation id="2250624716625396929">Този раздел използва камерата и микрофона ви</translation>
 <translation id="2251218783371366160">Отваряне със системния визуализатор</translation>
@@ -2235,6 +2237,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2519250377986324805">Вижте как</translation>
 <translation id="2519517390894391510">Име на профила на сертификата</translation>
 <translation id="2520644704042891903">Изчаква се свободен сокет...</translation>
+<translation id="2520961587246779103">Още опции за разделен изглед</translation>
 <translation id="2521427645491031107">Синхронизирането на приложенията е зададено в настройките на устройството</translation>
 <translation id="2521835766824839541">предишен запис</translation>
 <translation id="2521854691574443804"><ph name="FILE_NAME" /> се проверява за съответствие с правилата за сигурност на организацията ви...</translation>
@@ -3180,6 +3183,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="3202578601642193415">Най-нова</translation>
 <translation id="3204648577100496185">Данните, свързани с това приложение, може да бъдат премахнати от устройството</translation>
 <translation id="3204717934117444051">Данните, които са запазени само на това устройство, ще останат в съществуващия потребителски профил. Няма да се синхронизира с(ъс) <ph name="EMAIL" /></translation>
+<translation id="3206289903841621620">Потребителски речник <ph name="NUMBER" /></translation>
 <translation id="3207344462385471911">Показват се предложения за търсене и отстъпки при пазаруване, които може да ви заинтересуват, въз основа на скорошната ви активност.
         <ph name="BREAK" />
         <ph name="BREAK" />
@@ -4721,6 +4725,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="4275397969489577657">Активиране на записването в регистрационен файл за потоците на събития</translation>
 <translation id="4275788652681621337">Затваряне на страничния панел</translation>
 <translation id="4275830172053184480">Рестартиране на устройството ви</translation>
+<translation id="4276598757692536305">PPD файл за принтера</translation>
 <translation id="4276856098224910511">Инсталирането не е възможно. Изчаква се актуализация на операционната система. Моля, приложете всички изчакващи актуализации на операционната система, рестартирайте устройството и опитайте отново. Кодът на грешката е <ph name="ERROR" />.</translation>
 <translation id="4277434192562187284">Източник на конфигурацията чрез XML</translation>
 <translation id="4278348589087554892">{NUM_SITES,plural, =1{Разрешенията са премахнати от 1 сайт}other{Разрешенията са премахнати от {NUM_SITES} сайта}}</translation>
@@ -10014,6 +10019,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="8073499153683482226"><ph name="BEGIN_PARAGRAPH1" />Данните на приложенията могат да бъдат всяка запазена от тях информация (въз основа на настройките за програмисти), включително контакти, съобщения и снимки.<ph name="END_PARAGRAPH1" />
 <ph name="BEGIN_PARAGRAPH2" />Данните в резервното копие не заемат от квотата на използваното от детето ви хранилище на Диск.<ph name="END_PARAGRAPH2" />
 <ph name="BEGIN_PARAGRAPH3" />Можете да изключите тази услуга от настройките.<ph name="END_PARAGRAPH3" /></translation>
+<translation id="8075044377771022666">Долен колонтитул</translation>
 <translation id="8076835018653442223">Достъпът до локални файлове на устройството ви е деактивиран от администратора ви</translation>
 <translation id="8077120325605624147">Всички посещавани от вас сайтове могат да ви показват всякакви реклами</translation>
 <translation id="8077579734294125741">Други потребителски профили в Chrome</translation>
@@ -10949,6 +10955,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="8729133765463465108">Използване на камерата за сканиране на QR код</translation>
 <translation id="8730621377337864115">Готово</translation>
 <translation id="8731029916209785242">Разрешения (<ph name="FORMATTED_ORIGIN" />)</translation>
+<translation id="8731258351357994801">Запис <ph name="NUMBER" /></translation>
 <translation id="8731268612289859741">Код за сигурност</translation>
 <translation id="8731629443331803108"><ph name="SITE_NAME" /> иска да <ph name="PERMISSION" /></translation>
 <translation id="8731787661154643562">Номер на порта</translation>

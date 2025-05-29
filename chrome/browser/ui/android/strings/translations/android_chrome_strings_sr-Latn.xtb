@@ -375,6 +375,7 @@ Samo neko ko ima pristupnu frazu može da čita šifrovane podatke. Pristupna fr
 <translation id="2718352093833049315">Samo na WiFi-ju</translation>
 <translation id="2718846868787000099">Da bi vam prikazivali sadržaj na željenim jezicima, sajtovi koje posećujete mogu da vide podešavanja</translation>
 <translation id="2723001399770238859">audio</translation>
+<translation id="2734335652257251631">Prikaži Režim čitanja</translation>
 <translation id="2739887572830526131">Zadržite ovu grupu da biste dodali kartice kasnije ili je izbrišite ako vam više ne treba.</translation>
 <translation id="2742373789128106053"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> – trenutno je nedostupno.</translation>
 <translation id="2760805590727089264">MM/GG</translation>
@@ -1744,6 +1745,7 @@ Da biste promenili ovo podešavanje, <ph name="BEGIN_LINK" />izbrišite Chrome p
 <translation id="8676789164135894283">Potvrde prijavljivanja</translation>
 <translation id="8683039184091909753">slika</translation>
 <translation id="8688183792442786085"><ph name="TAB_TITLE" />, izabrana kartica</translation>
+<translation id="8693232767599693749">Želite da otvorite Režim čitanja?</translation>
 <translation id="8697753151306746444">Delite prozor ili ekran</translation>
 <translation id="869891660844655955">Datum isteka</translation>
 <translation id="8699120352855309748">Ne nudi prevod ovih jezika</translation>

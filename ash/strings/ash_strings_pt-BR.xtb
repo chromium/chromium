@@ -761,6 +761,7 @@ Caso contrário, o touchpad integrado será reativado em <ph name="TIMEOUT_SECON
 <translation id="3552189655002856821">O Wi-Fi está desativado</translation>
 <translation id="3554215588514239132">Mostrar ou ocultar o painel "Ferramentas para desenvolvedores"</translation>
 <translation id="3554637740840164787">O item <ph name="ITEM_TITLE" /> foi fixado</translation>
+<translation id="3554928024630051016">Para adicionar outros dispositivos USB, tente remover um e conectar outro</translation>
 <translation id="3558768885091059911">Ativar o acesso à câmera e ao microfone?</translation>
 <translation id="3560174576767922131">Gravar vídeo</translation>
 <translation id="3563775809269155755">Ativar ponto de acesso</translation>
@@ -868,6 +869,7 @@ Conecte o dispositivo a uma fonte de energia.</translation>
 <translation id="3861651314799684201">Pressione "Enter" para gravar em tela cheia</translation>
 <translation id="3870197372373144624">Tente desligar o dispositivo.</translation>
 <translation id="3879748587602334249">Gerenciador de downloads</translation>
+<translation id="3884007280698606545">Limite de USB atingido</translation>
 <translation id="3886872229787704059">Aberto hoje</translation>
 <translation id="3891340733213178823">Pressione Ctrl+Shift+Q duas vezes para sair.</translation>
 <translation id="3892148308691398805">Copiar texto</translation>

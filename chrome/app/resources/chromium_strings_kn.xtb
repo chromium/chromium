@@ -223,6 +223,7 @@
 <translation id="4019629340646866719">ಹೆಚ್ಚುವರಿ <ph name="BEGIN_LINK_CROS_OSS" />ಓಪನ್ ಸೋರ್ಸ್ ಸಾಫ್ಟ್‌ವೇರ್‌<ph name="END_LINK_CROS_OSS" /> ನಿಂದ ChromiumOS ನ ರಚನೆ, ಹಾಗೆಯೇ <ph name="BEGIN_LINK_LINUX_OSS" />Linux ಡೆವಲಪ್‌ಮೆಂಟ್ ಎನ್ವಿರಾನ್‌ಮೆಂಟ್<ph name="END_LINK_LINUX_OSS" /> ರಚನೆ ಸಹ ಸಾಧ್ಯವಾಯಿತು.</translation>
 <translation id="4022972681110646219">ಸ್ಕ್ರೀನ್‌ ಅನ್ನು ಅನುವಾದಿಸಿ</translation>
 <translation id="4023601594785368013">ಮೂಲ ಭಾಷೆ: <ph name="LANGUAGE" /></translation>
+<translation id="4023845192681161785">ಯಾವುದೇ ಆ್ಯಪ್‌ನಿಂದ Chromium ನಲ್ಲಿ ಲಿಂಕ್‌ಗಳನ್ನು ತೆರೆಯಿರಿ. ಜೊತೆಗೆ ಸುಲಭ ಆ್ಯಕ್ಸೆಸ್‌ಗಾಗಿ, ಅದನ್ನು ನಿಮ್ಮ ಕಾರ್ಯಪಟ್ಟಿಗೆ ಪಿನ್ ಮಾಡಲಾಗುತ್ತದೆ.</translation>
 <translation id="4036079820698952681"><ph name="BEGIN_LINK" />ಪ್ರಸ್ತುತ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು<ph name="END_LINK" /> ವರದಿ ಮಾಡುವ ಮೂಲಕ Chromium ಅನ್ನು ಉತ್ತಮಗೊಳಿಸಲು ಸಹಾಯ ಮಾಡಿ</translation>
 <translation id="4050175100176540509">ಇತ್ತೀಚಿನ ಆವೃತ್ತಿಯಲ್ಲಿ ಪ್ರಮುಖವಾದ ಭದ್ರತಾ ಸುಧಾರಣೆಗಳು ಮತ್ತು ಹೊಸ ವೈಶಿಷ್ಟ್ಯಗಳು ಲಭ್ಯವಿದೆ.</translation>
 <translation id="4055805654398742145">P&amp;assword Manager</translation>
@@ -324,6 +325,7 @@
 <translation id="5524890928877629608">ಹುಡುಕಾಟ ಪ್ರದೇಶದ ಮೇಲಿನ ಎಡ ಮೂಲೆ: ಎಡಕ್ಕೆ <ph name="LEFT" />%, ಮೇಲಕ್ಕೆ <ph name="TOP" />%</translation>
 <translation id="5527463683072221100">Chromium ನಲ್ಲಿ PDF ಗಳನ್ನು ತೆರೆಯಿರಿ</translation>
 <translation id="5579324208890605088">ಸ್ಟಾರ್ಟ್‌ಅಪ್ ದೋಷ: ಇನ್‌ಸ್ಟಾಲರ್‌‌ ಅನ್ನು ಸಾಮಾನ್ಯ ಬಳಕೆದಾರರಂತೆ ರನ್ ಮಾಡಿ, ನಿರ್ವಾಹಕರಾಗಿ ಅಲ್ಲ.</translation>
+<translation id="5580770360767802657">Chromium ಅನ್ನು ಡೀಫಾಲ್ಟ್ ಆಗಿ ಬಳಸಿ ಮತ್ತು ಅದನ್ನು ಪಿನ್ ಮಾಡಿಸಿ</translation>
 <translation id="5596627076506792578">ಇನ್ನಷ್ಟು ಆಯ್ಕೆಗಳು</translation>
 <translation id="5605834417512968703">ಚಿತ್ರದ ಮೂಲಕ ಹುಡುಕಾಟ ಫೀಚರ್ ಬಳಸಿ ಹುಡುಕಲು ಏನನ್ನಾದರೂ ಆಯ್ಕೆಮಾಡಿ ಅಥವಾ ಚಿತ್ರದ ಮೂಲಕ ಹುಡುಕಾಟ ಫೀಚರ್‌ನಿಂದ ನಿರ್ಗಮಿಸಲು Escape ಒತ್ತಿರಿ</translation>
 <translation id="5618818588972826921">ಚಿತ್ರದ ಮೂಲಕ ಹುಡುಕಾಟ ಫೀಚರ್ ಅನ್ನು ಬಳಸಿ ಹುಡುಕಲು ಯಾವುದೇ ಪಠ್ಯ ಅಥವಾ ಚಿತ್ರವನ್ನು ಆಯ್ಕೆ ಮಾಡಿ ಅಥವಾ ಚಿತ್ರದ ಮೂಲಕ ಹುಡುಕಾಟ ಫೀಚರ್‌ನಿಂದ ಹೊರಬರಲು escape ಅನ್ನು ಒತ್ತಿ</translation>
@@ -592,6 +594,7 @@
 <translation id="9106612006984859720">ಭವಿಷ್ಯದ Chromium ಅಪ್‌ಡೇಟ್‌ಗಳನ್ನು ಪಡೆಯಲು, ನೀವು Windows 10 ಅಥವಾ ಅದರ ನಂತರದ ಆವೃತ್ತಿಯನ್ನು ಹೊಂದಿರಬೇಕಾಗುತ್ತದೆ. ಈ ಕಂಪ್ಯೂಟರ್ ಪ್ರಸ್ತುತ Windows 8.1 ಅನ್ನು ಬಳಸುತ್ತಿದೆ.</translation>
 <translation id="91086099826398415">ಹೊಸ Chromium &amp;ಟ್ಯಾಬ್‌ನಲ್ಲಿ ಲಿಂಕ್ ತೆರೆಯಿರಿ</translation>
 <translation id="911206726377975832">ನಿಮ್ಮ ಬ್ರೌಸಿಂಗ್ ಡೇಟಾವನ್ನು ಸಹ ಅಳಿಸುವುದೇ?</translation>
+<translation id="9134482777260927479">ಹೋಮ್‌ವರ್ಕ್ ಸಹಾಯ</translation>
 <translation id="9148058034647219655">ನಿರ್ಗಮಿಸಿ</translation>
 <translation id="9158494823179993217"><ph name="TARGET_URL_HOSTNAME" /> ಗೆ ಪ್ರವೇಶಿಸಲು ಒಂದು ಪರ್ಯಾಯ ಬ್ರೌಸರ್ ತೆರೆಯುವಂತೆ ನಿಮ್ಮ ಸಿಸ್ಟಂ ನಿರ್ವಾಹಕರು Chromium ಅನ್ನು ಕಾನ್ಫಿಗರ್ ಮಾಡಿದ್ದಾರೆ.</translation>
 <translation id="9185526690718004400">&amp;Chromium ಅಪ್‌ಡೇಟ್ ಮಾಡಲು ಮರುಪ್ರಾರಂಭಿಸಿ</translation>

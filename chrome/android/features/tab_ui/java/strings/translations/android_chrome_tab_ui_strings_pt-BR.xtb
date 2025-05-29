@@ -119,6 +119,7 @@
 <translation id="6051432659151380973">Seus grupos de guias são salvos automaticamente</translation>
 <translation id="6054741997831917303">O preço deste item caiu de <ph name="PREVIOUS_PRICE" /> para <ph name="NEW_PRICE" /></translation>
 <translation id="6109251075362363230">Agora, todas as guias duplicadas também serão arquivadas, com exceção da cópia usada mais recentemente.</translation>
+<translation id="61924696525243173">{WINDOW_COUNT,plural, =1{Mover grupo para nova janela}one{Mover grupo para outra janela}other{Mover grupo para outras janelas}}</translation>
 <translation id="6193448654517602979">Selecionar guias</translation>
 <translation id="6220820548421939212">Sim, aceito</translation>
 <translation id="6228793724645064692">(nota da loja)</translation>
@@ -174,6 +175,7 @@
 <translation id="7942349550061667556">Vermelho</translation>
 <translation id="7961015016161918242">Nunca</translation>
 <translation id="7966321538264951561">Dispensar as sugestões.</translation>
+<translation id="796696298310625748">{WINDOW_COUNT,plural, =1{Mover guia para uma nova janela}one{Mover guia para outra janela}other{Mover guia para outras janelas}}</translation>
 <translation id="799469866974412355">Novo grupo do seu outro dispositivo</translation>
 <translation id="8029301326595421733">As informações sobre a loja estão abertas no tamanho máximo</translation>
 <translation id="8053770993984522566">Lista de grupos de guias aberta na metade da altura</translation>
@@ -195,6 +197,7 @@
 <translation id="8730621377337864115">Concluir</translation>
 <translation id="8730999928494395583">Sua atividade nessas guias anônimas será removida deste dispositivo</translation>
 <translation id="875848103419578654">{NUM_MONTHS,plural, =1{Criado há <ph name="NUM_MONTHS_ONE" /> mês}one{Criado há <ph name="NUM_MONTHS_MANY" /> mês}other{Criado há <ph name="NUM_MONTHS_MANY" /> meses}}</translation>
+<translation id="8813708480179818649">Remover guia do grupo</translation>
 <translation id="8820741577754260431">Ver reduções no preço nas suas guias</translation>
 <translation id="883379923675618699">O Chrome fecha automaticamente os itens da seção "Inativas" que você não usa há três meses. Você pode desativar esse recurso agora ou a qualquer momento nas configurações.</translation>
 <translation id="8887921976452567404">Você pode reabrir as guias e os grupos fechados nas seções "Guias recentes" e "Grupos de guias".</translation>

@@ -175,6 +175,7 @@
 <translation id="7942349550061667556">ቀይ</translation>
 <translation id="7961015016161918242">በፍጹም</translation>
 <translation id="7966321538264951561">ጥቆማ ሐሳቦችን ያሰናብቱ።</translation>
+<translation id="796696298310625748">{WINDOW_COUNT,plural, =1{ትርን ወደ አዲስ መስኮት አንቀሳቅስ}one{ትርን ወደ ሌላ መስኮት አንቀሳቅስ}other{ትርን ወደ ሌላ መስኮት አንቀሳቅስ}}</translation>
 <translation id="799469866974412355">ከሌላኛው መሣሪያዎ አዲስ ቡድን</translation>
 <translation id="8029301326595421733">ስለዚህ መደብር መረጃ በሙሉ ቁመት ተከፍቷል</translation>
 <translation id="8053770993984522566">የትር ቡድን ዝርዝር፣ በግማሽ ቁመት ተከፍቷል</translation>
@@ -196,6 +197,7 @@
 <translation id="8730621377337864115">ተከናውኗል</translation>
 <translation id="8730999928494395583">በእነዚህ ማንነትን የማያሳውቁ ትሮች ውስጥ የሚኖርዎት እንቅስቃሴ ከዚህ መሣሪያ ላይ ይወገዳል</translation>
 <translation id="875848103419578654">{NUM_MONTHS,plural, =1{ከ<ph name="NUM_MONTHS_ONE" /> ወር በፊት የተፈጠረ}one{ከ<ph name="NUM_MONTHS_MANY" /> ወር በፊት የተፈጠረ}other{ከ<ph name="NUM_MONTHS_MANY" /> ወሮች በፊት የተፈጠረ}}</translation>
+<translation id="8813708480179818649">ትርን ከቡድን ያስወግዱ</translation>
 <translation id="8820741577754260431">በትሮችዎ ላይ የዋጋ ቅነሳዎችን ይመልከቱ</translation>
 <translation id="883379923675618699">Chrome በ3 ወራት ውስጥ ያልተጠቀሙባቸውን ገቢር ባልሆነ ክፍል ውስጥ ያሉ ንጥሎችን በራስ-ሰር ይዘጋል። ይህን አሁን ወይም በማንኛውም ጊዜ ቅንብሮች ውስጥ ማጥፋት ይችላሉ።</translation>
 <translation id="8887921976452567404">የእርስዎ የተዘጉ ትሮች እና ቡድኖች ከቅርብ ጊዜ የትሮች ክፍል እና ከትር ቡድኖች ክፍል እንደገና ሊከፈቱ ይችላሉ።</translation>

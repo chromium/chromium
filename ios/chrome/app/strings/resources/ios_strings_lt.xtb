@@ -383,6 +383,7 @@ Svetainės negali naudoti slapukų, kad sužinotų apie naršymo veiklą skirtin
 <translation id="2513103768503127042">Čia rasite skirtukų grupes</translation>
 <translation id="251837347827266434">Būsite atjungti, skirtukai bus uždaryti, naršymo duomenys ištrinti</translation>
 <translation id="2520787026086861736">Jei norite išjungti, eikite į skiltį <ph name="BEGIN_LINK" />„Automatinis pildymas ir slaptažodžiai“<ph name="END_LINK" /></translation>
+<translation id="2523295204312809179">Kai uždarysite skirtukų grupę, ji bus automatiškai išsaugota čia</translation>
 <translation id="2529021024822217800">Atidaryti viską</translation>
 <translation id="2536991091671391962">Išsaugotus slaptažodžius galite naudoti bet kuriame įrenginyje. Jie išsaugomi „Google“ slaptažodžių tvarkyklėje kaip priskirti el. pašto adresui <ph name="EMAIL" />.</translation>
 <translation id="2538103551183528357">Paslėptas slaptažodis</translation>
@@ -1035,6 +1036,7 @@ Peržiūrėkite paieškos variklio instrukcijas, kaip ištrinti paieškos istori
 <translation id="5275912569557792098"><ph name="USER_NAME" /> (<ph name="USER_EMAIL" />) nori, kad prisijungtumėte prie skirtukų grupės. Visi nuorodą turintys žmonės gali redaguoti visus skirtukus, todėl būkite atsargūs. Nuoroda baigia galioti po 48 val.</translation>
 <translation id="5279600392753459966">Blokuoti viską</translation>
 <translation id="5282340693022193851">Jei norite gauti kainų stebėjimo pranešimus, įjunkite pranešimus „iOS“ nustatymuose.</translation>
+<translation id="528857768909044842">Čia išsaugomos skirtukų grupės</translation>
 <translation id="5294624619177114121">Pranešimai mobiliuosiuose</translation>
 <translation id="5295239312320826323">Pašalinti paskyrą <ph name="USER_EMAIL" />?</translation>
 <translation id="5300589172476337783">Rodyti</translation>
@@ -1230,6 +1232,7 @@ Be to, reikia įgalinti „Handoff“ nustatymų skiltyje „Bendrieji“, o įr
 <translation id="6100617279104942061">Prisijungta kaip <ph name="USER_EMAIL" />. Atidaromi nustatymai.</translation>
 <translation id="6103540626693881831">Šifruotė įrenginyje</translation>
 <translation id="611361228753138223">Šiame įrenginyje neseniai aplankytos svetainės</translation>
+<translation id="611705554202268369">Ilgai paspauskite, kad pridėtumėte prie skirtukų grupės</translation>
 <translation id="6122191549521593678">Prisijungęs</translation>
 <translation id="6122831415929794347">Išjungti saugų naršymą?</translation>
 <translation id="6123514585040403489">Skirtukai bus uždaryti</translation>
@@ -1855,6 +1858,7 @@ Svetainės gali naudoti slapukus, kad sužinotų apie naršymo veiklą skirtingo
 <translation id="8535368836838588657">Rodyti slaptažodį</translation>
 <translation id="8545276357312221485">Numatytųjų naršyklės nustatymų tikrinimas</translation>
 <translation id="854938212724803178">Turite vieną pažeistą slaptažodį. Pataisykite dabar, kad užtikrintumėte saugą.</translation>
+<translation id="8551311254462607218">Adreso juostoje palieskite „Google Lens“ fotoaparato piktogramą</translation>
 <translation id="8556590991644167667">{count,plural, =1{Atsisakėte {count} perspėjimo}one{Atsisakėte {count} perspėjimo}few{Atsisakėte {count} perspėjimų}many{Atsisakėte {count} perspėjimo}other{Atsisakėte {count} perspėjimų}}</translation>
 <translation id="8558046478684552694">Uždaryti grupę.</translation>
 <translation id="8560253818350321773">Pirmiausia rodykite dažnai naudojamus elementus.</translation>
@@ -1998,6 +2002,7 @@ Svetainės gali naudoti slapukus, kad sužinotų apie naršymo veiklą skirtingo
 <translation id="9032405509996909363">Patvirtinti naršymo duomenų ištrynimą</translation>
 <translation id="9039373489628511875">Pralaidumas</translation>
 <translation id="9042893549633094279">Privatumas ir sauga</translation>
+<translation id="9055291197094969722">Kurkite skirtukų grupes, kad galėtumėte tvarkyti atidarytus skirtukus ir išlikti produktyvūs</translation>
 <translation id="9055580485132823283">Ketina ištrinti tiek slaptažodžių: {password_count}, tiek prieigos raktų: {passkey_count} ir svetainių bei programų, kurių prisijungimo informacijos pasirinkote niekada nesaugoti, sąrašą. Jokia sukurta svetainių ir programų paskyra nebus ištrinta.</translation>
 <translation id="9057030985451135243">Sužinokite apie bendrinamas skirtukų grupes</translation>
 <translation id="9057972802061533987">Negalima stebėti. Kažkas nepavyko.</translation>

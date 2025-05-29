@@ -761,6 +761,7 @@ Si no, el ratolí tàctil integrat es tornarà a activar d'aquí a <ph name="TIM
 <translation id="3552189655002856821">La Wi-Fi està desactivada</translation>
 <translation id="3554215588514239132">Mostra o amaga el tauler d'eines per a desenvolupadors</translation>
 <translation id="3554637740840164787"><ph name="ITEM_TITLE" /> s'ha fixat</translation>
+<translation id="3554928024630051016">Per afegir dispositius USB addicionals, prova de suprimir-ne un i, a continuació, connecta'n un de nou</translation>
 <translation id="3558768885091059911">Vols activar l'accés a la càmera i al micròfon?</translation>
 <translation id="3560174576767922131">Grava un vídeo</translation>
 <translation id="3563775809269155755">Activa el punt d'accés Wi‑Fi</translation>
@@ -868,6 +869,7 @@ Connecta el dispositiu a l'alimentació.</translation>
 <translation id="3861651314799684201">Prem Retorn per gravar la pantalla completa</translation>
 <translation id="3870197372373144624">Prova d'apagar el dispositiu.</translation>
 <translation id="3879748587602334249">Gestor de baixades</translation>
+<translation id="3884007280698606545">S'ha arribat al límit d'USB</translation>
 <translation id="3886872229787704059">Obert avui</translation>
 <translation id="3891340733213178823">Premeu Ctrl+Maj+Q dues vegades per tancar la sessió.</translation>
 <translation id="3892148308691398805">Copia el text</translation>

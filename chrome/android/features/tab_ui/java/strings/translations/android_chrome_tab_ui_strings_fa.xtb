@@ -175,6 +175,7 @@
 <translation id="7942349550061667556">قرمز</translation>
 <translation id="7961015016161918242">هرگز</translation>
 <translation id="7966321538264951561">پیشنهادها رد شود.</translation>
+<translation id="796696298310625748">{WINDOW_COUNT,plural, =1{انتقال دادن زبانه به پنجره جدید}one{انتقال دادن زبانه به پنجره‌ای دیگر}other{انتقال دادن زبانه به پنجره‌ای دیگر}}</translation>
 <translation id="799469866974412355">گروه جدید از دستگاه دیگرتان</translation>
 <translation id="8029301326595421733">اطلاعات مربوط به این فروشگاه به‌صورت کامل باز شده است</translation>
 <translation id="8053770993984522566">فهرست گروه برگه، به‌صورت نیمه باز شده است</translation>
@@ -196,6 +197,7 @@
 <translation id="8730621377337864115">تمام</translation>
 <translation id="8730999928494395583">فعالیتتان در این «برگه‌های ناشناس» از این دستگاه حذف خواهد شد</translation>
 <translation id="875848103419578654">{NUM_MONTHS,plural, =1{‫<ph name="NUM_MONTHS_ONE" /> ماه پیش ایجاد شد}one{‫<ph name="NUM_MONTHS_MANY" /> ماه پیش ایجاد شد}other{‫<ph name="NUM_MONTHS_MANY" /> ماه پیش ایجاد شد}}</translation>
+<translation id="8813708480179818649">برداشتن زبانه از گروه</translation>
 <translation id="8820741577754260431">دیدن کاهش قیمت در برگه‌ها</translation>
 <translation id="883379923675618699">‏‫Chrome به‌طور خودکار موارد موجود در بخش غیرفعال را که طی ۳ ماه گذشته استفاده نکرده‌اید می‌بندد. می‌توانید این ویژگی را اکنون یا در هر زمان دیگری در «تنظیمات» خاموش کنید.</translation>
 <translation id="8887921976452567404">برگه‌ها و گروه‌های بسته‌شده از بخش «برگه‌های اخیر» و بخش «گروه‌های برگه» مجدداً باز خواهند شد.</translation>

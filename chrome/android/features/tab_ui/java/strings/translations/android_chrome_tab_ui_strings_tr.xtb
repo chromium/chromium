@@ -119,6 +119,7 @@
 <translation id="6051432659151380973">Sekme gruplarınız otomatik olarak kaydedilir</translation>
 <translation id="6054741997831917303">Yakın zamanda bu ürünün <ph name="PREVIOUS_PRICE" /> olan fiyatı düştü ve <ph name="NEW_PRICE" /> oldu</translation>
 <translation id="6109251075362363230">En son kullanılan kopya hariç tüm kopya sekmeler artık arşivlenecek.</translation>
+<translation id="61924696525243173">{WINDOW_COUNT,plural, =1{Grubu yeni pencereye taşı}other{Grubu başka bir pencereye taşı}}</translation>
 <translation id="6193448654517602979">Sekmeleri seç</translation>
 <translation id="6220820548421939212">Evet. İstiyorum</translation>
 <translation id="6228793724645064692">(mağaza puanı)</translation>
@@ -174,6 +175,7 @@
 <translation id="7942349550061667556">Kırmızı</translation>
 <translation id="7961015016161918242">Hiçbir Zaman</translation>
 <translation id="7966321538264951561">Önerileri kapat.</translation>
+<translation id="796696298310625748">{WINDOW_COUNT,plural, =1{Sekmeyi yeni pencereye taşı}other{Sekmeyi başka bir pencereye taşı}}</translation>
 <translation id="799469866974412355">Diğer cihazınızdaki yeni grup</translation>
 <translation id="8029301326595421733">Bu mağazayla ilgili bilgiler tam ekranda açıldı</translation>
 <translation id="8053770993984522566">Sekme grubu listesi, ekranın yarısına kadar açıldı</translation>
@@ -195,6 +197,7 @@
 <translation id="8730621377337864115">Bitti</translation>
 <translation id="8730999928494395583">Bu gizli sekmelerdeki etkinliğiniz bu cihazdan silinecektir</translation>
 <translation id="875848103419578654">{NUM_MONTHS,plural, =1{<ph name="NUM_MONTHS_ONE" /> ay önce oluşturuldu}other{<ph name="NUM_MONTHS_MANY" /> ay önce oluşturuldu}}</translation>
+<translation id="8813708480179818649">Sekmeyi gruptan kaldır</translation>
 <translation id="8820741577754260431">Sekmelerinizde fiyat düşüşlerini görün</translation>
 <translation id="883379923675618699">Chrome, etkin olmayan bölümdeki ve 3 aydır kullanmadığınız öğeleri otomatik olarak kapatır. Bu özelliği şimdi veya dilediğiniz zaman Ayarlar'dan kapatabilirsiniz.</translation>
 <translation id="8887921976452567404">Kapattığınız sekmeleri ve grupları, Son sekmeler bölümünden ve Sekme grupları bölümünden yeniden açabilirsiniz.</translation>

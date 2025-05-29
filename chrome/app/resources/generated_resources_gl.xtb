@@ -80,6 +80,7 @@
 <translation id="1049743911850919806">Modo de incógnito</translation>
 <translation id="1049795001945932310">&amp;Configuración de idioma</translation>
 <translation id="1050693411695664090">Mala</translation>
+<translation id="1053226848101751430">Entrada eliminada</translation>
 <translation id="1053898984916097744">Comeza unha nova tarefa ou obtén axuda no fluxo.</translation>
 <translation id="1054048317165655285">Finaliza a configuración no teléfono</translation>
 <translation id="1054153489933238809">Abrir imaxe orixinal na pestana nova</translation>
@@ -2225,6 +2226,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="2519250377986324805">Máis información</translation>
 <translation id="2519517390894391510">Nome do perfil do certificado</translation>
 <translation id="2520644704042891903">Esperando polo socket dispoñible...</translation>
+<translation id="2520961587246779103">Máis opcións para a vista dividida</translation>
 <translation id="2521427645491031107">A sincronización das aplicacións defínese na configuración do dispositivo</translation>
 <translation id="2521835766824839541">pista anterior</translation>
 <translation id="2521854691574443804">Comprobando que <ph name="FILE_NAME" /> cumpra as políticas de seguranza da túa organización…</translation>
@@ -3170,6 +3172,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="3202578601642193415">Máis recente</translation>
 <translation id="3204648577100496185">Os datos asociados a esta aplicación pódense quitar deste dispositivo</translation>
 <translation id="3204717934117444051">Os datos que se garden só neste dispositivo permanecerán no perfil que xa teñas. Non se sincronizarán con <ph name="EMAIL" /></translation>
+<translation id="3206289903841621620">Dicionario do usuario <ph name="NUMBER" /></translation>
 <translation id="3207344462385471911">Estás vendo buscas suxeridas e descontos para compras que poderían interesarche en función da túa actividade recente.
         <ph name="BREAK" />
         <ph name="BREAK" />
@@ -9947,6 +9950,7 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="8037801708772278989">A comprobación realizouse agora mesmo</translation>
 <translation id="8038111231936746805">(predeterminado)</translation>
 <translation id="8039151841428107077">{NUM_OF_FILES,plural, =1{Copiando 1 ficheiro en <ph name="CLOUD_PROVIDER" />}other{Copiando {NUM_OF_FILES} ficheiros en <ph name="CLOUD_PROVIDER" />}}</translation>
+<translation id="8039525676147630657">Esta aplicación de Chrome deixará de funcionar cando se actualice a versión de ChromeOS. Garda os datos da aplicación que queiras conservar. Para obter máis información sobre as opcións dispoñibles, ponte en contacto con quen programou a aplicación ou co teu equipo do servizo de asistencia de TI.</translation>
 <translation id="8041089156583427627">Enviar comentarios</translation>
 <translation id="8041093619605951337">Feliz</translation>
 <translation id="8041267120753677077">Emite as aplicacións do teu teléfono</translation>
@@ -9999,6 +10003,7 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="8073499153683482226"><ph name="BEGIN_PARAGRAPH1" />Os datos das aplicacións poden ser calquera tipo de datos que gardase unha aplicación, baseándose na configuración do programador, incluídos datos como os contactos, as mensaxes e as fotos.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Os datos da copia de seguranza non contarán na cota de almacenamento de Drive do teu fillo.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />Podes desactivar este servizo en Configuración.<ph name="END_PARAGRAPH3" /></translation>
+<translation id="8075044377771022666">Pé de páxina</translation>
 <translation id="8076835018653442223">O administrador desactivou o acceso aos ficheiros locais do teu dispositivo</translation>
 <translation id="8077120325605624147">Calquera sitio que visites pode mostrarche anuncios</translation>
 <translation id="8077579734294125741">Outros perfís de Chrome</translation>
@@ -10934,6 +10939,7 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="8729133765463465108">Utilizar cámara para escanear código QR</translation>
 <translation id="8730621377337864115">Feito</translation>
 <translation id="8731029916209785242">Permisos (<ph name="FORMATTED_ORIGIN" />)</translation>
+<translation id="8731258351357994801">Entrada <ph name="NUMBER" /></translation>
 <translation id="8731268612289859741">Código de seguranza</translation>
 <translation id="8731629443331803108"><ph name="SITE_NAME" /> require permiso para: <ph name="PERMISSION" /></translation>
 <translation id="8731787661154643562">Número de porto</translation>

@@ -367,6 +367,7 @@
 <translation id="1612199629998703524">ਵਿਸ਼ਿਆਂ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ</translation>
 <translation id="1615178538289490617"><ph name="PORT_NAME" /> ਲਈ ਪਹੁੰਚ ਰੱਦ ਕਰੋ</translation>
 <translation id="1615402009686901181">ਗੁਪਤ ਸਮੱਗਰੀ ਦੇ ਦਿਸਣਯੋਗ ਹੋਣ 'ਤੇ ਪ੍ਰਸ਼ਾਸਕ ਨੀਤੀ ਸਕ੍ਰੀਨ ਕੈਪਚਰ ਨੂੰ ਬੰਦ ਕਰ ਦਿੰਦੀ ਹੈ</translation>
+<translation id="161612500287664753">ਇਸ ਪੰਨੇ ਬਾਰੇ Google Search ਤੋਂ ਪੁੱਛੋ</translation>
 <translation id="1617276713587758852">ਕ੍ਰਾਸਓਵਰ</translation>
 <translation id="1619007254056372606">ਡੀਵਾਈਸ 'ਤੇ ਸਾਈਟ ਡਾਟੇ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ</translation>
 <translation id="1619648179761984213"><ph name="USER_DISPLAY_NAME" /> ਨੇ ਇੱਕ ਟੈਬ ਹਟਾ ਦਿੱਤੀ</translation>
@@ -1506,6 +1507,7 @@
 <translation id="3586931643579894722">ਵੇਰਵੇ ਲੁਕਾਓ</translation>
 <translation id="3587725436724465984">ਤੁਹਾਡੀ ਸੰਸਥਾ ਨੇ ਪਤਾ ਲਗਾਇਆ ਹੈ ਕਿ <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> ਸਾਈਟ ਨੀਤੀ ਦੀ ਉਲੰਘਣਾ ਕਰ ਸਕਦੀ ਹੈ। <ph name="BEGIN_LEARN_MORE_LINK" />ਇਸ ਚਿਤਾਵਨੀ ਬਾਰੇ ਹੋਰ ਜਾਣੋ<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3587738293690942763">ਵਿਚਕਾਰ</translation>
+<translation id="3589519427766620380">ਇਸ ਪੰਨੇ ਬਾਰੇ Google Lens ਤੋਂ ਪੁੱਛੋ</translation>
 <translation id="3596918995172292499">ਪਲੇਟ ਜਾਰੀ ਕਰਨ ਵਾਲਾ ਰਾਜ</translation>
 <translation id="3600106876108433070">ਤੁਲਨਾ ਕਰਨ ਵਾਲੀਆਂ ਸਾਰਨੀਆਂ ਬਾਰੇ ਹੋਰ ਜਾਣੋ</translation>
 <translation id="3600246354004376029"><ph name="TITLE" />, <ph name="DOMAIN" />, <ph name="TIME" /></translation>
@@ -2445,6 +2447,7 @@
 <translation id="519422657042045905">ਐਨੋਟੇਸ਼ਨ ਉਪਲਬਧ ਨਹੀਂ ਹੈ</translation>
 <translation id="5200063972779787617">ਖਾਤੇ ਵਿੱਚ ਪਤਾ ਰੱਖਿਅਤ ਕਰੋ</translation>
 <translation id="5201306358585911203">ਇਸ ਪੰਨੇ 'ਤੇ ਇੱਕ ਪਰੋਏ ਗਏ ਪੰਨੇ ਦੇ ਮੁਤਾਬਕ</translation>
+<translation id="5203716867500274632">ਤੁਹਾਡੇ ਪ੍ਰਸ਼ਾਸਕ ਨੇ ਤੁਹਾਡੇ ChromeOS ਡੀਵਾਈਸਾਂ 'ਤੇ ਤੁਹਾਡੇ ਪਿਛਲੇ ਅਤੇ ਮੌਜੂਦਾ ਸੈਸ਼ਨਾਂ ਵਿਚਕਾਰ ਸਿੰਕ ਕਰਨ ਲਈ ਅੱਗੇ ਦਿੱਤਿਆਂ ਨੂੰ ਚਾਲੂ ਕੀਤਾ:</translation>
 <translation id="5205114269877707377"><ph name="OMNIBOX_ACTION_FOCUSED_FRIENDLY_MATCH_TEXT" />, ਉਪਲਬਧ ਕਾਰਵਾਈਆਂ ਨੂੰ ਬ੍ਰਾਊਜ਼ ਕਰਨ ਲਈ Tab ਦਬਾਓ, ਫਿਰ ਚੁਣੀ ਗਈ ਕਾਰਵਾਈ ਨੂੰ ਲਾਗੂ ਕਰਨ ਲਈ Enter ਦਬਾਓ।</translation>
 <translation id="5205222826937269299">ਨਾਮ ਲੋੜੀਂਦਾ ਹੈ</translation>
 <translation id="5206392433295093945">ਸੌਣ ਦਾ ਕਮਰਾ</translation>
@@ -2604,6 +2607,7 @@
 <translation id="5472588168895083535">ਹੱਥ ਦੀ ਟਰੈਕਿੰਗ ਦੀ ਸੁਵਿਧਾ ਬਲਾਕ ਹੈ</translation>
 <translation id="547963486735802022">ਆਪਣੀਆਂ ਫ਼ਾਈਲਾਂ ਨੂੰ ਦੁਬਾਰਾ ਟ੍ਰਾਂਸਫ਼ਰ ਕਰਨ ਦੀ ਕੋਸ਼ਿਸ਼ ਕਰੋ</translation>
 <translation id="5481076368049295676">ਇਹ ਸਮੱਗਰੀ ਤੁਹਾਡੇ ਡੀਵਾਈਸ 'ਤੇ ਅਜਿਹਾ ਖਤਰਨਾਕ ਸਾਫ਼ਟਵੇਅਰ ਸਥਾਪਤ ਕਰਨ ਦੀ ਕੋਸ਼ਿਸ਼ ਕਰ ਸਕਦੀ ਹੈ ਜੋ ਤੁਹਾਡੀ ਜਾਣਕਾਰੀ ਨੂੰ ਚੋਰੀ ਕਰ ਸਕਦਾ ਹੈ ਜਾਂ ਮਿਟਾ ਸਕਦਾ ਹੈ। <ph name="BEGIN_LINK" />ਫਿਰ ਵੀ ਦਿਖਾਓ<ph name="END_LINK" /></translation>
+<translation id="5481604577800516617">ਵਿੰਡੋਆਂ ਅਤੇ ਟੈਬਾਂ ਦੀ ਵਿਵਸਥਾ</translation>
 <translation id="5481682542063333508">ਲਿਖਣ ਵਿੱਚ ਮਦਦ ਦੀ ਪੇਸ਼ਕਸ਼ ਕਰੋ</translation>
 <translation id="54817484435770891">ਵੈਧ ਪਤਾ ਸ਼ਾਮਲ ਕਰੋ</translation>
 <translation id="5483838506518938965">ਤੁਸੀਂ ਪੂਰੀ ਤਰ੍ਹਾਂ ਤਿਆਰ ਹੋ</translation>
@@ -3438,6 +3442,7 @@
 <translation id="6925267999184670015">ਨਾਰਥ ਅਮਰੀਕਨ B+</translation>
 <translation id="6926216138694948720">ਸਰੀਰਕ ਕਲਾ</translation>
 <translation id="692638818576287323">ਵਪਾਰਕ ਵਾਹਨ</translation>
+<translation id="6930607614725241390">ਸਾਈਡ ਪੈਨਲ ਵਿੱਚ ਖੋਜੋ</translation>
 <translation id="6934236486840930310"><ph name="BEGIN_BOLD" />ਤੁਹਾਡਾ ਪੂਰਵ-ਨਿਰਧਾਰਿਤ ਖੋਜ ਇੰਜਣ ਤੁਹਾਨੂੰ ਵੈੱਬ 'ਤੇ ਖੋਜ ਕਰਨ ਅਤੇ Chrome ਦੀਆਂ ਵਿਸ਼ੇਸ਼ਤਾਵਾਂ ਦੀ ਵਰਤੋਂ ਕਰਨ ਦਿੰਦਾ ਹੈ<ph name="END_BOLD" /> ਜਿਵੇਂ ਕਿ ਪਤਾ ਬਾਰ ਅਤੇ ਵੈੱਬ ਪੰਨਿਆਂ 'ਤੇ ਮੌਜੂਦ ਚਿੱਤਰਾਂ ਦੀ ਮਦਦ ਨਾਲ ਖੋਜ ਕਰਨਾ। ਜੇ ਤੁਹਾਡਾ ਖੋਜ ਇੰਜਣ ਕਿਸੇ ਸੁਵਿਧਾ ਦਾ ਸਮਰਥਨ ਨਹੀਂ ਕਰਦਾ, ਤਾਂ ਹੋ ਸਕਦਾ ਹੈ ਕਿ ਇਹ ਵਿਸ਼ੇਸ਼ਤਾ ਉਪਲਬਧ ਨਾ ਹੋਵੇ।</translation>
 <translation id="6934672428414710184">ਇਹ ਨਾਮ ਤੁਹਾਡੇ Google ਖਾਤੇ ਤੋਂ ਲਿਆ ਗਿਆ ਹੈ</translation>
 <translation id="6935077351544118151">ਹੁਣ ਤੁਸੀਂ Google Wallet ਤੋਂ ਵਫ਼ਾਦਾਰੀ ਕਾਰਡ ਆਟੋਫਿਲ ਕਰ ਸਕਦੇ ਹੋ</translation>
@@ -4276,6 +4281,7 @@
 <translation id="8352849934814541340">ਇਸ ਡੀਵਾਈਸ ਦੇ ਪ੍ਰਸ਼ਾਸਕ ਨੇ ਵਧੀਕ ਫੰਕਸ਼ਨਾਂ ਲਈ ਐਪਲੀਕੇਸ਼ਨਾਂ ਸਥਾਪਤ ਕੀਤੀਆਂ ਹਨ। ਐਪਲੀਕੇਸ਼ਨਾਂ ਕੋਲ ਤੁਹਾਡੇ ਕੁਝ ਡਾਟੇ ਤੱਕ ਪਹੁੰਚ ਹੁੰਦੀ ਹੈ।</translation>
 <translation id="8355270400102541638">ਸਥਾਨਕ ਕ੍ਰੈਸ਼ ਸੰਦਰਭ:</translation>
 <translation id="8363502534493474904">ਜਹਾਜ਼ ਮੋਡ ਬੰਦ ਕਰੋ</translation>
+<translation id="8363929499301563123">ਵੈੱਬਸਾਈਟ ਕੁਕੀਜ਼ (ਹਾਲ ਹੀ ਵਿੱਚ ਦੇਖੀਆਂ ਗਈਆਂ ਵੈੱਬਸਾਈਟਾਂ 'ਤੇ ਸਾਈਨ-ਇਨ ਸਥਿਤੀ ਨੂੰ ਬਰਕਰਾਰ ਰੱਖਿਆ ਜਾਵੇਗਾ)</translation>
 <translation id="8364627913115013041">ਸੈੱਟ ਨਹੀਂ ਕੀਤਾ।</translation>
 <translation id="8366057325711477500">ਸੰਸਾਰ ਦੀਆਂ ਖਬਰਾਂ</translation>
 <translation id="836616551641291797">ਤੁਹਾਡੇ ਬ੍ਰਾਊਜ਼ਰ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰਨ ਦੇ ਤਰੀਕੇ ਬਾਰੇ ਹੋਰ ਜਾਣੋ</translation>

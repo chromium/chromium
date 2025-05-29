@@ -761,6 +761,7 @@
 <translation id="3552189655002856821">वाई-फ़ाई बंद है</translation>
 <translation id="3554215588514239132">डेवलपर टूल पैनल दिखाएं या छिपाएं</translation>
 <translation id="3554637740840164787"><ph name="ITEM_TITLE" /> को पिन किया गया</translation>
+<translation id="3554928024630051016">कोई अन्य यूएसबी डिवाइस जोड़ने के लिए, पहले किसी एक डिवाइस को हटाकर देखें. इसके बाद, नए डिवाइस को प्लग-इन करें</translation>
 <translation id="3558768885091059911">क्या कैमरे और माइक्रोफ़ोन का ऐक्सेस चालू करना है?</translation>
 <translation id="3560174576767922131">वीडियो रिकॉर्ड करें</translation>
 <translation id="3563775809269155755">हॉटस्पॉट चालू करें</translation>
@@ -869,6 +870,7 @@
 <translation id="3861651314799684201">पूरी स्क्रीन को रिकॉर्ड करने के लिए, Enter दबाएं</translation>
 <translation id="3870197372373144624">अपने डिवाइस को बंद करके देखें.</translation>
 <translation id="3879748587602334249">डाउनलोड मैनेजर</translation>
+<translation id="3884007280698606545">इससे ज़्यादा यूएसबी डिवाइस नहीं जोड़े जा सकते</translation>
 <translation id="3886872229787704059">इसे आज खोला गया था</translation>
 <translation id="3891340733213178823">साइन आउट करने के लिए दो बार Ctrl+Shift+Q दबाएं.</translation>
 <translation id="3892148308691398805">टेक्स्ट कॉपी करें</translation>

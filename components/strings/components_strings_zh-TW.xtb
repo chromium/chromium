@@ -366,6 +366,7 @@
 <translation id="1612199629998703524">管理主題</translation>
 <translation id="1615178538289490617">撤銷 <ph name="PORT_NAME" /> 的存取權</translation>
 <translation id="1615402009686901181">當畫面上出現機密內容，系統管理員政策就會停用螢幕畫面擷取功能</translation>
+<translation id="161612500287664753">問問 Google 搜尋關於本頁的資訊</translation>
 <translation id="1617276713587758852">跨界車</translation>
 <translation id="1619007254056372606">管理裝置端網站資料</translation>
 <translation id="1619648179761984213"><ph name="USER_DISPLAY_NAME" />已移除分頁</translation>
@@ -635,6 +636,7 @@
 <translation id="2088913896151127116">新增文字</translation>
 <translation id="2090451897496479509">詳情請洽詢供應商</translation>
 <translation id="2091887806945687916">音訊</translation>
+<translation id="2093184051799735948">搜尋 <ph name="ENGINE_NAME" /> 或輸入網址</translation>
 <translation id="2093982008204312032">Google Chrome 正在嘗試關閉 Windows Hello，以便填入密碼。</translation>
 <translation id="2094505752054353250">網域不符</translation>
 <translation id="2094704029599359040">版本資訊</translation>
@@ -901,7 +903,7 @@
 <translation id="2521736961081452453">建立表單</translation>
 <translation id="2524461107774643265">新增詳細資訊</translation>
 <translation id="2526062290525841862">如要執行這個應用程式，請重新啟用隔離網頁應用程式的開發人員模式</translation>
-<translation id="2526280916094749336">你可以在各項 Google 產品中使用已儲存的地址。這個地址將儲存至你的 Google 帳戶 (<ph name="ACCOUNT" />) 中。</translation>
+<translation id="2526280916094749336">你可以在各項 Google 產品中使用已儲存的地址。這個地址將儲存至你的 Google 帳戶 (<ph name="ACCOUNT" />)。</translation>
 <translation id="2527451058878391043">信用卡驗證碼位於卡片正面，即卡號右上方的 4 位數字。</translation>
 <translation id="2529899080962247600">這個欄位最多只能包含 <ph name="MAX_ITEMS_LIMIT" /> 個項目，超過的項目會遭到忽略。</translation>
 <translation id="2530042584066815841">滑鼠鎖定和使用</translation>
@@ -1505,6 +1507,7 @@
 <translation id="3586931643579894722">隱藏詳細資訊</translation>
 <translation id="3587725436724465984">貴機構已將 <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> 視為可能違反政策的網站。<ph name="BEGIN_LEARN_MORE_LINK" />進一步瞭解這項警告<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3587738293690942763">中間</translation>
+<translation id="3589519427766620380">問問 Google 智慧鏡頭關於本頁的資訊</translation>
 <translation id="3596918995172292499">車牌州別</translation>
 <translation id="3600106876108433070">瞭解比較表格</translation>
 <translation id="3600246354004376029"><ph name="TITLE" />，<ph name="DOMAIN" />，<ph name="TIME" /></translation>
@@ -2341,7 +2344,7 @@
 <translation id="5018422839182700155">無法開啟這個網頁</translation>
 <translation id="5018802455907704660">16 x 20 吋</translation>
 <translation id="5019198164206649151">備份儲存狀態不佳</translation>
-<translation id="5019293549442035120">你可以在各項 Google 產品中使用已儲存的地址。這個地址將儲存至你的 Google 帳戶 (<ph name="USER_EMAIL" />) 中。</translation>
+<translation id="5019293549442035120">你可以在各項 Google 產品中使用已儲存的地址。這個地址將儲存至你的 Google 帳戶 (<ph name="USER_EMAIL" />)。</translation>
 <translation id="5019952743397118625"><ph name="EXTENSION_DEVELOPER_MODE_SETTINGS_POLICY_NAME" /> 政策已設定。<ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> 不會控管能否在擴充功能頁面上使用開發人員模式。</translation>
 <translation id="5021500396464456616">請與傳送這個連結的使用者聯絡</translation>
 <translation id="5021557570875267742">使用 Chrome 追蹤價格</translation>
@@ -2445,6 +2448,7 @@
 <translation id="519422657042045905">無法使用註解模式</translation>
 <translation id="5200063972779787617">將地址儲存到帳戶</translation>
 <translation id="5201306358585911203">這個網頁上的嵌入式網頁顯示</translation>
+<translation id="5203716867500274632">系統管理員允許以下資料在所有 ChromeOS 裝置的工作階段間保持同步：</translation>
 <translation id="5205114269877707377"><ph name="OMNIBOX_ACTION_FOCUSED_FRIENDLY_MATCH_TEXT" />，按下 Tab 鍵瀏覽可用動作，按下 Enter 鍵可執行所選動作。</translation>
 <translation id="5205222826937269299">請輸入名稱</translation>
 <translation id="5206392433295093945">臥室</translation>
@@ -2604,6 +2608,7 @@
 <translation id="5472588168895083535">已封鎖手勢追蹤</translation>
 <translation id="547963486735802022">再次嘗試傳輸檔案</translation>
 <translation id="5481076368049295676">這項內容可能會試圖在你的裝置上安裝危險軟體，藉此竊取或刪除你的資訊。<ph name="BEGIN_LINK" />仍要顯示<ph name="END_LINK" /></translation>
+<translation id="5481604577800516617">視窗和分頁狀態</translation>
 <translation id="5481682542063333508">提供寫作輔助</translation>
 <translation id="54817484435770891">新增有效的地址</translation>
 <translation id="5483838506518938965">你已完成所有步驟</translation>
@@ -3439,6 +3444,7 @@
 <translation id="6925267999184670015">North American B+</translation>
 <translation id="6926216138694948720">人體藝術</translation>
 <translation id="692638818576287323">商用車</translation>
+<translation id="6930607614725241390">在側邊面板中搜尋</translation>
 <translation id="6934236486840930310"><ph name="BEGIN_BOLD" />預設搜尋引擎可提供網路搜尋服務並支援 Chrome 的各項功能<ph name="END_BOLD" />，例如透過網址列和運用網頁上的圖片進行搜尋。請注意，如果搜尋引擎不支援某項功能，你可能就無法使用該功能。</translation>
 <translation id="6934672428414710184">這是你在 Google 帳戶中設定的名稱</translation>
 <translation id="6935077351544118151">現在可以自動填入 Google 錢包中的會員卡</translation>
@@ -4278,6 +4284,7 @@
 <translation id="8352849934814541340">這部裝置的管理員已安裝支援額外功能的應用程式，這些應用程式可存取你的部分資料。</translation>
 <translation id="8355270400102541638">本機當機內容：</translation>
 <translation id="8363502534493474904">關閉飛航模式</translation>
+<translation id="8363929499301563123">網站 Cookie (保留近期造訪網站的登入狀態)</translation>
 <translation id="8364627913115013041">未設定。</translation>
 <translation id="8366057325711477500">國際新聞</translation>
 <translation id="836616551641291797">進一步瞭解如何管理瀏覽器</translation>

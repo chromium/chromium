@@ -175,6 +175,7 @@
 <translation id="7942349550061667556">Roșu</translation>
 <translation id="7961015016161918242">Niciodată</translation>
 <translation id="7966321538264951561">Închide sugestiile.</translation>
+<translation id="796696298310625748">{WINDOW_COUNT,plural, =1{Mută fila într-o fereastră nouă}few{Mută fila în altă fereastră}other{Mută fila în altă fereastră}}</translation>
 <translation id="799469866974412355">Grup nou de pe celălalt dispozitiv</translation>
 <translation id="8029301326595421733">Informațiile despre magazin deschise la înălțimea completă</translation>
 <translation id="8053770993984522566">Lista de grupuri de file, deschisă la jumătate din înălțime</translation>
@@ -196,6 +197,7 @@
 <translation id="8730621377337864115">Terminat</translation>
 <translation id="8730999928494395583">Activitatea ta în filele incognito va fi eliminată de pe acest dispozitiv</translation>
 <translation id="875848103419578654">{NUM_MONTHS,plural, =1{Creat acum <ph name="NUM_MONTHS_ONE" /> lună}few{Creat acum <ph name="NUM_MONTHS_MANY" /> luni}other{Creat acum <ph name="NUM_MONTHS_MANY" /> de luni}}</translation>
+<translation id="8813708480179818649">Elimină fila din grup</translation>
 <translation id="8820741577754260431">Vezi scăderile de prețuri din file</translation>
 <translation id="883379923675618699">Chrome închide automat elementele din secțiunea inactivă pe care nu le-ai folosit timp de trei luni. Poți dezactiva această opțiune acum sau oricând din Setări.</translation>
 <translation id="8887921976452567404">Filele și grupurile închise pot fi redeschise din secțiunile File recente și Grupuri de file.</translation>

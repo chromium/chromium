@@ -351,7 +351,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="2185444992308415167">Kalo nëpër skedat 1 deri në 8</translation>
 <translation id="2195732836444333448">Në maksimumin e kapacitetin për momentin. Kthehu përsëri së shpejti.</translation>
 <translation id="2198625180564913276">Po shton profilin. Kjo mund të zgjasë disa minuta.</translation>
-<translation id="219905428774326614">Launcher, të gjitha aplikacionet</translation>
+<translation id="219905428774326614">"Nisësi", të gjitha aplikacionet</translation>
 <translation id="2201071101391734388">Fotografia e fundit <ph name="INDEX" /> nga <ph name="TOTAL_COUNT" />.</translation>
 <translation id="2201687081523799384">Palos Google Tasks</translation>
 <translation id="2208323208084708176">Modaliteti i desktopit të unifikuar</translation>
@@ -761,6 +761,7 @@ Në rast të kundërt, blloku i integruar me prekje do të riaktivizohet pas <ph
 <translation id="3552189655002856821">Wi-Fi është çaktivizuar</translation>
 <translation id="3554215588514239132">Shfaq ose fshih panelin e "Veglave të zhvilluesit"</translation>
 <translation id="3554637740840164787"><ph name="ITEM_TITLE" /> u gozhdua</translation>
+<translation id="3554928024630051016">Për të shtuar pajisje të tjera USB, provo ta heqësh një dhe më pas lidh një të re</translation>
 <translation id="3558768885091059911">Të aktivizohet qasja te kamera dhe mikrofoni?</translation>
 <translation id="3560174576767922131">Regjistro një video</translation>
 <translation id="3563775809269155755">Aktivizo zonën e qasjes për internet</translation>
@@ -868,6 +869,7 @@ Lidhe pajisjen me një burim të energjisë elektrike.</translation>
 <translation id="3861651314799684201">Shtyp "Enter" për të regjistruar ekranin e plotë</translation>
 <translation id="3870197372373144624">Provo ta fikësh pajisjen tënde.</translation>
 <translation id="3879748587602334249">Menaxheri i shkarkimeve</translation>
+<translation id="3884007280698606545">U arrit kufiri për USB-në</translation>
 <translation id="3886872229787704059">Hapur sot</translation>
 <translation id="3891340733213178823">Shtyp Ctrl+Shift+Q për të dalë nga llogaria.</translation>
 <translation id="3892148308691398805">Kopjo tekstin</translation>
@@ -2258,7 +2260,7 @@ Për ta fikur pajisjen, shtyp dhe mbaj shtypur përsëri butonin e energjisë n�
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
 <translation id="834414266279889566">Rezultat i keq</translation>
 <translation id="8345019317483336363">U zgjodh dritarja <ph name="WINDOW_TITLE" /></translation>
-<translation id="8349826889576450703">launcher</translation>
+<translation id="8349826889576450703">nisësi</translation>
 <translation id="8349964124165471584">Hape lidhjen në një dritare të re</translation>
 <translation id="8351131234907093545">Krijo një shënim</translation>
 <translation id="8367948981300340152"><ph name="CAPTURE_MEDIUM" /> në përdorim.</translation>

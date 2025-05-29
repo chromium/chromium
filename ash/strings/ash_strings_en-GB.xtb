@@ -761,6 +761,7 @@ Otherwise, the built-in touchpad will be re-enabled in <ph name="TIMEOUT_SECONDS
 <translation id="3552189655002856821">Wi-Fi is turned off</translation>
 <translation id="3554215588514239132">Show or hide Developer tools panel</translation>
 <translation id="3554637740840164787"><ph name="ITEM_TITLE" /> was pinned</translation>
+<translation id="3554928024630051016">To add any additional USB devices, try removing one and then plug in a new one</translation>
 <translation id="3558768885091059911">Turn on camera and microphone access?</translation>
 <translation id="3560174576767922131">Record video</translation>
 <translation id="3563775809269155755">Enable hotspot</translation>
@@ -868,6 +869,7 @@ Connect your device to power.</translation>
 <translation id="3861651314799684201">Press enter to record full screen</translation>
 <translation id="3870197372373144624">Try shutting down your device.</translation>
 <translation id="3879748587602334249">Download manager</translation>
+<translation id="3884007280698606545">USB limit reached</translation>
 <translation id="3886872229787704059">Opened today</translation>
 <translation id="3891340733213178823">Press Ctrl+Shift+Q twice to sign out.</translation>
 <translation id="3892148308691398805">Copy text</translation>

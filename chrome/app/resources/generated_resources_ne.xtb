@@ -80,6 +80,7 @@
 <translation id="1049743911850919806">इन्कोग्निटो</translation>
 <translation id="1049795001945932310">&amp;भाषा सेटिङहरू</translation>
 <translation id="1050693411695664090">खराब</translation>
+<translation id="1053226848101751430">इन्ट्री मेटाइएको छ</translation>
 <translation id="1053898984916097744">नयाँ काम सुरु गर्नुहोस् वा काम सम्पन्न गर्ने क्रममा मद्दत प्राप्त गर्नुहोस्।</translation>
 <translation id="1054048317165655285">आफ्नो फोनमा सेटअप प्रक्रिया पूरा गर्नुहोस्</translation>
 <translation id="1054153489933238809">नयाँ ट्याबमा मूल छविलाई खोल्नुहोस्</translation>
@@ -2223,6 +2224,7 @@
 <translation id="2519250377986324805">तरिका जान्नुहोस्</translation>
 <translation id="2519517390894391510">सर्टिफिकेट प्रोफाइलको नाम</translation>
 <translation id="2520644704042891903">उपलब्ध सकेट प्रतिक्षा गर्दै...</translation>
+<translation id="2520961587246779103">स्प्लिट भ्यूसम्बन्धी थप विकल्पहरू</translation>
 <translation id="2521427645491031107">डिभाइसका सेटिङमा गई एपहरू सिंक गर्ने सुविधा अन वा अफ गर्न सकिन्छ</translation>
 <translation id="2521835766824839541">"अघिल्लो ट्रयाक" जनाउने आइकन</translation>
 <translation id="2521854691574443804"><ph name="FILE_NAME" /> तपाईंको सङ्गठनका सुरक्षासम्बन्धी नीतिअनुकूल छ कि छैन भनी जाँच गर्दै...</translation>
@@ -3167,6 +3169,7 @@
 <translation id="3202578601642193415">नवीनतम</translation>
 <translation id="3204648577100496185">यो डिभाइसबाट यस एपसँग सम्बन्धित डेटा हटाइन सक्छ</translation>
 <translation id="3204717934117444051">यो डिभाइसमा मात्र सेभ गरिएको डेटा हालको प्रोफाइलमा रहिरहने छ। उक्त डेटा <ph name="EMAIL" /> मा सिंक गरिने छैन</translation>
+<translation id="3206289903841621620">प्रयोगकर्ताले तयार पारेको शब्दकोश <ph name="NUMBER" /></translation>
 <translation id="3207344462385471911">तपाईंलाई तपाईंले हालसालै गरेका क्रियाकलापका आधारमा तपाईंलाई मन पर्न सक्ने सिफारिस गरिएका खोज तथा किनमेल गर्दा पाइने छुटसम्बन्धी जानकारी देखाइँदै छ।
         <ph name="BREAK" />
         <ph name="BREAK" />
@@ -9995,6 +9998,7 @@
 <translation id="8073499153683482226"><ph name="BEGIN_PARAGRAPH1" />एपका डेटा भनेको सम्पर्क, सन्देश र तस्बिरहरू जस्ता डेटालगायत कुनै एपले सुरक्षित गरेको (विकासकर्ताको सेटिङहरूका आधारमा) जुनसुकै डेटा हुन सक्छ।<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />ब्याकअपसम्बन्धी डेटालाई तपाईंका बालकको ड्राइभको भण्डारण कोटामा गणना गरिने छैन।<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />तपाईं सेटिङहरूमा गई यो सेवा निष्क्रिय पार्न सक्नुहुन्छ।<ph name="END_PARAGRAPH3" /></translation>
+<translation id="8075044377771022666">फुटर</translation>
 <translation id="8076835018653442223">तपाईंको प्रशासकले तपाईंको डिभाइसमा रहेका स्थानीय फाइलहरूमाथिको पहुँचलाई असक्षम पार्नुभएको छ</translation>
 <translation id="8077120325605624147">तपाईंले खोल्ने कुनै पनि साइटले तपाईंलाई जुनसुकै विज्ञापन देखाउन सक्छ</translation>
 <translation id="8077579734294125741">Chrome का अन्य प्रोफाइलहरू</translation>
@@ -10930,6 +10934,7 @@
 <translation id="8729133765463465108">QR कोड स्क्यान गर्न क्यामेरा प्रयोग गर्नुहोस्</translation>
 <translation id="8730621377337864115">गरियो</translation>
 <translation id="8731029916209785242">अनुमति (<ph name="FORMATTED_ORIGIN" />)</translation>
+<translation id="8731258351357994801"><ph name="NUMBER" /> औँ इन्ट्री</translation>
 <translation id="8731268612289859741">सुरक्षा कोड</translation>
 <translation id="8731629443331803108"><ph name="SITE_NAME" /> निम्न कुरा गर्न चाहन्छ: <ph name="PERMISSION" /></translation>
 <translation id="8731787661154643562">पोर्ट नम्बर</translation>

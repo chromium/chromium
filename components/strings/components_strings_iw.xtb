@@ -2087,7 +2087,7 @@
 <translation id="4562155266774382038">ביטול ההצעה</translation>
 <translation id="4566017918361049074">פעילות בחוץ</translation>
 <translation id="4569155249847375786">מאומת</translation>
-<translation id="4570008401337135432">יישור טקסט</translation>
+<translation id="4570008401337135432">יישור הטקסט</translation>
 <translation id="457875822857220463">משלוח</translation>
 <translation id="4579699065574932398">בנקאות</translation>
 <translation id="4582595824823167856">קבלה של הודעת טקסט</translation>
@@ -2452,6 +2452,7 @@ Del</translation>
 <translation id="519422657042045905">ההערה לא זמינה</translation>
 <translation id="5200063972779787617">שמירת הכתובת בחשבון</translation>
 <translation id="5201306358585911203">דף מוטמע בדף הזה אומר</translation>
+<translation id="5203716867500274632">‏האדמין מאפשר לסנכרן את הפריטים הבאים בין הסשן הקודם והסשן הנוכחי בכל מכשירי ChromeOS:</translation>
 <translation id="5205114269877707377">‏‫<ph name="OMNIBOX_ACTION_FOCUSED_FRIENDLY_MATCH_TEXT" />, צריך להקיש על מקש Tab כדי לעיין בפעולות הזמינות, ואז על Enter כדי לבצע את הפעולה שנבחרה.</translation>
 <translation id="5205222826937269299">שם (חובה)</translation>
 <translation id="5206392433295093945">חדר שינה</translation>
@@ -2611,6 +2612,7 @@ Del</translation>
 <translation id="5472588168895083535">המעקב אחר תנועות הידיים חסום</translation>
 <translation id="547963486735802022">רוצה לנסות שוב להעביר את הקבצים?</translation>
 <translation id="5481076368049295676">ייתכן שהתוכן הזה מכיל אמצעים שינסו להתקין תוכנה מסוכנת, שגונבת או מוחקת את המידע שלך. <ph name="BEGIN_LINK" />אני רוצה להציג בכל זאת<ph name="END_LINK" /></translation>
+<translation id="5481604577800516617">סידור של חלונות וכרטיסיות</translation>
 <translation id="5481682542063333508">הצעה לעזרה בכתיבה</translation>
 <translation id="54817484435770891">הוספה של כתובת חוקית</translation>
 <translation id="5483838506518938965">הכל מוכן</translation>
@@ -4286,6 +4288,7 @@ Del</translation>
 <translation id="8352849934814541340">האדמין של המכשיר הזה התקין אפליקציות שמספקות פונקציות נוספות. לאפליקציות יש גישה לחלק מהנתונים שלך.</translation>
 <translation id="8355270400102541638">ההקשר המקומי של הקריסה:</translation>
 <translation id="8363502534493474904">לכבות את מצב הטיסה</translation>
+<translation id="8363929499301563123">‏קובצי Cookie של אתרים (מצב הכניסה יישמר באתרים שביקרת בהם לאחרונה)</translation>
 <translation id="8364627913115013041">לא מוגדר.</translation>
 <translation id="8366057325711477500">חדשות מהעולם</translation>
 <translation id="836616551641291797">מידע נוסף על ניהול הדפדפן</translation>

@@ -119,6 +119,7 @@
 <translation id="6051432659151380973">Mae eich grwpiau tab yn cadw'n awtomatig</translation>
 <translation id="6054741997831917303">Gwnaeth pris yr eitem hon ostwng yn ddiweddar o <ph name="PREVIOUS_PRICE" /> i <ph name="NEW_PRICE" /></translation>
 <translation id="6109251075362363230">Bydd pob tab dyblyg nawr yn cael ei archifo hefyd, ac eithrio'r copi a ddefnyddiwyd yn fwyaf diweddar.</translation>
+<translation id="61924696525243173">{WINDOW_COUNT,plural, =1{Symud grŵp i ffenestr newydd}zero{Symud grŵp i ffenestr arall}two{Symud grŵp i ffenestr arall}few{Symud grŵp i ffenestr arall}many{Symud grŵp i ffenestr arall}other{Symud grŵp i ffenestr arall}}</translation>
 <translation id="6193448654517602979">Dewis tabiau</translation>
 <translation id="6220820548421939212">Ie. Iawn</translation>
 <translation id="6228793724645064692">(sgôr siop)</translation>
@@ -174,6 +175,7 @@
 <translation id="7942349550061667556">Coch</translation>
 <translation id="7961015016161918242">Byth</translation>
 <translation id="7966321538264951561">Diystyru'r awgrymiadau.</translation>
+<translation id="796696298310625748">{WINDOW_COUNT,plural, =1{Symud y tab i ffenestr newydd}zero{Symud y tab i ffenestr arall}two{Symud y tab i ffenestr arall}few{Symud y tab i ffenestr arall}many{Symud y tab i ffenestr arall}other{Symud y tab i ffenestr arall}}</translation>
 <translation id="799469866974412355">Grŵp newydd o'ch dyfais arall</translation>
 <translation id="8029301326595421733">Gwybodaeth am y siop hon wedi'i hagor ar uchder llawn</translation>
 <translation id="8053770993984522566">Rhestr grwpiau tabiau, wedi'i hagor ar hanner uchder</translation>
@@ -195,6 +197,7 @@
 <translation id="8730621377337864115">Wedi gorffen</translation>
 <translation id="8730999928494395583">Bydd eich gweithgarwch yn y tabiau Anhysbys hyn yn cael eu tynnu o'r ddyfais hon</translation>
 <translation id="875848103419578654">{NUM_MONTHS,plural, =1{Crëwyd <ph name="NUM_MONTHS_ONE" /> mis yn ôl}zero{Crëwyd <ph name="NUM_MONTHS_MANY" /> mis yn ôl}two{Crëwyd <ph name="NUM_MONTHS_MANY" /> fis yn ôl}few{Crëwyd <ph name="NUM_MONTHS_MANY" /> mis yn ôl}many{Crëwyd <ph name="NUM_MONTHS_MANY" /> mis yn ôl}other{Crëwyd <ph name="NUM_MONTHS_MANY" /> mis yn ôl}}</translation>
+<translation id="8813708480179818649">Tynnu'r tab o'r grŵp?</translation>
 <translation id="8820741577754260431">Gweld gostyngiadau prisiau yn eich tabiau</translation>
 <translation id="883379923675618699">Mae Chrome yn cau eitemau yn yr adran anweithredol nad ydych wedi'u defnyddio ers 3 mis yn awtomatig. Gallwch ddiffodd hyn nawr neu unrhyw bryd yn y Gosodiadau.</translation>
 <translation id="8887921976452567404">Gellir ailagor eich tabiau a'ch grwpiau sydd ar gau o'r adran Tabiau diweddar a'r adran Grwpiau tabiau.</translation>

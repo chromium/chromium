@@ -367,6 +367,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="1612199629998703524">Gestire gli argomenti</translation>
 <translation id="1615178538289490617">Revoca l'accesso per <ph name="PORT_NAME" /></translation>
 <translation id="1615402009686901181">La policy dell'amministratore disattiva l'acquisizione schermo se sono visibili contenuti riservati</translation>
+<translation id="161612500287664753">Chiedi alla Ricerca Google informazioni su questa pagina</translation>
 <translation id="1617276713587758852">Crossover</translation>
 <translation id="1619007254056372606">Gestisci i dati dei siti sul dispositivo</translation>
 <translation id="1619648179761984213"><ph name="USER_DISPLAY_NAME" /> ha rimosso una scheda</translation>
@@ -1019,7 +1020,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="2725927759457695883">Inserisci il nome completo</translation>
 <translation id="2726001110728089263">Vassoio laterale</translation>
 <translation id="2728127805433021124">Il certificato del server è stato firmato utilizzando un algoritmo di firma debole.</translation>
-<translation id="272937284275742856">Verifica sicura dei dati di pagamento…</translation>
+<translation id="272937284275742856">Verifica sicura dei dati di pagamento in corso…</translation>
 <translation id="2730326759066348565"><ph name="BEGIN_LINK" />Eseguire lo strumento Diagnostica della connettività<ph name="END_LINK" /></translation>
 <translation id="2731220418440848219">Scopri di più sul tuo motore di ricerca in Chromium</translation>
 <translation id="2731382536835015353">111,7 × 172,7 cm</translation>
@@ -1505,6 +1506,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="3586931643579894722">Nascondi dettagli</translation>
 <translation id="3587725436724465984">La tua organizzazione ha identificato <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> come un sito che potrebbe violare una policy. <ph name="BEGIN_LEARN_MORE_LINK" />Scopri di più sull'avviso<ph name="END_LEARN_MORE_LINK" />.</translation>
 <translation id="3587738293690942763">Medio</translation>
+<translation id="3589519427766620380">Chiedi a Google Lens informazioni su questa pagina</translation>
 <translation id="3596918995172292499">Stato targa</translation>
 <translation id="3600106876108433070">Scopri di più sulle tabelle di confronto</translation>
 <translation id="3600246354004376029"><ph name="TITLE" />, <ph name="DOMAIN" />, <ph name="TIME" /></translation>
@@ -2445,6 +2447,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="519422657042045905">Annotazione non disponibile</translation>
 <translation id="5200063972779787617">Salva l'indirizzo nell'account</translation>
 <translation id="5201306358585911203">Una pagina incorporata in questa pagina dice</translation>
+<translation id="5203716867500274632">L'amministratore ha consentito la sincronizzazione dei seguenti elementi tra le sessioni precedenti e attuali sui tuoi dispositivi ChromeOS:</translation>
 <translation id="5205114269877707377"><ph name="OMNIBOX_ACTION_FOCUSED_FRIENDLY_MATCH_TEXT" />, premi Tab per sfogliare le azioni disponibili, quindi Invio per eseguire l'azione selezionata.</translation>
 <translation id="5205222826937269299">Nome obbligatorio</translation>
 <translation id="5206392433295093945">Camera da letto</translation>
@@ -2604,6 +2607,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="5472588168895083535">Tracciamento delle mani bloccato</translation>
 <translation id="547963486735802022">Prova a trasferire nuovamente i file</translation>
 <translation id="5481076368049295676">Questi contenuti potrebbero cercare di installare sul tuo dispositivo software pericoloso che si impossessa delle tue informazioni o le elimina. <ph name="BEGIN_LINK" />Mostra comunque<ph name="END_LINK" /></translation>
+<translation id="5481604577800516617">Disposizione di finestre e schede</translation>
 <translation id="5481682542063333508">Offri aiuto con la scrittura</translation>
 <translation id="54817484435770891">Aggiungi un indirizzo valido</translation>
 <translation id="5483838506518938965">Ecco fatto</translation>
@@ -3438,6 +3442,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="6925267999184670015">B+ (America del Nord)</translation>
 <translation id="6926216138694948720">Body art</translation>
 <translation id="692638818576287323">Veicoli commerciali</translation>
+<translation id="6930607614725241390">Cerca nel riquadro laterale</translation>
 <translation id="6934236486840930310"><ph name="BEGIN_BOLD" />Il motore di ricerca predefinito ti consente di eseguire ricerche sul web e supporta le funzionalità di Chrome<ph name="END_BOLD" />, come la ricerca dalla barra degli indirizzi e dalle immagini nelle pagine web. Una funzionalità potrebbe non essere disponibile se il tuo motore di ricerca non la supporta.</translation>
 <translation id="6934672428414710184">Questo nome proviene dal tuo Account Google</translation>
 <translation id="6935077351544118151">Ora puoi compilare automaticamente le carte fedeltà da Google Wallet</translation>
@@ -3464,7 +3469,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="6963520811470373926">In sostituzione</translation>
 <translation id="6963693576491380224">Offerte di lavoro nella pubblica amministrazione e nel settore pubblico</translation>
 <translation id="6964255747740675745">Analisi della configurazione di rete non riuscita (JSON non valido).</translation>
-<translation id="6965382102122355670">OK</translation>
+<translation id="6965382102122355670">Ok</translation>
 <translation id="6965978654500191972">Dispositivo</translation>
 <translation id="696703987787944103">Percettivo</translation>
 <translation id="6967851206780867018">È stato bloccato 1 file a causa dei contenuti</translation>
@@ -4277,6 +4282,7 @@ Ulteriori dettagli:
 <translation id="8352849934814541340">L'amministratore di questo dispositivo ha installato applicazioni per funzioni aggiuntive. Le applicazioni hanno accesso ad alcuni tuoi dati.</translation>
 <translation id="8355270400102541638">Contesto arresto anomalo locale:</translation>
 <translation id="8363502534493474904">Disattivare la modalità aereo</translation>
+<translation id="8363929499301563123">Cookie dei siti web (lo stato di accesso sui siti web visitati di recente verrà conservato)</translation>
 <translation id="8364627913115013041">Non impostato.</translation>
 <translation id="8366057325711477500">Notizie dal mondo</translation>
 <translation id="836616551641291797">Scopri di più su come viene gestito il tuo browser</translation>

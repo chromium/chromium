@@ -636,6 +636,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="2088913896151127116">Engadir un texto</translation>
 <translation id="2090451897496479509">Ponte en contacto co fornecedor para obter máis información</translation>
 <translation id="2091887806945687916">Son</translation>
+<translation id="2093184051799735948">Fai unha busca en <ph name="ENGINE_NAME" /> ou escribe o URL</translation>
 <translation id="2093982008204312032">Google Chrome está tentando desactivar Windows Hello para completar contrasinais.</translation>
 <translation id="2094505752054353250">Os dominios non coinciden</translation>
 <translation id="2094704029599359040">Información da versión</translation>
@@ -770,6 +771,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="2296331629987861142">Paga en cómodas cotas (opción suxeita ao cumprimento dos requisitos; aplícanse taxas)</translation>
 <translation id="2300306941146563769">Non se cargou</translation>
 <translation id="2301098101308036335">Que sitios web se visitan e cando.</translation>
+<translation id="2302571905116831849">Autocompletar a tarxeta de fidelidade</translation>
 <translation id="230286397113210245">Botón para abrir unha ventá do modo de incógnito. Actívao para abrir unha nova ventá do modo de incógnito e navegar de forma privada</translation>
 <translation id="2305294852062272447">Queres gardar o permiso de conducir?</translation>
 <translation id="2306124309679506798">Queres permitir unha experiencia envolvente?</translation>
@@ -2446,6 +2448,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="519422657042045905">O modo de anotación non está dispoñible</translation>
 <translation id="5200063972779787617">Gardar o enderezo na conta</translation>
 <translation id="5201306358585911203">Unha páxina inserida nesta páxina di</translation>
+<translation id="5203716867500274632">Quen che administra a conta activou a sincronización dos seguintes datos entre as túas sesións anteriores e a actuais en todos os dispositivos ChromeOS:</translation>
 <translation id="5205114269877707377"><ph name="OMNIBOX_ACTION_FOCUSED_FRIENDLY_MATCH_TEXT" />, preme o tabulador para consultar as accións dispoñibles e despois Introducir para executar a acción seleccionada.</translation>
 <translation id="5205222826937269299">É obrigatorio introducir o nome</translation>
 <translation id="5206392433295093945">Dormitorio</translation>
@@ -2605,6 +2608,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="5472588168895083535">O seguimento das mans está bloqueado</translation>
 <translation id="547963486735802022">Proba a transferir os ficheiros de novo</translation>
 <translation id="5481076368049295676">É posible que con este contido se pretenda instalar software perigoso no teu dispositivo que che roube ou elimine información. <ph name="BEGIN_LINK" />Mostrar igualmente<ph name="END_LINK" /></translation>
+<translation id="5481604577800516617">Disposición de pestanas e ventás</translation>
 <translation id="5481682542063333508">Ofrecer axuda para escribir</translation>
 <translation id="54817484435770891">Engade un enderezo válido</translation>
 <translation id="5483838506518938965">Xa terminaches</translation>
@@ -4278,6 +4282,7 @@ Detalles adicionais:
 <translation id="8352849934814541340">O administrador deste dispositivo instalou aplicacións que ofrecen funcións adicionais. As aplicacións teñen acceso a algúns dos teus datos.</translation>
 <translation id="8355270400102541638">Contexto do fallo local:</translation>
 <translation id="8363502534493474904">Desactivar o modo avión</translation>
+<translation id="8363929499301563123">Cookies de sitios web (conservarase o estado de sesión iniciada nos sitios web visitados recentemente)</translation>
 <translation id="8364627913115013041">Sen configurar.</translation>
 <translation id="8366057325711477500">Noticias internacionais</translation>
 <translation id="836616551641291797">Máis información sobre como se xestiona o teu navegador</translation>

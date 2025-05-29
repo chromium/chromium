@@ -80,6 +80,7 @@
 <translation id="1049743911850919806">I fshehtë</translation>
 <translation id="1049795001945932310">&amp;Cilësimet e gjuhës</translation>
 <translation id="1050693411695664090">E dobët</translation>
+<translation id="1053226848101751430">Hyrja u fshi</translation>
 <translation id="1053898984916097744">Nis diçka të re ose merr ndihmë gjatë rrjedhës.</translation>
 <translation id="1054048317165655285">Përfundo konfigurimin në telefon</translation>
 <translation id="1054153489933238809">Hap imazhin &amp;origjinal në skedë të re</translation>
@@ -2224,6 +2225,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="2519250377986324805">Shiko si të veprosh</translation>
 <translation id="2519517390894391510">Emri i profilit të certifikatës</translation>
 <translation id="2520644704042891903">Po pret për folenë e lirë...</translation>
+<translation id="2520961587246779103">Më shumë opsione për pamjen e ndarë</translation>
 <translation id="2521427645491031107">Sinkronizimi i aplikacioneve është caktuar te "Cilësimet" e pajisjes</translation>
 <translation id="2521835766824839541">pjesa muzikore e mëparshme</translation>
 <translation id="2521854691574443804">Po kontrollon <ph name="FILE_NAME" /> me politikat e sigurisë së organizatës sate...</translation>
@@ -3167,6 +3169,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="3202578601642193415">Më të rejat</translation>
 <translation id="3204648577100496185">Të dhënat e lidhura me këtë aplikacion mund të hiqen nga kjo pajisje</translation>
 <translation id="3204717934117444051">Të dhënat që ruhen vetëm në këtë pajisje do të mbeten në profilin ekzistues. Ato nuk do të sinkronizohen me <ph name="EMAIL" /></translation>
+<translation id="3206289903841621620">Fjalori i përdoruesit <ph name="NUMBER" /></translation>
 <translation id="3207344462385471911">Po shikon kërkime të sugjeruara dhe zbritje çmimi për blerjet që mund të të interesojnë bazuar në aktivitetin tënd së fundi.
         <ph name="BREAK" />
         <ph name="BREAK" />
@@ -4875,7 +4878,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="4397372003838952832">Nuk është nevoja ta kujtosh këtë fjalëkalim. Ai do të ruhet te <ph name="GOOGLE_PASSWORD_MANAGER" /> për <ph name="EMAIL" /></translation>
 <translation id="4397844455100743910">Mëso më shumë rreth kërkesave për qasje</translation>
 <translation id="439817266247065935">Pajisja jote nuk është mbyllur si duhet. Rinis Linux për të përdorur aplikacionet e Linux.</translation>
-<translation id="4400632832271803360">Mbaj të shtypur tastin e Launcher për të ndërruar sjelljen e tasteve të rreshtit të sipërm</translation>
+<translation id="4400632832271803360">Mbaj të shtypur tastin e "Nisësit" për të ndërruar sjelljen e tasteve të rreshtit të sipërm</translation>
 <translation id="4400963414856942668">Mund të klikosh tek ylli për ta shtuar një skedë te faqeshënuesit</translation>
 <translation id="4401912261345737180">Lidhu me një kod për të transmetuar</translation>
 <translation id="4403012369005671154">Ligjërimi-në-tekst</translation>
@@ -9941,6 +9944,7 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="8037801708772278989">Kontrolluar pikërisht tani</translation>
 <translation id="8038111231936746805">(parazgjedhje)</translation>
 <translation id="8039151841428107077">{NUM_OF_FILES,plural, =1{Po kopjohet 1 skedar te <ph name="CLOUD_PROVIDER" />}other{Po kopjohen {NUM_OF_FILES} skedarë te <ph name="CLOUD_PROVIDER" />}}</translation>
+<translation id="8039525676147630657">Ky aplikacion i Chrome nuk do të funksionojë më pasi të përditësohet versioni yt i ChromeOS. Ruaj të dhënat e aplikacionit që dëshiron të mbash. Për të mësuar për opsionet e tua, kontakto me zhvilluesin e aplikacionit dhe ekipin e mbështetjes për teknologjinë e informacionit.</translation>
 <translation id="8041089156583427627">Dërgo komentet</translation>
 <translation id="8041093619605951337">E lumtur</translation>
 <translation id="8041267120753677077">Transmeto aplikacionet e telefonit tënd</translation>
@@ -9993,6 +9997,7 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="8073499153683482226"><ph name="BEGIN_PARAGRAPH1" />Të dhënat e aplikacioneve mund të jenë çdo e dhënë që ka ruajtur një aplikacion (bazuar në cilësimet e zhvilluesit), duke përfshirë të dhëna si kontaktet, mesazhet dhe fotografitë.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Të dhënat e rezervimit nuk do të llogariten në kuotën e hapësirës ruajtëse të "Diskut" të fëmijës tënd.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />Këtë shërbim mund ta çaktivizosh te "Cilësimet".<ph name="END_PARAGRAPH3" /></translation>
+<translation id="8075044377771022666">Fundi i faqes</translation>
 <translation id="8076835018653442223">Qasja në skedarët lokalë në pajisjen tënde është e çaktivizuar nga administratori yt</translation>
 <translation id="8077120325605624147">Çdo sajt që viziton ti mund të të shfaqë çdo reklamë</translation>
 <translation id="8077579734294125741">Profilet e tjera të Chrome</translation>
@@ -10381,7 +10386,7 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="8348430946834215779">Përdor HTTPS kur është e mundur dhe merr paralajmërime para ngarkimit të sajteve që nuk e mbështesin atë</translation>
 <translation id="8348896480272971199">Kontrollo internetin dhe provo përsëri.</translation>
 <translation id="8349325309815489209">Shtesat lejohen në këtë sajt</translation>
-<translation id="8349826889576450703">launcher</translation>
+<translation id="8349826889576450703">nisësi</translation>
 <translation id="8350789879725387295">Veglat e stilolapsit në stacion</translation>
 <translation id="8351316842353540018">Shfaq gjithmonë opsionet e qashmërisë</translation>
 <translation id="8351419472474436977">Kjo shtesë ka marrë nën kontroll cilësimet e përfaqësuesit tënd, që do të thotë se mund të ndryshojë, shkelë ose përgjojë çdo gjë që ti bën online. Nëse s'je i sigurt se pse ndodhi ky ndryshim, ndoshta nuk e do.</translation>
@@ -10928,6 +10933,7 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="8729133765463465108">Përdor kamerën për të skanuar kodin QR</translation>
 <translation id="8730621377337864115">U krye</translation>
 <translation id="8731029916209785242">Lejet (<ph name="FORMATTED_ORIGIN" />)</translation>
+<translation id="8731258351357994801">Hyrja <ph name="NUMBER" /></translation>
 <translation id="8731268612289859741">Kodi i sigurisë</translation>
 <translation id="8731629443331803108"><ph name="SITE_NAME" /> kërkon që: <ph name="PERMISSION" /></translation>
 <translation id="8731787661154643562">Numri i portës</translation>

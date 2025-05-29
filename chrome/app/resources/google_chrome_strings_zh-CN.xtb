@@ -58,7 +58,7 @@
 <translation id="1786003790898721085">请确保您已在“<ph name="TARGET_DEVICE_NAME" />”上登录 Chrome，然后再次尝试发送。</translation>
 <translation id="1786044937610313874">快捷方式会在 Chrome 中打开</translation>
 <translation id="178701303897325119">此扩展程序已不再受支持。Chrome 建议您移除它。</translation>
-<translation id="1812689907177901597">关闭此设置后，您无需登录 Chrome 即可登录 Gmail 等 Google 网站</translation>
+<translation id="1812689907177901597">关闭此设置后，您可以仅登录 Gmail 等 Google 网站，而不同时登录 Chrome</translation>
 <translation id="1821644463306970002">{NUM_TABS,plural, =1{Chrome 建议您暂停导致浏览器运行缓慢的标签页}other{Chrome 建议您暂停导致浏览器运行缓慢的标签页}}</translation>
 <translation id="1838374766361614909">清除搜索字词</translation>
 <translation id="1860536484129686729">Chrome 需要获得相应权限，才能允许此网站使用您的摄像头</translation>
@@ -193,7 +193,7 @@
 <translation id="3396977131400919238">安装过程中出现操作系统错误。请重新下载 Google Chrome。</translation>
 <translation id="3428747202529429621">保护您在 Chrome 中免受安全威胁，登录状态下还可让您更安全地使用其他 Google 应用</translation>
 <translation id="3434246496373299699">您需要先登录 Google 账号才能使用 Chrome 的密码检查功能。</translation>
-<translation id="3438681572027105609">如需获取您所有设备上的密码等信息，请登录 Chrome</translation>
+<translation id="3438681572027105609">如需将密码等信息同步到您的所有设备上，请登录 Chrome</translation>
 <translation id="3450887623636316740">这可能是个危险文件<ph name="LINE_BREAK" />如果您提供了密码，Chrome 可为您检查此下载内容。系统会将该文件的相关信息发送给 Google 安全浏览功能，但文件内容和密码会保留在您的设备上。</translation>
 <translation id="3451115285585441894">正在添加到 Chrome 浏览器...</translation>
 <translation id="345171907106878721">将您自己添加到Chrome</translation>
@@ -203,7 +203,7 @@
 <translation id="3541482654983822893">Chrome 无法检查您的密码。请过 24 小时再试。</translation>
 <translation id="3576528680708590453">您的系统管理员已将 Google Chrome 配置为使用备用浏览器访问 <ph name="TARGET_URL_HOSTNAME" />。</translation>
 <translation id="3582972582564653026">在您的所有设备上同步并个性化设置 Chrome</translation>
-<translation id="3583751698304738917">您已使用另一份 Chrome 个人资料 (<ph name="USER_EMAIL_ADDRESS" />) 登录</translation>
+<translation id="3583751698304738917">您已在另一份 Chrome 个人资料中使用 <ph name="USER_EMAIL_ADDRESS" /> 登录</translation>
 <translation id="3595784445906693824">要使用新的个人资料登录 Chrome 吗？</translation>
 <translation id="3596080736082218006">{COUNT,plural, =0{您的管理员要求您重新启动 Chrome 以应用一项更新}=1{您的管理员要求您重新启动 Chrome 以应用一项更新。您的无痕式窗口不会重新打开。}other{您的管理员要求您重新启动 Chrome 以应用一项更新。您的 # 个无痕式窗口不会重新打开。}}</translation>
 <translation id="3597003331831379823">未能以提升的权限运行设置。<ph name="METAINSTALLER_ERROR" /></translation>
@@ -238,7 +238,7 @@
 <translation id="4035053306113201399">需要重新启动 Chrome 操作系统以应用更新。</translation>
 <translation id="4050175100176540509">最新版本不仅在安全性方面做出了重要改进，还提供了多项新功能。</translation>
 <translation id="4053720452172726777">自定义及控制 Google Chrome</translation>
-<translation id="408393047846373801">如需获取您所有设备上的密码等信息，请登录 Chrome。登录后，该密码将保存到您的 Google 账号。</translation>
+<translation id="408393047846373801">如需将密码等信息同步到您的所有设备上，请登录 Chrome。登录后，这个密码将保存到您的 Google 账号。</translation>
 <translation id="409936259433005390">即将升级到 Windows 11？将 Chrome 安装程序下载到 OneDrive，预先准备即可随时开始。</translation>
 <translation id="4110895483821904099">设置您的新 Chrome 个人资料</translation>
 <translation id="4111566860456076004">Chrome 无法验证此扩展程序的来源，它可能不安全。请将其从 Chrome 中移除，这样它便无法再查看和更改您在所访问的网站上的数据，包括个人信息。</translation>
@@ -298,7 +298,7 @@
 <translation id="4793679854893018356">了解 Chrome 如何保障您的安全</translation>
 <translation id="4828579605166583682">Google Chrome 正在尝试替换现有密码。请输入您的 Windows 密码以允许此操作。</translation>
 <translation id="4842397268809523050">ChromeOS Flex 无法同步您的数据，因为您的网域不支持同步。</translation>
-<translation id="4851866215237571846"><ph name="EXISTING_USER" />已登录。若要单独存储您的浏览数据，请使用您自己的个人资料 (<ph name="USER_EMAIL_ADDRESS" />) 登录 Chrome。</translation>
+<translation id="4851866215237571846">目前登录的账号是：<ph name="EXISTING_USER" />。若要单独存储您的浏览数据，请使用您自己的个人资料 (<ph name="USER_EMAIL_ADDRESS" />) 登录 Chrome。</translation>
 <translation id="4855026984605187434">若要共享屏幕，请在“系统设置”中为 Chrome 启用屏幕录制功能</translation>
 <translation id="4873783916118289636">检查 Chrome 中重要的隐私控制设置和安全控件</translation>
 <translation id="4885446229353981848">始终显示 Google 智能镜头快捷方式</translation>
@@ -410,13 +410,13 @@
 <translation id="6291089322031436445">Chrome 开发者版应用</translation>
 <translation id="6291549208091401781">已为您计算机上的所有用户安装 Google Chrome。</translation>
 <translation id="6319856120645568262">Chrome 需要获得权限，才能绘制您周边环境的地图并跟踪您的双手</translation>
-<translation id="6321592572353357376">扩展程序“<ph name="EXTENSION_NAME" />”需要您登录 Chrome</translation>
+<translation id="6321592572353357376">“<ph name="EXTENSION_NAME" />”扩展程序需要您登录 Chrome</translation>
 <translation id="6326175484149238433">从 Chrome 中移除</translation>
 <translation id="6327105987658262776">没有可用的更新。</translation>
 <translation id="6360449101159168105">当此标签页处于闲置状态时，系统会释放一些内存，以让 Chrome 保持快速运行。您可以选择始终不让此网站处于闲置状态。</translation>
 <translation id="6412673304250309937">将网址与存储在 Chrome 中的不安全网站列表进行比对。如果某个网站企图窃取您的密码，或者您下载了有害的文件，Chrome 可能还会将相应网址连同少量网页内容发送给“安全浏览”功能。</translation>
 <translation id="6417690341895039567">{COUNT,plural, =1{贵组织会在 Chrome 闲置 1 分钟后自动关闭它。浏览数据会被删除。这些数据可能包括历史记录、自动填充数据和下载内容。}other{贵组织会在 Chrome 闲置 # 分钟后自动关闭它。浏览数据会被删除。这些数据可能包括历史记录、自动填充数据和下载内容。}}</translation>
-<translation id="6418662306461808273">切换到现有的 Chrome 个人资料？</translation>
+<translation id="6418662306461808273">要切换到现有的 Chrome 个人资料吗？</translation>
 <translation id="6473905796280459355">前往“关于 Chrome”页面</translation>
 <translation id="6481963882741794338">关联 Chrome 和其他 Google 服务，以便获得个性化体验和实现其他用途</translation>
 <translation id="648319183876919572">“增强型安全浏览”功能有助于保护您免受危险的网站及下载内容的侵害</translation>
@@ -623,6 +623,7 @@
 <translation id="9090566250983691233">了解 Chrome 为何屏蔽某些文件</translation>
 <translation id="9106236359747881194">选择文字即可搜索</translation>
 <translation id="911206726377975832">同时删除您的浏览数据吗？</translation>
+<translation id="9134482777260927479">作业辅导</translation>
 <translation id="9138603949443464873">要想应用您的更改，请重新启动 Chrome</translation>
 <translation id="9148058034647219655">退出</translation>
 <translation id="9195993889682885387">Chrome 可以根据您在过去几周的浏览记录推测出您的兴趣。这些信息会保留在您的设备上。</translation>

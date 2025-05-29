@@ -206,6 +206,7 @@
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1758459542619182298"><ph name="CONTROL_TYPE" /> <ph name="KEY_LIST" /></translation>
 <translation id="1759842336958782510">Chrome</translation>
+<translation id="1762353673362288306">Μπορείτε πλέον να χρησιμοποιείτε μόνο τα Εργαλεία για την τάξη</translation>
 <translation id="1762483337755424125">Μεταγραφή</translation>
 <translation id="1765169783255151332">Γρήγορη εναλλαγή πλήκτρων</translation>
 <translation id="1768959921651994223">Τύπος ελέγχου ταυτότητας</translation>
@@ -220,6 +221,7 @@
 <translation id="181434555916624618">Προς το παρόν, τα αποτελέσματα που περιέχουν άτομα δεν θα εμφανίζονται. Δοκιμάστε άλλη οδηγία.</translation>
 <translation id="1815850098929213707">Το επιλεγμένο πλήκτρο είναι <ph name="KEYS" />. Πατήστε το κουμπί για να επεξεργαστείτε το στοιχείο ελέγχου</translation>
 <translation id="1818174214124933000">Όταν επιλέξετε αποστολή, τα σχόλια και το περιεχόμενό σας (εμφανίζονται παρακάτω) θα σταλούν στην Google, θα υποβληθούν σε έλεγχο από ανθρώπους και θα χρησιμοποιηθούν για την εκπαίδευση ή τη βελτίωση των προϊόντων και των υπηρεσιών μας, σύμφωνα με την <ph name="LINK_POLICY_BEGIN" />Πολιτική απορρήτου<ph name="LINK_POLICY_END" /> και τους <ph name="LINK_TERMS_OF_SERVICE_BEGIN" />Όρους Παροχής Υπηρεσιών της Google<ph name="LINK_TERMS_OF_SERVICE_END" />.</translation>
+<translation id="1821075635029692203">Ο καθηγητής σας έστειλε έναν μη υποστηριζόμενο πόρο. Ενημερώστε τον.</translation>
 <translation id="1823120442877418684">Χαρακτήρες</translation>
 <translation id="1827738518074806965">Γκαλερί</translation>
 <translation id="183287940576828840">Προσβλητικό/Μη ασφαλές</translation>
@@ -476,6 +478,7 @@
 <translation id="3091839911843451378">Σφάλμα - Σταμάτησε</translation>
 <translation id="3102119246920354026">Κρυφή μνήμη</translation>
 <translation id="3103783611481501187">σουρεαλιστικό</translation>
+<translation id="3119672627216736407">Υπάρχει διαθέσιμη μετάφραση</translation>
 <translation id="3122464029669770682">Κεντρική μονάδα επεξεργασίας</translation>
 <translation id="3122614491980756867">πισίνες</translation>
 <translation id="3122883569442693641">Περισσότερες λεπτομέρειες</translation>
@@ -1136,6 +1139,7 @@
 <translation id="6058625436358447366">Για να τελειώσετε, εισαγάγετε τον παλιό και τον νέο κωδικό πρόσβασης</translation>
 <translation id="6061772781719867950">Αποτυχημένα αιτήματα HTTP</translation>
 <translation id="6073292342939316679">μείωση φωτεινότητας πληκτρολογίου</translation>
+<translation id="6074608334942655098">Διακοπή μετάφρασης</translation>
 <translation id="6074752328838739425">Απόκρυψη σύνοψης</translation>
 <translation id="6075872808778243331">(Android) Λανθάνων χρόνος HTTP</translation>
 <translation id="6078323886959318429">Προσθήκη συντόμευσης</translation>
@@ -1613,6 +1617,7 @@
 <translation id="8088963492174775412">Πατήστε για εγγραφή</translation>
 <translation id="8094062939584182041">Επιτρέψτε στην Google να σας στέλνει μηνύματα ηλεκτρονικού ταχυδρομείου σχετικά με αυτό το ζήτημα</translation>
 <translation id="8104083085214006426">Χρησιμοποιείτε ένα ανοιχτό και μη ασφαλές δίκτυο.</translation>
+<translation id="8108879170356113798">Θα μπορείτε να χρησιμοποιείτε μόνο τα Εργαλεία για την τάξη σε <ph name="NUM_SECONDS" /> δευτερόλεπτα</translation>
 <translation id="811820734797650957">(Android) Η πύλη λαμβάνει ping</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8131740175452115882">Επιβεβαίωση</translation>

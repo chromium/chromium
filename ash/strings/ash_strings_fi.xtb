@@ -761,6 +761,7 @@ Muussa tapauksessa sisäänrakennettu kosketuslevy otetaan käyttöön, kun <ph 
 <translation id="3552189655002856821">Wi-Fi on poissa päältä</translation>
 <translation id="3554215588514239132">Näytä tai piilota Kehittäjätyökalut-paneeli</translation>
 <translation id="3554637740840164787"><ph name="ITEM_TITLE" /> kiinnitettiin</translation>
+<translation id="3554928024630051016">Jos haluat lisätä muita USB-laitteita, yritä poistaa jokin nykyisistä ja kytkeä sitten uusi laite</translation>
 <translation id="3558768885091059911">Sallitaanko kameran ja mikrofonin käyttö?</translation>
 <translation id="3560174576767922131">Kuvaa video</translation>
 <translation id="3563775809269155755">Ota hotspot käyttöön</translation>
@@ -868,6 +869,7 @@ Yhdistä laite virtalähteeseen.</translation>
 <translation id="3861651314799684201">Tallenna koko näytön sisältö painamalla Enter</translation>
 <translation id="3870197372373144624">Kokeile sammuttaa laite.</translation>
 <translation id="3879748587602334249">Latausten hallinta</translation>
+<translation id="3884007280698606545">USB-laitteita on enimmäismäärä</translation>
 <translation id="3886872229787704059">Avattu tänään</translation>
 <translation id="3891340733213178823">Kirjaudu ulos painamalla Ctrl+Shift+Q kahdesti.</translation>
 <translation id="3892148308691398805">Kopioi teksti</translation>

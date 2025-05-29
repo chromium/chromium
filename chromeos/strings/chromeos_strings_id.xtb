@@ -206,6 +206,7 @@
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1758459542619182298"><ph name="CONTROL_TYPE" /> <ph name="KEY_LIST" /></translation>
 <translation id="1759842336958782510">Chrome</translation>
+<translation id="1762353673362288306">Anda sekarang hanya dapat menggunakan Alat Kelas</translation>
 <translation id="1762483337755424125">Transkrip</translation>
 <translation id="1765169783255151332">Beralih tombol dengan cepat</translation>
 <translation id="1768959921651994223">Jenis autentikasi</translation>
@@ -1613,6 +1614,7 @@ Download model transkripsi (hingga 100 MB) untuk mendapatkan transkripsi ini.</t
 <translation id="8088963492174775412">Tekan untuk merekam</translation>
 <translation id="8094062939584182041">Izinkan Google mengirim email kepada Anda tentang masalah ini</translation>
 <translation id="8104083085214006426">Anda menggunakan jaringan terbuka dan tidak aman</translation>
+<translation id="8108879170356113798">Anda hanya dapat menggunakan Alat Kelas setelah <ph name="NUM_SECONDS" /> detik</translation>
 <translation id="811820734797650957">(Android) Gateway Dapat Di-ping</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8131740175452115882">Konfirmasi</translation>

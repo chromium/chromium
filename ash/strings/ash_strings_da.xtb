@@ -761,6 +761,7 @@ Ellers genaktiveres den indbyggede touchplade om <ph name="TIMEOUT_SECONDS" />.<
 <translation id="3552189655002856821">Wi-Fi er deaktiveret</translation>
 <translation id="3554215588514239132">Vis eller skjul panelet i Udviklerværktøjer</translation>
 <translation id="3554637740840164787"><ph name="ITEM_TITLE" /> blev fastgjort</translation>
+<translation id="3554928024630051016">Hvis du vil tilføje yderligere USB-enheder, kan du prøve at fjerne en og derefter tilslutte en ny</translation>
 <translation id="3558768885091059911">Vil du give adgang til kameraet og mikrofonen?</translation>
 <translation id="3560174576767922131">Optag video</translation>
 <translation id="3563775809269155755">Aktivér hotspot</translation>
@@ -868,6 +869,7 @@ Slut din enhed til en strømkilde.</translation>
 <translation id="3861651314799684201">Tryk på Enter for at optage fuld skærm</translation>
 <translation id="3870197372373144624">Prøv at slukke din enhed.</translation>
 <translation id="3879748587602334249">Downloadadministrator</translation>
+<translation id="3884007280698606545">Grænsen for USB-enheder er nået</translation>
 <translation id="3886872229787704059">Åbnet i dag</translation>
 <translation id="3891340733213178823">Tryk på Ctrl+Shift+Q to gange for at logge ud.</translation>
 <translation id="3892148308691398805">Kopiér tekst</translation>

@@ -2401,6 +2401,13 @@ Para melhorar a privacidade, esta política não vai oferecer suporte a atualiza
 Se a captura de tela não tiver sido permitida no início da sessão, nenhum outro app poderá fazê-la após o login.</translation>
 <translation id="2615240493030733717">Enviar informações de fuso horário</translation>
 <translation id="2619258867868873629">Os destinos "Salvar como PDF" e "Salvar no Google Drive" em dispositivos <ph name="PRODUCT_OS_NAME" /></translation>
+<translation id="262035875928535253">Configure a lista de domínios em que <ph name="PRODUCT_NAME" /> precisa desativar <ph name="PASSWORD_MANAGER_NAME" />. Isso significa que os fluxos de trabalho de salvar e preencher serão desativados, garantindo que as senhas desses sites não sejam salvas nem preenchidas automaticamente em formulários on-line.
+
+Se um domínio estiver na lista, <ph name="PASSWORD_MANAGER_NAME" /> será desativado para ele.
+
+Se um domínio não estiver na lista, <ph name="PASSWORD_MANAGER_NAME" /> vai estar disponível para ele.
+
+Se a política for deixada sem definição, <ph name="PASSWORD_MANAGER_NAME" /> vai ficar disponível para todos os domínios.</translation>
 <translation id="2621290137818374425">A definição da política desativa os requisitos de divulgação de Transparência dos certificados para os nomes de host nos URLs especificados. Embora dificultem a detecção de certificados incorretos, os hosts podem continuar usando certificados que, de outro modo, não seriam confiáveis, já que não foram divulgados publicamente de maneira adequada.
 
       Deixar esta política sem definição significa que, se os certificados que precisam ser divulgados pela Transparência dos certificados não forem, o <ph name="PRODUCT_NAME" /> não confiará nesses certificados.
@@ -2477,6 +2484,7 @@ O sistema só consulta registros AAAA quando está acessível a um host IPv6 glo
 <translation id="268695908564263739">Esta política ativa ou desativa a configuração do modo de alta eficiência. Com essa configuração, as guias são descartadas após um determinado período em segundo plano para recuperar memória.
       Se a política não for definida, o usuário final vai poder controlar essa configuração em chrome://settings/performance.
       </translation>
+<translation id="2687600966277668971">A pré-busca de SpeculationRules não pode ser enviada para URLs controlados pelo ServiceWorkers (comportamento legado).</translation>
 <translation id="2691668238491124549">A definição da política (apenas como recomendado) move localidades recomendadas de uma sessão gerenciada para o topo da lista, na ordem em que elas aparecem na política. A primeira localidade recomendada é pré-selecionada.
 
       Se a política não for definida, a localidade atual da interface será pré-selecionada.
@@ -4496,7 +4504,7 @@ as extensões fixadas na versão também são ignoradas.
 Se a política for definida como <ph name="ALLOW_UNPUBLISHED" /> (0) ou for deixada sem definição, as extensões não publicadas na Chrome Web Store serão permitidas.
 Se a política for definida como <ph name="DISABLE_UNPUBLISHED" /> (1), as extensões não publicadas na Chrome Web Store serão desativadas.</translation>
 <translation id="4164866067069311355">Controla o atalho usado para acionar F11/F12</translation>
-<translation id="4165986682804962316">Configurações do site</translation>
+<translation id="4165986682804962316">Configurações de sites</translation>
 <translation id="4166174702671320480">Se a política for definida como "Ativada", as políticas vindas de um grupo atômico que não compartilha a origem com a maior prioridade do grupo serão ignoradas.
 
       Se a política for definida como "Desativada", nenhuma política será ignorada por causa da origem. As políticas serão ignoradas apenas se houver um conflito e a política não tiver a maior prioridade.
@@ -4580,6 +4588,7 @@ Descontinuado: o recurso de rastreamento de encomendas está desativado desde a 
 <translation id="4189872355465413041">Apps do sistema</translation>
 <translation id="4190316993598857632">Ativar a edição de favoritos</translation>
 <translation id="4192388905594723944">URL para validação do token de autenticação do cliente de acesso remoto</translation>
+<translation id="4195119404667420672">A pré-busca de SpeculationRules pode ser enviada para URLs controlados pelo ServiceWorkers.</translation>
 <translation id="4195698007674066525">Usar o teclado numérico por padrão para a entrada de senhas</translation>
 <translation id="4203055629055264833">Se a política for definida como "Ativada" ou for deixada sem definição, os usuários vão poder ver a página de resultados mais recente do mecanismo de pesquisa padrão em um painel lateral ao ativar um ícone na barra de ferramentas.
 
@@ -5184,6 +5193,19 @@ A configuração <ph name="CHROME_OS_RELEASE_CHANNEL_POLICY_NAME" /> só terá e
 <translation id="4650044303940238102">Configurações de fontes locais</translation>
 <translation id="4650759511838826572">Desativar esquemas do protocolo de URL</translation>
 <translation id="465099050592230505">URL da loja on-line da empresa (uso suspenso)</translation>
+<translation id="4652388001247121058">A pré-busca de SpeculationRules pode ser emitida para URLs controlados pelo
+ServiceWorkers. No entanto, o código legado não permitiu e cancelou as solicitações de
+pré-busca. Com essa política, é possível controlar o comportamento.
+
+Se a política for ativada ou não definida, a pré-busca de SpeculationRules será permitida para
+URLs controlados pelo ServiceWorkers (se a flag de recurso PrefetchServiceWorker estiver
+ativada). Esse é o comportamento padrão atual e está alinhado com as
+especificações.
+
+Se a política for desativada, a pré-busca de SpeculationRules para
+URLs controlados pelo ServiceWorkers não será permitida. Esse é o comportamento legado.
+
+Essa política é temporária e será removida.</translation>
 <translation id="4653465451589191309">Se a política for definida como "Ativada" ou não for definida, será possível gerenciar (desconectar ou modificar) conexões VPN. Se a conexão VPN tiver sido criada com um app de VPN, a interface do app não será afetada. Portanto, usuários ainda poderão usar o app para modificar a conexão VPN. Use esta política com o recurso "VPN sempre ativa", que permite ao administrador decidir estabelecer uma conexão VPN ao ligar um dispositivo.
 
       Se a política for definida como "Desativada", as interfaces do usuário do <ph name="PRODUCT_OS_NAME" /> que permitem desconectar ou modificar conexões VPN serão desativadas.</translation>
@@ -5862,7 +5884,7 @@ Esta política é uma solução temporária para permitir que o conteúdo da Web
       for direcionada a URLs de autenticação, apps autenticadores de provedores de identidade correspondentes que podem processar esse URL vão ser inicializados.
 
       Esse fluxo de inicialização do app autenticador de provedores de identidade seria usado para ativar
-      casos de uso, como ao fornecer SSO entre apps ou melhorar a segurança coletando indicadores de dispositivos de confiança zero para entender a postura dos dispositivos durante a autenticação.
+      casos de uso, como ao fornecer SSO entre apps ou melhorar a segurança coletando indicadores de dispositivos de zero trust para entender a postura dos dispositivos durante a autenticação.
 
       Se não houver um app válido instalado para processar o URL de autenticação no dispositivo, a navegação vai continuar no <ph name="WEBVIEW_PRODUCT_NAME" />.
 
@@ -5973,6 +5995,7 @@ política enquanto o navegador estiver em execução.</translation>
 <translation id="5194683382395300627">Permitir o uso do <ph name="ASSISTANT_PRODUCT_NAME" /> na Web, por exemplo, para autorizar a mudança automática de senhas</translation>
 <translation id="5196630732055960309">Permitir a API File Handling nesses apps da Web</translation>
 <translation id="5205352023880027050">Não ativar o recurso EphemeralNetworkPolicies.</translation>
+<translation id="5205385499831960279">Aplicar restrições a solicitações para endpoints de rede local</translation>
 <translation id="5206454085187851382">Se <ph name="PRINTERS_ALLOWLIST" /> for escolhida para <ph name="PRINTERS_BULK_ACCESS_MODE_POLICY_NAME" />, a definição de <ph name="PRINTERS_BULK_ALLOWLIST_POLICY_NAME" /> especificará quais impressoras os usuários não podem usar. Apenas as impressoras com IDs correspondentes aos valores desta política estão disponíveis para o usuário. Os IDs precisam corresponder aos campos <ph name="ID_FIELD" /> ou <ph name="GUID_FIELD" /> no arquivo especificado na <ph name="PRINTERS_BULK_CONFIGURATION_POLICY_NAME" />.</translation>
 <translation id="5207543664699568887">Configura se o <ph name="PRODUCT_NAME" /> no Linux usará notificações do sistema.
 
@@ -6220,6 +6243,7 @@ As contas gerenciadas não podem participar nem criar um grupo familiar. Por iss
 <translation id="5334404204520035180">Controlar o uso da API WebPrinting</translation>
 <translation id="5334501839642146593">Nunca enviar métricas ao Google</translation>
 <translation id="5335910979215357815">Ativar a API Save and Share para o controle do <ph name="PRODUCT_OS_NAME" /> de terceiros.</translation>
+<translation id="5337869685871558036">Permitir a pré-busca de SpeculationRules para URLs controlados pelo ServiceWorkers</translation>
 <translation id="5339096331970464266">Ativar o teclado virtual de acessibilidade</translation>
 <translation id="5340008866815063393">Ativar relatórios sobre dados de política</translation>
 <translation id="5345892164332459671">Desativar o SSO flutuante e não mover as autenticações do serviço da Web do usuário para um novo dispositivo</translation>
@@ -6891,6 +6915,7 @@ No <ph name="MS_WIN_NAME" />, essa política só está disponível em instância
 
       Observação: o fator de cálculo precisa ser de 100% ou mais.</translation>
 <translation id="5740636973289452345">Ativar relatórios sobre informações de extensões e plug-ins</translation>
+<translation id="5740716956489996914">Usar o comportamento padrão ao determinar se os sites podem fazer solicitações para endpoints de rede local</translation>
 <translation id="5741110260062082926">Desativar Orca</translation>
 <translation id="5746149754419996562">Ativa a presença de widgets Glanceables no <ph name="PRODUCT_OS_NAME" />. Mais especificamente, os widgets acessíveis pelo ícone de data na estante.
 Quando esta política está ativada, os Glanceables são ativados no <ph name="PRODUCT_OS_NAME" />.
@@ -7015,6 +7040,7 @@ Para mais informações sobre como tratar dados de recursos de IA generativa, co
 
       Se a política for definida como "Desativada" ou não for definida, nenhum log do sistema será enviado.</translation>
 <translation id="5861856285460256766">Configuração do código de acesso do familiar responsável</translation>
+<translation id="5864898931148094192">Controlar a visibilidade da atribuição da extensão na página "Nova guia"</translation>
 <translation id="5868414965372171132">Configuração de rede em nível do usuário</translation>
 <translation id="5868454276721377379">Quando um usuário alterna entre dispositivos <ph name="PRODUCT_OS_NAME" />, o serviço de SSO flutuante restaura o estado de autenticação do serviço da Web do usuário do dispositivo anterior para o novo. Isso é feito movendo os cookies do usuário entre dispositivos.
 
@@ -7305,6 +7331,13 @@ Esta política foi descontinuada na versão M124.</translation>
 <translation id="604243460476563291">Desativar a transferência de arquivos em conexões de suporte remoto de administradores corporativos</translation>
 <translation id="6042629184389251062">A coleta de métricas inseridas no URL não é permitida</translation>
 <translation id="6046615715547751255">Não permitir controles de geração de relatórios granulares</translation>
+<translation id="6047041034696466581">Esta política determina se uma atribuição à extensão que modifica a página "Nova guia" (NTP, na sigla em inglês) é exibida no rodapé da NTP.
+
+Por padrão, se uma extensão tiver substituído a NTP padrão, uma mensagem atribuindo essa mudança à extensão específica vai aparecer no rodapé. Essa atribuição normalmente inclui um link para a extensão relevante na Chrome Web Store.
+
+Se a política não for definida ou for definida como "true", a atribuição da extensão vai ficar visível no rodapé da NTP quando uma extensão controlar essa página.
+
+Se a política for definida como "false", a atribuição à extensão no rodapé da NTP será suprimida.</translation>
 <translation id="6048199181629830227">Ativar o gerenciamento de energia no período de pico</translation>
 <translation id="6048690591359317353">Não permitir que o usuário desconecte ou modifique uma VPN de forma manual</translation>
 <translation id="6049117606554031363">Ativar relatórios de status da placa do dispositivo</translation>
@@ -7898,6 +7931,7 @@ Confira uma lista com as variáveis que podem ser usadas (https://www.chromium.o
 
 Se a política for deixada sem definição, o <ph name="PRODUCT_OS_NAME" /> usará o diretório padrão "Downloads" para armazenar capturas de tela, e essa configuração poderá ser modificada pelos usuários.</translation>
 <translation id="6377031865393559909">Permitir que os usuários usem modelos de espaço de trabalho</translation>
+<translation id="6377570995433636383">Especifica se é necessário aplicar restrições a solicitações para endpoints de rede local</translation>
 <translation id="6378076389057087301">Especifica se a atividade de áudio afeta o gerenciamento de energia</translation>
 <translation id="6378393933102834628">Se a política for definida como verdadeira, o atalho de apps será exibido. Se ela for definida como falsa, o atalho não aparecerá.
 
@@ -9693,6 +9727,7 @@ Se a política não for definida, nenhuma exceção a <ph name="FLOATING_SSO_DOM
           Se ela for definida como "false" (falsa) ou não for definida, o PIN não vai ser enviado automaticamente na tela de bloqueio e login.
 
           Se a política for definida, os usuários não poderão ativar esse recurso.</translation>
+<translation id="7612030083959326401">Configure a lista de domínios em que <ph name="PASSWORD_MANAGER_NAME" /> (salvar e preencher) vai estar desativado</translation>
 <translation id="7612059745454194563">Não permitir que a promoção da extensão do provedor de credenciais seja mostrada</translation>
 <translation id="7612157962821894603">Sinalizações amplas do sistema que devem ser aplicadas na inicialização do <ph name="PRODUCT_NAME" /></translation>
 <translation id="7613115815080726221">O tempo, em milissegundos, sem entrada do usuário após o qual a ação de inatividade é tomada.</translation>
@@ -11706,6 +11741,13 @@ Se a política for desativada, todas as integrações também serão.</translati
       Se o mesmo padrão de URL existir nesta política e na política <ph name="SENSORS_BLOCKED_FOR_URLS_POLICY_NAME" />, a segunda terá prioridade e o acesso a sensores de luz e movimento será bloqueado.
 
       Para informações detalhadas sobre padrões de <ph name="URL_LABEL" /> válidos, consulte https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. Caracteres curinga (<ph name="WILDCARD_VALUE" />) são permitidos.</translation>
+<translation id="9002299469625801504">Se esta política for ativada, a solicitação principal será bloqueada sempre que um aviso precisar ser
+mostrado no <ph name="DEV_TOOLS_NAME" /> devido a falhas nas verificações do <ph name="LOCAL_NETWORK_ACCCESS" />.
+
+Se ela for desativada ou deixada sem definição, as solicitações do <ph name="LOCAL_NETWORK_ACCESS" /> vão usar o
+gerenciamento padrão.
+
+Consulte as restrições do <ph name="LOCAL_NETWORK_ACCESS" /> em https://github.com/explainers-by-googlers/local-network-access (em inglês).</translation>
 <translation id="9003823644527627017">Configurar VMs da Bruschetta no <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="9004469022085379212">Se a política for definida como ativada, o dispositivo poderá executar máquinas virtuais no <ph name="PRODUCT_OS_NAME" />. <ph name="VIRTUAL_MACHINES_ALLOWED_POLICY_NAME" /> e <ph name="CROSTINI_ALLOWED_POLICY_NAME" /> precisam estar ativadas para usar o <ph name="PRODUCT_CROSTINI_NAME" />. Se a política for definida como desativada, o dispositivo não poderá executar máquinas virtuais. Se a definição for alterada para desativada, a política será aplicada para executar novas máquinas virtuais em vez das já existentes.
 

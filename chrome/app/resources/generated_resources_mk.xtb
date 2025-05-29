@@ -80,6 +80,7 @@
 <translation id="1049743911850919806">Инкогнито</translation>
 <translation id="1049795001945932310">&amp;Поставки за јазик</translation>
 <translation id="1050693411695664090">Слабо</translation>
+<translation id="1053226848101751430">Записот е избришан</translation>
 <translation id="1053898984916097744">Започнете нешто ново или добијте помош во текот на работата.</translation>
 <translation id="1054048317165655285">Завршето го поставувањето на телефонот</translation>
 <translation id="1054153489933238809">Отвори оригинална &amp;слика во нова картичка</translation>
@@ -2240,6 +2241,7 @@
 <translation id="2519250377986324805">Видете како</translation>
 <translation id="2519517390894391510">Име за профилот на сертификатот</translation>
 <translation id="2520644704042891903">Се чека достапен приклучок...</translation>
+<translation id="2520961587246779103">Повеќе опции за поделен приказ</translation>
 <translation id="2521427645491031107">Синхронизацијата на апликациите е поставена во поставките на уредот</translation>
 <translation id="2521835766824839541">претходна песна</translation>
 <translation id="2521854691574443804">Ја проверуваме <ph name="FILE_NAME" /> согласно безбедносните правила на организацијата…</translation>
@@ -3185,6 +3187,7 @@
 <translation id="3202578601642193415">Најново</translation>
 <translation id="3204648577100496185">Податоците поврзани со апликацијава можеби ќе се отстранат од уредов</translation>
 <translation id="3204717934117444051">Податоците што се зачувани само на уредов ќе останат во постојниот профил. Нема да се синхронизира со <ph name="EMAIL" /></translation>
+<translation id="3206289903841621620">Речник на корисникот <ph name="NUMBER" /></translation>
 <translation id="3207344462385471911">Гледате предложени пребарувања и попусти за купување што може да ве интересираат согласно со вашата последна активност.
         <ph name="BREAK" />
         <ph name="BREAK" />
@@ -9964,6 +9967,7 @@
 <translation id="8037801708772278989">Тукушто проверено</translation>
 <translation id="8038111231936746805">(стандардно)</translation>
 <translation id="8039151841428107077">{NUM_OF_FILES,plural, =1{Се копира 1 датотека во <ph name="CLOUD_PROVIDER" />}one{Се копираат {NUM_OF_FILES} датотека во <ph name="CLOUD_PROVIDER" />}other{Се копираат {NUM_OF_FILES} датотеки во <ph name="CLOUD_PROVIDER" />}}</translation>
+<translation id="8039525676147630657">Оваа апликација на Chrome веќе нема да функционира откако ќе се ажурира верзијата на ChromeOS. Зачувајте ги податоци од апликацијата што сакате да ги задржите. За да дознаете повеќе за вашите опции, контактирајте со програмерот на апликацијата или тимот за IT-поддршка.</translation>
 <translation id="8041089156583427627">Испратете повратни информации</translation>
 <translation id="8041093619605951337">Среќно</translation>
 <translation id="8041267120753677077">Стримувајте ги апликациите на телефонот</translation>
@@ -10016,6 +10020,7 @@
 <translation id="8073499153683482226"><ph name="BEGIN_PARAGRAPH1" />Податоците за апликации може да се секакви податоци што ги зачувала одредена апликација (според поставките на програмерот), вклучувајќи податоци како што се контактите, пораките и фотографиите.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Податоците од бекапот не се земаат предвид во квотата за складирање во Drive на вашето дете.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />Услугава може да ја исклучите во „Поставки“.<ph name="END_PARAGRAPH3" /></translation>
+<translation id="8075044377771022666">Подножје</translation>
 <translation id="8076835018653442223">Администраторот го оневозможил пристапот до локалните датотеки на вашиот уред</translation>
 <translation id="8077120325605624147">Секој сајт што го посетувате може да ви прикаже која било реклама</translation>
 <translation id="8077579734294125741">Други профили на Chrome</translation>
@@ -10954,6 +10959,7 @@
 <translation id="8729133765463465108">Употребете ја камерата за да го скенирате QR-кодот</translation>
 <translation id="8730621377337864115">Готово</translation>
 <translation id="8731029916209785242">Дозволи (<ph name="FORMATTED_ORIGIN" />)</translation>
+<translation id="8731258351357994801">Запис <ph name="NUMBER" /></translation>
 <translation id="8731268612289859741">Безбедносен код</translation>
 <translation id="8731629443331803108"><ph name="SITE_NAME" /> сака: <ph name="PERMISSION" /></translation>
 <translation id="8731787661154643562">Број на порта</translation>

@@ -239,6 +239,7 @@
 <translation id="4050175100176540509">Wichtige Sicherheitsverbesserungen und neue Funktionen sind in der aktuellen Version verfügbar.</translation>
 <translation id="4053720452172726777">Google Chrome anpassen und verwalten</translation>
 <translation id="408393047846373801">Wenn du auf allen deinen Geräten auf deine Passwörter und andere Daten zugreifen möchtest, melde dich in Chrome an. Dieses Passwort wird in deinem Google-Konto gespeichert, nachdem du dich angemeldet hast.</translation>
+<translation id="409936259433005390">Möchtest du bald auf Windows 11 upgraden? Dann lade das Installationsprogramm für Chrome auf OneDrive herunter, damit du schon am ersten Tag startklar bist.</translation>
 <translation id="4110895483821904099">Neues Chrome-Profil einrichten</translation>
 <translation id="4111566860456076004">Chrome kann nicht überprüfen, woher diese Erweiterung stammt. Sie könnte unsicher sein. Entferne sie aus Chrome, damit sie deine Daten auf von dir besuchten Websites nicht mehr abrufen oder ändern kann, auch nicht personenbezogene Daten.</translation>
 <translation id="4128488089242627000">Chrome wird schneller ausgeführt und JavaScript-Funktionen sollten wie vorgesehen funktionieren (empfohlen)</translation>
@@ -312,6 +313,7 @@
 <translation id="4970880042055371251">Chrome OS-Version</translation>
 <translation id="4990567037958725628">Google Chrome Canary</translation>
 <translation id="5003967926796347400">Klicke auf „Google Passwortmanager“</translation>
+<translation id="504867494566807945">Du kannst über jede App Links in Chrome öffnen. Außerdem wird Chrome für einen einfachen Zugriff an die Taskleiste angepinnt.</translation>
 <translation id="5114340746415930644">Gib deine Passphrase ein, um Chrome-Daten in deinem Konto <ph name="USER_EMAIL" /> zu verwenden und zu speichern</translation>
 <translation id="5120334927898581447">In Chrome anmelden, wenn du dich in anderen Google-Diensten anmeldest</translation>
 <translation id="5126049312684316860">Chrome lädt noch mehr Seiten vorab, die du wahrscheinlich besuchen wirst, sodass sie dann schneller zur Verfügung stehen</translation>
@@ -388,6 +390,7 @@
 <translation id="6075300983329039771">Deine Organisation (<ph name="MANAGER" />) verlangt, dass du dich in Chrome anmeldest</translation>
 <translation id="6113794647360055231">Chrome ist jetzt noch besser</translation>
 <translation id="6116252277240876590">In dieser Sprache werden Menüs, Einstellungen, Benachrichtigungen und andere Texte in Chrome angezeigt</translation>
+<translation id="6127237283587442951">Chrome standardmäßig verwenden und anpinnen</translation>
 <translation id="6134085236017727171">Wenn du dein Mikrofon verwenden möchtest, erlaube Chrome über die <ph name="BEGIN_LINK" />Systemeinstellungen<ph name="END_LINK" /> den Zugriff darauf</translation>
 <translation id="6135456723633883042">Diese Tabs verbrauchen zusätzliche Ressourcen. Du kannst die Leistung verbessern, wenn du zulässt, dass Chrome sie deaktiviert.</translation>
 <translation id="6145313976051292476">PDFs in Chrome öffnen</translation>
@@ -622,6 +625,7 @@
 <translation id="9090566250983691233">Gründe, warum Chrome einige Dateien blockiert</translation>
 <translation id="9106236359747881194">Einen Text für die Suche auswählen</translation>
 <translation id="911206726377975832">Auch die Browserdaten löschen?</translation>
+<translation id="9134482777260927479">Hilfe bei den Hausaufgaben</translation>
 <translation id="9138603949443464873">Starte Chrome neu, um die Änderungen zu übernehmen</translation>
 <translation id="9148058034647219655">Beenden</translation>
 <translation id="9195993889682885387">Chrome kann auf Grundlage deines Browserverlaufs der letzten Wochen deine Interessen schätzen. Diese Daten bleiben auf deinem Gerät.</translation>

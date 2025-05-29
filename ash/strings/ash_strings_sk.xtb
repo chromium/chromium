@@ -761,6 +761,7 @@ Ak to neurobíte, vstavaný touchpad sa znova aktivuje o <ph name="TIMEOUT_SECO
 <translation id="3552189655002856821">Pripojenie Wi‑Fi je vypnuté</translation>
 <translation id="3554215588514239132">Zobrazenie alebo skrytie panela s nástrojmi pre vývojárov</translation>
 <translation id="3554637740840164787">Položka <ph name="ITEM_TITLE" /> bola pripnutá</translation>
+<translation id="3554928024630051016">Ak chcete pridať ďalšie zariadenia USB, skúste jedno odpojiť a potom pripojiť nové</translation>
 <translation id="3558768885091059911">Chcete zapnúť prístup ku kamere a mikrofónu?</translation>
 <translation id="3560174576767922131">Nahrať video</translation>
 <translation id="3563775809269155755">Zapnutie hotspotu</translation>
@@ -868,6 +869,7 @@ Pripojte svoje zariadenie k napájaniu.</translation>
 <translation id="3861651314799684201">Celú obrazovku nahráte stlačením klávesa Enter</translation>
 <translation id="3870197372373144624">Skúste zariadenie vypnúť.</translation>
 <translation id="3879748587602334249">Správca sťahovania</translation>
+<translation id="3884007280698606545">Bol dosiahnutý limit zariadení USB</translation>
 <translation id="3886872229787704059">Otvorené dnes</translation>
 <translation id="3891340733213178823">Ak sa chcete odhlásiť, stlačte dvakrát kombináciu klávesov Ctrl+Shift+Q.</translation>
 <translation id="3892148308691398805">Kopírovať text</translation>

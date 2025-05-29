@@ -318,6 +318,7 @@
 <translation id="4970880042055371251">ເວີຊັນ ChromeOS</translation>
 <translation id="4990567037958725628">Google Chrome Canary</translation>
 <translation id="5003967926796347400">ຄລິກ “ຕົວຈັດການລະຫັດຜ່ານ Google”</translation>
+<translation id="504867494566807945">ເປີດລິ້ງໃນ Chrome ຈາກແອັບໃດກໍໄດ້. ພ້ອມທັງເພື່ອເຂົ້າເຖິງໄດ້ງ່າຍ, ມັນຈະຖືກປັກໝຸດໃສ່ແຖບໜ້າວຽກຂອງທ່ານ.</translation>
 <translation id="5114340746415930644">ໃສ່ລະຫັດຜ່ານຂອງທ່ານເພື່ອໃຊ້ ແລະ ບັນທຶກຂໍ້ມູນ Chrome ໃນບັນຊີຂອງທ່ານ, <ph name="USER_EMAIL" /></translation>
 <translation id="5120334927898581447">ເຂົ້າສູ່ລະບົບ Chrome ເມື່ອທ່ານເຂົ້າສູ່ລະບົບບໍລິການອື່ນໆຂອງ Google</translation>
 <translation id="5126049312684316860">Chrome ໂຫຼດໜ້າເວັບໄວ້ກ່ອນລ່ວງໜ້າເພີ່ມຫຼາຍຂຶ້ນສຳລັບໜ້າທີ່ທ່ານອາດຈະເຂົ້າເບິ່ງ, ເພື່ອໃຫ້ພວກມັນໂຫຼດໄວຂຶ້ນເມື່ອທ່ານເຂົ້າເບິ່ງ</translation>
@@ -398,6 +399,7 @@ Google Chrome ບໍ່ສາມາດກູ້ຄືນການຕັ້ງຄ
 <translation id="6075300983329039771">ອົງກອນຂອງທ່ານ, <ph name="MANAGER" />, ກຳນົດໃຫ້ທ່ານເຂົ້າສູ່ລະບົບ Chrome</translation>
 <translation id="6113794647360055231">Chrome ​ດີກ​ວ່າແລ້ວ</translation>
 <translation id="6116252277240876590">ລະບົບຈະໃຊ້ພາສານີ້ເພື່ອສະແດງເມນູ, ການຕັ້ງຄ່າ, ແຈ້ງເຕືອນ ແລະ ຂໍ້ຄວາມອື່ນໆໃນ Chrome</translation>
+<translation id="6127237283587442951">ໃຊ້ Chrome ເປັນຄ່າເລີ່ມຕົ້ນ ແລະ ປັກໝຸດມັນໄວ້</translation>
 <translation id="6134085236017727171">ເພື່ອໃຊ້ໄມໂຄຣໂຟນຂອງທ່ານ, ກະລຸນາມອບສິດເຂົ້າເຖິງໃຫ້ Chrome ໃນ <ph name="BEGIN_LINK" />ການຕັ້ງຄ່າລະບົບ<ph name="END_LINK" /></translation>
 <translation id="6135456723633883042">ແຖບເຫຼົ່ານີ້ໃຊ້ຊັບພະຍາກອນຫຼາຍເປັນພິເສດ. ເພື່ອປັບປຸງປະສິດທິພາບຂອງທ່ານ, ກະລຸນາໃຫ້ Chrome ຊ່ວຍປິດນຳໃຊ້ແຖບເຫຼົ່ານີ້.</translation>
 <translation id="6145313976051292476">ເປີດ PDF ໃນ Chrome</translation>
@@ -632,6 +634,7 @@ Google Chrome ບໍ່ສາມາດກູ້ຄືນການຕັ້ງຄ
 <translation id="9090566250983691233">ສຶກສາວ່າເປັນຫຍັງ Chrome ຈຶ່ງບລັອກໄຟລ໌ບາງລາຍການ</translation>
 <translation id="9106236359747881194">ເລືອກຂໍ້ຄວາມທີ່ຈະຊອກຫາ</translation>
 <translation id="911206726377975832">ລຶບຂໍ້ມູນການທ່ອງເນັດຂອງທ່ານນໍາບໍ?</translation>
+<translation id="9134482777260927479">ຄວາມຊ່ວຍເຫຼືອໃນການເຮັດວຽກບ້ານ</translation>
 <translation id="9138603949443464873">ເພື່ອນຳໃຊ້ການປ່ຽນແປງຂອງທ່ານ, ກະລຸນາເປີດ Chrome ຄືນໃໝ່</translation>
 <translation id="9148058034647219655">ອອກ</translation>
 <translation id="9195993889682885387">Chrome ສາມາດປະເມີນຄວາມສົນໃຈຂອງທ່ານໂດຍອ້າງອີງໃສ່ປະຫວັດການທ່ອງເວັບຈາກສອງສາມອາທິດທີ່ຜ່ານມາໄດ້. ຂໍ້ມູນນີ້ຈະຖືກຈັດເກັບໄວ້ຢູ່ອຸປະກອນຂອງທ່ານ.</translation>

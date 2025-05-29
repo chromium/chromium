@@ -175,6 +175,7 @@
 <translation id="7942349550061667556">赤</translation>
 <translation id="7961015016161918242">使用しない</translation>
 <translation id="7966321538264951561">提案を閉じます。</translation>
+<translation id="796696298310625748">{WINDOW_COUNT,plural, =1{タブを新しいウィンドウに移動}other{タブを別のウィンドウに移動}}</translation>
 <translation id="799469866974412355">他のデバイスで作成された新しいグループ</translation>
 <translation id="8029301326595421733">このショップに関する情報が画面全体に表示されています</translation>
 <translation id="8053770993984522566">タブグループのリストが画面の下半分に表示されています</translation>
@@ -196,6 +197,7 @@
 <translation id="8730621377337864115">完了</translation>
 <translation id="8730999928494395583">これらのシークレット タブでのアクティビティはこのデバイスから削除されます</translation>
 <translation id="875848103419578654">{NUM_MONTHS,plural, =1{<ph name="NUM_MONTHS_ONE" /> か月前に作成}other{<ph name="NUM_MONTHS_MANY" /> か月前に作成}}</translation>
+<translation id="8813708480179818649">グループからタブを削除</translation>
 <translation id="8820741577754260431">タブで値下げ情報を確認します</translation>
 <translation id="883379923675618699">3 か月間使用されていないセクションのアイテムを自動的に終了します。この設定は [設定] でいつでもオフにできます。</translation>
 <translation id="8887921976452567404">閉じたタブとグループは、[最近使ったタブ] と [タブグループ] で再度開くことができます。</translation>

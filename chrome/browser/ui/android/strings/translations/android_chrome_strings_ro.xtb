@@ -375,6 +375,7 @@ Numai un utilizator care deține expresia ta de acces îți poate citi datele cr
 <translation id="2718352093833049315">Numai prin Wi-Fi</translation>
 <translation id="2718846868787000099">Site-urile pe care le accesezi îți pot vedea preferințele pentru a afișa conținut în limbile tale preferate</translation>
 <translation id="2723001399770238859">audio</translation>
+<translation id="2734335652257251631">Afișează modul de lectură</translation>
 <translation id="2739887572830526131">Păstrează acest grup pentru a adăuga file mai târziu sau șterge-l dacă nu mai ai nevoie de el.</translation>
 <translation id="2742373789128106053">Momentan, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> nu este disponibil.</translation>
 <translation id="2760805590727089264">LL / AA</translation>
@@ -1744,6 +1745,7 @@ Pentru a modifica această setare, <ph name="BEGIN_LINK" />șterge datele Chrome
 <translation id="8676789164135894283">Confirmarea conectării</translation>
 <translation id="8683039184091909753">imagine</translation>
 <translation id="8688183792442786085"><ph name="TAB_TITLE" />, filă selectată</translation>
+<translation id="8693232767599693749">Vezi modul de lectură?</translation>
 <translation id="8697753151306746444">Permite accesul la fereastră sau ecran</translation>
 <translation id="869891660844655955">Dată de expirare</translation>
 <translation id="8699120352855309748">Nu oferi traducerea pentru aceste limbi</translation>

@@ -80,6 +80,7 @@
 <translation id="1049743911850919806">ছদ্মবেশী</translation>
 <translation id="1049795001945932310">&amp;ভাষা সেটিংস</translation>
 <translation id="1050693411695664090">দুর্বল</translation>
+<translation id="1053226848101751430">এন্ট্রি মোছা হয়েছে</translation>
 <translation id="1053898984916097744">নতুন কিছু শুরু করুন বা আগে থাকা কাজের ক্ষেত্রে সহায়তা পান।</translation>
 <translation id="1054048317165655285">আপনার ফোন সেট আপ করা সম্পূর্ণ করুন</translation>
 <translation id="1054153489933238809">নতুন ট্যাবে আসল ছবিটি খুলুন</translation>
@@ -2240,6 +2241,7 @@
 <translation id="2519250377986324805">কীভাবে করবেন দেখুন</translation>
 <translation id="2519517390894391510">সার্টিফিকেট প্রোফাইলের নাম</translation>
 <translation id="2520644704042891903">উপলব্ধ সকেটের জন্য অপেক্ষা করা হচ্ছে...</translation>
+<translation id="2520961587246779103">স্প্লিট ভিউয়ের আরও বিকল্প</translation>
 <translation id="2521427645491031107">অ্যাপ সিঙ্ক ডিভাইস সেটিংসে সেট করা হয়েছে</translation>
 <translation id="2521835766824839541">আগের ট্র্যাক</translation>
 <translation id="2521854691574443804">আপনার সংস্থার সুরক্ষা নীতি মেনে চলছে কিনা তা জানতে <ph name="FILE_NAME" /> চেক করা হচ্ছে…</translation>
@@ -3185,6 +3187,7 @@
 <translation id="3202578601642193415">নবীনতম</translation>
 <translation id="3204648577100496185">এই অ্যাপের ডেটাও হয়ত ডিভাইস থেকে মুছে যাবে</translation>
 <translation id="3204717934117444051">শুধুমাত্র এই ডিভাইসে সেভ করা ডেটা আগে থাকা প্রোফাইলে রয়ে যাবে। এটি <ph name="EMAIL" />-এর সাথে সিঙ্ক হবে না</translation>
+<translation id="3206289903841621620">ব্যবহারকারীর অভিধান <ph name="NUMBER" /></translation>
 <translation id="3207344462385471911">আপনার সাম্প্রতিক অ্যাক্টিভিটির ভিত্তিতে সাজেস্ট করা সার্চ ও কেনাকাটায় ছাড় দেখছেন যাতে আপনি আগ্রহী হতে পারেন।
         <ph name="BREAK" />
         <ph name="BREAK" />
@@ -9966,6 +9969,7 @@
 <translation id="8037801708772278989">এখনই চেক করা হয়েছে</translation>
 <translation id="8038111231936746805">(ডিফল্ট)</translation>
 <translation id="8039151841428107077">{NUM_OF_FILES,plural, =1{<ph name="CLOUD_PROVIDER" />-এ ১টি ফাইল কপি করা হচ্ছে}one{<ph name="CLOUD_PROVIDER" />-এ {NUM_OF_FILES}টি ফাইল কপি করা হচ্ছে}other{<ph name="CLOUD_PROVIDER" />-এ {NUM_OF_FILES}টি ফাইল কপি করা হচ্ছে}}</translation>
+<translation id="8039525676147630657">আপনার ChromeOS ভার্সন আপডেট করা হলে, এই Chrome অ্যাপ কাজ করা বন্ধ করে দেবে। সেইসব অ্যাপ ডেটা স্টোর করুন যেগুলি আপনি রেখে দিতে চান। আপনার বিকল্প সম্পর্কে জানতে, অ্যাপ ডেভেলপার বা আইটি সহায়তা টিমের সাথে যোগাযোগ করুন।</translation>
 <translation id="8041089156583427627">প্রতিক্রিয়া পাঠান</translation>
 <translation id="8041093619605951337">হ্যাপি</translation>
 <translation id="8041267120753677077">আপনার ফোনের অ্যাপ স্ট্রিম করুন</translation>
@@ -10018,6 +10022,7 @@
 <translation id="8073499153683482226"><ph name="BEGIN_PARAGRAPH1" />অ্যাপ ডেটা এমন যেকোনও ডেটা যা কোনও অ্যাপ (ডেভেলপারের সেটিংসের উপর ভিত্তি করে) সেভ করে রাখে যেমন - পরিচিতি, মেসেজ এবং ফটোর মতো ডেটা।<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />ব্যাক-আপ ডেটা আপনার সন্তানের ড্রাইভ স্টোরেজের কোটার মধ্যে ধরা হবে না।<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />সেটিংস থেকে আপনি এই পরিষেবাটি বন্ধ করতে পারেন।<ph name="END_PARAGRAPH3" /></translation>
+<translation id="8075044377771022666">ফুটার</translation>
 <translation id="8076835018653442223">আপনার অ্যাডমিনিস্ট্রেটরের মাধ্যমে আপনার ডিভাইসে স্থানীয় ফাইলের অ্যাক্সেস বন্ধ করা আছে</translation>
 <translation id="8077120325605624147">আপনি ভিজিট করেন এমন যেকোনও সাইট আপনাকে যেকোনও বিজ্ঞাপন দেখাতে পারে</translation>
 <translation id="8077579734294125741">অন্যান্য Chrome প্রোফাইল</translation>
@@ -10953,6 +10958,7 @@
 <translation id="8729133765463465108">QR কোড স্ক্যান করতে ক্যামেরা ব্যবহার করুন</translation>
 <translation id="8730621377337864115">হয়ে গেছে</translation>
 <translation id="8731029916209785242">অনুমতি (<ph name="FORMATTED_ORIGIN" />)</translation>
+<translation id="8731258351357994801"><ph name="NUMBER" /> নম্বর এন্ট্রি</translation>
 <translation id="8731268612289859741">সিকিউরিটি কোড</translation>
 <translation id="8731629443331803108"><ph name="SITE_NAME" /> এর জন্য অনুমতি চায়: <ph name="PERMISSION" /></translation>
 <translation id="8731787661154643562">পোর্ট নম্বর</translation>

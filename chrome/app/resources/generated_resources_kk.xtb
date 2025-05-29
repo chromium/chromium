@@ -80,6 +80,7 @@
 <translation id="1049743911850919806">Инкогнито</translation>
 <translation id="1049795001945932310">&amp;Тіл параметрлері</translation>
 <translation id="1050693411695664090">Нашар</translation>
+<translation id="1053226848101751430">Жазба жойылды</translation>
 <translation id="1053898984916097744">Жаңа нәрсе бастаңыз немесе жұмыс барысында көмек алыңыз.</translation>
 <translation id="1054048317165655285">Телефоныңыздағы реттеуді аяқтаңыз</translation>
 <translation id="1054153489933238809">Жаңа қойындыда түпнұсқалық &amp;кескінді ашу</translation>
@@ -1799,6 +1800,7 @@
 <translation id="2249111429176737533">Қойындысы бар терезе етіп ашу</translation>
 <translation id="2249605167705922988">мысалы, 1-5, 8, 11-13</translation>
 <translation id="2249635629516220541">Жарнамаларыңызды көрсету үшін сайттар пайдаланатын ақпаратты бейімдеу</translation>
+<translation id="2250153645770828940">Сөздікті жою</translation>
 <translation id="22505994009453896">Тінтуір курсорын сандық пернетақтамен басқарыңыз</translation>
 <translation id="2250624716625396929">Бұл қойынды камераңыз бен микрофоныңызды пайдаланып жатыр</translation>
 <translation id="2251218783371366160">Жүйелік көру құралымен ашу</translation>
@@ -2223,6 +2225,7 @@
 <translation id="2519250377986324805">Қалай жасалатынын көру</translation>
 <translation id="2519517390894391510">Сертификат профилінің атауы</translation>
 <translation id="2520644704042891903">Қолжетімді ұяшық күтілуде…</translation>
+<translation id="2520961587246779103">Бөлінген көріністің басқа опциялары</translation>
 <translation id="2521427645491031107">Құрылғы параметрлерінде қолданбаларды синхрондау орнатылған</translation>
 <translation id="2521835766824839541">алдыңғы трек</translation>
 <translation id="2521854691574443804"><ph name="FILE_NAME" /> файлының ұйымның қауіпсіздік саясаттарына сәйкес келетіні тексерілуде...</translation>
@@ -3166,6 +3169,7 @@
 <translation id="3202578601642193415">Ең жаңа</translation>
 <translation id="3204648577100496185">Бұл қолданбамен байланыстырылған деректер осы құрылғыдан өшірілуі мүмкін.</translation>
 <translation id="3204717934117444051">Тек осы құрылғыда сақталған деректер қолданыстағы профильде қалады. Ол <ph name="EMAIL" /> электрондық поштасымен синхрондалмайды.</translation>
+<translation id="3206289903841621620">Пайдаланушы сөздігі <ph name="NUMBER" /></translation>
 <translation id="3207344462385471911">Соңғы іс-әрекеттеріңізге байланысты сізді қызықтыруы мүмкін ұсынылған іздеулер мен сатып алу жеңілдіктерін көріп тұрсыз.
         <ph name="BREAK" />
         <ph name="BREAK" />
@@ -9937,6 +9941,7 @@
 <translation id="8037801708772278989">Жаңа ғана тексерілді</translation>
 <translation id="8038111231936746805">(әдепкі)</translation>
 <translation id="8039151841428107077">{NUM_OF_FILES,plural, =1{1 файл <ph name="CLOUD_PROVIDER" /> қызметіне көшіріліп жатыр}other{{NUM_OF_FILES} файл <ph name="CLOUD_PROVIDER" /> қызметіне көшіріліп жатыр}}</translation>
+<translation id="8039525676147630657">ChromeOS нұсқасы жаңартылғаннан кейін, бұл Chrome қолданбасы жұмыс істемейтін болады. Қалдырғыңыз келетін қолданба деректерін сақтаңыз. Қолжетімді опциялар туралы ақпарат алу үшін қолданба әзірлеушісіне немесе АТ қолдау көрсету ұжымына хабарласыңыз.</translation>
 <translation id="8041089156583427627">Пікір жіберу</translation>
 <translation id="8041093619605951337">Бақытты</translation>
 <translation id="8041267120753677077">Телефондағы қолданбаларды трансляциялау</translation>
@@ -9989,6 +9994,7 @@
 <translation id="8073499153683482226"><ph name="BEGIN_PARAGRAPH1" />Қолданба деректеріне контактілер, хабарлар және фотосуреттер сияқты қолданба сақтаған (әзірлеуші параметрлеріне байланысты) кез келген дерек жатуы мүмкін.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Сақтық көшірме деректері балаңыздың Drive жадынан орын алмайды.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />Бұл қызметті "Параметрлер" бөлімінен өшіруге болады.<ph name="END_PARAGRAPH3" /></translation>
+<translation id="8075044377771022666">Төменгі деректеме</translation>
 <translation id="8076835018653442223">Әкімші құрылғыңызда жергілікті файлдарға кіруге тыйым салған</translation>
 <translation id="8077120325605624147">Сіз кірген кез келген сайт сізге кез келген жарнаманы көрсете алады</translation>
 <translation id="8077579734294125741">Chrome басқа профильдері</translation>
@@ -10924,6 +10930,7 @@
 <translation id="8729133765463465108">QR кодын сканерлеу үшін камераны пайдалану</translation>
 <translation id="8730621377337864115">Дайын</translation>
 <translation id="8731029916209785242">Рұқсаттар (<ph name="FORMATTED_ORIGIN" />)</translation>
+<translation id="8731258351357994801"><ph name="NUMBER" />-жазба</translation>
 <translation id="8731268612289859741">Қауіпсіздік коды</translation>
 <translation id="8731629443331803108"><ph name="SITE_NAME" /> сайтына келесі рұқсаттар қажет: <ph name="PERMISSION" /></translation>
 <translation id="8731787661154643562">Порт нөмірі</translation>

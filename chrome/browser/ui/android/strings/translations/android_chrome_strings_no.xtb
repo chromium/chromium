@@ -375,6 +375,7 @@ Bare personer som har passordfrasen din, kan lese de krypterte dataene. Passordf
 <translation id="2718352093833049315">Bare når Wifi er på</translation>
 <translation id="2718846868787000099">For å kunne vise innhold på språkene du foretrekker, kan nettstedene du besøker, se preferansene dine</translation>
 <translation id="2723001399770238859">lyd</translation>
+<translation id="2734335652257251631">Vis lesemodus</translation>
 <translation id="2739887572830526131">Behold denne gruppen for å legge til faner senere, eller slett den hvis du ikke trenger den lenger.</translation>
 <translation id="2742373789128106053"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> er ikke tilgjengelig akkurat nå.</translation>
 <translation id="2760805590727089264">MM/ÅÅ</translation>
@@ -1439,6 +1440,7 @@ For å endre denne innstillingen, <ph name="BEGIN_LINK" />slett Chrome-dataene i
 <translation id="7431991332293347422">Kontroller hvordan nettleserloggen din brukes til blant annet personlig tilpasning av søk</translation>
 <translation id="7435356471928173109">Slått av av administratoren din</translation>
 <translation id="7437998757836447326">Logg av Chrome</translation>
+<translation id="7439467816829380878">Flytt fanen til en gruppe</translation>
 <translation id="7453810262525006706">Skjul til sidevisning</translation>
 <translation id="7454641608352164238">Det er ikke nok plass</translation>
 <translation id="7454744349230173024">Organisasjonen din har slått av lagring av passord</translation>
@@ -1744,6 +1746,7 @@ For å endre denne innstillingen, <ph name="BEGIN_LINK" />slett Chrome-dataene i
 <translation id="8676789164135894283">Påloggingsbekreftelser</translation>
 <translation id="8683039184091909753">bilde</translation>
 <translation id="8688183792442786085"><ph name="TAB_TITLE" /> – valgt fane</translation>
+<translation id="8693232767599693749">Vil du se lesemodusen?</translation>
 <translation id="8697753151306746444">Del vinduet eller skjermen i stedet</translation>
 <translation id="869891660844655955">Utløpsdato</translation>
 <translation id="8699120352855309748">Ikke tilby å oversette disse språkene</translation>
@@ -1813,6 +1816,7 @@ For å endre denne innstillingen, <ph name="BEGIN_LINK" />slett Chrome-dataene i
 <translation id="9019199799064251516">Vil du fortsette uten profillås for bilen?</translation>
 <translation id="9022774213089566801">Ofte besøkte</translation>
 <translation id="9022871169049522985">Nettsteder og annonsører kan måle annonseresultater sine</translation>
+<translation id="9027728231343310283">Angre <ph name="SITE" /></translation>
 <translation id="9035378196785279980">Flytt til\u2026</translation>
 <translation id="9042893549633094279">Personvern og sikkerhet</translation>
 <translation id="9047347135558855162">Start et søk raskt i Chrome</translation>

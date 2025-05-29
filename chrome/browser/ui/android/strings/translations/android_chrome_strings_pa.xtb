@@ -375,6 +375,7 @@
 <translation id="2718352093833049315">ਕੇਵਲ ਵਾਈ-ਫਾਈ 'ਤੇ</translation>
 <translation id="2718846868787000099">ਤੁਹਾਡੀਆਂ ਤਰਜੀਹੀ ਭਾਸ਼ਾਵਾਂ ਵਿੱਚ ਸਮੱਗਰੀ ਦਿਖਾਉਣ ਲਈ, ਤੁਹਾਡੇ ਵੱਲੋਂ ਦੇਖੀਆਂ ਜਾਣ ਵਾਲੀਆਂ ਸਾਈਟਾਂ ਤੁਹਾਡੀਆਂ ਤਰਜੀਹਾਂ ਨੂੰ ਦੇਖ ਸਕਦੀਆਂ ਹਨ</translation>
 <translation id="2723001399770238859">ਆਡੀਓ</translation>
+<translation id="2734335652257251631">ਪੜ੍ਹਨ ਸੰਬੰਧੀ ਮੋਡ ਦਿਖਾਓ</translation>
 <translation id="2739887572830526131">ਬਾਅਦ ਵਿੱਚ ਟੈਬਾਂ ਸ਼ਾਮਲ ਕਰਨ ਲਈ, ਇਸ ਗਰੁੱਪ ਨੂੰ ਬਣਾਈ ਰੱਖੋ ਜਾਂ ਜੇ ਤੁਹਾਨੂੰ ਇਸਦੀ ਲੋੜ ਨਹੀਂ ਹੈ, ਤਾਂ ਇਸ ਨੂੰ ਮਿਟਾਓ।</translation>
 <translation id="2742373789128106053">ਫ਼ਿਲਹਾਲ <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ਉਪਲਬਧ ਨਹੀਂ ਹੈ।</translation>
 <translation id="2760805590727089264">MM / YY</translation>
@@ -1744,6 +1745,7 @@
 <translation id="8676789164135894283">ਸਾਈਨ-ਇਨ ਲਈ ਪੁਸ਼ਟੀਕਰਨ</translation>
 <translation id="8683039184091909753">ਚਿੱਤਰ</translation>
 <translation id="8688183792442786085"><ph name="TAB_TITLE" />, ਚੁਣੀ ਗਈ ਟੈਬ</translation>
+<translation id="8693232767599693749">ਕੀ ਪੜ੍ਹਨ ਸੰਬੰਧੀ ਮੋਡ ਦੇਖਣਾ ਹੈ?</translation>
 <translation id="8697753151306746444">ਇਸਦੀ ਬਜਾਏ ਵਿੰਡੋ ਜਾਂ ਸਕ੍ਰੀਨ ਨੂੰ ਸਾਂਝਾ ਕਰੋ</translation>
 <translation id="869891660844655955">ਮਿਆਦ ਪੁੱਗਣ ਦੀ ਤਾਰੀਖ</translation>
 <translation id="8699120352855309748">ਇਹਨਾਂ ਭਾਸ਼ਾਵਾਂ ਦਾ ਅਨੁਵਾਦ ਕਰਨ ਦੀ ਪੇਸ਼ਕਸ਼ ਨਾ ਕਰੋ</translation>
@@ -1813,6 +1815,7 @@
 <translation id="9019199799064251516">ਕੀ ਕਾਰ ਪ੍ਰੋਫਾਈਲ ਲਾਕ ਤੋਂ ਬਿਨਾਂ ਜਾਰੀ ਰੱਖਣਾ ਹੈ?</translation>
 <translation id="9022774213089566801">ਅਕਸਰ ਦੇਖੀਆਂ ਜਾਣ ਵਾਲੀਆਂ</translation>
 <translation id="9022871169049522985">ਸਾਈਟਾਂ ਅਤੇ ਵਿਗਿਆਪਨਦਾਤਾ ਆਪਣੇ ਵਿਗਿਆਪਨਾਂ ਦੀ ਕਾਰਗੁਜ਼ਾਰੀ ਨੂੰ ਮਾਪ ਸਕਦੇ ਹਨ</translation>
+<translation id="9027728231343310283"><ph name="SITE" /> ਨੂੰ ਅਣਕੀਤਾ ਕਰੋ</translation>
 <translation id="9035378196785279980">ਇੱਥੇ ਲਿਜਾਓ\u2026</translation>
 <translation id="9042893549633094279">ਪਰਦੇਦਾਰੀ ਅਤੇ ਸੁਰੱਖਿਆ</translation>
 <translation id="9047347135558855162">Chrome ਵਿੱਚ ਤੇਜ਼ੀ ਨਾਲ ਖੋਜ ਸ਼ੁਰੂ ਕਰੋ</translation>

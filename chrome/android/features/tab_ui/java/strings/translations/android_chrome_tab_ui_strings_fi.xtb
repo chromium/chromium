@@ -175,6 +175,7 @@
 <translation id="7942349550061667556">Punainen</translation>
 <translation id="7961015016161918242">Ei koskaan</translation>
 <translation id="7966321538264951561">Ohita ehdotukset.</translation>
+<translation id="796696298310625748">{WINDOW_COUNT,plural, =1{Siirrä välilehti uuteen ikkunaan}other{Siirrä välilehdet toiseen ikkunaan}}</translation>
 <translation id="799469866974412355">Uusi ryhmä toiselta laitteelta</translation>
 <translation id="8029301326595421733">"Tietoja tästä kaupasta" avattu koko näytön kokoisena</translation>
 <translation id="8053770993984522566">Välilehtiryhmälista avattu puoliksi</translation>
@@ -196,6 +197,7 @@
 <translation id="8730621377337864115">Valmis</translation>
 <translation id="8730999928494395583">Toimintasi näillä incognito-välilehdillä poistetaan laitteelta</translation>
 <translation id="875848103419578654">{NUM_MONTHS,plural, =1{Luotu <ph name="NUM_MONTHS_ONE" /> kuukausi sitten}other{Luotu <ph name="NUM_MONTHS_MANY" /> kuukautta sitten}}</translation>
+<translation id="8813708480179818649">Poista välilehti ryhmästä</translation>
 <translation id="8820741577754260431">Katso hinnanalennukset välilehdiltä</translation>
 <translation id="883379923675618699">Chrome sulkee automaattisesti ei-aktiivisen osion kohteet, joita et ole käyttänyt kolmeen kuukauteen. Voit laittaa tämän pois päältä nyt tai milloin tahansa asetuksista.</translation>
 <translation id="8887921976452567404">Suljetut välilehdet ja ryhmät voi avata uudelleen Viimeaikaiset välilehdet‑ ja Välilehtiryhmät-osioista.</translation>

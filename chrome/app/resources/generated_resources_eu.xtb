@@ -80,6 +80,7 @@
 <translation id="1049743911850919806">Ezkutuko modua</translation>
 <translation id="1049795001945932310">&amp;Hizkuntza-ezarpenak</translation>
 <translation id="1050693411695664090">txarra</translation>
+<translation id="1053226848101751430">Ezabatu da sarrera</translation>
 <translation id="1053898984916097744">Hasi zerbait berria edo jaso laguntza prozesuan.</translation>
 <translation id="1054048317165655285">Amaitu konfigurazioa telefonoan</translation>
 <translation id="1054153489933238809">Ireki jatorrizko &amp;irudia beste fitxa batean</translation>
@@ -2226,6 +2227,7 @@ Voice Match-ekin, Google-ren Laguntzailea zerbitzuak <ph name="SUPERVISED_USER_N
 <translation id="2519250377986324805">Ikusi nola</translation>
 <translation id="2519517390894391510">Ziurtagiriaren profilaren izena</translation>
 <translation id="2520644704042891903">Socket bat erabilgarri egoteko zain…</translation>
+<translation id="2520961587246779103">Ikuspegi zatituaren aukera gehiago</translation>
 <translation id="2521427645491031107">Aplikazioen sinkronizazioa gailuaren ezarpenetan ezartzen da</translation>
 <translation id="2521835766824839541">aurreko pista</translation>
 <translation id="2521854691574443804"><ph name="FILE_NAME" /> zure erakundeko segurtasun-gidalerroekin egiaztatzen…</translation>
@@ -3169,6 +3171,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="3202578601642193415">Berrienak</translation>
 <translation id="3204648577100496185">Aplikazio honekin erlazionatutako datu guztiak kenduko dira gailu honetatik</translation>
 <translation id="3204717934117444051">Gailu honetan bakarrik gordetzen diren datuak oraingo profilean geldituko dira. Ez dira sinkronizatuko <ph name="EMAIL" /> helbide elektronikoarekin.</translation>
+<translation id="3206289903841621620">Erabiltzailearen hiztegia <ph name="NUMBER" /></translation>
 <translation id="3207344462385471911">Azkenaldiko jardueren arabera agian interesatzen zaizkizun bilaketen iradokizunak eta erosketetarako deskontuak dituzu ikusgai.
         <ph name="BREAK" />
         <ph name="BREAK" />
@@ -9940,6 +9943,7 @@ Gorde gakoen fitxategia leku seguru batean. Zure luzapenaren bertsio berriak sor
 <translation id="8037801708772278989">Oraintxe bertan egiaztatu da</translation>
 <translation id="8038111231936746805">(lehenetsia)</translation>
 <translation id="8039151841428107077">{NUM_OF_FILES,plural, =1{1 fitxategi <ph name="CLOUD_PROVIDER" />-n kopiatzen}other{{NUM_OF_FILES} fitxategi <ph name="CLOUD_PROVIDER" />-n kopiatzen}}</translation>
+<translation id="8039525676147630657">Chrome-ren aplikazio honek funtzionatzeari utziko dio ChromeOS-en bertsioa eguneratzen denean. Gorde mantendu nahi dituzun aplikazioko datuak. Dauzkazun aukerak ezagutzeko, jarri aplikazioaren garatzailearekin edo zure IKT saileko laguntza-taldearekin harremanetan.</translation>
 <translation id="8041089156583427627">Bidali oharrak</translation>
 <translation id="8041093619605951337">Pozik</translation>
 <translation id="8041267120753677077">Igorri zuzenean telefonoko aplikazioak</translation>
@@ -9992,6 +9996,7 @@ Gorde gakoen fitxategia leku seguru batean. Zure luzapenaren bertsio berriak sor
 <translation id="8073499153683482226"><ph name="BEGIN_PARAGRAPH1" />Aplikazioek gordetako datu guztiak sartzen dira aplikazioetako datuetan (garatzaileen ezarpenen arabera), kontaktuak, mezuak eta argazkiak barne.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Babeskopiek ez dute hartzen tokirik zure haurraren Drive-n.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />Ezarpenak atalean desaktiba dezakezu zerbitzu hori.<ph name="END_PARAGRAPH3" /></translation>
+<translation id="8075044377771022666">Orri-oina</translation>
 <translation id="8076835018653442223">Administratzaileak zure gailuko fitxategi lokaletarako sarbidea blokeatu du</translation>
 <translation id="8077120325605624147">Bisitatzen dituzun webgune guztiek edozein iragarki erakusteko aukera dute</translation>
 <translation id="8077579734294125741">Chrome-ko beste profilak</translation>
@@ -10927,6 +10932,7 @@ Gorde gakoen fitxategia leku seguru batean. Zure luzapenaren bertsio berriak sor
 <translation id="8729133765463465108">Erabili kamera QR kodea eskaneatzeko</translation>
 <translation id="8730621377337864115">Eginda</translation>
 <translation id="8731029916209785242">Baimenak (<ph name="FORMATTED_ORIGIN" />)</translation>
+<translation id="8731258351357994801"><ph name="NUMBER" />. sarrera</translation>
 <translation id="8731268612289859741">Segurtasun-kodea</translation>
 <translation id="8731629443331803108"><ph name="SITE_NAME" /> webguneak honetarako baimena nahi du: <ph name="PERMISSION" /></translation>
 <translation id="8731787661154643562">Ataka-zenbakia</translation>

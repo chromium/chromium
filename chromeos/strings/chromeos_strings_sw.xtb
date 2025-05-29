@@ -206,6 +206,7 @@
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1758459542619182298"><ph name="CONTROL_TYPE" /> <ph name="KEY_LIST" /></translation>
 <translation id="1759842336958782510">Chrome</translation>
+<translation id="1762353673362288306">Sasa unaweza tu kutumia Zana za Darasani</translation>
 <translation id="1762483337755424125">Manukuu</translation>
 <translation id="1765169783255151332">Badilisha funguo haraka</translation>
 <translation id="1768959921651994223">Aina ya uthibitishaji</translation>
@@ -220,6 +221,7 @@
 <translation id="181434555916624618">Kwa sasa, matokeo yenye picha za watu hayataonyeshwa. Jaribu kidokezo kingine.</translation>
 <translation id="1815850098929213707">Kitufe kilichochaguliwa ni <ph name="KEYS" />. Gusa kitufe ili ubadilishe kidhibiti</translation>
 <translation id="1818174214124933000">Ukichagua 'tuma', maoni na maudhui yako (yaliyoonyeshwa hapa chini) yatatumwa kwa Google, yakaguliwe na wahakiki wanadamu na kutumiwa kufunza au kuboresha bidhaa na huduma zetu kulingana na <ph name="LINK_POLICY_BEGIN" />Sera ya Faragha<ph name="LINK_POLICY_END" /> na <ph name="LINK_TERMS_OF_SERVICE_BEGIN" />Sheria na Masharti ya Google<ph name="LINK_TERMS_OF_SERVICE_END" />.</translation>
+<translation id="1821075635029692203">Mwalimu wako ametuma wenzo usiotumika. Mfahamishe.</translation>
 <translation id="1823120442877418684">Herufi</translation>
 <translation id="1827738518074806965">Matunzio ya sanaa</translation>
 <translation id="183287940576828840">Ni ya kukera au Si salama</translation>
@@ -476,6 +478,7 @@
 <translation id="3091839911843451378">Haijakamilika - Imesimamisha</translation>
 <translation id="3102119246920354026">Akiba</translation>
 <translation id="3103783611481501187">picha ya ajabu</translation>
+<translation id="3119672627216736407">Tafsiri inapatikana</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3122614491980756867">madimbwi</translation>
 <translation id="3122883569442693641">Maelezo zaidi</translation>
@@ -1136,6 +1139,7 @@
 <translation id="6058625436358447366">Ili ukamilishe, weka nenosiri lako la awali na lile jipya</translation>
 <translation id="6061772781719867950">Maombi ya HTTP hayakutumwa</translation>
 <translation id="6073292342939316679">kupunguza mwangaza wa kibodi</translation>
+<translation id="6074608334942655098">Acha kutafsiri</translation>
 <translation id="6074752328838739425">Ficha muhtasari</translation>
 <translation id="6075872808778243331">Muda wa Kusubiri Maombi ya HTTP (Android)</translation>
 <translation id="6078323886959318429">Ongeza njia ya mkato</translation>
@@ -1613,6 +1617,7 @@ Pakua mfumo wa unukuzi (hadi MB 100) ili upate manukuu haya.</translation>
 <translation id="8088963492174775412">Bonyeza ili urekodi</translation>
 <translation id="8094062939584182041">Ruhusu Google ikutumie barua pepe kuhusu hitilafu hii</translation>
 <translation id="8104083085214006426">Unatumia mtandao usio salama unaoweza kutumiwa na mtu yeyote</translation>
+<translation id="8108879170356113798">Utaweza tu kutumia Zana za Darasani ndani ya sekunde <ph name="NUM_SECONDS" /></translation>
 <translation id="811820734797650957">Lango linaweza Kuitwa (Android)</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8131740175452115882">Thibitisha</translation>

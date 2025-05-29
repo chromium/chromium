@@ -375,6 +375,7 @@ Vaše šifrirane podatke lahko bere samo oseba, ki ima vaše geslo. Geslo ni pos
 <translation id="2718352093833049315">Samo v omrežju Wi-Fi</translation>
 <translation id="2718846868787000099">Če želite prikazati vsebino v prednostnih jezikih, lahko spletna mesta, ki jih obiščete, vidijo vaše nastavitve.</translation>
 <translation id="2723001399770238859">zvok</translation>
+<translation id="2734335652257251631">Prikaži način za branje</translation>
 <translation id="2739887572830526131">Ohranite to skupino, če želite pozneje dodati zavihke, ali jo izbrišite, če je ne potrebujete več.</translation>
 <translation id="2742373789128106053">Ponudnik identitete <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> trenutno ni na voljo.</translation>
 <translation id="2760805590727089264">MM/LL</translation>
@@ -1744,6 +1745,7 @@ Nekatera spletna mesta se lahko na primer na zahtevo odzovejo tako, da prikažej
 <translation id="8676789164135894283">Preverjanja prijave</translation>
 <translation id="8683039184091909753">slika</translation>
 <translation id="8688183792442786085"><ph name="TAB_TITLE" />, izbrani zavihek</translation>
+<translation id="8693232767599693749">Si želite ogledati način za branje?</translation>
 <translation id="8697753151306746444">Namesto tega delite okno ali zaslon</translation>
 <translation id="869891660844655955">Datum izteka</translation>
 <translation id="8699120352855309748">Ne ponudi prevajanja teh jezikov</translation>

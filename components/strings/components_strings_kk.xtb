@@ -367,6 +367,7 @@
 <translation id="1612199629998703524">Тақырыптарды басқару</translation>
 <translation id="1615178538289490617"><ph name="PORT_NAME" /> портына кіру рұқсатын қайтару</translation>
 <translation id="1615402009686901181">Құпия контент көрініп тұрғанда, әкімші саясаты экранды түсіру функциясын өшіреді.</translation>
+<translation id="161612500287664753">Google Search-тен осы бет жайында сұрау</translation>
 <translation id="1617276713587758852">Кроссоверлер</translation>
 <translation id="1619007254056372606">Құрылғыдағы сайт деректерін реттеу</translation>
 <translation id="1619648179761984213"><ph name="USER_DISPLAY_NAME" /> қойындыны өшірді.</translation>
@@ -636,6 +637,7 @@
 <translation id="2088913896151127116">Мәтін қосу</translation>
 <translation id="2090451897496479509">Толық ақпарат алу үшін провайдерге хабарласыңыз.</translation>
 <translation id="2091887806945687916">Дыбыс</translation>
+<translation id="2093184051799735948"><ph name="ENGINE_NAME" /> арқылы іздеңіз немесе URL теріңіз</translation>
 <translation id="2093982008204312032">Google Chrome құпия сөздерді толтыру үшін Windows Hello технологиясын өшіргісі келеді.</translation>
 <translation id="2094505752054353250">Домен сәйкессіздігі</translation>
 <translation id="2094704029599359040">Нұсқасы туралы ақпарат</translation>
@@ -770,6 +772,7 @@
 <translation id="2296331629987861142">Бөліп төлейсіз (талаптарға сай болуы керек, комиссия алынады).</translation>
 <translation id="2300306941146563769">Жүктеп салынбады</translation>
 <translation id="2301098101308036335">Веб-сайттарға біреу кіргені және қашан кіргені.</translation>
+<translation id="2302571905116831849">Тұрақты клиент картасын автоматты түрде толтыру</translation>
 <translation id="230286397113210245">"Инкогнито терезесін ашу" түймесі, құпия шолу мақсатында жаңа инкогнито терезесін ашу үшін белсендіріңіз</translation>
 <translation id="2305294852062272447">Жүргізуші куәлігін сақтау керек пе?</translation>
 <translation id="2306124309679506798">Иммерсивті тәжірибеге рұқсат беру қажет пе?</translation>
@@ -1505,6 +1508,7 @@
 <translation id="3586931643579894722">Мәліметтерді жасыру</translation>
 <translation id="3587725436724465984">Ұйымыңыз <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> сайтының саясатты бұзуы мүмкін екенін анықтады. <ph name="BEGIN_LEARN_MORE_LINK" />Бұл ескерту туралы толық ақпарат<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3587738293690942763">Ортасы</translation>
+<translation id="3589519427766620380">Google Lens-ден осы бет жайында сұрау</translation>
 <translation id="3596918995172292499">Нөмірлік белгі тіркелген аймақ</translation>
 <translation id="3600106876108433070">Салыстыру кестелері туралы ақпарат</translation>
 <translation id="3600246354004376029"><ph name="TITLE" />, <ph name="DOMAIN" />, <ph name="TIME" /></translation>
@@ -2445,6 +2449,7 @@
 <translation id="519422657042045905">Аннотация жоқ</translation>
 <translation id="5200063972779787617">Мекенжайды аккаунтқа сақтау</translation>
 <translation id="5201306358585911203">Бұл веббетке ендірілген беттегі сұрау</translation>
+<translation id="5203716867500274632">Әкімші келесі деректерді ChromeOS құрылғыларындағы алдыңғы және ағымдағы сеанстар арасында синхрондауды қосты:</translation>
 <translation id="5205114269877707377"><ph name="OMNIBOX_ACTION_FOCUSED_FRIENDLY_MATCH_TEXT" />, қолжетімді әрекеттерді шолу үшін Tab пернесін басып, таңдалған әрекетті орындау үшін Enter пернесін басыңыз.</translation>
 <translation id="5205222826937269299">Аты қажет</translation>
 <translation id="5206392433295093945">Жатын бөлме</translation>
@@ -2604,6 +2609,7 @@
 <translation id="5472588168895083535">Қолды бақылау функциясы блокталды</translation>
 <translation id="547963486735802022">Файлдарды қайта тасымалдап көріңіз</translation>
 <translation id="5481076368049295676">Бұл контент құрылғыңызға ақпаратыңызды ұрлайтын не жоятын қауіпті бағдарламалық құралды орнатуы мүмкін. <ph name="BEGIN_LINK" />Бәрібір көрсету<ph name="END_LINK" /></translation>
+<translation id="5481604577800516617">Терезелер мен қойындыларды реттеу</translation>
 <translation id="5481682542063333508">Жазу бойынша көмек беру</translation>
 <translation id="54817484435770891">Жарамды мекенжайды енгізу</translation>
 <translation id="5483838506518938965">Барлығы дайын</translation>
@@ -3439,6 +3445,7 @@
 <translation id="6925267999184670015">Солтүстік Америка B+</translation>
 <translation id="6926216138694948720">Денені безендіру өнері</translation>
 <translation id="692638818576287323">Коммерциялық көліктер</translation>
+<translation id="6930607614725241390">Бүйірлік панельден іздеу</translation>
 <translation id="6934236486840930310"><ph name="BEGIN_BOLD" />Әдепкі іздеу жүйесі интернеттен іздеуге мүмкіндік береді және Chrome функцияларының (мысалы, мекенжай жолағынан және веб-беттердегі кескіндерден іздеу) жұмысын қамтамасыз етеді.<ph name="END_BOLD" /> Іздеу жүйесі қолдау көрсетпесе, функция қолжетімді болмауы мүмкін.</translation>
 <translation id="6934672428414710184">Бұл атау Google аккаунтыңызда бар.</translation>
 <translation id="6935077351544118151">Енді тұрақты клиент карталарын Google Wallet-тен автоматты түрде толтыруға болады</translation>
@@ -4277,6 +4284,7 @@
 <translation id="8352849934814541340">Бұл құрылғының әкімшісі қосымша функциялар үшін қолданбалар орнатты. Қолданбалар кейбір деректерді пайдалана алады.</translation>
 <translation id="8355270400102541638">Пайдаланушы компьютеріндегі жаңылыс мәнмәтіні:</translation>
 <translation id="8363502534493474904">Ұшақ режимін сөндіру</translation>
+<translation id="8363929499301563123">Веб-сайттың cookie файлдары (соңғы кірген веб-сайттардағы аккаунтқа кірген күй сақталады)</translation>
 <translation id="8364627913115013041">Орнатылмаған.</translation>
 <translation id="8366057325711477500">Әлем жаңалықтары</translation>
 <translation id="836616551641291797">Браузеріңізді басқару жолы туралы толық ақпарат</translation>

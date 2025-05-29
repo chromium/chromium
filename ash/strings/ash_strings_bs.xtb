@@ -761,6 +761,7 @@ U suprotnom će se ugrađena dodirna podloga ponovo omogućiti za <ph name="TIME
 <translation id="3552189655002856821">WiFi je isključen</translation>
 <translation id="3554215588514239132">Prikazivanje ili sakrivanje ploče s alatima za programere</translation>
 <translation id="3554637740840164787">Stavka <ph name="ITEM_TITLE" /> je zakačena</translation>
+<translation id="3554928024630051016">Da dodate druge USB uređaje, uklonite jedan, a zatim priključite novi</translation>
 <translation id="3558768885091059911">Uključiti pristup kameri i mikrofonu?</translation>
 <translation id="3560174576767922131">Snimi videozapis</translation>
 <translation id="3563775809269155755">Omogućavanje pristupne tačke</translation>
@@ -868,6 +869,7 @@ Povežite uređaj na napajanje.</translation>
 <translation id="3861651314799684201">Pritisnite Enter da snimite cijeli ekran</translation>
 <translation id="3870197372373144624">Pokušajte isključiti uređaj.</translation>
 <translation id="3879748587602334249">Upravitelj za preuzimanja</translation>
+<translation id="3884007280698606545">Dosegnuli ste ograničenje broja USB uređaja</translation>
 <translation id="3886872229787704059">Otvoreno danas</translation>
 <translation id="3891340733213178823">Dvaput pritisnite Ctrl + Shift + Q da se odjavite.</translation>
 <translation id="3892148308691398805">Kopiraj tekst</translation>

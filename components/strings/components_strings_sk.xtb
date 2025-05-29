@@ -771,6 +771,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="2296331629987861142">Platiť budete v jednoduchých splátkach (platia podmienky oprávnenosti, uplatňujú sa poplatky)</translation>
 <translation id="2300306941146563769">Nenahrané</translation>
 <translation id="2301098101308036335">Ktoré weby sú navštívené a kedy.</translation>
+<translation id="2302571905116831849">Automatické dopĺňanie vernostnej karty</translation>
 <translation id="230286397113210245">Tlačidlo Otvoriť okno inkognito, ktorého aktivovaním otvoríte okno inkognito na anonymné prehliadanie</translation>
 <translation id="2305294852062272447">Chcete uložiť vodičský preukaz?</translation>
 <translation id="2306124309679506798">Chcete povoliť imerzívne prostredie?</translation>
@@ -2443,6 +2444,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="519422657042045905">Anotácia nie je k dispozícii</translation>
 <translation id="5200063972779787617">Uložte adresu v účte</translation>
 <translation id="5201306358585911203">Vložená stránka na tejto stránke hovorí</translation>
+<translation id="5203716867500274632">Správca povolil synchronizovať medzi predchádzajúcimi a aktuálnymi reláciami vo vašich zariadeniach ChromeOS toto:</translation>
 <translation id="5205114269877707377"><ph name="OMNIBOX_ACTION_FOCUSED_FRIENDLY_MATCH_TEXT" />, stláčaním klávesa Tab prehliadajte dostupné akcie a stlačením klávesa Enter vybranú akciu aktivujte.</translation>
 <translation id="5205222826937269299">Meno je povinný údaj</translation>
 <translation id="5206392433295093945">Spálňa</translation>
@@ -2602,6 +2604,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="5472588168895083535">Sledovanie rúk je blokované</translation>
 <translation id="547963486735802022">Skúste súbory znova preniesť</translation>
 <translation id="5481076368049295676">Tento obsah sa môže pokúsiť nainštalovať v zariadení nebezpečný softvér, ktorý ukradne alebo odstráni vaše informácie. <ph name="BEGIN_LINK" />Napriek tomu zobraziť<ph name="END_LINK" /></translation>
+<translation id="5481604577800516617">Usporiadanie okien a kariet</translation>
 <translation id="5481682542063333508">Ponuka pomoci s písaním</translation>
 <translation id="54817484435770891">Pridanie platnej adresy</translation>
 <translation id="5483838506518938965">Všetko je nastavené</translation>
@@ -4275,6 +4278,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="8352849934814541340">Správca tohto zariadenia nainštaloval aplikácie pre ďalšie funkcie. Aplikácie majú prístup k niektorým vašim údajom.</translation>
 <translation id="8355270400102541638">Miestny kontext zrútenia:</translation>
 <translation id="8363502534493474904">Vypnúť režim v lietadle</translation>
+<translation id="8363929499301563123">Súbory cookie webov (stav prihlásenia na nedávno navštívených weboch bude zachovaný)</translation>
 <translation id="8364627913115013041">Nenastavené.</translation>
 <translation id="8366057325711477500">Správy zo sveta</translation>
 <translation id="836616551641291797">Ďalšie informácie o tom, ako je prehliadač spravovaný</translation>

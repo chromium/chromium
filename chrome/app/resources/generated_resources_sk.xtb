@@ -80,6 +80,7 @@
 <translation id="1049743911850919806">Inkognito</translation>
 <translation id="1049795001945932310">&amp;Nastavenia jazyka</translation>
 <translation id="1050693411695664090">Slabé</translation>
+<translation id="1053226848101751430">Záznam bol odstránený</translation>
 <translation id="1053898984916097744">Začnite niečo nové alebo získajte pomoc s postupom.</translation>
 <translation id="1054048317165655285">Dokončite nastavenie v telefóne</translation>
 <translation id="1054153489933238809">Otvoriť pôvodný &amp;obrázok na novej karte</translation>
@@ -2228,6 +2229,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="2519250377986324805">Ako na to</translation>
 <translation id="2519517390894391510">Názov profilu certifikátu</translation>
 <translation id="2520644704042891903">Čaká sa na dostupný soket...</translation>
+<translation id="2520961587246779103">Ďalšie možnosti rozdeleného zobrazenia</translation>
 <translation id="2521427645491031107">Synchronizácia aplikácií je nastavená v nastaveniach zariadenia</translation>
 <translation id="2521835766824839541">predchádzajúca stopa</translation>
 <translation id="2521854691574443804">Kontroluje sa súlad súboru <ph name="FILE_NAME" /> s pravidlami zabezpečenia vašej organizácie…</translation>
@@ -3173,6 +3175,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="3202578601642193415">Najnovšie</translation>
 <translation id="3204648577100496185">Údaje spojené s touto aplikáciou môžu byť z tohto zariadenia odstránené</translation>
 <translation id="3204717934117444051">Údaje uložené iba v tomto zariadení zostanú v existujúcom profile. S účtom <ph name="EMAIL" /> sa nebudú synchronizovať.</translation>
+<translation id="3206289903841621620"><ph name="NUMBER" />. používateľský slovník</translation>
 <translation id="3207344462385471911">Zobrazujú sa vám navrhované vyhľadávania a nákupné zľavy, ktoré vás na základe vašej nedávnej aktivity môžu zaujímať.
         <ph name="BREAK" />
         <ph name="BREAK" />
@@ -9953,6 +9956,7 @@ Súbor kľúča uložte na bezpečné miesto. Budete ho potrebovať na vytvoreni
 <translation id="8037801708772278989">Kontrola prebehla pred chvíľou</translation>
 <translation id="8038111231936746805">(predvolená)</translation>
 <translation id="8039151841428107077">{NUM_OF_FILES,plural, =1{Kopíruje sa 1 súbor do služby <ph name="CLOUD_PROVIDER" />}few{Kopírujú sa {NUM_OF_FILES} súbory do služby <ph name="CLOUD_PROVIDER" />}many{Copying {NUM_OF_FILES} files to <ph name="CLOUD_PROVIDER" />}other{Kopíruje sa {NUM_OF_FILES} súborov do služby <ph name="CLOUD_PROVIDER" />}}</translation>
+<translation id="8039525676147630657">Táto aplikácia pre Chrome prestane fungovať po aktualizácii verzie systému ChromeOS. Uložte si dáta aplikácie, ktoré si chcete ponechať. Ak chcete zistiť, aké máte možnosti, kontaktujte vývojára aplikácie alebo tím podpory IT.</translation>
 <translation id="8041089156583427627">Odoslať spätnú väzbu</translation>
 <translation id="8041093619605951337">Šťastná</translation>
 <translation id="8041267120753677077">Streamovať aplikácie vášho telefónu</translation>
@@ -10005,6 +10009,7 @@ Súbor kľúča uložte na bezpečné miesto. Budete ho potrebovať na vytvoreni
 <translation id="8073499153683482226"><ph name="BEGIN_PARAGRAPH1" />Dáta aplikácií môžu byť ľubovoľné dáta, ktoré aplikácie uložili (v závislosti od nastavení vývojára), vrátane potenciálne citlivých informácií, ako sú kontakty, správy a fotky.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Zálohované dáta sa nezapočítavajú do kvóty úložiska Disku.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />Túto službu môžete vypnúť v Nastaveniach.<ph name="END_PARAGRAPH3" /></translation>
+<translation id="8075044377771022666">Päta</translation>
 <translation id="8076835018653442223">Prístup k miestnym súborom vo vašom zariadení zakázal správca</translation>
 <translation id="8077120325605624147">Všetky weby, ktoré navštívite, vám môžu zobrazovať ľubovoľné reklamy</translation>
 <translation id="8077579734294125741">Ďalšie profily Chromu</translation>
@@ -10940,6 +10945,7 @@ Súbor kľúča uložte na bezpečné miesto. Budete ho potrebovať na vytvoreni
 <translation id="8729133765463465108">Naskenovať QR kód fotoaparátom</translation>
 <translation id="8730621377337864115">Hotovo</translation>
 <translation id="8731029916209785242">Povolenia (<ph name="FORMATTED_ORIGIN" />)</translation>
+<translation id="8731258351357994801"><ph name="NUMBER" />. záznam</translation>
 <translation id="8731268612289859741">Bezpečnostný kód</translation>
 <translation id="8731629443331803108"><ph name="SITE_NAME" /> vyžaduje povolenie <ph name="PERMISSION" /></translation>
 <translation id="8731787661154643562">Číslo portu</translation>

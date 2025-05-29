@@ -206,6 +206,7 @@
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1758459542619182298"><ph name="CONTROL_TYPE" /> <ph name="KEY_LIST" /></translation>
 <translation id="1759842336958782510">Chrome</translation>
+<translation id="1762353673362288306">Acum poți folosi numai Class Tools</translation>
 <translation id="1762483337755424125">Transcriere</translation>
 <translation id="1765169783255151332">Schimbă rapid tastele</translation>
 <translation id="1768959921651994223">Tip de autentificare</translation>
@@ -1613,6 +1614,7 @@ Descarcă modelul de transcriere (până la 100 MB) pentru a obține aceste tran
 <translation id="8088963492174775412">Apasă pentru a înregistra</translation>
 <translation id="8094062939584182041">Permite ca Google să-ți trimită e-mail despre această problemă</translation>
 <translation id="8104083085214006426">Folosești o rețea deschisă și nesigură</translation>
+<translation id="8108879170356113798">Vei putea folosi numai Class Tools peste <ph name="NUM_SECONDS" /> secunde</translation>
 <translation id="811820734797650957">(Android) Gateway-ul acceptă testul de ping</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
 <translation id="8131740175452115882">Confirmați</translation>

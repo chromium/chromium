@@ -761,6 +761,7 @@ In caso contrario, il touchpad integrato verrà riattivato dopo <ph name="TIMEOU
 <translation id="3552189655002856821">Il Wi-Fi non è attivo</translation>
 <translation id="3554215588514239132">Mostra o nascondi il riquadro Strumenti per sviluppatori</translation>
 <translation id="3554637740840164787"><ph name="ITEM_TITLE" /> è stato bloccato</translation>
+<translation id="3554928024630051016">Per aggiungere altri dispositivi USB, prova a rimuoverne uno e quindi a collegarne uno nuovo</translation>
 <translation id="3558768885091059911">Vuoi attivare l'accesso alla fotocamera e al microfono?</translation>
 <translation id="3560174576767922131">Registra video</translation>
 <translation id="3563775809269155755">Attiva hotspot</translation>
@@ -865,6 +866,7 @@ Collega il dispositivo all'alimentazione.</translation>
 <translation id="3861651314799684201">Premi invio per registrare a schermo intero</translation>
 <translation id="3870197372373144624">Prova a spegnere il dispositivo.</translation>
 <translation id="3879748587602334249">Gestione dei download</translation>
+<translation id="3884007280698606545">Limite USB raggiunto</translation>
 <translation id="3886872229787704059">Aperto oggi</translation>
 <translation id="3891340733213178823">Premi due volte Ctrl+Maiusc+Q per uscire.</translation>
 <translation id="3892148308691398805">Copia testo</translation>
@@ -1843,7 +1845,7 @@ Nuova installazione</translation>
 <translation id="6961121602502368900">La funzionalità Disattiva audio non è disponibile sul profilo di lavoro</translation>
 <translation id="6961840794482373852">La scorciatoia da tastiera Alt + Freccia su è cambiata. Per usare il tasto Pagina su, premi il tasto <ph name="LAUNCHER_KEY_NAME" /> + Freccia su.</translation>
 <translation id="696267987219125751">Zoom automatico disattivato.</translation>
-<translation id="6965382102122355670">OK</translation>
+<translation id="6965382102122355670">Ok</translation>
 <translation id="6972629891077993081">Dispositivi HID</translation>
 <translation id="6972754398087986839">Inizia</translation>
 <translation id="6979158407327259162">Google Drive</translation>

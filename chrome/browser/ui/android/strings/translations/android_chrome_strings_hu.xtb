@@ -375,6 +375,7 @@ Csak az Ön összetett jelszava ismeretében tudja bárki is megtekinteni a titk
 <translation id="2718352093833049315">Csak Wi-Fi-n</translation>
 <translation id="2718846868787000099">A felkeresett webhelyek láthatják az Ön preferenciáit, hogy a kívánt nyelveken jeleníthessék meg a tartalmakat</translation>
 <translation id="2723001399770238859">audio</translation>
+<translation id="2734335652257251631">Olvasási mód megjelenítése</translation>
 <translation id="2739887572830526131">Tartsa meg ezt a csoportot, ha később szeretne hozzáadni lapokat, vagy törölje, ha már nem lesz rá szüksége.</translation>
 <translation id="2742373789128106053">A(z) <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> jelenleg nem áll rendelkezésre.</translation>
 <translation id="2760805590727089264">HH/ÉÉ</translation>
@@ -1744,6 +1745,7 @@ A beállítás módosításához <ph name="BEGIN_LINK" />törölje a fiókjában
 <translation id="8676789164135894283">Bejelentkezési hitelesítések</translation>
 <translation id="8683039184091909753">kép</translation>
 <translation id="8688183792442786085"><ph name="TAB_TITLE" />, kiválasztott lap</translation>
+<translation id="8693232767599693749">Megtekinti az Olvasási módot?</translation>
 <translation id="8697753151306746444">Inkább ablak vagy képernyő megosztása</translation>
 <translation id="869891660844655955">Lejárati dátum</translation>
 <translation id="8699120352855309748">Ne ajánlja fel a fordítást ezekről a nyelvekről</translation>

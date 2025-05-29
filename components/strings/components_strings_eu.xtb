@@ -636,6 +636,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="2088913896151127116">Gehitu testua</translation>
 <translation id="2090451897496479509">Informazio gehiago lortzeko, jarri hornitzailearekin harremanetan</translation>
 <translation id="2091887806945687916">Soinua</translation>
+<translation id="2093184051799735948">Bilatu <ph name="ENGINE_NAME" /> edo idatzi URLa</translation>
 <translation id="2093982008204312032">Google Chrome Windows Hello desaktibatzen saiatzen ari da, pasahitzak betetzeko.</translation>
 <translation id="2094505752054353250">Domeinuak ez datoz bat</translation>
 <translation id="2094704029599359040">Bertsioaren informazioa</translation>
@@ -770,6 +771,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="2296331629987861142">Ordaindu epe erosotan (baldintzen arabera; komisioak daude)</translation>
 <translation id="2300306941146563769">Kargatu gabe</translation>
 <translation id="2301098101308036335">Zein webgune bisitatzen diren eta noiz.</translation>
+<translation id="2302571905116831849">Bete automatikoki fideltasun-txartela</translation>
 <translation id="230286397113210245">Ezkutuko moduko leihoa irekitzeko botoia: aktiba ezazu ezkutuko moduko leiho bat irekitzeko, modu pribatuan arakatu ahal izateko</translation>
 <translation id="2305294852062272447">Gidabaimena gorde nahi duzu?</translation>
 <translation id="2306124309679506798">Zerbitzu murgiltzailea eskaintzeko baimena eman nahi duzu?</translation>
@@ -2442,6 +2444,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="519422657042045905">Oharpena ez dago erabilgarri</translation>
 <translation id="5200063972779787617">Gorde helbidea kontuan</translation>
 <translation id="5201306358585911203">Orriko orri kapsulatu batek hau dio:</translation>
+<translation id="5203716867500274632">Zure administratzaileak aurreko eta oraingo saioen artean hauen sinkronizazioa gaitu du zure ChromeOS-eko gailu guztietan:</translation>
 <translation id="5205114269877707377"><ph name="OMNIBOX_ACTION_FOCUSED_FRIENDLY_MATCH_TEXT" />, sakatu tabuladorea gauza daitezkeen ekintzak arakatzeko. Gero, sakatu Sartu hautatutako ekintza exekutatzeko.</translation>
 <translation id="5205222826937269299">Nahitaez zehaztu behar duzu izena</translation>
 <translation id="5206392433295093945">Logela</translation>
@@ -2601,6 +2604,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="5472588168895083535">Blokeatuta dago eskuen jarraipena</translation>
 <translation id="547963486735802022">Saiatu berriro fitxategiak transferitzen</translation>
 <translation id="5481076368049295676">Baliteke edukiak software kaltegarria instalatzen saiatzea zure informazioa lapurtu edo ezabatzeko. <ph name="BEGIN_LINK" />Erakutsi, hala ere<ph name="END_LINK" /></translation>
+<translation id="5481604577800516617">Leiho eta fitxen antolakuntza</translation>
 <translation id="5481682542063333508">Eskaini idazteko laguntza</translation>
 <translation id="54817484435770891">Gehitu balio duen helbide bat</translation>
 <translation id="5483838506518938965">Prest zaude</translation>
@@ -4273,6 +4277,7 @@ Xehetasun gehiago:
 <translation id="8352849934814541340">Gailuaren administratzaileak aplikazio batzuk instalatu ditu, funtzio gehigarriak izan ditzazun. Aplikazioek zure datu batzuk atzi ditzakete.</translation>
 <translation id="8355270400102541638">Gailuko hutsegitearen testuingurua:</translation>
 <translation id="8363502534493474904">Hegaldi modua desaktibatu.</translation>
+<translation id="8363929499301563123">Webguneen cookieak (azkenaldian bisitatu dituzun webguneetako saio-hasierak mantenduko dira)</translation>
 <translation id="8364627913115013041">Ez da ezarri.</translation>
 <translation id="8366057325711477500">Munduko albisteak</translation>
 <translation id="836616551641291797">Lortu arakatzailea kudeatzeko moduari buruzko informazio gehiago</translation>

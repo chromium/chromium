@@ -243,6 +243,7 @@ Certaines fonctionnalités ne seront peut-être pas disponibles, et les modifica
 <translation id="4050175100176540509">La dernière version propose d'importantes améliorations de la sécurité ainsi que de nouvelles fonctionnalités.</translation>
 <translation id="4053720452172726777">Personnaliser et contrôler Google Chrome</translation>
 <translation id="408393047846373801">Pour accéder à vos mots de passe et plus encore sur tous vos appareils, connectez-vous à Chrome. Ce mot de passe sera enregistré dans votre compte Google une fois que vous vous serez connecté.</translation>
+<translation id="409936259433005390">Vous allez bientôt passer à Windows 11 ? Téléchargez le programme d'installation de Chrome sur OneDrive pour être prêt dès le premier jour.</translation>
 <translation id="4110895483821904099">Configurez votre nouveau profil Chrome</translation>
 <translation id="4111566860456076004">Chrome ne peut pas déterminer l'origine de cette extension, et elle est peut-être dangereuse. Supprimez-la de Chrome pour qu'elle ne puisse plus voir ni modifier vos données (y compris vos informations personnelles) sur les sites que vous consultez.</translation>
 <translation id="4128488089242627000">Chrome s'exécute plus rapidement, et les fonctionnalités qui utilisent JavaScript devraient fonctionner comme prévu (recommandé)</translation>
@@ -546,7 +547,7 @@ Google Chrome ne peut pas récupérer vos paramètres.</translation>
 <translation id="7959172989483770734">Gérer les profils Chrome</translation>
 <translation id="7962410387636238736">Cet ordinateur ne recevra plus les mises à jour de Google Chrome, car la compatibilité n'est plus assurée sur Windows XP et Windows Vista</translation>
 <translation id="8004582292198964060">Navigateur</translation>
-<translation id="8005666035647241369">Dans le Gestionnaire de mots de passe Google sur cet appareil</translation>
+<translation id="8005666035647241369">Dans le Gestionnaire de mots de passe de Google sur cet appareil</translation>
 <translation id="8008534537613507642">Réinstaller Chrome</translation>
 <translation id="8009904340233602924">Utiliser Chrome sans compte</translation>
 <translation id="8010081455002666927">Détection automatique</translation>
@@ -630,6 +631,7 @@ Google Chrome ne peut pas récupérer vos paramètres.</translation>
 <translation id="9090566250983691233">Découvrez pourquoi Chrome bloque certains fichiers</translation>
 <translation id="9106236359747881194">Sélectionner le texte à rechercher</translation>
 <translation id="911206726377975832">Supprimer également vos données de navigation ?</translation>
+<translation id="9134482777260927479">Aide aux devoirs</translation>
 <translation id="9138603949443464873">Pour appliquer vos modifications, relancez Chrome</translation>
 <translation id="9148058034647219655">Quitter</translation>
 <translation id="9195993889682885387">Chrome peut estimer quels sont vos centres d'intérêt en fonction de votre historique de navigation des dernières semaines. Ces informations restent sur votre appareil.</translation>

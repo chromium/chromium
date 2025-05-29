@@ -367,6 +367,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="1612199629998703524">Teemade haldamine</translation>
 <translation id="1615178538289490617">Juurdepääsu tühistamine: <ph name="PORT_NAME" /></translation>
 <translation id="1615402009686901181">Administraatori eeskirjad keelavad ekraanikuva jäädvustamise, kui konfidentsiaalne sisu on nähtaval</translation>
+<translation id="161612500287664753">Küsige teavet selle lehe kohta Google'i otsingult</translation>
 <translation id="1617276713587758852">Mahturid</translation>
 <translation id="1619007254056372606">Seadmes olevate saidiandmete haldamine</translation>
 <translation id="1619648179761984213"><ph name="USER_DISPLAY_NAME" /> eemaldas vahelehe</translation>
@@ -636,6 +637,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="2088913896151127116">Lisa tekst</translation>
 <translation id="2090451897496479509">Lisateabe saamiseks võtke ühendust teenusepakkujaga</translation>
 <translation id="2091887806945687916">Heli</translation>
+<translation id="2093184051799735948">Otsige teenusest <ph name="ENGINE_NAME" /> või sisestage URL</translation>
 <translation id="2093982008204312032">Google Chrome üritab paroolide sisestamiseks lülitada sisse Windows Hello.</translation>
 <translation id="2094505752054353250">Domeeni vastuolu</translation>
 <translation id="2094704029599359040">Versiooniteave</translation>
@@ -1507,6 +1509,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="3586931643579894722">Peida üksikasjad</translation>
 <translation id="3587725436724465984">Teie organisatsioon on tuvastanud, et sait <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> võib üht reeglit rikkuda. <ph name="BEGIN_LEARN_MORE_LINK" />Lisateave selle hoiatuse kohta<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3587738293690942763">Keskmine</translation>
+<translation id="3589519427766620380">Küsige teavet selle lehe kohta Google Lensilt</translation>
 <translation id="3596918995172292499">Numbrimärgi riik</translation>
 <translation id="3600106876108433070">Teave võrdlustabelite kohta</translation>
 <translation id="3600246354004376029"><ph name="TITLE" />, <ph name="DOMAIN" />, <ph name="TIME" /></translation>
@@ -2447,6 +2450,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="519422657042045905">Märkuste lisamise funktsioon ei ole saadaval</translation>
 <translation id="5200063972779787617">Salvestage aadress kontole</translation>
 <translation id="5201306358585911203">Selle lehe manustatud leht ütleb</translation>
+<translation id="5203716867500274632">Teie administraator lubas teie ChromeOS-i seadmetes eelmise ja praeguse seansi vahel sünkroonida järgmised andmed.</translation>
 <translation id="5205114269877707377"><ph name="OMNIBOX_ACTION_FOCUSED_FRIENDLY_MATCH_TEXT" />, vajutage saadaolevate toimingute sirvimiseks tabulaatorit, seejärel valitud toimingu käivitamiseks sisestusklahvi.</translation>
 <translation id="5205222826937269299">Nimi on nõutav</translation>
 <translation id="5206392433295093945">Magamistuba</translation>
@@ -2606,6 +2610,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="5472588168895083535">Käeliigutuste jälgimine on blokeeritud</translation>
 <translation id="547963486735802022">Proovige oma failid uuesti üle kanda</translation>
 <translation id="5481076368049295676">See sisu võib üritada installida teie seadmesse ohtlikku tarkvara, mis varastab või kustutab teie teavet. <ph name="BEGIN_LINK" />Kuva ikkagi<ph name="END_LINK" />.</translation>
+<translation id="5481604577800516617">Akende ja vahelehtede ümberpaigutamine</translation>
 <translation id="5481682542063333508">Paku kirjutamisel abi</translation>
 <translation id="54817484435770891">Sisestage sobiv aadress</translation>
 <translation id="5483838506518938965">Olete valmis</translation>
@@ -3441,6 +3446,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="6925267999184670015">Põhja-Ameerika B+</translation>
 <translation id="6926216138694948720">Kehamaalingud</translation>
 <translation id="692638818576287323">Tarbesõidukid</translation>
+<translation id="6930607614725241390">Otsimine külgpaneelilt</translation>
 <translation id="6934236486840930310"><ph name="BEGIN_BOLD" />Teie vaikeotsingumootor võimaldab teil veebist otsida ja toetab Chrome'i funktsioone<ph name="END_BOLD" />, nagu otsimine aadressiribalt ja veebilehtedel olevatelt piltidelt. Funktsioon ei pruugi olla saadaval, kui teie otsingumootor seda ei toeta.</translation>
 <translation id="6934672428414710184">Nimi pärineb teie Google'i kontolt</translation>
 <translation id="6935077351544118151">Nüüd saate Google Walleti kliendikaarte automaatselt täita</translation>
@@ -4280,6 +4286,7 @@ Lisateave:
 <translation id="8352849934814541340">Seadme administraator on installinud rakendused, mis hõlmavad lisafunktsioone. Rakendustel on juurdepääs teie mõningatele andmetele.</translation>
 <translation id="8355270400102541638">Kohaliku kokkujooksmise kontekst:</translation>
 <translation id="8363502534493474904">Lülitage lennurežiim välja</translation>
+<translation id="8363929499301563123">Veebisaidi küpsised (säilitatakse hiljuti külastatud veebisaitide sisselogitud olek)</translation>
 <translation id="8364627913115013041">Määramata.</translation>
 <translation id="8366057325711477500">Maailma uudised</translation>
 <translation id="836616551641291797">Lugege lisateavet brauseri haldamise kohta</translation>

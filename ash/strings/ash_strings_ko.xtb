@@ -761,6 +761,7 @@
 <translation id="3552189655002856821">Wi-Fi가 사용 중지됨</translation>
 <translation id="3554215588514239132">개발자 도구 패널 표시 또는 숨기기</translation>
 <translation id="3554637740840164787"><ph name="ITEM_TITLE" /> 고정됨</translation>
+<translation id="3554928024630051016">USB 기기를 추가하려면 기존 기기를 제거하고 새 기기를 연결해 보세요</translation>
 <translation id="3558768885091059911">카메라 및 마이크 액세스 권한을 사용 설정하시겠습니까?</translation>
 <translation id="3560174576767922131">동영상 녹화</translation>
 <translation id="3563775809269155755">핫스팟 사용</translation>
@@ -868,6 +869,7 @@
 <translation id="3861651314799684201">전체 화면을 녹화하려면 Enter를 누르세요</translation>
 <translation id="3870197372373144624">기기를 종료해 보세요.</translation>
 <translation id="3879748587602334249">다운로드 관리자</translation>
+<translation id="3884007280698606545">USB 한도 도달</translation>
 <translation id="3886872229787704059">오늘 열림</translation>
 <translation id="3891340733213178823">로그아웃하려면 Ctrl+Shift+Q를 두 번 누릅니다.</translation>
 <translation id="3892148308691398805">텍스트 복사</translation>

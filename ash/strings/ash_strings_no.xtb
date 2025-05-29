@@ -761,6 +761,7 @@ Ellers blir den innebygde styreflaten slått på igjen om <ph name="TIMEOUT_SECO
 <translation id="3552189655002856821">Wifi er slått av</translation>
 <translation id="3554215588514239132">Vis eller skjul utviklerverktøy-panelet</translation>
 <translation id="3554637740840164787">Festet <ph name="ITEM_TITLE" /></translation>
+<translation id="3554928024630051016">For å legge til flere USB-enheter, prøv å koble fra en og koble til en ny</translation>
 <translation id="3558768885091059911">Vil du slå på kamera- og mikrofontilgang?</translation>
 <translation id="3560174576767922131">Ta opp video</translation>
 <translation id="3563775809269155755">Slå på wifi-sone</translation>
@@ -868,6 +869,7 @@ Koble enheten til strøm.</translation>
 <translation id="3861651314799684201">Trykk på Enter for å ta opp hele skjermen</translation>
 <translation id="3870197372373144624">Prøv å slå av enheten.</translation>
 <translation id="3879748587602334249">Nedlastingsbehandling</translation>
+<translation id="3884007280698606545">USB-grensen er nådd</translation>
 <translation id="3886872229787704059">Åpnet i dag</translation>
 <translation id="3891340733213178823">Trykk på Control+Shift+Q to ganger for å logge av.</translation>
 <translation id="3892148308691398805">Kopier teksten</translation>

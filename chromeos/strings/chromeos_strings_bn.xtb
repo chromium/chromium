@@ -206,6 +206,7 @@
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1758459542619182298"><ph name="CONTROL_TYPE" /> <ph name="KEY_LIST" /></translation>
 <translation id="1759842336958782510">Chrome</translation>
+<translation id="1762353673362288306">আপনি এখন শুধু ক্লাস টুল ব্যবহার করতে পারবেন</translation>
 <translation id="1762483337755424125">ট্রানস্ক্রিপ্ট</translation>
 <translation id="1765169783255151332">ঝটপট একটি 'কী' থেকে আরেকটিতে পাল্টে নিন</translation>
 <translation id="1768959921651994223">যাচাইকরণের প্রকার</translation>
@@ -1613,6 +1614,7 @@
 <translation id="8088963492174775412">রেকর্ড করতে প্রেস করুন</translation>
 <translation id="8094062939584182041">এই সমস্যা সম্পর্কে আপনাকে ইমেল পাঠানোর জন্য Google-কে অনুমতি দিন</translation>
 <translation id="8104083085214006426">আপনি একটি ওপেন এবং নিরাপদ নয় এমন নেটওয়ার্ক ব্যবহার করছেন</translation>
+<translation id="8108879170356113798">আপনি মাত্র <ph name="NUM_SECONDS" /> সেকেন্ড পরেই ক্লাস টুল ব্যবহার করতে পারবেন</translation>
 <translation id="811820734797650957">(Android) গেটওয়ে পিং করা যেতে পারে</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° সেঃ</translation>
 <translation id="8131740175452115882">নিশ্চিত হন</translation>

@@ -636,6 +636,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="2088913896151127116">Přidat text</translation>
 <translation id="2090451897496479509">Pro více informací kontaktujte poskytovatele</translation>
 <translation id="2091887806945687916">Zvuk</translation>
+<translation id="2093184051799735948">Vyhledávejte pomocí <ph name="ENGINE_NAME" /> nebo zadejte URL</translation>
 <translation id="2093982008204312032">Google Chrome se pokouší zapnout Windows Hello pro vyplňování hesel.</translation>
 <translation id="2094505752054353250">Neshoda domén</translation>
 <translation id="2094704029599359040">Informace o verzi</translation>
@@ -770,6 +771,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="2296331629987861142">Plaťte v jednoduchých splátkách (platí podmínky způsobilosti, jsou účtovány poplatky)</translation>
 <translation id="2300306941146563769">Nenahráno</translation>
 <translation id="2301098101308036335">Které weby jsou navštěvovány a kdy.</translation>
+<translation id="2302571905116831849">Automatické vyplnění věrnostní karty</translation>
 <translation id="230286397113210245">Tlačítko Otevřít anonymní okno, aktivací otevřete nové anonymní okno, abyste mohli prohlížet v soukromí</translation>
 <translation id="2305294852062272447">Uložit řidičský průkaz?</translation>
 <translation id="2306124309679506798">Povolit pohlcující prostředí?</translation>
@@ -2442,6 +2444,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="519422657042045905">Poznámky nejsou k dispozici</translation>
 <translation id="5200063972779787617">Uložení adresy do účtu</translation>
 <translation id="5201306358585911203">Stránka vložená na této stránce říká</translation>
+<translation id="5203716867500274632">Administrátor povolil synchronizaci následujících položek mezi předchozími a aktuálními relacemi na vašich zařízeních se systémem ChromeOS:</translation>
 <translation id="5205114269877707377"><ph name="OMNIBOX_ACTION_FOCUSED_FRIENDLY_MATCH_TEXT" />, stisknutím tabulátoru můžete procházet dostupné akce a stisknutím klávesy Enter vybranou akci provést.</translation>
 <translation id="5205222826937269299">Je nutné zadat jméno</translation>
 <translation id="5206392433295093945">Ložnice</translation>
@@ -2601,6 +2604,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="5472588168895083535">Sledování rukou je blokováno</translation>
 <translation id="547963486735802022">Zkuste soubory přenést znovu</translation>
 <translation id="5481076368049295676">Tento obsah by vám do zařízení mohl zkusit nainstalovat nebezpečný software, který odcizuje nebo maže informace. <ph name="BEGIN_LINK" />Přesto zobrazit<ph name="END_LINK" /></translation>
+<translation id="5481604577800516617">Uspořádání oken a karet</translation>
 <translation id="5481682542063333508">Nabízet pomoc při psaní</translation>
 <translation id="54817484435770891">Přidejte platnou adresu</translation>
 <translation id="5483838506518938965">Hotovo</translation>
@@ -4273,6 +4277,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="8352849934814541340">Administrátor tohoto zařízení nainstaloval rozšíření pro dodatečné funkce. Rozšíření mají přístup k některým vašim datům.</translation>
 <translation id="8355270400102541638">Místní kontext selhání:</translation>
 <translation id="8363502534493474904">Vypnout režim Letadlo</translation>
+<translation id="8363929499301563123">Soubory cookie webů (stav přihlášení na nedávno navštívených webech bude zachován)</translation>
 <translation id="8364627913115013041">Nenastaveno.</translation>
 <translation id="8366057325711477500">Zprávy ze světa</translation>
 <translation id="836616551641291797">Další informace o tom, jak je váš prohlížeč spravován</translation>

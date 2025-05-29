@@ -761,6 +761,7 @@ Když to neuděláte, vestavěný touchpad se za <ph name="TIMEOUT_SECONDS" /> z
 <translation id="3552189655002856821">Wi-Fi je vypnuta</translation>
 <translation id="3554215588514239132">Zobrazit nebo skrýt panel Nástroje pro vývojáře</translation>
 <translation id="3554637740840164787">Položka <ph name="ITEM_TITLE" /> byla připnuta</translation>
+<translation id="3554928024630051016">Pokud chcete přidat další zařízení USB, zkuste některé odebrat a pak připojit nové.</translation>
 <translation id="3558768885091059911">Zapnout přístup ke kameře a mikrofonu?</translation>
 <translation id="3560174576767922131">Zaznamenat video</translation>
 <translation id="3563775809269155755">Aktivovat hotspot</translation>
@@ -868,6 +869,7 @@ Připojte zařízení k napájení.</translation>
 <translation id="3861651314799684201">Stisknutím klávesy Enter spustíte nahrávání celé obrazovky</translation>
 <translation id="3870197372373144624">Zkuste zařízení vypnout.</translation>
 <translation id="3879748587602334249">Správce stahování</translation>
+<translation id="3884007280698606545">Dosáhli jste limitu zařízení USB</translation>
 <translation id="3886872229787704059">Otevřeno dnes</translation>
 <translation id="3891340733213178823">Odhlaste se dvojitým stisknutím kombinace kláves Ctrl+Shift+Q.</translation>
 <translation id="3892148308691398805">Kopírovat text</translation>

@@ -367,6 +367,7 @@
 <translation id="1612199629998703524">Управление на темите</translation>
 <translation id="1615178538289490617">Отмяна на достъпа за <ph name="PORT_NAME" /></translation>
 <translation id="1615402009686901181">Заснемането на екрана, когато се вижда поверително съдържание, е деактивирано чрез администраторско правило</translation>
+<translation id="161612500287664753">Попитайте Google Търсене за тази страница</translation>
 <translation id="1617276713587758852">Кросоувъри</translation>
 <translation id="1619007254056372606">Управление на локалните данни за сайтовете</translation>
 <translation id="1619648179761984213"><ph name="USER_DISPLAY_NAME" /> премахна раздел</translation>
@@ -1508,6 +1509,7 @@
 <translation id="3586931643579894722">Скриване на подробностите</translation>
 <translation id="3587725436724465984">Организацията ви е идентифицирала <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> като сайт, който може да нарушава правилата. <ph name="BEGIN_LEARN_MORE_LINK" />Научете повече за това предупреждение<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3587738293690942763">Среден</translation>
+<translation id="3589519427766620380">Поискайте от Google Обектив информация за тази страница</translation>
 <translation id="3596918995172292499">Щат на регистрационния номер</translation>
 <translation id="3600106876108433070">Научете за таблиците за сравняване</translation>
 <translation id="3600246354004376029"><ph name="TITLE" />, <ph name="DOMAIN" />, <ph name="TIME" /></translation>
@@ -2448,6 +2450,7 @@
 <translation id="519422657042045905">Няма достъп до режима за пояснения</translation>
 <translation id="5200063972779787617">Запазване на адреса в профила</translation>
 <translation id="5201306358585911203">Страница, вградена в тази страница, изпраща съобщение</translation>
+<translation id="5203716867500274632">Администраторът ви даде възможност за синхронизиране на следните неща между предишните и текущите ви сесии на устройствата ви с ChromeOS:</translation>
 <translation id="5205114269877707377"><ph name="OMNIBOX_ACTION_FOCUSED_FRIENDLY_MATCH_TEXT" />. Натиснете Tab, за да видите наличните действия, и след това Enter, за да изпълните избраното.</translation>
 <translation id="5205222826937269299">Името е задължително</translation>
 <translation id="5206392433295093945">Спалня</translation>
@@ -2607,6 +2610,7 @@
 <translation id="5472588168895083535">Проследяването на ръцете е блокирано</translation>
 <translation id="547963486735802022">Опитайте отново да прехвърлите файловете си</translation>
 <translation id="5481076368049295676">Въпросното съдържание може да се опита да инсталира опасен софтуер на устройството ви, който да открадне или изтрие информацията ви. <ph name="BEGIN_LINK" />Показване въпреки това<ph name="END_LINK" /></translation>
+<translation id="5481604577800516617">Подреждане на прозорците и разделите</translation>
 <translation id="5481682542063333508">Предлагане на помощ при писане</translation>
 <translation id="54817484435770891">Добавяне на валиден адрес</translation>
 <translation id="5483838506518938965">Готови сте</translation>
@@ -3442,6 +3446,7 @@
 <translation id="6925267999184670015">North American B+</translation>
 <translation id="6926216138694948720">Бодиарт</translation>
 <translation id="692638818576287323">Търговски превозни средства</translation>
+<translation id="6930607614725241390">Търсене в страничния панел</translation>
 <translation id="6934236486840930310"><ph name="BEGIN_BOLD" />Основната търсеща машина ви дава възможност да търсите в мрежата и да се възползвате от функции на Chrome<ph name="END_BOLD" />, като например търсене от адресната лента и от изображенията в уеб страниците. Някои функции може да не са налице, ако не се поддържат от търсещата ви машина.</translation>
 <translation id="6934672428414710184">Това име е от профила ви в Google</translation>
 <translation id="6935077351544118151">Вече можете да попълвате автоматично карти за лоялност от Google Wallet</translation>
@@ -4281,6 +4286,7 @@
 <translation id="8352849934814541340">Администраторът на това устройство е инсталирал приложения за допълнителни функции. Приложенията имат достъп до част от данните ви.</translation>
 <translation id="8355270400102541638">Локален контекст за срива:</translation>
 <translation id="8363502534493474904">Изключете самолетния режим.</translation>
+<translation id="8363929499301563123">„Бисквитки“ на уебсайтовете (състоянието на влизане в профила на наскоро посетените уебсайтове ще бъде запазено)</translation>
 <translation id="8364627913115013041">Не е зададено.</translation>
 <translation id="8366057325711477500">Световни новини</translation>
 <translation id="836616551641291797">Научете повече за това как се управлява браузърът ви</translation>

@@ -80,6 +80,7 @@
 <translation id="1049743911850919806">ማንነት የማያሳውቅ</translation>
 <translation id="1049795001945932310">የ&amp;ቋንቋ ቅንብሮች...</translation>
 <translation id="1050693411695664090">ደካማ</translation>
+<translation id="1053226848101751430">ግቤት ተሰርዟል</translation>
 <translation id="1053898984916097744">የሆነ አዲስ ነገር ይጀምሩ ወይም ፍሰት ውስጥ እገዛ ያግኙ።</translation>
 <translation id="1054048317165655285">በእርስዎ ስልክ ላይ ማዋቀርን ያጠናቅቁ</translation>
 <translation id="1054153489933238809">የመጀመሪያውን ምስል በአዲስ ትር ክፈት</translation>
@@ -1810,6 +1811,7 @@
 <translation id="2249111429176737533">እንደ በትር የተከፈተ መስኮት ተከፍቷል</translation>
 <translation id="2249605167705922988">ለምሳሌ፦ 1-5፣ 8፣ 11-13</translation>
 <translation id="2249635629516220541">ማስታወቂያዎችን ለእርስዎ ለማሳየት በጣቢያዎች ጥቅም ላይ የሚውለውን መረጃ ያብጁ</translation>
+<translation id="2250153645770828940">መዝገበ ቃላትን ሰርዝ</translation>
 <translation id="22505994009453896">የመዳፊት ጠቋሚዎችን በቁጥር ቁልፍ ሰሌዳ ይቆጣጠሩ</translation>
 <translation id="2250624716625396929">ይህ ትር የእርስዎን ካሜራ እና ማይክሮፎን እየተጠቀመ ነው</translation>
 <translation id="2251218783371366160">በስርዓት መመልከቻ ክፈት</translation>
@@ -2235,6 +2237,7 @@
 <translation id="2519250377986324805">እንዴት እንደሆነ ይመልከቱ</translation>
 <translation id="2519517390894391510">የእውቅና ማረጋገጫ መገለጫ ስም</translation>
 <translation id="2520644704042891903">የሚገኙ ሶኬቶችን በመጠባበቅ ላይ...</translation>
+<translation id="2520961587246779103">ለተከፈለ ዕይታ ተጨማሪ አማራጮች</translation>
 <translation id="2521427645491031107">የመተግበሪያዎች ስምረት የመሣሪያ ቅንብሮች ውስጥ ይቀናበራል</translation>
 <translation id="2521835766824839541">ቀዳሚ ትራክ</translation>
 <translation id="2521854691574443804"><ph name="FILE_NAME" />ን በእርስዎ ድርጅት የደህንነት መመሪያዎች መሠረት...</translation>
@@ -3180,6 +3183,7 @@
 <translation id="3202578601642193415">እጅግ በጣም አዲስ</translation>
 <translation id="3204648577100496185">ከዚህ መተግበሪያ ጋር የተጎዳኘ ውሂብ ከዚህ መሣሪያ ላይ ሊወገድ ይችላል</translation>
 <translation id="3204717934117444051">በዚህ መሣሪያ ላይ ብቻ የተቀመጠ ውሂብ ነባር መገለጫ ውስጥ ይቆያል። ወደ <ph name="EMAIL" /> አይሠምርም</translation>
+<translation id="3206289903841621620">የተጠቃሚ መዝገበ-ቃላት <ph name="NUMBER" /></translation>
 <translation id="3207344462385471911">በቅርብ ጊዜ እንቅስቃሴዎ መሠረት ሊያስደስትዎ የሚችሉ የተጠቆሙ ፍለጋዎችን እና የሸመታ ዋጋ ቅናሾችን እየተመለከቱ ነው።
         <ph name="BREAK" />
         <ph name="BREAK" />
@@ -10017,6 +10021,7 @@ nil</translation>
 <translation id="8073499153683482226"><ph name="BEGIN_PARAGRAPH1" />የመተግበሪያ ውሂብ እንደ እውቂያዎች፣ መልዕክቶች፣ እና ፎቶዎች ያለ ውሂብንም ጨምሮ አንድ መተግበሪያ የሚያስቀምጠው ማንኛውም ውሂብ ሊሆን ይችላል (በገንቢው ቅንብሮች ላይ የሚወሰን)።<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />የምትኬ ውሂብ በእርስዎ ልጅ የDrive ማከማቻ ኮታ ላይ አይቆጠርም።<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />ይህን አገልግሎት በቅንብሮች ውስጥ ማጥፋት ይችላሉ።<ph name="END_PARAGRAPH3" /></translation>
+<translation id="8075044377771022666">ግርጌ</translation>
 <translation id="8076835018653442223">በእርስዎ መሣሪያ ላይ ያሉ የአካባቢያዊ ፋይሎች መዳረሻ በእርስዎ አስተዳዳሪ ተሰናክሏል</translation>
 <translation id="8077120325605624147">የሚጎበኙት ማንኛውም ጣቢያ ማንኛውንም ማስታወቂያ ሊያሳይዎ ይችላል</translation>
 <translation id="8077579734294125741">ሌሎች የChrome መገለጫዎች</translation>
@@ -10952,6 +10957,7 @@ nil</translation>
 <translation id="8729133765463465108">የQR ኮድ ለመቃኘት ካሜራ ይጠቀሙ</translation>
 <translation id="8730621377337864115">ተከናውኗል</translation>
 <translation id="8731029916209785242">ፈቃዶች (<ph name="FORMATTED_ORIGIN" />)</translation>
+<translation id="8731258351357994801">ግቤት <ph name="NUMBER" /></translation>
 <translation id="8731268612289859741">የደህንነት ኮድ</translation>
 <translation id="8731629443331803108"><ph name="SITE_NAME" /> የሚከተለውን ማድረግ ይፈልጋል፦ <ph name="PERMISSION" /></translation>
 <translation id="8731787661154643562">ወደብ ቁጥር</translation>

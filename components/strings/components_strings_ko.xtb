@@ -367,6 +367,7 @@
 <translation id="1612199629998703524">주제 관리</translation>
 <translation id="1615178538289490617"><ph name="PORT_NAME" />의 액세스 권한 취소</translation>
 <translation id="1615402009686901181">기밀 콘텐츠가 보일 때 관리자 정책에서 화면 캡처를 사용 중지합니다.</translation>
+<translation id="161612500287664753">Google 검색에 이 페이지에 관해 질문하기</translation>
 <translation id="1617276713587758852">크로스오버</translation>
 <translation id="1619007254056372606">기기 내 사이트 데이터 관리</translation>
 <translation id="1619648179761984213"><ph name="USER_DISPLAY_NAME" />님이 탭을 삭제했습니다.</translation>
@@ -1508,6 +1509,7 @@
 <translation id="3586931643579894722">세부정보 숨기기</translation>
 <translation id="3587725436724465984">조직에서 <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> 도메인을 정책 위반 가능성이 있는 사이트로 식별했습니다. <ph name="BEGIN_LEARN_MORE_LINK" />이 경고에 대해 자세히 알아보기<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3587738293690942763">보통</translation>
+<translation id="3589519427766620380">Google 렌즈에 이 페이지에 관해 질문하기</translation>
 <translation id="3596918995172292499">번호판 발행 주</translation>
 <translation id="3600106876108433070">비교 표에 대해 자세히 알아보기</translation>
 <translation id="3600246354004376029"><ph name="TITLE" />, <ph name="DOMAIN" />, <ph name="TIME" /></translation>
@@ -2448,6 +2450,7 @@
 <translation id="519422657042045905">주석을 사용할 수 없음</translation>
 <translation id="5200063972779787617">계정에 주소 저장</translation>
 <translation id="5201306358585911203">이 페이지에 삽입된 페이지 내용:</translation>
+<translation id="5203716867500274632">관리자가 ChromeOS 기기에서 이전 세션과 현재 세션 간에 다음 항목을 동기화하도록 설정했습니다</translation>
 <translation id="5205114269877707377"><ph name="OMNIBOX_ACTION_FOCUSED_FRIENDLY_MATCH_TEXT" />, Tab을 눌러 사용 가능한 작업을 둘러보고 Enter를 눌러 선택한 작업을 실행합니다.</translation>
 <translation id="5205222826937269299">이름은 필수입니다.</translation>
 <translation id="5206392433295093945">침실</translation>
@@ -2607,6 +2610,7 @@
 <translation id="5472588168895083535">손 추적이 차단됨</translation>
 <translation id="547963486735802022">파일을 다시 전송해 보세요.</translation>
 <translation id="5481076368049295676">이 콘텐츠는 사용자의 정보를 도용하거나 삭제하는 위험한 소프트웨어를 기기에 설치하려 할 수도 있습니다. <ph name="BEGIN_LINK" />표시하기<ph name="END_LINK" /></translation>
+<translation id="5481604577800516617">창 및 탭 배열</translation>
 <translation id="5481682542063333508">작성 도움 제공</translation>
 <translation id="54817484435770891">유효한 주소 추가</translation>
 <translation id="5483838506518938965">준비 완료</translation>
@@ -3442,6 +3446,7 @@
 <translation id="6925267999184670015">북미 B+</translation>
 <translation id="6926216138694948720">바디아트</translation>
 <translation id="692638818576287323">상업용 차량</translation>
+<translation id="6930607614725241390">측면 패널에서 검색</translation>
 <translation id="6934236486840930310"><ph name="BEGIN_BOLD" />기본 검색엔진을 사용하면 웹을 검색할 수 있으며 Chrome 기능<ph name="END_BOLD" />(예: 주소 표시줄 및 웹페이지의 이미지 검색)을 사용할 수 있습니다. 선택한 검색엔진에서 지원하지 않는 기능은 사용하지 못할 수도 있습니다.</translation>
 <translation id="6934672428414710184">Google 계정에 등록된 이름입니다.</translation>
 <translation id="6935077351544118151">이제 Google 월렛에서 포인트 카드를 자동 완성할 수 있습니다</translation>
@@ -3768,7 +3773,7 @@
 <translation id="7469935732330206581">안전하지 않은 양식</translation>
 <translation id="7470854469646445678">복사 사유 입력(필수)</translation>
 <translation id="7471007961486718967">이전 사유 입력(필수)</translation>
-<translation id="7473891865547856676">건너뛰기</translation>
+<translation id="7473891865547856676">나중에</translation>
 <translation id="7481312909269577407">앞으로</translation>
 <translation id="7481603210197454575">봉투 Italian</translation>
 <translation id="7483482939016730822">학용품 및 교실 비품</translation>
@@ -4280,6 +4285,7 @@
 <translation id="8352849934814541340">이 기기의 관리자가 추가 기능을 위한 애플리케이션을 설치했습니다. 애플리케이션에는 내 데이터 중 일부에 액세스할 권한이 있습니다.</translation>
 <translation id="8355270400102541638">로컬 비정상 종료 컨텍스트:</translation>
 <translation id="8363502534493474904">비행기 모드 사용 중지</translation>
+<translation id="8363929499301563123">웹사이트 쿠키(최근 방문한 웹사이트의 로그인 상태는 유지됨)</translation>
 <translation id="8364627913115013041">설정 안됨</translation>
 <translation id="8366057325711477500">세계 뉴스</translation>
 <translation id="836616551641291797">브라우저 관리 방법 자세히 알아보기</translation>

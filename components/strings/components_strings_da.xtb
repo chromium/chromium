@@ -636,6 +636,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="2088913896151127116">Tilføj tekst</translation>
 <translation id="2090451897496479509">Kontakt udbyderen for at få flere oplysninger</translation>
 <translation id="2091887806945687916">Lyd</translation>
+<translation id="2093184051799735948">Søg i <ph name="ENGINE_NAME" />, eller angiv en webadresse</translation>
 <translation id="2093982008204312032">Google Chrome forsøger at deaktivere udfyldning af adgangskoder via Windows Hello.</translation>
 <translation id="2094505752054353250">Uoverensstemmelse mellem domæner</translation>
 <translation id="2094704029599359040">Versionsoplysninger</translation>
@@ -770,6 +771,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="2296331629987861142">Betal i rater (med forbehold for kvalificering, gebyrer pålægges)</translation>
 <translation id="2300306941146563769">Ikke uploadet</translation>
 <translation id="2301098101308036335">Hvilke websites der besøges, og hvornår de besøges.</translation>
+<translation id="2302571905116831849">Udfyld loyalitetskort automatisk</translation>
 <translation id="230286397113210245">Knappen Åbn inkognitovindue, aktivér for at åbne et nyt inkognitovindue, så du kan browse privat</translation>
 <translation id="2305294852062272447">Vil du gemme dit kørekort?</translation>
 <translation id="2306124309679506798">Vil du tillade en medrivende brugeroplevelse?</translation>
@@ -2446,6 +2448,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="519422657042045905">Annotering er ikke tilgængelig</translation>
 <translation id="5200063972779787617">Gem adressen på kontoen</translation>
 <translation id="5201306358585911203">En integreret side på denne side siger</translation>
+<translation id="5203716867500274632">Din administrator har tilladt, at følgende synkroniseres mellem dine tidligere og aktuelle sessioner på alle dine ChromeOS-enheder:</translation>
 <translation id="5205114269877707377"><ph name="OMNIBOX_ACTION_FOCUSED_FRIENDLY_MATCH_TEXT" />, tryk på Tab-tasten for at gennemse tilgængelige handlinger, og tryk derefter på Enter for at udføre den valgte handling.</translation>
 <translation id="5205222826937269299">Navn påkrævet</translation>
 <translation id="5206392433295093945">Soveværelse</translation>
@@ -2605,6 +2608,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="5472588168895083535">Registrering af håndbevægelser er blokeret</translation>
 <translation id="547963486735802022">Prøv at overføre dine filer igen</translation>
 <translation id="5481076368049295676">Dette indhold forsøger muligvis at installere farlig software på din enhed, der kan stjæle eller slette dine oplysninger. <ph name="BEGIN_LINK" />Vis alligevel<ph name="END_LINK" /></translation>
+<translation id="5481604577800516617">Rækkefølge af vinduer og faner</translation>
 <translation id="5481682542063333508">Tilbyd hjælp til at skrive</translation>
 <translation id="54817484435770891">Tilføj gyldig adresse</translation>
 <translation id="5483838506518938965">Så er du klar</translation>
@@ -4279,6 +4283,7 @@ Yderligere oplysninger:
 <translation id="8352849934814541340">Administratoren af denne enhed har installeret apps til yderligere funktioner. De pågældende apps har adgang til nogle af dine data.</translation>
 <translation id="8355270400102541638">Lokal nedbrudskontekst:</translation>
 <translation id="8363502534493474904">Deaktivere flytilstand</translation>
+<translation id="8363929499301563123">Websitecookies (loginstatus på websites, der er besøgt for nylig, bevares)</translation>
 <translation id="8364627913115013041">Ikke angivet.</translation>
 <translation id="8366057325711477500">Internationale nyheder</translation>
 <translation id="836616551641291797">Få flere oplysninger om, hvordan din browser administreres</translation>

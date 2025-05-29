@@ -636,6 +636,7 @@
 <translation id="2088913896151127116">Ajouter du texte</translation>
 <translation id="2090451897496479509">Contactez le fournisseur pour plus d'informations</translation>
 <translation id="2091887806945687916">Son</translation>
+<translation id="2093184051799735948">Recherchez sur <ph name="ENGINE_NAME" /> ou entrez une URL</translation>
 <translation id="2093982008204312032">Google Chrome essaie de désactiver Windows Hello pour remplir les mots de passe.</translation>
 <translation id="2094505752054353250">Le domaine ne correspond pas</translation>
 <translation id="2094704029599359040">Renseignements sur la version</translation>
@@ -2447,6 +2448,7 @@ Vous pouvez également communiquer avec le propriétaire du site et lui suggére
 <translation id="519422657042045905">Le mode d'annotation n'est pas accessible</translation>
 <translation id="5200063972779787617">Enregistrer l'adresse dans le compte</translation>
 <translation id="5201306358585911203">Une page intégrée de cette page indique</translation>
+<translation id="5203716867500274632">Votre administrateur a activé la synchronisation des éléments suivants entre vos sessions précédentes et actuelles sur vos appareils ChromeOS :</translation>
 <translation id="5205114269877707377"><ph name="OMNIBOX_ACTION_FOCUSED_FRIENDLY_MATCH_TEXT" />, appuyez sur Tabulation pour parcourir les actions offertes, puis sur Entrée pour exécuter l'action sélectionnée.</translation>
 <translation id="5205222826937269299">Vous devez indiquer un nom</translation>
 <translation id="5206392433295093945">Chambre</translation>
@@ -2606,6 +2608,7 @@ Vous pouvez également communiquer avec le propriétaire du site et lui suggére
 <translation id="5472588168895083535">Suivi des mains bloqué</translation>
 <translation id="547963486735802022">Réessayez de transférer vos fichiers</translation>
 <translation id="5481076368049295676">Ce contenu pourrait tenter d'installer des logiciels dangereux sur votre appareil afin de voler ou de supprimer vos données. <ph name="BEGIN_LINK" />Afficher quand même<ph name="END_LINK" /></translation>
+<translation id="5481604577800516617">Disposition des fenêtres et des onglets</translation>
 <translation id="5481682542063333508">Offrir l'aide à la rédaction</translation>
 <translation id="54817484435770891">Ajouter une adresse valide</translation>
 <translation id="5483838506518938965">Tout est prêt</translation>
@@ -4279,6 +4282,7 @@ Détails supplémentaires :
 <translation id="8352849934814541340">L'administrateur de cet appareil a installé des applications offrant des fonctions supplémentaires. Les applications ont accès à certaines de vos données.</translation>
 <translation id="8355270400102541638">Contexte du plantage local :</translation>
 <translation id="8363502534493474904">De désactiver le mode Avion</translation>
+<translation id="8363929499301563123">Témoins de sites Web (l'état de connexion sur les sites Web récemment visités sera conservé)</translation>
 <translation id="8364627913115013041">Non configurée.</translation>
 <translation id="8366057325711477500">Actualités internationales</translation>
 <translation id="836616551641291797">En savoir plus sur la gestion de votre navigateur</translation>

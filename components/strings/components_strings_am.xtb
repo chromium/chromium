@@ -367,6 +367,7 @@
 <translation id="1612199629998703524">ርዕሶችን አስተዳድር</translation>
 <translation id="1615178538289490617">ለ<ph name="PORT_NAME" /> መዳረሻን ሻር</translation>
 <translation id="1615402009686901181">ሚስጥራዊ ይዘት በሚታይበት ጊዜ የአስተዳዳሪ መመሪያ የማያ ገፅ ማንሳትን ያሰናክላል</translation>
+<translation id="161612500287664753">ስለ እዚህ ገፅ Google ፍለጋን ይጠይቁ</translation>
 <translation id="1617276713587758852">ክሮስኦቨሮች</translation>
 <translation id="1619007254056372606">በመሣሪያ ላይ የጣቢያ ውሂብን ያስተዳድሩ</translation>
 <translation id="1619648179761984213"><ph name="USER_DISPLAY_NAME" /> ይህን ትር አስወግደዋል</translation>
@@ -1507,6 +1508,7 @@
 <translation id="3586931643579894722">ዝርዝር ደብቅ</translation>
 <translation id="3587725436724465984">የእርስዎ ድርጅት <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> መመሪያ ሊጥስ የሚችል ጣቢያ እንደሆነ ለይቶታል። <ph name="BEGIN_LEARN_MORE_LINK" />ስለዚህ ማስጠንቀቂያ የበለጠ ይረዱ<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3587738293690942763">መሃል</translation>
+<translation id="3589519427766620380">ስለ እዚህ ገፅ Google ሌንስን ይጠይቁ</translation>
 <translation id="3596918995172292499">የሰሌዳ ሁኔታ</translation>
 <translation id="3600106876108433070">ስለ የንጽጽር ሠንጠረዦች ይወቁ</translation>
 <translation id="3600246354004376029"><ph name="TITLE" />፣ <ph name="DOMAIN" />፣ <ph name="TIME" /></translation>
@@ -2447,6 +2449,7 @@
 <translation id="519422657042045905">ማብራሪያ አይገኝም</translation>
 <translation id="5200063972779787617">አድራሻን በመለያ ውስጥ ያስቀምጡ</translation>
 <translation id="5201306358585911203">በዚህ ድረ-ገፅ ላይ ያለ የተካተተ ገፅ እንዲህ ይላል፦</translation>
+<translation id="5203716867500274632">አስተዳዳሪዎ የሚከተለውን በመላው ChromeOS መሣሪያዎችዎ ላይ በእርስዎ ቀዳሚ እና የአሁን ክፍለ-ጊዜዎች መካከል እንዲሠምር አስችለውታል፦</translation>
 <translation id="5205114269877707377"><ph name="OMNIBOX_ACTION_FOCUSED_FRIENDLY_MATCH_TEXT" />፣ የሚገኙ እርምጃዎችን ለማሰስ Tabን በመቀጠል የተመረጠውን እርምጃ ለመፈጸም አስገባን ይጫኑ።</translation>
 <translation id="5205222826937269299">ስም ያስፈልጋል</translation>
 <translation id="5206392433295093945">የመኝታ ክፍል</translation>
@@ -2606,6 +2609,7 @@
 <translation id="5472588168895083535">የእጅ ክትትል ታግዷል</translation>
 <translation id="547963486735802022">ፋይሎችዎን እንደገና ለማስተላልፍ ይሞክሩ</translation>
 <translation id="5481076368049295676">ይህ ይዘት በእርስዎ መሣሪያ ላይ መረጃዎን የሚሰርቅ ወይም የሚሰርዝ አደገኛ ሶፍትዌርን ለመጫን ሊሞክር ይችል ይሆናል። <ph name="BEGIN_LINK" />የሆነው ሆኖ አሳይ<ph name="END_LINK" /></translation>
+<translation id="5481604577800516617">የመስኮቶች እና ትሮች አቀማመጥ</translation>
 <translation id="5481682542063333508">የአጻጻፍ እገዛን አቅርብ</translation>
 <translation id="54817484435770891">የሚሰራ አድራሻ ያስገቡ</translation>
 <translation id="5483838506518938965">በቃ ጨርሰዋል</translation>
@@ -3441,6 +3445,7 @@
 <translation id="6925267999184670015">የሰሜን አሜሪካ B+</translation>
 <translation id="6926216138694948720">የሰውነት ሥነ ጥበብ</translation>
 <translation id="692638818576287323">የንግድ ተሽከርካሪዎች</translation>
+<translation id="6930607614725241390">በጎን ፓነል ውስጥ ይፈልጉ</translation>
 <translation id="6934236486840930310"><ph name="BEGIN_BOLD" />የእርስዎ ነባሪ የፍለጋ ፕሮግራም ድርን እንዲፈልጉ ያስችልዎታል እና የChrome ባህሪያትን ያጎለብታል<ph name="END_BOLD" /> ለምሳሌ ከአድራሻ አሞሌ እና በድረ-ገጾች ላይ ከምስሎች መፈለግ። ባህሪ በእርስዎ የፍለጋ ፕሮግራም የሚደገፍ ካልሆነ ላይገኝ ይችላል።</translation>
 <translation id="6934672428414710184">ይህ ስም ከእርስዎ Google መለያ የተገኘ ነው</translation>
 <translation id="6935077351544118151">አሁን ከGoogle Wallet የታማኝነት ካርዶችን ራስ-መሙላት ይችላሉ</translation>
@@ -4280,6 +4285,7 @@
 <translation id="8352849934814541340">የዚህ መሣሪያ አስተዳዳሪ ለተጨማሪ ተግባራት መተግበሪያዎችን ጭኗል። መተግበሪያዎች የአንዳንድ ውሂብዎ መዳረሻ አላቸው።</translation>
 <translation id="8355270400102541638">የአካባቢያዊ ስንክል አውድ፦</translation>
 <translation id="8363502534493474904">የአውሮፕላን ሁነታን ማጥፋት</translation>
+<translation id="8363929499301563123">የድር ጣቢያ ኩኪዎች (በቅርብ ጊዜ በተጎበኙ ድር ጣቢያዎች ላይ በመለያ የተገባበት ሁኔታ ተጠብቆ ይቆያል)</translation>
 <translation id="8364627913115013041">አልተዋቀረም።</translation>
 <translation id="8366057325711477500">የዓለም ዜና</translation>
 <translation id="836616551641291797">አሳሽዎ እንዴት እንደሚተዳደር የበለጠ ይወቁ</translation>

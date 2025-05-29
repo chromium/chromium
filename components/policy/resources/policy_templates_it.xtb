@@ -5854,6 +5854,7 @@ NOTA: le modifiche apportate a questa policy verranno applicate soltanto ai proc
 <translation id="5194683382395300627">Consenti l'utilizzo di <ph name="ASSISTANT_PRODUCT_NAME" /> sul Web, ad esempio per attivare la modifica automatica delle password</translation>
 <translation id="5196630732055960309">Consenti l'API File Handling su queste app web</translation>
 <translation id="5205352023880027050">Non attivare la funzionalità EphemeralNetworkPolicies.</translation>
+<translation id="5205385499831960279">Applica limitazioni alle richieste agli endpoint della rete locale</translation>
 <translation id="5206454085187851382">Se per la policy <ph name="PRINTERS_BULK_ACCESS_MODE_POLICY_NAME" /> viene selezionata l'opzione <ph name="PRINTERS_ALLOWLIST" />, la configurazione della policy <ph name="PRINTERS_BULK_ALLOWLIST_POLICY_NAME" /> consente di specificare le stampanti che possono essere utilizzate dagli utenti. Soltanto le stampanti con ID corrispondenti ai valori specificati in questa policy saranno a disposizione degli utenti. Gli ID devono corrispondere ai campi <ph name="ID_FIELD" /> o <ph name="GUID_FIELD" /> del file specificato nella policy <ph name="PRINTERS_BULK_CONFIGURATION_POLICY_NAME" />.</translation>
 <translation id="5207543664699568887">Consente di configurare se <ph name="PRODUCT_NAME" /> utilizzerà notifiche di sistema su Linux.
 
@@ -6756,6 +6757,7 @@ Su <ph name="MS_WIN_NAME" />, questa policy è disponibile soltanto per le istan
 
       Nota: il fattore di regolazione minimo deve essere 100%.</translation>
 <translation id="5740636973289452345">Attiva la generazione di report sulle informazioni relative a estensioni e plug-in</translation>
+<translation id="5740716956489996914">Usa il comportamento predefinito quando determini se i siti web possono effettuare richieste agli endpoint della rete locale</translation>
 <translation id="5741110260062082926">Disattiva Orca</translation>
 <translation id="5746149754419996562">Consente la presenza di widget Glanceables su <ph name="PRODUCT_OS_NAME" />. In particolare, i widget accessibili tramite il chip di data nella barra delle app.
 Se questa policy viene attivata, i Glanceables sono attivati su <ph name="PRODUCT_OS_NAME" />.
@@ -6877,6 +6879,7 @@ Per ulteriori informazioni sulla gestione dei dati per le funzionalità di AI ge
 
       Se la policy viene impostata su Disattivata o se non viene configurata, i log di sistema non vengono segnalati.</translation>
 <translation id="5861856285460256766">Configurazione codice di accesso genitori</translation>
+<translation id="5864898931148094192">Controlla la visibilità dell'attribuzione dell'estensione nella pagina Nuova scheda</translation>
 <translation id="5868414965372171132">Configurazione di rete a livello di utente</translation>
 <translation id="5868454276721377379">Quando un utente passa da un dispositivo <ph name="PRODUCT_OS_NAME" /> a un altro, il servizio SSO mobile ripristina lo stato dell'autenticazione dell'utente nel web service dal dispositivo precedente a quello nuovo. Ciò si ottiene trasferendo i cookie dell'utente tra i dispositivi.
 
@@ -7168,6 +7171,13 @@ Questa policy è stata ritirata a partire dalla versione M124.</translation>
 <translation id="604243460476563291">Disattiva il trasferimento di file nelle connessioni di assistenza da remoto da parte degli amministratori aziendali</translation>
 <translation id="6042629184389251062">La raccolta di metriche con chiave URL non è consentita</translation>
 <translation id="6046615715547751255">Non consentire i controlli di reporting granulare</translation>
+<translation id="6047041034696466581">Questa policy consente di stabilire se nel piè di pagina della pagina Nuova scheda viene visualizzata un'attribuzione dell'estensione che modifica la pagina Nuova scheda.
+
+Per impostazione predefinita, se un'estensione ha sostituito la pagina Nuova scheda standard, nel piè di pagina viene visualizzato un messaggio che attribuisce questa modifica all'estensione specifica. Questa attribuzione include in genere un link all'estensione pertinente nel Chrome Web Store.
+
+Se questa policy non viene impostata o viene impostata su true, l'attribuzione dell'estensione sarà visibile nel piè di pagina della pagina Nuova scheda quando un'estensione ne ha il controllo.
+
+Se questa policy viene impostata su false, l'attribuzione dell'estensione nel piè di pagina della pagina Nuova scheda verrà soppressa.</translation>
 <translation id="6048199181629830227">Attiva la gestione della variazione dei picchi energetici</translation>
 <translation id="6048690591359317353">Non consentire all'utente di disconnettere o modificare manualmente una VPN</translation>
 <translation id="6049117606554031363">Attiva i report sullo stato della scheda del dispositivo</translation>
@@ -7718,6 +7728,7 @@ Vedi l'elenco di variabili che puoi utilizzare (https://www.chromium.org/adminis
 
 Se la policy non viene configurata, significa che <ph name="PRODUCT_OS_NAME" /> utilizza la directory "Download" predefinita per archiviare le acquisizioni schermo e gli utenti possono modificarla.</translation>
 <translation id="6377031865393559909">Gli utenti possono usare i modelli di scrivanie</translation>
+<translation id="6377570995433636383">Specifica se applicare limitazioni alle richieste agli endpoint della rete locale</translation>
 <translation id="6378076389057087301">Specifica se l'attività audio incide sulla gestione dell'alimentazione</translation>
 <translation id="6378393933102834628">Se la policy è impostata su True, la scorciatoia per le app viene visualizzata. Se la policy è impostata su False, tale scorciatoia non viene mai visualizzata.
 
@@ -11443,6 +11454,11 @@ Se questa policy viene disattivata, tutte le integrazioni verranno disattivate.<
       Se lo stesso pattern URL esiste sia in questa policy sia nella policy <ph name="SENSORS_BLOCKED_FOR_URLS_POLICY_NAME" />, quest'ultima ha la priorità e l'accesso ai sensori di movimento o di luce verrà bloccato.
 
       Per informazioni dettagliate sui pattern <ph name="URL_LABEL" /> validi, visita la pagina https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. I caratteri jolly (<ph name="WILDCARD_VALUE" />) sono consentiti.</translation>
+<translation id="9002299469625801504">Se questa policy viene impostata su Attivata, ogni volta che dovrebbe essere visualizzato un avviso in <ph name="DEV_TOOLS_NAME" /> a causa di controlli <ph name="LOCAL_NETWORK_ACCCESS" /> non riusciti, la richiesta principale verrà bloccata.
+
+Se questa policy viene impostata su Disattivata o se non viene configurata, le richieste di <ph name="LOCAL_NETWORK_ACCESS" /> useranno la gestione predefinita di queste richieste.
+
+Visita la pagina https://github.com/explainers-by-googlers/local-network-access per conoscere le limitazioni relative a <ph name="LOCAL_NETWORK_ACCESS" />.</translation>
 <translation id="9003823644527627017">Configura VM Bruschetta su <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="9004469022085379212">Se la policy viene attivata, al dispositivo viene consentito di eseguire macchine virtuali su <ph name="PRODUCT_OS_NAME" />. Le policy <ph name="VIRTUAL_MACHINES_ALLOWED_POLICY_NAME" /> e <ph name="CROSTINI_ALLOWED_POLICY_NAME" /> devono essere attivate per utilizzare <ph name="PRODUCT_CROSTINI_NAME" />. Se la policy viene disattivata, significa che il dispositivo non può eseguire macchine virtuali. Tramite la disattivazione della policy, questa viene applicata all'avvio di nuove macchine virtuali, non a quelle già in esecuzione.
 

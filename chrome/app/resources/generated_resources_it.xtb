@@ -80,6 +80,7 @@
 <translation id="1049743911850919806">In incognito</translation>
 <translation id="1049795001945932310">&amp;Impostazioni lingua</translation>
 <translation id="1050693411695664090">Scadente</translation>
+<translation id="1053226848101751430">Voce eliminata</translation>
 <translation id="1053898984916097744">Inizia qualcosa di nuovo o ricevi assistenza nel flusso.</translation>
 <translation id="1054048317165655285">Completa la configurazione sul telefono</translation>
 <translation id="1054153489933238809">Apri &amp;originale in nuova scheda</translation>
@@ -1802,6 +1803,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2249111429176737533">Apri come finestra a schede</translation>
 <translation id="2249605167705922988">ad es. 1-5, 8, 11-13</translation>
 <translation id="2249635629516220541">Personalizza le informazioni usate dai siti per mostrarti annunci</translation>
+<translation id="2250153645770828940">Elimina dizionario</translation>
 <translation id="22505994009453896">Controlla il cursore del mouse con la tastiera numerica</translation>
 <translation id="2250624716625396929">Questa scheda utilizza la videocamera o il microfono</translation>
 <translation id="2251218783371366160">Apri con visualizzatore di sistema</translation>
@@ -2226,6 +2228,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2519250377986324805">Scopri come fare</translation>
 <translation id="2519517390894391510">Nome profilo di certificato</translation>
 <translation id="2520644704042891903">In attesa di socket disponibile...</translation>
+<translation id="2520961587246779103">Altre opzioni per la visualizzazione divisa</translation>
 <translation id="2521427645491031107">La sincronizzazione delle app è configurata nelle impostazioni del dispositivo</translation>
 <translation id="2521835766824839541">traccia precedente</translation>
 <translation id="2521854691574443804">Controllo della conformità di <ph name="FILE_NAME" /> alle norme di sicurezza della tua organizzazione in corso…</translation>
@@ -3171,6 +3174,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3202578601642193415">Ultimo</translation>
 <translation id="3204648577100496185">I dati associati a questa app potrebbero essere rimossi dal dispositivo</translation>
 <translation id="3204717934117444051">I dati salvati solo su questo dispositivo rimarranno nel profilo esistente. Non verranno sincronizzati con <ph name="EMAIL" /></translation>
+<translation id="3206289903841621620">Dizionario utente <ph name="NUMBER" /></translation>
 <translation id="3207344462385471911">Ricevi ricerche suggerite e sconti per gli acquisti che potrebbero interessarti in base alla tua attività recente.
         <ph name="BREAK" />
         <ph name="BREAK" />
@@ -6900,7 +6904,7 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="5868434909835797817">Microfono non attivo sul dispositivo</translation>
 <translation id="5868479397518301468">Accesso scaduto</translation>
 <translation id="5868822853313956582">Segui i colori del dispositivo</translation>
-<translation id="5869029295770560994">OK</translation>
+<translation id="5869029295770560994">Ok</translation>
 <translation id="5869522115854928033">Password salvate</translation>
 <translation id="5870086504539785141">Chiudi menu accessibilità</translation>
 <translation id="5870155679953074650">Errori hardware</translation>
@@ -7685,7 +7689,7 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="6445450263907939268">Se non volevi apportare queste modifiche, puoi ripristinare le impostazioni precedenti.</translation>
 <translation id="6446213738085045933">Crea collegamento sul desktop</translation>
 <translation id="6447842834002726250">Cookie</translation>
-<translation id="6450876761651513209">Modifica delle impostazioni relative alla privacy</translation>
+<translation id="6450876761651513209">Modificare le impostazioni relative alla privacy</translation>
 <translation id="6451591602925140504">{NUM_PAGES,plural, =0{<ph name="PAGE_TITLE" />}=1{<ph name="PAGE_TITLE" /> e 1 altra scheda}other{<ph name="PAGE_TITLE" /> e altre # schede}}</translation>
 <translation id="6451689256222386810">Se non ricordi la passphrase o vuoi modificare questa impostazione, <ph name="BEGIN_LINK" />reimposta la sincronizzazione<ph name="END_LINK" />.</translation>
 <translation id="6451861213630784801">Accesso non eseguito</translation>
@@ -8414,7 +8418,7 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="6963872466817251924">Evidenziazione del cursore di testo</translation>
 <translation id="6964390816189577014">Eroe</translation>
 <translation id="6964760285928603117">Rimuovi dal gruppo</translation>
-<translation id="6965382102122355670">OK</translation>
+<translation id="6965382102122355670">Ok</translation>
 <translation id="6965607054907047032">Libera memoria in base all'inattività delle schede</translation>
 <translation id="6965648386495488594">Porta</translation>
 <translation id="6965978654500191972">Dispositivo</translation>
@@ -10935,6 +10939,7 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8729133765463465108">Utilizza la fotocamera per scansionare il codice QR</translation>
 <translation id="8730621377337864115">Fine</translation>
 <translation id="8731029916209785242">Autorizzazioni (<ph name="FORMATTED_ORIGIN" />)</translation>
+<translation id="8731258351357994801">Voce <ph name="NUMBER" /></translation>
 <translation id="8731268612289859741">Codice di sicurezza</translation>
 <translation id="8731629443331803108"><ph name="SITE_NAME" /> richiede l'autorizzazione: <ph name="PERMISSION" /></translation>
 <translation id="8731787661154643562">Numero porta</translation>

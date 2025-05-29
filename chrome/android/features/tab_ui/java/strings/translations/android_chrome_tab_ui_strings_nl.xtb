@@ -175,6 +175,7 @@
 <translation id="7942349550061667556">Rood</translation>
 <translation id="7961015016161918242">Nooit</translation>
 <translation id="7966321538264951561">Sluit de suggesties.</translation>
+<translation id="796696298310625748">{WINDOW_COUNT,plural, =1{Tabblad verplaatsen naar nieuw venster}other{Tabblad verplaatsen naar ander venster}}</translation>
 <translation id="799469866974412355">Nieuwe groep van je andere apparaat</translation>
 <translation id="8029301326595421733">Informatie over deze winkel is op volledige hoogte geopend</translation>
 <translation id="8053770993984522566">Lijst met tabbladgroepen, geopend op halve hoogte</translation>
@@ -196,6 +197,7 @@
 <translation id="8730621377337864115">Klaar</translation>
 <translation id="8730999928494395583">Je activiteit in deze incognitotabbladen wordt verwijderd van dit apparaat</translation>
 <translation id="875848103419578654">{NUM_MONTHS,plural, =1{<ph name="NUM_MONTHS_ONE" /> maand geleden gemaakt}other{<ph name="NUM_MONTHS_MANY" /> maanden geleden gemaakt}}</translation>
+<translation id="8813708480179818649">Tabblad uit groep verwijderen</translation>
 <translation id="8820741577754260431">Prijsdalingen bekijken op je tabbladen</translation>
 <translation id="883379923675618699">Chrome sluit automatisch items in het gedeelte Inactief die je al 3 maanden niet hebt gebruikt. Je kunt dit nu of later uitzetten via Instellingen.</translation>
 <translation id="8887921976452567404">Je kunt je gesloten tabbladen en groepen opnieuw openen via het gedeelte Recente tabbladen en het gedeelte Tabbladgroepen.</translation>

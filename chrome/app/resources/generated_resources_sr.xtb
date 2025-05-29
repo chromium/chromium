@@ -80,6 +80,7 @@
 <translation id="1049743911850919806">Без архивирања</translation>
 <translation id="1049795001945932310">&amp;Подешавања језика</translation>
 <translation id="1050693411695664090">Лоша</translation>
+<translation id="1053226848101751430">Унос је избрисан</translation>
 <translation id="1053898984916097744">Започните нови задатак или затражите помоћ у току.</translation>
 <translation id="1054048317165655285">Довршите подешавање на телефону</translation>
 <translation id="1054153489933238809">Отвори оригиналну сл&amp;ику на новој картици</translation>
@@ -1800,6 +1801,7 @@
 <translation id="2249111429176737533">Отвори као прозор са картицама</translation>
 <translation id="2249605167705922988">нпр. 1–5, 8, 11–13</translation>
 <translation id="2249635629516220541">Прилагодите информације које сајтови користе да би вам приказивали огласе</translation>
+<translation id="2250153645770828940">Избришите речник</translation>
 <translation id="22505994009453896">Контролишите курсор миша помоћу нумеричке тастатуре</translation>
 <translation id="2250624716625396929">Ова картица користи камеру и микрофон</translation>
 <translation id="2251218783371366160">Отвори помоћу системског приказивача</translation>
@@ -2224,6 +2226,7 @@
 <translation id="2519250377986324805">Прикажи како</translation>
 <translation id="2519517390894391510">Назив профила сертификата</translation>
 <translation id="2520644704042891903">Чека се доступан прикључак...</translation>
+<translation id="2520961587246779103">Још опција за подељени приказ</translation>
 <translation id="2521427645491031107">Синхронизација апликација је подешена у подешавањима уређаја</translation>
 <translation id="2521835766824839541">претходна песма</translation>
 <translation id="2521854691574443804">Проверава се да ли је <ph name="FILE_NAME" /> у складу са безбедносним смерницама организације...</translation>
@@ -3169,6 +3172,7 @@
 <translation id="3202578601642193415">Најновије</translation>
 <translation id="3204648577100496185">Подаци повезани са овом апликацијом ће се можда уклонити са овог уређаја</translation>
 <translation id="3204717934117444051">Подаци који се чувају само на овом уређају остаће на постојећем профилу. Неће се синхронизовати са <ph name="EMAIL" /></translation>
+<translation id="3206289903841621620">Кориснички речник <ph name="NUMBER" /></translation>
 <translation id="3207344462385471911">Приказују вам се предложене претраге и попусти за куповину који би могли да вас занимају на основу недавних активности.
         <ph name="BREAK" />
         <ph name="BREAK" />
@@ -10004,6 +10008,7 @@
 <translation id="8073499153683482226"><ph name="BEGIN_PARAGRAPH1" />Подаци апликација могу да буду било који подаци које је апликација сачувала (на основу подешавања програмера), укључујући податке као што су контакти, поруке и слике.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Резервне копије података се не рачунају у односу на квоту меморијског простора на Диску детета.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />Ову услугу можете да искључите у Подешавањима.<ph name="END_PARAGRAPH3" /></translation>
+<translation id="8075044377771022666">Подножје</translation>
 <translation id="8076835018653442223">Администратор је онемогућио приступ локалним датотекама на уређају</translation>
 <translation id="8077120325605624147">Сваки сајт који посетите може да вам прикаже било који оглас</translation>
 <translation id="8077579734294125741">Други Chrome профили</translation>
@@ -10939,6 +10944,7 @@
 <translation id="8729133765463465108">Скенирај QR кôд помоћу камере</translation>
 <translation id="8730621377337864115">Готово</translation>
 <translation id="8731029916209785242">Дозволе (<ph name="FORMATTED_ORIGIN" />)</translation>
+<translation id="8731258351357994801"><ph name="NUMBER" />. унос</translation>
 <translation id="8731268612289859741">Безбедносни кôд</translation>
 <translation id="8731629443331803108"><ph name="SITE_NAME" /> жели да: <ph name="PERMISSION" /></translation>
 <translation id="8731787661154643562">Број порта</translation>

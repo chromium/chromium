@@ -80,6 +80,7 @@
 <translation id="1049743911850919806">ইনক’গনিট’</translation>
 <translation id="1049795001945932310">&amp;ভাষাৰ ছেটিং</translation>
 <translation id="1050693411695664090">বেয়া</translation>
+<translation id="1053226848101751430">প্ৰৱিষ্টিটো মচা হ’ল</translation>
 <translation id="1053898984916097744">নতুন কিবা আৰম্ভ কৰক বা চলিত কামটোত সহায় লাভ কৰক।</translation>
 <translation id="1054048317165655285">আপোনাৰ ফ’নত ছেটআপ সম্পূৰ্ণ কৰক</translation>
 <translation id="1054153489933238809">নতুন টেবত প্ৰকৃত &amp;প্ৰতিচ্ছবি খোলক</translation>
@@ -1810,6 +1811,7 @@
 <translation id="2249111429176737533">টেব কৰা ৱিণ্ড’ হিচাপে খোলক</translation>
 <translation id="2249605167705922988">যেনে: ১—৫, ৮, ১১—১৩</translation>
 <translation id="2249635629516220541">আপোনাক বিজ্ঞাপন দেখুৱাবলৈ ছাইটসমূহে ব্যৱহাৰ কৰা তথ্য কাষ্টমাইজ কৰক</translation>
+<translation id="2250153645770828940">অভিধান মচক</translation>
 <translation id="22505994009453896">এখন সাংখ্যিক কীপেডৰ জৰিয়তে আপোনাৰ মাউছৰ কাৰ্ছৰডাল নিয়ন্ত্ৰণ কৰক</translation>
 <translation id="2250624716625396929">এই টেবটোৱে আপোনাৰ কেমেৰা আৰু মাইক্ৰ’ফ’ন ব্যৱহাৰ কৰি আছে</translation>
 <translation id="2251218783371366160">ছিষ্টেম ভিউৱাৰৰ জৰিয়তে খোলক</translation>
@@ -2237,6 +2239,7 @@
 <translation id="2519250377986324805">কেনেকৈ কৰে চাওক</translation>
 <translation id="2519517390894391510">প্ৰমাণপত্ৰৰ প্ৰ’ফাইলৰ নাম</translation>
 <translation id="2520644704042891903">ছকেট উপলব্ধ হোৱালৈ অপেক্ষা কৰি থকা হৈছে...</translation>
+<translation id="2520961587246779103">বিভাজিত ভিউৰ বাবে অধিক বিকল্প</translation>
 <translation id="2521427645491031107">ডিভাইচৰ ছেটিঙত এপ্‌ ছিংক কৰাৰ সুবিধাটো ছেট কৰা আছে</translation>
 <translation id="2521835766824839541">পূৰ্বৱৰ্তী ট্ৰেক</translation>
 <translation id="2521854691574443804"><ph name="FILE_NAME" />ক আপোনাৰ প্ৰতিষ্ঠানৰ সুৰক্ষা নীতিসমূহৰ জৰিয়তে পৰীক্ষা কৰি থকা হৈছে...</translation>
@@ -3182,6 +3185,7 @@
 <translation id="3202578601642193415">একেবাৰে নতুন</translation>
 <translation id="3204648577100496185">এই এপ্‌টোৰ সৈতে জড়িত ডেটা এই ডিভাইচটোৰ পৰা আঁতৰোৱা হ’ব পাৰে</translation>
 <translation id="3204717934117444051">কেৱল এই ডিভাইচত ছেভ কৰা ডেটা পূৰ্বৰে পৰা থকা প্ৰ’ফাইল থাকিব। এয়া <ph name="EMAIL" />লৈ ছিংক কৰা নহ’ব</translation>
+<translation id="3206289903841621620">ব্যৱহাৰকাৰীৰ অভিধান <ph name="NUMBER" /></translation>
 <translation id="3207344462385471911">আপোনাৰ শেহতীয়া কাৰ্যকলাপৰ ওপৰত ভিত্তি কৰি আপুনি আগ্ৰহী হ’ব পৰা সন্ধান আৰু শ্বপিঙৰ ৰেহাই সম্পৰ্কীয় পৰামৰ্শ দেখা পাইছে।
         <ph name="BREAK" />
         <ph name="BREAK" />
@@ -10949,6 +10953,7 @@
 <translation id="8729133765463465108">কিউআৰ ক’ড স্কেন কৰিবলৈ কেমেৰা ব্যৱহাৰ কৰক</translation>
 <translation id="8730621377337864115">হ’ল</translation>
 <translation id="8731029916209785242">অনুমতিসমূহ (<ph name="FORMATTED_ORIGIN" />)</translation>
+<translation id="8731258351357994801">প্ৰৱিষ্টি <ph name="NUMBER" /></translation>
 <translation id="8731268612289859741">সুৰক্ষা ক’ড</translation>
 <translation id="8731629443331803108"><ph name="SITE_NAME" />এ এইটো অনুমতি বিচাৰে: <ph name="PERMISSION" /></translation>
 <translation id="8731787661154643562">প’ৰ্ট নম্বৰ</translation>

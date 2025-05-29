@@ -243,6 +243,7 @@
 <translation id="1972325230031091483">Bizkorrago arakatuko duzu, edukia proaktiboki kargatuko delako bisitatzen ari zaren web-orriaren arabera</translation>
 <translation id="1974060860693918893">Aurreratuak</translation>
 <translation id="1977621687170192347">Aktibatu "Eskatu beste aplikazioetako estekak ezkutuko moduan irekitzea".</translation>
+<translation id="1979055159547313322"><ph name="HOSTED_DOMAIN" /> domeinuak kudeatzen du <ph name="USER_EMAIL" /> kontua, eta agian zenbait datu ikus ditzake, hauek barne:</translation>
 <translation id="1979188886349613713">Sartu webguneak zehaztu ez dituen fitxategi-luzapenak</translation>
 <translation id="1980417445547898121">{count,plural, =1{Ireki beste gailuan duela gutxi aktibo zegoen {count} fitxa iPhone honetan}other{Ireki beste gailuan duela gutxi aktibo zeuden {count} fitxa iPhone honetan}}</translation>
 <translation id="1981118202195772574">Mugikorretarakoa</translation>
@@ -264,6 +265,7 @@
 <translation id="2044681667265133332"><ph name="HOSTED_DOMAIN" /> domeinuak kudeatzen du <ph name="USER_EMAIL" /> kontua, eta agian zenbait datu ikus ditzake. <ph name="BEGIN_LINK" />Lortu informazio gehiago<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">elementu berria</translation>
 <translation id="2049727122989709386"><ph name="COUNT" /> kontuk pasahitz bera darabilte</translation>
+<translation id="2054044186557130763">Hasi saioa <ph name="NAME" /> (<ph name="EMAIL" />) gisa. Erakundeak kudeatzen du.</translation>
 <translation id="2059166748188874810">Udalerria</translation>
 <translation id="2060638295449304809">Helbidea gailu honetan soilik gordeta dago. Beste gailuetan erabiltzeko, gorde ezazu Google-ko kontuan (<ph name="USER_EMAIL" />).</translation>
 <translation id="20638360198452347">Unitate motaren hautatzailea</translation>
@@ -278,6 +280,7 @@
 <translation id="2103075008456228677">Ireki history.google.com</translation>
 <translation id="2104436223719117661">Pil-pilean dauden bilaketak</translation>
 <translation id="21133533946938348">Ainguratu fitxa</translation>
+<translation id="2117650889962717098">Mantendu arakatzea pribatu ezkutuko modura aldatuta</translation>
 <translation id="2119636449201577317">Ireki hemen…</translation>
 <translation id="2120553909046681540">Zure erakundeak arakatze pribatua desaktibatu du.</translation>
 <translation id="2122754583996902531">Arakatzailea kudeatuta dago. <ph name="BEGIN_LINK" />Lortu informazio gehiago<ph name="END_LINK" /></translation>
@@ -562,6 +565,7 @@ Behar izanez gero, joan bilatzailearen argibideetara bilaketa-historia ezabatzea
 <translation id="3348387552617855658">Txartelak paketeen jarraipena egiten eta entregari buruzko berri garratzitsuak ematen laguntzen du.</translation>
 <translation id="3349031117032695619">Blokeatu leiho gainerakorrak</translation>
 <translation id="3349676726073650389">Jarraitzaile zaituzten webguneak eta bilaketak Google-ko kontuan gordetzen dira. Haiek kudeatzeko, joan ezarpenetara.</translation>
+<translation id="3353037916374303415"><ph name="EMAIL" />. Kudeatuta dago kontua.</translation>
 <translation id="3365529507898144230">Gorde Argazkiak zerbitzuan</translation>
 <translation id="3371831930909698441">Translate zerbitzua erabilgarri dago. Pantailaren behealdean agertzen dira dauden aukerak.</translation>
 <translation id="3377063233124932127">Orain, gordetako laster-markak, pasahitzak eta gauza gehiago goialdean daude.</translation>
@@ -610,6 +614,7 @@ Behar izanez gero, joan bilatzailearen argibideetara bilaketa-historia ezabatzea
 <translation id="3572607909481582402">Google-ko kontuan daudenak</translation>
 <translation id="3575234738189584619">Bilatu Lens bidez</translation>
 <translation id="3575426792457739946">Zerrenda honek kargatutako profil guztiak ditu.</translation>
+<translation id="3578866308944526475"><ph name="EMAIL" />, erakundeak kudeatzen du.</translation>
 <translation id="3581564640715911333">Eskaini beste hizkuntzetan dauden orriak itzultzea</translation>
 <translation id="3587885837929752825">Erakundeak Google-ko kontuan gorde dezakezuna mugatzen du.</translation>
 <translation id="3588820906588687999">Ireki irudia beste fitxa batean</translation>
@@ -670,6 +675,7 @@ Behar izanez gero, joan bilatzailearen argibideetara bilaketa-historia ezabatzea
 <translation id="3875783148670536197">Erakutsi nola</translation>
 <translation id="3878657761594430423">Orri-hartzailea</translation>
 <translation id="3885587018298784481">Sartu familia-talde batean</translation>
+<translation id="3888230626190453136">Arakatu ezkutuko moduan</translation>
 <translation id="3888863481921783344">Agian gertaerara gonbidatu nahi dituzun pertsonak erakusteko erabiliko da hau.</translation>
 <translation id="3891414008432200754">Prezioa</translation>
 <translation id="3892144330757387737">Historia aurkituko duzu hemen</translation>
@@ -876,6 +882,9 @@ Behar izanez gero, joan bilatzailearen argibideetara bilaketa-historia ezabatzea
 <translation id="4669618761237477717">Modu pribatuan arakatzeko eskatzen dizu zure erakundeak. Ezkutuko moduan, fitxa taldeak ez dira sinkronizatzen.
 <ph name="BEGIN_LINK" />Lortu informazio gehiago<ph name="END_LINK" /></translation>
 <translation id="467189612236587057">Jarri enpresa batekin harremanetan telefonoz deituta</translation>
+<translation id="4673565891421389203">Kontu kudeatuarekin saioa hasiz gero, errazagoa da erakundearekin erlazionatutako arakatzea bereiztea beste arakatzetik (fitxak, historia eta pasahitzak barne).
+
+       Aukeratu zer egin nahi duzun gailuan lehendik dauden arakatze-datuekin.</translation>
 <translation id="4682496302933121474">Orria itzuli nahi duzu?</translation>
 <translation id="4682686630151240767">1. Ireki iPhone-aren Settings (ezarpenak) atala.</translation>
 <translation id="4699172675775169585">Cachean gordetako irudiak eta fitxategiak</translation>
@@ -884,6 +893,7 @@ Behar izanez gero, joan bilatzailearen argibideetara bilaketa-historia ezabatzea
 <translation id="4719927025381752090">Eskaini itzultzea</translation>
 <translation id="4720530280568305198">Hautatutakoa beste fitxa batean ireki da</translation>
 <translation id="472259426228234149">Prezioa: 100 dolar - 180 dolar</translation>
+<translation id="4735849923335729414">Hasi saioa <ph name="EMAIL" /> gisa. Erakundeak kudeatzen du.</translation>
 <translation id="473775607612524610">Eguneratu</translation>
 <translation id="474209246745757965">Arakatu produktuak eta itzuli testua kamerarekin</translation>
 <translation id="4742407542027196863">Kudeatu pasahitzak…</translation>
@@ -956,6 +966,7 @@ Behar izanez gero, joan bilatzailearen argibideetara bilaketa-historia ezabatzea
 <translation id="4985921635659180565">Fitxategi bat ezabatzeko programatzen denean, ezin da bertan behera utzi.</translation>
 <translation id="498624032394115435">Esteka duten guztiek fitxa guztiak edita ditzakete.</translation>
 <translation id="4989065233040279145">Aukeratu non gorde nahi duzun <ph name="FILENAME" /></translation>
+<translation id="499122600724363620"><ph name="NAME" /> (<ph name="EMAIL" />), erakundeak kudeatzen du.</translation>
 <translation id="4992255726304765516">Fitxa talderako kolore <ph name="COLOR" /></translation>
 <translation id="5005498671520578047">Kopiatu pasahitza</translation>
 <translation id="5012914568031465281">Ezin izan da egin prezioen jarraipena.</translation>
@@ -1015,6 +1026,7 @@ Behar izanez gero, joan bilatzailearen argibideetara bilaketa-historia ezabatzea
 <translation id="5234094073825090254">{count,plural, =1{Gorde da laster-marka Google-ko kontuan ({email}).}other{Gorde dira laster-markak Google-ko kontuan ({email}).}}</translation>
 <translation id="5234764350956374838">Baztertu</translation>
 <translation id="5238596603078743134">Orain, <ph name="BEGIN_BOLD" /><ph name="USERNAME" /><ph name="END_BOLD" /> erabiltzaileak zure erabiltzaile-izena eta pasahitza erabil ditzake <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" /> webgunean saioa hasteko Google-ren Pasahitz-kudeatzailea darabilenean.</translation>
+<translation id="5241106044372754566"><ph name="NAME" /> (<ph name="EMAIL" />) hautatuta dago. Erakundeak kudeatzen du. Aukeratu kontu bat.</translation>
 <translation id="5242899254250321823">Aldatu pasahitza webgunean</translation>
 <translation id="5248640482715684545">Webgunea beste aplikazio bat irekitzen saiatzen ari da.</translation>
 <translation id="5250371859659394278">Iturburu ezezagun batetik abiarazi delako</translation>
@@ -1071,6 +1083,7 @@ Behar izanez gero, joan bilatzailearen argibideetara bilaketa-historia ezabatzea
 <translation id="5524590039848017563">Tolestutako tresna-barra nagusiaren botoia</translation>
 <translation id="553151287733286479">{COUNT,plural, =1{{COUNT} pasahitz ez da segurua}other{{COUNT} pasahitz ez dira seguruak}}</translation>
 <translation id="5532545557415295622">Inaktibitate-egoeraren denbora-mugaren leihoa</translation>
+<translation id="5547868626772433490">Galdetu Gemini-ri</translation>
 <translation id="5548760955356983418">Handoff eginbidea erabiltzen baduzu, gailu honetan has zaitezke webguneak ikusten eta Mac-ean jarrai dezakezu haiek arakatzen.
 
 "Settings" (Ezarpenak) aplikazioaren "General" (Orokorra) atalean ere gaitu behar da Handoff, eta gailuek iCloud kontu bera erabili behar dute.</translation>
@@ -1282,6 +1295,9 @@ Behar izanez gero, joan bilatzailearen argibideetara bilaketa-historia ezabatzea
 <translation id="6339793034470834130">Web Inspector erabiltzeko, konektatu Safari-ra ordenagailuan kable baten bidez eta sartu iPhone-an Develop (garatu) menutik. Ordenagailuko Safari-ren ezarpenetako Advanced (aurreratuak) atalean gai dezakezu Develop (garatu) menua.</translation>
 <translation id="6340285871011301182">Itzulpen partziala ez dago erabilgarri.</translation>
 <translation id="6340526405444716530">Pertsonalizazioa</translation>
+<translation id="6341140761912903432">Kontu kudeatuarekin saioa hasiz gero, errazagoa da erakundearekin erlazionatutako arakatzea bereiztea beste arakatzetik (fitxak, historia eta pasahitzak barne).
+
+       Lehendik dauzkazun arakatze-datuak bereizita mantenduko dira. Haiek erabiltzeko, amaitu kontu kudeatuaren saioa.</translation>
 <translation id="6342069812937806050">Oraintxe</translation>
 <translation id="6344533709188026708">Lanerako eremu bereiz bat</translation>
 <translation id="6347953390226388422">{count,plural, =1{Helbidea zure Google-ko kontutik (<ph name="USER_EMAIL" />) eta gailu honetatik ezabatuko da.}other{Helbideak zure Google-ko kontutik (<ph name="USER_EMAIL" />) eta gailu honetatik ezabatuko dira.}}</translation>
@@ -1954,6 +1970,7 @@ Webguneek cookieak erabil ditzakete beste webguneetan egiten dituzun arakatze-ja
 <translation id="8923178205567790913">Pasahitzak</translation>
 <translation id="892776311701544612">Lortu informazio gehiago…</translation>
 <translation id="8928133177108699615">Mahaigainekoa</translation>
+<translation id="8928426232677696166"><ph name="EMAIL" /> hautatuta dago. Erakundeak kudeatzen du. Aukeratu kontu bat.</translation>
 <translation id="894191600409472540">Sortu pasahitz konplexuak</translation>
 <translation id="8943780400130412484">Beste deskarga bat hasi nahi duzu?</translation>
 <translation id="8944844131570002190">Ireki kokapena…</translation>

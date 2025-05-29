@@ -328,7 +328,7 @@
 <translation id="1555191101192706055">يتضمّن هذا الموقع الإلكتروني الذي حاولت الانتقال إليه مهاجمِين قد يتمكّنون من خداعك لتثبيت برامج ضارة تؤثّر في طريقة التصفُّح من خلال تغيير الصفحة الرئيسية مثلاً أو عرض إعلانات إضافية على المواقع الإلكترونية التي تنتقل إليها.</translation>
 <translation id="1559231233244409191">ورق مقوّى (ثلاث طبقات)</translation>
 <translation id="1559447966090556585">هل تريد تلقّي إشعارات؟</translation>
-<translation id="1559486004335285648">الملء التلقائي لمعلومات الدفع</translation>
+<translation id="1559486004335285648">املأ معلومات الدفع تلقائيًا</translation>
 <translation id="1559528461873125649">لا وجود لمثل هذا الملف أو الدليل</translation>
 <translation id="1559572115229829303">‏&lt;p&gt;تعذر إنشاء اتصال خاص بـ <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> نظرًا لأن تاريخ ووقت جهازك (<ph name="DATE_AND_TIME" />) غير صحيحين.&lt;/p&gt;
 
@@ -367,6 +367,7 @@
 <translation id="1612199629998703524">إدارة المواضيع</translation>
 <translation id="1615178538289490617">إلغاء إذن الوصول إلى <ph name="PORT_NAME" /></translation>
 <translation id="1615402009686901181">تحظر سياسة المشرف إمكانية تصوير الشاشة عند عرض محتوى سري.</translation>
+<translation id="161612500287664753">‏طرح سؤال على "بحث Google" حول هذه الصفحة</translation>
 <translation id="1617276713587758852">مركبات كروس أوفر</translation>
 <translation id="1619007254056372606">إدارة بيانات الموقع الإلكتروني على الجهاز فقط</translation>
 <translation id="1619648179761984213">تمت إزالة علامة تبويب من قِبل "<ph name="USER_DISPLAY_NAME" />"</translation>
@@ -1509,6 +1510,7 @@
 <translation id="3586931643579894722">إخفاء التفاصيل</translation>
 <translation id="3587725436724465984">حدّدت مؤسستك الموقع الإلكتروني <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> على أنّه قد ينتهك إحدى السياسات. <ph name="BEGIN_LEARN_MORE_LINK" />مزيد من المعلومات حول هذا التحذير<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3587738293690942763">متوسط</translation>
+<translation id="3589519427766620380">‏طرح سؤال على "عدسة Google" حول هذه الصفحة</translation>
 <translation id="3596918995172292499">حالة اللوحة</translation>
 <translation id="3600106876108433070">مزيد من المعلومات حول جداول المقارنة</translation>
 <translation id="3600246354004376029"><ph name="TITLE" />، و<ph name="DOMAIN" />، و<ph name="TIME" /></translation>
@@ -3446,6 +3448,7 @@
 <translation id="6925267999184670015">‏‫B+‎ شمال أمريكا</translation>
 <translation id="6926216138694948720">فن الجسد</translation>
 <translation id="692638818576287323">مركبات تجارية</translation>
+<translation id="6930607614725241390">البحث في اللوحة الجانبية</translation>
 <translation id="6934236486840930310">‏<ph name="BEGIN_BOLD" />يتيح لك محرك البحث التلقائي البحث على الإنترنت ويفعِّل ميزات Chrome<ph name="END_BOLD" />، مثل البحث من شريط العناوين ومن الصور على صفحات الويب. قد لا تتوفر إحدى الميزات إذا لم يكن محرك البحث الخاص بك يتيحها.</translation>
 <translation id="6934672428414710184">‏هذا الاسم من حسابك على Google</translation>
 <translation id="6935077351544118151">‏يمكنك الآن ملء بطاقات الولاء تلقائيًا من "محفظة Google"</translation>

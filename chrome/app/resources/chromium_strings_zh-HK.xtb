@@ -226,6 +226,7 @@
 <translation id="4019629340646866719">Chromium 作業系統得以面世，全賴其他<ph name="BEGIN_LINK_CROS_OSS" />開放原始碼軟件<ph name="END_LINK_CROS_OSS" />，<ph name="BEGIN_LINK_LINUX_OSS" />Linux 開發環境<ph name="END_LINK_LINUX_OSS" />也一樣。</translation>
 <translation id="4022972681110646219">翻譯畫面</translation>
 <translation id="4023601594785368013">原文語言：<ph name="LANGUAGE" /></translation>
+<translation id="4023845192681161785">Chromium 將開啟任何應用程式的連結。此外，Chromium 會固定在工作列，方便你隨時使用。</translation>
 <translation id="4036079820698952681">只要報告<ph name="BEGIN_LINK" />目前的設定<ph name="END_LINK" />，就能助我們一臂之力，讓 Chromium 更臻完美</translation>
 <translation id="4050175100176540509">最新版本提供重大保安改良和新功能。</translation>
 <translation id="4055805654398742145">密碼管理工具(&amp;A)</translation>
@@ -327,6 +328,7 @@
 <translation id="5524890928877629608">搜尋區域嘅左上角：距左側 <ph name="LEFT" />%，距頂部 <ph name="TOP" />%</translation>
 <translation id="5527463683072221100">在 Chromium 中開啟 PDF</translation>
 <translation id="5579324208890605088">啟動錯誤：請以一般使用者 (而非管理員) 身分執行安裝程式。</translation>
+<translation id="5580770360767802657">預設使用 Chromium 並固定在工作列</translation>
 <translation id="5596627076506792578">更多選項</translation>
 <translation id="5605834417512968703">選取任何要使用「圖片搜尋」尋找的內容，或按下 Esc 鍵退出「圖片搜尋」</translation>
 <translation id="5618818588972826921">選取任何要使用「圖片搜尋」尋找的文字或圖片，或按下 Esc 鍵退出「圖片搜尋」</translation>
@@ -599,6 +601,7 @@ Chromium 無法復原您的設定。</translation>
 <translation id="9106612006984859720">如要取得日後的 Chromium 更新，您需要使用 Windows 10 或以上版本。此電腦目前版本為 Windows 8.1。</translation>
 <translation id="91086099826398415">在 Chromium 的新分頁中開啟連結(&amp;T)</translation>
 <translation id="911206726377975832">您要一併刪除瀏覽數據嗎？</translation>
+<translation id="9134482777260927479">功課指導</translation>
 <translation id="9148058034647219655">結束</translation>
 <translation id="9158494823179993217">系統管理員已設定 Chromium 開啟替代瀏覽器來存取 <ph name="TARGET_URL_HOSTNAME" />。</translation>
 <translation id="9185526690718004400">重新啟動以更新 &amp;Chromium</translation>

@@ -80,6 +80,7 @@
 <translation id="1049743911850919806">Жашыруун</translation>
 <translation id="1049795001945932310">&amp;Тил параметрлери</translation>
 <translation id="1050693411695664090">Начар</translation>
+<translation id="1053226848101751430">Жазуу өчүрүлдү</translation>
 <translation id="1053898984916097744">Жаңы нерсени баштап же иш процессинде жардам алыңыз.</translation>
 <translation id="1054048317165655285">Телефонуңузда жөндөп бүтүрүңүз</translation>
 <translation id="1054153489933238809">Түпнуска &amp;сүрөттү жаңы өтмөктө ачуу</translation>
@@ -2239,6 +2240,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="2519250377986324805">Үйрөнүп алыңыз</translation>
 <translation id="2519517390894391510">Тастыктама профилинин аталышы</translation>
 <translation id="2520644704042891903">Мүмкүн болгон чанак күтүлүүдө…</translation>
+<translation id="2520961587246779103">Бөлүп көрүү режиминин башка варианттары</translation>
 <translation id="2521427645491031107">Колдонмолорду шайкештирүү түзмөктүн параметрлеринде туураланган</translation>
 <translation id="2521835766824839541">мурунку трек</translation>
 <translation id="2521854691574443804"><ph name="FILE_NAME" /> файлы уюмуңуздун коопсуздук эрежелерин бузгандыгы текшерилүүдө...</translation>
@@ -3184,6 +3186,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="3202578601642193415">Эң акыркы</translation>
 <translation id="3204648577100496185">Бул колдонмого байланыштуу маалымат бул түзмөктөн өчүрүлүшү мүмкүн</translation>
 <translation id="3204717934117444051">Ушул түзмөктө гана сакталган маалыматтар учурдагы профилде калат. Ал <ph name="EMAIL" /> менен шайкештирилбейт</translation>
+<translation id="3206289903841621620">Колдонуучунун сөздүгү <ph name="NUMBER" /></translation>
 <translation id="3207344462385471911">Акыркы аракеттериңиздин негизинде сунушталган сизди кызыктырышы мүмкүн болгон нерселерди жана арзандатууларды көрүп жатасыз.
         <ph name="BREAK" />
         <ph name="BREAK" />
@@ -9961,6 +9964,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="8037801708772278989">Жаңы эле текшерилди</translation>
 <translation id="8038111231936746805">(демейки)</translation>
 <translation id="8039151841428107077">{NUM_OF_FILES,plural, =1{1 файл <ph name="CLOUD_PROVIDER" /> кызматына көчүрүлүп жатат}other{{NUM_OF_FILES} файл <ph name="CLOUD_PROVIDER" /> кызматына көчүрүлүп жатат}}</translation>
+<translation id="8039525676147630657">ChromeOS версиясы жаңыртылгандан кийин бул Chrome колдонмосу иштебей калат. Керектүү маалыматты сактап коюңуз. Кийинки кадамдар тууралуу билүү үчүн колдонмону иштеп чыгуучуга же кардарларга колдоо көрсөтүү жамаатына кайрылыңыз.</translation>
 <translation id="8041089156583427627">Пикириңизди билдириңиз</translation>
 <translation id="8041093619605951337">Бактылуумун</translation>
 <translation id="8041267120753677077">Телефондогу колдонмолорду алып ойнотуу</translation>
@@ -10013,6 +10017,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="8073499153683482226"><ph name="BEGIN_PARAGRAPH1" />Колдонмо дайындарына иштеп чыгуучунун параметрлеринин негизинде сакталган бардык нерселер, анын ичинде байланыштар, билдирүүлөр жана сүрөттөр сыяктуу дайындар кириши мүмкүн.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Дайындардын камдык көчүрмөлөрү балаңыздын Drive сактагычынан орун ээлебейт.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />Бул кызматты жөндөөлөрдөн өчүрсөңүз болот.<ph name="END_PARAGRAPH3" /></translation>
+<translation id="8075044377771022666">Төмөнкү колонтитул</translation>
 <translation id="8076835018653442223">Түзмөгүңүздөгү файлдарды пайдалануу мүмкүнчүлүгүн администраторуңуз өчүрүп койгон</translation>
 <translation id="8077120325605624147">Сиз кирген бардык сайттар каалаган жарнаманы көрсөтө алышат</translation>
 <translation id="8077579734294125741">Башка Chrome профилдери</translation>
@@ -10878,7 +10883,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="8685882652128627032">Сайттан издөөнү кошуу диалогун ачуу үчүн чыкылдатыңыз</translation>
 <translation id="8686142379631285985"><ph name="BEGIN_BOLD" /><ph name="DRIVE_ACCOUNT_EMAIL" /><ph name="END_BOLD" /> катары кирдиңиз</translation>
 <translation id="8687103160920393343"><ph name="FILE_NAME" /> файлын жүктөп алууну токтотуу</translation>
-<translation id="8687527282898211955">PIN кодду коюңуз</translation>
+<translation id="8687527282898211955">PIN код коюңуз</translation>
 <translation id="8688672835843460752">Бош</translation>
 <translation id="8689811383248488428">Четке кагып, профилди жабуу</translation>
 <translation id="8689998525144040851">100</translation>
@@ -10948,6 +10953,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="8729133765463465108">QR кодду камеранын жардамы менен скандаңыз</translation>
 <translation id="8730621377337864115">Бүттү</translation>
 <translation id="8731029916209785242">Уруксаттар (<ph name="FORMATTED_ORIGIN" />)</translation>
+<translation id="8731258351357994801">Жазуу <ph name="NUMBER" /></translation>
 <translation id="8731268612289859741">Коопсуздук коду</translation>
 <translation id="8731629443331803108"><ph name="SITE_NAME" /> төмөнкү аракетти аткарганы жатат: <ph name="PERMISSION" /></translation>
 <translation id="8731787661154643562">Оюкчанын номери</translation>

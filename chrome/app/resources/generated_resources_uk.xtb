@@ -80,6 +80,7 @@
 <translation id="1049743911850919806">Анонімний перегляд</translation>
 <translation id="1049795001945932310">&amp;Налаштування мови</translation>
 <translation id="1050693411695664090">Слабкий сигнал</translation>
+<translation id="1053226848101751430">Запис видалено</translation>
 <translation id="1053898984916097744">Почніть щось нове або отримайте допомогу.</translation>
 <translation id="1054048317165655285">Завершіть налаштування на телефоні</translation>
 <translation id="1054153489933238809">Відкрити оригінальне зображення в новій вкладці</translation>
@@ -2242,6 +2243,7 @@
 <translation id="2519250377986324805">Докладніше</translation>
 <translation id="2519517390894391510">Назва профілю сертифіката</translation>
 <translation id="2520644704042891903">Очікування доступного сокета…</translation>
+<translation id="2520961587246779103">Інші параметри розділеного вікна</translation>
 <translation id="2521427645491031107">Синхронізацію додатків задано в налаштуваннях пристрою</translation>
 <translation id="2521835766824839541">попередня композиція</translation>
 <translation id="2521854691574443804">Перевірка відповідності файлу "<ph name="FILE_NAME" />" правилам безпеки вашої організації…</translation>
@@ -3187,6 +3189,7 @@
 <translation id="3202578601642193415">Найновіше</translation>
 <translation id="3204648577100496185">Дані, пов’язані з цим додатком, може бути видалено з пристрою</translation>
 <translation id="3204717934117444051">Дані, які зберігаються лише на цьому пристрої, залишаться в поточному профілі. Вони не синхронізуватимуться з <ph name="EMAIL" />.</translation>
+<translation id="3206289903841621620">Словник користувача <ph name="NUMBER" /></translation>
 <translation id="3207344462385471911">Ви бачите рекомендовані пошукові запити й знижки на покупки, які можуть зацікавити вас, на основі ваших останніх дій.
         <ph name="BREAK" />
         <ph name="BREAK" />
@@ -10019,6 +10022,7 @@
 <translation id="8073499153683482226"><ph name="BEGIN_PARAGRAPH1" />Дані додатків – це будь-яка інформація, яку вони зберігають (залежно від налаштувань розробника), зокрема контакти, повідомлення та фотографії.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Резервні копії даних не займають місця на Диску дитини.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />Цей сервіс можна вимкнути в налаштуваннях.<ph name="END_PARAGRAPH3" /></translation>
+<translation id="8075044377771022666">Нижній колонтитул</translation>
 <translation id="8076835018653442223">Адміністратор вимкнув доступ до локальних файлів на вашому пристрої</translation>
 <translation id="8077120325605624147">Усі сайти, які ви відвідуєте, можуть показувати вам будь-які оголошення</translation>
 <translation id="8077579734294125741">Інші профілі Chrome</translation>
@@ -10954,6 +10958,7 @@
 <translation id="8729133765463465108">Зісканувати QR-код за допомогою камери</translation>
 <translation id="8730621377337864115">Готово</translation>
 <translation id="8731029916209785242">Дозволи (<ph name="FORMATTED_ORIGIN" />)</translation>
+<translation id="8731258351357994801">Запис <ph name="NUMBER" /></translation>
 <translation id="8731268612289859741">Код безпеки</translation>
 <translation id="8731629443331803108">Сайту <ph name="SITE_NAME" /> потрібен дозвіл, щоб <ph name="PERMISSION" /></translation>
 <translation id="8731787661154643562">Номер порту</translation>

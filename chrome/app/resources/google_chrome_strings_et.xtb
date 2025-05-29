@@ -242,6 +242,7 @@
 <translation id="4050175100176540509">Uusimas versioonis on saadaval olulised turvatäiendused ja uued funktsioonid.</translation>
 <translation id="4053720452172726777">Google Chrome'i kohandamine ja juhtimine</translation>
 <translation id="408393047846373801">Kõigis seadmetes paroolide ja muude võimaluste kasutamiseks logige sisse Chrome'i. See parool salvestatakse pärast sisselogimist teie Google'i kontole.</translation>
+<translation id="409936259433005390">Kas soovite varsti Windows 11-le üle minna? Laadige Chrome'i installiprogramm OneDrive'i alla, et oleksite esimesest päevast valmis.</translation>
 <translation id="4110895483821904099">Uue Chrome'i profiili seadistamine</translation>
 <translation id="4111566860456076004">Chrome ei suuda tuvastada, kust see laiendus pärineb. Laiendus võib olla ebaturvaline. Eemaldage see Chrome'ist, et see ei saaks enam näha ja muuta teie andmeid saitidel, mida külastate, sealhulgas isiklikku teavet.</translation>
 <translation id="4128488089242627000">Chrome töötab kiiremini ja JavaScripti kasutavad funktsioonid peaksid töötama kavandatud viisil (soovitatav)</translation>
@@ -627,6 +628,7 @@ Mõned funktsioonid ei pruugi saadaval olla. Määrake muu profiilikataloog või
 <translation id="9090566250983691233">Vaadake, miks Chrome mõned failid blokeerib</translation>
 <translation id="9106236359747881194">Valige otsimiseks tekst</translation>
 <translation id="911206726377975832">Kas kustutada ka teie sirvimisandmed?</translation>
+<translation id="9134482777260927479">Abi koduste ülesannetega</translation>
 <translation id="9138603949443464873">Muudatuste rakendamiseks käivitage Chrome uuesti</translation>
 <translation id="9148058034647219655">Välju</translation>
 <translation id="9195993889682885387">Chrome suudab prognoosida teie huvisid, võttes aluseks teie viimase mõne nädala sirvimisajaloo. See teave jääb teie seadmesse.</translation>

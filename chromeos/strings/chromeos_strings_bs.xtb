@@ -206,6 +206,7 @@
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1758459542619182298"><ph name="CONTROL_TYPE" /> <ph name="KEY_LIST" /></translation>
 <translation id="1759842336958782510">Chrome</translation>
+<translation id="1762353673362288306">Sada možete koristiti Alate za predmet</translation>
 <translation id="1762483337755424125">Transkript</translation>
 <translation id="1765169783255151332">Brzo mijenjajte tipke</translation>
 <translation id="1768959921651994223">Vrsta autentifikacije</translation>
@@ -220,6 +221,7 @@
 <translation id="181434555916624618">Zasad se ne prikazuju rezultati s osobama. Pokušajte s drugim upitom.</translation>
 <translation id="1815850098929213707">Odabrana tipka je <ph name="KEYS" />. Uređivanje kontrole dodirom dugmeta</translation>
 <translation id="1818174214124933000">Kada odaberete Pošalji, vaše povratne informacije i sadržaj (prikazan u nastavku) poslat će se Googleu, pregledat će ih osobe koje vrše pregled i upotrijebit ćemo ih da obučimo ili poboljšamo proizvode i usluge podložno <ph name="LINK_POLICY_BEGIN" />Pravilima privatnosti<ph name="LINK_POLICY_END" /> i <ph name="LINK_TERMS_OF_SERVICE_BEGIN" />Googleovim Uslovima korištenja usluge<ph name="LINK_TERMS_OF_SERVICE_END" />.</translation>
+<translation id="1821075635029692203">Vaš je nastavnik poslao nepodržani resurs. Obavijestite ga o tome.</translation>
 <translation id="1823120442877418684">Likovi</translation>
 <translation id="1827738518074806965">Umjetnička galerija</translation>
 <translation id="183287940576828840">Uvredljivo/nesigurno</translation>
@@ -476,6 +478,7 @@
 <translation id="3091839911843451378">Nije uspjelo – zaustavljeno</translation>
 <translation id="3102119246920354026">Keš memorija</translation>
 <translation id="3103783611481501187">nadrealno</translation>
+<translation id="3119672627216736407">Dostupan je prijevod</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3122614491980756867">bazeni</translation>
 <translation id="3122883569442693641">Više detalja</translation>
@@ -950,7 +953,7 @@
 <translation id="5170568018924773124">Prikaži u folderu</translation>
 <translation id="517075088756846356">Iskopčajte kabl za napajanje uređaja <ph name="DEVICE_NAME" /> i ponovo ga priključite da nastavite postupak ažuriranja</translation>
 <translation id="5180108905184566358">stabla baobaba</translation>
-<translation id="5180431943345994173">Nastavnik je uklonio sadržaj iz alata za predmet</translation>
+<translation id="5180431943345994173">Nastavnik je uklonio sadržaj iz Alata za predmet</translation>
 <translation id="5180712487038406644">Izražajno</translation>
 <translation id="5190187232518914472">Ponovo doživite omiljene uspomene. Da dodate ili uredite albume, idite u <ph name="LINK_BEGIN" />Google Fotografije<ph name="LINK_END" />.</translation>
 <translation id="5212593641110061691">Tabloid</translation>
@@ -1046,7 +1049,7 @@
 <translation id="5628106863521633649">Dostupni jezici</translation>
 <translation id="5630438231335788050">bauhaus</translation>
 <translation id="5631759159893697722">sažetak</translation>
-<translation id="5655084389678168978">Nastavnik je dodao novi sadržaj u alate za predmet</translation>
+<translation id="5655084389678168978">Nastavnik je dodao novi sadržaj u Alate za predmet</translation>
 <translation id="5655283760733841251">Pojačavanje osvjetljenja tastature</translation>
 <translation id="5655296450510165335">Prijava uređaja</translation>
 <translation id="5655776422854483175">Nema nijednog zadatka štampanja</translation>
@@ -1136,6 +1139,7 @@
 <translation id="6058625436358447366">Unesite staru i novu lozinku da završite</translation>
 <translation id="6061772781719867950">HTTP zahtjevi nisu uspjeli</translation>
 <translation id="6073292342939316679">smanjivanje osvjetljenja tastature</translation>
+<translation id="6074608334942655098">Prestani prevoditi</translation>
 <translation id="6074752328838739425">Sakrivanje sažetka</translation>
 <translation id="6075872808778243331">(Android) HTTP latentnost</translation>
 <translation id="6078323886959318429">Dodaj prečicu</translation>
@@ -1613,6 +1617,7 @@ Preuzmite model transkripcija (do 100 MB) da dobijete ove transkripcije.</trans
 <translation id="8088963492174775412">Pritisnite da snimate</translation>
 <translation id="8094062939584182041">Dozvolite Googleu da vam šalje e-poruke o ovom problemu</translation>
 <translation id="8104083085214006426">Koristite otvorenu i nezaštićenu mrežu</translation>
+<translation id="8108879170356113798">Moći ćete koristiti Alate za predmet za <ph name="NUM_SECONDS" /> s</translation>
 <translation id="811820734797650957">(Android) Pristupnik se može provjeriti pingom</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
 <translation id="8131740175452115882">Potvrdi</translation>

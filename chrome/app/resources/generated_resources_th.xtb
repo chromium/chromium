@@ -485,6 +485,7 @@
 <translation id="1319983966058170660">ปุ่มย้อนกลับของหน้าย่อย<ph name="SUBPAGE_TITLE" /></translation>
 <translation id="1322046419516468189">ดูและจัดการรหัสผ่านที่บันทึกไว้ได้ใน<ph name="SAVED_PASSWORDS_STORE" /></translation>
 <translation id="132539964543492755">ใช้ปุ่ม "x" เพื่อเปลี่ยนการเลือกปุ่มเมาส์ระหว่างปุ่มซ้าย ปุ่มขวา และทั้งสองปุ่ม</translation>
+<translation id="1325611581149097457">เขียนได้ดีขึ้น</translation>
 <translation id="1325898422473267360"><ph name="PERMISSION_USAGE" /> <ph name="PERMISSION_INDICATOR_DESCRIPTION" /></translation>
 <translation id="1327272175893960498">ตั๋ว Kerberos</translation>
 <translation id="1327495825214193325">หากต้องการเปิดใช้การแก้ไขข้อบกพร่อง ADB คุณต้องรีสตาร์ท <ph name="DEVICE_TYPE" /> เครื่องนี้ และต้องรีเซ็ตเป็นค่าเริ่มต้นจึงจะปิดใช้ได้</translation>
@@ -1803,6 +1804,7 @@
 <translation id="2249111429176737533">เปิดเป็นหน้าต่างแท็บ</translation>
 <translation id="2249605167705922988">เช่น 1-5, 8, 11-13</translation>
 <translation id="2249635629516220541">ปรับแต่งข้อมูลที่เว็บไซต์ใช้เพื่อแสดงโฆษณาแก่คุณ</translation>
+<translation id="2250153645770828940">ลบพจนานุกรม</translation>
 <translation id="22505994009453896">ควบคุมเคอร์เซอร์เมาส์ด้วยปุ่มกดตัวเลข</translation>
 <translation id="2250624716625396929">แท็บนี้กำลังใช้กล้องถ่ายรูปและไมโครโฟนของคุณ</translation>
 <translation id="2251218783371366160">เปิดด้วยเครื่องมือดูระบบ</translation>
@@ -1986,6 +1988,7 @@
 <translation id="2359345697448000899">จัดการส่วนขยายของคุณโดยคลิกที่ "ส่วนขยาย" ในเมนู "เครื่องมือ"</translation>
 <translation id="2359556993567737338">เชื่อมต่ออุปกรณ์บลูทูธ</translation>
 <translation id="2359808026110333948">ต่อไป</translation>
+<translation id="2360047907847684514">เสริมประสิทธิภาพให้กับเบราว์เซอร์ด้วยส่วนขยายและธีม</translation>
 <translation id="2360792123962658445">หากต้องการดูสรุปหน้าเว็บ การค้นหาที่เกี่ยวข้อง และข้อมูลอื่นๆ ที่เป็นประโยชน์เกี่ยวกับหน้านี้ ให้เลือกปุ่มแผงด้านข้างของ Google Search ในแถบเครื่องมือ</translation>
 <translation id="2361100938102002520">คุณกำลังจะเพิ่มโปรไฟล์ที่มีการจัดการลงในเบราว์เซอร์นี้ ผู้ดูแลระบบเป็นผู้ควบคุมโปรไฟล์และเข้าถึงข้อมูลในโปรไฟล์ได้</translation>
 <translation id="236117173274098341">เพิ่มประสิทธิภาพ</translation>
@@ -2464,6 +2467,7 @@
 <translation id="2692503699962701720">เปลี่ยนระดับเสียงสูงต่ำเมื่อพูดประเภทขององค์ประกอบและข้อความที่จัดรูปแบบ</translation>
 <translation id="2692901429679246677">เขียวอควา</translation>
 <translation id="2693134906590795721">เสียงการชาร์จ</translation>
+<translation id="2695943520968279338">สำรวจส่วนขยาย</translation>
 <translation id="2698147581454716013">อุปกรณ์นี้เป็นส่วนหนึ่งของแพ็กเกจและลงทะเบียนกับ Kiosk &amp; Signage Upgrade ไม่ได้</translation>
 <translation id="2699911226086014512">กำหนด PIN ไม่สำเร็จและรหัสข้อผิดพลาดคือ <ph name="RETRIES" /></translation>
 <translation id="2701330563083355633">แชร์จาก <ph name="DEVICE_NAME" /></translation>
@@ -2978,6 +2982,7 @@
 <translation id="3043126717220766543">ล้างคำแนะนำกลุ่ม</translation>
 <translation id="3043218608271070212"><ph name="GROUP_NAME" /> - <ph name="GROUP_CONTENT_STRING" /></translation>
 <translation id="3043581297103810752">จาก <ph name="ORIGIN" /></translation>
+<translation id="3044066905368192931">ปรับปรุงด้วย AI</translation>
 <translation id="3045447014237878114">เว็บไซต์นี้มีการดาวน์โหลดไฟล์หลายไฟล์โดยอัตโนมัติ</translation>
 <translation id="3046178388369461825">พื้นที่ดิสก์ Linux เกือบเต็มแล้ว</translation>
 <translation id="304644035656848980">ตัวอย่างไมโครโฟน</translation>
@@ -4579,6 +4584,7 @@
 <translation id="4176864026061939326">อุปกรณ์นี้มีการจัดการ ผู้ดูแลระบบอุปกรณ์ต้องใช้โปรไฟล์ใหม่สำหรับบัญชี <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="4177501066905053472">หัวข้อโฆษณา</translation>
 <translation id="4177668342649553942">เปิด <ph name="SHORTCUT_NAME" /> - <ph name="APP_NAME" /></translation>
+<translation id="4177731895051842298">ส่วนขยายคือส่วนเสริมของ Chrome ที่ช่วยให้คุณทำงานได้ง่ายและเป็นระเบียบ ตลอดจนช่วยปรับแต่งการท่องเว็บให้คุณ</translation>
 <translation id="4178220097446335546">หากต้องการลืมการสมัครใช้บริการนี้และเครือข่ายที่เกี่ยวข้อง ให้ไปที่หน้าการสมัครใช้บริการ Passpoint เพื่อนำการสมัครใช้บริการออก</translation>
 <translation id="4181602000363099176">20x</translation>
 <translation id="4181841719683918333">ภาษา</translation>
@@ -4712,6 +4718,7 @@
 <translation id="4275397969489577657">เปิดใช้การบันทึกสตรีมเหตุการณ์</translation>
 <translation id="4275788652681621337">ปิดแผงด้านข้าง</translation>
 <translation id="4275830172053184480">รีสตาร์ทอุปกรณ์ของคุณ</translation>
+<translation id="4276598757692536305">PPD ของเครื่องพิมพ์</translation>
 <translation id="4276856098224910511">ติดตั้งไม่ได้ รออัปเดตระบบปฏิบัติการ โปรดทำการอัปเดตระบบปฏิบัติการที่รอดำเนินการอยู่ทั้งหมด จากนั้นรีสตาร์ท แล้วลองอีกครั้ง รหัสข้อผิดพลาดคือ <ph name="ERROR" /></translation>
 <translation id="4277434192562187284">แหล่งที่มาของการกำหนดค่า XML</translation>
 <translation id="4278348589087554892">{NUM_SITES,plural, =1{นำสิทธิ์ออกจากเว็บไซต์แล้ว 1 รายการ}other{นำสิทธิ์ออกจากเว็บไซต์แล้ว {NUM_SITES} รายการ}}</translation>
@@ -5368,6 +5375,7 @@
 <translation id="4750185073185658673">ไปที่โทรศัพท์เพื่อดูสิทธิ์อื่นๆ เพิ่มเติม ตรวจสอบว่าบลูทูธและ Wi-Fi ของโทรศัพท์เปิดอยู่</translation>
 <translation id="4750394297954878236">คำแนะนำ</translation>
 <translation id="475088594373173692">ผู้ใช้แรก</translation>
+<translation id="4754590344707355551">เพิ่มประสิทธิภาพเบราว์เซอร์ด้วยส่วนขยาย</translation>
 <translation id="4756378406049221019">หยุด/โหลดซ้ำ</translation>
 <translation id="4756388243121344051">&amp;ประวัติการเข้าชม</translation>
 <translation id="4756671452988984333">ข้อความสำหรับเสียง</translation>
@@ -6397,6 +6405,7 @@
 <translation id="5490798133083738649">อนุญาตให้ Linux เข้าถึงไมโครโฟน</translation>
 <translation id="549211519852037402">สีเบจและสีขาว</translation>
 <translation id="5492637351392383067">การเข้ารหัสในอุปกรณ์</translation>
+<translation id="5492780659774694607">ส่วนขยายคือส่วนเสริมของ Chrome ที่ช่วยคุณได้</translation>
 <translation id="5493455553805432330">เลิกจำ</translation>
 <translation id="5493792505296048976">เปิดหน้าจอ</translation>
 <translation id="5494016731375030300">แท็บที่เพิ่งปิด</translation>
@@ -9618,6 +9627,7 @@
 <translation id="7815680994978050279">บล็อกการดาวน์โหลดที่เป็นอันตรายแล้ว</translation>
 <translation id="7817361223956157679">แป้นพิมพ์บนหน้าจอยังใช้ไม่ได้ในแอป Linux</translation>
 <translation id="7818135753970109980">เพิ่มธีมใหม่แล้ว (<ph name="EXTENSION_NAME" />)</translation>
+<translation id="7819839686707222575">ส่วนขยายคือส่วนเสริมของ Chrome ที่ช่วยให้คุณทำสิ่งต่างๆ ได้มากขึ้น</translation>
 <translation id="7820400255539998692">ลบ <ph name="FILENAME" /> เพื่อให้ผู้อื่นที่ใช้อุปกรณ์นี้มองไม่เห็นรหัสผ่าน</translation>
 <translation id="7820561748632634942">กำหนดสวิตช์เพิ่มอีกไหม</translation>
 <translation id="782057141565633384">คัด&amp;ลอกที่อยู่วิดีโอ</translation>
@@ -9998,6 +10008,7 @@
 <translation id="8073499153683482226"><ph name="BEGIN_PARAGRAPH1" />ข้อมูลแอปอาจเป็นข้อมูลใดก็ตามที่แอปบันทึกไว้ (โดยอิงตามการตั้งค่าของนักพัฒนาซอฟต์แวร์) ซึ่งรวมถึงข้อมูลอย่างเช่น รายชื่อติดต่อ ข้อความ และรูปภาพ<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />ข้อมูลสำรองจะไม่นับรวมในโควต้าพื้นที่เก็บข้อมูล Google ไดรฟ์ของบุตรหลาน<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />คุณปิดบริการนี้ได้ในการตั้งค่า<ph name="END_PARAGRAPH3" /></translation>
+<translation id="8075044377771022666">ส่วนท้าย</translation>
 <translation id="8076835018653442223">ผู้ดูแลระบบปิดการเข้าถึงไฟล์ในอุปกรณ์ของคุณ</translation>
 <translation id="8077120325605624147">เว็บไซต์ที่คุณเข้าชมจะแสดงโฆษณาต่อคุณได้</translation>
 <translation id="8077579734294125741">โปรไฟล์ Chrome อื่นๆ</translation>
@@ -10584,6 +10595,7 @@
 <translation id="8477241577829954800">ถูกแทนที่</translation>
 <translation id="8477384620836102176">&amp;ทั่วไป</translation>
 <translation id="8477446666255316832">ลงชื่อเข้าใช้ครั้งถัดไปได้เร็วขึ้น</translation>
+<translation id="8478346767369317046">ที่ทำงาน</translation>
 <translation id="8479176401914456949">รหัสไม่ถูกต้อง โปรดลองอีกครั้ง</translation>
 <translation id="8480869669560681089">อุปกรณ์ที่ไม่รู้จักจาก <ph name="VENDOR_NAME" /></translation>
 <translation id="8481187309597259238">ยืนยันสิทธิ์ USB</translation>
@@ -11076,6 +11088,7 @@
 <translation id="8827289157496676362">ปักหมุดส่วนขยาย</translation>
 <translation id="8828933418460119530">ชื่อ DNS</translation>
 <translation id="8829979393064090868">เพิ่มแท็บไปยังมุมมองแบบแยก</translation>
+<translation id="8830479210602243906">เพิ่มประสิทธิภาพการทำงาน</translation>
 <translation id="883062543841130884">การใช้แทน</translation>
 <translation id="8830779999439981481">กำลังรีสตาร์ทเพื่อนำการอัปเดตไปใช้</translation>
 <translation id="8830796635868321089">ไม่สามารถตรวจหาการอัปเดตโดยใช้การตั้งค่าพร็อกซีปัจจุบัน โปรดปรับ<ph name="PROXY_SETTINGS_LINK_START" />การตั้งค่าพร็อกซี<ph name="PROXY_SETTINGS_LINK_END" /></translation>

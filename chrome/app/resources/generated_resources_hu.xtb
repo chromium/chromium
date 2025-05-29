@@ -80,6 +80,7 @@
 <translation id="1049743911850919806">Inkognitó mód</translation>
 <translation id="1049795001945932310">&amp;Nyelvi beállítások</translation>
 <translation id="1050693411695664090">Gyenge</translation>
+<translation id="1053226848101751430">Bejegyzés törölve</translation>
 <translation id="1053898984916097744">Kezdjen el valami újat, vagy kérjen segítséget, miközben dolgozik valamin.</translation>
 <translation id="1054048317165655285">Fejezze be a beállítást a telefonon</translation>
 <translation id="1054153489933238809">Az eredeti &amp;kép megnyitása új lapon</translation>
@@ -1811,6 +1812,7 @@ Ha kezelni szeretné a fiók beállításait, telepítse eszközére a Family Li
 <translation id="2249111429176737533">Megnyitás ablakként (lapokkal)</translation>
 <translation id="2249605167705922988">pl. 1-5, 8, 11-13</translation>
 <translation id="2249635629516220541">Megszabhatja, hogy a webhelyek milyen adatokat használhassanak, amikor hirdetéseket jelenítnek meg Önnek</translation>
+<translation id="2250153645770828940">Szótár törlése</translation>
 <translation id="22505994009453896">Az egérkurzor vezérlése numerikus billentyűzettel</translation>
 <translation id="2250624716625396929">Ez a lap használja a kamerát és a mikrofont</translation>
 <translation id="2251218783371366160">Megnyitás a rendszer megtekintőjével</translation>
@@ -2238,6 +2240,7 @@ Ha kezelni szeretné a fiók beállításait, telepítse eszközére a Family Li
 <translation id="2519250377986324805">Megnézem</translation>
 <translation id="2519517390894391510">Tanúsítványprofil neve</translation>
 <translation id="2520644704042891903">Várakozás elérhető socketre...</translation>
+<translation id="2520961587246779103">A megosztott nézet további beállításai</translation>
 <translation id="2521427645491031107">Az alkalmazások közötti szinkronizálást az eszközbeállításokban állíthatja be</translation>
 <translation id="2521835766824839541">előző szám</translation>
 <translation id="2521854691574443804">Folyamatban van annak ellenőrzése, hogy a(z) <ph name="FILE_NAME" /> sérti-e szervezete biztonsági szabályait</translation>
@@ -3183,6 +3186,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="3202578601642193415">Legújabb</translation>
 <translation id="3204648577100496185">Az alkalmazáshoz kapcsolódó adatok törlődhetnek erről az eszközről.</translation>
 <translation id="3204717934117444051">A csak erre az eszközre mentett adatok a meglévő profilban maradnak. Nem fognak szinkronizálódni a következővel: <ph name="EMAIL" />.</translation>
+<translation id="3206289903841621620"><ph name="NUMBER" />. felhasználói szótár</translation>
 <translation id="3207344462385471911">A legutóbbi tevékenységei alapján Önt esetleg érdeklő javasolt kereséseket és vásárlási kedvezményeket lát.
         <ph name="BREAK" />
         <ph name="BREAK" />
@@ -9961,6 +9965,7 @@ A kulcsfájlt tartsa biztonságos helyen. Szüksége lesz rá ahhoz, hogy új ve
 <translation id="8037801708772278989">Most volt ellenőrizve</translation>
 <translation id="8038111231936746805">(alapértelmezett)</translation>
 <translation id="8039151841428107077">{NUM_OF_FILES,plural, =1{1 fájl másolása a(z) <ph name="CLOUD_PROVIDER" /> szolgáltatásba}other{{NUM_OF_FILES} fájl másolása a(z) <ph name="CLOUD_PROVIDER" /> szolgáltatásba}}</translation>
+<translation id="8039525676147630657">Ez a Chrome-alkalmazás a ChromeOS-verzió frissítése után nem fog működni. Mentse a megőrizni kívánt alkalmazásadatokat. A lehetőségekről az alkalmazásfejlesztőtől vagy az informatikai támogatási csapatától kaphat tájékoztatást.</translation>
 <translation id="8041089156583427627">Visszajelzés küldése</translation>
 <translation id="8041093619605951337">Boldog</translation>
 <translation id="8041267120753677077">Streamelheti telefonja alkalmazásait</translation>
@@ -10013,6 +10018,7 @@ A kulcsfájlt tartsa biztonságos helyen. Szüksége lesz rá ahhoz, hogy új ve
 <translation id="8073499153683482226"><ph name="BEGIN_PARAGRAPH1" />Alkalmazásadat lehet minden olyan adat, amelyet valamelyik alkalmazás elmentett (a fejlesztői beállítások alapján), beleértve például a névjegyeket, az üzeneteket és a fotókat.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />A biztonsági másolat adatai nem számítanak bele gyermeke Drive-tárhelykvótájába.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />Ezt a szolgáltatást a Beállítások között kapcsolhatja ki.<ph name="END_PARAGRAPH3" /></translation>
+<translation id="8075044377771022666">Lábléc</translation>
 <translation id="8076835018653442223">A rendszergazda letiltotta a helyi fájlok elérését az eszközön</translation>
 <translation id="8077120325605624147">Bármely felkeresett webhely bármilyen hirdetést megjeleníthet Önnek</translation>
 <translation id="8077579734294125741">Egyéb Chrome-profilok</translation>
@@ -10948,6 +10954,7 @@ A kulcsfájlt tartsa biztonságos helyen. Szüksége lesz rá ahhoz, hogy új ve
 <translation id="8729133765463465108">Kamera használata a QR-kód beolvasásához</translation>
 <translation id="8730621377337864115">Kész</translation>
 <translation id="8731029916209785242">Engedélyek (<ph name="FORMATTED_ORIGIN" />)</translation>
+<translation id="8731258351357994801"><ph name="NUMBER" />. bejegyzés</translation>
 <translation id="8731268612289859741">Biztonsági kód</translation>
 <translation id="8731629443331803108">A(z) <ph name="SITE_NAME" /> a következőre kér engedélyt: <ph name="PERMISSION" /></translation>
 <translation id="8731787661154643562">Port száma</translation>

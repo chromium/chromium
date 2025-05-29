@@ -119,6 +119,7 @@
 <translation id="6051432659151380973">Fitxa taldeak automatikoki gordetzen dira</translation>
 <translation id="6054741997831917303">Produktu honen prezioa jaitsi egin da, eta <ph name="PREVIOUS_PRICE" /> izatetik <ph name="NEW_PRICE" /> izatera pasatu</translation>
 <translation id="6109251075362363230">Orain, fitxa bikoiztu guztiak ere artxibatuko dira, erabilitako azken kopia izan ezik.</translation>
+<translation id="61924696525243173">{WINDOW_COUNT,plural, =1{Eraman taldea leiho berri batera}other{Eraman taldea beste leiho batera}}</translation>
 <translation id="6193448654517602979">Hautatu fitxak</translation>
 <translation id="6220820548421939212">Bai. Ados</translation>
 <translation id="6228793724645064692">(dendaren balorazioa)</translation>
@@ -174,6 +175,7 @@
 <translation id="7942349550061667556">Gorria</translation>
 <translation id="7961015016161918242">Inoiz ez</translation>
 <translation id="7966321538264951561">Baztertu iradokizunak.</translation>
+<translation id="796696298310625748">{WINDOW_COUNT,plural, =1{Eraman fitxa leiho berri batera}other{Eraman fitxa beste leiho batera}}</translation>
 <translation id="799469866974412355">Beste gailuko talde berria</translation>
 <translation id="8029301326595421733">Denda honi buruzko informazioa altuera osoan irekita dago</translation>
 <translation id="8053770993984522566">Fitxa taldeen zerrenda, altuera erdian irekita dago</translation>
@@ -195,6 +197,7 @@
 <translation id="8730621377337864115">Eginda</translation>
 <translation id="8730999928494395583">Ezkutuko moduko fitxa hauetan egin dituzun jarduerak kendu egingo dira gailu honetatik</translation>
 <translation id="875848103419578654">{NUM_MONTHS,plural, =1{Duela <ph name="NUM_MONTHS_ONE" /> hilabete sortua}other{Duela <ph name="NUM_MONTHS_MANY" /> hilabete sortua}}</translation>
+<translation id="8813708480179818649">Kendu fitxa taldetik</translation>
 <translation id="8820741577754260431">Ikusi prezio-jaitsierak fitxetan</translation>
 <translation id="883379923675618699">Chrome-k automatikoki ixten ditu 3 hilabetetan erabili ez dituzun elementuak inaktiboen atalean. Aukera hori desaktibatzeko, joan Ezarpenak atalera.</translation>
 <translation id="8887921976452567404">Itxitako fitxak eta taldeak Azkenaldiko fitxak eta Fitxa taldeak ataletatik ireki daitezke berriro.</translation>

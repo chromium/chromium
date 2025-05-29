@@ -487,6 +487,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="1319983966058170660">Przycisk Wstecz na podstronie <ph name="SUBPAGE_TITLE" /></translation>
 <translation id="1322046419516468189">Swoje zapisane hasła znajdziesz tutaj: <ph name="SAVED_PASSWORDS_STORE" /></translation>
 <translation id="132539964543492755">Aby zmienić wybór przycisku myszy na lewy, prawy lub oba, naciśnij „X”</translation>
+<translation id="1325611581149097457">Lepsze pisanie</translation>
 <translation id="1325898422473267360"><ph name="PERMISSION_USAGE" /> <ph name="PERMISSION_INDICATOR_DESCRIPTION" /></translation>
 <translation id="1327272175893960498">Bilety Kerberos</translation>
 <translation id="1327495825214193325">Aby włączyć debugowanie ADB, musisz ponownie uruchomić urządzenie <ph name="DEVICE_TYPE" />. W celu wyłączenia tej funkcji trzeba będzie przywrócić na urządzeniu ustawienia fabryczne.</translation>
@@ -1804,6 +1805,7 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2249111429176737533">Otwórz jako okno z kartami</translation>
 <translation id="2249605167705922988">np. 1–5, 8, 11–13</translation>
 <translation id="2249635629516220541">Dostosuj informacje używane przez witryny do wyświetlania Ci reklam</translation>
+<translation id="2250153645770828940">Usuń słownik</translation>
 <translation id="22505994009453896">Sterowanie kursorem myszy za pomocą klawiatury numerycznej</translation>
 <translation id="2250624716625396929">Ta karta używa Twojej kamery lub mikrofonu</translation>
 <translation id="2251218783371366160">Otwórz w przeglądarce systemowej</translation>
@@ -1976,6 +1978,7 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2359345697448000899">Aby zarządzać zainstalowanymi rozszerzeniami, kliknij Rozszerzenia w menu Narzędzia.</translation>
 <translation id="2359556993567737338">Łączenie z urządzeniem Bluetooth</translation>
 <translation id="2359808026110333948">Dalej</translation>
+<translation id="2360047907847684514">Zwiększ możliwości przeglądarki dzięki rozszerzeniom i motywom</translation>
 <translation id="2360792123962658445">Aby zobaczyć podsumowanie strony, podobne wyszukiwania i inne przydatne informacje na jej temat, wybierz przycisk panelu bocznego wyszukiwarki Google na pasku narzędzi</translation>
 <translation id="2361100938102002520">Dodajesz do tej przeglądarki profil zarządzany. Kontrolę nad nim i dostęp do jego danych ma administrator.</translation>
 <translation id="236117173274098341">Optymalizuj</translation>
@@ -2450,6 +2453,7 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2692503699962701720">Zmieniaj ton w przypadku typów elementów oraz tekstu sformatowanego</translation>
 <translation id="2692901429679246677">Morze</translation>
 <translation id="2693134906590795721">Dźwięki ładowania</translation>
+<translation id="2695943520968279338">Polecane rozszerzenia</translation>
 <translation id="2698147581454716013">To urządzenie jest dołączone do pakietu i nie można go zarejestrować w ramach Licencji na kioski i znaki.</translation>
 <translation id="2699911226086014512">Operacja z kodem PIN nie powiodła się, kod błędu: <ph name="RETRIES" />.</translation>
 <translation id="2701330563083355633">Tę kartę udostępnia <ph name="DEVICE_NAME" /></translation>
@@ -2964,6 +2968,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="3043126717220766543">Wyczyść sugestie dla grupy</translation>
 <translation id="3043218608271070212"><ph name="GROUP_NAME" /> – <ph name="GROUP_CONTENT_STRING" /></translation>
 <translation id="3043581297103810752">Ze strony <ph name="ORIGIN" /></translation>
+<translation id="3044066905368192931">Ulepsz za pomocą AI</translation>
 <translation id="3045447014237878114">Ta strona automatycznie pobrała wiele plików</translation>
 <translation id="3046178388369461825">Na dysku Linuksa już prawie nie ma miejsca</translation>
 <translation id="304644035656848980">Podgląd mikrofonu</translation>
@@ -4563,6 +4568,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="4176864026061939326">To urządzenie jest zarządzane. Administrator urządzenia wymaga nowego profilu dla konta <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="4177501066905053472">Tematy reklam</translation>
 <translation id="4177668342649553942">Otwórz <ph name="SHORTCUT_NAME" /> – <ph name="APP_NAME" /></translation>
+<translation id="4177731895051842298">Rozszerzenia to dodatki do Chrome, które mogą pomóc Ci utrzymać porządek, uprościć zadania i spersonalizować przeglądanie</translation>
 <translation id="4178220097446335546">Aby wykasować tę subskrypcję i powiązane z nią sieci, otwórz stronę subskrypcji Passpoint i usuń subskrypcję.</translation>
 <translation id="4181602000363099176">20x</translation>
 <translation id="4181841719683918333">Języki</translation>
@@ -4696,6 +4702,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="4275397969489577657">Włącz rejestrowanie strumienia wydarzenia</translation>
 <translation id="4275788652681621337">Zamknij panel boczny</translation>
 <translation id="4275830172053184480">Zrestartuj urządzenie</translation>
+<translation id="4276598757692536305">Plik PPD drukarki</translation>
 <translation id="4276856098224910511">Nie udało się zainstalować. Czekam na aktualizację systemu operacyjnego. Zastosuj wszelkie oczekujące aktualizacje systemu operacyjnego, uruchom ponownie i spróbuj jeszcze raz. Kod błędu: <ph name="ERROR" />.</translation>
 <translation id="4277434192562187284">Źródło konfiguracji XML</translation>
 <translation id="4278348589087554892">{NUM_SITES,plural, =1{Usunięto uprawnienia z 1 witryny}few{Usunięto uprawnienia z {NUM_SITES} witryn}many{Usunięto uprawnienia z {NUM_SITES} witryn}other{Usunięto uprawnienia z {NUM_SITES} witryny}}</translation>
@@ -5352,6 +5359,7 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="4750185073185658673">Sprawdź więcej uprawnień na telefonie. Sprawdź, czy na telefonie są włączone Bluetooth i Wi-Fi.</translation>
 <translation id="4750394297954878236">Sugestie</translation>
 <translation id="475088594373173692">Pierwszy użytkownik</translation>
+<translation id="4754590344707355551">Zwiększ możliwości przeglądarki dzięki rozszerzeniom</translation>
 <translation id="4756378406049221019">Zatrzymaj / załaduj ponownie</translation>
 <translation id="4756388243121344051">&amp;Historia</translation>
 <translation id="4756671452988984333">Napisy do dźwięku</translation>
@@ -6380,6 +6388,7 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="5490798133083738649">Zezwalaj Linuksowi na dostęp do mikrofonu</translation>
 <translation id="549211519852037402">Beżowo-biały</translation>
 <translation id="5492637351392383067">Szyfrowanie na urządzeniu</translation>
+<translation id="5492780659774694607">Rozszerzenia to dodatki do Chrome, które mogą Ci pomóc</translation>
 <translation id="5493455553805432330">Zapomnij</translation>
 <translation id="5493792505296048976">ekran włączony</translation>
 <translation id="5494016731375030300">Ostatnio zamknięte karty</translation>
@@ -9606,6 +9615,7 @@ Aby usunąć przypisanie, naciśnij przypisany przełącznik lub klawisz.</trans
 <translation id="7815680994978050279">Zablokowano niebezpieczne pobieranie</translation>
 <translation id="7817361223956157679">W aplikacjach na Linuksa klawiatura ekranowa jeszcze nie działa</translation>
 <translation id="7818135753970109980">Dodano nowy motyw (<ph name="EXTENSION_NAME" />)</translation>
+<translation id="7819839686707222575">Rozszerzenia to dodatki do Chrome, które mogą zwiększyć Twoją produktywność</translation>
 <translation id="7820400255539998692">Usuń plik <ph name="FILENAME" />, aby Twoje hasła nie były widoczne dla innych osób na tym urządzeniu</translation>
 <translation id="7820561748632634942">Przypisać dodatkowe przełączniki?</translation>
 <translation id="782057141565633384">K&amp;opiuj adres wideo</translation>
@@ -10573,6 +10583,7 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 <translation id="8477241577829954800">Zastąpiony</translation>
 <translation id="8477384620836102176">&amp;Ogólne</translation>
 <translation id="8477446666255316832">Następnym razem możesz się zalogować szybciej</translation>
+<translation id="8478346767369317046">Praca</translation>
 <translation id="8479176401914456949">Nieprawidłowy kod. Spróbuj ponownie.</translation>
 <translation id="8480869669560681089">Nieznane urządzenie firmy <ph name="VENDOR_NAME" /></translation>
 <translation id="8481187309597259238">Potwierdź uprawnienia USB</translation>
@@ -11063,6 +11074,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="8827289157496676362">Przypnij rozszerzenie</translation>
 <translation id="8828933418460119530">Nazwa DNS</translation>
 <translation id="8829979393064090868">Dodaj kartę do widoku dzielonego</translation>
+<translation id="8830479210602243906">Zwiększ produktywność</translation>
 <translation id="883062543841130884">Zamienniki</translation>
 <translation id="8830779999439981481">Uruchamiam ponownie, by zastosować aktualizacje</translation>
 <translation id="8830796635868321089">Sprawdzenie aktualizacji przy użyciu obecnych ustawień serwera proxy nie powiodło się. Popraw <ph name="PROXY_SETTINGS_LINK_START" />ustawienia serwera proxy<ph name="PROXY_SETTINGS_LINK_END" />.</translation>
