@@ -495,13 +495,6 @@ BASE_FEATURE(kAutofillSupportLastNamePrefix,
              "AutofillSupportLastNamePrefix",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Kill switch that ignores duplicate AskForValuesToFill() which in
-// AutofillAgent as to work around the broken focus-event handling.
-// TODO(crbug.com/40284788): Clean up after M138 branch (26 May 2025).
-BASE_FEATURE(kAutofillThrottleAskForValuesToFill,
-             "AutofillThrottleAskForValuesToFill",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // When enabled, the form field parser won't try to match other attributes if
 // any of the negative patterns matched.
 BASE_FEATURE(kAutofillUseNegativePatternForAllAttributes,

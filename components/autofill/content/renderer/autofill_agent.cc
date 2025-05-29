@@ -1479,9 +1479,7 @@ bool AutofillAgent::ShouldThrottleAskForValuesToFill(FieldRendererId field) {
   static constexpr base::TimeDelta kThrottle = base::Milliseconds(100);
   base::TimeTicks now = base::TimeTicks::Now();
   if (field == last_ask_for_values_to_fill_.field &&
-      now - last_ask_for_values_to_fill_.time < kThrottle &&
-      base::FeatureList::IsEnabled(
-          features::kAutofillThrottleAskForValuesToFill)) {
+      now - last_ask_for_values_to_fill_.time < kThrottle) {
     return true;
   }
   last_ask_for_values_to_fill_ = {now, field};
