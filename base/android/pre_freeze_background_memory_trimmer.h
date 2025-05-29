@@ -162,6 +162,7 @@ class BASE_EXPORT PreFreezeBackgroundMemoryTrimmer {
       JNIEnv* env);
   friend class base::android::MemoryPurgeManagerAndroid;
   friend class base::OneShotDelayedBackgroundTimer;
+  friend class SelfCompactionManager;
   friend class PreFreezeBackgroundMemoryTrimmerTest;
   friend class PreFreezeSelfCompactionTest;
   friend class PreFreezeSelfCompactionTestWithParam;
@@ -325,6 +326,8 @@ class BASE_EXPORT PreFreezeBackgroundMemoryTrimmer {
 
   template <class State>
   void OnTriggerCompact(scoped_refptr<SequencedTaskRunner> task_runner);
+  void OnTriggerCompact(std::unique_ptr<CompactionState> state)
+      EXCLUSIVE_LOCKS_REQUIRED(lock());
 
   void StartCompaction(std::unique_ptr<CompactionState> state)
       LOCKS_EXCLUDED(lock());
@@ -440,6 +443,27 @@ class BASE_EXPORT SelfCompactionManager {
   // safety assumptions for the callback execution (e.g. it could run
   // concurrently with the thread that registered it).
   static void SetOnStartSelfCompactionCallback(base::RepeatingClosure callback);
+
+ private:
+  friend class PreFreezeBackgroundMemoryTrimmer;
+  friend class PreFreezeSelfCompactionTest;
+  friend class PreFreezeSelfCompactionTestWithParam;
+  FRIEND_TEST_ALL_PREFIXES(PreFreezeSelfCompactionTest, NotCanceled);
+  FRIEND_TEST_ALL_PREFIXES(PreFreezeSelfCompactionTest, OnSelfFreezeCancel);
+
+  using CompactionState = PreFreezeBackgroundMemoryTrimmer::CompactionState;
+
+  static bool CompactionIsSupported();
+
+  static std::optional<uint64_t> CompactRegion(
+      debug::MappedMemoryRegion region);
+
+  static std::unique_ptr<CompactionState> GetSelfCompactionStateForTesting(
+      scoped_refptr<SequencedTaskRunner> task_runner,
+      const TimeTicks& triggered_at);
+  static std::unique_ptr<CompactionState> GetRunningCompactionStateForTesting(
+      scoped_refptr<SequencedTaskRunner> task_runner,
+      const TimeTicks& triggered_at);
 };
 
 }  // namespace base::android

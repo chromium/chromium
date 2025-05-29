@@ -752,6 +752,12 @@ void PreFreezeBackgroundMemoryTrimmer::CompactSelf(
 // static
 std::optional<uint64_t> PreFreezeBackgroundMemoryTrimmer::CompactRegion(
     debug::MappedMemoryRegion region) {
+  return SelfCompactionManager::CompactRegion(region);
+}
+
+// static
+std::optional<uint64_t> SelfCompactionManager::CompactRegion(
+    debug::MappedMemoryRegion region) {
 #if defined(MADV_PAGEOUT)
   using Permission = debug::MappedMemoryRegion::Permission;
   // Skip file-backed regions
@@ -837,11 +843,17 @@ void PreFreezeBackgroundMemoryTrimmer::OnTriggerCompact(
   base::AutoLock locker(lock());
   compaction_last_triggered_ = triggered_at;
   auto state = std::make_unique<State>(task_runner, triggered_at);
+  OnTriggerCompact(std::move(state));
+}
+
+void PreFreezeBackgroundMemoryTrimmer::OnTriggerCompact(
+    std::unique_ptr<CompactionState> state) {
   if (state->IsFeatureEnabled()) {
     RunPreFreezeTasks();
   }
   const auto delay_after_pre_freeze_tasks =
       state->GetDelayAfterPreFreezeTasks();
+  const auto task_runner = state->task_runner_;
   task_runner->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&PreFreezeBackgroundMemoryTrimmer::CompactSelf,
@@ -1112,6 +1124,11 @@ void PreFreezeBackgroundMemoryTrimmer::CompactionMetric::RecordTimeMetrics(
                           last_finished - last_cancelled);
 }
 
+// static
+bool SelfCompactionManager::CompactionIsSupported() {
+  return IsMadvisePageoutSupported();
+}
+
 void SelfCompactionManager::OnSelfFreeze() {
   PreFreezeBackgroundMemoryTrimmer::OnSelfFreeze();
 }
@@ -1129,6 +1146,24 @@ void SelfCompactionManager::SetOnStartSelfCompactionCallback(
     base::RepeatingCallback<void()> callback) {
   PreFreezeBackgroundMemoryTrimmer::SetOnStartSelfCompactionCallback(
       std::move(callback));
+}
+
+std::unique_ptr<SelfCompactionManager::CompactionState>
+SelfCompactionManager::GetSelfCompactionStateForTesting(
+    scoped_refptr<SequencedTaskRunner> task_runner,
+    const TimeTicks& triggered_at) {
+  return std::make_unique<
+      PreFreezeBackgroundMemoryTrimmer::SelfCompactionState>(
+      std::move(task_runner), triggered_at, 1);
+}
+
+std::unique_ptr<SelfCompactionManager::CompactionState>
+SelfCompactionManager::GetRunningCompactionStateForTesting(
+    scoped_refptr<SequencedTaskRunner> task_runner,
+    const TimeTicks& triggered_at) {
+  return std::make_unique<
+      PreFreezeBackgroundMemoryTrimmer::RunningCompactionState>(
+      std::move(task_runner), triggered_at, 1);
 }
 
 }  // namespace base::android
