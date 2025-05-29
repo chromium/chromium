@@ -128,7 +128,6 @@
 #include "chrome/browser/ui/signin/cookie_clear_on_exit_migration_notice.h"
 #include "chrome/browser/ui/singleton_tabs.h"
 #include "chrome/browser/ui/status_bubble.h"
-#include "chrome/browser/ui/sync/browser_synced_window_delegate.h"
 #include "chrome/browser/ui/tab_contents/core_tab_helper.h"
 #include "chrome/browser/ui/tab_dialogs.h"
 #include "chrome/browser/ui/tab_helpers.h"
@@ -655,7 +654,6 @@ Browser::Browser(const CreateParams& params)
           location_bar_model_delegate_.get(),
           content::kMaxURLDisplayChars)),
       live_tab_context_(new BrowserLiveTabContext(this)),
-      synced_window_delegate_(new BrowserSyncedWindowDelegate(this)),
       app_controller_(web_app::MaybeCreateAppBrowserController(this)),
       bookmark_bar_state_(BookmarkBar::HIDDEN),
       browser_actions_(new BrowserActions(*this)),

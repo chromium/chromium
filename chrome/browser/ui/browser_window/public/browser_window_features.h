@@ -19,6 +19,7 @@ class GlicIphController;
 
 class Browser;
 class BrowserInstantController;
+class BrowserSyncedWindowDelegate;
 class BrowserView;
 class BrowserWindowInterface;
 class ChromeLabsCoordinator;
@@ -230,6 +231,10 @@ class BrowserWindowFeatures {
     return cookie_controls_bubble_coordinator_.get();
   }
 
+  BrowserSyncedWindowDelegate* synced_window_delegate() {
+    return synced_window_delegate_.get();
+  }
+
   TabMenuModelDelegate* tab_menu_model_delegate() {
     return tab_menu_model_delegate_.get();
   }
@@ -331,6 +336,8 @@ class BrowserWindowFeatures {
 
   std::unique_ptr<CookieControlsBubbleCoordinator>
       cookie_controls_bubble_coordinator_;
+
+  std::unique_ptr<BrowserSyncedWindowDelegate> synced_window_delegate_;
 
   std::unique_ptr<TabMenuModelDelegate> tab_menu_model_delegate_;
 

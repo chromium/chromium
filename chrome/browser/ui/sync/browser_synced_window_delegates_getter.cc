@@ -7,6 +7,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/sync/browser_synced_window_delegate.h"
 #include "components/sync_sessions/synced_window_delegate.h"
 
@@ -26,8 +27,8 @@ BrowserSyncedWindowDelegatesGetter::GetSyncedWindowDelegates() {
     if (browser->profile() != profile_) {
       continue;
     }
-    synced_window_delegates[browser->synced_window_delegate()->GetSessionId()] =
-        browser->synced_window_delegate();
+    auto* const delegate = browser->GetFeatures().synced_window_delegate();
+    synced_window_delegates[delegate->GetSessionId()] = delegate;
   }
   return synced_window_delegates;
 }
@@ -35,7 +36,7 @@ BrowserSyncedWindowDelegatesGetter::GetSyncedWindowDelegates() {
 const sync_sessions::SyncedWindowDelegate*
 BrowserSyncedWindowDelegatesGetter::FindById(SessionID id) {
   Browser* browser = chrome::FindBrowserWithID(id);
-  return (browser != nullptr) ? browser->synced_window_delegate() : nullptr;
+  return browser ? browser->GetFeatures().synced_window_delegate() : nullptr;
 }
 
 }  // namespace browser_sync

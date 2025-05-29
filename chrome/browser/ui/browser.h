@@ -67,7 +67,6 @@ class BackgroundContents;
 class BreadcrumbManagerBrowserAgent;
 class BrowserActions;
 class BrowserContentSettingBubbleModelDelegate;
-class BrowserSyncedWindowDelegate;
 class BrowserLocationBarModelDelegate;
 class BrowserLiveTabContext;
 class BrowserView;
@@ -508,9 +507,6 @@ class Browser : public TabStripModelObserver,
     return content_setting_bubble_model_delegate_.get();
   }
   BrowserLiveTabContext* live_tab_context() { return live_tab_context_.get(); }
-  BrowserSyncedWindowDelegate* synced_window_delegate() {
-    return synced_window_delegate_.get();
-  }
   const web_app::AppBrowserController* app_controller() const {
     return app_controller_.get();
   }
@@ -1453,9 +1449,6 @@ class Browser : public TabStripModelObserver,
 
   // Helper which implements the LiveTabContext interface.
   std::unique_ptr<BrowserLiveTabContext> live_tab_context_;
-
-  // Helper which implements the SyncedWindowDelegate interface.
-  std::unique_ptr<BrowserSyncedWindowDelegate> synced_window_delegate_;
 
   // Helper which handles bookmark app specific browser configuration.
   // This must be initialized before |command_controller_| to ensure the correct

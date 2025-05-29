@@ -30,6 +30,7 @@
 #include "chrome/browser/ui/lens/lens_overlay_entry_point_controller.h"
 #include "chrome/browser/ui/performance_controls/memory_saver_bubble_controller.h"
 #include "chrome/browser/ui/performance_controls/memory_saver_opt_in_iph_controller.h"
+#include "chrome/browser/ui/sync/browser_synced_window_delegate.h"
 #include "chrome/browser/ui/tabs/glic_nudge_controller.h"
 #include "chrome/browser/ui/tabs/organization/tab_declutter_controller.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/most_recent_shared_tab_update_store.h"
@@ -267,6 +268,9 @@ void BrowserWindowFeatures::InitPostWindowConstruction(Browser* browser) {
       }
     }
   }
+
+  synced_window_delegate_ =
+      std::make_unique<BrowserSyncedWindowDelegate>(browser);
 
   if (browser->is_type_normal() || browser->is_type_app()) {
     toast_service_ = std::make_unique<ToastService>(browser);
