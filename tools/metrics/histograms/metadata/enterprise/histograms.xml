@@ -3003,12 +3003,31 @@ chromium-metrics-reviews@google.com.
   <owner>domfc@chromium.org</owner>
   <owner>xanth@google.com</owner>
   <owner>nancylanxiao@google.com</owner>
+  <owner>cbe-cep-eng@google.com</owner>
   <summary>
     The size of the UploadEventsRequest for {EventType} events sent to the
     reporting server, in bytes. This is recorded once per upload request when
     the payload is generated in RealtimeReportingJobConfiguration::GetPayload.
   </summary>
   <token key="EventType" variants="EnterpriseReportingEventType"/>
+</histogram>
+
+<histogram name="Enterprise.ReportingEvent.{EventType}.{UploadResult}.Duration"
+    units="ms" expires_after="2025-11-27">
+  <owner>nancylanxiao@google.com</owner>
+  <owner>domfc@chromium.org</owner>
+  <owner>xanth@google.com</owner>
+  <owner>cbe-cep-eng@google.com</owner>
+  <summary>
+    Record the duration from attempting to upload {EventType} events to the
+    reporting server to get the {UploadResult} measured in milliseconds. It is
+    logged once per upload request, when the upload finishes.
+  </summary>
+  <token key="EventType" variants="EnterpriseReportingEventType"/>
+  <token key="UploadResult">
+    <variant name="UploadFailure" summary="failed upload"/>
+    <variant name="UploadSuccess" summary="successful upload"/>
+  </token>
 </histogram>
 
 <histogram name="Enterprise.ReportingEventUploadFailure"

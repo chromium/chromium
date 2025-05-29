@@ -79,13 +79,6 @@ inline constexpr char kKeyOptInEventUrlPatterns[] = "url_patterns";
 inline constexpr char kDlpTag[] = "dlp";
 inline constexpr char kMalwareTag[] = "malware";
 
-// A MIME type string that matches all MIME types.
-inline constexpr char kWildcardMimeType[] = "*";
-
-// The reporting connector subdirectory in User_Data_Directory
-inline constexpr base::FilePath::CharType RC_BASE_DIR[] =
-    FILE_PATH_LITERAL("Enterprise/ReportingConnector/");
-
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused. Keep this enum in sync with
 // EnterpriseReportingEventType in enums.xml.
@@ -131,33 +124,6 @@ inline constexpr auto kEventNameToUmaEnumMap =
          EnterpriseReportingEventType::kExtensionInstallEvent},
         {kBrowserCrashEvent, EnterpriseReportingEventType::kBrowserCrashEvent},
         {kExtensionTelemetryEvent,
-         EnterpriseReportingEventType::kExtensionTelemetryEvent},
-    });
-
-inline constexpr auto kEventCaseToUmaEnumMap =
-    base::MakeFixedFlatMap<EventCase, EnterpriseReportingEventType>({
-        {EventCase::kPasswordReuseEvent,
-         EnterpriseReportingEventType::kPasswordReuseEvent},
-        {EventCase::kPasswordChangedEvent,
-         EnterpriseReportingEventType::kPasswordChangedEvent},
-        {EventCase::kDangerousDownloadEvent,
-         EnterpriseReportingEventType::kDangerousDownloadEvent},
-        {EventCase::kInterstitialEvent,
-         EnterpriseReportingEventType::kInterstitialEvent},
-        {EventCase::kSensitiveDataEvent,
-         EnterpriseReportingEventType::kSensitiveDataEvent},
-        {EventCase::kUnscannedFileEvent,
-         EnterpriseReportingEventType::kUnscannedFileEvent},
-        {EventCase::kLoginEvent, EnterpriseReportingEventType::kLoginEvent},
-        {EventCase::kPasswordBreachEvent,
-         EnterpriseReportingEventType::kPasswordBreachEvent},
-        {EventCase::kUrlFilteringInterstitialEvent,
-         EnterpriseReportingEventType::kUrlFilteringInterstitialEvent},
-        {EventCase::kBrowserExtensionInstallEvent,
-         EnterpriseReportingEventType::kExtensionInstallEvent},
-        {EventCase::kBrowserCrashEvent,
-         EnterpriseReportingEventType::kBrowserCrashEvent},
-        {EventCase::kExtensionTelemetryEvent,
          EnterpriseReportingEventType::kExtensionTelemetryEvent},
     });
 
@@ -347,6 +313,14 @@ std::string EventResultToString(EventResult result);
 // or an empty string if no account is signed in.  If `identity_manager` is null
 // then the empty string is returned.
 std::string GetProfileEmail(signin::IdentityManager* identity_manager);
+
+// Returns the UMA metrics for tracking the successful uploaded event duration.
+std::string GetSuccessfulUploadDurationUmaMetricName(
+    EnterpriseReportingEventType event_type);
+
+// Returns the UMA metrics for tracking the failed-to-upload event duration.
+std::string GetFailedUploadDurationUmaMetricName(
+    EnterpriseReportingEventType event_type);
 
 }  // namespace enterprise_connectors
 

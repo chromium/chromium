@@ -6,6 +6,7 @@
 
 #include <algorithm>
 
+#include "base/containers/map_util.h"
 #include "base/notreached.h"
 #include "base/strings/escape.h"
 #include "base/strings/strcat.h"
@@ -21,6 +22,60 @@
 namespace enterprise_connectors {
 
 namespace {
+
+inline constexpr auto kUmaEnumToStringMap =
+    base::MakeFixedFlatMap<EnterpriseReportingEventType, std::string_view>({
+        {EnterpriseReportingEventType::kPasswordReuseEvent,
+         kPasswordReuseUmaMetricName},
+        {EnterpriseReportingEventType::kPasswordChangedEvent,
+         kPasswordChangedUmaMetricName},
+        {EnterpriseReportingEventType::kDangerousDownloadEvent,
+         kDangerousDownloadUmaMetricName},
+        {EnterpriseReportingEventType::kInterstitialEvent,
+         kInterstitialUmaMetricName},
+        {EnterpriseReportingEventType::kSensitiveDataEvent,
+         kSensitiveDataUmaMetricName},
+        {EnterpriseReportingEventType::kUnscannedFileEvent,
+         kUnscannedFileUmaMetricName},
+        {EnterpriseReportingEventType::kLoginEvent, kLoginUmaMetricName},
+        {EnterpriseReportingEventType::kPasswordBreachEvent,
+         kPasswordBreachUmaMetricName},
+        {EnterpriseReportingEventType::kUrlFilteringInterstitialEvent,
+         kUrlFilteringInterstitialUmaMetricName},
+        {EnterpriseReportingEventType::kExtensionInstallEvent,
+         kExtensionInstallUmaMetricName},
+        {EnterpriseReportingEventType::kBrowserCrashEvent,
+         kBrowserCrashUmaMetricName},
+        {EnterpriseReportingEventType::kExtensionTelemetryEvent,
+         kExtensionTelemetryUmaMetricName},
+    });
+
+inline constexpr auto kEventCaseToUmaEnumMap =
+    base::MakeFixedFlatMap<EventCase, EnterpriseReportingEventType>({
+        {EventCase::kPasswordReuseEvent,
+         EnterpriseReportingEventType::kPasswordReuseEvent},
+        {EventCase::kPasswordChangedEvent,
+         EnterpriseReportingEventType::kPasswordChangedEvent},
+        {EventCase::kDangerousDownloadEvent,
+         EnterpriseReportingEventType::kDangerousDownloadEvent},
+        {EventCase::kInterstitialEvent,
+         EnterpriseReportingEventType::kInterstitialEvent},
+        {EventCase::kSensitiveDataEvent,
+         EnterpriseReportingEventType::kSensitiveDataEvent},
+        {EventCase::kUnscannedFileEvent,
+         EnterpriseReportingEventType::kUnscannedFileEvent},
+        {EventCase::kLoginEvent, EnterpriseReportingEventType::kLoginEvent},
+        {EventCase::kPasswordBreachEvent,
+         EnterpriseReportingEventType::kPasswordBreachEvent},
+        {EventCase::kUrlFilteringInterstitialEvent,
+         EnterpriseReportingEventType::kUrlFilteringInterstitialEvent},
+        {EventCase::kBrowserExtensionInstallEvent,
+         EnterpriseReportingEventType::kExtensionInstallEvent},
+        {EventCase::kBrowserCrashEvent,
+         EnterpriseReportingEventType::kBrowserCrashEvent},
+        {EventCase::kExtensionTelemetryEvent,
+         EnterpriseReportingEventType::kExtensionTelemetryEvent},
+    });
 
 ContentAnalysisAcknowledgement::FinalAction RuleActionToAckAction(
     TriggeredRule::Action action) {
@@ -364,6 +419,22 @@ std::string GetProfileEmail(signin::IdentityManager* identity_manager) {
                    ->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
                    .email
              : std::string();
+}
+
+std::string GetSuccessfulUploadDurationUmaMetricName(
+    EnterpriseReportingEventType event_type) {
+  auto* metric_name = base::FindOrNull(kUmaEnumToStringMap, event_type);
+  return metric_name
+             ? base::StrCat({*metric_name, "UploadSuccess.Duration"})
+             : base::StrCat({kUnknownUmaMetricName, "UploadSuccess.Duration"});
+}
+
+std::string GetFailedUploadDurationUmaMetricName(
+    EnterpriseReportingEventType event_type) {
+  auto* metric_name = base::FindOrNull(kUmaEnumToStringMap, event_type);
+  return metric_name
+             ? base::StrCat({*metric_name, "UploadFailure.Duration"})
+             : base::StrCat({kUnknownUmaMetricName, "UploadFailure.Duration"});
 }
 
 }  // namespace enterprise_connectors

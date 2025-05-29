@@ -331,7 +331,8 @@ void RealtimeReportingClient::UploadCallbackDeprecated(
     base::Value::Dict event_wrapper,
     bool per_profile,
     policy::CloudPolicyClient* client,
-    EnterpriseReportingEventType eventType,
+    EnterpriseReportingEventType event_type,
+    base::TimeTicks upload_started_at,
     policy::CloudPolicyClient::Result upload_result) {
   // TODO(crbug.com/256553070): Do not crash if the client is unregistered.
   CHECK(!upload_result.IsClientNotRegisteredError());
@@ -353,10 +354,19 @@ void RealtimeReportingClient::UploadCallbackDeprecated(
 
   if (upload_result.IsSuccess()) {
     base::UmaHistogramEnumeration("Enterprise.ReportingEventUploadSuccess",
-                                  eventType);
+                                  event_type);
+    base::UmaHistogramCustomTimes(
+        GetSuccessfulUploadDurationUmaMetricName(event_type),
+        base::TimeTicks::Now() - upload_started_at, base::Milliseconds(1),
+        base::Minutes(5), 50);
+
   } else {
     base::UmaHistogramEnumeration("Enterprise.ReportingEventUploadFailure",
-                                  eventType);
+                                  event_type);
+    base::UmaHistogramCustomTimes(
+        GetFailedUploadDurationUmaMetricName(event_type),
+        base::TimeTicks::Now() - upload_started_at, base::Milliseconds(1),
+        base::Minutes(5), 50);
   }
 }
 
@@ -364,24 +374,34 @@ void RealtimeReportingClient::UploadCallback(
     ::chrome::cros::reporting::proto::UploadEventsRequest request,
     bool per_profile,
     policy::CloudPolicyClient* client,
-    EnterpriseReportingEventType eventType,
+    EnterpriseReportingEventType event_type,
+    base::TimeTicks upload_started_at,
     policy::CloudPolicyClient::Result upload_result) {
   base::Value::Dict event_wrapper = base::Value::Dict();
   base::Value::Dict error_details = ReportErrorDetails(upload_result);
   event_wrapper.Merge(std::move(error_details));
   event_wrapper.Set("upload_request",
                     base::EscapeNonASCII(request.SerializeAsString()));
-  event_wrapper.Set("event_type", static_cast<int>(eventType));
+  event_wrapper.Set("event_type", static_cast<int>(event_type));
 
   safe_browsing::WebUIInfoSingleton::GetInstance()->AddToReportingEvents(
       std::move(event_wrapper));
 
   if (upload_result.IsSuccess()) {
     base::UmaHistogramEnumeration("Enterprise.ReportingEventUploadSuccess",
-                                  eventType);
+                                  event_type);
+    base::UmaHistogramCustomTimes(
+        GetSuccessfulUploadDurationUmaMetricName(event_type),
+        base::TimeTicks::Now() - upload_started_at, base::Milliseconds(1),
+        base::Minutes(5), 50);
+
   } else {
     base::UmaHistogramEnumeration("Enterprise.ReportingEventUploadFailure",
-                                  eventType);
+                                  event_type);
+    base::UmaHistogramCustomTimes(
+        GetFailedUploadDurationUmaMetricName(event_type),
+        base::TimeTicks::Now() - upload_started_at, base::Milliseconds(1),
+        base::Minutes(5), 50);
   }
 }
 

@@ -116,14 +116,16 @@ class RealtimeReportingClientBase : public KeyedService,
       base::Value::Dict event_wrapper,
       bool per_profile,
       policy::CloudPolicyClient* client,
-      EnterpriseReportingEventType eventType,
+      EnterpriseReportingEventType event_type,
+      base::TimeTicks upload_started_at,
       policy::CloudPolicyClient::Result upload_result) = 0;
 
   virtual void UploadCallback(
       ::chrome::cros::reporting::proto::UploadEventsRequest request,
       bool per_profile,
       policy::CloudPolicyClient* client,
-      EnterpriseReportingEventType eventType,
+      EnterpriseReportingEventType event_type,
+      base::TimeTicks upload_started_at,
       policy::CloudPolicyClient::Result upload_result) = 0;
 
   // Returns a dictionary of information added to reporting events,
@@ -178,8 +180,7 @@ class RealtimeReportingClientBase : public KeyedService,
       base::Value::Dict event,
       policy::CloudPolicyClient* client,
       std::string name,
-      const ReportingSettings& settings,
-      base::Time time);
+      const ReportingSettings& settings);
 
   const std::string GetProfilePolicyClientDescription();
 
