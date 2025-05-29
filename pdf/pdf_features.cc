@@ -45,9 +45,6 @@ BASE_FEATURE(kPdfSaveOriginalFromMemory,
              "PdfSaveOriginalFromMemory",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// TODO(crbug.com/419436546): Deprecated, remove.
-BASE_FEATURE(kPdfSearchify, "PdfSearchify", base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kPdfSearchifySave,
              "PdfSearchifySave",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -93,8 +90,7 @@ bool IsOopifPdfEnabled() {
 }
 
 bool IsPdfSearchifySaveEnabled() {
-  return base::FeatureList::IsEnabled(kPdfSearchify) &&
-         base::FeatureList::IsEnabled(kPdfSearchifySave);
+  return base::FeatureList::IsEnabled(kPdfSearchifySave);
 }
 
 }  // namespace chrome_pdf::features

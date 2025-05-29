@@ -23,7 +23,6 @@ BASE_DECLARE_FEATURE(kPdfOopif);
 BASE_DECLARE_FEATURE(kPdfPartialLoading);
 BASE_DECLARE_FEATURE(kPdfPortfolio);
 BASE_DECLARE_FEATURE(kPdfSaveOriginalFromMemory);
-BASE_DECLARE_FEATURE(kPdfSearchify);
 BASE_DECLARE_FEATURE(kPdfSearchifySave);
 BASE_DECLARE_FEATURE(kPdfTags);
 BASE_DECLARE_FEATURE(kPdfUseShowSaveFilePicker);
@@ -44,7 +43,7 @@ void SetIsOopifPdfPolicyEnabled(bool is_oopif_pdf_policy_enabled);
 // PDF viewer should be used.
 bool IsOopifPdfEnabled();
 
-// Returns whether PDF Searchify and PDF Searchify Save features are enabled.
+// Returns whether PDF Searchify Save features is enabled.
 bool IsPdfSearchifySaveEnabled();
 
 }  // namespace chrome_pdf::features

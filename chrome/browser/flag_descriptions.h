@@ -1901,9 +1901,6 @@ extern const char kPasswordManualFallbackAvailableDescription[];
 extern const char kPasswordParsingOnSaveUsesPredictionsName[];
 extern const char kPasswordParsingOnSaveUsesPredictionsDescription[];
 
-extern const char kPdfSearchifyName[];
-extern const char kPdfSearchifyDescription[];
-
 extern const char kPdfXfaFormsName[];
 extern const char kPdfXfaFormsDescription[];
 

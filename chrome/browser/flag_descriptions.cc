@@ -3291,11 +3291,6 @@ const char kPasswordParsingOnSaveUsesPredictionsDescription[] =
     "Take server prediction into account when parsing password forms "
     "during saving.";
 
-const char kPdfSearchifyName[] = "Make the text in PDF images interactable";
-const char kPdfSearchifyDescription[] =
-    "Enables a feature which runs OCR on PDF images and makes the recognized "
-    "text searchable and editable.";
-
 const char kPdfXfaFormsName[] = "PDF XFA support";
 const char kPdfXfaFormsDescription[] =
     "Enables support for XFA forms in PDFs. "
