@@ -1446,101 +1446,11 @@ bool ViewTransitionStyleTracker::RunPostPrePaintSteps() {
   bool needs_style_invalidation = false;
 
   for (auto& entry : element_data_map_) {
-    auto& element_data = entry.value;
-    if (!element_data->target_element)
-      continue;
-
-    DCHECK(scope);
-    auto* layout_object = element_data->target_element->GetLayoutObject();
-    if (!layout_object) {
+    if (!RunPostPrePaintStepsForElement(entry.key, entry.value.Get(),
+                                        max_capture_size_in_layout,
+                                        needs_style_invalidation)) {
       return false;
     }
-
-    // End the transition if any of the objects have become fragmented.
-    if (layout_object->IsFragmented()) {
-      return false;
-    }
-
-    ContainerProperties container_properties;
-    PhysicalRect visual_overflow_rect_in_layout_space;
-    std::optional<gfx::RectF> captured_rect_in_layout_space;
-
-    if (element_data->target_element->IsDocumentElement()) {
-      auto layout_view_size = PhysicalSize(GetSnapshotRootSize());
-      auto layout_view_size_in_css_space = layout_view_size;
-      layout_view_size_in_css_space.Scale(1 / device_pixel_ratio_);
-      container_properties = ContainerProperties{
-          PhysicalRect(PhysicalOffset(), layout_view_size_in_css_space),
-          gfx::Transform()};
-      visual_overflow_rect_in_layout_space.size = layout_view_size;
-    } else {
-      ComputeLiveElementGeometry(
-          max_capture_size_in_layout, *layout_object, container_properties,
-          visual_overflow_rect_in_layout_space, captured_rect_in_layout_space);
-    }
-
-    FlatMapBuilder<CSSPropertyID, String> css_property_builder(
-        std::size(kPropertiesToCapture));
-
-    auto capture_property = [&](CSSPropertyID id) {
-      if (const CSSValue* css_value =
-              CSSProperty::Get(id).CSSValueFromComputedStyle(
-                  layout_object->StyleRef(),
-                  /*layout_object=*/nullptr,
-                  /*allow_visited_style=*/false,
-                  CSSValuePhase::kComputedValue)) {
-        css_property_builder.Insert(id, css_value->CssText());
-      }
-    };
-
-    for (CSSPropertyID id : kPropertiesToCapture) {
-      capture_property(id);
-    }
-
-    auto css_properties = std::move(css_property_builder).Finish();
-
-    if (element_data->container_properties == container_properties &&
-        visual_overflow_rect_in_layout_space ==
-            element_data->visual_overflow_rect_in_layout_space &&
-        captured_rect_in_layout_space ==
-            element_data->captured_rect_in_layout_space &&
-        css_properties == element_data->captured_css_properties) {
-      continue;
-    }
-
-    element_data->container_properties = container_properties;
-
-    element_data->visual_overflow_rect_in_layout_space =
-        visual_overflow_rect_in_layout_space;
-    element_data->captured_css_properties = css_properties;
-    element_data->captured_rect_in_layout_space = captured_rect_in_layout_space;
-
-    PseudoId live_content_element = HasLiveNewContent()
-                                        ? kPseudoIdViewTransitionNew
-                                        : kPseudoIdViewTransitionOld;
-    DCHECK(scope);
-    if (auto* pseudo_element =
-            scope->GetStyledPseudoElement(live_content_element, entry.key)) {
-      // A pseudo element of type |tansition*content| must be created using
-      // ViewTransitionContentElement.
-      bool use_cached_data = false;
-      auto captured_rect = element_data->GetCapturedSubrect(use_cached_data);
-      auto border_box_rect =
-          element_data->GetReferenceRect(use_cached_data, device_pixel_ratio_);
-      static_cast<ViewTransitionContentElement*>(pseudo_element)
-          ->SetIntrinsicSize(
-              captured_rect, border_box_rect,
-              element_data
-                  ->ShouldPropagateVisualOverflowRectAsMaxExtentsRect());
-    }
-
-    // Ensure that the cached state stays in sync with the current state while
-    // we're capturing.
-    if (state_ == State::kCapturing) {
-      element_data->CacheStateForOldSnapshot();
-    }
-
-    needs_style_invalidation = true;
   }
 
   if (LayoutViewTransitionRoot* snapshot_containing_block =
@@ -1552,6 +1462,108 @@ bool ViewTransitionStyleTracker::RunPostPrePaintSteps() {
     InvalidateStyleAndCompositing();
   }
 
+  return true;
+}
+
+bool ViewTransitionStyleTracker::RunPostPrePaintStepsForElement(
+    AtomicString name,
+    ElementData* element_data,
+    const int max_capture_size_in_layout,
+    bool& needs_style_invalidation) {
+  if (!element_data->target_element) {
+    return true;
+  }
+
+  Element* scope = OriginatingElement();
+  DCHECK(scope);
+  auto* layout_object = element_data->target_element->GetLayoutObject();
+  if (!layout_object) {
+    return false;
+  }
+
+  // End the transition if any of the objects have become fragmented.
+  if (layout_object->IsFragmented()) {
+    return false;
+  }
+
+  ContainerProperties container_properties;
+  PhysicalRect visual_overflow_rect_in_layout_space;
+  std::optional<gfx::RectF> captured_rect_in_layout_space;
+
+  if (element_data->target_element->IsDocumentElement()) {
+    auto layout_view_size = PhysicalSize(GetSnapshotRootSize());
+    auto layout_view_size_in_css_space = layout_view_size;
+    layout_view_size_in_css_space.Scale(1 / device_pixel_ratio_);
+    container_properties = ContainerProperties{
+        PhysicalRect(PhysicalOffset(), layout_view_size_in_css_space),
+        gfx::Transform()};
+    visual_overflow_rect_in_layout_space.size = layout_view_size;
+  } else {
+    ComputeLiveElementGeometry(
+        max_capture_size_in_layout, *layout_object, container_properties,
+        visual_overflow_rect_in_layout_space, captured_rect_in_layout_space);
+  }
+
+  FlatMapBuilder<CSSPropertyID, String> css_property_builder(
+      std::size(kPropertiesToCapture));
+
+  auto capture_property = [&](CSSPropertyID id) {
+    if (const CSSValue* css_value =
+            CSSProperty::Get(id).CSSValueFromComputedStyle(
+                layout_object->StyleRef(),
+                /*layout_object=*/nullptr,
+                /*allow_visited_style=*/false, CSSValuePhase::kComputedValue)) {
+      css_property_builder.Insert(id, css_value->CssText());
+    }
+  };
+
+  for (CSSPropertyID id : kPropertiesToCapture) {
+    capture_property(id);
+  }
+
+  auto css_properties = std::move(css_property_builder).Finish();
+
+  if (element_data->container_properties == container_properties &&
+      visual_overflow_rect_in_layout_space ==
+          element_data->visual_overflow_rect_in_layout_space &&
+      captured_rect_in_layout_space ==
+          element_data->captured_rect_in_layout_space &&
+      css_properties == element_data->captured_css_properties) {
+    return true;
+  }
+
+  element_data->container_properties = container_properties;
+
+  element_data->visual_overflow_rect_in_layout_space =
+      visual_overflow_rect_in_layout_space;
+  element_data->captured_css_properties = css_properties;
+  element_data->captured_rect_in_layout_space = captured_rect_in_layout_space;
+
+  PseudoId live_content_element = HasLiveNewContent()
+                                      ? kPseudoIdViewTransitionNew
+                                      : kPseudoIdViewTransitionOld;
+  DCHECK(scope);
+  if (auto* pseudo_element =
+          scope->GetStyledPseudoElement(live_content_element, name)) {
+    // A pseudo element of type |tansition*content| must be created using
+    // ViewTransitionContentElement.
+    bool use_cached_data = false;
+    auto captured_rect = element_data->GetCapturedSubrect(use_cached_data);
+    auto border_box_rect =
+        element_data->GetReferenceRect(use_cached_data, device_pixel_ratio_);
+    static_cast<ViewTransitionContentElement*>(pseudo_element)
+        ->SetIntrinsicSize(
+            captured_rect, border_box_rect,
+            element_data->ShouldPropagateVisualOverflowRectAsMaxExtentsRect());
+  }
+
+  // Ensure that the cached state stays in sync with the current state while
+  // we're capturing.
+  if (state_ == State::kCapturing) {
+    element_data->CacheStateForOldSnapshot();
+  }
+
+  needs_style_invalidation = true;
   return true;
 }
 

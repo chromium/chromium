@@ -323,6 +323,11 @@ class ViewTransitionStyleTracker
     bool is_generated_name;
   };
 
+  bool RunPostPrePaintStepsForElement(AtomicString name,
+                                      ElementData* element_data,
+                                      const int max_capture_size_in_layout,
+                                      bool& needs_style_invalidation);
+
   // In physical pixels. Returns the snapshot root rect, relative to the
   // fixed viewport origin. See README.md for a detailed description of the
   // snapshot root rect.
