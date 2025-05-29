@@ -9,7 +9,15 @@ git submodules (see
 `gclient` supports three dependency types: git, [gcs](gcs_dependencies.md), and
 [cipd](cipd_and_3pp.md).
 
-[TOC]
+## Adding to GoB
+
+If the code is in a Git repo that you want to mirror, please file an [infra git
+ticket](https://bugs.chromium.org/p/chromium/issues/entry?template=Infra-Git)
+to get the repo mirrored onto chromium.googlesource.com; we don't allow direct
+dependencies on non-Google-hosted repositories, so that we can still build
+if an external repository goes down.
+
+Once the mirror is set up, you can add the actual dependency into `DEPS`.
 
 ## Adding dependencies
 
