@@ -19,7 +19,7 @@ import androidx.core.graphics.Insets;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.ui.util.WindowInsetsUtils;
+import org.chromium.ui.insets.WindowInsetsUtils;
 
 /**
  * A wrapper layout that adjusts padding based on the current window insets. It ensures it's child

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.ui;
+package org.chromium.ui.insets;
 
 import static androidx.core.view.WindowInsetsCompat.Type.captionBar;
 import static androidx.core.view.WindowInsetsCompat.Type.navigationBars;
@@ -38,9 +38,9 @@ import org.robolectric.annotation.Implements;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CallbackHelper;
+import org.chromium.ui.InsetObserver;
 import org.chromium.ui.InsetObserver.WindowInsetsConsumer.InsetConsumerSource;
-import org.chromium.ui.InsetsRectProviderTest.ShadowWindowInsetsUtils;
-import org.chromium.ui.util.WindowInsetsUtils;
+import org.chromium.ui.insets.InsetsRectProviderTest.ShadowWindowInsetsUtils;
 
 import java.util.List;
 

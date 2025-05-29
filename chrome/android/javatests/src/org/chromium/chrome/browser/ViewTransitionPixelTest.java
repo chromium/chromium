@@ -44,9 +44,9 @@ import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.util.DOMUtils;
 import org.chromium.content_public.browser.test.util.JavaScriptUtils;
 import org.chromium.ui.base.DeviceFormFactor;
+import org.chromium.ui.insets.WindowInsetsUtils;
 import org.chromium.ui.mojom.VirtualKeyboardMode;
 import org.chromium.ui.test.util.RenderTestRule;
-import org.chromium.ui.util.WindowInsetsUtils;
 
 import java.io.File;
 import java.util.concurrent.TimeUnit;

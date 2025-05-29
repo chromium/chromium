@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.ui;
+package org.chromium.ui.insets;
 
 import android.graphics.Rect;
 import android.view.View;
@@ -12,7 +12,7 @@ import androidx.core.view.WindowInsetsCompat;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.ui.util.WindowInsetsUtils;
+import org.chromium.ui.InsetObserver;
 
 import java.util.ArrayList;
 import java.util.List;

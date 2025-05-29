@@ -60,11 +60,11 @@ import org.chromium.chrome.browser.ui.desktop_windowing.AppHeaderUtils.Windowing
 import org.chromium.components.browser_ui.desktop_windowing.AppHeaderState;
 import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
 import org.chromium.components.browser_ui.edge_to_edge.EdgeToEdgeStateProvider;
-import org.chromium.ui.CaptionBarInsetsRectProvider;
 import org.chromium.ui.InsetObserver;
-import org.chromium.ui.InsetsRectProvider;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.display.DisplayUtil;
+import org.chromium.ui.insets.CaptionBarInsetsRectProvider;
+import org.chromium.ui.insets.InsetsRectProvider;
 
 import java.util.List;
 
