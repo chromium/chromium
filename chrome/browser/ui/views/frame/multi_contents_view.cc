@@ -16,7 +16,6 @@
 #include "chrome/browser/ui/views/frame/multi_contents_view_drop_target_controller.h"
 #include "chrome/browser/ui/views/frame/multi_contents_view_mini_toolbar.h"
 #include "chrome/browser/ui/views/frame/top_container_background.h"
-#include "chrome/browser/ui/views/status_bubble_views.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer.h"
@@ -132,10 +131,13 @@ void MultiContentsView::SetActiveIndex(int index) {
   UpdateContentsBorderAndOverlay();
 }
 
-bool MultiContentsView::PreHandleMouseEvent(const blink::WebMouseEvent& event) {
-  // Always allow the event to propagate to the WebContents, regardless of
-  // whether it was also handled above.
-  return false;
+void MultiContentsView::UpdateSplitRatio(double ratio) {
+  if (start_ratio_ == ratio) {
+    return;
+  }
+
+  start_ratio_ = ratio;
+  InvalidateLayout();
 }
 
 void MultiContentsView::ExecuteOnEachVisibleContentsView(
@@ -150,15 +152,6 @@ void MultiContentsView::ExecuteOnEachVisibleContentsView(
 void MultiContentsView::OnSwap() {
   CHECK(IsInSplitView());
   browser_view_->ReverseWebContents();
-}
-
-void MultiContentsView::UpdateSplitRatio(double ratio) {
-  if (start_ratio_ == ratio) {
-    return;
-  }
-
-  start_ratio_ = ratio;
-  InvalidateLayout();
 }
 
 void MultiContentsView::OnResize(int resize_amount, bool done_resizing) {

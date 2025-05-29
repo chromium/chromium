@@ -148,7 +148,7 @@ class MultiContentsViewUiTest
 
   auto SetMinWidth(int width) {
     auto result = Steps(Do([width, this]() {
-      multi_contents_view()->SetMinWidthForTesting(width);
+      multi_contents_view()->set_min_contents_width_for_testing(width);
     }));
     AddDescriptionPrefix(result, "SetMinWidth()");
     return result;

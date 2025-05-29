@@ -22,10 +22,6 @@ class MultiContentsResizeArea;
 class MultiContentsViewDropTargetController;
 class MultiContentsViewMiniToolbar;
 
-namespace blink {
-class WebMouseEvent;
-}  // namespace blink
-
 namespace content {
 class WebContents;
 }  // namespace content
@@ -93,8 +89,8 @@ class MultiContentsView : public views::View, public views::ResizeAreaDelegate {
   // Sets the index of the active contents view within contents_views_.
   void SetActiveIndex(int index);
 
-  // Handles a mouse event prior to it being passed along to the WebContents.
-  bool PreHandleMouseEvent(const blink::WebMouseEvent& event);
+  // Updates the the size of the contents views based on |ratio|.
+  void UpdateSplitRatio(double ratio);
 
   // Helper method to execute an arbitrary callback on each visible contents
   // view. Will execute the callback on the active contents view first.
@@ -103,8 +99,6 @@ class MultiContentsView : public views::View, public views::ResizeAreaDelegate {
 
   // If in a split view, swaps the order of the two contents views.
   void OnSwap();
-
-  void UpdateSplitRatio(double ratio);
 
   // views::ResizeAreaDelegate:
   void OnResize(int resize_amount, bool done_resizing) override;
@@ -124,7 +118,7 @@ class MultiContentsView : public views::View, public views::ResizeAreaDelegate {
 
   gfx::Insets& end_contents_view_inset() { return end_contents_view_inset_; }
 
-  void SetMinWidthForTesting(int width) {
+  void set_min_contents_width_for_testing(int width) {
     min_contents_width_for_testing_ = std::make_optional(width);
   }
 

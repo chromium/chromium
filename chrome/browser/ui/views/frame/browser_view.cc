@@ -3743,24 +3743,7 @@ void BrowserView::ShowAppMenu() {
 }
 
 bool BrowserView::PreHandleMouseEvent(const blink::WebMouseEvent& event) {
-  if (multi_contents_view_) {
-    return multi_contents_view_->PreHandleMouseEvent(event);
-  }
   return false;
-}
-
-void BrowserView::PreHandleDragUpdate(const content::DropData& drop_data,
-                                      const gfx::PointF& point) {
-  if (multi_contents_view_) {
-    multi_contents_view_->drop_target_controller().OnWebContentsDragUpdate(
-        drop_data, point);
-  }
-}
-
-void BrowserView::PreHandleDragExit() {
-  if (multi_contents_view_) {
-    multi_contents_view_->drop_target_controller().OnWebContentsDragExit();
-  }
 }
 
 content::KeyboardEventProcessingResult BrowserView::PreHandleKeyboardEvent(
@@ -3842,6 +3825,20 @@ content::KeyboardEventProcessingResult BrowserView::PreHandleKeyboardEvent(
   DCHECK_EQ(event.GetType(), blink::WebInputEvent::Type::kRawKeyDown);
   // |accelerator| is a non-reserved browser shortcut (e.g. Ctrl+f).
   return content::KeyboardEventProcessingResult::NOT_HANDLED_IS_SHORTCUT;
+}
+
+void BrowserView::PreHandleDragUpdate(const content::DropData& drop_data,
+                                      const gfx::PointF& point) {
+  if (multi_contents_view_) {
+    multi_contents_view_->drop_target_controller().OnWebContentsDragUpdate(
+        drop_data, point);
+  }
+}
+
+void BrowserView::PreHandleDragExit() {
+  if (multi_contents_view_) {
+    multi_contents_view_->drop_target_controller().OnWebContentsDragExit();
+  }
 }
 
 bool BrowserView::HandleKeyboardEvent(const NativeWebKeyboardEvent& event) {
