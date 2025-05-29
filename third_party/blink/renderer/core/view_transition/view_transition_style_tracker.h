@@ -395,6 +395,7 @@ class ViewTransitionStyleTracker
   Member<Document> document_;
 
   Member<Element> element_;
+  AtomicString scope_tag_;
 
   // Indicates which step during the transition we're currently at.
   State state_ = State::kIdle;

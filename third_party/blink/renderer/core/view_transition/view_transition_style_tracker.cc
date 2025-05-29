@@ -979,6 +979,9 @@ bool ViewTransitionStyleTracker::Capture(bool snap_browser_controls) {
     if (element->IsDocumentElement()) {
       is_root_transitioning_ = true;
     }
+    if (element == OriginatingElement()) {
+      scope_tag_ = name;
+    }
   }
 
 #if DCHECK_IS_ON()
@@ -1445,7 +1448,20 @@ bool ViewTransitionStyleTracker::RunPostPrePaintSteps() {
 
   bool needs_style_invalidation = false;
 
+  if (scope_tag_) {
+    // If the scope element is a participant, process it first. Updating pseudo
+    // tree intrinsic sizes may invalidate PaintLayer ancestors, including the
+    // scope, which prevents us from reading the scope element's geometry.
+    if (!RunPostPrePaintStepsForElement(
+            scope_tag_, element_data_map_.at(scope_tag_),
+            max_capture_size_in_layout, needs_style_invalidation)) {
+      return false;
+    }
+  }
   for (auto& entry : element_data_map_) {
+    if (entry.key == scope_tag_) {
+      continue;
+    }
     if (!RunPostPrePaintStepsForElement(entry.key, entry.value.Get(),
                                         max_capture_size_in_layout,
                                         needs_style_invalidation)) {
