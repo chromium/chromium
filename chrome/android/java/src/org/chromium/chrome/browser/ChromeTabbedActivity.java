@@ -3796,11 +3796,11 @@ public class ChromeTabbedActivity extends ChromeActivity {
             CipherLazyHolder.sCipherInstance.saveToBundle(outState);
             outState.putInt(
                     WINDOW_INDEX, TabWindowManagerSingleton.getInstance().getIdForWindow(this));
-            Boolean is_incognito = getCurrentTabModel().isIncognito();
-            outState.putBoolean(IS_INCOGNITO_SELECTED, is_incognito);
+            Boolean isIncognito = getCurrentTabModel().isIncognito();
+            outState.putBoolean(IS_INCOGNITO_SELECTED, isIncognito);
             // If it's Incognito and native is initialized and profile exists, serialize duration
             // service state.
-            if (is_incognito && ProfileManager.isInitialized()) {
+            if (isIncognito && ProfileManager.isInitialized()) {
                 AndroidSessionDurationsServiceState.serializeFromNative(
                         outState, getCurrentTabModel().getProfile());
             }
