@@ -1328,18 +1328,53 @@ class MODULES_EXPORT WebGLRenderingContextWebGPUBase
   void InitializeContext();
   void Destroy();
 
+  // Validates that the value fits in the positive value of a int32_t to ensure
+  // that no clamping occurs when narrowing to GL integer parameters that may be
+  // 32 bit integers.
+  bool ValidateFitsNonNegInt32(const char* function_name,
+                               const char* param_name,
+                               int64_t value);
+
+  // Validates that the location is for the current program. Also returns false
+  // when the location is null.
+  bool ValidateUniformLocation(const char* function_name,
+                               const WebGLUniformLocation* location);
+
+  // In addition from ValidateUniformLocation, checks that the size is a
+  // multiple of the alignment and fits in a int32_t.
+  bool ValidateUniformV(const char* function_name,
+                        const WebGLUniformLocation* location,
+                        size_t required_size_alignment,
+                        size_t size);
+  // In addition from ValidateUniformLocation, checks that the range defined by
+  // src_offset/size fits in the size, is a multiple of the alignment, and
+  // return the corresponding range of data in out.
+  template <typename T>
+  bool ValidateUniformV(const char* function_name,
+                        const WebGLUniformLocation* location,
+                        size_t required_size_alignment,
+                        base::span<const T> data,
+                        GLuint src_offset,
+                        GLuint src_size,
+                        base::span<const T>* out_data);
+
   // Helper function for APIs which can legally receive null objects, including
   // the bind* calls (bindBuffer, bindTexture, etc.) and useProgram. Checks that
   // the object belongs to this context and that it's not marked for deletion.
   // Returns false if the caller should return without further processing.
-  // Performs a context loss check internally.
   // This returns true for null WebGLObject arguments!
-  bool ValidateNullableObject(const char* function_name, WebGLObject* object);
+  bool ValidateNullableObject(const char* function_name,
+                              const WebGLObject* object);
 
   // Validates the incoming WebGL object, which is assumed to be non-null.
   // Checks that the object belongs to this context and that it's not marked for
-  // deletion. Performs a context loss check internally.
-  bool ValidateObject(const char* function_name, WebGLObject* object);
+  // deletion.
+  bool ValidateObject(const char* function_name, const WebGLObject* object);
+
+  // Similar to ValidateObject but returns GL_INVALID_VALUE instead of
+  // GL_OPERATION_ERROR when a deleted object is used.
+  bool ValidateProgramOrShader(const char* function_name,
+                               const WebGLObject* object);
 
   // Helper function for delete* (deleteBuffer, deleteProgram, etc) functions.
   // Return false if caller should return without further processing.
@@ -1413,6 +1448,12 @@ class MODULES_EXPORT WebGLRenderingContextWebGPUBase
   std::array<std::array<Member<WebGLTexture>, kMaxTextureUnits>,
              kNumTextureTypes>
       bound_textures_;
+
+  Member<WebGLBuffer> array_buffer_binding_;
+  // TODO(413078308): This reference should live in the VAO instead.
+  Member<WebGLBuffer> element_array_buffer_binding_;
+
+  Member<WebGLProgram> program_binding_;
 };
 
 }  // namespace blink

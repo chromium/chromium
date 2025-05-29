@@ -84,7 +84,7 @@ class WebGLObject : public ScriptWrappable {
   // This indicates whether the client side has already issued a delete call,
   // not whether the OpenGL resource is deleted. Object()==0, or !HasObject(),
   // indicates that the OpenGL resource has been deleted.
-  bool MarkedForDeletion() { return marked_for_deletion_; }
+  bool MarkedForDeletion() const { return marked_for_deletion_; }
 
   // True if this object belongs to the group or context.
   bool Validate(const WebGLContextObjectSupport*) const;

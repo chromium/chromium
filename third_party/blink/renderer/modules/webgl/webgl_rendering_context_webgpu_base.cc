@@ -333,6 +333,16 @@ class PartialGLES2ForObjects : public gpu::gles2::GLES2InterfaceStub {
 
 }  // anonymous namespace
 
+#define RETURN_IF_GL_ERROR(code, ...)        \
+  {                                          \
+    CheckAndClearErrorCallbackState();       \
+    code;                                    \
+    if (CheckAndClearErrorCallbackState()) { \
+      return __VA_ARGS__;                    \
+    }                                        \
+  }                                          \
+  while (false)
+
 WebGLRenderingContextWebGPUBase::WebGLRenderingContextWebGPUBase(
     CanvasRenderingContextHost* host,
     const CanvasContextCreationAttributesCore& requested_attributes,
@@ -498,11 +508,7 @@ void WebGLRenderingContextWebGPUBase::setUnpackColorSpace(
 }
 
 void WebGLRenderingContextWebGPUBase::activeTexture(GLenum texture) {
-  CheckAndClearErrorCallbackState();
-  driver_gl_.fn.glActiveTextureFn(texture);
-  if (!CheckAndClearErrorCallbackState()) {
-    return;
-  }
+  RETURN_IF_GL_ERROR(driver_gl_.fn.glActiveTextureFn(texture));
 
   active_texture_unit_ = texture - GL_TEXTURE0;
   DCHECK(active_texture_unit_ < kMaxTextureUnits);
@@ -510,11 +516,17 @@ void WebGLRenderingContextWebGPUBase::activeTexture(GLenum texture) {
 
 void WebGLRenderingContextWebGPUBase::attachShader(WebGLProgram* program,
                                                    WebGLShader* shader) {
-  // TODO(413078308): Validate the objects are for this context and not deleted.
-  driver_gl_.fn.glAttachShaderFn(program->Object(), shader->Object());
+  if (!ValidateProgramOrShader("attachShader", program) ||
+      !ValidateProgramOrShader("attachShader", shader)) {
+    return;
+  }
 
-  // TODO(413078308): Update the state only if no GL error was produced.
+  RETURN_IF_GL_ERROR(
+      driver_gl_.fn.glAttachShaderFn(program->Object(), shader->Object()));
+
   bool attachSuccess = program->AttachShader(shader);
+  // While the WRCWebGPU might not need the OnAttach/OnDetach calls,
+  // WebGLProgram calls OnDetach so we keep it balanced with an OnAttach here.
   DCHECK(attachSuccess);
   shader->OnAttached();
 }
@@ -527,10 +539,30 @@ void WebGLRenderingContextWebGPUBase::bindAttribLocation(WebGLProgram*,
 
 void WebGLRenderingContextWebGPUBase::bindBuffer(GLenum target,
                                                  WebGLBuffer* buffer) {
-  // TODO(413078308): Validate the object is for this context and not deleted.
-  driver_gl_.fn.glBindBufferFn(target, ObjectOrZero(buffer));
+  if (!ValidateNullableObject("bindBuffer", buffer)) {
+    return;
+  }
 
-  // TODO(413078308): Update the state only if no GL error was produced.
+  RETURN_IF_GL_ERROR(
+      driver_gl_.fn.glBindBufferFn(target, ObjectOrZero(buffer)));
+
+  switch (target) {
+    case GL_ARRAY_BUFFER:
+      array_buffer_binding_ = buffer;
+      break;
+    case GL_ELEMENT_ARRAY_BUFFER:
+      element_array_buffer_binding_ = buffer;
+      break;
+    case GL_COPY_READ_BUFFER:
+    case GL_COPY_WRITE_BUFFER:
+    case GL_PIXEL_PACK_BUFFER:
+    case GL_PIXEL_UNPACK_BUFFER:
+    case GL_TRANSFORM_FEEDBACK_BUFFER:
+    case GL_UNIFORM_BUFFER:
+      // TODO(413078308): Implement WebGL2 buffer bindings.
+      NOTIMPLEMENTED();
+      break;
+  }
 }
 
 void WebGLRenderingContextWebGPUBase::bindFramebuffer(
@@ -546,12 +578,7 @@ void WebGLRenderingContextWebGPUBase::bindFramebuffer(
     id = default_framebuffer_;
   }
 
-  CheckAndClearErrorCallbackState();
-  driver_gl_.fn.glBindFramebufferEXTFn(target, id);
-  if (CheckAndClearErrorCallbackState()) {
-    // Early return in the case of an error, the bindings should not be updated
-    return;
-  }
+  RETURN_IF_GL_ERROR(driver_gl_.fn.glBindFramebufferEXTFn(target, id));
 
   switch (target) {
     case GL_FRAMEBUFFER:
@@ -582,11 +609,8 @@ void WebGLRenderingContextWebGPUBase::bindTexture(GLenum target,
     return;
   }
 
-  CheckAndClearErrorCallbackState();
-  driver_gl_.fn.glBindTextureFn(target, ObjectOrZero(texture));
-  if (CheckAndClearErrorCallbackState()) {
-    return;
-  }
+  RETURN_IF_GL_ERROR(
+      driver_gl_.fn.glBindTextureFn(target, ObjectOrZero(texture)));
 
   texture->SetTarget(target);
   bound_textures_[static_cast<size_t>(GLenumToTextureTarget(target))]
@@ -624,7 +648,10 @@ void WebGLRenderingContextWebGPUBase::blendFuncSeparate(GLenum src_rgb,
 void WebGLRenderingContextWebGPUBase::bufferData(GLenum target,
                                                  int64_t size,
                                                  GLenum usage) {
-  // TODO(413078308): Validate that the size fits in i32.
+  if (!ValidateFitsNonNegInt32("bufferData", "size", size)) {
+    return;
+  }
+
   driver_gl_.fn.glBufferDataFn(target, static_cast<GLsizeiptr>(size), nullptr,
                                usage);
 }
@@ -632,7 +659,14 @@ void WebGLRenderingContextWebGPUBase::bufferData(GLenum target,
 void WebGLRenderingContextWebGPUBase::bufferData(GLenum target,
                                                  DOMArrayBufferBase* data,
                                                  GLenum usage) {
-  // TODO(413078308): Validate that data is not null and the size fits in i32.
+  if (!data) {
+    InsertGLError(GL_INVALID_VALUE, "bufferData", "no data");
+    return;
+  }
+  if (!ValidateFitsNonNegInt32("bufferData", "size", data->ByteLength())) {
+    return;
+  }
+
   driver_gl_.fn.glBufferDataFn(target,
                                static_cast<GLsizeiptr>(data->ByteLength()),
                                data->DataMaybeShared(), usage);
@@ -642,7 +676,9 @@ void WebGLRenderingContextWebGPUBase::bufferData(
     GLenum target,
     MaybeShared<DOMArrayBufferView> data,
     GLenum usage) {
-  // TODO(413078308): Validate that the size fits in i32.
+  if (!ValidateFitsNonNegInt32("bufferData", "size", data->byteLength())) {
+    return;
+  }
   driver_gl_.fn.glBufferDataFn(target,
                                static_cast<GLsizeiptr>(data->byteLength()),
                                data->BaseAddressMaybeShared(), usage);
@@ -688,7 +724,10 @@ void WebGLRenderingContextWebGPUBase::colorMask(GLboolean red,
 }
 
 void WebGLRenderingContextWebGPUBase::compileShader(WebGLShader* shader) {
-  // TODO(413078308): Validate the object is for this context and not deleted.
+  if (!ValidateProgramOrShader("compileShader", shader)) {
+    return;
+  }
+
   driver_gl_.fn.glCompileShaderFn(shader->Object());
 }
 
@@ -755,8 +794,10 @@ WebGLRenderbuffer* WebGLRenderingContextWebGPUBase::createRenderbuffer() {
 }
 
 WebGLShader* WebGLRenderingContextWebGPUBase::createShader(GLenum type) {
-  // TODO(413078308) Validate the shader type and return nullptr on error.
-  return MakeGarbageCollected<WebGLShader>(this, type);
+  WebGLShader* shader;
+  RETURN_IF_GL_ERROR(shader = MakeGarbageCollected<WebGLShader>(this, type),
+                     nullptr);
+  return shader;
 }
 
 WebGLTexture* WebGLRenderingContextWebGPUBase::createTexture() {
@@ -867,9 +908,11 @@ void WebGLRenderingContextWebGPUBase::drawElements(GLenum mode,
                                                    GLsizei count,
                                                    GLenum type,
                                                    int64_t offset) {
-  // TODO(413078308): Validate the offset fits in i32.
+  if (!ValidateFitsNonNegInt32("drawElements", "offset", offset)) {
+    return;
+  }
+
   EnsureDefaultFramebuffer();
-  LOG(ERROR);
   driver_gl_.fn.glDrawElementsFn(
       mode, count, type,
       reinterpret_cast<void*>(static_cast<intptr_t>(offset)));
@@ -956,7 +999,10 @@ WebGLRenderingContextWebGPUBase::getAttachedShaders(WebGLProgram*) {
 
 GLint WebGLRenderingContextWebGPUBase::getAttribLocation(WebGLProgram* program,
                                                          const String& name) {
-  // TODO(413078308): Validate the object is for this context and not deleted.
+  if (!ValidateProgramOrShader("getAttribLocation", program)) {
+    return -1;
+  }
+
   return driver_gl_.fn.glGetAttribLocationFn(program->Object(),
                                              name.Utf8().c_str());
 }
@@ -1075,7 +1121,10 @@ ScriptValue WebGLRenderingContextWebGPUBase::getUniform(
 WebGLUniformLocation* WebGLRenderingContextWebGPUBase::getUniformLocation(
     WebGLProgram* program,
     const String& name) {
-  // TODO(413078308): Validate the object is for this context and not deleted.
+  if (!ValidateProgramOrShader("getUniformLocation", program)) {
+    return nullptr;
+  }
+
   GLint location = driver_gl_.fn.glGetUniformLocationFn(program->Object(),
                                                         name.Utf8().c_str());
   if (location == -1) {
@@ -1141,10 +1190,13 @@ void WebGLRenderingContextWebGPUBase::lineWidth(GLfloat width) {
 }
 
 void WebGLRenderingContextWebGPUBase::linkProgram(WebGLProgram* program) {
-  // TODO(413078308): Validate the object is for this context and not deleted.
-  // TODO(413078308): Something to do with transform feedback.
+  if (!ValidateProgramOrShader("linkProgram", program)) {
+    return;
+  }
+
+  RETURN_IF_GL_ERROR(driver_gl_.fn.glLinkProgramFn(program->Object()));
+
   // TODO(413078308): Handle KHR_parallel_shader_compile.
-  driver_gl_.fn.glLinkProgramFn(program->Object());
   // Increase the link count so TFO can know which version it uses.
   program->IncreaseLinkCount();
 }
@@ -1190,8 +1242,9 @@ void WebGLRenderingContextWebGPUBase::scissor(GLint x,
 
 void WebGLRenderingContextWebGPUBase::shaderSource(WebGLShader* shader,
                                                    const String& source) {
-  // TODO(413078308): Validate the object is for this context and not deleted.
-  shader->SetSource(source);
+  if (!ValidateProgramOrShader("shaderSource", shader)) {
+    return;
+  }
 
   // Handle non-ASCII characters (by replacing them with '?').
   std::vector<char> ascii_source;
@@ -1202,8 +1255,10 @@ void WebGLRenderingContextWebGPUBase::shaderSource(WebGLShader* shader,
 
   GLint c_ascii_size = ascii_source.size();
   const char* c_ascii_source = ascii_source.data();
-  driver_gl_.fn.glShaderSourceFn(shader->Object(), 1, &c_ascii_source,
-                                 &c_ascii_size);
+  RETURN_IF_GL_ERROR(driver_gl_.fn.glShaderSourceFn(
+      shader->Object(), 1, &c_ascii_source, &c_ascii_size));
+
+  shader->SetSource(source);
 }
 
 void WebGLRenderingContextWebGPUBase::stencilFunc(GLenum func,
@@ -1268,7 +1323,10 @@ void WebGLRenderingContextWebGPUBase::texImage2D(
   if (pixels) {
     pixel_data = pixels->BaseAddress();
 
-    // TODO(420793500): Validate that byteLength fits in a GLsizei
+    if (!ValidateFitsNonNegInt32("texImage2D", "pixels",
+                                 pixels->byteLength())) {
+      return;
+    }
     pixel_data_size = static_cast<GLsizei>(pixels->byteLength());
   }
 
@@ -1355,7 +1413,10 @@ void WebGLRenderingContextWebGPUBase::texSubImage2D(
   if (pixels) {
     pixel_data = pixels->BaseAddress();
 
-    // TODO(420793500): Validate that byteLength fits in a GLsizei
+    if (!ValidateFitsNonNegInt32("texSubImage2D", "pixels",
+                                 pixels->byteLength())) {
+      return;
+    }
     pixel_data_size = static_cast<GLsizei>(pixels->byteLength());
   }
 
@@ -1439,24 +1500,36 @@ void WebGLRenderingContextWebGPUBase::texSubImage2D(GLenum target,
 void WebGLRenderingContextWebGPUBase::uniform1f(
     const WebGLUniformLocation* location,
     GLfloat x) {
+  if (!ValidateUniformLocation("uniform1f", location)) {
+    return;
+  }
   driver_gl_.fn.glUniform1fFn(location->Location(), x);
 }
 
 void WebGLRenderingContextWebGPUBase::uniform1fv(
     const WebGLUniformLocation* location,
     base::span<const GLfloat> v) {
+  if (!ValidateUniformV("uniform1fv", location, 1, v.size())) {
+    return;
+  }
   driver_gl_.fn.glUniform1fvFn(location->Location(), v.size(), v.data());
 }
 
 void WebGLRenderingContextWebGPUBase::uniform1i(
     const WebGLUniformLocation* location,
     GLint x) {
+  if (!ValidateUniformLocation("uniform1i", location)) {
+    return;
+  }
   driver_gl_.fn.glUniform1iFn(location->Location(), x);
 }
 
 void WebGLRenderingContextWebGPUBase::uniform1iv(
     const WebGLUniformLocation* location,
     base::span<const GLint> v) {
+  if (!ValidateUniformV("uniform1iv", location, 1, v.size())) {
+    return;
+  }
   driver_gl_.fn.glUniform1ivFn(location->Location(), v.size(), v.data());
 }
 
@@ -1464,12 +1537,18 @@ void WebGLRenderingContextWebGPUBase::uniform2f(
     const WebGLUniformLocation* location,
     GLfloat x,
     GLfloat y) {
+  if (!ValidateUniformLocation("uniform2f", location)) {
+    return;
+  }
   driver_gl_.fn.glUniform2fFn(location->Location(), x, y);
 }
 
 void WebGLRenderingContextWebGPUBase::uniform2fv(
     const WebGLUniformLocation* location,
     base::span<const GLfloat> v) {
+  if (!ValidateUniformV("uniform2fv", location, 2, v.size())) {
+    return;
+  }
   driver_gl_.fn.glUniform2fvFn(location->Location(), v.size() / 2, v.data());
 }
 
@@ -1477,12 +1556,18 @@ void WebGLRenderingContextWebGPUBase::uniform2i(
     const WebGLUniformLocation* location,
     GLint x,
     GLint y) {
+  if (!ValidateUniformLocation("uniform2i", location)) {
+    return;
+  }
   driver_gl_.fn.glUniform2iFn(location->Location(), x, y);
 }
 
 void WebGLRenderingContextWebGPUBase::uniform2iv(
     const WebGLUniformLocation* location,
     base::span<const GLint> v) {
+  if (!ValidateUniformV("uniform2iv", location, 2, v.size())) {
+    return;
+  }
   driver_gl_.fn.glUniform2ivFn(location->Location(), v.size() / 2, v.data());
 }
 
@@ -1491,12 +1576,18 @@ void WebGLRenderingContextWebGPUBase::uniform3f(
     GLfloat x,
     GLfloat y,
     GLfloat z) {
+  if (!ValidateUniformLocation("uniform3f", location)) {
+    return;
+  }
   driver_gl_.fn.glUniform3fFn(location->Location(), x, y, z);
 }
 
 void WebGLRenderingContextWebGPUBase::uniform3fv(
     const WebGLUniformLocation* location,
     base::span<const GLfloat> v) {
+  if (!ValidateUniformV("uniform3fv", location, 3, v.size())) {
+    return;
+  }
   driver_gl_.fn.glUniform3fvFn(location->Location(), v.size() / 3, v.data());
 }
 
@@ -1505,12 +1596,18 @@ void WebGLRenderingContextWebGPUBase::uniform3i(
     GLint x,
     GLint y,
     GLint z) {
+  if (!ValidateUniformLocation("uniform3i", location)) {
+    return;
+  }
   driver_gl_.fn.glUniform3iFn(location->Location(), x, y, z);
 }
 
 void WebGLRenderingContextWebGPUBase::uniform3iv(
     const WebGLUniformLocation* location,
     base::span<const GLint> v) {
+  if (!ValidateUniformV("uniform3iv", location, 3, v.size())) {
+    return;
+  }
   driver_gl_.fn.glUniform3ivFn(location->Location(), v.size() / 3, v.data());
 }
 
@@ -1520,12 +1617,18 @@ void WebGLRenderingContextWebGPUBase::uniform4f(
     GLfloat y,
     GLfloat z,
     GLfloat w) {
+  if (!ValidateUniformLocation("uniform4f", location)) {
+    return;
+  }
   driver_gl_.fn.glUniform4fFn(location->Location(), x, y, z, w);
 }
 
 void WebGLRenderingContextWebGPUBase::uniform4fv(
     const WebGLUniformLocation* location,
     base::span<const GLfloat> v) {
+  if (!ValidateUniformV("uniform4fv", location, 4, v.size())) {
+    return;
+  }
   driver_gl_.fn.glUniform4fvFn(location->Location(), v.size() / 4, v.data());
 }
 
@@ -1535,12 +1638,18 @@ void WebGLRenderingContextWebGPUBase::uniform4i(
     GLint y,
     GLint z,
     GLint w) {
+  if (!ValidateUniformLocation("uniform4i", location)) {
+    return;
+  }
   driver_gl_.fn.glUniform4iFn(location->Location(), x, y, z, w);
 }
 
 void WebGLRenderingContextWebGPUBase::uniform4iv(
     const WebGLUniformLocation* location,
     base::span<const GLint> v) {
+  if (!ValidateUniformV("uniform4iv", location, 4, v.size())) {
+    return;
+  }
   driver_gl_.fn.glUniform4ivFn(location->Location(), v.size() / 4, v.data());
 }
 
@@ -1548,6 +1657,9 @@ void WebGLRenderingContextWebGPUBase::uniformMatrix2fv(
     const WebGLUniformLocation* location,
     GLboolean transpose,
     base::span<const GLfloat> v) {
+  if (!ValidateUniformV("uniformMatrix2fv", location, 4, v.size())) {
+    return;
+  }
   driver_gl_.fn.glUniformMatrix2fvFn(location->Location(), v.size() / 4,
                                      transpose, v.data());
 }
@@ -1556,6 +1668,9 @@ void WebGLRenderingContextWebGPUBase::uniformMatrix3fv(
     const WebGLUniformLocation* location,
     GLboolean transpose,
     base::span<const GLfloat> v) {
+  if (!ValidateUniformV("uniformMatrix3fv", location, 9, v.size())) {
+    return;
+  }
   driver_gl_.fn.glUniformMatrix3fvFn(location->Location(), v.size() / 9,
                                      transpose, v.data());
 }
@@ -1564,19 +1679,29 @@ void WebGLRenderingContextWebGPUBase::uniformMatrix4fv(
     const WebGLUniformLocation* location,
     GLboolean transpose,
     base::span<const GLfloat> v) {
+  if (!ValidateUniformV("uniformMatrix4fv", location, 16, v.size())) {
+    return;
+  }
   driver_gl_.fn.glUniformMatrix4fvFn(location->Location(), v.size() / 16,
                                      transpose, v.data());
 }
 
 void WebGLRenderingContextWebGPUBase::useProgram(WebGLProgram* program) {
-  // TODO(413078308): Validate the object is for this context and not deleted.
-  driver_gl_.fn.glUseProgramFn(ObjectOrZero(program));
+  if (!ValidateNullableObject("useProgram", program)) {
+    return;
+  }
 
-  // TODO(413078308): If successful update the state tracking.
+  RETURN_IF_GL_ERROR(driver_gl_.fn.glUseProgramFn(ObjectOrZero(program)));
+
+  program_binding_ = program;
 }
 
-void WebGLRenderingContextWebGPUBase::validateProgram(WebGLProgram*) {
-  NOTIMPLEMENTED();
+void WebGLRenderingContextWebGPUBase::validateProgram(WebGLProgram* program) {
+  if (!ValidateProgramOrShader("useProgram", program)) {
+    return;
+  }
+
+  driver_gl_.fn.glValidateProgramFn(program->Object());
 }
 
 void WebGLRenderingContextWebGPUBase::vertexAttrib1f(GLuint index, GLfloat x) {
@@ -1634,12 +1759,15 @@ void WebGLRenderingContextWebGPUBase::vertexAttribPointer(GLuint index,
                                                           GLboolean normalized,
                                                           GLsizei stride,
                                                           int64_t offset) {
-  // TODO(413078308): Validate the offset fits in i32.
+  if (!ValidateFitsNonNegInt32("vertexAttribPointer", "offset", offset)) {
+    return;
+  }
+
   driver_gl_.fn.glVertexAttribPointerFn(
       index, size, type, normalized, stride,
       reinterpret_cast<void*>(static_cast<intptr_t>(offset)));
 
-  // TODO(413078308): Update the tracked buffer in the curret VAO if there was
+  // TODO(413078308): Update the tracked buffer in the current VAO if there was
   // no GL error.
 }
 
@@ -2464,7 +2592,12 @@ void WebGLRenderingContextWebGPUBase::uniform1fv(
     base::span<const GLfloat> v,
     GLuint src_offset,
     GLuint src_length) {
-  NOTIMPLEMENTED();
+  base::span<const GLfloat> data;
+  if (!ValidateUniformV("uniform1fv", location, 1, v, src_offset, src_length,
+                        &data)) {
+    return;
+  }
+  driver_gl_.fn.glUniform1fvFn(location->Location(), data.size(), data.data());
 }
 
 void WebGLRenderingContextWebGPUBase::uniform2fv(
@@ -2472,7 +2605,12 @@ void WebGLRenderingContextWebGPUBase::uniform2fv(
     base::span<const GLfloat> v,
     GLuint src_offset,
     GLuint src_length) {
-  NOTIMPLEMENTED();
+  base::span<const GLfloat> data;
+  if (!ValidateUniformV("uniform2fv", location, 2, v, src_offset, src_length,
+                        &data)) {
+    return;
+  }
+  driver_gl_.fn.glUniform2fvFn(location->Location(), data.size(), data.data());
 }
 
 void WebGLRenderingContextWebGPUBase::uniform3fv(
@@ -2480,7 +2618,12 @@ void WebGLRenderingContextWebGPUBase::uniform3fv(
     base::span<const GLfloat> v,
     GLuint src_offset,
     GLuint src_length) {
-  NOTIMPLEMENTED();
+  base::span<const GLfloat> data;
+  if (!ValidateUniformV("uniform3fv", location, 3, v, src_offset, src_length,
+                        &data)) {
+    return;
+  }
+  driver_gl_.fn.glUniform3fvFn(location->Location(), data.size(), data.data());
 }
 
 void WebGLRenderingContextWebGPUBase::uniform4fv(
@@ -2488,7 +2631,12 @@ void WebGLRenderingContextWebGPUBase::uniform4fv(
     base::span<const GLfloat> v,
     GLuint src_offset,
     GLuint src_length) {
-  NOTIMPLEMENTED();
+  base::span<const GLfloat> data;
+  if (!ValidateUniformV("uniform4fv", location, 4, v, src_offset, src_length,
+                        &data)) {
+    return;
+  }
+  driver_gl_.fn.glUniform4fvFn(location->Location(), data.size(), data.data());
 }
 
 void WebGLRenderingContextWebGPUBase::uniform1iv(
@@ -2496,7 +2644,12 @@ void WebGLRenderingContextWebGPUBase::uniform1iv(
     base::span<const GLint> v,
     GLuint src_offset,
     GLuint src_length) {
-  NOTIMPLEMENTED();
+  base::span<const GLint> data;
+  if (!ValidateUniformV("uniform1iv", location, 1, v, src_offset, src_length,
+                        &data)) {
+    return;
+  }
+  driver_gl_.fn.glUniform1ivFn(location->Location(), data.size(), data.data());
 }
 
 void WebGLRenderingContextWebGPUBase::uniform2iv(
@@ -2504,7 +2657,12 @@ void WebGLRenderingContextWebGPUBase::uniform2iv(
     base::span<const GLint> v,
     GLuint src_offset,
     GLuint src_length) {
-  NOTIMPLEMENTED();
+  base::span<const GLint> data;
+  if (!ValidateUniformV("uniform2iv", location, 2, v, src_offset, src_length,
+                        &data)) {
+    return;
+  }
+  driver_gl_.fn.glUniform2ivFn(location->Location(), data.size(), data.data());
 }
 
 void WebGLRenderingContextWebGPUBase::uniform3iv(
@@ -2512,7 +2670,12 @@ void WebGLRenderingContextWebGPUBase::uniform3iv(
     base::span<const GLint> v,
     GLuint src_offset,
     GLuint src_length) {
-  NOTIMPLEMENTED();
+  base::span<const GLint> data;
+  if (!ValidateUniformV("uniform3iv", location, 3, v, src_offset, src_length,
+                        &data)) {
+    return;
+  }
+  driver_gl_.fn.glUniform3ivFn(location->Location(), data.size(), data.data());
 }
 
 void WebGLRenderingContextWebGPUBase::uniform4iv(
@@ -2520,7 +2683,12 @@ void WebGLRenderingContextWebGPUBase::uniform4iv(
     base::span<const GLint> v,
     GLuint src_offset,
     GLuint src_length) {
-  NOTIMPLEMENTED();
+  base::span<const GLint> data;
+  if (!ValidateUniformV("uniform4iv", location, 4, v, src_offset, src_length,
+                        &data)) {
+    return;
+  }
+  driver_gl_.fn.glUniform4ivFn(location->Location(), data.size(), data.data());
 }
 
 void WebGLRenderingContextWebGPUBase::uniform1uiv(
@@ -2528,7 +2696,12 @@ void WebGLRenderingContextWebGPUBase::uniform1uiv(
     base::span<const GLuint> v,
     GLuint src_offset,
     GLuint src_length) {
-  NOTIMPLEMENTED();
+  base::span<const GLuint> data;
+  if (!ValidateUniformV("uniform1uiv", location, 1, v, src_offset, src_length,
+                        &data)) {
+    return;
+  }
+  driver_gl_.fn.glUniform1uivFn(location->Location(), data.size(), data.data());
 }
 
 void WebGLRenderingContextWebGPUBase::uniform2uiv(
@@ -2536,7 +2709,12 @@ void WebGLRenderingContextWebGPUBase::uniform2uiv(
     base::span<const GLuint> v,
     GLuint src_offset,
     GLuint src_length) {
-  NOTIMPLEMENTED();
+  base::span<const GLuint> data;
+  if (!ValidateUniformV("uniform2uiv", location, 2, v, src_offset, src_length,
+                        &data)) {
+    return;
+  }
+  driver_gl_.fn.glUniform2uivFn(location->Location(), data.size(), data.data());
 }
 
 void WebGLRenderingContextWebGPUBase::uniform3uiv(
@@ -2544,7 +2722,12 @@ void WebGLRenderingContextWebGPUBase::uniform3uiv(
     base::span<const GLuint> v,
     GLuint src_offset,
     GLuint src_length) {
-  NOTIMPLEMENTED();
+  base::span<const GLuint> data;
+  if (!ValidateUniformV("uniform3uiv", location, 3, v, src_offset, src_length,
+                        &data)) {
+    return;
+  }
+  driver_gl_.fn.glUniform3uivFn(location->Location(), data.size(), data.data());
 }
 
 void WebGLRenderingContextWebGPUBase::uniform4uiv(
@@ -2552,7 +2735,12 @@ void WebGLRenderingContextWebGPUBase::uniform4uiv(
     base::span<const GLuint> v,
     GLuint src_offset,
     GLuint src_length) {
-  NOTIMPLEMENTED();
+  base::span<const GLuint> data;
+  if (!ValidateUniformV("uniform4uiv", location, 4, v, src_offset, src_length,
+                        &data)) {
+    return;
+  }
+  driver_gl_.fn.glUniform4uivFn(location->Location(), data.size(), data.data());
 }
 
 void WebGLRenderingContextWebGPUBase::uniformMatrix2fv(
@@ -2561,7 +2749,13 @@ void WebGLRenderingContextWebGPUBase::uniformMatrix2fv(
     base::span<const GLfloat> v,
     GLuint src_offset,
     GLuint src_length) {
-  NOTIMPLEMENTED();
+  base::span<const GLfloat> data;
+  if (!ValidateUniformV("uniformMatrix2fv", location, 4, v, src_offset,
+                        src_length, &data)) {
+    return;
+  }
+  driver_gl_.fn.glUniformMatrix2fvFn(location->Location(), data.size(),
+                                     transpose, data.data());
 }
 
 void WebGLRenderingContextWebGPUBase::uniformMatrix3fv(
@@ -2570,7 +2764,13 @@ void WebGLRenderingContextWebGPUBase::uniformMatrix3fv(
     base::span<const GLfloat> v,
     GLuint src_offset,
     GLuint src_length) {
-  NOTIMPLEMENTED();
+  base::span<const GLfloat> data;
+  if (!ValidateUniformV("uniformMatrix3fv", location, 9, v, src_offset,
+                        src_length, &data)) {
+    return;
+  }
+  driver_gl_.fn.glUniformMatrix3fvFn(location->Location(), data.size(),
+                                     transpose, data.data());
 }
 
 void WebGLRenderingContextWebGPUBase::uniformMatrix4fv(
@@ -2579,7 +2779,13 @@ void WebGLRenderingContextWebGPUBase::uniformMatrix4fv(
     base::span<const GLfloat> v,
     GLuint src_offset,
     GLuint src_length) {
-  NOTIMPLEMENTED();
+  base::span<const GLfloat> data;
+  if (!ValidateUniformV("uniformMatrix4fv", location, 16, v, src_offset,
+                        src_length, &data)) {
+    return;
+  }
+  driver_gl_.fn.glUniformMatrix4fvFn(location->Location(), data.size(),
+                                     transpose, data.data());
 }
 
 void WebGLRenderingContextWebGPUBase::uniformMatrix2x3fv(
@@ -2588,7 +2794,13 @@ void WebGLRenderingContextWebGPUBase::uniformMatrix2x3fv(
     base::span<const GLfloat> v,
     GLuint src_offset,
     GLuint src_length) {
-  NOTIMPLEMENTED();
+  base::span<const GLfloat> data;
+  if (!ValidateUniformV("uniformMatrix2x3fv", location, 6, v, src_offset,
+                        src_length, &data)) {
+    return;
+  }
+  driver_gl_.fn.glUniformMatrix2x3fvFn(location->Location(), data.size(),
+                                       transpose, data.data());
 }
 
 void WebGLRenderingContextWebGPUBase::uniformMatrix3x2fv(
@@ -2597,7 +2809,13 @@ void WebGLRenderingContextWebGPUBase::uniformMatrix3x2fv(
     base::span<const GLfloat> v,
     GLuint src_offset,
     GLuint src_length) {
-  NOTIMPLEMENTED();
+  base::span<const GLfloat> data;
+  if (!ValidateUniformV("uniformMatrix3x2fv", location, 6, v, src_offset,
+                        src_length, &data)) {
+    return;
+  }
+  driver_gl_.fn.glUniformMatrix3x2fvFn(location->Location(), data.size(),
+                                       transpose, data.data());
 }
 
 void WebGLRenderingContextWebGPUBase::uniformMatrix2x4fv(
@@ -2606,7 +2824,13 @@ void WebGLRenderingContextWebGPUBase::uniformMatrix2x4fv(
     base::span<const GLfloat> v,
     GLuint src_offset,
     GLuint src_length) {
-  NOTIMPLEMENTED();
+  base::span<const GLfloat> data;
+  if (!ValidateUniformV("uniformMatrix2x4fv", location, 8, v, src_offset,
+                        src_length, &data)) {
+    return;
+  }
+  driver_gl_.fn.glUniformMatrix2x4fvFn(location->Location(), data.size(),
+                                       transpose, data.data());
 }
 
 void WebGLRenderingContextWebGPUBase::uniformMatrix4x2fv(
@@ -2615,7 +2839,13 @@ void WebGLRenderingContextWebGPUBase::uniformMatrix4x2fv(
     base::span<const GLfloat> v,
     GLuint src_offset,
     GLuint src_length) {
-  NOTIMPLEMENTED();
+  base::span<const GLfloat> data;
+  if (!ValidateUniformV("uniformMatrix4x2fv", location, 8, v, src_offset,
+                        src_length, &data)) {
+    return;
+  }
+  driver_gl_.fn.glUniformMatrix4x2fvFn(location->Location(), data.size(),
+                                       transpose, data.data());
 }
 
 void WebGLRenderingContextWebGPUBase::uniformMatrix3x4fv(
@@ -2624,7 +2854,13 @@ void WebGLRenderingContextWebGPUBase::uniformMatrix3x4fv(
     base::span<const GLfloat> v,
     GLuint src_offset,
     GLuint src_length) {
-  NOTIMPLEMENTED();
+  base::span<const GLfloat> data;
+  if (!ValidateUniformV("uniformMatrix3x4fv", location, 12, v, src_offset,
+                        src_length, &data)) {
+    return;
+  }
+  driver_gl_.fn.glUniformMatrix3x4fvFn(location->Location(), data.size(),
+                                       transpose, data.data());
 }
 
 void WebGLRenderingContextWebGPUBase::uniformMatrix4x3fv(
@@ -2633,7 +2869,13 @@ void WebGLRenderingContextWebGPUBase::uniformMatrix4x3fv(
     base::span<const GLfloat> v,
     GLuint src_offset,
     GLuint src_length) {
-  NOTIMPLEMENTED();
+  base::span<const GLfloat> data;
+  if (!ValidateUniformV("uniformMatrix4x3fv", location, 12, v, src_offset,
+                        src_length, &data)) {
+    return;
+  }
+  driver_gl_.fn.glUniformMatrix4x3fvFn(location->Location(), data.size(),
+                                       transpose, data.data());
 }
 
 void WebGLRenderingContextWebGPUBase::vertexAttribI4i(GLuint index,
@@ -3159,6 +3401,9 @@ bool WebGLRenderingContextWebGPUBase::IsGPUDeviceDestroyed() {
 void WebGLRenderingContextWebGPUBase::Trace(Visitor* visitor) const {
   visitor->Trace(draw_framebuffer_binding_);
   visitor->Trace(read_framebuffer_binding_);
+  visitor->Trace(array_buffer_binding_);
+  visitor->Trace(element_array_buffer_binding_);
+  visitor->Trace(program_binding_);
   for (size_t texture_type_idx = 0; texture_type_idx < bound_textures_.size();
        texture_type_idx++) {
     for (size_t texture_unit_idx = 0;
@@ -3384,9 +3629,96 @@ void WebGLRenderingContextWebGPUBase::Destroy() {
   driver_egl_.ClearBindings();
 }
 
+bool WebGLRenderingContextWebGPUBase::ValidateFitsNonNegInt32(
+    const char* function_name,
+    const char* param_name,
+    int64_t value) {
+  if (value < 0) {
+    String error_msg = String(param_name) + " < 0";
+    InsertGLError(GL_INVALID_VALUE, function_name, error_msg.Ascii().c_str());
+    return false;
+  }
+  if (value > static_cast<int64_t>(std::numeric_limits<int32_t>::max())) {
+    String error_msg = String(param_name) + " more than 32-bit";
+    InsertGLError(GL_INVALID_OPERATION, function_name,
+                  error_msg.Ascii().c_str());
+    return false;
+  }
+  return true;
+}
+
+bool WebGLRenderingContextWebGPUBase::ValidateUniformLocation(
+    const char* function_name,
+    const WebGLUniformLocation* location) {
+  if (location != nullptr) {
+    return false;
+  }
+  if (location->Program() != program_binding_) {
+    InsertGLError(GL_INVALID_OPERATION, function_name,
+                  "location is not from the associated program");
+    return false;
+  }
+  return true;
+}
+
+bool WebGLRenderingContextWebGPUBase::ValidateUniformV(
+    const char* function_name,
+    const WebGLUniformLocation* location,
+    size_t required_size_alignment,
+    size_t size) {
+  if (!ValidateUniformLocation(function_name, location) ||
+      !ValidateFitsNonNegInt32(function_name, "data", size)) {
+    return false;
+  }
+  if (size % required_size_alignment != 0) {
+    InsertGLError(GL_INVALID_VALUE, function_name, "invalid size");
+    return false;
+  }
+  return true;
+}
+
+template <typename T>
+bool WebGLRenderingContextWebGPUBase::ValidateUniformV(
+    const char* function_name,
+    const WebGLUniformLocation* location,
+    size_t required_size_alignment,
+    base::span<const T> data,
+    GLuint src_offset,
+    GLuint src_size,
+    base::span<const T>* out_data) {
+  if (!ValidateUniformLocation(function_name, location) ||
+      !ValidateFitsNonNegInt32(function_name, "data", data.size())) {
+    return false;
+  }
+
+  // Check that src_offset is valid.
+  if (src_offset >= data.size()) {
+    InsertGLError(GL_INVALID_VALUE, function_name, "invalid srcOffset");
+    return false;
+  }
+  GLuint remaining_data_size = static_cast<GLuint>(data.size()) - src_offset;
+
+  // Compute defaults and validate that the src_size is valid.
+  if (src_size == 0) {
+    src_size = remaining_data_size;
+  } else {
+    if (src_size > remaining_data_size) {
+      InsertGLError(GL_INVALID_VALUE, function_name, "invalid size");
+      return false;
+    }
+  }
+  if (src_size % required_size_alignment != 0) {
+    InsertGLError(GL_INVALID_VALUE, function_name, "invalid size");
+    return false;
+  }
+
+  *out_data = data.subspan(src_offset, src_size);
+  return true;
+}
+
 bool WebGLRenderingContextWebGPUBase::ValidateNullableObject(
     const char* function_name,
-    WebGLObject* object) {
+    const WebGLObject* object) {
   if (!object) {
     // This differs in behavior to ValidateObject; null objects are allowed
     // in these entry points.
@@ -3395,11 +3727,29 @@ bool WebGLRenderingContextWebGPUBase::ValidateNullableObject(
   return ValidateObject(function_name, object);
 }
 
-bool WebGLRenderingContextWebGPUBase::ValidateObject(const char* function_name,
-                                                     WebGLObject* object) {
+bool WebGLRenderingContextWebGPUBase::ValidateObject(
+    const char* function_name,
+    const WebGLObject* object) {
   DCHECK(object);
   if (object->MarkedForDeletion()) {
     InsertGLError(GL_INVALID_OPERATION, function_name,
+                  "attempt to use a deleted object");
+    return false;
+  }
+  if (!object->Validate(this)) {
+    InsertGLError(GL_INVALID_OPERATION, function_name,
+                  "object does not belong to this context");
+    return false;
+  }
+  return true;
+}
+
+bool WebGLRenderingContextWebGPUBase::ValidateProgramOrShader(
+    const char* function_name,
+    const WebGLObject* object) {
+  DCHECK(object);
+  if (object->MarkedForDeletion()) {
+    InsertGLError(GL_INVALID_VALUE, function_name,
                   "attempt to use a deleted object");
     return false;
   }
