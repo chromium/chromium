@@ -1037,13 +1037,9 @@ CanonicalCookie::IsCanonicalForFromStorage() const {
     return Fail(CanonicalizationFailure::kEmptyNameWithHiddenPrefix);
   }
 
-  if (IsPartitioned()) {
-    if (CookiePartitionKey::HasNonce(PartitionKey())) {
-      return Pass();
-    }
-    if (!SecureAttribute()) {
-      return Fail(CanonicalizationFailure::kPartitionedInsecure);
-    }
+  if (IsPartitioned() && !CookiePartitionKey::HasNonce(PartitionKey()) &&
+      !SecureAttribute()) {
+    return Fail(CanonicalizationFailure::kPartitionedInsecure);
   }
 
   return Pass();
