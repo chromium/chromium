@@ -1,14 +1,11 @@
-include_rules = [
+specific_include_rules = {
+  ".*test\.cc": [
     "+base/task",
+    "+base/test",
     "+net/base",
     "+net/cookies",
     "+net/first_party_sets",
     "+services/network",
     "+url/origin.h",
-]
-
-specific_include_rules = {
-  ".*test\.cc": [
-    "+base/test",
   ],
 }
