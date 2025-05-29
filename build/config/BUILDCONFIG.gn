@@ -621,7 +621,7 @@ foreach(_target_type,
         if (!defined(defines)) {
           defines = []
         }
-        defines +=  [ "USE_LIBCXX_MODULES" ]
+        defines += [ "USE_LIBCXX_MODULES" ]
       } else if (filter_include(configs,
                                 [ "//build/config/compiler:libcxx_module" ]) !=
                  []) {
@@ -737,7 +737,7 @@ foreach(_target_type,
         if (!defined(defines)) {
           defines = []
         }
-        defines +=  [ "USE_LIBCXX_MODULES" ]
+        defines += [ "USE_LIBCXX_MODULES" ]
       } else if (filter_include(configs,
                                 [ "//build/config/compiler:libcxx_module" ]) !=
                  []) {
