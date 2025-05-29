@@ -270,6 +270,7 @@ struct alignas(64) PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRoot {
 #if PA_BUILDFLAG(HAS_64_BIT_POINTERS)
     internal::PoolOffsetLookup offset_lookup;
 #endif  // PA_BUILDFLAG(HAS_64_BIT_POINTERS)
+    internal::ReservationOffsetTable reservation_offset_table;
 
     bool eventually_zero_freed_memory = false;
     internal::SchedulerLoopQuarantineConfig
@@ -721,6 +722,10 @@ struct alignas(64) PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRoot {
     return settings.offset_lookup;
   }
 #endif  // PA_BUILDFLAG(HAS_64_BIT_POINTERS)
+  PA_ALWAYS_INLINE const internal::ReservationOffsetTable&
+  GetReservationOffsetTable() const {
+    return settings.reservation_offset_table;
+  }
 
   PA_ALWAYS_INLINE static PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR size_t
   GetDirectMapMetadataAndGuardPagesSize() {
@@ -1105,15 +1110,9 @@ struct SlotAddressAndSize {
 PA_ALWAYS_INLINE SlotAddressAndSize
 PartitionAllocGetDirectMapSlotStartAndSizeInBRPPool(uintptr_t address) {
   PA_DCHECK(IsManagedByPartitionAllocBRPPool(address));
-#if PA_BUILDFLAG(HAS_64_BIT_POINTERS)
-  // Use this variant of GetDirectMapReservationStart as it has better
-  // performance.
-  uintptr_t offset = OffsetInBRPPool(address);
   uintptr_t reservation_start =
-      GetDirectMapReservationStart(address, kBRPPoolHandle, offset);
-#else  // PA_BUILDFLAG(HAS_64_BIT_POINTERS)
-  uintptr_t reservation_start = GetDirectMapReservationStart(address);
-#endif
+      ReservationOffsetTable::Get(pool_handle::kBRPPoolHandle)
+          .GetDirectMapReservationStart(address);
   if (!reservation_start) {
     return SlotAddressAndSize{.slot_start = uintptr_t(0), .size = size_t(0)};
   }
@@ -1156,7 +1155,9 @@ PartitionAllocGetDirectMapSlotStartAndSizeInBRPPool(uintptr_t address) {
 // the in-slot metadata is in place for this allocation.
 PA_ALWAYS_INLINE SlotAddressAndSize
 PartitionAllocGetSlotStartAndSizeInBRPPool(uintptr_t address) {
-  PA_DCHECK(IsManagedByNormalBucketsOrDirectMap(address));
+  PA_DCHECK(
+      ReservationOffsetTable::Get(address).IsManagedByNormalBucketsOrDirectMap(
+          address));
   DCheckIfManagedByPartitionAllocBRPPool(address);
 
   auto directmap_slot_info =
@@ -1766,7 +1767,8 @@ PA_ALWAYS_INLINE PartitionRoot* PartitionRoot::FromSlotSpanMetadata(
 
 PA_ALWAYS_INLINE PartitionRoot* PartitionRoot::FromFirstSuperPage(
     uintptr_t super_page) {
-  PA_DCHECK(internal::IsReservationStart(super_page));
+  PA_DCHECK(internal::ReservationOffsetTable::Get(super_page)
+                .IsReservationStart(super_page));
   auto* extent_entry = internal::PartitionSuperPageToExtent(super_page);
   PartitionRoot* root = extent_entry->root;
   PA_DCHECK(root->inverted_self == ~reinterpret_cast<uintptr_t>(root));
@@ -1776,7 +1778,8 @@ PA_ALWAYS_INLINE PartitionRoot* PartitionRoot::FromFirstSuperPage(
 PA_ALWAYS_INLINE PartitionRoot* PartitionRoot::FromAddrInFirstSuperpage(
     uintptr_t address) {
   uintptr_t super_page = address & internal::kSuperPageBaseMask;
-  PA_DCHECK(internal::IsReservationStart(super_page));
+  PA_DCHECK(internal::ReservationOffsetTable::Get(super_page)
+                .IsReservationStart(super_page));
   return FromFirstSuperPage(super_page);
 }
 

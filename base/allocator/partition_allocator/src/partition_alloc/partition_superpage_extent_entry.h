@@ -143,7 +143,8 @@ PA_ALWAYS_INLINE uintptr_t SuperPagesBeginFromExtent(
     const PartitionSuperPageExtentEntry<MetadataKind::kReadOnly>* extent) {
   PA_DCHECK(0 < extent->number_of_consecutive_super_pages);
   uintptr_t extent_as_uintptr = reinterpret_cast<uintptr_t>(extent);
-  PA_DCHECK(IsManagedByNormalBuckets(extent_as_uintptr));
+  PA_DCHECK(ReservationOffsetTable::Get(extent_as_uintptr)
+                .IsManagedByNormalBuckets(extent_as_uintptr));
   return base::bits::AlignDown(extent_as_uintptr, kSuperPageAlignment);
 }
 

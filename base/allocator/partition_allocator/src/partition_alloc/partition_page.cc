@@ -30,7 +30,7 @@ namespace {
 
 void UnmapNow(uintptr_t reservation_start,
               size_t reservation_size,
-              pool_handle pool);
+              PartitionRoot* root);
 
 PA_ALWAYS_INLINE void PartitionDirectUnmap(
     SlotSpanMetadata<MetadataKind::kReadOnly>* slot_span) {
@@ -78,7 +78,7 @@ PA_ALWAYS_INLINE void PartitionDirectUnmap(
   // while releasing the address space.
   ScopedUnlockGuard unlock{PartitionRootLock(root)};
   ScopedSyscallTimer timer{root};
-  UnmapNow(reservation_start, reservation_size, root->ChoosePool());
+  UnmapNow(reservation_start, reservation_size, root);
 }
 
 }  // namespace
@@ -341,8 +341,10 @@ namespace {
 
 void UnmapNow(uintptr_t reservation_start,
               size_t reservation_size,
-              pool_handle pool) {
+              PartitionRoot* root) {
   PA_DCHECK(reservation_start && reservation_size > 0);
+  pool_handle pool = root->ChoosePool();
+
 #if PA_BUILDFLAG(DCHECKS_ARE_ON)
   // When ENABLE_BACKUP_REF_PTR_SUPPORT is off, BRP pool isn't used.
 #if PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
@@ -384,21 +386,13 @@ void UnmapNow(uintptr_t reservation_start,
   }
 #endif  // PA_BUILDFLAG(DCHECKS_ARE_ON)
 
-  PA_DCHECK((reservation_start & kSuperPageOffsetMask) == 0);
-  uintptr_t reservation_end = reservation_start + reservation_size;
-  auto* offset_ptr = ReservationOffsetPointer(reservation_start);
   // Reset the offset table entries for the given memory before unreserving
   // it. Since the memory is not unreserved and not available for other
   // threads, the table entries for the memory are not modified by other
   // threads either. So we can update the table entries without race
   // condition.
-  uint16_t i = 0;
-  for (uintptr_t address = reservation_start; address < reservation_end;
-       address += kSuperPageSize) {
-    PA_DCHECK(offset_ptr < GetReservationOffsetTableEnd(address));
-    PA_DCHECK(*offset_ptr == i++);
-    *offset_ptr++ = kOffsetTagNotAllocated;
-  }
+  root->GetReservationOffsetTable().SetNotAllocatedTag(reservation_start,
+                                                       reservation_size);
 
 #if PA_CONFIG(ENABLE_SHADOW_METADATA)
   // UnmapShadowMetadata must be done before unreserving memory, because
