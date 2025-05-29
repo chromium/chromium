@@ -957,14 +957,6 @@ ANDROID_BRYA = PerfPlatform(
     platform_os='android',
     executables=None,
     crossbench=_CROSSBENCH_ANDROID_AL)
-# TODO(crbug.com/414619873) - deprecate byra-perf
-ANDROID_BYRA = PerfPlatform(name='android-byra-perf',
-                            description='AL Byra',
-                            num_shards=7,
-                            benchmark_configs=_ANDROID_AL_BENCHMARK_CONFIGS,
-                            platform_os='android',
-                            executables=None,
-                            crossbench=_CROSSBENCH_ANDROID_AL)
 ANDROID_CORSOLA = PerfPlatform(name='android-corsola-steelix-8gb-perf',
                                description='Corsola SKU steelix_MT8186_8GB',
                                num_shards=7,
