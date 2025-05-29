@@ -41,8 +41,9 @@ def main():
             arch, success, result = future.result()
             if not success:
                 failures += 1
-            name = (f"{sysroot_creator.DISTRO}_{sysroot_creator.RELEASE}" +
-                    f"_{arch.lower()}-sysroot")
+            name = (
+                f"{sysroot_creator.DISTRO}_{sysroot_creator.RELEASES[arch]}" +
+                f"_{arch.lower()}-sysroot")
             results[name] = (success, result)
 
     globals = {"Str": lambda x: x, "Var": lambda x: x}
