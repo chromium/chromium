@@ -50,9 +50,7 @@ class WTF_EXPORT AtomicStringTable final {
 
   // Adding UTF8.
   // Returns null if the characters contain invalid utf8 sequences.
-  // Pass null as `characters_end` to automatically detect the length.
-  scoped_refptr<StringImpl> AddUTF8(const uint8_t* characters_start,
-                                    const uint8_t* characters_end);
+  scoped_refptr<StringImpl> AddUTF8(base::span<const uint8_t> characters_span);
 
   // Returned as part of the WeakFind*() APIs below. Represents the result of
   // the non-creating lookup within the AtomicStringTable. See the WeakFind*()

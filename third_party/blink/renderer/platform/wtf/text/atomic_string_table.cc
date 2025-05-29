@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string_table.h"
 
 #include "base/containers/heap_array.h"
+#include "base/containers/span.h"
 #include "base/notreached.h"
 #include "third_party/blink/renderer/platform/wtf/text/character_visitor.h"
 #include "third_party/blink/renderer/platform/wtf/text/convert_to_8bit_hash_reader.h"
@@ -440,21 +441,18 @@ scoped_refptr<StringImpl> AtomicStringTable::Add(
 }
 
 scoped_refptr<StringImpl> AtomicStringTable::AddUTF8(
-    const uint8_t* characters_start,
-    const uint8_t* characters_end) {
+    base::span<const uint8_t> characters_span) {
   bool seen_non_ascii = false;
   bool seen_non_latin1 = false;
+
   unsigned utf16_length = unicode::CalculateStringLengthFromUTF8(
-      characters_start, characters_end, seen_non_ascii, seen_non_latin1);
+      characters_span, seen_non_ascii, seen_non_latin1);
   if (!seen_non_ascii) {
-    return Add((const LChar*)characters_start, utf16_length);
+    return Add(characters_span.data(), utf16_length);
   }
 
   auto utf16_buf = base::HeapArray<UChar>::Uninit(utf16_length);
-  base::span<const uint8_t> source_buffer(
-      reinterpret_cast<const uint8_t*>(characters_start),
-      static_cast<size_t>(characters_end - characters_start));
-  if (unicode::ConvertUTF8ToUTF16(source_buffer, utf16_buf).status !=
+  if (unicode::ConvertUTF8ToUTF16(characters_span, utf16_buf).status !=
       unicode::kConversionOK) {
     NOTREACHED();
   }
