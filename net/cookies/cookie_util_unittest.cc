@@ -125,6 +125,15 @@ TEST(CookieUtilTest, GetCookieDomainWithString_UnknownSchemeUrl) {
 #endif  // IS_WIN
 }
 
+// An invalid domain with a non-special scheme should return std::nullopt,
+// not an empty string. Regression test for https://crbug.com/420496068.
+TEST(CookieUtilTest, GetCookieDomainWithString_EmptyNonSpecial) {
+  CookieInclusionStatus status;
+  EXPECT_EQ(cookie_util::GetCookieDomainWithString(GURL("foo://\x05.localhost"),
+                                                   "", status),
+            std::nullopt);
+}
+
 // A cookie domain string equal to the URL host, when that is an IP, results in
 // the IP.
 TEST(CookieUtilTest, GetCookieDomainWithString_IP) {

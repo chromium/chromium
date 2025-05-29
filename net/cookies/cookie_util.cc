@@ -412,6 +412,11 @@ std::optional<std::string> GetCookieDomainWithString(
       if (!result.empty() && result[0] == '.') {
         return std::nullopt;
       }
+
+      if (result.empty() && !url_host.empty()) {
+        // Reject non-special domains we fail to canonicalize.
+        return std::nullopt;
+      }
     }
     // TODO(crbug.com/40271909): Once empty label support is implemented we can
     // CHECK our assumptions here. For now, we DCHECK as DUMP_WILL_BE_CHECK is
