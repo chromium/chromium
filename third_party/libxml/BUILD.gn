@@ -82,6 +82,7 @@ static_library("xml_reader") {
   visibility = [
     "//base/test:test_support",
     "//components/policy/core/common:unit_tests",
+
     # For parsing trusted data from Google origins with public key pinning only.
     "//components/trusted_vault",
     "//services/data_decoder:*",
