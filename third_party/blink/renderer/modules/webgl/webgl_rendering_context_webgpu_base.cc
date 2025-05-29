@@ -19,6 +19,7 @@
 #include "third_party/blink/renderer/modules/webgl/webgl_object.h"
 #include "third_party/blink/renderer/modules/webgl/webgl_program.h"
 #include "third_party/blink/renderer/modules/webgl/webgl_shader.h"
+#include "third_party/blink/renderer/modules/webgl/webgl_uniform_location.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/dawn_control_client_holder.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/webgpu_callback.h"
 #include "third_party/blink/renderer/platform/graphics/skia/skia_utils.h"
@@ -1011,10 +1012,15 @@ ScriptValue WebGLRenderingContextWebGPUBase::getUniform(
 }
 
 WebGLUniformLocation* WebGLRenderingContextWebGPUBase::getUniformLocation(
-    WebGLProgram*,
-    const String&) {
-  NOTIMPLEMENTED();
-  return nullptr;
+    WebGLProgram* program,
+    const String& name) {
+  // TODO(413078308): Validate the object is for this context and not deleted.
+  GLint location = driver_gl_.fn.glGetUniformLocationFn(program->Object(),
+                                                        name.Utf8().c_str());
+  if (location == -1) {
+    return nullptr;
+  }
+  return MakeGarbageCollected<WebGLUniformLocation>(program, location);
 }
 
 ScriptValue WebGLRenderingContextWebGPUBase::getVertexAttrib(ScriptState*,
@@ -1343,117 +1349,140 @@ void WebGLRenderingContextWebGPUBase::texSubImage2D(GLenum target,
   NOTIMPLEMENTED();
 }
 
-void WebGLRenderingContextWebGPUBase::uniform1f(const WebGLUniformLocation*,
-                                                GLfloat x) {
-  NOTIMPLEMENTED();
+// TODO(413078308): Add validation that the uniform location still being current
+// and matching the current program. For the "v" versions of the uniforms, also
+// check that the byte size fits in a i32 and the array size is a multiple of
+// 1/2/3/4. Finally null locations must result in noops.
+void WebGLRenderingContextWebGPUBase::uniform1f(
+    const WebGLUniformLocation* location,
+    GLfloat x) {
+  driver_gl_.fn.glUniform1fFn(location->Location(), x);
 }
 
-void WebGLRenderingContextWebGPUBase::uniform1fv(const WebGLUniformLocation*,
-                                                 base::span<const GLfloat>) {
-  NOTIMPLEMENTED();
+void WebGLRenderingContextWebGPUBase::uniform1fv(
+    const WebGLUniformLocation* location,
+    base::span<const GLfloat> v) {
+  driver_gl_.fn.glUniform1fvFn(location->Location(), v.size(), v.data());
 }
 
-void WebGLRenderingContextWebGPUBase::uniform1i(const WebGLUniformLocation*,
-                                                GLint x) {
-  NOTIMPLEMENTED();
+void WebGLRenderingContextWebGPUBase::uniform1i(
+    const WebGLUniformLocation* location,
+    GLint x) {
+  driver_gl_.fn.glUniform1iFn(location->Location(), x);
 }
 
-void WebGLRenderingContextWebGPUBase::uniform1iv(const WebGLUniformLocation*,
-                                                 base::span<const GLint>) {
-  NOTIMPLEMENTED();
+void WebGLRenderingContextWebGPUBase::uniform1iv(
+    const WebGLUniformLocation* location,
+    base::span<const GLint> v) {
+  driver_gl_.fn.glUniform1ivFn(location->Location(), v.size(), v.data());
 }
 
-void WebGLRenderingContextWebGPUBase::uniform2f(const WebGLUniformLocation*,
-                                                GLfloat x,
-                                                GLfloat y) {
-  NOTIMPLEMENTED();
+void WebGLRenderingContextWebGPUBase::uniform2f(
+    const WebGLUniformLocation* location,
+    GLfloat x,
+    GLfloat y) {
+  driver_gl_.fn.glUniform2fFn(location->Location(), x, y);
 }
 
-void WebGLRenderingContextWebGPUBase::uniform2fv(const WebGLUniformLocation*,
-                                                 base::span<const GLfloat>) {
-  NOTIMPLEMENTED();
+void WebGLRenderingContextWebGPUBase::uniform2fv(
+    const WebGLUniformLocation* location,
+    base::span<const GLfloat> v) {
+  driver_gl_.fn.glUniform2fvFn(location->Location(), v.size() / 2, v.data());
 }
 
-void WebGLRenderingContextWebGPUBase::uniform2i(const WebGLUniformLocation*,
-                                                GLint x,
-                                                GLint y) {
-  NOTIMPLEMENTED();
+void WebGLRenderingContextWebGPUBase::uniform2i(
+    const WebGLUniformLocation* location,
+    GLint x,
+    GLint y) {
+  driver_gl_.fn.glUniform2iFn(location->Location(), x, y);
 }
 
-void WebGLRenderingContextWebGPUBase::uniform2iv(const WebGLUniformLocation*,
-                                                 base::span<const GLint>) {
-  NOTIMPLEMENTED();
+void WebGLRenderingContextWebGPUBase::uniform2iv(
+    const WebGLUniformLocation* location,
+    base::span<const GLint> v) {
+  driver_gl_.fn.glUniform2ivFn(location->Location(), v.size() / 2, v.data());
 }
 
-void WebGLRenderingContextWebGPUBase::uniform3f(const WebGLUniformLocation*,
-                                                GLfloat x,
-                                                GLfloat y,
-                                                GLfloat z) {
-  NOTIMPLEMENTED();
+void WebGLRenderingContextWebGPUBase::uniform3f(
+    const WebGLUniformLocation* location,
+    GLfloat x,
+    GLfloat y,
+    GLfloat z) {
+  driver_gl_.fn.glUniform3fFn(location->Location(), x, y, z);
 }
 
-void WebGLRenderingContextWebGPUBase::uniform3fv(const WebGLUniformLocation*,
-                                                 base::span<const GLfloat>) {
-  NOTIMPLEMENTED();
+void WebGLRenderingContextWebGPUBase::uniform3fv(
+    const WebGLUniformLocation* location,
+    base::span<const GLfloat> v) {
+  driver_gl_.fn.glUniform3fvFn(location->Location(), v.size() / 3, v.data());
 }
 
-void WebGLRenderingContextWebGPUBase::uniform3i(const WebGLUniformLocation*,
-                                                GLint x,
-                                                GLint y,
-                                                GLint z) {
-  NOTIMPLEMENTED();
+void WebGLRenderingContextWebGPUBase::uniform3i(
+    const WebGLUniformLocation* location,
+    GLint x,
+    GLint y,
+    GLint z) {
+  driver_gl_.fn.glUniform3iFn(location->Location(), x, y, z);
 }
 
-void WebGLRenderingContextWebGPUBase::uniform3iv(const WebGLUniformLocation*,
-                                                 base::span<const GLint>) {
-  NOTIMPLEMENTED();
+void WebGLRenderingContextWebGPUBase::uniform3iv(
+    const WebGLUniformLocation* location,
+    base::span<const GLint> v) {
+  driver_gl_.fn.glUniform3ivFn(location->Location(), v.size() / 3, v.data());
 }
 
-void WebGLRenderingContextWebGPUBase::uniform4f(const WebGLUniformLocation*,
-                                                GLfloat x,
-                                                GLfloat y,
-                                                GLfloat z,
-                                                GLfloat w) {
-  NOTIMPLEMENTED();
+void WebGLRenderingContextWebGPUBase::uniform4f(
+    const WebGLUniformLocation* location,
+    GLfloat x,
+    GLfloat y,
+    GLfloat z,
+    GLfloat w) {
+  driver_gl_.fn.glUniform4fFn(location->Location(), x, y, z, w);
 }
 
-void WebGLRenderingContextWebGPUBase::uniform4fv(const WebGLUniformLocation*,
-                                                 base::span<const GLfloat>) {
-  NOTIMPLEMENTED();
+void WebGLRenderingContextWebGPUBase::uniform4fv(
+    const WebGLUniformLocation* location,
+    base::span<const GLfloat> v) {
+  driver_gl_.fn.glUniform4fvFn(location->Location(), v.size() / 4, v.data());
 }
 
-void WebGLRenderingContextWebGPUBase::uniform4i(const WebGLUniformLocation*,
-                                                GLint x,
-                                                GLint y,
-                                                GLint z,
-                                                GLint w) {
-  NOTIMPLEMENTED();
+void WebGLRenderingContextWebGPUBase::uniform4i(
+    const WebGLUniformLocation* location,
+    GLint x,
+    GLint y,
+    GLint z,
+    GLint w) {
+  driver_gl_.fn.glUniform4iFn(location->Location(), x, y, z, w);
 }
 
-void WebGLRenderingContextWebGPUBase::uniform4iv(const WebGLUniformLocation*,
-                                                 base::span<const GLint>) {
-  NOTIMPLEMENTED();
+void WebGLRenderingContextWebGPUBase::uniform4iv(
+    const WebGLUniformLocation* location,
+    base::span<const GLint> v) {
+  driver_gl_.fn.glUniform4ivFn(location->Location(), v.size() / 4, v.data());
 }
 
 void WebGLRenderingContextWebGPUBase::uniformMatrix2fv(
-    const WebGLUniformLocation*,
+    const WebGLUniformLocation* location,
     GLboolean transpose,
-    base::span<const GLfloat> value) {
-  NOTIMPLEMENTED();
+    base::span<const GLfloat> v) {
+  driver_gl_.fn.glUniformMatrix2fvFn(location->Location(), v.size() / 4,
+                                     transpose, v.data());
 }
 
 void WebGLRenderingContextWebGPUBase::uniformMatrix3fv(
-    const WebGLUniformLocation*,
+    const WebGLUniformLocation* location,
     GLboolean transpose,
-    base::span<const GLfloat> value) {
-  NOTIMPLEMENTED();
+    base::span<const GLfloat> v) {
+  driver_gl_.fn.glUniformMatrix3fvFn(location->Location(), v.size() / 9,
+                                     transpose, v.data());
 }
 
 void WebGLRenderingContextWebGPUBase::uniformMatrix4fv(
-    const WebGLUniformLocation*,
+    const WebGLUniformLocation* location,
     GLboolean transpose,
-    base::span<const GLfloat> value) {
-  NOTIMPLEMENTED();
+    base::span<const GLfloat> v) {
+  driver_gl_.fn.glUniformMatrix4fvFn(location->Location(), v.size() / 16,
+                                     transpose, v.data());
 }
 
 void WebGLRenderingContextWebGPUBase::useProgram(WebGLProgram* program) {
