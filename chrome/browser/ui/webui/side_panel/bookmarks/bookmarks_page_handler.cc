@@ -621,7 +621,7 @@ void BookmarksPageHandler::OpenBookmark(
       click_modifiers->middle_button, click_modifiers->alt_key,
       click_modifiers->ctrl_key, click_modifiers->meta_key,
       click_modifiers->shift_key);
-  chrome::OpenAllIfAllowed(
+  bookmarks::OpenAllIfAllowed(
       browser_window_interface_->GetBrowserForMigrationOnly(), {bookmark_node},
       open_location);
   if (source == side_panel::mojom::ActionSource::kPriceTracking) {

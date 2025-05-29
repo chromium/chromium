@@ -64,80 +64,8 @@ void BookmarkNavigationWrapper::SetInstanceForTesting(
     BookmarkNavigationWrapper* instance) {
   g_nav_wrapper_test_instance = instance;
 }
-}  // namespace bookmarks
-
-namespace chrome {
 
 namespace {
-
-// Returns a vector of all URLs in |nodes| and their immediate children.  Only
-// recurses one level deep, not infinitely.  TODO(pkasting): It's not clear why
-// this shouldn't just recurse infinitely.
-std::vector<UrlAndId> GetURLsToOpen(
-    const std::vector<raw_ptr<const BookmarkNode, VectorExperimental>>& nodes,
-    bool incognito_urls_only = false) {
-  std::vector<UrlAndId> url_and_ids;
-  const auto AddUrlIfLegal = [&](const GURL url, int64_t id) {
-    if (!incognito_urls_only || IsURLAllowedInIncognito(url)) {
-      UrlAndId url_and_id;
-      url_and_id.url = url;
-      url_and_id.id = id;
-      url_and_ids.push_back(url_and_id);
-    }
-  };
-  for (const BookmarkNode* node : nodes) {
-    if (node->is_url()) {
-      AddUrlIfLegal(node->url(), node->id());
-    } else {
-      // If the node is not a URL, it is a folder. We want to add those of its
-      // children which are URLs.
-      for (const auto& child : node->children()) {
-        if (child->is_url()) {
-          AddUrlIfLegal(child->url(), child->id());
-        }
-      }
-    }
-  }
-  return url_and_ids;
-}
-
-// Returns the total number of descendants nodes.
-int ChildURLCountTotal(const BookmarkNode* node) {
-  const auto count_children = [](int total, const auto& child) {
-    if (child->is_folder()) {
-      total += ChildURLCountTotal(child.get());
-    }
-    return total + 1;
-  };
-  return std::accumulate(node->children().cbegin(), node->children().cend(), 0,
-                         count_children);
-}
-
-// Returns in |urls|, the url and title pairs for each open tab in browser.
-void GetURLsAndFoldersForOpenTabs(
-    Browser* browser,
-    std::vector<BookmarkEditor::EditDetails::BookmarkData>* folder_data) {
-  std::vector<std::pair<GURL, std::u16string>> tab_entries;
-  base::flat_map<int, TabGroupData> groups_by_index;
-  for (int i = 0; i < browser->tab_strip_model()->count(); ++i) {
-    std::pair<GURL, std::u16string> entry;
-    auto* contents = browser->tab_strip_model()->GetWebContentsAt(i);
-    GetURLAndTitleToBookmark(contents, &(entry.first), &(entry.second));
-    tab_entries.push_back(entry);
-    auto tab_group_id = browser->tab_strip_model()->GetTabGroupForTab(i);
-    std::u16string title;
-    if (tab_group_id.has_value()) {
-      title = browser->tab_strip_model()
-                  ->group_model()
-                  ->GetTabGroup(tab_group_id.value())
-                  ->visual_data()
-                  ->title();
-    }
-    groups_by_index.emplace(i, std::make_pair(tab_group_id, title));
-  }
-  GetURLsAndFoldersForTabEntries(folder_data, tab_entries, groups_by_index);
-}
-
 // Represents a reference set of web contents opened by OpenAllHelper() so that
 // the actual web contents and what browsers they are located in can be
 // determined (if necessary).
@@ -264,6 +192,73 @@ OpenedWebContentsSet OpenAllHelper(
   return OpenedWebContentsSet(std::move(opened_tabs));
 }
 
+// Returns a vector of all URLs in |nodes| and their immediate children.  Only
+// recurses one level deep, not infinitely.  TODO(pkasting): It's not clear why
+// this shouldn't just recurse infinitely.
+std::vector<UrlAndId> GetURLsToOpen(
+    const std::vector<raw_ptr<const BookmarkNode, VectorExperimental>>& nodes,
+    bool incognito_urls_only = false) {
+  std::vector<UrlAndId> url_and_ids;
+  const auto AddUrlIfLegal = [&](const GURL url, int64_t id) {
+    if (!incognito_urls_only || IsURLAllowedInIncognito(url)) {
+      UrlAndId url_and_id;
+      url_and_id.url = url;
+      url_and_id.id = id;
+      url_and_ids.push_back(url_and_id);
+    }
+  };
+  for (const BookmarkNode* node : nodes) {
+    if (node->is_url()) {
+      AddUrlIfLegal(node->url(), node->id());
+    } else {
+      // If the node is not a URL, it is a folder. We want to add those of its
+      // children which are URLs.
+      for (const auto& child : node->children()) {
+        if (child->is_url()) {
+          AddUrlIfLegal(child->url(), child->id());
+        }
+      }
+    }
+  }
+  return url_and_ids;
+}
+
+// Returns the total number of descendants nodes.
+int ChildURLCountTotal(const BookmarkNode* node) {
+  const auto count_children = [](int total, const auto& child) {
+    if (child->is_folder()) {
+      total += ChildURLCountTotal(child.get());
+    }
+    return total + 1;
+  };
+  return std::accumulate(node->children().cbegin(), node->children().cend(), 0,
+                         count_children);
+}
+
+// Returns in |urls|, the url and title pairs for each open tab in browser.
+void GetURLsAndFoldersForOpenTabs(
+    Browser* browser,
+    std::vector<BookmarkEditor::EditDetails::BookmarkData>* folder_data) {
+  std::vector<std::pair<GURL, std::u16string>> tab_entries;
+  base::flat_map<int, TabGroupData> groups_by_index;
+  for (int i = 0; i < browser->tab_strip_model()->count(); ++i) {
+    std::pair<GURL, std::u16string> entry;
+    auto* contents = browser->tab_strip_model()->GetWebContentsAt(i);
+    chrome::GetURLAndTitleToBookmark(contents, &(entry.first), &(entry.second));
+    tab_entries.push_back(entry);
+    auto tab_group_id = browser->tab_strip_model()->GetTabGroupForTab(i);
+    std::u16string title;
+    if (tab_group_id.has_value()) {
+      title = browser->tab_strip_model()
+                  ->group_model()
+                  ->GetTabGroup(tab_group_id.value())
+                  ->visual_data()
+                  ->title();
+    }
+    groups_by_index.emplace(i, std::make_pair(tab_group_id, title));
+  }
+  GetURLsAndFoldersForTabEntries(folder_data, tab_entries, groups_by_index);
+}
 }  // namespace
 
 void OpenAllIfAllowed(
@@ -354,7 +349,7 @@ void OpenAllIfAllowed(
   // since if |browser| is closed, the message box will be destroyed
   // before the user can answer "Yes".
 
-  ShowQuestionMessageBox(
+  chrome::ShowQuestionMessageBox(
       browser->window()->GetNativeWindow(),
       l10n_util::GetStringUTF16(IDS_PRODUCT_NAME),
       l10n_util::GetStringFUTF16(IDS_BOOKMARK_BAR_SHOULD_OPEN_ALL,
@@ -390,11 +385,11 @@ int OpenCount(gfx::NativeWindow parent,
 bool ConfirmDeleteBookmarkNode(gfx::NativeWindow window,
                                const BookmarkNode* node) {
   DCHECK(node && node->is_folder() && !node->children().empty());
-  return ShowQuestionMessageBoxSync(
+  return chrome::ShowQuestionMessageBoxSync(
              window, l10n_util::GetStringUTF16(IDS_PRODUCT_NAME),
              l10n_util::GetPluralStringFUTF16(
                  IDS_BOOKMARK_EDITOR_CONFIRM_DELETE,
-                 ChildURLCountTotal(node))) == MESSAGE_BOX_RESULT_YES;
+                 ChildURLCountTotal(node))) == chrome::MESSAGE_BOX_RESULT_YES;
 }
 
 void ShowBookmarkAllTabsDialog(Browser* browser) {
@@ -456,5 +451,4 @@ void GetURLsAndFoldersForTabEntries(
     }
   }
 }
-
-}  // namespace chrome
+}  // namespace bookmarks

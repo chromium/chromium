@@ -235,7 +235,7 @@ void BookmarkEditorView::ExecuteCommand(int command_id, int event_flags) {
   if (command_id == kContextMenuItemEdit) {
     tree_view_->StartEditing(tree_view_->GetActiveNode());
   } else if (command_id == kContextMenuItemDelete) {
-    ExecuteCommandDelete(base::BindOnce(&chrome::ConfirmDeleteBookmarkNode,
+    ExecuteCommandDelete(base::BindOnce(&bookmarks::ConfirmDeleteBookmarkNode,
                                         GetWidget()->GetNativeWindow()));
   } else {
     DCHECK_EQ(kContextMenuItemNewFolder, command_id);
