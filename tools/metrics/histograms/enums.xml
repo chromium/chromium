@@ -15443,6 +15443,8 @@ from previous Chrome versions.
   <int value="581118445" label="enable-eol-notification"/>
   <int value="581355159" label="ContentSuggestionsCategoryRanker:disabled"/>
   <int value="582187448" label="DontPrefetchLibraries:enabled"/>
+  <int value="582299647"
+      label="AndroidShowRestoreTabsPromoOnFREBypassedKillSwitch:enabled"/>
   <int value="582882261" label="ForceShowAppsCollections:disabled"/>
   <int value="583059655" label="TerminalAlternativeEmulator:enabled"/>
   <int value="583648374" label="AndroidWidgetFullscreenToast:disabled"/>
@@ -16588,6 +16590,8 @@ from previous Chrome versions.
   <int value="1021848000" label="SharedHighlightingUseBlocklist:disabled"/>
   <int value="1022424308" label="SignedExchangeSubresourcePrefetch:enabled"/>
   <int value="1022504679" label="UseMultipleOverlays:enabled"/>
+  <int value="1022853086"
+      label="AndroidShowRestoreTabsPromoOnFREBypassedKillSwitch:disabled"/>
   <int value="1022960145" label="CrosBlockWarnings:enabled"/>
   <int value="1022992701" label="enable-origin-chip-always"/>
   <int value="1023319882" label="HttpsOnlyMode:disabled"/>

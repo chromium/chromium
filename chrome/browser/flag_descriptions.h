@@ -2733,6 +2733,10 @@ extern const char kAndroidOpenPdfInlineBackportDescription[];
 extern const char kAndroidPdfAssistContentName[];
 extern const char kAndroidPdfAssistContentDescription[];
 
+extern const char kAndroidShowRestoreTabsPromoOnFREBypassedKillSwitchName[];
+extern const char
+    kAndroidShowRestoreTabsPromoOnFREBypassedKillSwitchDescription[];
+
 extern const char kAndroidSurfaceColorUpdateName[];
 extern const char kAndroidSurfaceColorUpdateDescription[];
 

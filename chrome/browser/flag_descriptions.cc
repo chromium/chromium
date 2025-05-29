@@ -4662,6 +4662,11 @@ const char kAndroidTabGroupsColorUpdateGM3Name[] =
 const char kAndroidTabGroupsColorUpdateGM3Description[] =
     "If enabled, allows tab groups to have display the color chosen by the "
     "user.";
+const char kAndroidShowRestoreTabsPromoOnFREBypassedKillSwitchName[] =
+    "Android Show Restore Tab Promo On FRE Bypassed Kill Switch";
+const char kAndroidShowRestoreTabsPromoOnFREBypassedKillSwitchDescription[] =
+    "Allows Restore Tabs Promo to run even FRE is bypassed, based on a "
+    "time stamp set when the user had first initialized the app.";
 
 const char kAndroidSurfaceColorUpdateName[] = "Android surface color update.";
 const char kAndroidSurfaceColorUpdateDescription[] =
