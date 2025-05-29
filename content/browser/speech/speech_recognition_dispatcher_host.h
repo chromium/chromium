@@ -27,6 +27,8 @@ class Origin;
 namespace content {
 
 class SpeechRecognitionManager;
+struct SpeechRecognitionSessionConfig;
+struct SpeechRecognitionAudioForwarderConfig;
 
 // SpeechRecognitionDispatcherHost is an implementation of the SpeechRecognizer
 // interface that allows a RenderFrame to start a speech recognition session
@@ -65,7 +67,18 @@ class SpeechRecognitionDispatcherHost : public media::mojom::SpeechRecognizer {
       const url::Origin& origin,
       std::unique_ptr<network::PendingSharedURLLoaderFactory>
           pending_shared_url_loader_factory,
-      const std::string& accept_language);
+      const std::string& accept_language,
+      bool can_render_frame_use_on_device);
+
+  int CreateSession(
+      const SpeechRecognitionSessionConfig& config,
+      mojo::PendingReceiver<media::mojom::SpeechRecognitionSession>
+          session_receiver,
+      mojo::PendingRemote<media::mojom::SpeechRecognitionSessionClient>
+          client_remote,
+      std::optional<SpeechRecognitionAudioForwarderConfig>
+          audio_forwarder_config,
+      bool can_render_frame_use_on_device);
 
   const int render_process_id_;
   const int render_frame_id_;

@@ -107,6 +107,16 @@ class CONTENT_EXPORT SpeechRecognitionManagerImpl
                            float volume,
                            float noise_volume) override;
 
+  int CreateSession(
+      const SpeechRecognitionSessionConfig& config,
+      mojo::PendingReceiver<media::mojom::SpeechRecognitionSession>
+          session_receiver,
+      mojo::PendingRemote<media::mojom::SpeechRecognitionSessionClient>
+          client_remote,
+      std::optional<SpeechRecognitionAudioForwarderConfig>
+          audio_forwarder_config,
+      bool can_render_frame_use_on_device);
+
   SpeechRecognitionManagerDelegate* delegate() const { return delegate_.get(); }
 
  protected:

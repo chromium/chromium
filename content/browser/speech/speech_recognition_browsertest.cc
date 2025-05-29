@@ -47,8 +47,10 @@
 #include "base/test/scoped_feature_list.h"
 #include "components/soda/mock_soda_installer.h"  // nogncheck
 #include "components/soda/soda_util.h"
+#include "content/browser/site_instance_impl.h"
 #include "content/browser/speech/fake_speech_recognition_manager_delegate.h"
 #include "content/browser/speech/soda_speech_recognition_engine_impl.h"
+#include "content/public/browser/storage_partition_config.h"
 #include "media/base/media_switches.h"
 #include "media/mojo/mojom/audio_data.mojom.h"
 #endif  // !BUILDFLAG(IS_FUCHSIA)
@@ -467,6 +469,108 @@ IN_PROC_BROWSER_TEST_F(SpeechRecognitionBrowserTest,
                             mock_service) { mock_service.reset(); },
                      std::move(mock_speech_service)));
   base::RunLoop().RunUntilIdle();
+}
+
+IN_PROC_BROWSER_TEST_F(SpeechRecognitionBrowserTest,
+                       NonDefaultPartitionThrowsError) {
+  if (!speech::IsOnDeviceSpeechRecognitionSupported()) {
+    return;
+  }
+  mock_soda_installer_.NotifySodaInstalledForTesting();
+  mock_soda_installer_.NotifySodaInstalledForTesting(
+      speech::LanguageCode::kEnUs);
+  EXPECT_CALL(mock_soda_installer_, GetAvailableLanguages())
+      .WillRepeatedly(InvokeWithoutArgs([]() {
+        std::vector<std::string> langs;
+        langs.push_back("en-US");
+        return langs;
+      }));
+
+  auto* browser_context = shell()->web_contents()->GetBrowserContext();
+  auto storage_partition_config = StoragePartitionConfig::Create(
+      browser_context, "SpeechRecognitionBrowserTest", "FixedStoragePartition",
+      true);
+  ASSERT_TRUE(embedded_test_server()->Start());
+  auto url = embedded_test_server()->GetURL("/");
+  auto* shell = Shell::CreateNewWindow(
+      browser_context, url,
+      SiteInstanceImpl::CreateForFixedStoragePartition(
+          browser_context, url, storage_partition_config),
+      gfx::Size());
+
+  auto GetSiteInstance = [](Shell* shell) {
+    return static_cast<SiteInstanceImpl*>(
+        shell->web_contents()->GetSiteInstance());
+  };
+
+  EXPECT_EQ(GetSiteInstance(shell)->GetStoragePartitionConfig(),
+            storage_partition_config);
+  EXPECT_TRUE(GetSiteInstance(shell)->IsFixedStoragePartition());
+
+  ASSERT_TRUE(
+      NavigateToURL(shell, embedded_test_server()->GetURL("/title1.html")));
+  EXPECT_EQ(GetSiteInstance(shell)->GetStoragePartitionConfig(),
+            storage_partition_config);
+  EXPECT_TRUE(GetSiteInstance(shell)->IsFixedStoragePartition());
+
+  std::string js_to_execute = R"(
+    new Promise((resolve, reject) => {
+      try {
+        var recognition = new webkitSpeechRecognition();
+        var error_received = false;
+
+        recognition.continuous = false;
+        recognition.interimResults = false;
+        recognition.mode = 'ondevice-only';
+
+        recognition.onstart = function(event) {
+          console.log('onstart');
+        };
+        recognition.onaudiostart = function(event) {
+          console.log('onaudiostart');
+        };
+        recognition.onsoundstart = function(event) {
+          console.log('onsoundstart');
+        };
+        recognition.onspeechstart = function(event) {
+          console.log('onspeechstart');
+        };
+        recognition.onspeechend = function(event) {
+          console.log('onspeechend');
+        };
+        recognition.onsoundend = function(event) {
+          console.log('onsoundend');
+        };
+        recognition.onaudioend = function(event) {
+          console.log('onaudioend');
+        };
+        recognition.onresult = function(event) {
+          console.log('onresult');
+          resolve();
+        };
+        recognition.onnomatch = function(event) {
+          console.log('onnomatch');
+          resolve();
+        };
+        recognition.onerror = function(event) {
+          console.log('onerror from ExecJs: ' + event.error);
+          if (error_received) { resolve(); return; }
+          error_received = true;
+          window.location.hash = 'error_' + event.error;
+          resolve();
+        };
+        recognition.start();
+      } catch (e) {
+        window.location.hash = 'error_js_exception_in_execjs_' + e.name;
+        resolve();
+      }
+    });
+  )";
+
+  ASSERT_TRUE(
+      ExecJs(shell->web_contents()->GetPrimaryMainFrame(), js_to_execute));
+  EXPECT_THAT(shell->web_contents()->GetLastCommittedURL().ref(),
+              testing::HasSubstr("error_service-not-allowed"));
 }
 #endif  // !BUILDFLAG(IS_FUCHSIA)
 
