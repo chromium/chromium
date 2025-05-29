@@ -15,6 +15,8 @@
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/modules/webgl/webgl_buffer.h"
+#include "third_party/blink/renderer/modules/webgl/webgl_framebuffer.h"
+#include "third_party/blink/renderer/modules/webgl/webgl_object.h"
 #include "third_party/blink/renderer/modules/webgl/webgl_program.h"
 #include "third_party/blink/renderer/modules/webgl/webgl_shader.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/dawn_control_client_holder.h"
@@ -156,10 +158,12 @@ class ScopedBindTexture {
 
 class ScopedBindFramebuffer {
  public:
-  ScopedBindFramebuffer(const gl::DriverGL& gl, GLenum target, GLuint fbo)
+  ScopedBindFramebuffer(const gl::DriverGL& gl,
+                        bool supports_separate_targets,
+                        GLenum target,
+                        GLuint fbo)
       : gl_(gl) {
-    // TODO(): ES3+ also adds these binding points.
-    if (gl.ext.b_GL_ANGLE_framebuffer_blit) {
+    if (supports_separate_targets) {
       gl_->fn.glGetIntegervFn(GL_READ_FRAMEBUFFER_BINDING, &prev_read_fbo_);
       gl_->fn.glGetIntegervFn(GL_DRAW_FRAMEBUFFER_BINDING, &prev_draw_fbo_);
     } else {
@@ -520,9 +524,42 @@ void WebGLRenderingContextWebGPUBase::bindBuffer(GLenum target,
   // TODO(413078308): Update the state only if no GL error was produced.
 }
 
-void WebGLRenderingContextWebGPUBase::bindFramebuffer(GLenum target,
-                                                      WebGLFramebuffer*) {
-  NOTIMPLEMENTED();
+void WebGLRenderingContextWebGPUBase::bindFramebuffer(
+    GLenum target,
+    WebGLFramebuffer* framebuffer) {
+  if (!ValidateNullableObject("bindFramebuffer", framebuffer)) {
+    return;
+  }
+
+  GLuint id = ObjectOrZero(framebuffer);
+  if (id == 0) {
+    EnsureDefaultFramebuffer();
+    id = default_framebuffer_;
+  }
+
+  CheckAndClearErrorCallbackState();
+  driver_gl_.fn.glBindFramebufferEXTFn(target, id);
+  if (CheckAndClearErrorCallbackState()) {
+    // Early return in the case of an error, the bindings should not be updated
+    return;
+  }
+
+  switch (target) {
+    case GL_FRAMEBUFFER:
+      draw_framebuffer_binding_ = framebuffer;
+      read_framebuffer_binding_ = framebuffer;
+      break;
+    case GL_DRAW_FRAMEBUFFER:
+      DCHECK(supports_separate_framebuffer_targets_);
+      draw_framebuffer_binding_ = framebuffer;
+      break;
+    case GL_READ_FRAMEBUFFER:
+      DCHECK(supports_separate_framebuffer_targets_);
+      read_framebuffer_binding_ = framebuffer;
+      break;
+    default:
+      NOTREACHED();
+  }
 }
 
 void WebGLRenderingContextWebGPUBase::bindRenderbuffer(GLenum target,
@@ -598,8 +635,7 @@ void WebGLRenderingContextWebGPUBase::bufferSubData(
 }
 
 GLenum WebGLRenderingContextWebGPUBase::checkFramebufferStatus(GLenum target) {
-  NOTIMPLEMENTED();
-  return 0;
+  return driver_gl_.fn.glCheckFramebufferStatusEXTFn(target);
 }
 
 void WebGLRenderingContextWebGPUBase::clear(GLbitfield mask) {
@@ -685,8 +721,7 @@ WebGLBuffer* WebGLRenderingContextWebGPUBase::createBuffer() {
 }
 
 WebGLFramebuffer* WebGLRenderingContextWebGPUBase::createFramebuffer() {
-  NOTIMPLEMENTED();
-  return nullptr;
+  return MakeGarbageCollected<WebGLFramebuffer>(this);
 }
 
 WebGLProgram* WebGLRenderingContextWebGPUBase::createProgram() {
@@ -716,8 +751,24 @@ void WebGLRenderingContextWebGPUBase::deleteBuffer(WebGLBuffer*) {
   NOTIMPLEMENTED();
 }
 
-void WebGLRenderingContextWebGPUBase::deleteFramebuffer(WebGLFramebuffer*) {
-  NOTIMPLEMENTED();
+void WebGLRenderingContextWebGPUBase::deleteFramebuffer(
+    WebGLFramebuffer* framebuffer) {
+  if (!DeleteObject(framebuffer)) {
+    return;
+  }
+
+  if (framebuffer == draw_framebuffer_binding_) {
+    if (supports_separate_framebuffer_targets_ ||
+        draw_framebuffer_binding_ != read_framebuffer_binding_) {
+      bindFramebuffer(GL_DRAW_FRAMEBUFFER, nullptr);
+    } else {
+      bindFramebuffer(GL_FRAMEBUFFER, nullptr);
+    }
+  }
+  if (framebuffer == read_framebuffer_binding_) {
+    DCHECK(supports_separate_framebuffer_targets_);
+    bindFramebuffer(GL_READ_FRAMEBUFFER, nullptr);
+  }
 }
 
 void WebGLRenderingContextWebGPUBase::deleteProgram(WebGLProgram*) {
@@ -2964,8 +3015,9 @@ void WebGLRenderingContextWebGPUBase::OnTextureTransferred() {
   driver_gl_.fn.glFlushFn();
 
   {
-    ScopedBindFramebuffer bind_default_fbo(driver_gl_, GL_FRAMEBUFFER,
-                                           default_framebuffer_);
+    ScopedBindFramebuffer bind_default_fbo(
+        driver_gl_, supports_separate_framebuffer_targets_, GL_FRAMEBUFFER,
+        default_framebuffer_);
     driver_gl_.fn.glFramebufferTexture2DEXTFn(
         GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, 0, 0);
   }
@@ -2993,6 +3045,8 @@ bool WebGLRenderingContextWebGPUBase::IsGPUDeviceDestroyed() {
 }
 
 void WebGLRenderingContextWebGPUBase::Trace(Visitor* visitor) const {
+  visitor->Trace(draw_framebuffer_binding_);
+  visitor->Trace(read_framebuffer_binding_);
   WebGLContextObjectSupport::Trace(visitor);
   CanvasRenderingContext::Trace(visitor);
 }
@@ -3053,8 +3107,9 @@ void WebGLRenderingContextWebGPUBase::EnsureDefaultFramebuffer() {
         GL_TEXTURE_2D, default_framebuffer_color_image_);
 
     {
-      ScopedBindFramebuffer bind_default_fbo(driver_gl_, GL_FRAMEBUFFER,
-                                             default_framebuffer_);
+      ScopedBindFramebuffer bind_default_fbo(
+          driver_gl_, supports_separate_framebuffer_targets_, GL_FRAMEBUFFER,
+          default_framebuffer_);
       driver_gl_.fn.glFramebufferTexture2DEXTFn(
           GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D,
           default_framebuffer_color_texture_, 0);
@@ -3154,6 +3209,11 @@ void WebGLRenderingContextWebGPUBase::InitializeContext() {
   gles2_for_objects_ = std::make_unique<PartialGLES2ForObjects>(&driver_gl_);
   WebGLContextObjectSupport::OnContextRestored(gles2_for_objects_.get());
 
+  // The separate read and draw framebuffer bindings require ES3 or framebuffer
+  // blit extensions
+  supports_separate_framebuffer_targets_ =
+      driver_gl_.ext.b_GL_ANGLE_framebuffer_blit || version.IsAtLeastGLES(3, 0);
+
   // Create the underlying WebGPUSwapBufferProvider. Usages are based on what
   // ANGLE needs to be able to use this for texturing and rendering.
   constexpr wgpu::TextureUsage kDefaultFBOUsages =
@@ -3202,6 +3262,55 @@ void WebGLRenderingContextWebGPUBase::Destroy() {
     display_ = EGL_NO_DISPLAY;
   }
   driver_egl_.ClearBindings();
+}
+
+bool WebGLRenderingContextWebGPUBase::ValidateNullableObject(
+    const char* function_name,
+    WebGLObject* object) {
+  if (!object) {
+    // This differs in behavior to ValidateObject; null objects are allowed
+    // in these entry points.
+    return true;
+  }
+  return ValidateObject(function_name, object);
+}
+
+bool WebGLRenderingContextWebGPUBase::ValidateObject(const char* function_name,
+                                                     WebGLObject* object) {
+  DCHECK(object);
+  if (object->MarkedForDeletion()) {
+    InsertGLError(GL_INVALID_OPERATION, function_name,
+                  "attempt to use a deleted object");
+    return false;
+  }
+  if (!object->Validate(this)) {
+    InsertGLError(GL_INVALID_OPERATION, function_name,
+                  "object does not belong to this context");
+    return false;
+  }
+  return true;
+}
+
+bool WebGLRenderingContextWebGPUBase::DeleteObject(WebGLObject* object) {
+  if (!object) {
+    return false;
+  }
+  if (!object->Validate(this)) {
+    InsertGLError(GL_INVALID_OPERATION, "delete",
+                  "object does not belong to this context");
+    return false;
+  }
+  if (object->MarkedForDeletion()) {
+    // This is specified to be a no-op, including skipping all unbinding from
+    // the context's attachment points that would otherwise happen.
+    return false;
+  }
+  if (object->HasObject()) {
+    // We need to pass in context here because we want
+    // things in this context unbound.
+    object->DeleteObject(ContextGL());
+  }
+  return true;
 }
 
 bool WebGLRenderingContextWebGPUBase::CheckAndClearErrorCallbackState() {

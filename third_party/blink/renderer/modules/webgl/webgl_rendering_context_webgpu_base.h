@@ -33,6 +33,7 @@ class V8PredefinedColorSpace;
 class V8UnionHTMLCanvasElementOrOffscreenCanvas;
 class VideoFrame;
 class WebGLActiveInfo;
+class WebGLObject;
 class WebGLBuffer;
 class WebGLFramebuffer;
 class WebGLProgram;
@@ -1327,6 +1328,23 @@ class MODULES_EXPORT WebGLRenderingContextWebGPUBase
   void InitializeContext();
   void Destroy();
 
+  // Helper function for APIs which can legally receive null objects, including
+  // the bind* calls (bindBuffer, bindTexture, etc.) and useProgram. Checks that
+  // the object belongs to this context and that it's not marked for deletion.
+  // Returns false if the caller should return without further processing.
+  // Performs a context loss check internally.
+  // This returns true for null WebGLObject arguments!
+  bool ValidateNullableObject(const char* function_name, WebGLObject* object);
+
+  // Validates the incoming WebGL object, which is assumed to be non-null.
+  // Checks that the object belongs to this context and that it's not marked for
+  // deletion. Performs a context loss check internally.
+  bool ValidateObject(const char* function_name, WebGLObject* object);
+
+  // Helper function for delete* (deleteBuffer, deleteProgram, etc) functions.
+  // Return false if caller should return without further processing.
+  bool DeleteObject(WebGLObject* object);
+
   // Clears the current state of had_error_callback_ and returns the previous
   // value. Can be used to clear the state before a critical section and check
   // if an error was generated afterwards.
@@ -1365,6 +1383,10 @@ class MODULES_EXPORT WebGLRenderingContextWebGPUBase
   int num_gl_errors_to_console_allowed_ = 255;
   Vector<GLenum> errors_;
   bool had_error_callback_ = false;
+
+  bool supports_separate_framebuffer_targets_ = false;
+  Member<WebGLFramebuffer> draw_framebuffer_binding_;
+  Member<WebGLFramebuffer> read_framebuffer_binding_;
 };
 
 }  // namespace blink
