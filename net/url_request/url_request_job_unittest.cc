@@ -749,9 +749,7 @@ TEST(URLRequestJobComputeReferrer, DoesntTruncateReferrerWithLongRef) {
 
 TEST(URLRequestJobComputeReferrer, InvalidSchemeReferrer) {
   const GURL kOriginalReferrer("about:blank");
-  ASSERT_FALSE(url::IsReferrerScheme(
-      kOriginalReferrer.spec().data(),
-      kOriginalReferrer.parsed_for_possibly_invalid_spec().scheme));
+  ASSERT_FALSE(url::IsReferrerScheme(kOriginalReferrer.scheme_piece()));
 
   EXPECT_EQ(URLRequestJob::ComputeReferrerForPolicy(ReferrerPolicy::NEVER_CLEAR,
                                                     kOriginalReferrer,

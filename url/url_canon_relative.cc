@@ -190,7 +190,7 @@ bool DoIsRelativeURL(const char* base,
   // > 2.6. Otherwise, if url is special, base is non-null, and base’s scheme is
   // >      url’s scheme:
   if ((IsUsingStandardCompliantNonSpecialSchemeURLParsing() &&
-       !IsStandard(base, base_parsed.scheme)) ||
+       !IsStandard(base_parsed.scheme.maybe_as_string_view_on(base))) ||
       !AreSchemesEqual(base, base_parsed.scheme, url, scheme)) {
     return true;
   }
@@ -498,8 +498,8 @@ bool DoResolveRelativeHost(const char* base_url,
                            CanonOutput* output,
                            Parsed* out_parsed) {
   SchemeType scheme_type = SCHEME_WITH_HOST_PORT_AND_USER_INFORMATION;
-  const bool is_standard_scheme =
-      GetStandardSchemeType(base_url, base_parsed.scheme, &scheme_type);
+  const bool is_standard_scheme = GetStandardSchemeType(
+      base_parsed.scheme.maybe_as_string_view_on(base_url), &scheme_type);
 
   // Parse the relative URL, just like we would for anything following a
   // scheme.

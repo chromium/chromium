@@ -192,17 +192,9 @@ String CanonicalizePathname(const String& protocol,
     standard = true;
   } else if (protocol.Is8Bit()) {
     StringUTF8Adaptor utf8(protocol);
-    // TODO(crbug.com/351564777, crbug.com/420421613): Remove the UNSAFE_TODO
-    // after we finish transition in `url::IsStandard` to use
-    // `std::string_view`.
-    standard = UNSAFE_TODO(
-        url::IsStandard(utf8.data(), url::Component(0, utf8.size())));
+    standard = url::IsStandard(utf8.AsStringView());
   } else {
-    // TODO(crbug.com/351564777, crbug.com/420421613): Remove the UNSAFE_TODO
-    // after we finish transition in `url::IsStandard` to use
-    // `std::u16string_view`.
-    standard = UNSAFE_TODO(url::IsStandard(
-        protocol.Characters16(), url::Component(0, protocol.length())));
+    standard = url::IsStandard(protocol.View16());
   }
 
   // Do not enforce absolute pathnames here since we can't enforce it
