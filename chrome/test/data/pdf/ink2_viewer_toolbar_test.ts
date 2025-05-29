@@ -18,8 +18,16 @@ const controller = PluginController.getInstance();
 const mockPlugin = setupTestMockPluginForInk();
 const mockMetricsPrivate = setupMockMetricsPrivate();
 
-function getUndoRedoModifier() {
-  return isMac ? 'meta' : 'ctrl';
+function sendUndoShortcutKey(target: Element) {
+  keyDownOn(target, 0, isMac ? 'meta' : 'ctrl', 'z');
+}
+
+function sendRedoShortcutKey(target: Element) {
+  if (isMac) {
+    keyDownOn(target, 0, ['meta', 'shift'], 'z');
+  } else {
+    keyDownOn(target, 0, 'ctrl', 'y');
+  }
 }
 
 // Utils to add extra wait for Mac13 tests.
@@ -627,8 +635,7 @@ chrome.test.runTests([
 
     startFinishModifiedInkStroke(controller);
 
-    // Undo shortcut.
-    keyDownOn(viewerToolbar, 0, getUndoRedoModifier(), 'z');
+    sendUndoShortcutKey(viewerToolbar);
 
     chrome.test.assertTrue(
         mockPlugin.findMessage('annotationUndo') !== undefined);
@@ -637,8 +644,7 @@ chrome.test.runTests([
 
     mockPlugin.clearMessages();
 
-    // Redo shortcut.
-    keyDownOn(viewerToolbar, 0, getUndoRedoModifier(), 'y');
+    sendRedoShortcutKey(viewerToolbar);
 
     chrome.test.assertTrue(
         mockPlugin.findMessage('annotationRedo') !== undefined);
@@ -680,8 +686,8 @@ chrome.test.runTests([
         'message', {data: {type: 'formFocusChange', focused: 'text'}}));
     await microtasksFinished();
 
-    keyDownOn(viewerToolbar, 0, getUndoRedoModifier(), 'z');
-    keyDownOn(viewerToolbar, 0, getUndoRedoModifier(), 'y');
+    sendUndoShortcutKey(viewerToolbar);
+    sendRedoShortcutKey(viewerToolbar);
 
     chrome.test.assertTrue(
         mockPlugin.findMessage('annotationUndo') === undefined);
@@ -696,8 +702,8 @@ chrome.test.runTests([
         'message', {data: {type: 'formFocusChange', focused: 'non-text'}}));
     await microtasksFinished();
 
-    keyDownOn(viewerToolbar, 0, getUndoRedoModifier(), 'z');
-    keyDownOn(viewerToolbar, 0, getUndoRedoModifier(), 'y');
+    sendUndoShortcutKey(viewerToolbar);
+    sendRedoShortcutKey(viewerToolbar);
 
     chrome.test.assertTrue(
         mockPlugin.findMessage('annotationUndo') !== undefined);
@@ -713,8 +719,8 @@ chrome.test.runTests([
         'message', {data: {type: 'formFocusChange', focused: 'none'}}));
     await microtasksFinished();
 
-    keyDownOn(viewerToolbar, 0, getUndoRedoModifier(), 'z');
-    keyDownOn(viewerToolbar, 0, getUndoRedoModifier(), 'y');
+    sendUndoShortcutKey(viewerToolbar);
+    sendRedoShortcutKey(viewerToolbar);
 
     chrome.test.assertTrue(
         mockPlugin.findMessage('annotationUndo') !== undefined);
@@ -742,16 +748,14 @@ chrome.test.runTests([
     // Simulate committing an edited text annotation.
     startFinishModifiedInkStroke(controller);
 
-    // Undo shortcut.
-    keyDownOn(viewerToolbar, 0, getUndoRedoModifier(), 'z');
+    sendUndoShortcutKey(viewerToolbar);
     chrome.test.assertTrue(
         mockPlugin.findMessage('annotationUndo') !== undefined);
     mockMetricsPrivate.assertCount(UserAction.UNDO_INK2, 1);
     mockMetricsPrivate.assertCount(UserAction.REDO_INK2, 0);
     mockPlugin.clearMessages();
 
-    // Redo shortcut.
-    keyDownOn(viewerToolbar, 0, getUndoRedoModifier(), 'y');
+    sendRedoShortcutKey(viewerToolbar);
     chrome.test.assertTrue(
         mockPlugin.findMessage('annotationRedo') !== undefined);
     mockMetricsPrivate.assertCount(UserAction.UNDO_INK2, 1);
@@ -763,8 +767,7 @@ chrome.test.runTests([
     const textBox = viewer.shadowRoot.querySelector('ink-text-box');
     assert(textBox);
     await createTextBoxAndWaitForStateChange(textBox);
-    // Undo shortcut.
-    keyDownOn(viewerToolbar, 0, getUndoRedoModifier(), 'z');
+    sendUndoShortcutKey(viewerToolbar);
     chrome.test.assertTrue(
         mockPlugin.findMessage('annotationUndo') === undefined);
     mockMetricsPrivate.assertCount(UserAction.UNDO_INK2, 1);
@@ -773,7 +776,7 @@ chrome.test.runTests([
 
     // Close textbox. Undo works again.
     await commitAnnotationAndWaitForStateChange(textBox);
-    keyDownOn(viewerToolbar, 0, getUndoRedoModifier(), 'z');
+    sendUndoShortcutKey(viewerToolbar);
     chrome.test.assertTrue(
         mockPlugin.findMessage('annotationUndo') !== undefined);
     mockMetricsPrivate.assertCount(UserAction.UNDO_INK2, 2);
@@ -782,8 +785,7 @@ chrome.test.runTests([
 
     // Redo also doesn't work with a textbox open.
     await createTextBoxAndWaitForStateChange(textBox);
-    // Undo shortcut.
-    keyDownOn(viewerToolbar, 0, getUndoRedoModifier(), 'y');
+    sendRedoShortcutKey(viewerToolbar);
     chrome.test.assertTrue(
         mockPlugin.findMessage('annotationRedo') === undefined);
     mockMetricsPrivate.assertCount(UserAction.UNDO_INK2, 2);
@@ -792,7 +794,7 @@ chrome.test.runTests([
 
     // Close textbox. Redo works again.
     await commitAnnotationAndWaitForStateChange(textBox);
-    keyDownOn(viewerToolbar, 0, getUndoRedoModifier(), 'y');
+    sendRedoShortcutKey(viewerToolbar);
     chrome.test.assertTrue(
         mockPlugin.findMessage('annotationRedo') !== undefined);
     mockMetricsPrivate.assertCount(UserAction.UNDO_INK2, 2);
@@ -812,7 +814,7 @@ chrome.test.runTests([
     startFinishModifiedInkStroke(controller);
     startFinishModifiedInkStroke(controller);
     await microtasksFinished();
-    keyDownOn(viewerToolbar, 0, getUndoRedoModifier(), 'z');
+    sendUndoShortcutKey(viewerToolbar);
 
     chrome.test.assertTrue(
         mockPlugin.findMessage('annotationUndo') !== undefined);
@@ -835,7 +837,7 @@ chrome.test.runTests([
 
     // Try to undo, which should do nothing.
     mockPlugin.clearMessages();
-    keyDownOn(viewerToolbar, 0, getUndoRedoModifier(), 'z');
+    sendUndoShortcutKey(viewerToolbar);
 
     chrome.test.assertTrue(
         mockPlugin.findMessage('annotationUndo') === undefined);
@@ -846,7 +848,7 @@ chrome.test.runTests([
 
     // Try to redo, which should do nothing.
     mockPlugin.clearMessages();
-    keyDownOn(viewerToolbar, 0, getUndoRedoModifier(), 'y');
+    sendRedoShortcutKey(viewerToolbar);
 
     chrome.test.assertTrue(
         mockPlugin.findMessage('annotationUndo') === undefined);
@@ -869,7 +871,7 @@ chrome.test.runTests([
 
     // Make sure undo works.
     mockPlugin.clearMessages();
-    keyDownOn(viewerToolbar, 0, getUndoRedoModifier(), 'z');
+    sendUndoShortcutKey(viewerToolbar);
 
     chrome.test.assertTrue(
         mockPlugin.findMessage('annotationUndo') !== undefined);
@@ -880,7 +882,7 @@ chrome.test.runTests([
 
     // Make sure redo works.
     mockPlugin.clearMessages();
-    keyDownOn(viewerToolbar, 0, getUndoRedoModifier(), 'y');
+    sendRedoShortcutKey(viewerToolbar);
 
     chrome.test.assertTrue(
         mockPlugin.findMessage('annotationUndo') === undefined);

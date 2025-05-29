@@ -506,16 +506,29 @@ export class PdfViewerElement extends PdfViewerBaseElement {
         return;
       // <if expr="enable_pdf_ink2">
       case 'z':
+        // <if expr="is_macosx">
+        if (e.metaKey && !e.ctrlKey && !e.altKey) {
+          if (e.shiftKey) {
+            this.$.toolbar.redo();
+          } else {
+            this.$.toolbar.undo();
+          }
+        }
+        // </if>  is_macosx
+        // <if expr="not is_macosx">
         if (hasCtrlModifierOnly(e)) {
           this.$.toolbar.undo();
         }
+        // </if>  not is_macosx
         return;
+      // <if expr="not is_macosx">
       case 'y':
         if (hasCtrlModifierOnly(e)) {
           this.$.toolbar.redo();
         }
         return;
-      // </if>
+      // </if>  not is_macosx
+      // </if>  enable_pdf_ink2
     }
   }
 
