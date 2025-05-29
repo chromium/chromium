@@ -1320,7 +1320,14 @@ void GpuDataManagerImplPrivate::AppendGpuCommandLine(
       use_gl = browser_command_line->GetSwitchValueASCII(switches::kUseGL);
       break;
     case gpu::GpuMode::SOFTWARE_GL:
-      gl::SetSoftwareWebGLCommandLineSwitches(command_line);
+      // On Fuchsia, always force software GL
+#if !BUILDFLAG(IS_FUCHSIA)
+      if (!gl::HasRequestedSoftwareGLImplementationFromCommandLine(
+              command_line))
+#endif  // BUILDFLAG(IS_FUCHSIA)
+      {
+        gl::SetSoftwareWebGLCommandLineSwitches(command_line);
+      }
       break;
     default:
       use_gl = gl::kGLImplementationDisabledName;

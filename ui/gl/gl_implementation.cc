@@ -255,6 +255,10 @@ GL_EXPORT bool IsSwiftShaderGLImplementation(
 void SetGLImplementationCommandLineSwitches(
     const GLImplementationParts& implementation,
     base::CommandLine* command_line) {
+  // Avoid duplicating the GL implementation switches. Multiples are not
+  // handled.
+  command_line->RemoveSwitch(switches::kUseGL);
+  command_line->RemoveSwitch(switches::kUseANGLE);
   command_line->AppendSwitchASCII(
       switches::kUseGL, gl::GetGLImplementationGLName(implementation));
   command_line->AppendSwitchASCII(
@@ -267,6 +271,11 @@ void SetSoftwareGLCommandLineSwitches(base::CommandLine* command_line) {
 }
 
 void SetSoftwareWebGLCommandLineSwitches(base::CommandLine* command_line) {
+  // Avoid duplicating the GL implementation switches. Multiples are not
+  // handled.
+  command_line->RemoveSwitch(switches::kUseGL);
+  command_line->RemoveSwitch(switches::kUseANGLE);
+
 #if BUILDFLAG(IS_WIN)
   if (base::FeatureList::IsEnabled(features::kAllowD3D11WarpFallback)) {
     command_line->AppendSwitchASCII(switches::kUseGL,
@@ -280,6 +289,14 @@ void SetSoftwareWebGLCommandLineSwitches(base::CommandLine* command_line) {
   command_line->AppendSwitchASCII(switches::kUseGL, kGLImplementationANGLEName);
   command_line->AppendSwitchASCII(switches::kUseANGLE,
                                   kANGLEImplementationSwiftShaderForWebGLName);
+}
+
+GL_EXPORT bool HasRequestedSoftwareGLImplementationFromCommandLine(
+    const base::CommandLine* command_line) {
+  std::optional<GLImplementationParts> requested_impl =
+      GetRequestedGLImplementationFromCommandLine(command_line);
+  return requested_impl.has_value() &&
+         IsSoftwareGLImplementation(requested_impl.value());
 }
 
 std::optional<GLImplementationParts>
