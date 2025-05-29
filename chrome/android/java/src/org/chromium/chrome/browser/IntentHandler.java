@@ -1017,6 +1017,7 @@ public class IntentHandler {
                 if (ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL.equals(lowerCaseUrl)
                         || ContentUrlConstants.ABOUT_BLANK_URL.equals(lowerCaseUrl)
                         || UrlConstants.CHROME_DINO_URL.equals(lowerCaseUrl)
+                        || lowerCaseUrl.startsWith(UrlConstants.CHROME_EXTENSIONS_URL)
                         || lowerCaseUrl.startsWith(UrlConstants.PDF_URL)) {
                     return false;
                 }

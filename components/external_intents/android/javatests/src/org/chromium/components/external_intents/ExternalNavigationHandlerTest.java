@@ -3396,6 +3396,11 @@ public class ExternalNavigationHandlerTest {
             mSafeBrowsingIntent = intent;
         }
 
+        @Override
+        public Intent createIntentToPreventIncognitoAccess(GURL url) {
+            return null;
+        }
+
         public void reset() {
             startIncognitoIntentCalled = false;
         }

@@ -2144,6 +2144,8 @@ public class ChromeTabbedActivity extends ChromeActivity {
                         intent, IntentHandler.EXTRA_INVOKED_FROM_APP_WIDGET, false);
         boolean focus = false;
 
+        // TODO(crbug.com/418106849): We should use regular tab model in case the url
+        // will open in a regular tab even if the current tab model is incognito.
         TabModel tabModel = getCurrentTabModel();
         final Tab resultTab;
         switch (tabOpenType) {
