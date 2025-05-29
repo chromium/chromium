@@ -6,7 +6,6 @@
 
 #include <vector>
 
-#include "base/containers/to_vector.h"
 #include "components/autofill/core/browser/data_model/valuables/loyalty_card.h"
 #include "components/autofill/core/browser/ui/autofill_image_fetcher_base.h"
 #include "components/autofill/core/browser/webdata/autofill_change.h"

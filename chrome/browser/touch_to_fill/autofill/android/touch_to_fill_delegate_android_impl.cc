@@ -192,15 +192,13 @@ TouchToFillDelegateAndroidImpl::DryRunForLoyaltyCard() {
   }
   const GURL& current_domain =
       manager_->client().GetLastCommittedPrimaryMainFrameURL();
-  // Returns whether a loyalty card has a related merchant domain that matches
-  // the `current_domain`.
-  const auto HasMatchingMerchantDomain =
-      [&current_domain](const LoyaltyCard& loyalty_card) {
-        return loyalty_card.HasMatchingMerchantDomain(current_domain);
-      };
+
   // Only show the TTF surface if any loyalty card have a matching merchant
   // domain.
-  if (std::ranges::any_of(loyalty_cards, HasMatchingMerchantDomain)) {
+  if (std::ranges::any_of(
+          loyalty_cards, [&current_domain](const LoyaltyCard& loyalty_card) {
+            return loyalty_card.HasMatchingMerchantDomain(current_domain);
+          })) {
     return DryRunResult(TriggerOutcome::kShown, loyalty_cards);
   }
   return DryRunResult(TriggerOutcome::kNoValidPaymentMethods, {});
