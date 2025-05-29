@@ -127,9 +127,11 @@ PasskeyBrowserBinder::PasskeyBrowserBinder(
     scoped_refptr<BrowserBoundKeyStore> key_store,
     scoped_refptr<PaymentManifestWebDataService> web_data_service)
     : key_store_(std::move(key_store)),
-      web_data_service_(web_data_service),
+      web_data_service_(std::move(web_data_service)),
       random_bytes_as_vector_callback_(
-          base::BindRepeating(crypto::RandBytesAsVector)) {}
+          base::BindRepeating(crypto::RandBytesAsVector)) {
+  CHECK(web_data_service_);
+}
 
 PasskeyBrowserBinder::~PasskeyBrowserBinder() = default;
 
@@ -185,19 +187,17 @@ PasskeyBrowserBinder::CreateUnboundKey(
 void PasskeyBrowserBinder::BindKey(UnboundKey key,
                                    const std::vector<uint8_t>& credential_id,
                                    const std::string& relying_party) {
-  if (web_data_service_) {
-    WebDataServiceBase::Handle handle = web_data_service_->SetBrowserBoundKey(
-        credential_id, relying_party, key.browser_bound_key_id_,
-        /*consumer=*/this);
-    set_browser_bound_key_handlers_[handle] = base::BindOnce(
-        [](UnboundKey key, bool success) {
-          if (success) {
-            key.MarkKeyBoundAndReset();
-            // Do not call methods on key past this point.
-          }
-        },
-        std::move(key));
-  }
+  WebDataServiceBase::Handle handle = web_data_service_->SetBrowserBoundKey(
+      credential_id, relying_party, key.browser_bound_key_id_,
+      /*consumer=*/this);
+  set_browser_bound_key_handlers_[handle] = base::BindOnce(
+      [](UnboundKey key, bool success) {
+        if (success) {
+          key.MarkKeyBoundAndReset();
+          // Do not call methods on key past this point.
+        }
+      },
+      std::move(key));
 }
 
 void PasskeyBrowserBinder::DeleteAllUnknownBrowserBoundKeys(
@@ -232,10 +232,6 @@ void PasskeyBrowserBinder::GetBoundKeyForPasskey(
     std::vector<uint8_t> credential_id,
     std::string relying_party,
     base::OnceCallback<void(std::unique_ptr<BrowserBoundKey>)> callback) {
-  if (!web_data_service_) {
-    std::move(callback).Run(nullptr);
-    return;
-  }
   auto handle = web_data_service_->GetBrowserBoundKey(
       std::move(credential_id), std::move(relying_party), /*consumer=*/this);
   get_browser_bound_key_handlers_[handle] =
@@ -248,10 +244,6 @@ void PasskeyBrowserBinder::GetOrCreateBoundKeyForPasskey(
     std::string relying_party,
     const BrowserBoundKeyStore::CredentialInfoList& allowed_algorithms,
     base::OnceCallback<void(bool, std::unique_ptr<BrowserBoundKey>)> callback) {
-  if (!web_data_service_) {
-    std::move(callback).Run(/*is_new=*/false, nullptr);
-    return;
-  }
   auto handle = web_data_service_->GetBrowserBoundKey(
       credential_id, relying_party, /*consumer=*/this);
   // The call back must not strongly reference this to avoid strong reference
