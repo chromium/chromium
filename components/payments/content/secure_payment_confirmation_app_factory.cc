@@ -413,13 +413,6 @@ void SecurePaymentConfirmationAppFactory::Create(
   delegate->OnDoneCreatingPaymentApps();
 }
 
-#if BUILDFLAG(IS_ANDROID)
-void SecurePaymentConfirmationAppFactory::SetBrowserBoundKeyStoreForTesting(
-    scoped_refptr<BrowserBoundKeyStore> key_store) {
-  browser_bound_key_store_for_testing_ = std::move(key_store);
-}
-#endif  // BUILDFLAG(IS_ANDROID)
-
 void SecurePaymentConfirmationAppFactory::OnWebDataServiceRequestDone(
     WebDataServiceBase::Handle handle,
     std::unique_ptr<WDTypedResult> result) {
@@ -445,6 +438,13 @@ void SecurePaymentConfirmationAppFactory::OnWebDataServiceRequestDone(
     return;
   }
 }
+
+#if BUILDFLAG(IS_ANDROID)
+void SecurePaymentConfirmationAppFactory::SetBrowserBoundKeyStoreForTesting(
+    scoped_refptr<BrowserBoundKeyStore> key_store) {
+  browser_bound_key_store_for_testing_ = std::move(key_store);
+}
+#endif  // BUILDFLAG(IS_ANDROID)
 
 void SecurePaymentConfirmationAppFactory::OnGetMatchingCredentialIdsFromStore(
     std::unique_ptr<Request> request,
