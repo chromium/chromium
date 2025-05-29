@@ -2449,8 +2449,14 @@ class WebAppFrameToolbarBrowserTest_OriginText
       ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION};
 };
 
+// TODO(crbug.com/381106937): Re-enable this test on linux and ChromeOS.
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_InScopeNavigation DISABLED_InScopeNavigation
+#else
+#define MAYBE_InScopeNavigation InScopeNavigation
+#endif
 IN_PROC_BROWSER_TEST_P(WebAppFrameToolbarBrowserTest_OriginText,
-                       InScopeNavigation) {
+                       MAYBE_InScopeNavigation) {
   ASSERT_TRUE(https_server()->Started());
   InstallAndLaunchWebApp();
   // Origin text should not show if navigating to a URL in scope and with the
