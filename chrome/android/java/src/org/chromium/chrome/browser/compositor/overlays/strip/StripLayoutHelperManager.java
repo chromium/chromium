@@ -175,7 +175,7 @@ public class StripLayoutHelperManager
     // Tab strip transition constants.
     @VisibleForTesting
     static final Interpolator TAB_STRIP_TRANSITION_INTERPOLATOR =
-            Interpolators.FAST_OUT_SLOW_IN_INTERPOLATOR;
+            Interpolators.STANDARD_DEFAULT_EFFECTS;
 
     // Fade constants.
     static final float FADE_SHORT_WIDTH_DP = 60;

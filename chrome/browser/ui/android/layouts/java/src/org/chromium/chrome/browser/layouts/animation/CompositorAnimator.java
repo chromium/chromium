@@ -203,7 +203,7 @@ public class CompositorAnimator extends Animator {
                 startValue,
                 endValue,
                 durationMs,
-                Interpolators.DECELERATE_INTERPOLATOR);
+                Interpolators.STANDARD_DEFAULT_EFFECTS);
     }
 
     /**

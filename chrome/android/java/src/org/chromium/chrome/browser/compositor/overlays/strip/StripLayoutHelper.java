@@ -33,7 +33,6 @@ import android.text.format.DateUtils;
 import android.util.TypedValue;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.animation.Interpolator;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
@@ -123,7 +122,6 @@ import org.chromium.components.tab_groups.TabGroupColorId;
 import org.chromium.ui.accessibility.AccessibilityState;
 import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.ui.base.WindowAndroid;
-import org.chromium.ui.interpolators.Interpolators;
 import org.chromium.ui.util.ColorUtils;
 import org.chromium.ui.util.MotionEventUtils;
 import org.chromium.ui.util.XrUtils;
@@ -3845,8 +3843,7 @@ public class StripLayoutHelper
                                     StripLayoutTab.WIDTH,
                                     tab.getWidth(),
                                     TAB_OVERLAP_WIDTH_DP,
-                                    NEW_ANIM_TAB_RESIZE_MS,
-                                    Interpolators.STANDARD_DEFAULT_EFFECTS);
+                                    NEW_ANIM_TAB_RESIZE_MS);
                     resizeAnimationList.add(animator);
                     continue;
                 }
@@ -3857,11 +3854,9 @@ public class StripLayoutHelper
                 }
 
                 int duration = ANIM_TAB_RESIZE_MS;
-                Interpolator interpolator = Interpolators.DECELERATE_INTERPOLATOR;
 
                 if (ChromeFeatureList.sTabletTabStripAnimation.isEnabled()) {
                     duration = NEW_ANIM_TAB_RESIZE_MS;
-                    interpolator = Interpolators.STANDARD_DEFAULT_EFFECTS;
                 }
                 animator =
                         CompositorAnimator.ofFloatProperty(
@@ -3870,8 +3865,7 @@ public class StripLayoutHelper
                                 StripLayoutTab.WIDTH,
                                 tab.getWidth(),
                                 cachedTabWidth,
-                                duration,
-                                interpolator);
+                                duration);
 
                 resizeAnimationList.add(animator);
             } else {
