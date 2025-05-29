@@ -1027,30 +1027,6 @@ void PartitionRoot::DestructForTesting()
 #endif  // PA_CONFIG(ENABLE_SHADOW_METADATA)
 }
 
-#if PA_CONFIG(MAYBE_ENABLE_MAC11_MALLOC_SIZE_HACK)
-void PartitionRoot::InitMac11MallocSizeHackUsableSize() {
-  settings.mac11_malloc_size_hack_enabled_ = true;
-
-  // Request of 32B will fall into a 48B bucket in the presence of BRP
-  // in-slot metadata, yielding |48 - in_slot_metadata_size| of actual usable
-  // space.
-  PA_DCHECK(settings.in_slot_metadata_size);
-  settings.mac11_malloc_size_hack_usable_size_ =
-      48 - settings.in_slot_metadata_size;
-}
-
-void PartitionRoot::EnableMac11MallocSizeHackForTesting() {
-  InitMac11MallocSizeHackUsableSize();
-}
-
-void PartitionRoot::EnableMac11MallocSizeHackIfNeeded() {
-  PA_DCHECK(settings.brp_enabled_);
-  if (internal::base::mac::MacOSMajorVersion() == 11) {
-    InitMac11MallocSizeHackUsableSize();
-  }
-}
-#endif  // PA_CONFIG(MAYBE_ENABLE_MAC11_MALLOC_SIZE_HACK)
-
 #if PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT) && \
     !PA_BUILDFLAG(HAS_64_BIT_POINTERS)
 namespace {
@@ -1190,10 +1166,6 @@ void PartitionRoot::Init(PartitionOptions opts) {
       settings.in_slot_metadata_size = internal::kInSlotMetadataSizeAdjustment;
       settings.extras_size += internal::kInSlotMetadataSizeAdjustment;
       settings.extras_size += opts.backup_ref_ptr_extra_extras_size;
-#if PA_CONFIG(MAYBE_ENABLE_MAC11_MALLOC_SIZE_HACK)
-      EnableMac11MallocSizeHackIfNeeded();
-#endif
-
       PA_CHECK(settings.pool_handle == internal::kNullPoolHandle);
       settings.pool_handle = internal::kBRPPoolHandle;
     }

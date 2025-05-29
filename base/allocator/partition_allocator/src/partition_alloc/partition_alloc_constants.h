@@ -457,11 +457,6 @@ constexpr unsigned char kFreedByte = 0xCD;
 
 constexpr unsigned char kQuarantinedByte = 0xEF;
 
-#if PA_CONFIG(MAYBE_ENABLE_MAC11_MALLOC_SIZE_HACK)
-// Requested size that requires the hack.
-constexpr size_t kMac11MallocSizeHackRequestedSize = 32;
-#endif
-
 }  // namespace internal
 
 // When trying to conserve memory, set the thread cache limit to this.
