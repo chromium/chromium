@@ -125,9 +125,10 @@ namespace {
 
 // Feature to skip a redundant NavigationRequest creation for bfcache
 // activations, per https://crbug.com/417251428.
+// TODO(crbug.com/420275259): Diagnose crashes and enable by default.
 BASE_FEATURE(kSkipExtraBfcacheNavigationRequest,
              "SkipExtraBfcacheNavigationRequest",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Invoked when entries have been pruned, or removed. For example, if the
 // current entries are [google, digg, yahoo], with the current entry google,
@@ -3380,7 +3381,8 @@ NavigationControllerImpl::NavigateToExistingPendingEntry(
   // Navigate immediately if the document is in the BackForwardCache.
   if (back_forward_cache_.GetOrEvictEntry(nav_entry_id).has_value()) {
     TRACE_EVENT0("navigation", "BackForwardCache_CreateNavigationRequest");
-    CHECK_EQ(reload_type, ReloadType::NONE);
+    // TODO(crbug.com/420275259): Diagnose failures and upgrade to a CHECK.
+    DCHECK_EQ(reload_type, ReloadType::NONE);
     base::WeakPtr<NavigationRequest> request;
 
     // Skip a redundant NavigationRequest creation, per
