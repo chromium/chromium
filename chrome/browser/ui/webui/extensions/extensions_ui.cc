@@ -410,8 +410,7 @@ content::WebUIDataSource* CreateAndAddExtensionsSource(Profile* profile,
        IDS_EXTENSIONS_KIOSK_DISABLE_BAILOUT_SHORTCUT_LABEL},
       {"kioskDisableBailoutWarningTitle",
        IDS_EXTENSIONS_KIOSK_DISABLE_BAILOUT_SHORTCUT_WARNING_TITLE},
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-      {"pendingChangeWarning", IDS_PENDING_CHANGE_WARNING},
+#endif
   };
   source->AddLocalizedStrings(kLocalizedStrings);
 
