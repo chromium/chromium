@@ -187,59 +187,65 @@ class CxxDependencyTest(unittest.TestCase):
     def testCheckCommentsIgnored(self):
         filename = 'third_party/blink/renderer/core/frame/frame.cc'
         for item in self.allow_list:
-            errors = self.runCheck(filename, ['// %s' % item])
-            self.assertEqual([], errors)
+            results = self.runCheck(filename, ['// %s' % item])
+            self.assertEqual([], results)
 
         for item in self.disallow_list:
-            errors = self.runCheck(filename, ['// %s' % item])
-            self.assertEqual([], errors)
+            results = self.runCheck(filename, ['// %s' % item])
+            self.assertEqual([], results)
 
     # References in Test files should never be checked.
     def testCheckTestsIgnored(self):
         filename = 'third_party/blink/rendere/core/frame/frame_test.cc'
         for item in self.allow_list:
-            errors = self.runCheck(filename, ['// %s' % item])
-            self.assertEqual([], errors)
+            results = self.runCheck(filename, ['// %s' % item])
+            self.assertEqual([], results)
 
         for item in self.disallow_list:
-            errors = self.runCheck(filename, ['// %s' % item])
-            self.assertEqual([], errors)
+            results = self.runCheck(filename, ['// %s' % item])
+            self.assertEqual([], results)
 
     # core, modules, public, et cetera should all have dependency enforcement.
     def testCheckCoreEnforcement(self):
         filename = 'third_party/blink/renderer/core/frame/frame.cc'
         for item in self.allow_list:
-            errors = self.runCheck(filename, ['%s' % item])
-            self.assertEqual([], errors)
+            results = self.runCheck(filename, ['%s' % item])
+            self.assertEqual([], results)
 
         for item in self.disallow_list:
-            errors = self.runCheck(filename, ['%s' % item])
-            self.assertEqual(1, len(errors))
-            self.assertRegex(errors[0].message,
+            results = self.runCheck(filename, ['%s' % item])
+            self.assertEqual(2, len(results))
+            self.assertIn('Non-Blink usage violations detected.',
+                          results[0].message)
+            self.assertRegex(results[1].message,
                              r'^[^:]+:\d+ uses disallowed identifier .+$')
 
     def testCheckModulesEnforcement(self):
         filename = 'third_party/blink/renderer/modules/modules_initializer.cc'
         for item in self.allow_list:
-            errors = self.runCheck(filename, ['%s' % item])
-            self.assertEqual([], errors)
+            results = self.runCheck(filename, ['%s' % item])
+            self.assertEqual([], results)
 
         for item in self.disallow_list:
-            errors = self.runCheck(filename, ['%s' % item])
-            self.assertEqual(1, len(errors))
-            self.assertRegex(errors[0].message,
+            results = self.runCheck(filename, ['%s' % item])
+            self.assertEqual(2, len(results))
+            self.assertIn('Non-Blink usage violations detected.',
+                          results[0].message)
+            self.assertRegex(results[1].message,
                              r'^[^:]+:\d+ uses disallowed identifier .+$')
 
     def testCheckPublicEnforcement(self):
         filename = 'third_party/blink/renderer/public/platform/web_thread.h'
         for item in self.allow_list:
-            errors = self.runCheck(filename, ['%s' % item])
-            self.assertEqual([], errors)
+            results = self.runCheck(filename, ['%s' % item])
+            self.assertEqual([], results)
 
         for item in self.disallow_list:
-            errors = self.runCheck(filename, ['%s' % item])
-            self.assertEqual(1, len(errors))
-            self.assertRegex(errors[0].message,
+            results = self.runCheck(filename, ['%s' % item])
+            self.assertEqual(2, len(results))
+            self.assertIn('Non-Blink usage violations detected.',
+                          results[0].message)
+            self.assertRegex(results[1].message,
                              r'^[^:]+:\d+ uses disallowed identifier .+$')
 
     # platform and controller should be opted out of enforcement, but aren't
