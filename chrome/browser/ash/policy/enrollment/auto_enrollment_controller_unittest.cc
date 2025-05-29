@@ -390,6 +390,15 @@ class AutoEnrollmentControllerBaseTest : public testing::Test {
       scoped_fake_session_manager_client_initializer_;
 };
 
+TEST_F(AutoEnrollmentControllerBaseTest, NoEarlyGuestMode) {
+  auto controller = CreateController();
+
+  // Guest signin should not be allowed before finishing state determination.
+  // In particular, it should not be allowed before even starting state
+  // determination.
+  EXPECT_FALSE(controller.IsGuestSigninAllowed());
+}
+
 class AutoEnrollmentControllerSafeguardTimeoutTest
     : public AutoEnrollmentControllerBaseTest {
  protected:
