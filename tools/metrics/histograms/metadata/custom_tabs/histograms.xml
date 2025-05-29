@@ -866,6 +866,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="CustomTabs.TimeSpentInEngagementEventIpc" units="ms"
+    expires_after="2025-11-29">
+  <owner>nafisabedin@google.com</owner>
+  <summary>
+    The time spent in milliseconds processing IPCs on the UI thread related to
+    Realtime Engagement events for CCTs.
+
+    Recorded only for Android, once per CCT session after the #onSessionEnded
+    call, if Realtime Engagement signals are enabled.
+  </summary>
+</histogram>
+
 <histogram name="CustomTabs.Visible" enum="VisibleTab" expires_after="never">
 <!-- expires-never: Used to classify UMA reports by the dashboards. -->
 

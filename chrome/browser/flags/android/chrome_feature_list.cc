@@ -252,6 +252,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kCCTOpenInBrowserButtonIfEnabledByEmbedder,
     &kCCTPredictiveBackGesture,
     &kCCTPrewarmTab,
+    &kCCTRealtimeEngagementEventsInBackground,
     &kCCTReportParallelRequestStatus,
     &kCCTReportPrerenderEvents,
     &kCCTResizableForThirdParties,
@@ -752,6 +753,10 @@ BASE_FEATURE(kGridTabSwitcherUpdate,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kCCTPrewarmTab, "CCTPrewarmTab", base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kCCTRealtimeEngagementEventsInBackground,
+             "CCTRealtimeEngagementEventsInBackground",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kCCTReportParallelRequestStatus,
              "CCTReportParallelRequestStatus",

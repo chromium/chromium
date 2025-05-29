@@ -301,6 +301,8 @@ public abstract class ChromeFeatureList {
     public static final String CCT_PREDICTIVE_BACK_GESTURE = "CCTPredictiveBackGesture";
     // NOTE: Do not query this feature directly, use WarmupManager#isCCTPrewarmTabFeatureEnabled.
     public static final String CCT_PREWARM_TAB = "CCTPrewarmTab";
+    public static final String CCT_REALTIME_ENGAGEMENT_EVENTS_IN_BACKGROUND =
+            "CCTRealtimeEngagementEventsInBackground";
     public static final String CCT_REPORT_PARALLEL_REQUEST_STATUS =
             "CCTReportParallelRequestStatus";
     public static final String CCT_REPORT_PRERENDER_EVENTS = "CCTReportPrerenderEvents";
@@ -720,6 +722,11 @@ public abstract class ChromeFeatureList {
                     CCT_PREDICTIVE_BACK_GESTURE,
                     /* defaultValue= */ false,
                     /* defaultValueInTests= */ true);
+    public static final CachedFlag sCctRealtimeEngagementEventsInBackground =
+            newCachedFlag(
+                    CCT_REALTIME_ENGAGEMENT_EVENTS_IN_BACKGROUND,
+                    /* defaultValue= */ false,
+                    /* defaultValueInTests= */ true);
     public static final CachedFlag sCctOpenInBrowserButtonIfAllowedByEmbedder =
             newCachedFlag(CCT_OPEN_IN_BROWSER_BUTTON_IF_ALLOWED_BY_EMBEDDER, false);
     public static final CachedFlag sCctOpenInBrowserButtonIfEnabledByEmbedder =
@@ -952,6 +959,7 @@ public abstract class ChromeFeatureList {
                     sCctNavigationalPrefetch,
                     sCctNestedSecurityIcon,
                     sCctPredictiveBackGesture,
+                    sCctRealtimeEngagementEventsInBackground,
                     sCctOpenInBrowserButtonIfAllowedByEmbedder,
                     sCctOpenInBrowserButtonIfEnabledByEmbedder,
                     sCctResizableForThirdParties,
