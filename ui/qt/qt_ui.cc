@@ -230,7 +230,12 @@ bool QtUi::Initialize() {
   // SESSION_MANAGER to prevent creating an ICE connection.  See [1] and [2].
   // [1] https://crbug.com/1450759
   // [2] https://bugreports.qt.io/browse/QTBUG-38599
-  base::ScopedEnvironmentVariableOverride env_override("SESSION_MANAGER");
+  base::ScopedEnvironmentVariableOverride session_manager("SESSION_MANAGER");
+
+  // Disable QT input device handling since it's not needed and may result in
+  // crashes on certain device changes. See [3].
+  // [3] https://crbug.com/396193145
+  base::ScopedEnvironmentVariableOverride qt_xcb_no_xi2("QT_XCB_NO_XI2", "1");
 
   auto cmd_line = *base::CommandLine::ForCurrentProcess();
   if (auto* delegate = ui::LinuxUiDelegate::GetInstance()) {
