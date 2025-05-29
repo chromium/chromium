@@ -634,6 +634,24 @@ Status DeleteBlobsInObjectStore(BackingStore::Transaction* transaction,
                             true);
 }
 
+// Null cursor => 0 count.
+StatusOr<uint32_t> CountCursorEntries(
+    std::unique_ptr<indexed_db::BackingStore::Cursor> cursor) {
+  if (!cursor) {
+    return 0;
+  }
+
+  uint32_t count = 1;
+  Status s;
+  while (cursor->Continue(&s)) {
+    if (!s.ok()) {
+      return base::unexpected(s);
+    }
+    ++count;
+  }
+  return count;
+}
+
 bool ObjectStoreCursorOptions(
     TransactionalLevelDBTransaction* transaction,
     int64_t database_id,
@@ -3853,6 +3871,23 @@ bool IndexCursorImpl::LoadCurrentRow(Status* s) {
   *s = transaction_->GetExternalObjectsForRecord(primary_leveldb_key_,
                                                  &current_value_);
   return s->ok();
+}
+
+StatusOr<uint32_t> BackingStore::Transaction::GetObjectStoreKeyCount(
+    int64_t object_store_id,
+    blink::IndexedDBKeyRange key_range) {
+  return OpenObjectStoreKeyCursor(object_store_id, key_range,
+                                  blink::mojom::IDBCursorDirection::Next)
+      .and_then(CountCursorEntries);
+}
+
+StatusOr<uint32_t> BackingStore::Transaction::GetIndexKeyCount(
+    int64_t object_store_id,
+    int64_t index_id,
+    blink::IndexedDBKeyRange key_range) {
+  return OpenIndexKeyCursor(object_store_id, index_id, key_range,
+                            blink::mojom::IDBCursorDirection::Next)
+      .and_then(CountCursorEntries);
 }
 
 StatusOr<std::unique_ptr<indexed_db::BackingStore::Cursor>>

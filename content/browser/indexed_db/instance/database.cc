@@ -864,33 +864,16 @@ Status Database::CountOperation(
     return Status::InvalidArgument("Invalid object_store_id and/or index_id.");
   }
 
-  StatusOr<std::unique_ptr<BackingStore::Cursor>> backing_store_cursor;
+  uint32_t count = -1;
   if (index_id == IndexedDBIndexMetadata::kInvalidId) {
-    backing_store_cursor =
-        transaction->BackingStoreTransaction()->OpenObjectStoreKeyCursor(
-            object_store_id, key_range, blink::mojom::IDBCursorDirection::Next);
+    ASSIGN_OR_RETURN(
+        count, transaction->BackingStoreTransaction()->GetObjectStoreKeyCount(
+                   object_store_id, std::move(key_range)));
+
   } else {
-    backing_store_cursor =
-        transaction->BackingStoreTransaction()->OpenIndexKeyCursor(
-            object_store_id, index_id, key_range,
-            blink::mojom::IDBCursorDirection::Next);
-  }
-  if (!backing_store_cursor.has_value()) {
-    DLOG(ERROR) << "Unable perform count operation: "
-                << backing_store_cursor.error().ToString();
-    return backing_store_cursor.error();
-  }
-
-  if (!*backing_store_cursor) {
-    std::move(callback).Run(/*success=*/true, /*count=*/0);
-    return Status::OK();
-  }
-
-  uint32_t count = 1;
-  Status s;
-  while ((*backing_store_cursor)->Continue(&s)) {
-    IDB_RETURN_IF_ERROR(s);
-    ++count;
+    ASSIGN_OR_RETURN(count,
+                     transaction->BackingStoreTransaction()->GetIndexKeyCount(
+                         object_store_id, index_id, std::move(key_range)));
   }
   std::move(callback).Run(/*success=*/true, count);
   return Status::OK();

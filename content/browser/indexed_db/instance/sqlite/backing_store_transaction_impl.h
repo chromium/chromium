@@ -90,6 +90,13 @@ class BackingStoreTransactionImpl : public BackingStore::Transaction {
       const blink::IndexedDBKey& key,
       std::unique_ptr<blink::IndexedDBKey>* found_primary_key,
       bool* exists) override;
+  StatusOr<uint32_t> GetObjectStoreKeyCount(
+      int64_t object_store_id,
+      blink::IndexedDBKeyRange key_range) override;
+  StatusOr<uint32_t> GetIndexKeyCount(
+      int64_t object_store_id,
+      int64_t index_id,
+      blink::IndexedDBKeyRange key_range) override;
   StatusOr<std::unique_ptr<BackingStore::Cursor>> OpenObjectStoreKeyCursor(
       int64_t object_store_id,
       const blink::IndexedDBKeyRange& key_range,

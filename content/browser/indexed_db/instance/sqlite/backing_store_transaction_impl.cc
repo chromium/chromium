@@ -174,6 +174,21 @@ Status BackingStoreTransactionImpl::KeyExistsInIndex(
   return Status::InvalidArgument("Not implemented");
 }
 
+StatusOr<uint32_t> BackingStoreTransactionImpl::GetObjectStoreKeyCount(
+    int64_t object_store_id,
+    blink::IndexedDBKeyRange key_range) {
+  NOTIMPLEMENTED();
+  return base::unexpected(Status::InvalidArgument("Not implemented"));
+}
+
+StatusOr<uint32_t> BackingStoreTransactionImpl::GetIndexKeyCount(
+    int64_t object_store_id,
+    int64_t index_id,
+    blink::IndexedDBKeyRange key_range) {
+  NOTIMPLEMENTED();
+  return base::unexpected(Status::InvalidArgument("Not implemented"));
+}
+
 StatusOr<std::unique_ptr<BackingStore::Cursor>>
 BackingStoreTransactionImpl::OpenObjectStoreKeyCursor(
     int64_t object_store_id,

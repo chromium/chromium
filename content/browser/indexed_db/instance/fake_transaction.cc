@@ -160,6 +160,21 @@ FakeTransaction::OpenObjectStoreKeyCursor(
                                                         key_range, direction);
 }
 
+StatusOr<uint32_t> FakeTransaction::GetObjectStoreKeyCount(
+    int64_t object_store_id,
+    blink::IndexedDBKeyRange key_range) {
+  return wrapped_transaction_->GetObjectStoreKeyCount(object_store_id,
+                                                      std::move(key_range));
+}
+
+StatusOr<uint32_t> FakeTransaction::GetIndexKeyCount(
+    int64_t object_store_id,
+    int64_t index_id,
+    blink::IndexedDBKeyRange key_range) {
+  return wrapped_transaction_->GetIndexKeyCount(object_store_id, index_id,
+                                                std::move(key_range));
+}
+
 StatusOr<std::unique_ptr<indexed_db::BackingStore::Cursor>>
 FakeTransaction::OpenObjectStoreCursor(
     int64_t object_store_id,
