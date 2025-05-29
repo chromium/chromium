@@ -3744,7 +3744,7 @@ bool WebGLRenderingContextWebGPUBase::ValidateFitsNonNegInt32(
 bool WebGLRenderingContextWebGPUBase::ValidateUniformLocation(
     const char* function_name,
     const WebGLUniformLocation* location) {
-  if (location != nullptr) {
+  if (location == nullptr) {
     return false;
   }
   if (location->Program() != program_binding_) {
