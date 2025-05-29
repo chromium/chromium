@@ -6,6 +6,7 @@
 #define NET_FILTER_MOCK_SOURCE_STREAM_H_
 
 #include <string>
+#include <string_view>
 
 #include "base/containers/queue.h"
 #include "base/memory/scoped_refptr.h"
@@ -45,6 +46,8 @@ class MockSourceStream : public SourceStream {
   // |Read| will return the supplied data synchronously; otherwise, consumer
   // needs to call |CompleteNextRead|
   void AddReadResult(const char* data, int len, Error error, Mode mode);
+
+  void AddReadResult(std::string_view data, Error error, Mode mode);
 
   // Completes a pending Read() call. Crash in debug build if there is no
   // pending read.

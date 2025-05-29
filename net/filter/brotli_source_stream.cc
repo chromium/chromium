@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "net/filter/brotli_source_stream.h"
 
 #include <utility>
@@ -37,7 +32,7 @@ class BrotliSourceStream : public FilterSourceStream {
         dictionary_(std::move(dictionary)),
         dictionary_size_(dictionary_size) {
     brotli_state_ =
-        BrotliDecoderCreateInstance(AllocateMemory, FreeMemory, this);
+        BrotliDecoderCreateInstance(AllocateMemory, FreeMemory, nullptr);
     CHECK(brotli_state_);
     if (dictionary_) {
       BROTLI_BOOL result = BrotliDecoderAttachDictionary(
@@ -54,8 +49,6 @@ class BrotliSourceStream : public FilterSourceStream {
     BrotliDecoderErrorCode error_code =
         BrotliDecoderGetErrorCode(brotli_state_);
     BrotliDecoderDestroyInstance(brotli_state_.ExtractAsDangling());
-    DCHECK_EQ(0u, used_memory_);
-
 
     UMA_HISTOGRAM_ENUMERATION(
         "BrotliFilter.Status", static_cast<int>(decoding_status_),
@@ -73,14 +66,6 @@ class BrotliSourceStream : public FilterSourceStream {
                                 -static_cast<int>(error_code),
                                 1 - BROTLI_LAST_ERROR_CODE);
     }
-
-    // All code here is for gathering stats, and can be removed when
-    // BrotliSourceStream is considered stable.
-    const int kBuckets = 48;
-    const int64_t kMaxKb = 1 << (kBuckets / 3);  // 64MiB in KiB
-    UMA_HISTOGRAM_CUSTOM_COUNTS("BrotliFilter.UsedMemoryKB",
-                                used_memory_maximum_ / 1024, 1, kMaxKb,
-                                kBuckets);
   }
 
  private:
@@ -151,34 +136,11 @@ class BrotliSourceStream : public FilterSourceStream {
     }
   }
 
-  static void* AllocateMemory(void* opaque, size_t size) {
-    BrotliSourceStream* filter = reinterpret_cast<BrotliSourceStream*>(opaque);
-    return filter->AllocateMemoryInternal(size);
+  static void* AllocateMemory(void* /* opaque */, size_t size) {
+    return malloc(size);
   }
 
-  static void FreeMemory(void* opaque, void* address) {
-    BrotliSourceStream* filter = reinterpret_cast<BrotliSourceStream*>(opaque);
-    filter->FreeMemoryInternal(address);
-  }
-
-  void* AllocateMemoryInternal(size_t size) {
-    size_t* array = reinterpret_cast<size_t*>(malloc(size + sizeof(size_t)));
-    if (!array)
-      return nullptr;
-    used_memory_ += size;
-    if (used_memory_maximum_ < used_memory_)
-      used_memory_maximum_ = used_memory_;
-    array[0] = size;
-    return &array[1];
-  }
-
-  void FreeMemoryInternal(void* address) {
-    if (!address)
-      return;
-    size_t* array = reinterpret_cast<size_t*>(address);
-    used_memory_ -= array[-1];
-    free(&array[-1]);
-  }
+  static void FreeMemory(void* /* opaque */, void* address) { free(address); }
 
   const scoped_refptr<IOBuffer> dictionary_;
   const size_t dictionary_size_;
@@ -187,8 +149,6 @@ class BrotliSourceStream : public FilterSourceStream {
 
   DecodingStatus decoding_status_ = DecodingStatus::DECODING_IN_PROGRESS;
 
-  size_t used_memory_ = 0;
-  size_t used_memory_maximum_ = 0;
   size_t consumed_bytes_ = 0;
   size_t produced_bytes_ = 0;
 };

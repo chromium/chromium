@@ -3166,18 +3166,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="BrotliFilter.UsedMemoryKB" units="KiB"
-    expires_after="2024-09-01">
-  <owner>eustas@chromium.org</owner>
-  <summary>
-    Maximum amount of memory allocated to decode a Brotli-compressed response
-    stream from the network. Recorded during the process of allocating memory to
-    decode a Brotli-compressed response stream.
-
-    Warning: this histogram was expired from M77 to M110; data may be missing.
-  </summary>
-</histogram>
-
 <histogram name="CertificateType2{CertificateTypeBRValidity2}" units="units"
     expires_after="never">
 <!-- expires-never: histograms are used to assess policy -->
