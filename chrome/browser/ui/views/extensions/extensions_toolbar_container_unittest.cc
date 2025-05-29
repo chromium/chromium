@@ -500,6 +500,64 @@ TEST_F(ExtensionsToolbarContainerUnitTest,
       testing::ElementsAre(kExtensionAName, kExtensionBName, kExtensionCName));
 }
 
+// Tests reordering pinned actions with MovePinnedActionsBy().
+TEST_F(ExtensionsToolbarContainerUnitTest, TestMovePinnedActionBy) {
+  constexpr char kExtensionAName[] = "A Extension";
+  auto extensionA = InstallExtension(kExtensionAName);
+  constexpr char kExtensionBName[] = "B Extension";
+  auto extensionB = InstallExtension(kExtensionBName);
+  constexpr char kExtensionCName[] = "C Extension";
+  auto extensionC = InstallExtension(kExtensionCName);
+
+  auto* toolbar_model = ToolbarActionsModel::Get(profile());
+  ASSERT_TRUE(toolbar_model);
+
+  toolbar_model->SetActionVisibility(extensionA->id(), true);
+  toolbar_model->SetActionVisibility(extensionB->id(), true);
+  toolbar_model->SetActionVisibility(extensionC->id(), true);
+  WaitForAnimation();
+
+  EXPECT_THAT(
+      GetPinnedExtensionNames(),
+      testing::ElementsAre(kExtensionAName, kExtensionBName, kExtensionCName));
+
+  // Simulate moving "A" by -1. Nothing should change.
+  extensions_container()->MovePinnedActionBy(extensionA->id(), -1);
+  EXPECT_THAT(
+      GetPinnedExtensionNames(),
+      testing::ElementsAre(kExtensionAName, kExtensionBName, kExtensionCName));
+
+  // Simulate moving "C" by 1. Nothing should change.
+  extensions_container()->MovePinnedActionBy(extensionC->id(), 1);
+  EXPECT_THAT(
+      GetPinnedExtensionNames(),
+      testing::ElementsAre(kExtensionAName, kExtensionBName, kExtensionCName));
+
+  // Now, move A by 1. The order should be B, A, C.
+  extensions_container()->MovePinnedActionBy(extensionA->id(), 1);
+  EXPECT_THAT(
+      GetPinnedExtensionNames(),
+      testing::ElementsAre(kExtensionBName, kExtensionAName, kExtensionCName));
+
+  // Move A by 1 more. The order should be B, C, A.
+  extensions_container()->MovePinnedActionBy(extensionA->id(), 1);
+  EXPECT_THAT(
+      GetPinnedExtensionNames(),
+      testing::ElementsAre(kExtensionBName, kExtensionCName, kExtensionAName));
+
+  // Move A back by one. Now, B, A, C.
+  extensions_container()->MovePinnedActionBy(extensionA->id(), -1);
+  EXPECT_THAT(
+      GetPinnedExtensionNames(),
+      testing::ElementsAre(kExtensionBName, kExtensionAName, kExtensionCName));
+
+  // And back once more. Back to A, B, C.
+  extensions_container()->MovePinnedActionBy(extensionA->id(), -1);
+  EXPECT_THAT(
+      GetPinnedExtensionNames(),
+      testing::ElementsAre(kExtensionAName, kExtensionBName, kExtensionCName));
+}
+
 // ToolbarActionsModel::MovePinnedAction crashes if pinned extensions changes
 // while the drop callback isn't invalidated. This test makes sure this doesn't
 // happen anymore. https://crbug.com/1268239.

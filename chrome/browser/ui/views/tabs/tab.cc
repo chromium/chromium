@@ -39,6 +39,7 @@
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/view_ids.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
+#include "chrome/browser/ui/views/event_utils.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/tabs/alert_indicator_button.h"
 #include "chrome/browser/ui/views/tabs/browser_tab_strip_controller.h"
@@ -469,36 +470,33 @@ bool Tab::OnKeyPressed(const ui::KeyEvent& event) {
     return true;
   }
 
-  constexpr int kModifiedFlag =
-#if BUILDFLAG(IS_MAC)
-      ui::EF_COMMAND_DOWN;
-#else
-      ui::EF_CONTROL_DOWN;
-#endif
+  std::optional<event_utils::ReorderDirection> reorder_direction =
+      event_utils::GetReorderCommandForKeyboardEvent(event);
+  if (!reorder_direction) {
+    return false;
+  }
 
-  if (event.type() == ui::EventType::kKeyPressed &&
-      (event.flags() & kModifiedFlag)) {
-    const bool is_right = event.key_code() == ui::VKEY_RIGHT;
-    const bool is_left = event.key_code() == ui::VKEY_LEFT;
-    if (is_right || is_left) {
-      const bool is_rtl = base::i18n::IsRTL();
-      const bool is_next = (is_right && !is_rtl) || (is_left && is_rtl);
-      if (event.flags() & ui::EF_SHIFT_DOWN) {
-        if (is_next) {
-          controller()->MoveTabLast(this);
-        } else {
-          controller()->MoveTabFirst(this);
-        }
-      } else if (is_next) {
-        controller()->ShiftTabNext(this);
+  bool move_to_end = event.flags() & ui::EF_SHIFT_DOWN;
+  switch (*reorder_direction) {
+    case event_utils::ReorderDirection::kPrevious: {
+      if (move_to_end) {
+        controller()->MoveTabFirst(this);
       } else {
         controller()->ShiftTabPrevious(this);
       }
-      return true;
+      break;
+    }
+    case event_utils::ReorderDirection::kNext: {
+      if (move_to_end) {
+        controller()->MoveTabLast(this);
+      } else {
+        controller()->ShiftTabNext(this);
+      }
+      break;
     }
   }
 
-  return false;
+  return true;
 }
 
 bool Tab::OnKeyReleased(const ui::KeyEvent& event) {

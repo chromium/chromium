@@ -217,6 +217,7 @@ class ExtensionsToolbarContainer : public ToolbarIconContainerView,
   content::WebContents* GetCurrentWebContents() override;
   views::LabelButton* GetOverflowReferenceView() const override;
   gfx::Size GetToolbarActionSize() override;
+  void MovePinnedActionBy(const std::string& action_id, int move_by) override;
   void WriteDragDataForView(View* sender,
                             const gfx::Point& press_pt,
                             ui::OSExchangeData* data) override;

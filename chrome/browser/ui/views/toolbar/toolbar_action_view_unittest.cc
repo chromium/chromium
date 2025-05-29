@@ -17,10 +17,13 @@
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "content/public/test/test_web_contents_factory.h"
+#include "testing/gmock/include/gmock/gmock.h"
+#include "testing/gtest/include/gtest/gtest.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/dragdrop/drag_drop_types.h"
 #include "ui/base/mojom/menu_source_type.mojom-forward.h"
+#include "ui/events/base_event_utils.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/button/menu_button.h"
@@ -46,6 +49,10 @@ class TestToolbarActionViewDelegate : public ToolbarActionView::Delegate {
     return overflow_reference_view_.get();
   }
   gfx::Size GetToolbarActionSize() override { return gfx::Size(32, 32); }
+  MOCK_METHOD(void,
+              MovePinnedActionBy,
+              (const std::string& action_id, int move_by),
+              (override));
   void WriteDragDataForView(views::View* sender,
                             const gfx::Point& press_pt,
                             ui::OSExchangeData* data) override {}
@@ -107,7 +114,8 @@ class ToolbarActionViewUnitTest : public ChromeViewsTestBase {
     ChromeViewsTestBase::SetUp();
     controller_ =
         std::make_unique<TestToolbarActionViewController>("fake controller");
-    action_view_delegate_ = std::make_unique<TestToolbarActionViewDelegate>();
+    action_view_delegate_ =
+        std::make_unique<testing::NiceMock<TestToolbarActionViewDelegate>>();
     widget_ =
         CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
   }
@@ -117,6 +125,12 @@ class ToolbarActionViewUnitTest : public ChromeViewsTestBase {
     ChromeViewsTestBase::TearDown();
   }
 
+  void Reset() {
+    widget_.reset();
+    action_view_delegate_.reset();
+    controller_.reset();
+  }
+
   views::Widget* widget() { return widget_.get(); }
 
   TestToolbarActionViewController* controller() { return controller_.get(); }
@@ -124,10 +138,15 @@ class ToolbarActionViewUnitTest : public ChromeViewsTestBase {
   TestToolbarActionViewDelegate* action_view_delegate() {
     return action_view_delegate_.get();
   }
+  testing::NiceMock<TestToolbarActionViewDelegate>&
+  mock_action_view_delegate() {
+    return *action_view_delegate_;
+  }
 
  private:
   std::unique_ptr<TestToolbarActionViewController> controller_;
-  std::unique_ptr<TestToolbarActionViewDelegate> action_view_delegate_;
+  std::unique_ptr<testing::NiceMock<TestToolbarActionViewDelegate>>
+      action_view_delegate_;
 
   // The widget managed by this test.
   std::unique_ptr<views::Widget> widget_;
@@ -277,4 +296,73 @@ TEST_F(ToolbarActionViewUnitTest, MAYBE_BasicToolbarActionViewTest) {
   view_controller->HidePopup();
   EXPECT_EQ(views::Button::STATE_NORMAL, view->GetState());
   EXPECT_EQ(views::Button::STATE_NORMAL, overflow_button->GetState());
+}
+
+// Verifies that pressing [Ctrl|Cmd] + Left / Right triggers a call to move the
+// toolbar action.
+TEST_F(ToolbarActionViewUnitTest, TestKeyboardReordering) {
+  TestToolbarActionViewController* view_controller = controller();
+
+  auto owned_view = std::make_unique<ToolbarActionView>(view_controller,
+                                                        action_view_delegate());
+  auto* view = owned_view.get();
+  view->SetBoundsRect(gfx::Rect(0, 0, 200, 20));
+  widget()->SetContentsView(std::move(owned_view));
+  widget()->Show();
+
+  auto send_key_press = [view](ui::KeyboardCode code, int flags) {
+    view->OnKeyPressed(ui::KeyEvent(ui::EventType::kKeyPressed, code, flags,
+                                    ui::EventTimeForNow()));
+    view->OnKeyReleased(ui::KeyEvent(ui::EventType::kKeyPressed, code, flags,
+                                     ui::EventTimeForNow()));
+  };
+
+  // Start by pressing just left / right. No modifier is present, so this should
+  // do nothing.
+  EXPECT_CALL(mock_action_view_delegate(), MovePinnedActionBy).Times(0);
+  send_key_press(ui::VKEY_RIGHT, ui::EF_NONE);
+  testing::Mock::VerifyAndClearExpectations(&mock_action_view_delegate());
+
+  EXPECT_CALL(mock_action_view_delegate(), MovePinnedActionBy).Times(0);
+  send_key_press(ui::VKEY_LEFT, ui::EF_NONE);
+  testing::Mock::VerifyAndClearExpectations(&mock_action_view_delegate());
+
+  // Next, do the same with the wrong modifier key. Again, this should do
+  // nothing.
+  constexpr int kWrongModifierFlag =
+#if BUILDFLAG(IS_MAC)
+      ui::EF_CONTROL_DOWN;
+#else
+      ui::EF_COMMAND_DOWN;
+#endif
+
+  EXPECT_CALL(mock_action_view_delegate(), MovePinnedActionBy).Times(0);
+  send_key_press(ui::VKEY_RIGHT, kWrongModifierFlag);
+  testing::Mock::VerifyAndClearExpectations(&mock_action_view_delegate());
+
+  EXPECT_CALL(mock_action_view_delegate(), MovePinnedActionBy).Times(0);
+  send_key_press(ui::VKEY_LEFT, kWrongModifierFlag);
+  testing::Mock::VerifyAndClearExpectations(&mock_action_view_delegate());
+
+  // Finally, use the correct modifier flag, and verify the delegate is told
+  // to move the action by the correct index.
+  constexpr int kCorrectModifierFlag =
+#if BUILDFLAG(IS_MAC)
+      ui::EF_COMMAND_DOWN;
+#else
+      ui::EF_CONTROL_DOWN;
+#endif
+  EXPECT_CALL(mock_action_view_delegate(),
+              MovePinnedActionBy(view_controller->GetId(), 1))
+      .Times(1);
+  send_key_press(ui::VKEY_RIGHT, kCorrectModifierFlag);
+  testing::Mock::VerifyAndClearExpectations(&mock_action_view_delegate());
+
+  EXPECT_CALL(mock_action_view_delegate(),
+              MovePinnedActionBy(view_controller->GetId(), -1))
+      .Times(1);
+  send_key_press(ui::VKEY_LEFT, kCorrectModifierFlag);
+  testing::Mock::VerifyAndClearExpectations(&mock_action_view_delegate());
+
+  Reset();
 }
