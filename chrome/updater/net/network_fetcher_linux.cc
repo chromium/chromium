@@ -212,7 +212,7 @@ void LibcurlNetworkFetcherImpl::PostRequest(
           GetHeaderValue(response_headers,
                          update_client::NetworkFetcher::kHeaderXCupServerProof),
           GetHeaderValue(response_headers,
-                         update_client::NetworkFetcher::kHeaderCookie),
+                         update_client::NetworkFetcher::kHeaderSetCookie),
           x_retry_after));
 
   curl_slist_free_all(headers);

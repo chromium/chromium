@@ -130,7 +130,7 @@ void RequestSender::SendInternalComplete(
     const std::string& response_body,
     const std::string& response_etag,
     const std::string& response_cup_server_proof,
-    const std::string& response_cookie,
+    const std::string& response_set_cookie,
     int retry_after_sec) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   VLOG(2) << "Omaha response received: " << response_body;
@@ -181,7 +181,7 @@ void RequestSender::OnNetworkFetcherComplete(
     int net_error,
     const std::string& header_etag,
     const std::string& xheader_cup_server_proof,
-    const std::string& header_cookie,
+    const std::string& header_set_cookie,
     int64_t xheader_retry_after_sec) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -205,7 +205,7 @@ void RequestSender::OnNetworkFetcherComplete(
       FROM_HERE,
       base::BindOnce(&RequestSender::SendInternalComplete, this, error,
                      std::move(response_body).value_or(std::string()),
-                     header_etag, xheader_cup_server_proof, header_cookie,
+                     header_etag, xheader_cup_server_proof, header_set_cookie,
                      retry_after_sec));
 }
 

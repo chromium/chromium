@@ -150,7 +150,7 @@ void NetworkFetcherImpl::PostRequest(
                      GetStringHeader(simple_url_loader.get(), kHeaderEtag),
                      GetStringHeader(simple_url_loader.get(),
                                      kHeaderXCupServerProof),
-                     GetStringHeader(simple_url_loader.get(), kHeaderCookie),
+                     /*header_set_cookie=*/"",
                      GetInt64Header(simple_url_loader.get(),
                                     kHeaderXRetryAfter));
           },
