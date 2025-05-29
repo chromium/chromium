@@ -18,7 +18,8 @@ namespace tabs = api::tabs;
 
 namespace {
 
-constexpr char kNotImplemented[] = "Not implemented";
+constexpr char kTabsNotImplemented[] = "chrome.tabs not implemented";
+constexpr char kWindowsNotImplemented[] = "chrome.windows not implemented";
 
 }  // namespace
 
@@ -28,49 +29,49 @@ ExtensionFunction::ResponseAction WindowsGetFunction::Run() {
   std::optional<windows::Get::Params> params =
       windows::Get::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
-  return RespondNow(Error(kNotImplemented));
+  return RespondNow(Error(kWindowsNotImplemented));
 }
 
 ExtensionFunction::ResponseAction WindowsGetCurrentFunction::Run() {
   std::optional<windows::GetCurrent::Params> params =
       windows::GetCurrent::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
-  return RespondNow(Error(kNotImplemented));
+  return RespondNow(Error(kWindowsNotImplemented));
 }
 
 ExtensionFunction::ResponseAction WindowsGetLastFocusedFunction::Run() {
   std::optional<windows::GetLastFocused::Params> params =
       windows::GetLastFocused::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
-  return RespondNow(Error(kNotImplemented));
+  return RespondNow(Error(kWindowsNotImplemented));
 }
 
 ExtensionFunction::ResponseAction WindowsGetAllFunction::Run() {
   std::optional<windows::GetAll::Params> params =
       windows::GetAll::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
-  return RespondNow(Error(kNotImplemented));
+  return RespondNow(Error(kWindowsNotImplemented));
 }
 
 ExtensionFunction::ResponseAction WindowsCreateFunction::Run() {
   std::optional<windows::Create::Params> params =
       windows::Create::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
-  return RespondNow(Error(kNotImplemented));
+  return RespondNow(Error(kWindowsNotImplemented));
 }
 
 ExtensionFunction::ResponseAction WindowsUpdateFunction::Run() {
   std::optional<windows::Update::Params> params =
       windows::Update::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
-  return RespondNow(Error(kNotImplemented));
+  return RespondNow(Error(kWindowsNotImplemented));
 }
 
 ExtensionFunction::ResponseAction WindowsRemoveFunction::Run() {
   std::optional<windows::Remove::Params> params =
       windows::Remove::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
-  return RespondNow(Error(kNotImplemented));
+  return RespondNow(Error(kWindowsNotImplemented));
 }
 
 // Tabs ------------------------------------------------------------------------
@@ -79,14 +80,14 @@ ExtensionFunction::ResponseAction TabsGetSelectedFunction::Run() {
   std::optional<tabs::GetSelected::Params> params =
       tabs::GetSelected::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
-  return RespondNow(Error(kNotImplemented));
+  return RespondNow(Error(kTabsNotImplemented));
 }
 
 ExtensionFunction::ResponseAction TabsGetAllInWindowFunction::Run() {
   std::optional<tabs::GetAllInWindow::Params> params =
       tabs::GetAllInWindow::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
-  return RespondNow(Error(kNotImplemented));
+  return RespondNow(Error(kTabsNotImplemented));
 }
 
 ExtensionFunction::ResponseAction TabsQueryFunction::Run() {
@@ -116,31 +117,31 @@ ExtensionFunction::ResponseAction TabsCreateFunction::Run() {
   std::optional<tabs::Create::Params> params =
       tabs::Create::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
-  return RespondNow(Error(kNotImplemented));
+  return RespondNow(Error(kTabsNotImplemented));
 }
 
 ExtensionFunction::ResponseAction TabsDuplicateFunction::Run() {
   std::optional<tabs::Duplicate::Params> params =
       tabs::Duplicate::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
-  return RespondNow(Error(kNotImplemented));
+  return RespondNow(Error(kTabsNotImplemented));
 }
 
 ExtensionFunction::ResponseAction TabsGetFunction::Run() {
   std::optional<tabs::Get::Params> params = tabs::Get::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
-  return RespondNow(Error(kNotImplemented));
+  return RespondNow(Error(kTabsNotImplemented));
 }
 
 ExtensionFunction::ResponseAction TabsGetCurrentFunction::Run() {
-  return RespondNow(Error(kNotImplemented));
+  return RespondNow(Error(kTabsNotImplemented));
 }
 
 ExtensionFunction::ResponseAction TabsHighlightFunction::Run() {
   std::optional<tabs::Highlight::Params> params =
       tabs::Highlight::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
-  return RespondNow(Error(kNotImplemented));
+  return RespondNow(Error(kTabsNotImplemented));
 }
 
 TabsUpdateFunction::TabsUpdateFunction() = default;
@@ -149,20 +150,20 @@ ExtensionFunction::ResponseAction TabsUpdateFunction::Run() {
   std::optional<tabs::Update::Params> params =
       tabs::Update::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
-  return RespondNow(Error(kNotImplemented));
+  return RespondNow(Error(kTabsNotImplemented));
 }
 
 ExtensionFunction::ResponseAction TabsMoveFunction::Run() {
   std::optional<tabs::Move::Params> params = tabs::Move::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
-  return RespondNow(Error(kNotImplemented));
+  return RespondNow(Error(kTabsNotImplemented));
 }
 
 ExtensionFunction::ResponseAction TabsReloadFunction::Run() {
   std::optional<tabs::Reload::Params> params =
       tabs::Reload::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
-  return RespondNow(Error(kNotImplemented));
+  return RespondNow(Error(kTabsNotImplemented));
 }
 
 TabsRemoveFunction::TabsRemoveFunction() = default;
@@ -171,35 +172,35 @@ ExtensionFunction::ResponseAction TabsRemoveFunction::Run() {
   std::optional<tabs::Remove::Params> params =
       tabs::Remove::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
-  return RespondNow(Error(kNotImplemented));
+  return RespondNow(Error(kTabsNotImplemented));
 }
 
 ExtensionFunction::ResponseAction TabsGroupFunction::Run() {
   std::optional<tabs::Group::Params> params =
       tabs::Group::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
-  return RespondNow(Error(kNotImplemented));
+  return RespondNow(Error(kTabsNotImplemented));
 }
 
 ExtensionFunction::ResponseAction TabsUngroupFunction::Run() {
   std::optional<tabs::Ungroup::Params> params =
       tabs::Ungroup::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
-  return RespondNow(Error(kNotImplemented));
+  return RespondNow(Error(kTabsNotImplemented));
 }
 
 TabsCaptureVisibleTabFunction::TabsCaptureVisibleTabFunction() = default;
 
 ExtensionFunction::ResponseAction TabsCaptureVisibleTabFunction::Run() {
   EXTENSION_FUNCTION_VALIDATE(has_args());
-  return RespondNow(Error(kNotImplemented));
+  return RespondNow(Error(kTabsNotImplemented));
 }
 
 ExtensionFunction::ResponseAction TabsDetectLanguageFunction::Run() {
   std::optional<tabs::DetectLanguage::Params> params =
       tabs::DetectLanguage::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
-  return RespondNow(Error(kNotImplemented));
+  return RespondNow(Error(kTabsNotImplemented));
 }
 
 ExecuteCodeInTabFunction::ExecuteCodeInTabFunction() = default;
@@ -256,28 +257,28 @@ ExtensionFunction::ResponseAction TabsSetZoomFunction::Run() {
   std::optional<tabs::SetZoom::Params> params =
       tabs::SetZoom::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
-  return RespondNow(Error(kNotImplemented));
+  return RespondNow(Error(kTabsNotImplemented));
 }
 
 ExtensionFunction::ResponseAction TabsGetZoomFunction::Run() {
   std::optional<tabs::GetZoom::Params> params =
       tabs::GetZoom::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
-  return RespondNow(Error(kNotImplemented));
+  return RespondNow(Error(kTabsNotImplemented));
 }
 
 ExtensionFunction::ResponseAction TabsSetZoomSettingsFunction::Run() {
   std::optional<tabs::SetZoomSettings::Params> params =
       tabs::SetZoomSettings::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
-  return RespondNow(Error(kNotImplemented));
+  return RespondNow(Error(kTabsNotImplemented));
 }
 
 ExtensionFunction::ResponseAction TabsGetZoomSettingsFunction::Run() {
   std::optional<tabs::GetZoomSettings::Params> params =
       tabs::GetZoomSettings::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
-  return RespondNow(Error(kNotImplemented));
+  return RespondNow(Error(kTabsNotImplemented));
 }
 
 TabsDiscardFunction::TabsDiscardFunction() = default;
@@ -286,21 +287,21 @@ ExtensionFunction::ResponseAction TabsDiscardFunction::Run() {
   std::optional<tabs::Discard::Params> params =
       tabs::Discard::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
-  return RespondNow(Error(kNotImplemented));
+  return RespondNow(Error(kTabsNotImplemented));
 }
 
 ExtensionFunction::ResponseAction TabsGoForwardFunction::Run() {
   std::optional<tabs::GoForward::Params> params =
       tabs::GoForward::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
-  return RespondNow(Error(kNotImplemented));
+  return RespondNow(Error(kTabsNotImplemented));
 }
 
 ExtensionFunction::ResponseAction TabsGoBackFunction::Run() {
   std::optional<tabs::GoBack::Params> params =
       tabs::GoBack::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
-  return RespondNow(Error(kNotImplemented));
+  return RespondNow(Error(kTabsNotImplemented));
 }
 
 }  // namespace extensions
