@@ -603,10 +603,6 @@ class PLATFORM_EXPORT ResourceFetcher
       bool handled_by_serviceworker,
       const blink::ServiceWorkerRouterInfo* router_info);
 
-  void RecordResourceHistogram(std::string_view prefix,
-                               ResourceType type,
-                               RevalidationPolicyForMetrics policy) const;
-
   void ScheduleLoadingPotentiallyUnusedPreload(Resource*);
   void StartLoadAndFinishIfFailed(Resource*,
                                   bool is_potentially_unused_preload);
