@@ -5,7 +5,8 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_COMMON_FORM_INTERACTIONS_FLOW_H_
 #define COMPONENTS_AUTOFILL_CORE_COMMON_FORM_INTERACTIONS_FLOW_H_
 
-#include "base/rand_util.h"
+#include <stdint.h>
+
 #include "base/types/id_type.h"
 
 namespace autofill {
@@ -16,10 +17,7 @@ namespace autofill {
 // installations, in particular for UKM metrics.
 struct FormInteractionsFlowId
     : public base::IdTypeU64<struct FormInteractionsFlowIdTag> {
- public:
-  FormInteractionsFlowId()
-      : base::IdTypeU64<struct FormInteractionsFlowIdTag>::IdType(
-            base::RandUint64()) {}
+  FormInteractionsFlowId();
 };
 
 // Counts of user interactions with forms.
