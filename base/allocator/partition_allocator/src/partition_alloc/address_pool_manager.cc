@@ -48,7 +48,7 @@ void DecommitPages(uintptr_t address, size_t size) {
   // Callers rely on the pages being zero-initialized when recommitting them.
   // |DecommitSystemPages| doesn't guarantee this on all operating systems, in
   // particular on macOS, but |DecommitAndZeroSystemPages| does.
-  DecommitAndZeroSystemPages(address, size, kPageTag);
+  PA_CHECK(DecommitAndZeroSystemPages(address, size, kPageTag));
 }
 
 }  // namespace
