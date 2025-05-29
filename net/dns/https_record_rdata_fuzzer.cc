@@ -8,7 +8,6 @@
 #include <stdint.h>
 
 #include <memory>
-#include <set>
 #include <string>
 #include <vector>
 
@@ -61,8 +60,7 @@ void ParseAndExercise(FuzzedDataProvider& data_provider) {
     service->unparsed_params();
     service->IsCompatible();
 
-    std::set<uint16_t> mandatory_keys = service->mandatory_keys();
-    CHECK(!base::Contains(mandatory_keys,
+    CHECK(!base::Contains(service->mandatory_keys(),
                           dns_protocol::kHttpsServiceParamKeyMandatory));
 
     std::vector<IPAddress> ipv4_hint = service->ipv4_hint();

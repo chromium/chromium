@@ -4,13 +4,14 @@
 
 #include "net/dns/https_record_rdata.h"
 
-#include <map>
 #include <memory>
 #include <optional>
 #include <string>
 #include <string_view>
 #include <vector>
 
+#include "base/containers/flat_map.h"
+#include "base/containers/flat_set.h"
 #include "base/containers/span.h"
 #include "net/base/ip_address.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -112,13 +113,15 @@ TEST(HttpsRecordRdataTest, ParsesService) {
   IPAddress expected_ipv6;
   ASSERT_TRUE(expected_ipv6.AssignFromIPLiteral("2001:4860:4860::8888"));
   ServiceFormHttpsRecordRdata expected(
-      1 /* priority */, "chromium.org", std::set<uint16_t>({1, 2, 3, 4, 5, 6}),
+      1 /* priority */, "chromium.org",
+      base::flat_set<uint16_t>({1, 2, 3, 4, 5, 6}),
       std::vector<std::string>({"foo", "bar"}) /* alpn_ids */,
       false /* default_alpn */, std::optional<uint16_t>(46) /* port */,
       std::vector<IPAddress>({IPAddress(8, 8, 8, 8)}) /* ipv4_hint */,
       ech_config_testdata /* ech_config */,
       std::vector<IPAddress>({expected_ipv6}) /* ipv6_hint */,
-      std::map<uint16_t, std::string>({{7, "foo"}}) /* unparsed_params */);
+      base::flat_map<uint16_t, std::string>(
+          {{7, "foo"}}) /* unparsed_params */);
   EXPECT_TRUE(rdata->IsEqual(&expected));
 
   EXPECT_FALSE(rdata->IsAlias());
