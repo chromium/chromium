@@ -497,6 +497,9 @@ crbug.com/402429382 [ win11 nvidia-0x2184 ] Pixel_ReflectedDiv [ Failure ]
 # Flaky D3D11 device creation crash
 crbug.com/419469465 [ win intel-0x9bc5 ] Pixel_MeetEffects* [ RetryOnFailure ]
 
+# Failure on Win10 Nvidia bot
+crbug.com/420902568 [ win10 nvidia-0x2184 target-cpu-32 ] Pixel_MeetEffectsTruckerHat [ Failure ]
+
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #
 #######################################################################
