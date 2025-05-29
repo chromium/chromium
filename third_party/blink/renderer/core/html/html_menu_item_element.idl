@@ -8,6 +8,5 @@
     RuntimeEnabled=MenuElements
 ] interface HTMLMenuItemElement : HTMLElement {
     [CEReactions, Reflect] attribute boolean disabled;
-    [CEReactions, Reflect=checked] attribute boolean defaultChecked;
     [ImplementedAs=Checked] attribute boolean checked;
 };

@@ -24,12 +24,6 @@ test(() => {
  menubaritem.disabled = true;
  assert_true(menubaritem.disabled);
 
- assert_false(menubaritem.checked);
- menubaritem.defaultChecked = true;
- assert_true(menubaritem.checked);
- menubaritem.checked = false;
- assert_false(menubaritem.checked);
-
  const menulist = document.querySelector("menulist");
  const menulistitem = document.getElementById("menulistitem");
 
@@ -38,11 +32,32 @@ test(() => {
  assert_true(menulistitem.disabled);
  menulistitem.disabled = false;
  assert_false(menulistitem.disabled);
-
- assert_false(menulistitem.checked);
- menulistitem.defaultChecked = false;
- assert_false(menulistitem.checked);
- menulistitem.checked = true;
- assert_true(menulistitem.checked);
 }, "Menu elements are HTML elements.");
+
+test(() => {
+  const menubaritem = document.getElementById("menubaritem");
+
+  // `defaultChecked`.
+  assert_equals(menubaritem.defaultChecked, undefined,
+      "menuitem does not have a defaultChecked attribute");
+
+  // `checked` content & IDL attribute behavior.
+  // By default, attribute missing/null, which translates to the false IDL
+  // boolean state.
+  assert_equals(menubaritem.getAttribute('checked'), null);
+  assert_false(menubaritem.checked);
+
+  // The IDL attribute reads from the same state that the content attribute
+  // writes to.
+  menubaritem.setAttribute("checked", "true");
+  assert_true(menubaritem.checked);
+
+  // But the IDL attribute does not reflect [1] the content attribute value,
+  // which means when it is updated, the content attribute does not change.
+  //
+  // [1]: https://html.spec.whatwg.org/C#reflect
+  menubaritem.checked = false;
+  assert_false(menubaritem.checked);
+  menubaritem.setAttribute("checked", "true");
+}, "menuitem checked attribute");
 </script>
