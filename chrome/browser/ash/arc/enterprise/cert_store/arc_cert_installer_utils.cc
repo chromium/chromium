@@ -25,9 +25,16 @@ std::string CreatePkcs12ForKey(const std::string& name, EVP_PKEY* key) {
     return "";
   }
 
-  // Make a PKCS#12 blob.
-  bssl::UniquePtr<PKCS12> pkcs12(PKCS12_create(
-      nullptr, name.c_str(), key, nullptr, nullptr, 0, 0, 0, 0, 0));
+  // Make a PKCS#12 blob. Specify obsolete encryption because ARC++ seems to
+  // break with modern values. See crbug.com/420764006. However this is
+  // encrypted with an empty password, so there is no security here anyway.
+  // This should be switched to PKCS#8 PrivateKeyInfo if encryption is not
+  // necessary.
+  bssl::UniquePtr<PKCS12> pkcs12(
+      PKCS12_create(nullptr, name.c_str(), key, nullptr, nullptr,
+                    /*key_nid=*/NID_pbe_WithSHA1And3_Key_TripleDES_CBC,
+                    /*cert_nid=*/NID_pbe_WithSHA1And40BitRC2_CBC,
+                    /*iterations=*/2048, /*mac_iterators=*/1, /*key_type=*/0));
   if (!pkcs12) {
     VLOG(1) << "Failed to create PKCS12 object from |key| for " << name;
     return "";
