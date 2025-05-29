@@ -11,6 +11,7 @@ import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.util.AttributeSet;
 import android.view.Gravity;
+import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
@@ -25,6 +26,7 @@ import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.NumberRollView;
 import org.chromium.components.browser_ui.widget.TintedDrawable;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectableListToolbar;
+import org.chromium.ui.util.KeyboardNavigationListener;
 import org.chromium.ui.widget.ChromeImageButton;
 
 import java.util.Collections;
@@ -37,6 +39,7 @@ class TabListEditorToolbar extends SelectableListToolbar<TabListEditorItemSelect
             Collections.emptyList();
     private ChromeImageButton mMenuButton;
     private TabListEditorActionViewLayout mActionViewLayout;
+    private @Nullable View mNextFocusableView;
     @ColorInt private int mBackgroundColor;
     @StringRes private int mBackButtonAccessibilityString;
     private @Nullable RelatedTabCountProvider mRelatedTabCountProvider;
@@ -75,6 +78,17 @@ class TabListEditorToolbar extends SelectableListToolbar<TabListEditorItemSelect
         params.gravity = Gravity.CENTER_VERTICAL;
         ((ViewGroup) mNumberRollView.getParent()).removeView(mNumberRollView);
         mActionViewLayout.addView(mNumberRollView, 0, params);
+
+        int finalChildIdx = mActionViewLayout.getChildCount() - 1;
+        mActionViewLayout
+                .getChildAt(finalChildIdx)
+                .setOnKeyListener(
+                        new KeyboardNavigationListener() {
+                            @Override
+                            public @Nullable View getNextFocusForward() {
+                                return mNextFocusableView;
+                            }
+                        });
     }
 
     private void showNavigationButton() {
@@ -172,5 +186,10 @@ class TabListEditorToolbar extends SelectableListToolbar<TabListEditorItemSelect
     /** Set the title of the toolbar when no tabs are selected. */
     public void setTitle(String title) {
         mNumberRollView.setStringForZero(title);
+    }
+
+    /** Set the view to focus to next after the toolbar. */
+    public void setNextFocusableView(View nextFocusableView) {
+        mNextFocusableView = nextFocusableView;
     }
 }

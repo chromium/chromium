@@ -15,9 +15,11 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectableListLayout;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate;
+import org.chromium.ui.util.KeyboardNavigationListener;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -28,21 +30,28 @@ class TabListEditorLayout extends SelectableListLayout<TabListEditorItemSelectio
     private TabListEditorToolbar mToolbar;
     private ViewGroup mRootView;
     private ViewGroup mParentView;
+    private RecyclerView mRecyclerView;
+    private @Nullable View mFinalRecyclerViewChild;
     private boolean mIsInitialized;
     private boolean mIsShowing;
 
     private final Map<View, Integer> mAccessibilityImportanceMap = new HashMap<>();
+    private final Map<View, Integer> mDescendantFocusabilityImportanceMap = new HashMap<>();
 
     // TODO(meiliang): inflates R.layout.tab_list_editor_layout in
     // TabListEditorCoordinator.
     public TabListEditorLayout(Context context, AttributeSet attrs) {
         super(context, attrs);
+        setOnKeyListener(createOnKeyListener());
     }
 
     /** Destroy any members that needs clean up. */
     public void destroy() {
         if (mIsInitialized) {
             super.onDestroyed();
+        }
+        if (mRecyclerView != null) {
+            mRecyclerView.setOnHierarchyChangeListener(null);
         }
     }
 
@@ -69,6 +78,8 @@ class TabListEditorLayout extends SelectableListLayout<TabListEditorItemSelectio
             SelectionDelegate<TabListEditorItemSelectionId> selectionDelegate) {
         mIsInitialized = true;
         initializeRecyclerView(adapter, recyclerView);
+
+        mRecyclerView = recyclerView;
         mToolbar =
                 (TabListEditorToolbar)
                         initializeToolbar(
@@ -79,16 +90,21 @@ class TabListEditorLayout extends SelectableListLayout<TabListEditorItemSelectio
                                 0,
                                 null,
                                 true);
+        mToolbar.setNextFocusableView(mRecyclerView);
         mRootView = rootView;
         mParentView = parentView;
+        setOnKeyListener(createOnKeyListener());
     }
 
     /** Add and shows the layout in the parent view. */
     public void show() {
         assert mIsInitialized;
         mIsShowing = true;
-        clearBackgroundViewAccessibilityImportance();
+
+        suppressBackgroundViews();
         mParentView.addView(this);
+
+        addOnHierarchyChangeListener();
     }
 
     /** Remove and hides the layout from parent view. */
@@ -96,7 +112,9 @@ class TabListEditorLayout extends SelectableListLayout<TabListEditorItemSelectio
         assert mIsInitialized && mIsShowing;
         mIsShowing = false;
         mParentView.removeView(this);
-        restoreBackgroundViewAccessibilityImportance();
+
+        undoBackgroundViewsSuppression();
+        clearOnHierarchyChangeListener();
     }
 
     /**
@@ -119,33 +137,100 @@ class TabListEditorLayout extends SelectableListLayout<TabListEditorItemSelectio
         mToolbar.setBackButtonContentDescription(backButtonContentDescription);
     }
 
-    private void clearBackgroundViewAccessibilityImportance() {
-        assert mAccessibilityImportanceMap.size() == 0 && mRootView.indexOfChild(this) == -1;
+    private void suppressBackgroundViews() {
+        assert mDescendantFocusabilityImportanceMap.isEmpty()
+                && mAccessibilityImportanceMap.isEmpty()
+                && mRootView.indexOfChild(this) == -1;
 
         for (int i = 0; i < mRootView.getChildCount(); i++) {
             View view = mRootView.getChildAt(i);
             mAccessibilityImportanceMap.put(view, view.getImportantForAccessibility());
             view.setImportantForAccessibility(IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS);
+
+            if (view instanceof ViewGroup viewGroup) {
+                mDescendantFocusabilityImportanceMap.put(
+                        viewGroup, viewGroup.getDescendantFocusability());
+                viewGroup.setDescendantFocusability(ViewGroup.FOCUS_BLOCK_DESCENDANTS);
+            }
         }
+
         mAccessibilityImportanceMap.put(mRootView, mRootView.getImportantForAccessibility());
         mRootView.setImportantForAccessibility(IMPORTANT_FOR_ACCESSIBILITY_NO);
     }
 
-    private void restoreBackgroundViewAccessibilityImportance() {
+    private void undoBackgroundViewsSuppression() {
         assert mRootView.indexOfChild(this) == -1;
 
         for (int i = 0; i < mRootView.getChildCount(); i++) {
             View view = mRootView.getChildAt(i);
 
-            assert mAccessibilityImportanceMap.containsKey(view);
-            Integer importance = mAccessibilityImportanceMap.get(view);
-            view.setImportantForAccessibility(
-                    importance == null ? IMPORTANT_FOR_ACCESSIBILITY_AUTO : importance);
+            int importance =
+                    mAccessibilityImportanceMap.getOrDefault(
+                            view, IMPORTANT_FOR_ACCESSIBILITY_AUTO);
+            view.setImportantForAccessibility(importance);
+
+            if (view instanceof ViewGroup viewGroup) {
+                int descendantFocusability =
+                        mDescendantFocusabilityImportanceMap.getOrDefault(
+                                viewGroup, ViewGroup.FOCUS_BEFORE_DESCENDANTS);
+                viewGroup.setDescendantFocusability(descendantFocusability);
+            }
         }
-        assert mAccessibilityImportanceMap.containsKey(mRootView);
-        Integer importance = mAccessibilityImportanceMap.get(mRootView);
-        mRootView.setImportantForAccessibility(
-                importance == null ? IMPORTANT_FOR_ACCESSIBILITY_AUTO : importance);
+
+        int importance =
+                mAccessibilityImportanceMap.getOrDefault(
+                        mRootView, IMPORTANT_FOR_ACCESSIBILITY_AUTO);
+        mRootView.setImportantForAccessibility(importance);
+
         mAccessibilityImportanceMap.clear();
+        mDescendantFocusabilityImportanceMap.clear();
+    }
+
+    private void addFinalChildOnKeyListener(int finalChildIdx) {
+        mFinalRecyclerViewChild = mRecyclerView.getChildAt(finalChildIdx);
+        if (mFinalRecyclerViewChild == null) return;
+
+        mFinalRecyclerViewChild.setOnKeyListener(createOnKeyListener());
+    }
+
+    private void updateFinalChildOnKeyListener() {
+        clearFinalChildOnKeyListener();
+        int finalChildIdx = mRecyclerView.getChildCount() - 1;
+        if (finalChildIdx == -1) return;
+        addFinalChildOnKeyListener(finalChildIdx);
+    }
+
+    private void clearFinalChildOnKeyListener() {
+        if (mFinalRecyclerViewChild != null) {
+            mFinalRecyclerViewChild.setOnKeyListener(/* listener */ null);
+        }
+    }
+
+    private void addOnHierarchyChangeListener() {
+        mRecyclerView.setOnHierarchyChangeListener(
+                new OnHierarchyChangeListener() {
+                    @Override
+                    public void onChildViewAdded(View parent, View child) {
+                        updateFinalChildOnKeyListener();
+                    }
+
+                    @Override
+                    public void onChildViewRemoved(View parent, View child) {
+                        updateFinalChildOnKeyListener();
+                    }
+                });
+    }
+
+    private void clearOnHierarchyChangeListener() {
+        mRecyclerView.setOnHierarchyChangeListener(null);
+    }
+
+    private KeyboardNavigationListener createOnKeyListener() {
+        return new KeyboardNavigationListener() {
+            @Override
+            public @Nullable View getNextFocusForward() {
+                return mToolbar.focusSearch(FOCUS_LEFT);
+            }
+        };
     }
 }
