@@ -4422,7 +4422,7 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_MENU_PAINT_PREVIEW_SHOW" desc="Menu item allowing users to capture and show a paint preview of a page. [CHAR_LIMIT=27]" translateable="false">
         Show Paint Preview
       </message>
-      <message name="IDS_MENU_REQUEST_DESKTOP_SITE" desc="Menu item in Chrome's overflow/options menu. By default, when a user navigates to a web page, Chrome shows the mobile site, that is, the version of the site designed for mobile phones. If this menu item is selected, however, Chrome will try to load the 'desktop' site instead, i.e. the site designed for desktop computers or laptop computers, which have larger screens. [CHAR_LIMIT=24]">
+      <message name="IDS_MENU_REQUEST_DESKTOP_SITE" desc="Menu item in Chrome's overflow/options menu. By default, when a user navigates to a web page, Chrome shows the mobile site, that is, the version of the site designed for mobile phones. If this menu item is selected, however, Chrome will try to load the 'desktop' site instead, i.e. the site designed for desktop computers or laptop computers, which have larger screens. [CHAR_LIMIT=15]">
         Desktop site
       </message>
       <message name="IDS_MENU_REQUEST_DESKTOP_SITE_ON" desc="Accessibility description for when Request Desktop Site is enabled.">
