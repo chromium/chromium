@@ -147,8 +147,8 @@ component("variations") {
       "variations_crash_keys_android.h",
     ]
     deps += [
-      "//components/crash/android:anr_collector_jni_headers",
       "//components/crash/android:anr_build_id_provider",
+      "//components/crash/android:anr_collector_jni_headers",
       "//components/variations/android:variations_seed_jni",
     ]
   }
