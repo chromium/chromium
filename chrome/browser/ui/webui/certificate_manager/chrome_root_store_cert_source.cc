@@ -25,11 +25,11 @@ void PopulateChromeRootStoreLogsAsync(
   // TODO(crbug.com/40928765): store the info returned so we can use it in later
   // calls (e.g. the cert bytes will be needed when we view the details or
   // export the cert.
-  std::vector<certificate_manager_v2::mojom::SummaryCertInfoPtr> cert_infos;
+  std::vector<certificate_manager::mojom::SummaryCertInfoPtr> cert_infos;
   for (auto const& cert_info : info->root_cert_info) {
     x509_certificate_model::X509CertificateModel model(
         net::x509_util::CreateCryptoBuffer(cert_info->cert), "");
-    cert_infos.push_back(certificate_manager_v2::mojom::SummaryCertInfo::New(
+    cert_infos.push_back(certificate_manager::mojom::SummaryCertInfo::New(
         cert_info->sha256hash_hex, model.GetTitle(),
         /*is_deletable=*/false));
   }

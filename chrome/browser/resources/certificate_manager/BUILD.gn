@@ -10,7 +10,7 @@ import("//ui/webui/resources/tools/build_webui.gni")
 assert(chrome_root_store_cert_management_ui)
 
 mojom("mojom") {
-  sources = [ "certificate_manager_v2.mojom" ]
+  sources = [ "certificate_manager.mojom" ]
   public_deps = [ "//mojo/public/mojom/base" ]
   webui_module_path = "/"
 }
@@ -19,16 +19,16 @@ build_webui("build") {
   grd_prefix = "certificate_manager"
 
   static_files = [
-    "certificate_manager_dialog_v2.html",
+    "certificate_manager_dialog.html",
     "favicon.svg",
   ]
   web_component_files = [
-    "certificate_entry_v2.ts",
-    "certificate_list_v2.ts",
-    "certificate_manager_v2.ts",
-    "certificate_subpage_v2.ts",
-    "crs_section_v2.ts",
-    "local_certs_section_v2.ts",
+    "certificate_entry.ts",
+    "certificate_list.ts",
+    "certificate_manager.ts",
+    "certificate_subpage.ts",
+    "crs_section.ts",
+    "local_certs_section.ts",
   ]
   ts_files = [
     "certificate_confirmation_dialog.html.ts",
@@ -37,16 +37,16 @@ build_webui("build") {
     "certificate_info_dialog.ts",
     "certificate_password_dialog.html.ts",
     "certificate_password_dialog.ts",
-    "certificates_v2_browser_proxy.ts",
-    "navigation_v2.ts",
+    "certificates_browser_proxy.ts",
+    "navigation.ts",
   ]
 
   mojo_files_deps = [ ":mojom_ts__generator" ]
-  mojo_files = [ "$target_gen_dir/certificate_manager_v2.mojom-webui.ts" ]
+  mojo_files = [ "$target_gen_dir/certificate_manager.mojom-webui.ts" ]
 
-  icons_html_files = [ "certificate_manager_v2_icons.html" ]
+  icons_html_files = [ "certificate_manager_icons.html" ]
   html_to_wrapper_template = "detect"
-  css_files = [ "certificate_manager_style_v2.css" ]
+  css_files = [ "certificate_manager_style.css" ]
 
   if (is_chromeos) {
     web_component_files += [

@@ -3,12 +3,12 @@
 // found in the LICENSE file.
 
 /**
- * @fileoverview The 'crs-section-v2' component is the Chrome Root Store
+ * @fileoverview The 'crs-section' component is the Chrome Root Store
  * section of the Certificate Management V2 UI.
  */
 
-import './certificate_list_v2.js';
-import './certificate_manager_style_v2.css.js';
+import './certificate_list.js';
+import './certificate_manager_style.css.js';
 import '//resources/cr_elements/cr_shared_style.css.js';
 import '//resources/cr_elements/cr_shared_vars.css.js';
 import '//resources/cr_elements/cr_page_host_style.css.js';
@@ -17,21 +17,21 @@ import {I18nMixin} from '//resources/cr_elements/i18n_mixin.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import type {CertificateListV2Element} from './certificate_list_v2.js';
-import {CertificateSource} from './certificate_manager_v2.mojom-webui.js';
-import {getTemplate} from './crs_section_v2.html.js';
+import type {CertificateListElement} from './certificate_list.js';
+import {CertificateSource} from './certificate_manager.mojom-webui.js';
+import {getTemplate} from './crs_section.html.js';
 
-const CrsSectionV2ElementBase = I18nMixin(PolymerElement);
+const CrsSectionElementBase = I18nMixin(PolymerElement);
 
-export interface CrsSectionV2Element {
+export interface CrsSectionElement {
   $: {
-    crsCerts: CertificateListV2Element,
+    crsCerts: CertificateListElement,
   };
 }
 
-export class CrsSectionV2Element extends CrsSectionV2ElementBase {
+export class CrsSectionElement extends CrsSectionElementBase {
   static get is() {
-    return 'crs-section-v2';
+    return 'crs-section';
   }
 
   static get template() {
@@ -57,8 +57,8 @@ export class CrsSectionV2Element extends CrsSectionV2ElementBase {
 
 declare global {
   interface HTMLElementTagNameMap {
-    'crs-section-v2': CrsSectionV2Element;
+    'crs-section': CrsSectionElement;
   }
 }
 
-customElements.define(CrsSectionV2Element.is, CrsSectionV2Element);
+customElements.define(CrsSectionElement.is, CrsSectionElement);

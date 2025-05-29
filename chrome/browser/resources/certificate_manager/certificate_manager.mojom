@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// Mojo module supporting the Certificate Manager V2 WebUI.
-module certificate_manager_v2.mojom;
+// Mojo module supporting the Certificate Manager WebUI.
+module certificate_manager.mojom;
 
 // Summary information about a certificate.
 struct SummaryCertInfo {

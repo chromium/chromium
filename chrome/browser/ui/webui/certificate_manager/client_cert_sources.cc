@@ -17,8 +17,8 @@
 #include "base/task/bind_post_task.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/resources/certificate_manager/certificate_manager_v2.mojom-shared.h"
-#include "chrome/browser/resources/certificate_manager/certificate_manager_v2.mojom.h"
+#include "chrome/browser/resources/certificate_manager/certificate_manager.mojom-shared.h"
+#include "chrome/browser/resources/certificate_manager/certificate_manager.mojom.h"
 #include "chrome/browser/ui/chrome_select_file_policy.h"
 #include "chrome/browser/ui/webui/certificate_manager/certificate_manager_utils.h"
 #include "chrome/common/net/x509_certificate_model.h"
@@ -265,11 +265,11 @@ void PopulateCertInfosFromCertificateList(
     CertificateManagerPageHandler::GetCertificatesCallback callback,
     const net::CertificateList& certs,
     bool is_deletable) {
-  std::vector<certificate_manager_v2::mojom::SummaryCertInfoPtr> out_infos;
+  std::vector<certificate_manager::mojom::SummaryCertInfoPtr> out_infos;
   for (const auto& cert : certs) {
     x509_certificate_model::X509CertificateModel model(
         bssl::UpRef(cert->cert_buffer()), "");
-    out_infos.push_back(certificate_manager_v2::mojom::SummaryCertInfo::New(
+    out_infos.push_back(certificate_manager::mojom::SummaryCertInfo::New(
         model.HashCertSHA256(), model.GetTitle(), is_deletable));
   }
   std::move(callback).Run(std::move(out_infos));
@@ -436,11 +436,11 @@ class WritableCertLoader : public CertificateManagerPageHandler::CertSource {
 
   void ReplyToGetCertificatesCallback(
       CertificateManagerPageHandler::GetCertificatesCallback callback) const {
-    std::vector<certificate_manager_v2::mojom::SummaryCertInfoPtr> out_infos;
+    std::vector<certificate_manager::mojom::SummaryCertInfoPtr> out_infos;
     for (const auto& info : *certs_) {
       x509_certificate_model::X509CertificateModel model(
           bssl::UpRef(info.cert->cert_buffer()), "");
-      out_infos.push_back(certificate_manager_v2::mojom::SummaryCertInfo::New(
+      out_infos.push_back(certificate_manager::mojom::SummaryCertInfo::New(
           model.HashCertSHA256(), model.GetTitle(), info.is_deletable));
     }
     std::move(callback).Run(std::move(out_infos));
@@ -457,7 +457,7 @@ class KcerLoader : public WritableCertLoader {
  public:
   explicit KcerLoader(
       Profile* profile,
-      mojo::Remote<certificate_manager_v2::mojom::CertificateManagerPage>*
+      mojo::Remote<certificate_manager::mojom::CertificateManagerPage>*
           remote_client)
       : profile_(profile),
         remote_client_(remote_client),
@@ -488,7 +488,7 @@ class KcerLoader : public WritableCertLoader {
  private:
   void TriggerReload() {
     (*remote_client_)
-        ->TriggerReload({certificate_manager_v2::mojom::CertificateSource::
+        ->TriggerReload({certificate_manager::mojom::CertificateSource::
                              kPlatformClientCert});
   }
 
@@ -538,7 +538,7 @@ class KcerLoader : public WritableCertLoader {
   }
 
   raw_ptr<Profile> profile_;
-  raw_ptr<mojo::Remote<certificate_manager_v2::mojom::CertificateManagerPage>>
+  raw_ptr<mojo::Remote<certificate_manager::mojom::CertificateManagerPage>>
       remote_client_;
   base::WeakPtr<kcer::Kcer> kcer_;
   base::CallbackListSubscription observer_callback_;
@@ -605,7 +605,7 @@ class WritableClientCertSource
       public ui::SelectFileDialog::Listener {
  public:
   explicit WritableClientCertSource(
-      mojo::Remote<certificate_manager_v2::mojom::CertificateManagerPage>*
+      mojo::Remote<certificate_manager::mojom::CertificateManagerPage>*
           remote_client,
       Profile* profile)
       : remote_client_(remote_client), profile_(profile) {
@@ -690,7 +690,7 @@ class WritableClientCertSource
       // This error is not expected to be displayed under normal circumstances,
       // so it's not localized.
       std::move(callback).Run(
-          certificate_manager_v2::mojom::ActionResult::NewError("not allowed"));
+          certificate_manager::mojom::ActionResult::NewError("not allowed"));
       return;
     }
 
@@ -742,7 +742,7 @@ class WritableClientCertSource
   void FileRead(std::optional<std::vector<uint8_t>> file_bytes) {
     if (!file_bytes) {
       std::move(import_callback_)
-          .Run(certificate_manager_v2::mojom::ActionResult::NewError(
+          .Run(certificate_manager::mojom::ActionResult::NewError(
               l10n_util::GetStringUTF8(
                   IDS_SETTINGS_CERTIFICATE_MANAGER_V2_READ_FILE_ERROR)));
       return;
@@ -894,8 +894,8 @@ class WritableClientCertSource
       // call the import complete callback once the list has been updated.
       cert_loader_->RefreshCachedCertificateList(base::BindOnce(
           std::move(import_callback_),
-          certificate_manager_v2::mojom::ActionResult::NewSuccess(
-              certificate_manager_v2::mojom::SuccessResult::kSuccess)));
+          certificate_manager::mojom::ActionResult::NewSuccess(
+              certificate_manager::mojom::SuccessResult::kSuccess)));
     } else {
       // TODO(crbug.com/40928765): If the error was bad password, could prompt
       // the user to try again rather than just failing and requiring the user
@@ -918,7 +918,7 @@ class WritableClientCertSource
           message_id = IDS_SETTINGS_CERTIFICATE_MANAGER_V2_IMPORT_FAILED;
       }
       std::move(import_callback_)
-          .Run(certificate_manager_v2::mojom::ActionResult::NewError(
+          .Run(certificate_manager::mojom::ActionResult::NewError(
               l10n_util::GetStringUTF8(message_id)));
     }
   }
@@ -939,8 +939,7 @@ class WritableClientCertSource
       // This error is not expected to be displayed under normal circumstances,
       // so it's not localized.
       std::move(callback).Run(
-          certificate_manager_v2::mojom::ActionResult::NewError(
-              "cert not found"));
+          certificate_manager::mojom::ActionResult::NewError("cert not found"));
       return;
     }
 
@@ -1013,13 +1012,13 @@ class WritableClientCertSource
       // call the deletion complete callback once the list has been updated.
       cert_loader_->RefreshCachedCertificateList(base::BindOnce(
           std::move(callback),
-          certificate_manager_v2::mojom::ActionResult::NewSuccess(
-              certificate_manager_v2::mojom::SuccessResult::kSuccess)));
+          certificate_manager::mojom::ActionResult::NewSuccess(
+              certificate_manager::mojom::SuccessResult::kSuccess)));
     } else {
       // TODO(crbug.com/40928765): pass through better error status codes from
       // the lower level deletion code?
       std::move(callback).Run(
-          certificate_manager_v2::mojom::ActionResult::NewError(
+          certificate_manager::mojom::ActionResult::NewError(
               l10n_util::GetStringUTF8(
                   IDS_SETTINGS_CERTIFICATE_MANAGER_V2_DELETE_ERROR)));
     }
@@ -1029,7 +1028,7 @@ class WritableClientCertSource
   scoped_refptr<ui::SelectFileDialog> select_file_dialog_;
   bool import_hardware_backed_;
   CertificateManagerPageHandler::ImportCertificateCallback import_callback_;
-  raw_ptr<mojo::Remote<certificate_manager_v2::mojom::CertificateManagerPage>>
+  raw_ptr<mojo::Remote<certificate_manager::mojom::CertificateManagerPage>>
       remote_client_;
   raw_ptr<Profile> profile_;
   base::WeakPtrFactory<WritableClientCertSource> weak_ptr_factory_{this};
@@ -1096,7 +1095,7 @@ class ExtensionsClientCertSource
 
 std::unique_ptr<CertificateManagerPageHandler::CertSource>
 CreatePlatformClientCertSource(
-    mojo::Remote<certificate_manager_v2::mojom::CertificateManagerPage>*
+    mojo::Remote<certificate_manager::mojom::CertificateManagerPage>*
         remote_client,
     Profile* profile) {
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)

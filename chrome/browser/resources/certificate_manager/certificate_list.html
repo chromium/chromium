@@ -1,4 +1,4 @@
-<style include="cr-shared-style certificate-manager-style-v2">
+<style include="cr-shared-style certificate-manager-style">
 
   .header-buttons {
     margin-left: auto;
@@ -47,14 +47,14 @@
 
   <cr-collapse id="certs" opened="[[expanded_]]" aria-live="polite">
     <template is="dom-repeat" items="[[certificates_]]">
-      <certificate-entry-v2
+      <certificate-entry
           cert-source="[[certSource]]"
           display-name="[[item.displayName]]"
           sha256hash-hex="[[item.sha256hashHex]]"
           show-edit-icon="[[certMetadataEditable]]"
           is-deletable="[[item.isDeletable]]"
           on-delete-result="onDeleteResult_">
-      </certificate-entry-v2>
+      </certificate-entry>
     </template>
     <div id="noCertsRow" class="cr-row no-certs" hidden="[[hasCerts_]]">
       [[i18n("certificateManagerV2NoCertificatesRow")]]

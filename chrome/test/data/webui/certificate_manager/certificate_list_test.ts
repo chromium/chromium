@@ -2,29 +2,29 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://certificate-manager/certificate_list_v2.js';
+import 'chrome://certificate-manager/certificate_list.js';
 import 'chrome://certificate-manager/strings.m.js';
 
-import type {CertificateListV2Element} from 'chrome://certificate-manager/certificate_list_v2.js';
-import {CertificateSource} from 'chrome://certificate-manager/certificate_manager_v2.mojom-webui.js';
-import {CertificatesV2BrowserProxy} from 'chrome://certificate-manager/certificates_v2_browser_proxy.js';
+import type {CertificateListElement} from 'chrome://certificate-manager/certificate_list.js';
+import {CertificateSource} from 'chrome://certificate-manager/certificate_manager.mojom-webui.js';
+import {CertificatesBrowserProxy} from 'chrome://certificate-manager/certificates_browser_proxy.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
-import {TestCertificateManagerProxy} from './certificate_manager_v2_test_support.js';
+import {TestCertificateManagerProxy} from './certificate_manager_test_support.js';
 
 suite('CertificateListV2Test', () => {
-  let certList: CertificateListV2Element;
+  let certList: CertificateListElement;
   let testProxy: TestCertificateManagerProxy;
 
   setup(() => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     testProxy = new TestCertificateManagerProxy();
-    CertificatesV2BrowserProxy.setInstance(testProxy);
+    CertificatesBrowserProxy.setInstance(testProxy);
   });
 
   function initializeElement() {
-    certList = document.createElement('certificate-list-v2');
+    certList = document.createElement('certificate-list');
     certList.certSource = CertificateSource.kChromeRootStore;
     document.body.appendChild(certList);
   }
@@ -55,7 +55,7 @@ suite('CertificateListV2Test', () => {
         'getCertificates called with wrong source');
     await microtasksFinished();
 
-    const entries = certList.$.certs.querySelectorAll('certificate-entry-v2');
+    const entries = certList.$.certs.querySelectorAll('certificate-entry');
     assertEquals(2, entries.length, 'no certs displayed');
     assertEquals('cert1', entries[0]!.displayName);
     assertEquals('deadbeef1', entries[0]!.sha256hashHex);
@@ -84,7 +84,7 @@ suite('CertificateListV2Test', () => {
       };
     });
 
-    certList = document.createElement('certificate-list-v2');
+    certList = document.createElement('certificate-list');
     certList.certSource = CertificateSource.kChromeRootStore;
     certList.noCollapse = true;
     document.body.appendChild(certList);
@@ -95,7 +95,7 @@ suite('CertificateListV2Test', () => {
         'getCertificates called with wrong source');
     await microtasksFinished();
 
-    const entries = certList.$.certs.querySelectorAll('certificate-entry-v2');
+    const entries = certList.$.certs.querySelectorAll('certificate-entry');
     assertEquals(2, entries.length, 'no certs displayed');
 
     assertFalse(isVisible(certList.$.noCertsRow));
@@ -173,7 +173,7 @@ suite('CertificateListV2Test', () => {
 
 
   test('export hidden', async () => {
-    certList = document.createElement('certificate-list-v2');
+    certList = document.createElement('certificate-list');
     certList.certSource = CertificateSource.kChromeRootStore;
     certList.hideExport = true;
     document.body.appendChild(certList);
@@ -197,7 +197,7 @@ suite('CertificateListV2Test', () => {
       };
     });
 
-    certList = document.createElement('certificate-list-v2');
+    certList = document.createElement('certificate-list');
     certList.certSource = CertificateSource.kChromeRootStore;
     certList.showImport = true;
     document.body.appendChild(certList);
@@ -234,7 +234,7 @@ suite('CertificateListV2Test', () => {
       };
     });
 
-    certList = document.createElement('certificate-list-v2');
+    certList = document.createElement('certificate-list');
     certList.certSource = CertificateSource.kChromeRootStore;
     certList.showImportAndBind = true;
     document.body.appendChild(certList);
@@ -269,7 +269,7 @@ suite('CertificateListV2Test', () => {
   });
 
   test('no certs', async () => {
-    certList = document.createElement('certificate-list-v2');
+    certList = document.createElement('certificate-list');
     certList.certSource = CertificateSource.kChromeRootStore;
     document.body.appendChild(certList);
 
@@ -283,7 +283,7 @@ suite('CertificateListV2Test', () => {
   });
 
   test('hideIfEmpty with no certs - hide everything', async () => {
-    certList = document.createElement('certificate-list-v2');
+    certList = document.createElement('certificate-list');
     certList.hideIfEmpty = true;
     certList.certSource = CertificateSource.kChromeRootStore;
     document.body.appendChild(certList);
@@ -313,7 +313,7 @@ suite('CertificateListV2Test', () => {
       };
     });
 
-    certList = document.createElement('certificate-list-v2');
+    certList = document.createElement('certificate-list');
     // This should be ignored since the list isn't empty.
     certList.hideIfEmpty = true;
     certList.certSource = CertificateSource.kChromeRootStore;
@@ -327,7 +327,7 @@ suite('CertificateListV2Test', () => {
         'getCertificates called with wrong source');
     await microtasksFinished();
 
-    const entries = certList.$.certs.querySelectorAll('certificate-entry-v2');
+    const entries = certList.$.certs.querySelectorAll('certificate-entry');
     assertEquals(2, entries.length, 'no certs displayed');
     assertEquals('cert1', entries[0]!.displayName);
     assertEquals('deadbeef1', entries[0]!.sha256hashHex);
@@ -341,7 +341,7 @@ suite('CertificateListV2Test', () => {
   });
 
   test('hide header', async () => {
-    certList = document.createElement('certificate-list-v2');
+    certList = document.createElement('certificate-list');
     certList.hideHeader = true;
     certList.certSource = CertificateSource.kChromeRootStore;
     document.body.appendChild(certList);

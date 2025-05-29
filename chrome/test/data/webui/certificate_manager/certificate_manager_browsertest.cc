@@ -24,15 +24,15 @@ IN_PROC_BROWSER_TEST_F(CertficateManagerTest, CertificateManager) {
 }
 
 IN_PROC_BROWSER_TEST_F(CertficateManagerTest, CertificateList) {
-  RunTest("certificate_manager/certificate_list_v2_test.js", "mocha.run()");
+  RunTest("certificate_manager/certificate_list_test.js", "mocha.run()");
 }
 
 IN_PROC_BROWSER_TEST_F(CertficateManagerTest, CertificateEntry) {
-  RunTest("certificate_manager/certificate_entry_v2_test.js", "mocha.run()");
+  RunTest("certificate_manager/certificate_entry_test.js", "mocha.run()");
 }
 
 IN_PROC_BROWSER_TEST_F(CertficateManagerTest, CertificateSubpage) {
-  RunTest("certificate_manager/certificate_subpage_v2_test.js", "mocha.run()");
+  RunTest("certificate_manager/certificate_subpage_test.js", "mocha.run()");
 }
 
 IN_PROC_BROWSER_TEST_F(CertficateManagerTest, CertificatePasswordDialog) {
@@ -41,11 +41,11 @@ IN_PROC_BROWSER_TEST_F(CertficateManagerTest, CertificatePasswordDialog) {
 }
 
 IN_PROC_BROWSER_TEST_F(CertficateManagerTest, LocalCerts) {
-  RunTest("certificate_manager/local_certs_section_v2_test.js", "mocha.run()");
+  RunTest("certificate_manager/local_certs_section_test.js", "mocha.run()");
 }
 
 IN_PROC_BROWSER_TEST_F(CertficateManagerTest, Navigation) {
-  RunTest("certificate_manager/navigation_v2_test.js", "mocha.run()");
+  RunTest("certificate_manager/navigation_test.js", "mocha.run()");
 }
 
 #if BUILDFLAG(IS_CHROMEOS)

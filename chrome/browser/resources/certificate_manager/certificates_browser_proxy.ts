@@ -7,10 +7,10 @@
  * to interact with the browser. For the V2 Certificate Manager only.
  */
 
-import type {CertificateManagerPageHandlerInterface} from './certificate_manager_v2.mojom-webui.js';
-import {CertificateManagerPageCallbackRouter, CertificateManagerPageHandlerFactory, CertificateManagerPageHandlerRemote} from './certificate_manager_v2.mojom-webui.js';
+import type {CertificateManagerPageHandlerInterface} from './certificate_manager.mojom-webui.js';
+import {CertificateManagerPageCallbackRouter, CertificateManagerPageHandlerFactory, CertificateManagerPageHandlerRemote} from './certificate_manager.mojom-webui.js';
 
-export class CertificatesV2BrowserProxy {
+export class CertificatesBrowserProxy {
   callbackRouter: CertificateManagerPageCallbackRouter;
   handler: CertificateManagerPageHandlerInterface;
 
@@ -26,15 +26,15 @@ export class CertificatesV2BrowserProxy {
             .$.bindNewPipeAndPassReceiver());
   }
 
-  static getInstance(): CertificatesV2BrowserProxy {
-    return instance || (instance = new CertificatesV2BrowserProxy());
+  static getInstance(): CertificatesBrowserProxy {
+    return instance || (instance = new CertificatesBrowserProxy());
   }
 
-  static setInstance(obj: CertificatesV2BrowserProxy) {
+  static setInstance(obj: CertificatesBrowserProxy) {
     instance = obj;
   }
 }
 
 // The singleton instance_ is replaced with a test version of this wrapper
 // during testing.
-let instance: CertificatesV2BrowserProxy|null = null;
+let instance: CertificatesBrowserProxy|null = null;

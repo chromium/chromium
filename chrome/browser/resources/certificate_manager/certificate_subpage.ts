@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 /**
- * @fileoverview The 'certificate-subpage-v2' component is designed to show a
+ * @fileoverview The 'certificate-subpage' component is designed to show a
  * subpage. This subpage contains:
  *
  *   - header text
@@ -11,10 +11,10 @@
  *   - a back button for navigating back to the previous page
  *
  * This component is used in the new Certificate Management UI in
- * ./certificate_manager_v2.ts.
+ * ./certificate_manager.ts.
  */
 
-import './certificate_list_v2.js';
+import './certificate_list.js';
 import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import '//resources/cr_elements/cr_icons.css.js';
 import '//resources/cr_elements/cr_shared_style.css.js';
@@ -23,11 +23,11 @@ import {I18nMixin} from '//resources/cr_elements/i18n_mixin.js';
 import {focusWithoutInk} from '//resources/js/focus_without_ink.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import type {CertificateSource} from './certificate_manager_v2.mojom-webui.js';
-import {getTemplate} from './certificate_subpage_v2.html.js';
-import {Page, Router} from './navigation_v2.js';
+import type {CertificateSource} from './certificate_manager.mojom-webui.js';
+import {getTemplate} from './certificate_subpage.html.js';
+import {Page, Router} from './navigation.js';
 
-export interface CertificateSubpageV2Element {
+export interface CertificateSubpageElement {
   $: {
     backButton: HTMLElement,
   };
@@ -44,12 +44,11 @@ export class SubpageCertificateList {
   hideHeader?: boolean;
 }
 
-const CertificateSubpageV2ElementBase = I18nMixin(PolymerElement);
+const CertificateSubpageElementBase = I18nMixin(PolymerElement);
 
-export class CertificateSubpageV2Element extends
-    CertificateSubpageV2ElementBase {
+export class CertificateSubpageElement extends CertificateSubpageElementBase {
   static get is() {
-    return 'certificate-subpage-v2';
+    return 'certificate-subpage';
   }
 
   static get template() {
@@ -88,9 +87,8 @@ export class CertificateSubpageV2Element extends
 
 declare global {
   interface HTMLElementTagNameMap {
-    'certificate-subpage-v2': CertificateSubpageV2Element;
+    'certificate-subpage': CertificateSubpageElement;
   }
 }
 
-customElements.define(
-    CertificateSubpageV2Element.is, CertificateSubpageV2Element);
+customElements.define(CertificateSubpageElement.is, CertificateSubpageElement);

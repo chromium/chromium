@@ -22,7 +22,7 @@ class UserCertSource : public CertificateManagerPageHandler::CertSource,
       chrome_browser_server_certificate_database::CertificateTrust::
           CertificateTrustType trust,
       raw_ptr<Profile> profile,
-      mojo::Remote<certificate_manager_v2::mojom::CertificateManagerPage>*
+      mojo::Remote<certificate_manager::mojom::CertificateManagerPage>*
           remote_client);
   ~UserCertSource() override;
 
@@ -69,7 +69,7 @@ class UserCertSource : public CertificateManagerPageHandler::CertSource,
   chrome_browser_server_certificate_database::CertificateTrust::
       CertificateTrustType trust_;
   raw_ptr<Profile> profile_;
-  raw_ptr<mojo::Remote<certificate_manager_v2::mojom::CertificateManagerPage>>
+  raw_ptr<mojo::Remote<certificate_manager::mojom::CertificateManagerPage>>
       remote_client_;
   scoped_refptr<ui::SelectFileDialog> select_file_dialog_;
   CertificateManagerPageHandler::ImportCertificateCallback import_callback_;

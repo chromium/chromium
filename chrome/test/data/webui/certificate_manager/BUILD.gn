@@ -10,16 +10,16 @@ assert(chrome_root_store_cert_management_ui)
 
 build_webui_tests("build") {
   files = [
-    "certificate_entry_v2_test.ts",
-    "certificate_list_v2_test.ts",
+    "certificate_entry_test.ts",
+    "certificate_list_test.ts",
+    "certificate_manager_focus_test.ts",
+    "certificate_manager_test_support.ts",
     "certificate_manager_test.ts",
-    "certificate_manager_v2_focus_test.ts",
-    "certificate_manager_v2_test_support.ts",
     "certificate_manager_v2_test.ts",
     "certificate_password_dialog_test.ts",
-    "certificate_subpage_v2_test.ts",
-    "local_certs_section_v2_test.ts",
-    "navigation_v2_test.ts",
+    "certificate_subpage_test.ts",
+    "local_certs_section_test.ts",
+    "navigation_test.ts",
   ]
 
   if (is_chromeos) {

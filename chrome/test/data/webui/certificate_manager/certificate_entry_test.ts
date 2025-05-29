@@ -3,30 +3,30 @@
 // found in the LICENSE file.
 
 
-import 'chrome://certificate-manager/certificate_entry_v2.js';
+import 'chrome://certificate-manager/certificate_entry.js';
 import 'chrome://certificate-manager/strings.m.js';
 
-import type {CertificateEntryV2Element} from 'chrome://certificate-manager/certificate_entry_v2.js';
-import {CertificateSource} from 'chrome://certificate-manager/certificate_manager_v2.mojom-webui.js';
-import type {ActionResult} from 'chrome://certificate-manager/certificate_manager_v2.mojom-webui.js';
-import {CertificatesV2BrowserProxy} from 'chrome://certificate-manager/certificates_v2_browser_proxy.js';
+import type {CertificateEntryElement} from 'chrome://certificate-manager/certificate_entry.js';
+import {CertificateSource} from 'chrome://certificate-manager/certificate_manager.mojom-webui.js';
+import type {ActionResult} from 'chrome://certificate-manager/certificate_manager.mojom-webui.js';
+import {CertificatesBrowserProxy} from 'chrome://certificate-manager/certificates_browser_proxy.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
 
-import {TestCertificateManagerProxy} from './certificate_manager_v2_test_support.js';
+import {TestCertificateManagerProxy} from './certificate_manager_test_support.js';
 
 suite('CertificateEntryV2Test', () => {
-  let certEntry: CertificateEntryV2Element;
+  let certEntry: CertificateEntryElement;
   let testProxy: TestCertificateManagerProxy;
 
   setup(() => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     testProxy = new TestCertificateManagerProxy();
-    CertificatesV2BrowserProxy.setInstance(testProxy);
+    CertificatesBrowserProxy.setInstance(testProxy);
   });
 
   function initializeElement() {
-    certEntry = document.createElement('certificate-entry-v2');
+    certEntry = document.createElement('certificate-entry');
     certEntry.displayName = 'certname';
     certEntry.sha256hashHex = 'deadbeef';
     certEntry.certSource = CertificateSource.kChromeRootStore;
@@ -51,7 +51,7 @@ suite('CertificateEntryV2Test', () => {
   });
 
   test('edit icon', () => {
-    certEntry = document.createElement('certificate-entry-v2');
+    certEntry = document.createElement('certificate-entry');
     certEntry.displayName = 'certname';
     certEntry.sha256hashHex = 'deadbeef';
     certEntry.certSource = CertificateSource.kChromeRootStore;
@@ -70,7 +70,7 @@ suite('CertificateEntryV2Test', () => {
       return {result: kExpectedDeleteResult};
     });
 
-    certEntry = document.createElement('certificate-entry-v2');
+    certEntry = document.createElement('certificate-entry');
     certEntry.displayName = 'certname';
     certEntry.sha256hashHex = 'deadbeef';
     certEntry.certSource = CertificateSource.kChromeRootStore;

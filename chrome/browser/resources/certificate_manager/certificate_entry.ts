@@ -3,11 +3,11 @@
 // found in the LICENSE file.
 
 /**
- * @fileoverview The 'certificate-entry-v2' component is for showing a summary
+ * @fileoverview The 'certificate-entry' component is for showing a summary
  * of a certificate in a row on screen.
  *
  * This component is used in the new Certificate Management UI in
- * ./certificate_manager_v2.ts.
+ * ./certificate_manager.ts.
  */
 
 import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
@@ -21,11 +21,11 @@ import {I18nMixin} from '//resources/cr_elements/i18n_mixin.js';
 import {assert} from '//resources/js/assert.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {getTemplate} from './certificate_entry_v2.html.js';
-import type {ActionResult, CertificateSource} from './certificate_manager_v2.mojom-webui.js';
-import {CertificatesV2BrowserProxy} from './certificates_v2_browser_proxy.js';
+import {getTemplate} from './certificate_entry.html.js';
+import type {ActionResult, CertificateSource} from './certificate_manager.mojom-webui.js';
+import {CertificatesBrowserProxy} from './certificates_browser_proxy.js';
 
-export interface CertificateEntryV2Element {
+export interface CertificateEntryElement {
   $: {
     certhash: CrInputElement,
     copy: HTMLElement,
@@ -41,11 +41,11 @@ declare global {
   }
 }
 
-const CertificateEntryV2ElementBase = I18nMixin(PolymerElement);
+const CertificateEntryElementBase = I18nMixin(PolymerElement);
 
-export class CertificateEntryV2Element extends CertificateEntryV2ElementBase {
+export class CertificateEntryElement extends CertificateEntryElementBase {
   static get is() {
-    return 'certificate-entry-v2';
+    return 'certificate-entry';
   }
 
   static get template() {
@@ -80,13 +80,13 @@ export class CertificateEntryV2Element extends CertificateEntryV2ElementBase {
   }
 
   private onViewCertificate_() {
-    CertificatesV2BrowserProxy.getInstance().handler.viewCertificate(
+    CertificatesBrowserProxy.getInstance().handler.viewCertificate(
         this.certSource, this.sha256hashHex);
   }
 
   private onDeleteCertificate_() {
     assert(this.isDeletable);
-    CertificatesV2BrowserProxy.getInstance()
+    CertificatesBrowserProxy.getInstance()
         .handler
         .deleteCertificate(
             this.certSource, this.displayName, this.sha256hashHex)
@@ -108,8 +108,8 @@ export class CertificateEntryV2Element extends CertificateEntryV2ElementBase {
 
 declare global {
   interface HTMLElementTagNameMap {
-    'certificate-entry-v2': CertificateEntryV2Element;
+    'certificate-entry': CertificateEntryElement;
   }
 }
 
-customElements.define(CertificateEntryV2Element.is, CertificateEntryV2Element);
+customElements.define(CertificateEntryElement.is, CertificateEntryElement);

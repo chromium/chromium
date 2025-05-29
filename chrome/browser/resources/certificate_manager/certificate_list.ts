@@ -3,17 +3,17 @@
 // found in the LICENSE file.
 
 /**
- * @fileoverview The 'certificate-list-v2' component shows a list of
+ * @fileoverview The 'certificate-list' component shows a list of
  * certificates with a header, an expander, and optionally an "export all"
  * button.
  *
  * This component is used in the new Certificate Management UI in
- * ./certificate_manager_v2.ts.
+ * ./certificate_manager.ts.
  */
 
 
-import './certificate_entry_v2.js';
-import './certificate_manager_style_v2.css.js';
+import './certificate_entry.js';
+import './certificate_manager_style.css.js';
 import '//resources/cr_elements/cr_expand_button/cr_expand_button.js';
 import '//resources/cr_elements/cr_button/cr_button.js';
 import '//resources/cr_elements/cr_collapse/cr_collapse.js';
@@ -24,13 +24,13 @@ import type {CrCollapseElement} from '//resources/cr_elements/cr_collapse/cr_col
 import {I18nMixin} from '//resources/cr_elements/i18n_mixin.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {getTemplate} from './certificate_list_v2.html.js';
-import type {ActionResult, CertificateSource, SummaryCertInfo} from './certificate_manager_v2.mojom-webui.js';
-import {CertificatesV2BrowserProxy} from './certificates_v2_browser_proxy.js';
+import {getTemplate} from './certificate_list.html.js';
+import type {ActionResult, CertificateSource, SummaryCertInfo} from './certificate_manager.mojom-webui.js';
+import {CertificatesBrowserProxy} from './certificates_browser_proxy.js';
 
-const CertificateListV2ElementBase = I18nMixin(PolymerElement);
+const CertificateListElementBase = I18nMixin(PolymerElement);
 
-export interface CertificateListV2Element {
+export interface CertificateListElement {
   $: {
     certs: CrCollapseElement,
     exportCerts: HTMLElement,
@@ -42,9 +42,9 @@ export interface CertificateListV2Element {
   };
 }
 
-export class CertificateListV2Element extends CertificateListV2ElementBase {
+export class CertificateListElement extends CertificateListElementBase {
   static get is() {
-    return 'certificate-list-v2';
+    return 'certificate-list';
   }
 
   static get template() {
@@ -154,7 +154,7 @@ export class CertificateListV2Element extends CertificateListV2ElementBase {
       this.$.listHeader.classList.add('subpage-padding');
     }
 
-    const proxy = CertificatesV2BrowserProxy.getInstance();
+    const proxy = CertificatesBrowserProxy.getInstance();
     proxy.callbackRouter.triggerReload.addListener(
         this.onRefreshRequested_.bind(this));
   }
@@ -166,7 +166,7 @@ export class CertificateListV2Element extends CertificateListV2ElementBase {
   }
 
   private refreshCertificates() {
-    CertificatesV2BrowserProxy.getInstance()
+    CertificatesBrowserProxy.getInstance()
         .handler.getCertificates(this.certSource)
         .then((results: {certs: SummaryCertInfo[]}) => {
           this.certificates_ = results.certs;
@@ -176,14 +176,14 @@ export class CertificateListV2Element extends CertificateListV2ElementBase {
   private onExportCertsClick_(e: Event) {
     // Export button click shouldn't collapse the list as well.
     e.stopPropagation();
-    CertificatesV2BrowserProxy.getInstance().handler.exportCertificates(
+    CertificatesBrowserProxy.getInstance().handler.exportCertificates(
         this.certSource);
   }
 
   private onImportCertClick_(e: Event) {
     // Import button click shouldn't collapse the list as well.
     e.stopPropagation();
-    CertificatesV2BrowserProxy.getInstance()
+    CertificatesBrowserProxy.getInstance()
         .handler.importCertificate(this.certSource)
         .then(this.handleImportResult.bind(this));
   }
@@ -191,7 +191,7 @@ export class CertificateListV2Element extends CertificateListV2ElementBase {
   private onImportAndBindCertClick_(e: Event) {
     // Import button click shouldn't collapse the list as well.
     e.stopPropagation();
-    CertificatesV2BrowserProxy.getInstance()
+    CertificatesBrowserProxy.getInstance()
         .handler.importAndBindCertificate(this.certSource)
         .then(this.handleImportResult.bind(this));
   }
@@ -234,8 +234,8 @@ export class CertificateListV2Element extends CertificateListV2ElementBase {
 
 declare global {
   interface HTMLElementTagNameMap {
-    'certificate-list-v2': CertificateListV2Element;
+    'certificate-list': CertificateListElement;
   }
 }
 
-customElements.define(CertificateListV2Element.is, CertificateListV2Element);
+customElements.define(CertificateListElement.is, CertificateListElement);

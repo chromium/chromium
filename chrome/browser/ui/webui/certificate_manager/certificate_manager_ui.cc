@@ -169,7 +169,7 @@ CertificateManagerUI::CertificateManagerUI(content::WebUI* web_ui)
       profile, chrome::kChromeUICertificateManagerHost);
   webui::SetupWebUIDataSource(
       source, kCertificateManagerResources,
-      IDR_CERTIFICATE_MANAGER_CERTIFICATE_MANAGER_DIALOG_V2_HTML);
+      IDR_CERTIFICATE_MANAGER_CERTIFICATE_MANAGER_DIALOG_HTML);
   AddCertificateManagerV2Strings(source);
   source->AddString("crsLearnMoreUrl", kCRSLearnMoreLink);
 #if BUILDFLAG(IS_CHROMEOS)
@@ -197,7 +197,7 @@ CertificateManagerUI::CertificateManagerUI(content::WebUI* web_ui)
 
 void CertificateManagerUI::BindInterface(
     mojo::PendingReceiver<
-        certificate_manager_v2::mojom::CertificateManagerPageHandlerFactory>
+        certificate_manager::mojom::CertificateManagerPageHandlerFactory>
         pending_receiver) {
   if (certificate_manager_handler_factory_receiver_.is_bound()) {
     certificate_manager_handler_factory_receiver_.reset();
@@ -207,10 +207,10 @@ void CertificateManagerUI::BindInterface(
 }
 
 void CertificateManagerUI::CreateCertificateManagerPageHandler(
-    mojo::PendingRemote<certificate_manager_v2::mojom::CertificateManagerPage>
+    mojo::PendingRemote<certificate_manager::mojom::CertificateManagerPage>
         client,
     mojo::PendingReceiver<
-        certificate_manager_v2::mojom::CertificateManagerPageHandler> handler) {
+        certificate_manager::mojom::CertificateManagerPageHandler> handler) {
   certificate_manager_page_handler_ =
       std::make_unique<CertificateManagerPageHandler>(
           std::move(client), std::move(handler), Profile::FromWebUI(web_ui()),

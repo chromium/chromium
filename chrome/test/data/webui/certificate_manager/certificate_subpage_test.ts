@@ -2,29 +2,29 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://certificate-manager/certificate_subpage_v2.js';
+import 'chrome://certificate-manager/certificate_subpage.js';
 import 'chrome://certificate-manager/strings.m.js';
 
-import {CertificateSource} from 'chrome://certificate-manager/certificate_manager_v2.mojom-webui.js';
-import type {CertificateSubpageV2Element, SubpageCertificateList} from 'chrome://certificate-manager/certificate_subpage_v2.js';
-import {CertificatesV2BrowserProxy} from 'chrome://certificate-manager/certificates_v2_browser_proxy.js';
+import {CertificateSource} from 'chrome://certificate-manager/certificate_manager.mojom-webui.js';
+import type {CertificateSubpageElement, SubpageCertificateList} from 'chrome://certificate-manager/certificate_subpage.js';
+import {CertificatesBrowserProxy} from 'chrome://certificate-manager/certificates_browser_proxy.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
-import {TestCertificateManagerProxy} from './certificate_manager_v2_test_support.js';
+import {TestCertificateManagerProxy} from './certificate_manager_test_support.js';
 
 suite('CertificateSubpageV2Test', () => {
-  let certSubpage: CertificateSubpageV2Element;
+  let certSubpage: CertificateSubpageElement;
   let testProxy: TestCertificateManagerProxy;
 
   setup(() => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     testProxy = new TestCertificateManagerProxy();
-    CertificatesV2BrowserProxy.setInstance(testProxy);
+    CertificatesBrowserProxy.setInstance(testProxy);
   });
 
   function initializeElement() {
-    certSubpage = document.createElement('certificate-subpage-v2');
+    certSubpage = document.createElement('certificate-subpage');
 
     const subpageCertLists: SubpageCertificateList[] = [
       {
@@ -77,8 +77,7 @@ suite('CertificateSubpageV2Test', () => {
         2, testProxy.handler.getCallCount('getCertificates'),
         'getCertificates called incorrect amount of times');
 
-    const lists =
-        certSubpage.shadowRoot!.querySelectorAll('certificate-list-v2');
+    const lists = certSubpage.shadowRoot!.querySelectorAll('certificate-list');
     assertEquals(2, lists.length, 'no lists displayed');
     assertEquals('CRS', lists[0]!.headerText, 'crs list header wrong');
     assertEquals(

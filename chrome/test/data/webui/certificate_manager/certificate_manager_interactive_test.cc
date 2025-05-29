@@ -10,6 +10,6 @@ using CertificateManagerFocusTest = WebUIMochaBrowserTest;
 
 IN_PROC_BROWSER_TEST_F(CertificateManagerFocusTest, CertificateManager) {
   set_test_loader_host(chrome::kChromeUICertificateManagerHost);
-  RunTest("certificate_manager/certificate_manager_v2_focus_test.js",
+  RunTest("certificate_manager/certificate_manager_focus_test.js",
           "mocha.run()");
 }

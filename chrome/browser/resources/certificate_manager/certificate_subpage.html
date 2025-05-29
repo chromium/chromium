@@ -11,7 +11,7 @@
     --cr-icon-button-margin-start: -10px;
   }
 
-  certificate-list-v2 {
+  certificate-list {
     padding: 20px 0;
   }
 </style>
@@ -25,7 +25,7 @@
   <h2 class="cr-title-text">[[subpageTitle]]</h2>
 </div>
 <template is="dom-repeat" items="[[subpageCertLists]]">
-  <certificate-list-v2
+  <certificate-list
       cert-source="[[item.certSource]]"
       header-text="[[item.headerText]]"
       cert-metadata-editable="[[item.certMetadataEditable]]"
@@ -35,5 +35,5 @@
       hide-if-empty="[[item.hideIfEmpty]]"
       hide-header="[[item.hideHeader]]"
       in-subpage>
-  </certificate-list-v2>
+  </certificate-list>
 </template>

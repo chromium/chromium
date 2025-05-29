@@ -3,13 +3,13 @@
 // found in the LICENSE file.
 
 /**
- * @fileoverview The 'local-certs-section-v2' component is a section of the
- * Certificate Management V2 UI that shows local modifications to the the users
+ * @fileoverview The 'local-certs-section' component is a section of the
+ * Certificate Management UI that shows local modifications to the the users
  * trusted roots for TLS server auth (e.g. roots imported from the platform).
  */
 
-import './certificate_manager_v2_icons.html.js';
-import './certificate_manager_style_v2.css.js';
+import './certificate_manager_icons.html.js';
+import './certificate_manager_style.css.js';
 import '//resources/cr_elements/cr_icon/cr_icon.js';
 import '//resources/cr_elements/cr_link_row/cr_link_row.js';
 import '//resources/cr_elements/cr_shared_style.css.js';
@@ -24,16 +24,16 @@ import {focusWithoutInk} from '//resources/js/focus_without_ink.js';
 import {PluralStringProxyImpl} from '//resources/js/plural_string_proxy.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import type {CertManagementMetadata} from './certificate_manager_v2.mojom-webui.js';
-import {CertificateSource} from './certificate_manager_v2.mojom-webui.js';
-import {CertificatesV2BrowserProxy} from './certificates_v2_browser_proxy.js';
-import {getTemplate} from './local_certs_section_v2.html.js';
-import {Page, Router} from './navigation_v2.js';
+import type {CertManagementMetadata} from './certificate_manager.mojom-webui.js';
+import {CertificateSource} from './certificate_manager.mojom-webui.js';
+import {CertificatesBrowserProxy} from './certificates_browser_proxy.js';
+import {getTemplate} from './local_certs_section.html.js';
+import {Page, Router} from './navigation.js';
 
 
-const LocalCertsSectionV2ElementBase = I18nMixin(PolymerElement);
+const LocalCertsSectionElementBase = I18nMixin(PolymerElement);
 
-export interface LocalCertsSectionV2Element {
+export interface LocalCertsSectionElement {
   $: {
     // <if expr="is_win or is_macosx">
     manageOsImportedCerts: HTMLElement,
@@ -48,9 +48,9 @@ export interface LocalCertsSectionV2Element {
   };
 }
 
-export class LocalCertsSectionV2Element extends LocalCertsSectionV2ElementBase {
+export class LocalCertsSectionElement extends LocalCertsSectionElementBase {
   static get is() {
-    return 'local-certs-section-v2';
+    return 'local-certs-section';
   }
 
   static get template() {
@@ -107,13 +107,13 @@ export class LocalCertsSectionV2Element extends LocalCertsSectionV2ElementBase {
   override ready() {
     super.ready();
     this.onMetadataRefresh_();
-    const proxy = CertificatesV2BrowserProxy.getInstance();
+    const proxy = CertificatesBrowserProxy.getInstance();
     proxy.callbackRouter.triggerMetadataUpdate.addListener(
         this.onMetadataRefresh_.bind(this));
   }
 
   private onMetadataRefresh_() {
-    const proxy = CertificatesV2BrowserProxy.getInstance();
+    const proxy = CertificatesBrowserProxy.getInstance();
     proxy.handler.getCertManagementMetadata().then(
         (results: {metadata: CertManagementMetadata}) => {
           this.certManagementMetadata_ = results.metadata;
@@ -230,14 +230,14 @@ export class LocalCertsSectionV2Element extends LocalCertsSectionV2ElementBase {
 
   // <if expr="is_win or is_macosx">
   private onManageCertsExternal_() {
-    const proxy = CertificatesV2BrowserProxy.getInstance();
+    const proxy = CertificatesBrowserProxy.getInstance();
     proxy.handler.showNativeManageCertificates();
   }
   // </if>
 
   // <if expr="not is_chromeos">
   private onOsCertsToggleChanged_(e: CustomEvent<boolean>) {
-    const proxy = CertificatesV2BrowserProxy.getInstance();
+    const proxy = CertificatesBrowserProxy.getInstance();
     proxy.handler.setIncludeSystemTrustStore(e.detail);
   }
   // </if>
@@ -245,9 +245,8 @@ export class LocalCertsSectionV2Element extends LocalCertsSectionV2ElementBase {
 
 declare global {
   interface HTMLElementTagNameMap {
-    'local-certs-section-v2': LocalCertsSectionV2Element;
+    'local-certs-section': LocalCertsSectionElement;
   }
 }
 
-customElements.define(
-    LocalCertsSectionV2Element.is, LocalCertsSectionV2Element);
+customElements.define(LocalCertsSectionElement.is, LocalCertsSectionElement);

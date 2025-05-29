@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import type {ActionResult, CertificateManagerPageHandlerInterface, CertificateManagerPageRemote, CertificateSource, CertManagementMetadata, SummaryCertInfo} from 'chrome://certificate-manager/certificate_manager_v2.mojom-webui.js';
-import {CertificateManagerPageCallbackRouter} from 'chrome://certificate-manager/certificate_manager_v2.mojom-webui.js';
+import type {ActionResult, CertificateManagerPageHandlerInterface, CertificateManagerPageRemote, CertificateSource, CertManagementMetadata, SummaryCertInfo} from 'chrome://certificate-manager/certificate_manager.mojom-webui.js';
+import {CertificateManagerPageCallbackRouter} from 'chrome://certificate-manager/certificate_manager.mojom-webui.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
 class FakePageHandler extends TestBrowserProxy implements
     CertificateManagerPageHandlerInterface {
   // TODO(hchao): try to mess with structure so the auto formatter makes this
   // less confusing. See:
-  // https://crrev.com/c/5577174/8/chrome/test/data/webui/cr_components/certificate_manager_v2_test_support.ts
+  // https://crrev.com/c/5577174/8/chrome/test/data/webui/cr_components/certificate_manager_test_support.ts
   private getCertificatesCallback_: (source: CertificateSource) => {
     certs: SummaryCertInfo[],
   } = (_) => {

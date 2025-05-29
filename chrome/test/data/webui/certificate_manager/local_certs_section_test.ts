@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// These test suites test the local-certs-section-v2 component.
+// These test suites test the local-certs-section component.
 
-import 'chrome://certificate-manager/local_certs_section_v2.js';
+import 'chrome://certificate-manager/local_certs_section.js';
 import 'chrome://certificate-manager/strings.m.js';
 
 import {PluralStringProxyImpl} from '//resources/js/plural_string_proxy.js';
-import type {CertManagementMetadata} from 'chrome://certificate-manager/certificate_manager_v2.mojom-webui.js';
-import {CertificatesV2BrowserProxy} from 'chrome://certificate-manager/certificates_v2_browser_proxy.js';
-import type {LocalCertsSectionV2Element} from 'chrome://certificate-manager/local_certs_section_v2.js';
+import type {CertManagementMetadata} from 'chrome://certificate-manager/certificate_manager.mojom-webui.js';
+import {CertificatesBrowserProxy} from 'chrome://certificate-manager/certificates_browser_proxy.js';
+import type {LocalCertsSectionElement} from 'chrome://certificate-manager/local_certs_section.js';
 import {assertEquals, assertNull} from 'chrome://webui-test/chai_assert.js';
 import {TestPluralStringProxy} from 'chrome://webui-test/test_plural_string_proxy.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
@@ -20,7 +20,7 @@ import {assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
 // </if>
 
-import {TestCertificateManagerProxy} from './certificate_manager_v2_test_support.js';
+import {TestCertificateManagerProxy} from './certificate_manager_test_support.js';
 
 class CertManagerTestPluralStringProxy extends TestPluralStringProxy {
   override text: string = '';
@@ -34,17 +34,17 @@ class CertManagerTestPluralStringProxy extends TestPluralStringProxy {
 }
 
 suite('LocalCertsSectionV2Test', () => {
-  let localCertsSection: LocalCertsSectionV2Element;
+  let localCertsSection: LocalCertsSectionElement;
   let testProxy: TestCertificateManagerProxy;
 
   setup(() => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     testProxy = new TestCertificateManagerProxy();
-    CertificatesV2BrowserProxy.setInstance(testProxy);
+    CertificatesBrowserProxy.setInstance(testProxy);
   });
 
   function initializeElement() {
-    localCertsSection = document.createElement('local-certs-section-v2');
+    localCertsSection = document.createElement('local-certs-section');
     document.body.appendChild(localCertsSection);
   }
 

@@ -8,7 +8,7 @@
 
 #include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
-#include "chrome/browser/resources/certificate_manager/certificate_manager_v2.mojom.h"
+#include "chrome/browser/resources/certificate_manager/certificate_manager.mojom.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -20,7 +20,7 @@ class WebContents;
 
 // Mojo handler for the Certificate Manager v2 page.
 class CertificateManagerPageHandler
-    : public certificate_manager_v2::mojom::CertificateManagerPageHandler {
+    : public certificate_manager::mojom::CertificateManagerPageHandler {
  public:
   class CertSource {
    public:
@@ -45,10 +45,10 @@ class CertificateManagerPageHandler
   };
 
   explicit CertificateManagerPageHandler(
-      mojo::PendingRemote<certificate_manager_v2::mojom::CertificateManagerPage>
+      mojo::PendingRemote<certificate_manager::mojom::CertificateManagerPage>
           pending_client,
       mojo::PendingReceiver<
-          certificate_manager_v2::mojom::CertificateManagerPageHandler>
+          certificate_manager::mojom::CertificateManagerPageHandler>
           pending_handler,
       Profile* profile,
       content::WebContents* web_contents);
@@ -59,25 +59,23 @@ class CertificateManagerPageHandler
 
   ~CertificateManagerPageHandler() override;
 
-  void GetCertificates(
-      certificate_manager_v2::mojom::CertificateSource source_id,
-      GetCertificatesCallback callback) override;
-  void ViewCertificate(
-      certificate_manager_v2::mojom::CertificateSource source_id,
-      const std::string& sha256hash_hex) override;
+  void GetCertificates(certificate_manager::mojom::CertificateSource source_id,
+                       GetCertificatesCallback callback) override;
+  void ViewCertificate(certificate_manager::mojom::CertificateSource source_id,
+                       const std::string& sha256hash_hex) override;
   void ImportCertificate(
-      certificate_manager_v2::mojom::CertificateSource source_id,
+      certificate_manager::mojom::CertificateSource source_id,
       ImportCertificateCallback callback) override;
   void ImportAndBindCertificate(
-      certificate_manager_v2::mojom::CertificateSource source_id,
+      certificate_manager::mojom::CertificateSource source_id,
       ImportCertificateCallback callback) override;
   void DeleteCertificate(
-      certificate_manager_v2::mojom::CertificateSource source_id,
+      certificate_manager::mojom::CertificateSource source_id,
       const std::string& display_name,
       const std::string& sha256hash_hex,
       DeleteCertificateCallback callback) override;
   void ExportCertificates(
-      certificate_manager_v2::mojom::CertificateSource source_id) override;
+      certificate_manager::mojom::CertificateSource source_id) override;
 
   void GetCertManagementMetadata(
       GetCertManagementMetadataCallback callback) override;
@@ -99,19 +97,18 @@ class CertificateManagerPageHandler
   // enabled on the current runtime, it may return a dummy CertSource that
   // always returns an empty list of certificates.
   CertSource& GetCertSource(
-      certificate_manager_v2::mojom::CertificateSource source);
+      certificate_manager::mojom::CertificateSource source);
 
-  mojo::Remote<certificate_manager_v2::mojom::CertificateManagerPage>
+  mojo::Remote<certificate_manager::mojom::CertificateManagerPage>
       remote_client_;
-  mojo::Receiver<certificate_manager_v2::mojom::CertificateManagerPageHandler>
+  mojo::Receiver<certificate_manager::mojom::CertificateManagerPageHandler>
       handler_;
   raw_ptr<Profile> profile_;
   raw_ptr<content::WebContents> web_contents_;
 
-  std::array<
-      std::unique_ptr<CertSource>,
-      1 + static_cast<unsigned>(
-              certificate_manager_v2::mojom::CertificateSource::kMaxValue)>
+  std::array<std::unique_ptr<CertSource>,
+             1 + static_cast<unsigned>(
+                     certificate_manager::mojom::CertificateSource::kMaxValue)>
       cert_source_;
 };
 

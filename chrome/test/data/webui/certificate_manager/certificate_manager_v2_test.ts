@@ -4,13 +4,13 @@
 
 // These test suites test the certificate-manager v2 component.
 
-import 'chrome://certificate-manager/certificate_manager_v2.js';
+import 'chrome://certificate-manager/certificate_manager.js';
 import 'chrome://certificate-manager/strings.m.js';
 
-import type {CertificateManagerV2Element} from 'chrome://certificate-manager/certificate_manager_v2.js';
-import type {CertManagementMetadata} from 'chrome://certificate-manager/certificate_manager_v2.mojom-webui.js';
+import type {CertificateManagerElement} from 'chrome://certificate-manager/certificate_manager.js';
+import type {CertManagementMetadata} from 'chrome://certificate-manager/certificate_manager.mojom-webui.js';
 import type {CertificatePasswordDialogElement} from 'chrome://certificate-manager/certificate_password_dialog.js';
-import {CertificatesV2BrowserProxy} from 'chrome://certificate-manager/certificates_v2_browser_proxy.js';
+import {CertificatesBrowserProxy} from 'chrome://certificate-manager/certificates_browser_proxy.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertNull, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
@@ -18,21 +18,21 @@ import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
 // </if>
 
-import {TestCertificateManagerProxy} from './certificate_manager_v2_test_support.js';
+import {TestCertificateManagerProxy} from './certificate_manager_test_support.js';
 
 
 suite('CertificateManagerV2Test', () => {
-  let certManager: CertificateManagerV2Element;
+  let certManager: CertificateManagerElement;
   let testProxy: TestCertificateManagerProxy;
 
   setup(() => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     testProxy = new TestCertificateManagerProxy();
-    CertificatesV2BrowserProxy.setInstance(testProxy);
+    CertificatesBrowserProxy.setInstance(testProxy);
   });
 
   function initializeElement() {
-    certManager = document.createElement('certificate-manager-v2');
+    certManager = document.createElement('certificate-manager');
     document.body.appendChild(certManager);
   }
 

@@ -1,4 +1,4 @@
-<style include="cr-page-host-style cr-shared-style cr-nav-menu-item-style certificate-manager-style-v2">
+<style include="cr-page-host-style cr-shared-style cr-nav-menu-item-style certificate-manager-style">
   :host {
     display: flex;
     flex-direction: column;
@@ -101,22 +101,22 @@
       [[i18n("certificateManagerV2ClientCertsDescription")]]
 
       <if expr="is_win or is_macosx or is_linux">
-        <certificate-list-v2
+        <certificate-list
             id="provisionedClientCerts"
             cert-source="[[certificateSourceEnum_.kProvisionedClientCert]]"
             header-text="[[i18n('certificateManagerV2ClientCertsFromAdmin')]]"
             hide-export hide-if-empty
             on-hash-copied="onHashCopied_">
-        </certificate-list-v2>
+        </certificate-list>
       </if>
       <if expr="is_chromeos">
-        <certificate-list-v2
+        <certificate-list
             id="extensionsClientCerts"
             cert-source="[[certificateSourceEnum_.kExtensionsClientCert]]"
             header-text="[[i18n('certificateManagerV2ClientCertsFromExtension')]]"
             hide-export hide-if-empty
             on-hash-copied="onHashCopied_">
-        </certificate-list-v2>
+        </certificate-list>
       </if>
 
       <h3 class="section-title">[[i18n("certificateManagerV2Platform")]]</h3>
@@ -142,34 +142,34 @@
       </if>
     </div>
 
-    <local-certs-section-v2 id="localCertSection"
+    <local-certs-section id="localCertSection"
         path$="[[pageEnum_.LOCAL_CERTS]]" on-hash-copied="onHashCopied_">
-    </local-certs-section-v2>
+    </local-certs-section>
 
     <!-- Chrome Root Store section -->
-    <crs-section-v2 id="crsCertSection"
+    <crs-section id="crsCertSection"
         path$="[[pageEnum_.CRS_CERTS]]" on-hash-copied="onHashCopied_">
-    </crs-section-v2>
+    </crs-section>
 
-    <certificate-subpage-v2 id="adminCertsSection"
+    <certificate-subpage id="adminCertsSection"
         path$="[[pageEnum_.ADMIN_CERTS]]"
         class="cr-centered-card-container"
         on-hash-copied="onHashCopied_"
         navigate-back-target="[[pageEnum_.LOCAL_CERTS]]"
         subpage-title="[[i18n('certificateManagerV2AdminCertsTitle')]]"
         subpage-cert-lists="[[enterpriseSubpageLists_]]">
-    </certificate-subpage-v2>
+    </certificate-subpage>
 
-    <certificate-subpage-v2 id="platformCertsSection"
+    <certificate-subpage id="platformCertsSection"
         path$="[[pageEnum_.PLATFORM_CERTS]]"
         class="cr-centered-card-container"
         on-hash-copied="onHashCopied_"
         navigate-back-target="[[pageEnum_.LOCAL_CERTS]]"
         subpage-title="[[i18n('certificateManagerV2PlatformCertsTitle')]]"
         subpage-cert-lists="[[platformSubpageLists_]]">
-    </certificate-subpage-v2>
+    </certificate-subpage>
 
-    <certificate-subpage-v2 id="platformClientCertsSection"
+    <certificate-subpage id="platformClientCertsSection"
         path$="[[pageEnum_.PLATFORM_CLIENT_CERTS]]"
         class="cr-centered-card-container"
         on-hash-copied="onHashCopied_"
@@ -178,9 +178,9 @@
         on-delete-result="onDeleteResult_"
         subpage-title="[[i18n('certificateManagerV2ClientCertsFromPlatform')]]"
         subpage-cert-lists="[[clientPlatformSubpageLists_]]">
-    </certificate-subpage-v2>
+    </certificate-subpage>
 
-    <certificate-subpage-v2 id="userCertsSection"
+    <certificate-subpage id="userCertsSection"
         path$="[[pageEnum_.USER_CERTS]]"
         class="cr-centered-card-container"
         on-hash-copied="onHashCopied_"
@@ -189,7 +189,7 @@
         navigate-back-target="[[pageEnum_.LOCAL_CERTS]]"
         subpage-title="[[i18n('certificateManagerV2UserCertsTitle')]]"
         subpage-cert-lists="[[userSubpageLists_]]">
-    </certificate-subpage-v2>
+    </certificate-subpage>
   </cr-page-selector>
 </div>
 

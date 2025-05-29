@@ -3,20 +3,20 @@
 // found in the LICENSE file.
 
 /**
- * @fileoverview The 'certificate-manager-v2' component is a newer way for
+ * @fileoverview The 'certificate-manager' component is a newer way for
  * showing and managing TLS certificates. This is tied to the Chrome Root Store
  * and Chrome Cert Management Enterprise policies launch.
  */
 
-import './certificate_list_v2.js';
+import './certificate_list.js';
 import './certificate_confirmation_dialog.js';
 import './certificate_info_dialog.js';
 import './certificate_password_dialog.js';
-import './certificate_subpage_v2.js';
-import './certificate_manager_v2_icons.html.js';
-import './certificate_manager_style_v2.css.js';
-import './crs_section_v2.js';
-import './local_certs_section_v2.js';
+import './certificate_subpage.js';
+import './certificate_manager_icons.html.js';
+import './certificate_manager_style.css.js';
+import './crs_section.js';
+import './local_certs_section.js';
 // <if expr="is_chromeos">
 import './certificate_provisioning_list.js';
 // </if>
@@ -45,17 +45,17 @@ import {PromiseResolver} from '//resources/js/promise_resolver.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import type {CertificateConfirmationDialogElement} from './certificate_confirmation_dialog.js';
-import type {CertificateListV2Element} from './certificate_list_v2.js';
-import {getTemplate} from './certificate_manager_v2.html.js';
-import type {ActionResult, SummaryCertInfo} from './certificate_manager_v2.mojom-webui.js';
-import {CertificateSource} from './certificate_manager_v2.mojom-webui.js';
+import type {CertificateListElement} from './certificate_list.js';
+import {getTemplate} from './certificate_manager.html.js';
+import type {ActionResult, SummaryCertInfo} from './certificate_manager.mojom-webui.js';
+import {CertificateSource} from './certificate_manager.mojom-webui.js';
 import type {CertificatePasswordDialogElement} from './certificate_password_dialog.js';
-import type {CertificateSubpageV2Element, SubpageCertificateList} from './certificate_subpage_v2.js';
-import {CertificatesV2BrowserProxy} from './certificates_v2_browser_proxy.js';
-import type {CrsSectionV2Element} from './crs_section_v2.js';
-import type {LocalCertsSectionV2Element} from './local_certs_section_v2.js';
-import type {Route} from './navigation_v2.js';
-import {Page, RouteObserverMixin, Router} from './navigation_v2.js';
+import type {CertificateSubpageElement, SubpageCertificateList} from './certificate_subpage.js';
+import {CertificatesBrowserProxy} from './certificates_browser_proxy.js';
+import type {CrsSectionElement} from './crs_section.js';
+import type {LocalCertsSectionElement} from './local_certs_section.js';
+import type {Route} from './navigation.js';
+import {Page, RouteObserverMixin, Router} from './navigation.js';
 
 interface PasswordResult {
   password: string|null;
@@ -65,19 +65,19 @@ interface ConfirmationResult {
   confirmed: boolean;
 }
 
-const CertificateManagerV2ElementBase =
+const CertificateManagerElementBase =
     RouteObserverMixin(CrContainerShadowMixin(I18nMixin(PolymerElement)));
 
-export interface CertificateManagerV2Element {
+export interface CertificateManagerElement {
   $: {
     toolbar: HTMLElement,
     main: CrPageSelectorElement,
-    platformClientCerts: CertificateListV2Element,
+    platformClientCerts: CertificateListElement,
     // <if expr="is_win or is_macosx or is_linux">
-    provisionedClientCerts: CertificateListV2Element,
+    provisionedClientCerts: CertificateListElement,
     // </if>
     // <if expr="is_chromeos">
-    extensionsClientCerts: CertificateListV2Element,
+    extensionsClientCerts: CertificateListElement,
     // </if>
     toast: CrToastElement,
     viewOsImportedClientCerts: HTMLElement,
@@ -89,22 +89,21 @@ export interface CertificateManagerV2Element {
     clientMenuItem: HTMLElement,
     crsMenuItem: HTMLElement,
 
-    localCertSection: LocalCertsSectionV2Element,
+    localCertSection: LocalCertsSectionElement,
     clientCertSection: HTMLElement,
-    crsCertSection: CrsSectionV2Element,
-    adminCertsSection: CertificateSubpageV2Element,
-    userCertsSection: CertificateSubpageV2Element,
+    crsCertSection: CrsSectionElement,
+    adminCertsSection: CertificateSubpageElement,
+    userCertsSection: CertificateSubpageElement,
     // <if expr="not is_chromeos">
-    platformCertsSection: CertificateSubpageV2Element,
+    platformCertsSection: CertificateSubpageElement,
     // </if>
-    platformClientCertsSection: CertificateSubpageV2Element,
+    platformClientCertsSection: CertificateSubpageElement,
   };
 }
 
-export class CertificateManagerV2Element extends
-    CertificateManagerV2ElementBase {
+export class CertificateManagerElement extends CertificateManagerElementBase {
   static get is() {
-    return 'certificate-manager-v2';
+    return 'certificate-manager';
   }
 
   static get template() {
@@ -293,7 +292,7 @@ export class CertificateManagerV2Element extends
 
   override ready() {
     super.ready();
-    const proxy = CertificatesV2BrowserProxy.getInstance();
+    const proxy = CertificatesBrowserProxy.getInstance();
     proxy.callbackRouter.askForImportPassword.addListener(
         this.onAskForImportPassword_.bind(this));
     proxy.callbackRouter.askForConfirmation.addListener(
@@ -310,7 +309,7 @@ export class CertificateManagerV2Element extends
   }
 
   private getClientCertCount_() {
-    CertificatesV2BrowserProxy.getInstance()
+    CertificatesBrowserProxy.getInstance()
         .handler.getCertificates(CertificateSource.kPlatformClientCert)
         .then((results: {certs: SummaryCertInfo[]}) => {
           PluralStringProxyImpl.getInstance()
@@ -536,7 +535,7 @@ export class CertificateManagerV2Element extends
 
   // <if expr="is_win or is_macosx">
   private onManageCertsExternal_() {
-    const proxy = CertificatesV2BrowserProxy.getInstance();
+    const proxy = CertificatesBrowserProxy.getInstance();
     proxy.handler.showNativeManageCertificates();
   }
   // </if>
@@ -544,9 +543,8 @@ export class CertificateManagerV2Element extends
 
 declare global {
   interface HTMLElementTagNameMap {
-    'certificate-manager-v2': CertificateManagerV2Element;
+    'certificate-manager': CertificateManagerElement;
   }
 }
 
-customElements.define(
-    CertificateManagerV2Element.is, CertificateManagerV2Element);
+customElements.define(CertificateManagerElement.is, CertificateManagerElement);

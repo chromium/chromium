@@ -6,33 +6,33 @@
 // depend on what element is focused, and thus need to be an
 // interactive_ui_test to avoid flake.
 
-import 'chrome://certificate-manager/certificate_manager_v2.js';
+import 'chrome://certificate-manager/certificate_manager.js';
 import 'chrome://certificate-manager/strings.m.js';
 
-import type {CertificateManagerV2Element} from 'chrome://certificate-manager/certificate_manager_v2.js';
-import {CertificateSource} from 'chrome://certificate-manager/certificate_manager_v2.mojom-webui.js';
-import type {CertManagementMetadata} from 'chrome://certificate-manager/certificate_manager_v2.mojom-webui.js';
-import {CertificatesV2BrowserProxy} from 'chrome://certificate-manager/certificates_v2_browser_proxy.js';
+import type {CertificateManagerElement} from 'chrome://certificate-manager/certificate_manager.js';
+import {CertificateSource} from 'chrome://certificate-manager/certificate_manager.mojom-webui.js';
+import type {CertManagementMetadata} from 'chrome://certificate-manager/certificate_manager.mojom-webui.js';
+import {CertificatesBrowserProxy} from 'chrome://certificate-manager/certificates_browser_proxy.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
 import {getDeepActiveElement} from 'chrome://resources/js/util.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
-import {TestCertificateManagerProxy} from './certificate_manager_v2_test_support.js';
+import {TestCertificateManagerProxy} from './certificate_manager_test_support.js';
 
 suite('CertificateManagerV2FocusTest', () => {
-  let certManager: CertificateManagerV2Element;
+  let certManager: CertificateManagerElement;
   let testProxy: TestCertificateManagerProxy;
 
   setup(async () => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     await navigator.clipboard.writeText('');
     testProxy = new TestCertificateManagerProxy();
-    CertificatesV2BrowserProxy.setInstance(testProxy);
+    CertificatesBrowserProxy.setInstance(testProxy);
   });
 
   function initializeElement() {
-    certManager = document.createElement('certificate-manager-v2');
+    certManager = document.createElement('certificate-manager');
     document.body.appendChild(certManager);
   }
 
@@ -61,7 +61,7 @@ suite('CertificateManagerV2FocusTest', () => {
 
     const certEntries =
         certManager.$.crsCertSection.$.crsCerts.$.certs.querySelectorAll(
-            'certificate-entry-v2');
+            'certificate-entry');
     assertEquals(1, certEntries.length, 'no certs displayed');
     assertEquals('', await navigator.clipboard.readText());
     certEntries[0]!.$.copy.click();
@@ -96,11 +96,11 @@ suite('CertificateManagerV2FocusTest', () => {
 
     const certLists =
         certManager.$.platformClientCertsSection.shadowRoot!.querySelectorAll(
-            'certificate-list-v2');
+            'certificate-list');
     assertEquals(1, certLists.length, 'no cert lists displayed');
 
     const certEntries =
-        certLists[0]!.$.certs.querySelectorAll('certificate-entry-v2');
+        certLists[0]!.$.certs.querySelectorAll('certificate-entry');
     assertEquals(1, certEntries.length, 'no certs displayed');
 
     assertEquals('', await navigator.clipboard.readText());
@@ -135,7 +135,7 @@ suite('CertificateManagerV2FocusTest', () => {
 
     const entries =
         certManager.$.provisionedClientCerts.$.certs.querySelectorAll(
-            'certificate-entry-v2');
+            'certificate-entry');
     assertEquals(1, entries.length, 'no certs displayed');
 
     assertEquals('', await navigator.clipboard.readText());
@@ -171,7 +171,7 @@ suite('CertificateManagerV2FocusTest', () => {
 
     const entries =
         certManager.$.extensionsClientCerts.$.certs.querySelectorAll(
-            'certificate-entry-v2');
+            'certificate-entry');
     assertEquals(1, entries.length, 'no certs displayed');
 
     assertEquals('', await navigator.clipboard.readText());
