@@ -267,17 +267,16 @@ public class CustomTabObserver extends EmptyTabObserver {
                     50,
                     DateUtils.MINUTE_IN_MILLIS,
                     50);
-            // For TWA startup, the recorded duration is the difference between
-            // mFirstCommitUptimeMillis and mTwaStartupUptimeMillis, regardless
-            // of the suffix.
-            if (mTwaStartupUptimeMillis != null) {
-                RecordHistogram.recordCustomTimesHistogram(
-                        "TrustedWebActivity.Startup.TimeToFirstCommitNavigation2" + suffix,
-                        mFirstCommitUptimeMillis - mTwaStartupUptimeMillis.longValue(),
-                        50,
-                        DateUtils.MINUTE_IN_MILLIS,
-                        50);
-            }
+        }
+        if (mTwaStartupUptimeMillis != null) {
+            // The TWA durations are always relative to the startup time passed in the Intent.
+            RecordHistogram.recordCustomTimesHistogram(
+                    "TrustedWebActivity.Startup.TimeToFirstCommitNavigation2"
+                            + (isTwaColdStart() ? ".Cold" : ".Warm"),
+                    mFirstCommitUptimeMillis - mTwaStartupUptimeMillis.longValue(),
+                    50,
+                    DateUtils.MINUTE_IN_MILLIS,
+                    50);
         }
     }
 
@@ -287,6 +286,19 @@ public class CustomTabObserver extends EmptyTabObserver {
 
     private void recordLargestContentfulPaint(long lcpUptimeMillis) {
         recordPaint(lcpUptimeMillis, "TimeToLargestContentfulPaint2");
+    }
+
+    private boolean isTwaColdStart() {
+        // TWAs usually start by initiating a CustomTabsConnection first, which
+        // means we will get ProcessCreationReason.SERVICE as the startup
+        // reason all the time.
+        //
+        // Since that would not be useful, check for the timestamp from the TWA
+        // wrapper instead. If the wrapper started before the browser process,
+        // treat it as a cold start, no matter whatever warm up or other
+        // initialization that the wrapper could perform in between.
+        return mTwaStartupUptimeMillis != null
+                && mTwaStartupUptimeMillis.longValue() < Process.getStartUptimeMillis();
     }
 
     private void recordPaint(long paintUptimeMillis, String paintMetricName) {
@@ -321,17 +333,16 @@ public class CustomTabObserver extends EmptyTabObserver {
                     50,
                     DateUtils.MINUTE_IN_MILLIS,
                     50);
-            // For TWA startup, the recorded duration is the difference between
-            // mFirstCommitUptimeMillis and mTwaStartupUptimeMillis, regardless
-            // of the suffix.
-            if (mTwaStartupUptimeMillis != null) {
-                RecordHistogram.recordCustomTimesHistogram(
-                        "TrustedWebActivity.Startup." + paintMetricName + suffix,
-                        paintUptimeMillis - mTwaStartupUptimeMillis.longValue(),
-                        50,
-                        DateUtils.MINUTE_IN_MILLIS,
-                        50);
-            }
+        }
+        if (mTwaStartupUptimeMillis != null) {
+            // The TWA durations are always relative to the startup time passed in the Intent.
+            RecordHistogram.recordCustomTimesHistogram(
+                    "TrustedWebActivity.Startup.TimeToFirstCommitNavigation2"
+                            + (isTwaColdStart() ? ".Cold" : ".Warm"),
+                    mFirstCommitUptimeMillis - mTwaStartupUptimeMillis.longValue(),
+                    50,
+                    DateUtils.MINUTE_IN_MILLIS,
+                    50);
         }
     }
 

@@ -53,6 +53,13 @@ chromium-metrics-reviews@google.com.
   <variant name="WarmedUp" summary="When CustomTabsConnection#warmUp is used"/>
 </variants>
 
+<variants name="StartupSuffixTwa">
+  <variant name="Cold" summary=""/>
+  <variant name="Warm"
+      summary="When the browser process was already started before the TWA
+               wrapper started"/>
+</variants>
+
 <histogram name="CustomTab.SessionDuration{CustomTabOpenSource}" units="ms"
     expires_after="2020-10-18">
   <owner>ranj@chromium.org</owner>
@@ -1030,7 +1037,7 @@ chromium-metrics-reviews@google.com.
 
     {suffix}.
   </summary>
-  <token key="suffix" variants="StartupSuffix"/>
+  <token key="suffix" variants="StartupSuffixTwa"/>
 </histogram>
 
 <histogram
@@ -1046,7 +1053,7 @@ chromium-metrics-reviews@google.com.
 
     {suffix}.
   </summary>
-  <token key="suffix" variants="StartupSuffix"/>
+  <token key="suffix" variants="StartupSuffixTwa"/>
 </histogram>
 
 <histogram
@@ -1062,7 +1069,7 @@ chromium-metrics-reviews@google.com.
 
     {suffix}.
   </summary>
-  <token key="suffix" variants="StartupSuffix"/>
+  <token key="suffix" variants="StartupSuffixTwa"/>
 </histogram>
 
 </histograms>
