@@ -1488,3 +1488,9 @@ crbug.com/374045525 [ Debug Mac14 ] webaudio/AudioParam/audioparam-rate-change-3
 
 # Gardener 2024-10-24
 crbug.com/375337253 external/wpt/shadow-dom/reference-target/tentative/property-reflection.html [ Slow ]
+
+# Gardener 2025-02-12
+crbug.com/393175977 [ Mac14 Debug ] http/tests/devtools/network/preview-searchable.js [ Slow ]
+crbug.com/393175977 [ Mac14 Debug ] http/tests/devtools/sources/debugger-breakpoints/event-listener-breakpoints-xhr.js [ Slow ]
+crbug.com/393175977 [ Mac14 Debug ] http/tests/devtools/sources/debugger-pause/debugger-eval-on-call-frame-inside-iframe.js [ Slow ]
+crbug.com/393175977 [ Mac14 Debug ] http/tests/devtools/sources/debugger-step/debugger-step-over-inlined-scripts.js [ Slow ]
