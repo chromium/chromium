@@ -225,6 +225,7 @@
 <translation id="4019629340646866719">ChromiumOS terwujud karena adanya <ph name="BEGIN_LINK_CROS_OSS" />software open source<ph name="END_LINK_CROS_OSS" /> tambahan, seperti <ph name="BEGIN_LINK_LINUX_OSS" />lingkungan pengembangan Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="4022972681110646219">Terjemahkan layar</translation>
 <translation id="4023601594785368013">Bahasa asli: <ph name="LANGUAGE" /></translation>
+<translation id="4023845192681161785">Buka link di Chromium dari aplikasi apa pun. Selain itu, Chromium akan disematkan ke taskbar Anda untuk memudahkan akses.</translation>
 <translation id="4036079820698952681">Bantu Chromium jadi lebih baik dengan melaporkan <ph name="BEGIN_LINK" />setelan saat ini<ph name="END_LINK" /></translation>
 <translation id="4050175100176540509">Peningkatan keamanan dan fitur baru yang penting tersedia di versi terbaru.</translation>
 <translation id="4055805654398742145">Pengelola S&amp;andi</translation>
@@ -326,6 +327,7 @@
 <translation id="5524890928877629608">pojok kiri atas area penelusuran: kiri <ph name="LEFT" />%, atas <ph name="TOP" />%</translation>
 <translation id="5527463683072221100">Buka PDF di Chromium</translation>
 <translation id="5579324208890605088">Error saat sistem dimulai: jalankan penginstal sebagai pengguna biasa, bukan sebagai administrator.</translation>
+<translation id="5580770360767802657">Gunakan Chromium sebagai browser default dan sematkan ke taskbar</translation>
 <translation id="5596627076506792578">Opsi lainnya</translation>
 <translation id="5605834417512968703">Pilih item untuk ditelusuri dengan Penelusuran Gambar atau tekan escape untuk keluar dari Penelusuran Gambar</translation>
 <translation id="5618818588972826921">Pilih teks atau gambar untuk ditelusuri dengan Penelusuran Gambar atau tekan escape untuk keluar dari Penelusuran Gambar</translation>

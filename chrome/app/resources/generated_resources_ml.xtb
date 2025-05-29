@@ -485,6 +485,7 @@
 <translation id="1319983966058170660"><ph name="SUBPAGE_TITLE" /> സബ്‌പേജ് മടങ്ങുക ബട്ടൺ</translation>
 <translation id="1322046419516468189">നിങ്ങളുടെ <ph name="SAVED_PASSWORDS_STORE" /> എന്നതിൽ സംരക്ഷിച്ച പാസ്‌വേഡുകൾ കാണുക, മാനേജ് ചെയ്യുക</translation>
 <translation id="132539964543492755">ഇടത് മൗസ് ബട്ടൺ, വലത് മൗസ് ബട്ടൺ അല്ലെങ്കിൽ രണ്ട് ബട്ടണുകളും എന്നിവയ്ക്കിടയിൽ തിരഞ്ഞെടുക്കാൻ “x” ഉപയോഗിക്കുക</translation>
+<translation id="1325611581149097457">കൂടുതൽ നന്നായി എഴുതുക</translation>
 <translation id="1325898422473267360"><ph name="PERMISSION_USAGE" /> <ph name="PERMISSION_INDICATOR_DESCRIPTION" /></translation>
 <translation id="1327272175893960498">Kerberos ടിക്കറ്റുകൾ</translation>
 <translation id="1327495825214193325">ADB ഡീബഗ് ചെയ്യൽ പ്രവർത്തനക്ഷമമാക്കാൻ, ഈ <ph name="DEVICE_TYPE" /> റീസ്റ്റാർട്ട് ചെയ്യേണ്ടതുണ്ട്. അത് പ്രവർത്തനരഹിതമാക്കാൻ, ഫാക്‌ടറി ക്രമീകരണത്തിലേക്ക് റീസെറ്റ് ചെയ്യേണ്ടതുണ്ട്.</translation>
@@ -1984,6 +1985,7 @@
 <translation id="2359345697448000899">ഉപകരണങ്ങൾ മെനുവിലെ വിപുലീകരണങ്ങളിൽ ക്ലിക്ക് ചെയ്യുന്നതിലൂടെ നിങ്ങളുടെ വിപുലീകരണങ്ങൾ നിയന്ത്രിക്കുക.</translation>
 <translation id="2359556993567737338">Bluetooth ഉപകരണം കണക്റ്റ് ചെയ്യുക</translation>
 <translation id="2359808026110333948">തുടരുക</translation>
+<translation id="2360047907847684514">വിപുലീകരണങ്ങളും തീമുകളും ഉപയോഗിച്ച് നിങ്ങളുടെ ബ്രൗസർ കൂടുതൽ ഉപയോഗപ്രദമാക്കുക</translation>
 <translation id="2360792123962658445">പേജ് സംഗ്രഹം, അനുബന്ധ തിരയലുകൾ, ഈ പേജുമായി ബന്ധപ്പെട്ട മറ്റ് ഉപയോഗപ്രദമായ വിവരങ്ങൾ എന്നിവ ലഭിക്കാൻ, ടൂൾബാറിൽ Google Search സൈഡ് പാനൽ ബട്ടൺ തിരഞ്ഞെടുക്കുക</translation>
 <translation id="2361100938102002520">നിങ്ങൾ ഈ ബ്രൗസറിലേക്ക് മാനേജ് ചെയ്യുന്ന പ്രൊഫൈൽ ചേർക്കുന്നു. നിങ്ങളുടെ അഡ്‌മിൻ ആണ് പ്രൊഫൈൽ നിയന്ത്രിക്കുന്നത്, അവർക്ക് അതിന്റെ ഡാറ്റ ആക്‌സസ് ചെയ്യാനും കഴിയും.</translation>
 <translation id="236117173274098341">Optimize</translation>
@@ -2462,6 +2464,7 @@
 <translation id="2692503699962701720">ഘടകത്തിന്റെ തരങ്ങൾ, ഫോർമാറ്റ് ചെയ്‌ത ടെക്‌സ്റ്റ് എന്നിവ പറയുമ്പോൾ പിച്ച് മാറ്റുക</translation>
 <translation id="2692901429679246677">അക്വാ നിറം</translation>
 <translation id="2693134906590795721">ചാർജിംഗ് ശബ്‌ദങ്ങൾ</translation>
+<translation id="2695943520968279338">വിപുലീകരണങ്ങൾ കണ്ടെത്തൂ</translation>
 <translation id="2698147581454716013">ഇതൊരു ബണ്ടിൽ ചെയ്‌ത ഉപകരണമാണ്, Kiosk &amp; Signage അപ്ഗ്രേഡ് ഉപയോഗിച്ച് എൻറോൾ ചെയ്യാനാകില്ല.</translation>
 <translation id="2699911226086014512"><ph name="RETRIES" /> എന്ന കോഡ് ഉപയോഗിച്ച് പിൻ പ്രവർത്തിപ്പിക്കാനായില്ല.</translation>
 <translation id="2701330563083355633"><ph name="DEVICE_NAME" /> ഉപകരണത്തിൽ നിന്ന് പങ്കിട്ടു</translation>
@@ -2976,6 +2979,7 @@
 <translation id="3043126717220766543">ഗ്രൂപ്പ് നിർദ്ദേശങ്ങൾ മായ്ക്കുക</translation>
 <translation id="3043218608271070212"><ph name="GROUP_NAME" /> - <ph name="GROUP_CONTENT_STRING" /></translation>
 <translation id="3043581297103810752"><ph name="ORIGIN" /> എന്നതിൽ നിന്ന്</translation>
+<translation id="3044066905368192931">AI ഉപയോഗിച്ച് മെച്ചപ്പെടുത്തൂ</translation>
 <translation id="3045447014237878114">ഈ സൈറ്റ് ഒന്നിലധികം ഫയലുകൾ സ്വയമേവ ഡൗൺലോഡ് ചെയ്‌തു</translation>
 <translation id="3046178388369461825">Linux ഡിസ്‌ക് ഇടം വളരെ കുറവാണ്</translation>
 <translation id="304644035656848980">നിങ്ങളുടെ മൈക്രോഫോണിന്റെ പ്രിവ്യൂ</translation>
@@ -4578,6 +4582,7 @@
 <translation id="4176864026061939326">ഈ ഉപകരണം മാനേജ് ചെയ്യപ്പെടുന്നുണ്ട്. <ph name="USER_EMAIL_ADDRESS" /> അക്കൗണ്ടിന് പുതിയൊരു പ്രൊഫെെൽ വേണമെന്ന് നിങ്ങളുടെ ഉപകരണ അഡ്‌മിൻ ആവശ്യപ്പെടുന്നു</translation>
 <translation id="4177501066905053472">പരസ്യ വിഷയങ്ങൾ</translation>
 <translation id="4177668342649553942"><ph name="SHORTCUT_NAME" /> - <ph name="APP_NAME" /> തുറക്കുക</translation>
+<translation id="4177731895051842298">നിങ്ങളെ ചിട്ടയോടെ നിലനിർത്താനും, ടാസ്‌ക്കുകൾ ലളിതമാക്കാനും, ബ്രൗസിംഗ് ഇഷ്ടാനുസൃതമാക്കാനും സഹായിക്കുന്ന Chrome-ലേക്കുള്ള ആഡ്-ഓണുകളാണ് വിപുലീകരണങ്ങൾ</translation>
 <translation id="4178220097446335546">ഈ സബ്‌സ്‌ക്രിപ്‌ഷനും അനുബന്ധ നെറ്റ്‌വർക്കുകളും മറക്കാൻ, Passpoint സബ്‌സ്‌ക്രിപ്‌ഷൻ പേജിലേക്ക് പോയി സബ്‌സ്‌ക്രിപ്‌ഷൻ നീക്കം ചെയ്യുക.</translation>
 <translation id="4181602000363099176">20x</translation>
 <translation id="4181841719683918333">ഭാഷകൾ‌</translation>
@@ -5367,6 +5372,7 @@
 <translation id="4750185073185658673">കുറച്ച് അനുമതികൾ കൂടി അവലോകനം ചെയ്യാൻ നിങ്ങളുടെ ഫോണിലേക്ക് പോകുക. നിങ്ങളുടെ ഫോണിന്റെ Bluetooth-ഉം വൈഫൈയും ഓണാക്കിയിട്ടുണ്ടെന്നും ഉറപ്പാക്കുക.</translation>
 <translation id="4750394297954878236">നിർദ്ദേശങ്ങൾ</translation>
 <translation id="475088594373173692">ആദ്യ ഉപയോക്താവ്</translation>
+<translation id="4754590344707355551">വിപുലീകരണങ്ങൾ ഉപയോഗിച്ച് നിങ്ങളുടെ ബ്രൗസർ മെച്ചപ്പെടുത്തുക</translation>
 <translation id="4756378406049221019">നിർത്തുക/റീലോഡ് ചെയ്യുക</translation>
 <translation id="4756388243121344051">&amp;ചരിത്രം</translation>
 <translation id="4756671452988984333">ഓഡിയോയ്ക്കുള്ള ടെക്സ്റ്റ്</translation>
@@ -6398,6 +6404,7 @@
 <translation id="5490798133083738649">നിങ്ങളുടെ മൈക്രോഫോൺ ആക്‌സസ് ചെയ്യാൻ Linux-നെ അനുവദിക്കുക</translation>
 <translation id="549211519852037402">ബീജും വെള്ളയും</translation>
 <translation id="5492637351392383067">ഉപകരണത്തിലെ എൻക്രിപ്ഷൻ</translation>
+<translation id="5492780659774694607">നിങ്ങളെ സഹായിക്കാൻ കഴിയുന്ന Chrome-ലേക്കുള്ള ആഡ്-ഓണുകളാണ് വിപുലീകരണങ്ങൾ</translation>
 <translation id="5493455553805432330">മറക്കുക</translation>
 <translation id="5493792505296048976">സ്‌ക്രീൻ ഓണാണ്</translation>
 <translation id="5494016731375030300">ഏറ്റവും അവസാനം അടച്ച ടാബുകൾ</translation>
@@ -9620,6 +9627,7 @@
 <translation id="7815680994978050279">ദോഷകരമായ ഡൗൺലോഡ് ബ്ലോക്ക് ചെയ്‌തു</translation>
 <translation id="7817361223956157679">Linux ആപ്പുകളിൽ ഇപ്പോഴും ഓൺ-സ്‌ക്രീൻ കീബോർഡ് പ്രവർത്തിക്കില്ല</translation>
 <translation id="7818135753970109980">പുതിയ തീം ചേർത്തു (<ph name="EXTENSION_NAME" />)</translation>
+<translation id="7819839686707222575">കൂടുതൽ കാര്യങ്ങൾ ചെയ്യാൻ നിങ്ങളെ സഹായിക്കുന്ന, Chrome-നുള്ള ആഡ്-ഓണുകളാണ് വിപുലീകരണങ്ങൾ</translation>
 <translation id="7820400255539998692">ഈ ഉപകരണം ഉപയോഗിക്കുന്ന മറ്റ് ആളുകൾ നിങ്ങളുടെ പാസ്‌വേഡുകൾ കാണുന്നത് തടയാൻ <ph name="FILENAME" /> ഇല്ലാതാക്കുക</translation>
 <translation id="7820561748632634942">കൂടുതൽ സ്വിച്ചുകൾ അസൈൻ ചെയ്യണോ?</translation>
 <translation id="782057141565633384">വീഡിയോ വിലാസം പകർത്തുക</translation>
@@ -10587,6 +10595,7 @@
 <translation id="8477241577829954800">അസാധുവാക്കി</translation>
 <translation id="8477384620836102176">&amp;പൊതുവായത്</translation>
 <translation id="8477446666255316832">അടുത്ത തവണ വേഗത്തിൽ സൈൻ ഇൻ ചെയ്യുക</translation>
+<translation id="8478346767369317046">ഔദ്യോഗികം</translation>
 <translation id="8479176401914456949">കോഡ് അസാധുവാണ്. വീണ്ടും ശ്രമിക്കുക.</translation>
 <translation id="8480869669560681089"><ph name="VENDOR_NAME" /> നിന്നുള്ള പരിചിതമല്ലാത്ത ഉപകരണം</translation>
 <translation id="8481187309597259238">USB അനുമതി സ്ഥിരീകരിക്കുക</translation>
@@ -11079,6 +11088,7 @@
 <translation id="8827289157496676362">വിപുലീകരണം പിൻ ചെയ്യുക</translation>
 <translation id="8828933418460119530">DNS നാമം</translation>
 <translation id="8829979393064090868">സ്പ്ലിറ്റ് വ്യൂവിനായി ടാബ് ചേർക്കുക</translation>
+<translation id="8830479210602243906">ഉൽപ്പാദനക്ഷമത ബൂസ്റ്റ് ചെയ്യുക</translation>
 <translation id="883062543841130884">പകരമുള്ളവ</translation>
 <translation id="8830779999439981481">അപ്ഡേറ്റുകൾ ബാധകമാക്കാൻ റീസ്റ്റാർട്ട് ചെയ്യുന്നു</translation>
 <translation id="8830796635868321089">നിലവിലെ പ്രോക്‌സി ക്രമീകരണങ്ങൾ ഉപയോഗിച്ചുള്ള അപ്‌ഡേറ്റ് പരിശോധന പരാജയപ്പെട്ടു. നിങ്ങളുടെ <ph name="PROXY_SETTINGS_LINK_START" />പ്രോക്‌സി ക്രമീകരണങ്ങൾ<ph name="PROXY_SETTINGS_LINK_END" /> ക്രമീകരിക്കുക.</translation>

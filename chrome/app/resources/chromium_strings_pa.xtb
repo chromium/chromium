@@ -227,6 +227,7 @@
 <translation id="4019629340646866719">ChromiumOS ਨੂੰ ਵਧੀਕ <ph name="BEGIN_LINK_CROS_OSS" />ਖੁੱਲ੍ਹੇ ਸਰੋਤ ਸਾਫ਼ਟਵੇਅਰ<ph name="END_LINK_CROS_OSS" /> ਕਰਕੇ ਸੰਭਵ ਬਣਾਇਆ ਗਿਆ ਹੈ, ਜਿਵੇਂ ਕਿ <ph name="BEGIN_LINK_LINUX_OSS" />Linux ਵਿਕਾਸ ਵਾਤਾਵਰਨ<ph name="END_LINK_LINUX_OSS" />।</translation>
 <translation id="4022972681110646219">ਸਕ੍ਰੀਨ ਦਾ ਅਨੁਵਾਦ ਕਰੋ</translation>
 <translation id="4023601594785368013">ਮੂਲ ਭਾਸ਼ਾ: <ph name="LANGUAGE" /></translation>
+<translation id="4023845192681161785">ਕਿਸੇ ਵੀ ਐਪ ਤੋਂ Chromium ਵਿੱਚ ਲਿੰਕ ਖੋਲ੍ਹੋ। ਨਾਲ ਹੀ, ਆਸਾਨ ਪਹੁੰਚ ਲਈ, ਇਹ ਤੁਹਾਡੇ ਟਾਸਕਬਾਰ ਨਾਲ ਪਿੰਨ ਹੋ ਜਾਂਦਾ ਹੈ।</translation>
 <translation id="4036079820698952681"><ph name="BEGIN_LINK" />ਵਰਤਮਾਨ ਸੈਟਿੰਗਾਂ<ph name="END_LINK" /> ਦੀ ਰਿਪੋਰਟ ਕਰਕੇ Chromium ਨੂੰ ਬਿਹਤਰ ਬਣਾਉਣ ਵਿੱਚ ਮਦਦ ਕਰੋ</translation>
 <translation id="4050175100176540509">ਮਹੱਤਵਪੂਰਣ ਸੁਰੱਖਿਆ ਸੁਧਾਰ ਅਤੇ ਨਵੀਆਂ ਵਿਸ਼ੇਸ਼ਤਾਵਾਂ ਨਵੇਂ ਰੂਪ ਵਿੱਚ ਉਪਲਬਧ ਹਨ।</translation>
 <translation id="4055805654398742145">P&amp;assword Manager</translation>
@@ -328,6 +329,7 @@
 <translation id="5524890928877629608">ਖੋਜ ਖੇਤਰ ਦਾ ਸਿਖਰਲਾ ਖੱਬਾ ਕੋਨਾ: ਖੱਬੇ ਤੋਂ <ph name="LEFT" />%, ਸਿਖਰ ਤੋਂ <ph name="TOP" />%</translation>
 <translation id="5527463683072221100">Chromium ਵਿੱਚ PDF ਖੋਲ੍ਹੋ</translation>
 <translation id="5579324208890605088">ਸਟਾਰਟ-ਅੱਪ ਸੰਬੰਧੀ ਗੜਬੜ: ਕਿਰਪਾ ਕਰਕੇ ਸਥਾਪਨਾਕਾਰ ਨੂੰ ਕਿਸੇ ਨਿਯਮਿਤ ਵਰਤੋਂਕਾਰ ਵਜੋਂ ਚਲਾਓ, ਨਾ ਕਿ ਪ੍ਰਸ਼ਾਸਕ ਵਜੋਂ।</translation>
+<translation id="5580770360767802657">Chromium ਦੀ ਪੂਰਵ-ਨਿਰਧਾਰਿਤ ਤੌਰ 'ਤੇ ਵਰਤੋਂ ਕਰੋ ਅਤੇ ਇਸਨੂੰ ਪਿੰਨ ਕਰੋ</translation>
 <translation id="5596627076506792578">ਹੋਰ ਵਿਕਲਪ</translation>
 <translation id="5605834417512968703">'ਚਿੱਤਰ ਖੋਜ' ਨਾਲ ਖੋਜਣ ਲਈ ਕੁਝ ਵੀ ਚੁਣੋ ਜਾਂ 'ਚਿੱਤਰ ਖੋਜ' ਤੋਂ ਬਾਹਰ ਆਉਣ ਲਈ Escape ਦਬਾਓ</translation>
 <translation id="5618818588972826921">'ਚਿੱਤਰ ਖੋਜ' ਨਾਲ ਖੋਜਣ ਲਈ ਕੋਈ ਵੀ ਲਿਖਤ ਜਾਂ ਚਿੱਤਰ ਚੁਣੋ ਜਾਂ 'ਚਿੱਤਰ ਖੋਜ' ਤੋਂ ਬਾਹਰ ਆਉਣ ਲਈ Escape ਦਬਾਓ</translation>

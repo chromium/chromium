@@ -318,6 +318,7 @@
 <translation id="4970880042055371251">ChromeOS-н хувилбар</translation>
 <translation id="4990567037958725628">Google Chrome цайвар шаргал өнгө</translation>
 <translation id="5003967926796347400">“Google Password Manager”-г товшино уу</translation>
+<translation id="504867494566807945">Дурын аппаас холбоосыг Chrome-д нээнэ үү. Түүнчлэн хялбар хандахад зориулж үүнийг таны ажлын хэсэгт бэхэлдэг.</translation>
 <translation id="5114340746415930644"><ph name="USER_EMAIL" /> бүртгэлдээ Chrome-н өгөгдлийг ашиглах, хадгалахын тулд нэвтрэх үгээ оруулна уу</translation>
 <translation id="5120334927898581447">Та Google-н бусад үйлчилгээнд нэвтрэх үедээ Chrome-д нэвтэрнэ үү</translation>
 <translation id="5126049312684316860">Chrome таны зочлох магадлалтай илүү олон хуудсыг урьдчилан ачаалах бөгөөд ингэснээр тэдгээр нь таныг зочлох үед илүү хурдан ачаална</translation>
@@ -398,6 +399,7 @@ Google Chrome таны тохируулгыг дахин сэргээх боло
 <translation id="6075300983329039771">Танай байгууллага болох <ph name="MANAGER" /> таныг Chrome-д нэвтрэхийг шаардаж байна</translation>
 <translation id="6113794647360055231">Chrome илүү сайн боллоо</translation>
 <translation id="6116252277240876590">Энэ хэлийг Chrome-д цэс, тохиргоо, сэрэмжлүүлэг болон бусад текстийг үзүүлэхэд ашигладаг</translation>
+<translation id="6127237283587442951">Chrome-г өгөгдмөлөөр ашиглаж, бэхлээрэй</translation>
 <translation id="6134085236017727171">Микрофоноо ашиглахын тулд <ph name="BEGIN_LINK" />системийн тохиргоонд<ph name="END_LINK" /> Chrome-д хандах эрх өгнө үү</translation>
 <translation id="6135456723633883042">Эдгээр таб нэмэлт нөөцүүдийг ашиглаж байна. Гүйцэтгэлээ сайжруулахын тулд Chrome-д тэдгээр табыг идэвхгүй болгохыг зөвшөөрнө үү.</translation>
 <translation id="6145313976051292476">PDF-г Chrome-д нээх</translation>

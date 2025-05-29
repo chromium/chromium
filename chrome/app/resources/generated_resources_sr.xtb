@@ -487,6 +487,7 @@
 <translation id="1319983966058170660">Дугме Назад за подстраницу <ph name="SUBPAGE_TITLE" /></translation>
 <translation id="1322046419516468189">Прегледајте сачуване лозинке и управљајте њима са <ph name="SAVED_PASSWORDS_STORE" /></translation>
 <translation id="132539964543492755">Користите „x” да бисте променили избор тастера миша између левог тастера, десног тастера и оба</translation>
+<translation id="1325611581149097457">Пишите боље</translation>
 <translation id="1325898422473267360"><ph name="PERMISSION_USAGE" /> <ph name="PERMISSION_INDICATOR_DESCRIPTION" /></translation>
 <translation id="1327272175893960498">Kerberos тикети</translation>
 <translation id="1327495825214193325">Да бисте омогућили ADB отклањање грешака, морате да рестартујете овај <ph name="DEVICE_TYPE" />. Да бисте га онемогућили, мораћете да ресетујете уређај на фабричка подешавања.</translation>
@@ -1985,6 +1986,7 @@
 <translation id="2359345697448000899">Управљајте додацима кликом на ставку Додаци у менију Алатке.</translation>
 <translation id="2359556993567737338">Повежите Bluetooth уређај</translation>
 <translation id="2359808026110333948">Настави</translation>
+<translation id="2360047907847684514">Максимално побољшајте прегледач помоћу додатака и тема</translation>
 <translation id="2360792123962658445">Да бисте добили резиме странице, сродне претраге и друге корисне информације о овој страници, на траци с алаткама изаберите дугме бочне табле Google претраге</translation>
 <translation id="2361100938102002520">Додајете профил којим се управља у овај прегледач. Администратор има контролу над профилом и може да приступа његовим подацима.</translation>
 <translation id="236117173274098341">Оптимизуј</translation>
@@ -2463,6 +2465,7 @@
 <translation id="2692503699962701720">Промени интонацију приликом изговора типова елемената и форматираног текста</translation>
 <translation id="2692901429679246677">Тиркизна</translation>
 <translation id="2693134906590795721">Звукови пуњења</translation>
+<translation id="2695943520968279338">Откријте додатке</translation>
 <translation id="2698147581454716013">Ово је уређај у оквиру пакета и не може да се региструје за надоградњу киоска или уређаја за пријављивање.</translation>
 <translation id="2699911226086014512">PIN операција није успела, кôд грешке <ph name="RETRIES" />.</translation>
 <translation id="2701330563083355633">Дељено са: <ph name="DEVICE_NAME" /></translation>
@@ -2977,6 +2980,7 @@
 <translation id="3043126717220766543">Обриши предлоге групе</translation>
 <translation id="3043218608271070212"><ph name="GROUP_NAME" /> – <ph name="GROUP_CONTENT_STRING" /></translation>
 <translation id="3043581297103810752">Са <ph name="ORIGIN" /></translation>
+<translation id="3044066905368192931">Побољшајте помоћу вештачке интелигенције</translation>
 <translation id="3045447014237878114">Овај сајт је аутоматски преузео више датотека</translation>
 <translation id="3046178388369461825">Простор на диску за Linux је изузетно мали</translation>
 <translation id="304644035656848980">Преглед микрофона</translation>
@@ -4580,6 +4584,7 @@
 <translation id="4176864026061939326">Овим уређајем се управља. Администратор уређаја захтева нови профил за налог <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="4177501066905053472">Теме огласа</translation>
 <translation id="4177668342649553942">Отвори <ph name="SHORTCUT_NAME" /> – <ph name="APP_NAME" /></translation>
+<translation id="4177731895051842298">Додаци су Chrome додаци који вам помажу да будете организовани, поједноставите задатке и прилагодите прегледање</translation>
 <translation id="4178220097446335546">Да бисте заборавили ову претплату и повезане мреже, идите на страницу претплате за Passpoint да бисте уклонили претплату.</translation>
 <translation id="4181602000363099176">20x</translation>
 <translation id="4181841719683918333">Језици</translation>
@@ -4713,6 +4718,7 @@
 <translation id="4275397969489577657">Омогући евидентирање стрима догађаја</translation>
 <translation id="4275788652681621337">Затвори бочну таблу</translation>
 <translation id="4275830172053184480">Поновно покретање уређаја</translation>
+<translation id="4276598757692536305">PPD штампача</translation>
 <translation id="4276856098224910511">Инсталирање није успело. Ажурирање ОС-а је на чекању. Примените сва ажурирања ОС-а на чекању, рестартујте апликацију и пробајте поново. Кôд грешке је <ph name="ERROR" />.</translation>
 <translation id="4277434192562187284">Извор XML конфигурације</translation>
 <translation id="4278348589087554892">{NUM_SITES,plural, =1{Дозволе су уклоњене са 1 сајта}one{Дозволе су уклоњене са {NUM_SITES} сајта}few{Дозволе су уклоњене са {NUM_SITES} сајта}other{Дозволе су уклоњене са {NUM_SITES} сајтова}}</translation>
@@ -5369,6 +5375,7 @@
 <translation id="4750185073185658673">Идите на телефон да бисте прегледали још неколико дозвола. Уверите се да су Bluetooth и WiFi телефона укључени.</translation>
 <translation id="4750394297954878236">Предлози</translation>
 <translation id="475088594373173692">Први корисник</translation>
+<translation id="4754590344707355551">Побољшајте прегледач помоћу додатака</translation>
 <translation id="4756378406049221019">Заустави/поново учитај</translation>
 <translation id="4756388243121344051">&amp;Историја</translation>
 <translation id="4756671452988984333">Текст за звук</translation>
@@ -6398,6 +6405,7 @@
 <translation id="5490798133083738649">Дозволи Linux-у да приступа микрофону</translation>
 <translation id="549211519852037402">Беж и бела</translation>
 <translation id="5492637351392383067">Шифровање на уређају</translation>
+<translation id="5492780659774694607">Додаци су Chrome додаци који вам помажу</translation>
 <translation id="5493455553805432330">Заборави</translation>
 <translation id="5493792505296048976">екран је укључен</translation>
 <translation id="5494016731375030300">Недавно затворене картице</translation>
@@ -9626,6 +9634,7 @@
 <translation id="7815680994978050279">Опасно преузимање је блокирано</translation>
 <translation id="7817361223956157679">Тастатура на екрану још увек не ради у Linux апликацијама</translation>
 <translation id="7818135753970109980">Додата је нова тема (<ph name="EXTENSION_NAME" />)</translation>
+<translation id="7819839686707222575">Додаци су Chrome додаци који вам помажу да урадите више</translation>
 <translation id="7820400255539998692">Избришите фајл <ph name="FILENAME" /> да други људи који користе овај уређај не би могли да виде ваше лозинке</translation>
 <translation id="7820561748632634942">Желите да доделите додатне прекидаче?</translation>
 <translation id="782057141565633384">К&amp;опирај адресу видеа</translation>
@@ -10593,6 +10602,7 @@
 <translation id="8477241577829954800">Замењено</translation>
 <translation id="8477384620836102176">&amp;Опште</translation>
 <translation id="8477446666255316832">Пријавите се брже следећи пут</translation>
+<translation id="8478346767369317046">Пословни</translation>
 <translation id="8479176401914456949">Кôд је неважећи. Пробајте поново.</translation>
 <translation id="8480869669560681089">Непознат уређај произвођача <ph name="VENDOR_NAME" /></translation>
 <translation id="8481187309597259238">Потврдите дозволу за USB</translation>
@@ -11088,6 +11098,7 @@
 <translation id="8827289157496676362">Закачите додатак</translation>
 <translation id="8828933418460119530">Име DNS-а</translation>
 <translation id="8829979393064090868">Додај картицу у подељени приказ</translation>
+<translation id="8830479210602243906">Повећајте продуктивност</translation>
 <translation id="883062543841130884">Замене</translation>
 <translation id="8830779999439981481">Рестартује се да бисте применили ажурирања</translation>
 <translation id="8830796635868321089">Провера ажурирања није успела помоћу актуелних подешавања проксија. Прилагодите <ph name="PROXY_SETTINGS_LINK_START" />подешавања проксија<ph name="PROXY_SETTINGS_LINK_END" />.</translation>

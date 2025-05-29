@@ -313,6 +313,7 @@
 <translation id="4970880042055371251">Версия Chrome OS</translation>
 <translation id="4990567037958725628">Google Chrome Canary</translation>
 <translation id="5003967926796347400">Выберите "Google Менеджер паролей".</translation>
+<translation id="504867494566807945">Открывайте ссылки в Chrome из любых приложений. Для быстрого доступа браузер закрепляется на панели задач.</translation>
 <translation id="5114340746415930644">Чтобы использовать и сохранять данные Chrome в аккаунте <ph name="USER_EMAIL" />, введите кодовую фразу.</translation>
 <translation id="5120334927898581447">Входить в Chrome при входе в другие сервисы Google</translation>
 <translation id="5126049312684316860">Chrome предварительно загружает ещё больше страниц, которые вы с большой вероятностью посетите, чтобы они открылись быстрее.</translation>
@@ -389,6 +390,7 @@
 <translation id="6075300983329039771">По правилам вашей организации (<ph name="MANAGER" />), нужно войти в Chrome</translation>
 <translation id="6113794647360055231">Chrome становится все лучше</translation>
 <translation id="6116252277240876590">На этом языке показываются меню, настройки, оповещения и другой текст в Chrome</translation>
+<translation id="6127237283587442951">Сделайте Chrome браузером по умолчанию и закрепите его на панели задач</translation>
 <translation id="6134085236017727171">Чтобы использовать микрофон, предоставьте Chrome доступ к нему в <ph name="BEGIN_LINK" />системных настройках<ph name="END_LINK" /></translation>
 <translation id="6135456723633883042">Эти вкладки занимают лишние ресурсы. Чтобы повысить производительность, разрешите Chrome сделать их неактивными.</translation>
 <translation id="6145313976051292476">Открывать PDF-файлы в Chrome</translation>

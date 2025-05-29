@@ -486,6 +486,7 @@ Du kan til enhver tid tjekke dine adgangskoder i <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1319983966058170660">Knap til undersiden <ph name="SUBPAGE_TITLE" /></translation>
 <translation id="1322046419516468189">Se og administrer gemte adgangskoder på din <ph name="SAVED_PASSWORDS_STORE" /></translation>
 <translation id="132539964543492755">Brug "x" til at skifte mellem venstre og højre museknap eller dem begge</translation>
+<translation id="1325611581149097457">Skriv bedre</translation>
 <translation id="1325898422473267360"><ph name="PERMISSION_USAGE" /> <ph name="PERMISSION_INDICATOR_DESCRIPTION" /></translation>
 <translation id="1327272175893960498">Kerberos-billetter</translation>
 <translation id="1327495825214193325">Hvis du vil aktivere ADB-fejlretning, skal du genstarte denne <ph name="DEVICE_TYPE" />. Du skal gendanne fabriksindstillingerne på den for at deaktivere det.</translation>
@@ -2002,6 +2003,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2359345697448000899">Administrer dine udvidelser ved at klikke på Udvidelser i værktøjsmenuen.</translation>
 <translation id="2359556993567737338">Opret forbindelse til Bluetooth-enhed</translation>
 <translation id="2359808026110333948">Fortsæt</translation>
+<translation id="2360047907847684514">Giv din browser et boost med udvidelser og temaer</translation>
 <translation id="2360792123962658445">Du kan få en sideoversigt, relaterede søgninger og andre nyttige oplysninger om denne side ved at vælge knappen for Google Søgning-sidepanelet på værktøjslinjen</translation>
 <translation id="2361100938102002520">Du er ved at føje en administreret profil til denne browser. Din administrator har kontrol over profilen og har adgang til dens data.</translation>
 <translation id="236117173274098341">Optimer</translation>
@@ -2480,6 +2482,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2692503699962701720">Brug et andet toneleje, når der oplæses elementtyper og formateret tekst.</translation>
 <translation id="2692901429679246677">Aqua</translation>
 <translation id="2693134906590795721">Lyd ved opladning</translation>
+<translation id="2695943520968279338">Se udvidelser</translation>
 <translation id="2698147581454716013">Dette er en pakkeenhed, som ikke kan tilmeldes Kiosk &amp; Signage-opgraderingen.</translation>
 <translation id="2699911226086014512">Pinkodehandlingen mislykkedes med koden <ph name="RETRIES" />.</translation>
 <translation id="2701330563083355633">Delt fra <ph name="DEVICE_NAME" /></translation>
@@ -2994,6 +2997,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="3043126717220766543">Ryd gruppeforslag</translation>
 <translation id="3043218608271070212"><ph name="GROUP_NAME" /> – <ph name="GROUP_CONTENT_STRING" /></translation>
 <translation id="3043581297103810752">Fra <ph name="ORIGIN" /></translation>
+<translation id="3044066905368192931">Opnå forbedringer med AI</translation>
 <translation id="3045447014237878114">Dette website har downloadet flere filer automatisk</translation>
 <translation id="3046178388369461825">Der er næsten ikke mere Linux-diskplads</translation>
 <translation id="304644035656848980">Forhåndsvisning af din mikrofon</translation>
@@ -4597,6 +4601,7 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4176864026061939326">Dette er en administreret enhed. En ny profil for kontoen <ph name="USER_EMAIL_ADDRESS" /> er påkrævet af din enhedsadministrator</translation>
 <translation id="4177501066905053472">Annonceemner</translation>
 <translation id="4177668342649553942">Åbn <ph name="SHORTCUT_NAME" /> - <ph name="APP_NAME" /></translation>
+<translation id="4177731895051842298">Udvidelser er tilføjelser til Chrome, som kan hjælpe dig med at bevare overblikket, forenkle opgaver og tilpasse din browseroplevelse</translation>
 <translation id="4178220097446335546">Hvis du vil glemme dette abonnement og dets tilknyttede netværk, skal du gå til abonnementssiden for Passpoint for at fjerne abonnementet.</translation>
 <translation id="4181602000363099176">20x</translation>
 <translation id="4181841719683918333">Sprog</translation>
@@ -4730,6 +4735,7 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4275397969489577657">Aktivér logning af begivenhedsstreaming</translation>
 <translation id="4275788652681621337">Luk sidepanelet</translation>
 <translation id="4275830172053184480">Genstart din enhed</translation>
+<translation id="4276598757692536305">PPD-fil for printer</translation>
 <translation id="4276856098224910511">Installationen mislykkedes. OS-opdateringen afventer. Anvend eventuelle afventende OS-opdateringer, genstart, og prøv igen. Fejlkoden er <ph name="ERROR" />.</translation>
 <translation id="4277434192562187284">XML-konfigurationskilde</translation>
 <translation id="4278348589087554892">{NUM_SITES,plural, =1{Tilladelserne er blevet fjernet fra 1 website}one{Tilladelserne er blevet fjernet fra {NUM_SITES} website}other{Tilladelserne er blevet fjernet fra {NUM_SITES} websites}}</translation>
@@ -5386,6 +5392,7 @@ Brug Ctrl+Alt+Lysstyrke ned for at zoome ud.</translation>
 <translation id="4750185073185658673">Gennemgå et par tilladelser mere på din telefon. Sørg for, at Bluetooth og Wi-Fi er aktiveret på din telefon.</translation>
 <translation id="4750394297954878236">Forslag</translation>
 <translation id="475088594373173692">Første bruger</translation>
+<translation id="4754590344707355551">Få mere ud af din browser med udvidelser</translation>
 <translation id="4756378406049221019">Stop/genindlæs</translation>
 <translation id="4756388243121344051">&amp;Historik</translation>
 <translation id="4756671452988984333">Tekstning af lyd</translation>
@@ -6417,6 +6424,7 @@ Flere kontakter kan tildeles denne handling.</translation>
 <translation id="5490798133083738649">Tillad, at Linux får adgang til din mikrofon</translation>
 <translation id="549211519852037402">Beige og hvid</translation>
 <translation id="5492637351392383067">Kryptering på enheden</translation>
+<translation id="5492780659774694607">Udvidelser er tilføjelser til Chrome, der kan hjælpe dig</translation>
 <translation id="5493455553805432330">Glem</translation>
 <translation id="5493792505296048976">skærmen er tændt</translation>
 <translation id="5494016731375030300">Seneste lukkede faner</translation>
@@ -9641,6 +9649,7 @@ Tryk på en kontakt eller tast, der er tildelt en handling, for at fjerne tildel
 <translation id="7815680994978050279">En farlig download blev blokeret</translation>
 <translation id="7817361223956157679">Skærmtastaturet fungerer endnu ikke i Linux-apps</translation>
 <translation id="7818135753970109980">Nyt tema er tilføjet (<ph name="EXTENSION_NAME" />)</translation>
+<translation id="7819839686707222575">Udvidelser er tilføjelser til Chrome, der kan hjælpe dig med at få mere fra hånden</translation>
 <translation id="7820400255539998692">Slet <ph name="FILENAME" />, så andre, der bruger denne enhed, ikke kan se dine adgangskoder</translation>
 <translation id="7820561748632634942">Vil du tildele flere kontakter?</translation>
 <translation id="782057141565633384">K&amp;opiér webadressen til videoen</translation>
@@ -10608,6 +10617,7 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8477241577829954800">Erstattet</translation>
 <translation id="8477384620836102176">&amp;Generelt</translation>
 <translation id="8477446666255316832">Log hurtigere ind næste gang</translation>
+<translation id="8478346767369317046">Arbejde</translation>
 <translation id="8479176401914456949">Ugyldig kode. Prøv igen.</translation>
 <translation id="8480869669560681089">Ukendt enhed fra <ph name="VENDOR_NAME" /></translation>
 <translation id="8481187309597259238">Bekræft USB-tilladelse</translation>
@@ -11103,6 +11113,7 @@ Dette kan omfatte oplysninger om installeret software, filer, din browser, enhed
 <translation id="8827289157496676362">Fastgør udvidelse</translation>
 <translation id="8828933418460119530">DNS-navn</translation>
 <translation id="8829979393064090868">Føj fane til opdelt visning</translation>
+<translation id="8830479210602243906">Øg produktiviteten</translation>
 <translation id="883062543841130884">Erstatninger</translation>
 <translation id="8830779999439981481">Genstarter for at anvende opdateringer</translation>
 <translation id="8830796635868321089">Opdateringskontrollen kunne ikke anvende de aktuelle indstillinger for proxy. Tilpas dine <ph name="PROXY_SETTINGS_LINK_START" />Indstillinger for proxy<ph name="PROXY_SETTINGS_LINK_END" />.</translation>

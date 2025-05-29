@@ -225,6 +225,7 @@
 <translation id="4019629340646866719">ChromiumOS-г <ph name="BEGIN_LINK_LINUX_OSS" />Linux-н хөгжүүлэлтийн орчин <ph name="END_LINK_LINUX_OSS" /> болох нэмэлт <ph name="BEGIN_LINK_CROS_OSS" />нээлттэй эх кодын программ хангамжаар<ph name="END_LINK_CROS_OSS" /> боломжтой болгосон.</translation>
 <translation id="4022972681110646219">Дэлгэцийг орчуулах</translation>
 <translation id="4023601594785368013">Эх хэл: <ph name="LANGUAGE" /></translation>
+<translation id="4023845192681161785">Дурын аппаас холбоосыг Chromium-д нээнэ үү. Түүнчлэн хялбар хандахад зориулж үүнийг таны ажлын хэсэгт бэхэлдэг.</translation>
 <translation id="4036079820698952681"><ph name="BEGIN_LINK" />Одоогийн тохиргоог<ph name="END_LINK" /> мэдэгдэж Chromium-г сайжруулахад тусална уу</translation>
 <translation id="4050175100176540509">Хамгийн сүүлийн хувилбар дээр аюулгүй байдлын чухал сайжруулалт болон шинэ функцийг санал болгож байна.</translation>
 <translation id="4055805654398742145">Нууц үгний менежер</translation>
@@ -326,6 +327,7 @@
 <translation id="5524890928877629608">хайлтын хэсгийн зүүн дээд булан: зүүн <ph name="LEFT" />%, дээд <ph name="TOP" />%</translation>
 <translation id="5527463683072221100">PDF-г Chromium-д нээх</translation>
 <translation id="5579324208890605088">Эхлэхэд алдаа гарлаа: суулгагчийг администратораар бус, энгийн хэрэглэгчээр ажиллуулна уу.</translation>
+<translation id="5580770360767802657">Chromium-г өгөгдмөлөөр ашиглаж, бэхлээрэй</translation>
 <translation id="5596627076506792578">Бусад сонголт</translation>
 <translation id="5605834417512968703">Зурган хайлтаар хайхыг хүссэн зүйлээ сонгох эсвэл Зурган хайлтаас гарахын тулд escape-г дарна уу</translation>
 <translation id="5618818588972826921">Зурган хайлтаар хайхын тулд дурын текст, зургийг сонгох эсвэл Зурган хайлтаас гарахын тулд escape дээр дарна уу</translation>

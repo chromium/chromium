@@ -4729,6 +4729,7 @@
 <translation id="4275397969489577657">ইভেন্ট স্ট্রিম লগ-ইন চালু করুন</translation>
 <translation id="4275788652681621337">সাইড প্যানেল বন্ধ করুন</translation>
 <translation id="4275830172053184480">আপনার ডিভাইস বন্ধ করে চালু করুন</translation>
+<translation id="4276598757692536305">প্রিন্টারের জন্য PPD ফাইল</translation>
 <translation id="4276856098224910511">ইনস্টল করা যায়নি, OS আপডেট বাকি আছে। বাকি থাকা যেকোনও OS আপডেট প্রয়োগ, রিস্টার্ট করে, আবার চেষ্টা করুন। সমস্যার কোড হল <ph name="ERROR" />।</translation>
 <translation id="4277434192562187284">XML কনফিগারেশন সোর্স</translation>
 <translation id="4278348589087554892">{NUM_SITES,plural, =1{১টি সাইট থেকে অনুমতি সরানো হয়েছে}one{{NUM_SITES}টি সাইট থেকে অনুমতি সরানো হয়েছে}other{{NUM_SITES}টি সাইট থেকে অনুমতি সরানো হয়েছে}}</translation>

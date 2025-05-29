@@ -318,6 +318,7 @@
 <translation id="4970880042055371251">Верзија Chrome ОС-а</translation>
 <translation id="4990567037958725628">Google Chrome Canary</translation>
 <translation id="5003967926796347400">Кликните на Google менаџер лозинки</translation>
+<translation id="504867494566807945">Отварајте линкове у Chrome-у из било које апликације. Ради лакшег приступа закачите га на траку задатака.</translation>
 <translation id="5114340746415930644">Унесите приступну фразу да бисте користили и сачували Chrome податке на налогу, <ph name="USER_EMAIL" /></translation>
 <translation id="5120334927898581447">Пријавите се у Chrome када се пријавите у друге Google услуге</translation>
 <translation id="5126049312684316860">Chrome предучитава још више страница које ћете вероватно посетити, како би се брже учитавале када их посетите</translation>
@@ -398,6 +399,7 @@ Google Chrome не може да врати подешавања.</translation>
 <translation id="6075300983329039771">Ваша организација, <ph name="MANAGER" />, захтева да се пријавите у Chrome</translation>
 <translation id="6113794647360055231">Управо смо побољшали Chrome</translation>
 <translation id="6116252277240876590">Овај језик се користи за приказивање менија, подешавања, упозорења и другог текста у Chrome-у</translation>
+<translation id="6127237283587442951">Подразумевано користите Chrome и закачите га</translation>
 <translation id="6134085236017727171">Да бисте користили микрофон, одобрите Chrome-у приступ у <ph name="BEGIN_LINK" />подешавањима система<ph name="END_LINK" /></translation>
 <translation id="6135456723633883042">Ове картице користе додатне ресурсе. Да бисте побољшали перформансе, дозволите Chrome-у да их учини неактивним.</translation>
 <translation id="6145313976051292476">Отварајте PDF-ове у Chrome-у</translation>

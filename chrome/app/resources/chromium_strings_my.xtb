@@ -228,6 +228,7 @@
 <translation id="4019629340646866719"><ph name="BEGIN_LINK_LINUX_OSS" />Linux ဆော့ဖ်ဝဲရေးဆွဲမှု ပတ်ဝန်းကျင်<ph name="END_LINK_LINUX_OSS" /> တွင် <ph name="BEGIN_LINK_CROS_OSS" />အခမဲ့ရင်းမြစ် ဆော့ဖ်ဝဲ<ph name="END_LINK_CROS_OSS" /> ထပ်ဆောင်းဖြည့်ခြင်းဖြင့် ChromiumOS ကို ရေးဆွဲထားသည်။</translation>
 <translation id="4022972681110646219">ဖန်သားပြင်ကို ဘာသာပြန်ရန်</translation>
 <translation id="4023601594785368013">မူရင်းဘာသာစကား- <ph name="LANGUAGE" /></translation>
+<translation id="4023845192681161785">Chromium တွင် အက်ပ်များရှိ လင့်ခ်များကို ဖွင့်ပါ။ ထို့ပြင် အလွယ်သုံးနိုင်ရန်အတွက် သင်၏ လုပ်ဆောင်စရာဘားတွင် ၎င်းကို ပင်ထိုးပါ။</translation>
 <translation id="4036079820698952681"><ph name="BEGIN_LINK" />လက်ရှိဆက်တင်များ<ph name="END_LINK" />ကို အစီရင်ခံပေးခြင်းအားဖြင့် Chromium ပိုကောင်းလာအောင် ကူညီပေးပါ</translation>
 <translation id="4050175100176540509">အရေးကြီးလုံခြုံရေးဆိုင်ရာဖွံ့ဖြိုးတိုးတက်မှုများနှင့် အင်္ဂါရပ် အသစ်များအား နောက်ဆုံးပေါ် ဗားရှင်းဖြင့် ရရှိနိုင်ပါသည်။</translation>
 <translation id="4055805654398742145">P&amp;assword Manager</translation>
@@ -330,6 +331,7 @@
 <translation id="5524890928877629608">ရှာဖွေမှုနေရာ၏ ဘယ်ဘက်ထိပ်ထောင့်- ဘယ် <ph name="LEFT" />%၊ ထိပ် <ph name="TOP" />%</translation>
 <translation id="5527463683072221100">Chromium တွင် PDF များ ဖွင့်ရန်</translation>
 <translation id="5579324208890605088">စတင်မှုဆိုင်ရာ အမှားအယွင်း- ထည့်သွင်းသည့်ဖိုင်ကို ကြီးကြပ်သူအနေဖြင့် မဟုတ်ဘဲ ပုံမှန်အသုံးပြုသူအနေဖြင့် ဖွင့်ပါ။</translation>
+<translation id="5580770360767802657">Chromium ကို မူရင်းအဖြစ် သုံးပြီး ပင်ထိုးပါ</translation>
 <translation id="5596627076506792578">ပိုမို ရွေးချယ်စရာများ</translation>
 <translation id="5605834417512968703">‘ပုံဖြင့်ရှာဖွေမှု’ ဖြင့်ရှာရန် တစ်ခုခုရွေးပါ (သို့) ‘ပုံဖြင့်ရှာဖွေမှု’ မှ ထွက်ရန် Escape နှိပ်ပါ</translation>
 <translation id="5618818588972826921">‘ပုံဖြင့်ရှာဖွေမှု’ ဖြင့် ရှာရန် စာသား (သို့) ပုံ တစ်ခုခုရွေးပါ သို့မဟုတ် ‘ပုံဖြင့်ရှာဖွေမှု’ မှထွက်ရန် Escape နှိပ်ပါ</translation>

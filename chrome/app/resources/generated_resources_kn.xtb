@@ -4725,6 +4725,7 @@
 <translation id="4275397969489577657">ಈವೆಂಟ್ ಸ್ಟ್ರೀಮ್ ಲಾಗ್ ಇನ್ ಅನ್ನು ಸಕ್ರಿಯಗೊಳಿಸಿ</translation>
 <translation id="4275788652681621337">ಸೈಡ್ ಪ್ಯಾನೆಲ್ ಅನ್ನು ಮುಚ್ಚಿರಿ</translation>
 <translation id="4275830172053184480">ನಿಮ್ಮ ಸಾಧನವನ್ನು ಮರುಪ್ರಾರಂಭಿಸಿ</translation>
+<translation id="4276598757692536305">ಪ್ರಿಂಟರ್ PPD</translation>
 <translation id="4276856098224910511">ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಲು ಸಾಧ್ಯವಾಗುತ್ತಿಲ್ಲ, OS ಅಪ್‌ಡೇಟ್ ಬಾಕಿಯಿದೆ. ಯಾವುದೇ ಬಾಕಿ ಉಳಿದಿರುವ OS ಅಪ್‌ಡೇಟ್‌ಗಳನ್ನು ಅನ್ವಯಿಸಿ, ಮರುಪ್ರಾರಂಭಿಸಿ ಹಾಗೂ ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ. ದೋಷ ಕೋಡ್ <ph name="ERROR" /> ಆಗಿದೆ.</translation>
 <translation id="4277434192562187284">XML ಕಾನ್ಫಿಗರೇಶನ್ ಮೂಲ</translation>
 <translation id="4278348589087554892">{NUM_SITES,plural, =1{1 ಸೈಟ್‌ನಿಂದ ಅನುಮತಿಗಳನ್ನು ತೆಗೆದುಹಾಕಲಾಗಿದೆ}one{{NUM_SITES} ಸೈಟ್‌ಗಳಿಂದ ಅನುಮತಿಗಳನ್ನು ತೆಗೆದುಹಾಕಲಾಗಿದೆ}other{{NUM_SITES} ಸೈಟ್‌ಗಳಿಂದ ಅನುಮತಿಗಳನ್ನು ತೆಗೆದುಹಾಕಲಾಗಿದೆ}}</translation>
@@ -11484,7 +11485,7 @@
 <translation id="9089959054554410481">ಟಚ್‌ಪ್ಯಾಡ್ ಸ್ಕ್ರೋಲ್ ಮಾಡುವ ದಿಕ್ಕನ್ನು ಬದಲಾಯಿಸಿ</translation>
 <translation id="9090044809052745245">ಇತರರಿಗೆ ನಿಮ್ಮ ಸಾಧನವು ಹೇಗೆ ಕಾಣಿಸುತ್ತದೆ</translation>
 <translation id="9090295708045818045">{NUM_OF_FILES,plural, =1{ಫೈಲ್ ಅನ್ನು <ph name="CLOUD_PROVIDER" /> ಗೆ ಸರಿಸಲು ಸಾಧ್ಯವಿಲ್ಲ}one{ಫೈಲ್‌ಗಳನ್ನು <ph name="CLOUD_PROVIDER" /> ಗೆ ಸರಿಸಲು ಸಾಧ್ಯವಿಲ್ಲ}other{ಫೈಲ್‌ಗಳನ್ನು <ph name="CLOUD_PROVIDER" /> ಗೆ ಸರಿಸಲು ಸಾಧ್ಯವಿಲ್ಲ}}</translation>
-<translation id="9093470422440389061">ವೈಫೈ ಕಾರ್ಯಕ್ಷಮತೆ ಮೆಟ್ರಿಕ್‌ಗಳು</translation>
+<translation id="9093470422440389061">ವೈಫೈ ಪರ್ಫಾರ್ಮೆನ್ಸ್ ಮೆಟ್ರಿಕ್‌ಗಳು</translation>
 <translation id="9094033019050270033">ಪಾಸ್‌ವರ್ಡ್ ಅಪ್‌ಡೇಟ್ ಮಾಡು</translation>
 <translation id="9094038138851891550">ಬಳಕೆದಾರರ ಹೆಸರು ಅಮಾನ್ಯವಾಗಿದೆ</translation>
 <translation id="9094742965093882613">ಫಾಂಟ್ ಗಾತ್ರವನ್ನು ಕುಗ್ಗಿಸಿ</translation>

@@ -221,6 +221,7 @@
 <translation id="181434555916624618">Засега резултатите с хора няма да се показват. Опитайте с друга подкана.</translation>
 <translation id="1815850098929213707">Избраният клавиш е <ph name="KEYS" />. Докоснете бутона, за да редактирате контролата</translation>
 <translation id="1818174214124933000">Когато изберете „Изпращане“, отзивите и съдържанието ви (показани по-долу) ще бъдат изпратени до Google, прегледани от хора и използвани за обучение или подобряване на продуктите и услугите ни в съответствие с <ph name="LINK_POLICY_BEGIN" />Декларацията за поверителност<ph name="LINK_POLICY_END" /> и <ph name="LINK_TERMS_OF_SERVICE_BEGIN" />Общите условия на Google<ph name="LINK_TERMS_OF_SERVICE_END" />.</translation>
+<translation id="1821075635029692203">Преподавателят ви е изпратил неподдържан ресурс. Уведомете го.</translation>
 <translation id="1823120442877418684">Обекти</translation>
 <translation id="1827738518074806965">Художествена галерия</translation>
 <translation id="183287940576828840">Обидно/опасно</translation>
@@ -477,6 +478,7 @@
 <translation id="3091839911843451378">Неуспешно – отпечатването спря</translation>
 <translation id="3102119246920354026">Кеш</translation>
 <translation id="3103783611481501187">сюрреалистично</translation>
+<translation id="3119672627216736407">Налице е превод</translation>
 <translation id="3122464029669770682">Процесор</translation>
 <translation id="3122614491980756867">басейни</translation>
 <translation id="3122883569442693641">Още подробности</translation>
@@ -1137,6 +1139,7 @@
 <translation id="6058625436358447366">За да завършите процеса, въведете старата и новата си парола</translation>
 <translation id="6061772781719867950">Неуспешни HTTP заявки</translation>
 <translation id="6073292342939316679">намаляване на яркостта на клавиатурата</translation>
+<translation id="6074608334942655098">Спиране на превода</translation>
 <translation id="6074752328838739425">Скриване на обобщената информация</translation>
 <translation id="6075872808778243331">(Android) Забавяне на HTTP</translation>
 <translation id="6078323886959318429">Добавяне на пряк път</translation>

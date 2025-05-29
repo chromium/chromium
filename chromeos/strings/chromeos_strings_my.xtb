@@ -221,6 +221,7 @@
 <translation id="181434555916624618">လောလောဆယ် လူပါသော ရလဒ်များကို ပြမည်မဟုတ်ပါ။ အခြားတောင်းဆိုချက်ဖြင့် စမ်းကြည့်ပါ။</translation>
 <translation id="1815850098929213707">ရွေးထားသောကီးမှာ <ph name="KEYS" /> ဖြစ်သည်။ ထိန်းချုပ်မှုကို ပြင်ရန် ခလုတ်ကိုတို့ပါ</translation>
 <translation id="1818174214124933000">‘ပို့ရန်’ ကို ရွေးသောအခါ သင်၏ အကြံပြုချက်နှင့် အကြောင်းအရာ (အောက်တွင် ပြထားသည်) တို့ကို Google ထံပို့ပြီး လူကိုယ်တိုင်ပြန်စစ်မည်။ ၎င်းတို့ကို ကျွန်ုပ်တို့၏ ထုတ်ကုန်နှင့် ဝန်ဆောင်မှုများအား လေ့ကျင့်ရန် (သို့) မွမ်းမံရန်အတွက် <ph name="LINK_POLICY_BEGIN" />ကိုယ်ရေးအချက်အလက်လုံခြုံမှုဆိုင်ရာ မူဝါဒ<ph name="LINK_POLICY_END" />၊ <ph name="LINK_TERMS_OF_SERVICE_BEGIN" />Google ဝန်ဆောင်မှုစည်းမျဉ်းများ<ph name="LINK_TERMS_OF_SERVICE_END" /> နှင့်အညီ သုံးမည်။</translation>
+<translation id="1821075635029692203">သင့်ဆရာက မပံ့ပိုးသောရင်းမြစ်ကို ပို့ထားသည်။ သူ့ကို အသိပေးပါ။</translation>
 <translation id="1823120442877418684">အကြောင်းအရာ</translation>
 <translation id="1827738518074806965">ပန်းချီပြခန်း</translation>
 <translation id="183287940576828840">ရိုင်းပျသည်/လုံခြုံမှုမရှိပါ</translation>
@@ -477,6 +478,7 @@
 <translation id="3091839911843451378">မအောင်မြင်ပါ - ရပ်သွားသည်</translation>
 <translation id="3102119246920354026">Cache</translation>
 <translation id="3103783611481501187">အိပ်မက်ဆန်</translation>
+<translation id="3119672627216736407">ဘာသာပြန်ဆိုချက် ရနိုင်သည်</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3122614491980756867">ရေအိုင်</translation>
 <translation id="3122883569442693641">နောက်ထပ်အသေးစိတ်</translation>
@@ -1137,6 +1139,7 @@
 <translation id="6058625436358447366">အပြီးသတ်ရန်အတွက် သင့်စကားဝှက် အသစ်နှင့် အဟောင်းကို ထည့်ပါ</translation>
 <translation id="6061772781719867950">HTTP တောင်းဆိုချက်များ မအောင်မြင်ပါ</translation>
 <translation id="6073292342939316679">ကီးဘုတ်တောက်ပမှု လျှော့ရန်</translation>
+<translation id="6074608334942655098">ဘာသာပြန်ခြင်းကို ရပ်ရန်</translation>
 <translation id="6074752328838739425">အကျဉ်းချုပ်ကို ဖျောက်ပါ</translation>
 <translation id="6075872808778243331">(Android) HTTP တုံ့ပြန်ချိန်</translation>
 <translation id="6078323886959318429">ဖြတ်လမ်းလင့်ခ် ထည့်ပါ</translation>

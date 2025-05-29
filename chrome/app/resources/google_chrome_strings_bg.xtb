@@ -316,6 +316,7 @@
 <translation id="4970880042055371251">Версия на Chrome OS</translation>
 <translation id="4990567037958725628">Google Chrome Canary</translation>
 <translation id="5003967926796347400">Кликнете върху Google Мениджър на пароли</translation>
+<translation id="504867494566807945">Отваряйте връзки в Chrome от всяко приложение. Освен това браузърът се фиксира в лентата на задачите за лесен достъп.</translation>
 <translation id="5114340746415930644">Въведете пропуска си, за да използвате и запазвате данните от Chrome в профила си (<ph name="USER_EMAIL" />)</translation>
 <translation id="5120334927898581447">Влизане в Chrome, когато влизате в други услуги на Google</translation>
 <translation id="5126049312684316860">Chrome зарежда предварително още повече страници, които е вероятно да посетите, така че да се заредят по-бързо, когато ги отворите.</translation>
@@ -392,6 +393,7 @@
 <translation id="6075300983329039771">Организацията ви (<ph name="MANAGER" />) изисква да влезете в профила си в Chrome</translation>
 <translation id="6113794647360055231">Chrome се подобри</translation>
 <translation id="6116252277240876590">Този език се използва за показване на менюта, настройки, сигнали и друг текст в Chrome</translation>
+<translation id="6127237283587442951">Използване на Chrome по подразбиране и фиксиране на браузъра</translation>
 <translation id="6134085236017727171">За да се използва микрофонът ви, дайте достъп на Chrome от <ph name="BEGIN_LINK" />системните настройки<ph name="END_LINK" /></translation>
 <translation id="6135456723633883042">Тези раздели използват допълнителни ресурси. За да подобрите ефективността, разрешете на Chrome да деактивира съответните раздели.</translation>
 <translation id="6145313976051292476">Отваряне на PDF файловете в Chrome</translation>

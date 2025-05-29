@@ -485,6 +485,7 @@
 <translation id="1319983966058170660"><ph name="SUBPAGE_TITLE" /> 하위 페이지 뒤로 버튼</translation>
 <translation id="1322046419516468189"><ph name="SAVED_PASSWORDS_STORE" />에 저장된 비밀번호 보기 및 관리</translation>
 <translation id="132539964543492755">마우스 버튼 선택을 왼쪽 버튼, 오른쪽 버튼, 둘 다로 변경하려면 'x' 키를 사용하세요.</translation>
+<translation id="1325611581149097457">글쓰기 도움받기</translation>
 <translation id="1325898422473267360"><ph name="PERMISSION_USAGE" /> <ph name="PERMISSION_INDICATOR_DESCRIPTION" /></translation>
 <translation id="1327272175893960498">Kerberos 티켓</translation>
 <translation id="1327495825214193325">ADB 디버깅을 사용 설정하려면 이 <ph name="DEVICE_TYPE" /> 기기를 다시 시작해야 합니다. ADB 디버깅을 사용 중지하려면 초기화해야 합니다.</translation>
@@ -2002,6 +2003,7 @@
 <translation id="2359345697448000899">도구 메뉴에서 확장 프로그램을 클릭하여 확장 프로그램을 관리할 수 있습니다.</translation>
 <translation id="2359556993567737338">블루투스 기기 연결</translation>
 <translation id="2359808026110333948">계속</translation>
+<translation id="2360047907847684514">확장 프로그램과 테마를 사용해 브라우저를 내 마음대로 꾸며 보세요</translation>
 <translation id="2360792123962658445">이 페이지에 관한 페이지 요약, 관련 검색어, 기타 유용한 정보를 확인하려면 툴바에서 Google 검색 측면 패널 버튼을 선택하세요.</translation>
 <translation id="2361100938102002520">브라우저에 관리되는 프로필을 추가하려고 합니다. 관리자가 프로필을 제어하고 프로필 데이터에 액세스할 수 있습니다.</translation>
 <translation id="236117173274098341">최적화</translation>
@@ -2480,6 +2482,7 @@
 <translation id="2692503699962701720">요소 유형 및 형식이 지정된 텍스트를 말할 때 음높이를 변경합니다.</translation>
 <translation id="2692901429679246677">아쿠아</translation>
 <translation id="2693134906590795721">충전음</translation>
+<translation id="2695943520968279338">확장 프로그램 찾아보기</translation>
 <translation id="2698147581454716013">번들 기기이며 Kiosk &amp; Signage 업그레이드에 등록할 수 없습니다.</translation>
 <translation id="2699911226086014512">PIN 작업에 실패했습니다. 오류 코드는 <ph name="RETRIES" />입니다.</translation>
 <translation id="2701330563083355633"><ph name="DEVICE_NAME" />에서 공유함</translation>
@@ -2994,6 +2997,7 @@
 <translation id="3043126717220766543">그룹 추천 삭제</translation>
 <translation id="3043218608271070212"><ph name="GROUP_NAME" /> - <ph name="GROUP_CONTENT_STRING" /></translation>
 <translation id="3043581297103810752">출처: <ph name="ORIGIN" /></translation>
+<translation id="3044066905368192931">AI로 개선</translation>
 <translation id="3045447014237878114">이 사이트에서 여러 파일을 자동으로 다운로드함</translation>
 <translation id="3046178388369461825">Linux 디스크 공간이 매우 부족함</translation>
 <translation id="304644035656848980">마이크 미리보기</translation>
@@ -4595,6 +4599,7 @@
 <translation id="4176864026061939326">관리되는 기기입니다. 기기 관리자에게 <ph name="USER_EMAIL_ADDRESS" /> 계정에 대한 새 프로필이 필요합니다</translation>
 <translation id="4177501066905053472">광고 주제</translation>
 <translation id="4177668342649553942"><ph name="SHORTCUT_NAME" /> - <ph name="APP_NAME" /> 열기</translation>
+<translation id="4177731895051842298">확장 프로그램은 Chrome에 추가되는 부가기능으로, 정리, 작업 간소화, 탐색 맞춤설정에 도움이 됩니다.</translation>
 <translation id="4178220097446335546">이 구독 및 연결된 네트워크를 삭제하려면 Passpoint 구독 페이지로 이동하여 구독을 삭제하세요</translation>
 <translation id="4181602000363099176">20배</translation>
 <translation id="4181841719683918333">언어</translation>
@@ -4728,6 +4733,7 @@
 <translation id="4275397969489577657">이벤트 스트림 로깅 사용</translation>
 <translation id="4275788652681621337">측면 패널 닫기</translation>
 <translation id="4275830172053184480">기기 다시 시작</translation>
+<translation id="4276598757692536305">프린터 PPD</translation>
 <translation id="4276856098224910511">설치할 수 없습니다. OS 업데이트가 대기 중입니다. 대기 중인 OS 업데이트를 적용하고 재시작한 후 다시 시도해 주세요. 오류 코드는 <ph name="ERROR" />입니다.</translation>
 <translation id="4277434192562187284">XML 구성 소스</translation>
 <translation id="4278348589087554892">{NUM_SITES,plural, =1{사이트 1개에서 권한이 삭제됨}other{사이트 {NUM_SITES}개에서 권한이 삭제됨}}</translation>
@@ -5385,6 +5391,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="4750185073185658673">휴대전화에서 몇 가지 권한을 추가로 검토하세요. 휴대전화의 블루투스 및 Wi-Fi가 켜져 있어야 합니다.</translation>
 <translation id="4750394297954878236">추천</translation>
 <translation id="475088594373173692">첫 번째 사용자</translation>
+<translation id="4754590344707355551">확장 프로그램을 사용해 브라우저를 개선하세요</translation>
 <translation id="4756378406049221019">중지/새로고침</translation>
 <translation id="4756388243121344051">방문 기록(&amp;H)</translation>
 <translation id="4756671452988984333">오디오 스크립트</translation>
@@ -6416,6 +6423,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5490798133083738649">Linux에서 마이크에 액세스하도록 허용</translation>
 <translation id="549211519852037402">베이지색 및 흰색</translation>
 <translation id="5492637351392383067">기기 내 암호화</translation>
+<translation id="5492780659774694607">확장 프로그램은 Chrome에 추가되는 부가기능으로, 다양한 작업을 도와줍니다.</translation>
 <translation id="5493455553805432330">삭제</translation>
 <translation id="5493792505296048976">화면 켜짐</translation>
 <translation id="5494016731375030300">최근에 닫은 탭</translation>
@@ -9638,6 +9646,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7815680994978050279">위험한 다운로드가 차단됨</translation>
 <translation id="7817361223956157679">Linux 앱에서는 아직 터치 키보드가 지원되지 않습니다.</translation>
 <translation id="7818135753970109980">새 테마가 추가됨(<ph name="EXTENSION_NAME" />)</translation>
+<translation id="7819839686707222575">확장 프로그램은 Chrome에 추가되는 부가기능으로, 더 많은 작업을 할 수 있도록 도와줍니다.</translation>
 <translation id="7820400255539998692">이 기기를 사용하는 다른 사용자가 내 비밀번호를 볼 수 없도록 <ph name="FILENAME" /> 파일을 삭제하세요.</translation>
 <translation id="7820561748632634942">추가 스위치를 할당하시겠습니까?</translation>
 <translation id="782057141565633384">동영상 주소 복사(&amp;O)</translation>
@@ -10606,6 +10615,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8477241577829954800">대체됨</translation>
 <translation id="8477384620836102176">일반(&amp;G)</translation>
 <translation id="8477446666255316832">다음번에 더 빠르게 로그인하세요</translation>
+<translation id="8478346767369317046">직장</translation>
 <translation id="8479176401914456949">잘못된 코드입니다. 다시 시도해 보세요.</translation>
 <translation id="8480869669560681089"><ph name="VENDOR_NAME" />의 알 수 없는 기기</translation>
 <translation id="8481187309597259238">USB 권한 확인</translation>
@@ -11099,6 +11109,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8827289157496676362">확장 프로그램 고정</translation>
 <translation id="8828933418460119530">DNS 이름</translation>
 <translation id="8829979393064090868">분할 보기에 탭 추가</translation>
+<translation id="8830479210602243906">생산성 높이기</translation>
 <translation id="883062543841130884">대체 항목</translation>
 <translation id="8830779999439981481">업데이트 적용을 위해 다시 시작하는 중</translation>
 <translation id="8830796635868321089">현재 프록시 설정을 사용하여 업데이트를 확인하지 못했습니다. <ph name="PROXY_SETTINGS_LINK_START" />프록시 설정<ph name="PROXY_SETTINGS_LINK_END" />을 조정하세요.</translation>

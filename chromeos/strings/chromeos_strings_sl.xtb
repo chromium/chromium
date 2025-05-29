@@ -221,6 +221,7 @@
 <translation id="181434555916624618">Rezultati z osebami za zdaj ne bodo prikazani. Poskusite uporabiti drug poziv.</translation>
 <translation id="1815850098929213707">Izbrani ključ je <ph name="KEYS" />. Dotaknite se gumba, če želite urediti kontrolnik.</translation>
 <translation id="1818174214124933000">Ko izberete »pošlji«, bodo povratne informacije z vsebino vred (prikazano spodaj) poslane Googlu, kjer jih bodo pregledali ljudje in uporabili za usposabljanje ali izboljšanje izdelkov in storitev v skladu s <ph name="LINK_POLICY_BEGIN" />pravilnikom o zasebnosti<ph name="LINK_POLICY_END" /> in <ph name="LINK_TERMS_OF_SERVICE_BEGIN" />Googlovimi pogoji storitve<ph name="LINK_TERMS_OF_SERVICE_END" />.</translation>
+<translation id="1821075635029692203">Učitelj je poslal nepodprto sredstvo. Obvestite ga.</translation>
 <translation id="1823120442877418684">Znaki</translation>
 <translation id="1827738518074806965">Umetnostna galerija</translation>
 <translation id="183287940576828840">Žaljivo/nevarno</translation>
@@ -477,6 +478,7 @@
 <translation id="3091839911843451378">Napaka – ustavljeno</translation>
 <translation id="3102119246920354026">Predpomnilnik</translation>
 <translation id="3103783611481501187">nadrealistično</translation>
+<translation id="3119672627216736407">Na voljo je prevod</translation>
 <translation id="3122464029669770682">CPE</translation>
 <translation id="3122614491980756867">tolmuni</translation>
 <translation id="3122883569442693641">Več podrobnosti</translation>
@@ -1137,6 +1139,7 @@
 <translation id="6058625436358447366">Za dokončanje vnesite staro in novo geslo</translation>
 <translation id="6061772781719867950">Neuspele zahteve HTTP</translation>
 <translation id="6073292342939316679">zmanjšanje svetlosti osvetlitve tipkovnice</translation>
+<translation id="6074608334942655098">Ustavi prevajanje</translation>
 <translation id="6074752328838739425">Skrij povzetek</translation>
 <translation id="6075872808778243331">Zakasnitev HTTP (Android)</translation>
 <translation id="6078323886959318429">Dodajanje bližnjice</translation>
