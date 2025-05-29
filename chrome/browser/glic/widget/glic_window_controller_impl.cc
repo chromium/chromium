@@ -74,6 +74,7 @@ namespace {
 constexpr static int kAttachmentBuffer = 20;
 constexpr static int kInitialPositionBuffer = 4;
 constexpr static int kMaxWidgetSize = 16'384;
+constexpr static int kDraggableAreaHeight = 44;
 
 constexpr static base::TimeDelta kAnimationDuration = base::Milliseconds(300);
 
@@ -826,9 +827,11 @@ void GlicWindowControllerImpl::SetDraggingAreasAndWatchForMouseEvents() {
   window_event_observer_ =
       std::make_unique<WindowEventObserver>(this, GetGlicView());
 
-  // Set the draggable area to the top bar of the window, by default.
-  GetGlicView()->SetDraggableAreas(
-      {{0, 0, GetGlicView()->width(), GlicWidget::GetInitialSize().height()}});
+  if (!draggable_area_) {
+    // Set the draggable area to the top bar of the window.
+    GetGlicView()->SetDraggableAreas(
+        {{0, 0, GetGlicView()->width(), kDraggableAreaHeight}});
+  }
 }
 
 GlicView* GlicWindowControllerImpl::GetGlicView() {
@@ -1014,6 +1017,7 @@ void GlicWindowControllerImpl::Close() {
 
   SetWindowState(State::kClosed);
   attached_browser_ = nullptr;
+  draggable_area_ = std::nullopt;
   window_event_observer_.reset();
   browser_close_subscription_.reset();
   glic_window_hotkey_manager_.reset();
