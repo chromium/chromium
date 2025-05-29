@@ -9,4 +9,8 @@
 ] interface HTMLMenuItemElement : HTMLElement {
     [CEReactions, Reflect] attribute boolean disabled;
     [ImplementedAs=Checked] attribute boolean checked;
+
+    // Command Invokers
+    [RuntimeEnabled=HTMLCommandAttributes, CEReactions, Reflect=commandfor] attribute Element? commandForElement;
+    [RuntimeEnabled=HTMLCommandAttributes, CEReactions] attribute DOMString command;
 };

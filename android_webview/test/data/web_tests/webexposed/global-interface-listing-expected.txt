@@ -4511,9 +4511,13 @@ interface HTMLMenuElement : HTMLElement
 interface HTMLMenuItemElement : HTMLElement
     attribute @@toStringTag
     getter checked
+    getter command
+    getter commandForElement
     getter disabled
     method constructor
     setter checked
+    setter command
+    setter commandForElement
     setter disabled
 interface HTMLMenuListElement : HTMLElement
     attribute @@toStringTag

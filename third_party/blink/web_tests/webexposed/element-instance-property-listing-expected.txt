@@ -881,6 +881,8 @@ html element menu
 html element menubar
 html element menuitem
     property checked
+    property command
+    property commandForElement
     property disabled
 html element menulist
 html element meta
