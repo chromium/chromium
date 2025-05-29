@@ -383,6 +383,7 @@ Tampouco poden utilizalas para ver a túa actividade de navegación en distintos
 <translation id="2513103768503127042">Atoparás os teus grupos de pestanas aquí</translation>
 <translation id="251837347827266434">Pecharanse a túa sesión e as pestanas, e eliminaranse os datos de navegación</translation>
 <translation id="2520787026086861736">Para desactivar esta opción, vai a <ph name="BEGIN_LINK" />AutoFill &amp; Passwords<ph name="END_LINK" /> (Autocompletar e contrasinais)</translation>
+<translation id="2523295204312809179">Cando pechas un grupo de pestanas, gárdase aquí automaticamente</translation>
 <translation id="2529021024822217800">Abrir todo</translation>
 <translation id="2536991091671391962">Podes usar os contrasinais gardados en calquera dispositivo. Estes gárdanse no xestor de contrasinais de Google asociado a <ph name="EMAIL" />.</translation>
 <translation id="2538103551183528357">Contrasinal oculto</translation>
@@ -1035,6 +1036,7 @@ En caso aplicable, consulta as instrucións do teu motor de busca para eliminar 
 <translation id="5275912569557792098"><ph name="USER_NAME" /> (<ph name="USER_EMAIL" />) quere que te unas a un grupo de pestanas. Calquera persoa que teña a ligazón poderá editar todas as pestanas, polo que che recomendamos que teñas coidado ao unirte. A ligazón caducará ás 48 horas.</translation>
 <translation id="5279600392753459966">Bloquear todo</translation>
 <translation id="5282340693022193851">Para recibir notificacións de seguimento de prezos, activa as notificacións na configuración de iOS.</translation>
+<translation id="528857768909044842">Os grupos de pestanas gárdanse aquí</translation>
 <translation id="5294624619177114121">Notificacións para móbil</translation>
 <translation id="5295239312320826323">Queres quitar a conta <ph name="USER_EMAIL" />?</translation>
 <translation id="5300589172476337783">Mostrar</translation>
@@ -1230,6 +1232,7 @@ Handoff tamén debe estar activado na sección Xeral da configuración e os teus
 <translation id="6100617279104942061">Tes a sesión iniciada como <ph name="USER_EMAIL" />. Abre a configuración.</translation>
 <translation id="6103540626693881831">Encriptación no dispositivo</translation>
 <translation id="611361228753138223">Sitios que visitaches ultimamente neste dispositivo</translation>
+<translation id="611705554202268369">Mantén premida a pestana para engadila a un grupo de pestanas</translation>
 <translation id="6122191549521593678">Online</translation>
 <translation id="6122831415929794347">Queres desactivar a función Navegación segura?</translation>
 <translation id="6123514585040403489">Pecharanse as pestanas</translation>
@@ -1855,6 +1858,7 @@ Tamén poden utilizalas para ver a túa actividade de navegación en varios siti
 <translation id="8535368836838588657">Mostra o contrasinal</translation>
 <translation id="8545276357312221485">Comproba a configuración do navegador predeterminado</translation>
 <translation id="854938212724803178">Tes 1 contrasinal vulnerado. Cámbiao xa para non correr riscos.</translation>
+<translation id="8551311254462607218">Na barra de enderezos, toca a icona da cámara de Google Lens</translation>
 <translation id="8556590991644167667">{count,plural, =1{Ignoraches {count} aviso}other{Ignoraches {count} avisos}}</translation>
 <translation id="8558046478684552694">Pechar o grupo.</translation>
 <translation id="8560253818350321773">Móstranse primeiro os elementos usados con máis frecuencia.</translation>
@@ -1998,6 +2002,7 @@ Tamén poden utilizalas para ver a túa actividade de navegación en varios siti
 <translation id="9032405509996909363">Confirmar a eliminación dos datos de navegación</translation>
 <translation id="9039373489628511875">Largura de banda</translation>
 <translation id="9042893549633094279">Privacidade e seguranza</translation>
+<translation id="9055291197094969722">Crea grupos de pestanas para organizar as que estean abertas e seguir mantendo a produtividade</translation>
 <translation id="9055580485132823283">Vas eliminar {password_count} contrasinais, {passkey_count} claves de acceso e a lista de sitios e aplicacións dos que elixises non gardar nunca a información de inicio de sesión. Non se eliminarán as contas que creases para sitios e aplicacións.</translation>
 <translation id="9057030985451135243">Máis información acerca dos grupos de pestanas compartidos</translation>
 <translation id="9057972802061533987">Non se puido seguir o contido. Produciuse un erro.</translation>

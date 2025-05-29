@@ -367,6 +367,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="1612199629998703524">Xestionar temas</translation>
 <translation id="1615178538289490617">Revogar o acceso a <ph name="PORT_NAME" /></translation>
 <translation id="1615402009686901181">A política do administrador desactiva o modo de captura de pantalla cando nela se mostra contido confidencial</translation>
+<translation id="161612500287664753">Pregúntalle á Busca de Google acerca desta páxina</translation>
 <translation id="1617276713587758852">Vehículos crossover</translation>
 <translation id="1619007254056372606">Xestionar datos dos sitios no dispositivo</translation>
 <translation id="1619648179761984213"><ph name="USER_DISPLAY_NAME" /> quitou unha pestana</translation>
@@ -1508,6 +1509,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="3586931643579894722">Ocultar detalles</translation>
 <translation id="3587725436724465984">A túa organización identificou que <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> é un sitio que pode incumprir unha política. <ph name="BEGIN_LEARN_MORE_LINK" />Máis información sobre esta advertencia<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3587738293690942763">Medio</translation>
+<translation id="3589519427766620380">Pregúntalle a Google Lens acerca desta páxina</translation>
 <translation id="3596918995172292499">Estado da matrícula</translation>
 <translation id="3600106876108433070">Máis información sobre as táboas de comparación</translation>
 <translation id="3600246354004376029"><ph name="TITLE" />, <ph name="DOMAIN" />, <ph name="TIME" /></translation>
@@ -3444,6 +3446,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="6925267999184670015">Norteamericano B+</translation>
 <translation id="6926216138694948720">Arte corporal</translation>
 <translation id="692638818576287323">Vehículos comerciais</translation>
+<translation id="6930607614725241390">Fai buscas no panel lateral</translation>
 <translation id="6934236486840930310"><ph name="BEGIN_BOLD" />O teu buscador predeterminado permíteche procurar información na Web e potencia as funcións de Chrome<ph name="END_BOLD" />, como a busca desde a barra de enderezos e desde imaxes de páxinas web. Pode que algunha función non estea dispoñible se o buscador non a admite.</translation>
 <translation id="6934672428414710184">Este nome procede da túa Conta de Google</translation>
 <translation id="6935077351544118151">Xa podes autocompletar as tarxetas de fidelidade de Google Wallet</translation>
