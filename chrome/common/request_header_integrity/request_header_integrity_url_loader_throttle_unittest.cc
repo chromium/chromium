@@ -48,10 +48,10 @@ TEST_F(RequestHeaderIntegrityURLLoaderThrottleTest, NonGoogleSite) {
   network::ResourceRequest request;
   request.url = GURL("https://www.somesite.com/");
 
-  ASSERT_TRUE(request.headers.IsEmpty());
+  ASSERT_TRUE(request.cors_exempt_headers.IsEmpty());
   bool ignored;
   throttle().WillStartRequest(&request, &ignored);
-  EXPECT_TRUE(request.headers.IsEmpty());
+  EXPECT_TRUE(request.cors_exempt_headers.IsEmpty());
 }
 
 #if !BUILDFLAG(GOOGLE_CHROME_BRANDING)
@@ -59,10 +59,10 @@ TEST_F(RequestHeaderIntegrityURLLoaderThrottleTest, GoogleSite) {
   network::ResourceRequest request;
   request.url = GURL("https://www.google.com/");
 
-  ASSERT_TRUE(request.headers.IsEmpty());
+  ASSERT_TRUE(request.cors_exempt_headers.IsEmpty());
   bool ignored;
   throttle().WillStartRequest(&request, &ignored);
-  EXPECT_EQ(3u, request.headers.GetHeaderVector().size());
+  EXPECT_EQ(3u, request.cors_exempt_headers.GetHeaderVector().size());
 }
 #endif  // !BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
@@ -79,15 +79,16 @@ TEST_F(RequestHeaderIntegrityURLLoaderThrottleTest, GoogleSiteWithBranding) {
   network::ResourceRequest request;
   request.url = GURL("https://www.google.com/");
 
-  ASSERT_TRUE(request.headers.IsEmpty());
+  ASSERT_TRUE(request.cors_exempt_headers.IsEmpty());
   bool ignored;
   throttle().WillStartRequest(&request, &ignored);
-  EXPECT_EQ(4u, request.headers.GetHeaderVector().size());
-  EXPECT_TRUE(request.headers.HasHeader(CHANNEL_NAME_HEADER_NAME));
-  EXPECT_TRUE(request.headers.HasHeader(LASTCHANGE_YEAR_HEADER_NAME));
-  EXPECT_TRUE(request.headers.HasHeader(VALIDATE_HEADER_NAME));
+  EXPECT_EQ(4u, request.cors_exempt_headers.GetHeaderVector().size());
+  EXPECT_TRUE(request.cors_exempt_headers.HasHeader(CHANNEL_NAME_HEADER_NAME));
+  EXPECT_TRUE(
+      request.cors_exempt_headers.HasHeader(LASTCHANGE_YEAR_HEADER_NAME));
+  EXPECT_TRUE(request.cors_exempt_headers.HasHeader(VALIDATE_HEADER_NAME));
   const std::optional<std::string> copyright =
-      request.headers.GetHeader(COPYRIGHT_HEADER_NAME);
+      request.cors_exempt_headers.GetHeader(COPYRIGHT_HEADER_NAME);
   ASSERT_TRUE(copyright.has_value());
   EXPECT_NE(copyright->find("Copyright"), std::string::npos);
 }
