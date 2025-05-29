@@ -106,6 +106,7 @@ if (!is_android) {
       "//chrome/browser/themes",
       "//chrome/browser/ui:browser_element_identifiers",
       "//chrome/browser/ui:ui_features",
+      "//chrome/browser/ui/browser_window:browser_window",
       "//chrome/browser/ui/color:color_headers",
 
       # TODO(370883612): depends on //chrome/browser/ui/tabs instead.

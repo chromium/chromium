@@ -134,7 +134,6 @@
 #include "chrome/browser/ui/tab_modal_confirm_dialog.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
-#include "chrome/browser/ui/tabs/tab_group_deletion_dialog_controller.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_menu_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -658,8 +657,6 @@ Browser::Browser(const CreateParams& params)
       bookmark_bar_state_(BookmarkBar::HIDDEN),
       browser_actions_(new BrowserActions(*this)),
       command_controller_(new chrome::BrowserCommandController(this)),
-      tab_group_deletion_dialog_controller_(
-          std::make_unique<tab_groups::DeletionDialogController>(this)),
       window_has_shown_(false),
       user_title_(params.user_title),
       signin_view_controller_(this),
@@ -767,10 +764,6 @@ Browser::~Browser() {
   // destroy `features_` because that's what breaks things the least :)
   features_.reset();
   ClearAllUserData();
-
-  // Destroy the deletion dialog before profile resets.
-  // (see https://crbug.com/357391254)
-  tab_group_deletion_dialog_controller_.reset();
 
   // Stop observing notifications and destroy the tab monitor before continuing
   // with destruction. Profile destruction will unload extensions and reentrant

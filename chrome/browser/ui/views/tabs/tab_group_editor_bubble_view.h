@@ -204,6 +204,7 @@ class TabGroupEditorBubbleView : public views::BubbleDialogDelegateView,
   TitleFieldController title_field_controller_;
   Colors colors_;
 
+  // TODO(crbug.com/420979651): Make `browser_` non-const.
   const raw_ptr<const Browser> browser_;
   const tab_groups::TabGroupId group_;
 

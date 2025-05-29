@@ -60,6 +60,10 @@ namespace tabs {
 class GlicNudgeController;
 }
 
+namespace tab_groups {
+class DeletionDialogController;
+}  // namespace tab_groups
+
 namespace lens {
 class LensOverlayEntryPointController;
 class LensRegionSearchController;
@@ -239,6 +243,10 @@ class BrowserWindowFeatures {
     return tab_menu_model_delegate_.get();
   }
 
+  tab_groups::DeletionDialogController* tab_group_deletion_dialog_controller() {
+    return tab_group_deletion_dialog_controller_.get();
+  }
+
   // Only fetch the tab_strip_service to register a pending receiver.
   TabStripServiceRegister* tab_strip_service() {
     return tab_strip_service_.get();
@@ -340,6 +348,9 @@ class BrowserWindowFeatures {
   std::unique_ptr<BrowserSyncedWindowDelegate> synced_window_delegate_;
 
   std::unique_ptr<TabMenuModelDelegate> tab_menu_model_delegate_;
+
+  std::unique_ptr<tab_groups::DeletionDialogController>
+      tab_group_deletion_dialog_controller_;
 
   std::unique_ptr<new_tab_footer::NewTabFooterController>
       new_tab_footer_controller_;

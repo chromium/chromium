@@ -800,7 +800,7 @@ void TabGroupEditorBubbleView::UngroupPressed() {
         tab_group_service->GetGroup(group_);
     if (saved_group.has_value()) {
       tab_groups::SavedTabGroupUtils::UngroupSavedGroup(
-          browser_, saved_group->saved_guid());
+          const_cast<Browser*>(browser_.get()), saved_group->saved_guid());
     } else {
       Ungroup(browser_, group_);
     }
@@ -892,8 +892,8 @@ void TabGroupEditorBubbleView::DeleteGroupPressed() {
   }
 
   bool is_group_shared = saved_group->is_shared_tab_group();
-  tab_groups::SavedTabGroupUtils::DeleteSavedGroup(browser_,
-                                                   saved_group->saved_guid());
+  tab_groups::SavedTabGroupUtils::DeleteSavedGroup(
+      const_cast<Browser*>(browser_.get()), saved_group->saved_guid());
   if (is_group_shared) {
     shared_tab_group_metrics::RecordSharedTabGroupManageType(
         shared_tab_group_metrics::SharedTabGroupManageTypeDesktop::

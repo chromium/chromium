@@ -37,6 +37,7 @@
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/session_service_tab_group_sync_observer.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/shared_tab_group_feedback_controller.h"
+#include "chrome/browser/ui/tabs/tab_group_deletion_dialog_controller.h"
 #include "chrome/browser/ui/tabs/tab_strip_api/tab_strip_service_impl.h"
 #include "chrome/browser/ui/toasts/toast_controller.h"
 #include "chrome/browser/ui/toasts/toast_features.h"
@@ -198,6 +199,9 @@ void BrowserWindowFeatures::Init(BrowserWindowInterface* browser) {
       std::make_unique<chrome::BrowserTabMenuModelDelegate>(
           browser->GetSessionID(), browser->GetProfile(),
           browser->GetAppBrowserController());
+
+  tab_group_deletion_dialog_controller_ =
+      std::make_unique<tab_groups::DeletionDialogController>(browser);
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
   if (base::FeatureList::IsEnabled(features::kPdfInfoBar)) {
