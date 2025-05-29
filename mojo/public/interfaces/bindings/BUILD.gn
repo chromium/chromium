@@ -10,8 +10,8 @@ mojom_component("bindings") {
   macro_prefix = "MOJO_MOJOM_BINDINGS"
 
   visibility = [
-    "//mojo/public/cpp/bindings",
     "//ipc:mojom",
+    "//mojo/public/cpp/bindings",
   ]
 
   sources = [
