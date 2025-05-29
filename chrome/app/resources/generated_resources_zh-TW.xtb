@@ -9192,7 +9192,6 @@
 <translation id="7528440855533975803">{GROUP_COUNT,plural, =1{要將所有分頁移出群組嗎？}other{要將所有分頁移出群組嗎？}}</translation>
 <translation id="7529411698175791732">檢查你的網際網路連線。如果問題持續發生，請嘗試登出，然後再次登入。</translation>
 <translation id="7529865045818406536">如果有多個先前的網路可用，系統會使用慣用網路</translation>
-<translation id="7529876053219658589">{0,plural, =1{關閉訪客視窗}other{關閉訪客視窗}}</translation>
 <translation id="7530016656428373557">放電速率 (瓦特)</translation>
 <translation id="7531771599742723865">裝置使用中</translation>
 <translation id="7531779363494549572">依序輕觸 [設定] &gt; [應用程式和通知] &gt; [通知]。</translation>
@@ -9338,7 +9337,6 @@
 <translation id="764178579712141045">已新增 <ph name="USER_EMAIL" /></translation>
 <translation id="7642778300616172920">隱藏敏感內容</translation>
 <translation id="7643117827468520640">請詳閱這些條款</translation>
-<translation id="7643842463591647490">{0,plural, =1{# 個開啟的視窗}other{# 個開啟的視窗}}</translation>
 <translation id="7643932971554933646">要允許網站查看檔案嗎？</translation>
 <translation id="7644953783774050577">全部不選取</translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (擁有者)</translation>
@@ -10657,6 +10655,7 @@
 <translation id="8540503336857689453">基於安全考量，建議你不要使用隱藏的網路。</translation>
 <translation id="854071720451629801">標示為已讀取</translation>
 <translation id="8540942859441851323">服務供應商要求使用漫遊服務</translation>
+<translation id="8541158209346794904">藍牙裝置</translation>
 <translation id="8541462173655894684">在印表機伺服器上找不到任何印表機</translation>
 <translation id="8541838361296720865">按下切換工具或鍵盤按鍵，即可為其指派「<ph name="ACTION" />」</translation>
 <translation id="8546186510985480118">裝置空間即將用盡</translation>

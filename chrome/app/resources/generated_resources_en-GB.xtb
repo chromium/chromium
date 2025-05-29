@@ -9223,7 +9223,6 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="7528440855533975803">{GROUP_COUNT,plural, =1{Ungroup tab group?}other{Ungroup tab groups?}}</translation>
 <translation id="7529411698175791732">Check your Internet connection. If the problem continues, try signing out and signing in again.</translation>
 <translation id="7529865045818406536">Preferred networks will be used if more than one previous network is available</translation>
-<translation id="7529876053219658589">{0,plural, =1{Close guest}other{Close guest}}</translation>
 <translation id="7530016656428373557">Discharge Rate in Watts</translation>
 <translation id="7531771599742723865">Device in use</translation>
 <translation id="7531779363494549572">Go to Settings &gt; Apps &amp; notifications &gt; Notifications.</translation>
@@ -9369,7 +9368,6 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="764178579712141045"><ph name="USER_EMAIL" /> added</translation>
 <translation id="7642778300616172920">Hide sensitive content</translation>
 <translation id="7643117827468520640">Review these terms</translation>
-<translation id="7643842463591647490">{0,plural, =1{# open window}other{# open windows}}</translation>
 <translation id="7643932971554933646">Let site view files?</translation>
 <translation id="7644953783774050577">Select none</translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (owner)</translation>
@@ -10690,6 +10688,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8540503336857689453">Using a hidden network isn't recommended for security reasons.</translation>
 <translation id="854071720451629801">Mark as Read</translation>
 <translation id="8540942859441851323">Roaming required by provider</translation>
+<translation id="8541158209346794904">Bluetooth device</translation>
 <translation id="8541462173655894684">Did not find any printers from the print server</translation>
 <translation id="8541838361296720865">Press a switch or keyboard key to assign it to '<ph name="ACTION" />'</translation>
 <translation id="8546186510985480118">Device is low on space</translation>

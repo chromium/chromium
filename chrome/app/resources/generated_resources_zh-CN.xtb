@@ -9187,7 +9187,6 @@
 <translation id="7528440855533975803">{GROUP_COUNT,plural, =1{要取消标签页分组吗？}other{要取消标签页分组吗？}}</translation>
 <translation id="7529411698175791732">请检查您的互联网连接。如果问题仍然存在，请尝试退出账号并重新登录。</translation>
 <translation id="7529865045818406536">如果有多个先前的网络可用，系统会使用首选网络</translation>
-<translation id="7529876053219658589">{0,plural, =1{关闭访客窗口}other{关闭访客窗口}}</translation>
 <translation id="7530016656428373557">电池放电率（瓦）</translation>
 <translation id="7531771599742723865">设备正在使用中</translation>
 <translation id="7531779363494549572">依次转到“设置”&gt;“应用和通知”&gt;“通知”。</translation>
@@ -9333,7 +9332,6 @@
 <translation id="764178579712141045">已添加 <ph name="USER_EMAIL" /></translation>
 <translation id="7642778300616172920">隐藏敏感内容</translation>
 <translation id="7643117827468520640">查看这些条款</translation>
-<translation id="7643842463591647490">{0,plural, =1{# 个打开的窗口}other{# 个打开的窗口}}</translation>
 <translation id="7643932971554933646">允许网站查看文件？</translation>
 <translation id="7644953783774050577">全部不选</translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" />（所有者）</translation>
@@ -10652,6 +10650,7 @@
 <translation id="8540503336857689453">出于安全考虑，我们不建议您使用隐藏的网络。</translation>
 <translation id="854071720451629801">标记为已读</translation>
 <translation id="8540942859441851323">提供商要求开启漫游</translation>
+<translation id="8541158209346794904">蓝牙设备</translation>
 <translation id="8541462173655894684">通过打印服务器找不到任何打印机</translation>
 <translation id="8541838361296720865">按某个开关键或键盘按键即可将其分配给“<ph name="ACTION" />”操作</translation>
 <translation id="8546186510985480118">设备存储空间不足</translation>

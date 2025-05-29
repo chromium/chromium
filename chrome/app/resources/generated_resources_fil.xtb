@@ -9226,7 +9226,6 @@ May # ka pang nakompromisong password. Inirerekomenda ng Google Password Manager
 <translation id="7528440855533975803">{GROUP_COUNT,plural, =1{I-ungroup ang Grupo ng Tab?}one{I-ungroup ang Mga Grupo ng Tab?}other{I-ungroup ang Mga Grupo ng Tab?}}</translation>
 <translation id="7529411698175791732">Suriin ang iyong koneksyon sa internet. Kung magpapatuloy ang problema, subukang mag-sign out at muling mag-sign in.</translation>
 <translation id="7529865045818406536">Ang mga piniling network ang gagamitin kung mahigit sa isang dating network ang available</translation>
-<translation id="7529876053219658589">{0,plural, =1{Isara ang Bisita}one{Isara ang Bisita}other{Isara ang Bisita}}</translation>
 <translation id="7530016656428373557">Rate ng Pagdiskarga sa Watts</translation>
 <translation id="7531771599742723865">Ginagamit ang device</translation>
 <translation id="7531779363494549572">Pumunta sa Mga Setting &gt; Mga app at notification &gt; Mga Notification.</translation>
@@ -9372,7 +9371,6 @@ May # ka pang nakompromisong password. Inirerekomenda ng Google Password Manager
 <translation id="764178579712141045">Idinagdag si <ph name="USER_EMAIL" /></translation>
 <translation id="7642778300616172920">Itago ang sensitibong content</translation>
 <translation id="7643117827468520640">Suriin ang mga tuntuning ito</translation>
-<translation id="7643842463591647490">{0,plural, =1{# bukas na window}one{# bukas na window}other{# na bukas na window}}</translation>
 <translation id="7643932971554933646">Payagan ang site na tingnan ang mga file?</translation>
 <translation id="7644953783774050577">Huwag pumili</translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (may-ari)</translation>
@@ -10694,6 +10692,7 @@ Ilagay ang iyong key file sa ligtas na lugar. Kailangan mo ito upang lumikha ng 
 <translation id="8540503336857689453">Hindi inirerekomenda ang paggamit ng nakatagong network para sa seguridad.</translation>
 <translation id="854071720451629801">Markahan Bilang Nabasa Na</translation>
 <translation id="8540942859441851323">Kinakailangan ng provider ang pag-roam</translation>
+<translation id="8541158209346794904">Bluetooth device</translation>
 <translation id="8541462173655894684">Walang nakitang anumang printer mula sa server sa pag-print</translation>
 <translation id="8541838361296720865">Pumindot ng switch o key sa keyboard para italaga ito sa “<ph name="ACTION" />”</translation>
 <translation id="8546186510985480118">Kaunti na lang ang espasyo ng device</translation>

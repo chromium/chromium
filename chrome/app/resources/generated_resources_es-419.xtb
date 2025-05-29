@@ -9200,7 +9200,6 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="7528440855533975803">{GROUP_COUNT,plural, =1{¿Quieres desagrupar el grupo de pestañas?}other{¿Quieres desagrupar los grupos de pestañas?}}</translation>
 <translation id="7529411698175791732">Comprueba tu conexión a Internet. Si el problema persiste, intenta salir de tu cuenta y acceder de nuevo.</translation>
 <translation id="7529865045818406536">Se utilizarán las redes preferidas si hay más de una red anterior disponible</translation>
-<translation id="7529876053219658589">{0,plural, =1{Cerrar la ventana de la sesión de invitado}other{Cerrar las ventanas de la sesión de invitado}}</translation>
 <translation id="7530016656428373557">Tasa de descarga en vatios</translation>
 <translation id="7531771599742723865">Dispositivo en uso</translation>
 <translation id="7531779363494549572">Ve a Configuración &gt; Apps y notificaciones &gt; Notificaciones.</translation>
@@ -9346,7 +9345,6 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="764178579712141045">Se agregó <ph name="USER_EMAIL" /></translation>
 <translation id="7642778300616172920">Ocultar contenido confidencial</translation>
 <translation id="7643117827468520640">Revisa estas condiciones</translation>
-<translation id="7643842463591647490">{0,plural, =1{# ventana abierta}other{# ventanas abiertas}}</translation>
 <translation id="7643932971554933646">¿Quieres permitir que el sitio vea los archivos?</translation>
 <translation id="7644953783774050577">No seleccionar ninguna</translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (propietario/a)</translation>
@@ -10665,6 +10663,7 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8540503336857689453">Por razones de seguridad, no se recomienda el uso de redes ocultas.</translation>
 <translation id="854071720451629801">Marcar como leído</translation>
 <translation id="8540942859441851323">El proveedor requiere el servicio de roaming</translation>
+<translation id="8541158209346794904">Dispositivo Bluetooth</translation>
 <translation id="8541462173655894684">No se encontraron impresoras en el servidor de impresión</translation>
 <translation id="8541838361296720865">Presiona un interruptor o una tecla del teclado para asignarlo a "<ph name="ACTION" />".</translation>
 <translation id="8546186510985480118">El dispositivo tiene poco espacio</translation>

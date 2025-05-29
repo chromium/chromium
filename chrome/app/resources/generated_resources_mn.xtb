@@ -9210,7 +9210,6 @@
 <translation id="7528440855533975803">{GROUP_COUNT,plural, =1{Табын бүлгийг салгах уу?}other{Табын бүлгүүдийг салгах уу?}}</translation>
 <translation id="7529411698175791732">Интернет холболтоо шалгана уу. Асуудал үргэлжилсээр байвал гараад, дахин нэвтэрнэ үү.</translation>
 <translation id="7529865045818406536">Хэрэв өмнө нь холбогдсон нэгээс олон сүлжээ боломжтой байвал илүүд үзсэн сүлжээнүүдийг ашиглана</translation>
-<translation id="7529876053219658589">{0,plural, =1{Зочны цонхыг хаах}other{Зочны цонхыг хаах}}</translation>
 <translation id="7530016656428373557">Ватт хэмжигдэхүүнээр цэнэггүй болгох</translation>
 <translation id="7531771599742723865">Төхөөрөмжийг ашиглаж байна</translation>
 <translation id="7531779363494549572">Toхиргоо &gt; Апп, мэдэгдэл &gt; Мэдэгдэл рүү очно уу.</translation>
@@ -9356,7 +9355,6 @@
 <translation id="764178579712141045"><ph name="USER_EMAIL" />-г нэмсэн</translation>
 <translation id="7642778300616172920">Эмзэг агуулгыг нуух</translation>
 <translation id="7643117827468520640">Эдгээр нөхцөлийг хянах</translation>
-<translation id="7643842463591647490">{0,plural, =1{Нээлттэй # цонх}other{Нээлттэй # цонх}}</translation>
 <translation id="7643932971554933646">Файл уншихыг сайтад зөвшөөрөх үү?</translation>
 <translation id="7644953783774050577">Юу ч сонгохгүй</translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (эзэмшигч)</translation>
@@ -10672,6 +10670,7 @@
 <translation id="8540503336857689453">Нуусан сүлжээг ашиглахыг аюулгүй байдлын шалтгаануудын улмаас санал болгодоггүй.</translation>
 <translation id="854071720451629801">Уншсан гэж тэмдэглэх</translation>
 <translation id="8540942859441851323">Үйлчилгээ үзүүлэгчээс шаардсан роуминг</translation>
+<translation id="8541158209346794904">Bluetooth төхөөрөмж</translation>
 <translation id="8541462173655894684">Хэвлэх серверээс ямар ч хэвлэгч олдсонгүй</translation>
 <translation id="8541838361296720865">Сэлгүүр эсвэл гарын товчийг “<ph name="ACTION" />”-д оноохын тулд дээр нь дарна уу</translation>
 <translation id="8546186510985480118">Төхөөрөмжийн багтаамж бага байна</translation>

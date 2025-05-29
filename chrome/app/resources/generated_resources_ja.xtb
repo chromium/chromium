@@ -9186,7 +9186,6 @@
 <translation id="7528440855533975803">{GROUP_COUNT,plural, =1{タブグループを解除しますか？}other{タブグループを解除しますか？}}</translation>
 <translation id="7529411698175791732">インターネット接続を確認してください。問題が解消しない場合は、ログアウトして再度ログインしてみてください。</translation>
 <translation id="7529865045818406536">これまでに接続したネットワークが複数ある場合は、優先ネットワークが使用されます</translation>
-<translation id="7529876053219658589">{0,plural, =1{ゲストモードを終了}other{ゲストモードを終了}}</translation>
 <translation id="7530016656428373557">放電率（ワット）</translation>
 <translation id="7531771599742723865">デバイスは使用中です</translation>
 <translation id="7531779363494549572">[設定] &gt; [アプリと通知] &gt; [通知] の順に選択します。</translation>
@@ -9332,7 +9331,6 @@
 <translation id="764178579712141045"><ph name="USER_EMAIL" /> を追加しました</translation>
 <translation id="7642778300616172920">プライベートな内容を表示しない</translation>
 <translation id="7643117827468520640">利用規約を確認</translation>
-<translation id="7643842463591647490">{0,plural, =1{開いているウィンドウ # 個}other{開いているウィンドウ # 個}}</translation>
 <translation id="7643932971554933646">サイトにファイルの読み取りを許可しますか？</translation>
 <translation id="7644953783774050577">選択しない</translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" />（所有者）</translation>
@@ -10650,6 +10648,7 @@
 <translation id="8540503336857689453">セキュリティ上の理由から、非公開ネットワークの使用は推奨されません。</translation>
 <translation id="854071720451629801">既読にする</translation>
 <translation id="8540942859441851323">プロバイダによりローミング適用中</translation>
+<translation id="8541158209346794904">Bluetooth デバイス</translation>
 <translation id="8541462173655894684">プリント サーバーでプリンタが見つかりませんでした</translation>
 <translation id="8541838361296720865">スイッチかキーボードのキーを押すと「<ph name="ACTION" />」に割り当てられます。</translation>
 <translation id="8546186510985480118">デバイスの空き領域が少なくなっています</translation>
