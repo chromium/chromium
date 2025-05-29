@@ -9,6 +9,7 @@
 #include "base/notimplemented.h"
 #include "gpu/command_buffer/client/gles2_interface_stub.h"
 #include "third_party/blink/public/platform/web_url.h"
+#include "third_party/blink/renderer/bindings/modules/v8/webgl_any.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/html/canvas/html_canvas_element.h"
@@ -688,7 +689,12 @@ void WebGLRenderingContextWebGPUBase::bufferSubData(
     GLenum target,
     int64_t offset,
     base::span<const uint8_t> data) {
-  NOTIMPLEMENTED();
+  if (!ValidateFitsNonNegInt32("bufferSubData", "data", data.size()) ||
+      !ValidateFitsNonNegInt32("bufferSubData", "offset", offset)) {
+    return;
+  }
+  driver_gl_.fn.glBufferSubDataFn(target, GLsizeiptr(offset),
+                                  GLsizeiptr(data.size()), data.data());
 }
 
 GLenum WebGLRenderingContextWebGPUBase::checkFramebufferStatus(GLenum target) {
@@ -832,16 +838,16 @@ void WebGLRenderingContextWebGPUBase::deleteFramebuffer(
   }
 }
 
-void WebGLRenderingContextWebGPUBase::deleteProgram(WebGLProgram*) {
-  NOTIMPLEMENTED();
+void WebGLRenderingContextWebGPUBase::deleteProgram(WebGLProgram* program) {
+  DeleteObject(program);
 }
 
 void WebGLRenderingContextWebGPUBase::deleteRenderbuffer(WebGLRenderbuffer*) {
   NOTIMPLEMENTED();
 }
 
-void WebGLRenderingContextWebGPUBase::deleteShader(WebGLShader*) {
-  NOTIMPLEMENTED();
+void WebGLRenderingContextWebGPUBase::deleteShader(WebGLShader* shader) {
+  DeleteObject(shader);
 }
 
 void WebGLRenderingContextWebGPUBase::deleteTexture(WebGLTexture* texture) {
@@ -1046,17 +1052,72 @@ ScriptValue WebGLRenderingContextWebGPUBase::getFramebufferAttachmentParameter(
   return {};
 }
 
-ScriptValue WebGLRenderingContextWebGPUBase::getParameter(ScriptState*,
-                                                          GLenum pname) {
-  NOTIMPLEMENTED();
+ScriptValue WebGLRenderingContextWebGPUBase::getParameter(
+    ScriptState* script_state,
+    GLenum pname) {
+  if (IsLost()) {
+    return ScriptValue::CreateNull(script_state->GetIsolate());
+  }
+
+  GLint int_value = 0;
+  switch (pname) {
+    case GL_MAX_CUBE_MAP_TEXTURE_SIZE:
+    case GL_MAX_TEXTURE_SIZE: {
+      driver_gl_.fn.glGetIntegervFn(pname, &int_value);
+      return WebGLAny(script_state, int_value);
+    }
+
+    default:
+      // TODO(413078308): Support other pnames.
+      NOTIMPLEMENTED();
+  }
+
   return {};
 }
 
-ScriptValue WebGLRenderingContextWebGPUBase::getProgramParameter(ScriptState*,
-                                                                 WebGLProgram*,
-                                                                 GLenum pname) {
-  NOTIMPLEMENTED();
-  return {};
+ScriptValue WebGLRenderingContextWebGPUBase::getProgramParameter(
+    ScriptState* script_state,
+    WebGLProgram* program,
+    GLenum pname) {
+  if (!ValidateProgramOrShader("getProgramParameter", program)) {
+    return ScriptValue::CreateNull(script_state->GetIsolate());
+  }
+
+  GLint value = 0;
+  switch (pname) {
+    case GL_DELETE_STATUS:
+      return WebGLAny(script_state, program->MarkedForDeletion());
+
+    case GL_VALIDATE_STATUS:
+    case GL_LINK_STATUS:
+      driver_gl_.fn.glGetProgramivFn(program->Object(), pname, &value);
+      return WebGLAny(script_state, static_cast<bool>(value));
+
+    case GL_COMPLETION_STATUS_KHR:
+      // Completion status queries always return true on a lost context. This is
+      // intended to prevent applications from entering an infinite polling
+      // loop.
+      if (IsLost()) {
+        return WebGLAny(script_state, true);
+      }
+      driver_gl_.fn.glGetProgramivFn(program->Object(),
+                                     GL_COMPLETION_STATUS_KHR, &value);
+      return WebGLAny(script_state, bool(value));
+
+    case GL_ACTIVE_UNIFORM_BLOCKS:
+    case GL_TRANSFORM_FEEDBACK_VARYINGS:
+    case GL_ATTACHED_SHADERS:
+    case GL_ACTIVE_ATTRIBUTES:
+    case GL_ACTIVE_UNIFORMS:
+    case GL_TRANSFORM_FEEDBACK_BUFFER_MODE:
+      driver_gl_.fn.glGetProgramivFn(program->Object(), pname, &value);
+      return WebGLAny(script_state, value);
+
+    default:
+      InsertGLError(GL_INVALID_ENUM, "getProgramParameter",
+                    "invalid parameter name");
+      return ScriptValue::CreateNull(script_state->GetIsolate());
+  }
 }
 
 String WebGLRenderingContextWebGPUBase::getProgramInfoLog(WebGLProgram*) {
@@ -1072,11 +1133,44 @@ ScriptValue WebGLRenderingContextWebGPUBase::getRenderbufferParameter(
   return {};
 }
 
-ScriptValue WebGLRenderingContextWebGPUBase::getShaderParameter(ScriptState*,
-                                                                WebGLShader*,
-                                                                GLenum pname) {
-  NOTIMPLEMENTED();
-  return {};
+ScriptValue WebGLRenderingContextWebGPUBase::getShaderParameter(
+    ScriptState* script_state,
+    WebGLShader* shader,
+    GLenum pname) {
+  if (!ValidateProgramOrShader("getShaderParameter", shader)) {
+    return ScriptValue::CreateNull(script_state->GetIsolate());
+  }
+
+  GLint value = 0;
+  switch (pname) {
+    case GL_DELETE_STATUS:
+      return WebGLAny(script_state, shader->MarkedForDeletion());
+
+    case GL_COMPILE_STATUS:
+      driver_gl_.fn.glGetShaderivFn(shader->Object(), GL_COMPILE_STATUS,
+                                    &value);
+      return WebGLAny(script_state, bool(value));
+
+    case GL_COMPLETION_STATUS_KHR:
+      // Completion status queries always return true on a lost context. This is
+      // intended to prevent applications from entering an infinite polling
+      // loop.
+      if (IsLost()) {
+        return WebGLAny(script_state, true);
+      }
+      driver_gl_.fn.glGetShaderivFn(shader->Object(), GL_COMPLETION_STATUS_KHR,
+                                    &value);
+      return WebGLAny(script_state, bool(value));
+
+    case GL_SHADER_TYPE:
+      driver_gl_.fn.glGetShaderivFn(shader->Object(), GL_SHADER_TYPE, &value);
+      return WebGLAny(script_state, static_cast<unsigned>(value));
+
+    default:
+      InsertGLError(GL_INVALID_ENUM, "getShaderParameter",
+                    "invalid parameter name");
+      return ScriptValue::CreateNull(script_state->GetIsolate());
+  }
 }
 
 String WebGLRenderingContextWebGPUBase::getShaderInfoLog(WebGLShader*) {
