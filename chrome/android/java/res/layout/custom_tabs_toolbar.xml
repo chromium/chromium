@@ -46,15 +46,22 @@ found in the LICENSE file.
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical" >
-        <org.chromium.ui.widget.ChromeImageButton
-            android:id="@+id/security_button"
-            style="@style/LocationBarButton"
-            android:layout_width="@dimen/location_bar_lock_icon_width"
-            android:layout_height="@dimen/location_bar_lock_icon_height"
-            android:layout_gravity="center_vertical"
-            android:scaleType="center"
-            android:visibility="gone"
-            app:tint="@color/default_icon_color_tint_list" />
+        <FrameLayout
+          android:id="@+id/security_button_wrapper"
+          android:layout_width="@dimen/location_bar_lock_icon_width"
+          android:layout_height="wrap_content"
+          android:visibility="gone"
+          tools:ignore="UselessParent">
+          <org.chromium.ui.widget.ChromeImageButton
+              android:id="@+id/security_button"
+              style="@style/LocationBarButton"
+              android:layout_width="@dimen/location_bar_lock_icon_width"
+              android:layout_height="@dimen/location_bar_lock_icon_height"
+              android:layout_gravity="center_vertical"
+              android:scaleType="center"
+              android:visibility="gone"
+              app:tint="@color/default_icon_color_tint_list" />
+        </FrameLayout>
         <org.chromium.chrome.browser.customtabs.features.toolbar.TitleAndUrlLayout
             android:id="@+id/title_url_container"
             android:layout_width="match_parent"
@@ -135,14 +142,20 @@ found in the LICENSE file.
         android:layout_gravity="center_vertical|end"
         android:gravity="center_vertical"
         android:orientation="horizontal">
-        <ViewStub
-            android:id="@+id/optional_button_stub"
-            android:inflatedId="@+id/optional_toolbar_button_container"
-            android:layout_gravity="top"
-            android:visibility="gone"
-            style="@style/ToolbarHoverableButton" />
-      </LinearLayout>
-
+        <FrameLayout
+          android:id="@+id/optional_toolbar_button_wrapper"
+          android:layout_width="@dimen/toolbar_button_width"
+          android:layout_height="wrap_content"
+          android:visibility="gone"
+          tools:ignore="UselessParent">
+          <ViewStub
+              android:id="@+id/optional_button_stub"
+              android:inflatedId="@+id/optional_toolbar_button_container"
+              android:layout_gravity="top"
+              android:visibility="gone"
+              style="@style/ToolbarHoverableButton" />
+        </FrameLayout>
+    </LinearLayout>
 
     <!-- LINT.IfChange(MenuButton) -->
     <org.chromium.chrome.browser.toolbar.menu_button.MenuButton

@@ -198,9 +198,10 @@ public class CustomTabToolbarUnitTest {
                 mToolbarProgressBar,
                 null,
                 null);
-
-        mToolbar.setFeatureOverridesManager(mFeatureOverridesManager);
-
+        if (!ChromeFeatureList.sCctToolbarRefactor.isEnabled()) {
+            mToolbar.calculateToolbarWidthBeforeMeasure(mActivity, mIntentDataProvider);
+            mToolbar.setFeatureOverridesManager(mFeatureOverridesManager);
+        }
         mLocationBar =
                 (CustomTabLocationBar)
                         mToolbar.createLocationBar(
@@ -405,6 +406,7 @@ public class CustomTabToolbarUnitTest {
 
         when(titleUrlContainer.getWidth()).thenReturn(threshold - 10);
         mToolbar.onMeasure(MeasureSpec.UNSPECIFIED, MeasureSpec.UNSPECIFIED);
+        mToolbar.setToolbarWidthForTesting(48 * 2 + 68);
         assertEquals("Maximize button should be hidden", View.GONE, maximizeButton.getVisibility());
 
         mToolbar.removeSideSheetMaximizeButton();
@@ -447,6 +449,7 @@ public class CustomTabToolbarUnitTest {
         // No space for minimize button
         when(titleUrlContainer.getWidth()).thenReturn(60);
         mToolbar.onMeasure(MeasureSpec.UNSPECIFIED, MeasureSpec.UNSPECIFIED);
+        mToolbar.setToolbarWidthForTesting(48 + 68);
         assertEquals("Minimize button should be hidden", View.GONE, minimizeButton.getVisibility());
     }
 
