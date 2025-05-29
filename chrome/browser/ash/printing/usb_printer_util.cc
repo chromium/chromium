@@ -116,7 +116,7 @@ void OnAlternateSelected(mojo::Remote<device::mojom::UsbDevice> device,
   params->recipient = device::mojom::UsbControlTransferRecipient::INTERFACE;
   params->request = kGetDeviceIdRequest;
   params->value = target.config;
-  params->index = target.interface;
+  params->index = (uint16_t(target.interface) << 8) | (target.alternate);
 
   // Query for IEEE1284 string.
   auto* device_raw = device.get();
