@@ -322,7 +322,22 @@ class Parser:
 
   def p_response_type_1(self, p):
     """response_type : RESULT response_pop_state LANGLE typename COMMA typename RANGLE"""
-    p[0] = ast.ResultResponse(p[4], p[6])
+
+    success_type = p[4]
+    if success_type.nullable:
+      raise ParseError(self.filename,
+                       "success type cannot be nullable",
+                       lineno=p[4].start.line,
+                       snippet=self._GetSnippet(p.lineno(4)))
+
+    error_type = p[6]
+    if error_type.nullable:
+      raise ParseError(self.filename,
+                       "error type cannot be nullable",
+                       lineno=p[6].start.line,
+                       snippet=self._GetSnippet(p.lineno(6)))
+
+    p[0] = ast.ResultResponse(success_type, error_type)
 
   def p_response_type_2(self, p):
     """response_type : LPAREN response_pop_state parameter_list RPAREN"""

@@ -973,6 +973,27 @@ class ParserTest(unittest.TestCase):
         r" *MyMethod\(, string a\);$"):
       parser.Parse(source2, "my_file.mojom")
 
+    # Nullable result success type.
+    source3 = """\
+        interface MyInterface {
+          MyMethod() => result<int32?, bool>;
+        };
+        """
+    with self.assertRaisesRegex(parser.ParseError,
+                                r"success type cannot be nullable"):
+      parser.Parse(source3, "my_file.mojom")
+
+    # Nullable result failure type.
+    source4 = """\
+        interface MyInterface {
+          MyMethod() => result<int32, bool?>;
+        };
+        """
+    with self.assertRaisesRegex(parser.ParseError,
+                                r"error type cannot be nullable"):
+      parser.Parse(source4, "my_file.mojom")
+
+
   def testValidInterfaceDefinitions(self):
     """Tests all types of definitions that can occur in an interface."""
 
