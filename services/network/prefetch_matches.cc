@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "services/network/prefetch_matches.h"
 
 #include <algorithm>
@@ -557,7 +552,7 @@ void LogMismatchToUma(Fields field) {
   UMA_HISTOGRAM_ENUMERATION("Network.PrefetchMatches.FirstMismatch", uma_field);
 }
 
-void PrintSpanifiedObject(std::ostream& os, base::span<uint8_t> object) {
+void PrintSpanifiedObject(std::ostream& os, base::span<const uint8_t> object) {
   os << object.size() << "-byte-object<";
   size_t counter = 0;
   for (uint8_t byte : object) {
@@ -579,18 +574,11 @@ void PrintSpanifiedObject(std::ostream& os, base::span<uint8_t> object) {
 
 template <typename T>
 void PrintAsBinary(std::ostream& os, const T& value) {
-  constexpr size_t kSize = sizeof(T);
-  // Print the bytes. This is inspired by GTest's handling of unprintable
-  // values.
-  std::array<uint8_t, kSize> bytes;
-  // memcpy is approved by the C++ standard for type-punning to bytes.
-  // Using spans here is challenging, because `T` may not be trivially copyable,
-  // which means the only way to create a byte span to copy from is to
-  // `reinterpret_cast` and use `UNSAFE_BUFFERS` anyway, at which point the
-  // direct `memcpy()` is clearer. Note that in this case `memcpy()` has
-  // unspecified behavior, but it is not UB.
-  memcpy(bytes.data(), &value, kSize);
-  PrintSpanifiedObject(os, bytes);
+  // Safety: `value` has size sizeof(T); aliasing via byte types is OK and
+  // shouldn't require any extra alignment.
+  PrintSpanifiedObject(
+      os, UNSAFE_BUFFERS(
+              base::span(reinterpret_cast<const uint8_t*>(&value), sizeof(T))));
 }
 
 // CustomPrinter() is a customization point for types that need custom handling

@@ -1518,8 +1518,8 @@ void URLLoader::ReadMore() {
 
     // We may be able to fill up the buffer from the slop bucket.
     if (slop_bucket_) {
-      const size_t consumed = slop_bucket_->Consume(pending_write_->buffer(),
-                                                    pending_write_buffer_size_);
+      const size_t consumed =
+          slop_bucket_->Consume(base::as_writable_byte_span(*pending_write_));
       if (consumed) {
         // TODO(ricea): Refactor the way pending writes work so we don't need to
         // poke a value into `pending_write_buffer_offset_` here.
