@@ -36,6 +36,7 @@ namespace blink {
 
 class CallbackFunctionBase;
 class CallbackInterfaceBase;
+class CookieListItem;
 class EventListener;
 class GPUColorTargetState;
 class GPURenderPassColorAttachment;
@@ -1502,7 +1503,8 @@ struct NativeValueTraits<T> : public NativeValueTraitsBase<T*> {
 // confusing and often misused.
 template <typename T>
   requires std::derived_from<T, bindings::InputDictionaryBase> &&
-           (std::same_as<T, GPUColorTargetState> ||
+           (std::same_as<T, CookieListItem> ||
+            std::same_as<T, GPUColorTargetState> ||
             std::same_as<T, GPURenderPassColorAttachment> ||
             std::same_as<T, GPUVertexBufferLayout>)
 struct NativeValueTraits<IDLNullable<T>> : public NativeValueTraitsBase<T*> {
