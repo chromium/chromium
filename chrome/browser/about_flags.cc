@@ -7355,6 +7355,10 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_WITH_PARAMS_VALUE_TYPE(ntp_features::kNtpSharepointModule,
                                     kNtpSharepointModuleVariations,
                                     "DesktopNtpModules")},
+    {"ntp-show-compose-button",
+     flag_descriptions::kNtpSearchboxShowComposeButtonName,
+     flag_descriptions::kNtpSearchboxShowComposeButtonDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(ntp_features::kNtpSearchboxShowComposeButton)},
 
     {"ntp-wallpaper-search-button",
      flag_descriptions::kNtpWallpaperSearchButtonName,
