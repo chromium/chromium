@@ -375,6 +375,15 @@ export class ExtensionsDetailViewElement extends
         this.shadowRoot!
             .querySelector<ExtensionsToggleRowElement>(
                 '#allow-incognito')!.checked);
+
+    if (this.data.controlledInfo) {
+      // If admin-installed, the change might be postponed until Chromium
+      // restarts.
+      this.data = {
+        ...this.data,
+        incognitoAccessPendingChange: !this.data.incognitoAccessPendingChange,
+      };
+    }
   }
 
   protected onAllowOnFileUrlsChange_() {
@@ -383,6 +392,15 @@ export class ExtensionsDetailViewElement extends
         this.shadowRoot!
             .querySelector<ExtensionsToggleRowElement>(
                 '#allow-on-file-urls')!.checked);
+
+    if (this.data.controlledInfo) {
+      // If admin-installed, the change might be postponed until Chromium
+      // restarts.
+      this.data = {
+        ...this.data,
+        fileAccessPendingChange: !this.data.fileAccessPendingChange,
+      };
+    }
   }
 
   protected onCollectErrorsChange_() {

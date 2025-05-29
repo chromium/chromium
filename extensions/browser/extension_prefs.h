@@ -563,7 +563,11 @@ class ExtensionPrefs : public KeyedService {
   // instead of this method.
   bool IsIncognitoEnabled(const ExtensionId& extension_id) const;
   void SetIsIncognitoEnabled(const ExtensionId& extension_id, bool enabled);
-
+#if BUILDFLAG(IS_CHROMEOS)
+  void SetIsIncognitoEnabledDelayed(const ExtensionId& extension_id,
+                                    bool enabled);
+  bool HasIncognitoEnabledPendingUpdate(const ExtensionId& extension_id) const;
+#endif
   // Returns true if the user has chosen to allow this extension to inject
   // scripts into pages with file URLs.
   //
@@ -572,6 +576,10 @@ class ExtensionPrefs : public KeyedService {
   bool AllowFileAccess(const ExtensionId& extension_id) const;
   void SetAllowFileAccess(const ExtensionId& extension_id, bool allow);
   bool HasAllowFileAccessSetting(const ExtensionId& extension_id) const;
+#if BUILDFLAG(IS_CHROMEOS)
+  void SetAllowFileAccessDelayed(const ExtensionId& extension_id, bool allow);
+  bool HasAllowFileAccessPendingUpdate(const ExtensionId& extension_id) const;
+#endif
 
   // Saves ExtensionInfo for each installed extension with the path to the
   // version directory and the location. Blocklisted extensions won't be saved
@@ -716,6 +724,12 @@ class ExtensionPrefs : public KeyedService {
   // TODO(devlin): Remove this once clients are migrated over, around M84.
   void MigrateToNewExternalUninstallPref();
 
+#if BUILDFLAG(IS_CHROMEOS)
+  // Updates pref that were scheduled to be applied after Chrome restarts. This
+  // function should only be called from the constructor of the ExtensionPrefs
+  // class.
+  void ApplyPendingUpdates();
+#endif
   // Returns true if the given component extension should be installed, even
   // though it has been obsoleted. Installing it allows us to ensure it is
   // cleaned/deleted up properly. After that cleanup is done, this will return
