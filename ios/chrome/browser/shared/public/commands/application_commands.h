@@ -170,6 +170,10 @@ enum class TabGridOpeningMode {
 - (void)showSigninUpgradePromoWithCompletion:
     (SigninCoordinatorCompletionCallback)dismissalCompletion;
 
+// Shows the user the modal that contains a button to start the workflow to
+// import Safari data to Chrome.
+- (void)showSafariDataImportWorkflow;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_SHARED_PUBLIC_COMMANDS_APPLICATION_COMMANDS_H_

@@ -57,6 +57,7 @@
 #import "ios/chrome/browser/language/model/language_model_manager_factory.h"
 #import "ios/chrome/browser/net/model/crurl.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h"
+#import "ios/chrome/browser/passwords/model/features.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_password_check_manager.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_password_check_manager_factory.h"
 #import "ios/chrome/browser/passwords/model/password_check_observer_bridge.h"
@@ -535,6 +536,10 @@ struct EnhancedSafeBrowsingActivePromoData
     [model addItem:[self downloadsSettingsDetailItem]
         toSectionWithIdentifier:SettingsSectionIdentifierInfo];
   }
+  if (base::FeatureList::IsEnabled(kImportPasswordsFromSafari)) {
+    [model addItem:[self safariDataImportSettingsDetailItem]
+        toSectionWithIdentifier:SettingsSectionIdentifierInfo];
+  }
   [model addItem:[self bandwidthManagementDetailItem]
       toSectionWithIdentifier:SettingsSectionIdentifierInfo];
   [model addItem:[self aboutChromeDetailItem]
@@ -972,6 +977,17 @@ struct EnhancedSafeBrowsingActivePromoData
           accessibilityIdentifier:kSettingsDownloadsSettingsCellId];
 }
 
+- (TableViewItem*)safariDataImportSettingsDetailItem {
+  return [self
+           detailItemWithType:SettingsItemTypeSafariDataImport
+                         text:l10n_util::GetNSString(
+                                  IDS_IOS_SETTINGS_SAFARI_IMPORT_TITLE)
+                   detailText:nil
+                       symbol:DefaultSettingsRootSymbol(kSaveImageActionSymbol)
+        symbolBackgroundColor:[UIColor colorNamed:kGrey400Color]
+      accessibilityIdentifier:kSettingsSafariDataImportSettingsCellId];
+}
+
 - (TableViewItem*)tabsSettingsDetailItem {
   return [self detailItemWithType:SettingsItemTypeTabs
                              text:l10n_util::GetNSString(
@@ -1322,6 +1338,14 @@ struct EnhancedSafeBrowsingActivePromoData
       base::RecordAction(base::UserMetricsAction("Settings.Tabs"));
       [self showTabsSettings];
       break;
+    case SettingsItemTypeSafariDataImport: {
+      CHECK(base::FeatureList::IsEnabled(kImportPasswordsFromSafari));
+      base::RecordAction(base::UserMetricsAction("Settings.SafariImport"));
+      id<ApplicationCommands> handler = HandlerForProtocol(
+          _browser->GetCommandDispatcher(), ApplicationCommands);
+      [handler showSafariDataImportWorkflow];
+      break;
+    }
     case SettingsItemTypeBandwidth:
       base::RecordAction(base::UserMetricsAction("Settings.Bandwidth"));
       controller = [[BandwidthManagementTableViewController alloc]

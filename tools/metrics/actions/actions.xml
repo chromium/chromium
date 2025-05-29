@@ -37129,6 +37129,11 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Settings.SafariImport">
+  <owner>ginnyhuang@chromium.org</owner>
+  <description>Reported when user opens Safari import. iOS only.</description>
+</action>
+
 <action name="Settings.SafetyCheck">
   <owner>bwwilliams@google.com</owner>
   <owner>treib@chromium.org</owner>
