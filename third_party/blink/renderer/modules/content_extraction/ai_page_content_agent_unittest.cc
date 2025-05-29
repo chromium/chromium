@@ -2929,6 +2929,31 @@ TEST_F(AIPageContentAgentTest, PaidContentSubframeMicrodata) {
                    mojom::blink::AIPageContentAnnotatedRole::kPaidContent));
 }
 
+TEST_F(AIPageContentAgentTest, AnchorInInlineWithFloatingSiblingHitTesting) {
+  frame_test_helpers::LoadHTMLString(
+      helper_.LocalMainFrame(),
+      "<body>"
+      "  <span>"
+      "  <a href='https://www.google.com'>"
+      "    <div style='position: relative; float: left;'>text in div</div>"
+      "    <span>text</span>"
+      "  </a>"
+      "  </span>"
+      "</body>",
+      url_test_helpers::ToKURL("http://foobar.com"));
+
+  GetAIPageContentWithActionableElements();
+
+  const auto& root = ContentRootNode();
+  const auto& span = *root.children_nodes.at(0);
+  const auto& anchor = *span.children_nodes.at(0);
+
+  CheckAnchorNode(anchor, blink::KURL("https://www.google.com/"), {});
+  ASSERT_TRUE(anchor.content_attributes->node_interaction_info);
+  EXPECT_TRUE(anchor.content_attributes->node_interaction_info
+                  ->document_scoped_z_order);
+}
+
 TEST_F(AIPageContentAgentTest, HitTestElementsBasic) {
   frame_test_helpers::LoadHTMLString(
       helper_.LocalMainFrame(),
