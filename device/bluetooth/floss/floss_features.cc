@@ -27,8 +27,6 @@ const char* kNotLaunchedBoards[] = {
     // Chrome unittests have an empty board name.
     // TODO(b/369038879): Remove this after all unittests could pass with Floss.
     "",
-    // Wave MVL8897
-    "ELM", "HANA",
     // ChromeOS Flex
     "REVEN"};
 }  // namespace
