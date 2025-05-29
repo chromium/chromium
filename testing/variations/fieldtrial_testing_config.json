@@ -10664,10 +10664,10 @@
                 {
                     "name": "EnabledLowerTotalPages",
                     "params": {
-                        "AllocationSamplingMultiplier": "2000",
-                        "AllocationSamplingRange": "20",
+                        "AllocationSamplingMultiplier": "1000",
+                        "AllocationSamplingRange": "10",
                         "MaxAllocations": "2048",
-                        "MaxMetadata": "2048",
+                        "MaxMetadata": "6144",
                         "ProcessSamplingProbability": "0.1",
                         "TotalPages": "6144"
                     },
