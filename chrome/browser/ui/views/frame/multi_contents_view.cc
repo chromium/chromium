@@ -8,9 +8,9 @@
 
 #include "base/feature_list.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/frame/contents_container_view.h"
 #include "chrome/browser/ui/views/frame/contents_web_view.h"
 #include "chrome/browser/ui/views/frame/multi_contents_resize_area.h"
 #include "chrome/browser/ui/views/frame/multi_contents_view_drop_target_controller.h"
@@ -18,12 +18,8 @@
 #include "chrome/browser/ui/views/frame/top_container_background.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
-#include "ui/compositor/layer.h"
 #include "ui/events/types/event_type.h"
-#include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/scoped_canvas.h"
-#include "ui/views/layout/delegating_layout_manager.h"
-#include "ui/views/layout/proposed_layout.h"
 #include "ui/views/view_class_properties.h"
 
 DEFINE_ELEMENT_IDENTIFIER_VALUE(kMultiContentsViewDropTargetElementId);
@@ -187,15 +183,9 @@ void MultiContentsView::Layout(PassKey) {
       gfx::Size(widths.resize_width, available_space.height()));
   gfx::Rect end_rect(resize_rect.top_right(),
                      gfx::Size(widths.end_width, available_space.height()));
-  float corner_radius = 0;
   if (IsInSplitView()) {
     start_rect.Inset(start_contents_view_inset_);
     end_rect.Inset(end_contents_view_inset_);
-    corner_radius = kContentCornerRadius;
-  }
-  for (auto* contents_container_view : contents_container_views_) {
-    contents_container_view->GetContentsView()->layer()->SetRoundedCornerRadius(
-        gfx::RoundedCornersF{corner_radius});
   }
   contents_container_views_[0]->SetBoundsRect(start_rect);
   resize_area_->SetBoundsRect(resize_rect);
@@ -226,51 +216,6 @@ void MultiContentsView::OnWebContentsFocused(views::WebView* web_view) {
     }
   }
 }
-
-MultiContentsView::ContentsContainerView::ContentsContainerView(
-    BrowserView* browser_view) {
-  SetLayoutManager(std::make_unique<views::DelegatingLayoutManager>(this));
-  contents_view_ = AddChildView(
-      std::make_unique<ContentsWebView>(browser_view->GetProfile()));
-  mini_toolbar_ = AddChildView(std::make_unique<MultiContentsViewMiniToolbar>(
-      browser_view, contents_view_));
-}
-
-views::ProposedLayout
-MultiContentsView::ContentsContainerView::CalculateProposedLayout(
-    const views::SizeBounds& size_bounds) const {
-  views::ProposedLayout layouts;
-  if (!size_bounds.is_fully_bounded()) {
-    return layouts;
-  }
-
-  int height = size_bounds.height().value();
-  int width = size_bounds.width().value();
-
-  // |contents_view_| should fill the contents bounds.
-  gfx::Rect contents_rect = GetContentsBounds();
-  layouts.child_layouts.emplace_back(
-      contents_view_.get(), contents_view_->GetVisible(), contents_rect);
-
-  // |mini_toolbar_| should be offset in the bottom right corner, overlapping
-  // the outline.
-  gfx::Size mini_toolbar_size = mini_toolbar_->GetPreferredSize(
-      views::SizeBounds(width - kContentOutlineCornerRadius, height));
-  const int offset_x =
-      width - mini_toolbar_size.width() + (kContentOutlineThickness / 2.0f);
-  const int offset_y =
-      height - mini_toolbar_size.height() + (kContentOutlineThickness / 2.0f);
-  const gfx::Rect mini_toolbar_rect =
-      gfx::Rect(offset_x, offset_y, mini_toolbar_size.width(),
-                mini_toolbar_size.height());
-  layouts.child_layouts.emplace_back(
-      mini_toolbar_.get(), mini_toolbar_->GetVisible(), mini_toolbar_rect);
-
-  layouts.host_size = gfx::Size(width, height);
-  return layouts;
-}
-BEGIN_METADATA(MultiContentsView, ContentsContainerView)
-END_METADATA
 
 MultiContentsView::ViewWidths MultiContentsView::GetViewWidths(
     gfx::Rect available_space) {
@@ -316,41 +261,12 @@ MultiContentsView::ViewWidths MultiContentsView::ClampToMinWidth(
 }
 
 void MultiContentsView::UpdateContentsBorderAndOverlay() {
-  if (!IsInSplitView()) {
     for (auto* contents_container_view : contents_container_views_) {
-      if (contents_container_view->GetBorder()) {
-        contents_container_view->SetBorder(nullptr);
-      }
-    }
-    // Update mini toolbar visibility.
-    for (auto* contents_container_view : contents_container_views_) {
-      contents_container_view->GetMiniToolbar()->SetVisible(false);
-    }
-    return;
-  }
-
-  // Draw active/inactive outlines around the contents areas and updates mini
-  // toolbar visibility.
-  const auto set_contents_border_and_mini_toolbar =
-      [this](ContentsContainerView* contents_container_view) {
         const bool is_active = contents_container_view->GetContentsView() ==
                                GetActiveContentsView();
-        const SkColor color =
-            is_active ? GetColorProvider()->GetColor(
-                            kColorMulitContentsViewActiveContentOutline)
-                      : GetColorProvider()->GetColor(
-                            kColorMulitContentsViewInactiveContentOutline);
-        contents_container_view->SetBorder(views::CreatePaddedBorder(
-            views::CreateRoundedRectBorder(kContentOutlineThickness,
-                                           kContentOutlineCornerRadius, color),
-            gfx::Insets(kSplitViewContentPadding)));
-        // Mini toolbar should only be visible for the inactive contents
-        // container view.
-        contents_container_view->GetMiniToolbar()->SetVisible(!is_active);
-      };
-  for (auto* contents_container_view : contents_container_views_) {
-    set_contents_border_and_mini_toolbar(contents_container_view);
-  }
+        contents_container_view->UpdateBorderAndOverlay(IsInSplitView(),
+                                                        is_active);
+    }
 }
 
 BEGIN_METADATA(MultiContentsView)

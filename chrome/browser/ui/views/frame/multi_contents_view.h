@@ -10,10 +10,10 @@
 
 #include "base/callback_list.h"
 #include "base/functional/callback_forward.h"
+#include "chrome/browser/ui/views/frame/contents_container_view.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/resize_area_delegate.h"
-#include "ui/views/layout/delegating_layout_manager.h"
 #include "ui/views/view.h"
 
 class BrowserView;
@@ -141,33 +141,6 @@ class MultiContentsView : public views::View, public views::ResizeAreaDelegate {
  private:
   static constexpr int kMinWebContentsWidth = 200;
   static constexpr double kMinWebContentsWidthPercentage = 0.1;
-  static constexpr int kContentCornerRadius = 6;
-  static constexpr int kContentOutlineCornerRadius = 8;
-  static constexpr int kContentOutlineThickness = 1;
-  static constexpr int kSplitViewContentPadding = 4;
-
-  // ContentsContainerView holds the ContentsWebView and the outlines and
-  // minitoolbar when in split view.
-  class ContentsContainerView : public views::View,
-                                public views::LayoutDelegate {
-    METADATA_HEADER(ContentsContainerView, views::View)
-   public:
-    explicit ContentsContainerView(BrowserView* browser_view);
-    ContentsContainerView(ContentsContainerView&) = delete;
-    ContentsContainerView& operator=(const ContentsContainerView&) = delete;
-    ~ContentsContainerView() override = default;
-
-    ContentsWebView* GetContentsView() { return contents_view_; }
-    MultiContentsViewMiniToolbar* GetMiniToolbar() { return mini_toolbar_; }
-
-   private:
-    // LayoutDelegate:
-    views::ProposedLayout CalculateProposedLayout(
-        const views::SizeBounds& size_bounds) const override;
-
-    raw_ptr<ContentsWebView> contents_view_;
-    raw_ptr<MultiContentsViewMiniToolbar> mini_toolbar_;
-  };
 
   int GetInactiveIndex();
 
