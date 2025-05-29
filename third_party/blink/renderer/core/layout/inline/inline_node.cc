@@ -267,8 +267,10 @@ class ReusingTextShaper final {
       if (*item.Style()->GetFont() != font) {
         continue;
       }
-      if (shape_result->IsAppliedSpacing())
+      if (item.IsUnsafeToReuseShapeResult() ||
+          shape_result->IsAppliedSpacing()) {
         continue;
+      }
       shape_results.push_back(shape_result);
     }
     return shape_results;
