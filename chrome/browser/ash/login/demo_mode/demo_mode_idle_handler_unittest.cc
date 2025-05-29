@@ -20,9 +20,11 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
+#include "chrome/browser/ash/browser_delegate/browser_controller_impl.h"
 #include "chrome/browser/ash/login/demo_mode/demo_mode_window_closer.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_list.h"
 #include "chrome/test/base/chrome_ash_test_base.h"
 #include "chrome/test/base/test_browser_window.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -56,9 +58,6 @@ class DemoModeIdleHandlerTestBase : public ChromeAshTestBase {
       : ChromeAshTestBase(std::make_unique<content::BrowserTaskEnvironment>(
             base::test::TaskEnvironment::TimeSource::MOCK_TIME)),
         profile_manager_(TestingBrowserProcess::GetGlobal()) {
-    window_closer_ = std::make_unique<DemoModeWindowCloser>(
-        base::BindRepeating(&DemoModeIdleHandlerTestBase::MockLaunchDemoModeApp,
-                            base::Unretained(this)));
   }
   ~DemoModeIdleHandlerTestBase() override = default;
 
@@ -89,6 +88,11 @@ class DemoModeIdleHandlerTestBase : public ChromeAshTestBase {
     // activity to set `first_user_activity_`.
     metrics_recorder_ = std::make_unique<DemoSessionMetricsRecorder>();
 
+    browser_controller_ = std::make_unique<ash::BrowserControllerImpl>();
+    window_closer_ = std::make_unique<DemoModeWindowCloser>(
+        base::BindRepeating(&DemoModeIdleHandlerTestBase::MockLaunchDemoModeApp,
+                            base::Unretained(this)));
+
     // OK to unretained `this` since the life cycle of `demo_mode_idle_handler_`
     // is the same as the tests.
     demo_mode_idle_handler_ = std::make_unique<DemoModeIdleHandler>(
@@ -105,6 +109,7 @@ class DemoModeIdleHandlerTestBase : public ChromeAshTestBase {
     profile_manager_.DeleteAllTestingProfiles();
     demo_mode_idle_handler_.reset();
     window_closer_.reset();
+    browser_controller_.reset();
   }
 
   void SimulateUserActivity() {
@@ -134,6 +139,7 @@ class DemoModeIdleHandlerTestBase : public ChromeAshTestBase {
   int launch_demo_app_count_ = 0;
   TestingProfileManager profile_manager_;
 
+  std::unique_ptr<BrowserControllerImpl> browser_controller_;
   std::unique_ptr<DemoModeWindowCloser> window_closer_;
   std::unique_ptr<DemoModeIdleHandler> demo_mode_idle_handler_;
   raw_ptr<Profile> profile_ = nullptr;

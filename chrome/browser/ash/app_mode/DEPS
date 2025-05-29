@@ -64,6 +64,7 @@ include_rules = [
   "+chrome/browser/ui/browser_list.h",
   "+chrome/browser/ui/browser_window.h",
   "+chrome/browser/ui/chromeos",
+  "+chrome/browser/ui/tabs/tab_strip_model.h",
   "+chrome/browser/ui/web_applications",
   "+chrome/browser/web_applications/external_install_options.h",
   "+chrome/browser/web_applications/externally_managed_app_manager.h",

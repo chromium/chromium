@@ -68,6 +68,10 @@ BrowserDelegate* BrowserControllerImpl::GetDelegate(Browser* browser) {
   return it->second.get();
 }
 
+BrowserDelegate* BrowserControllerImpl::GetLastUsedBrowser() {
+  return GetDelegate(BrowserList::GetInstance()->GetLastActive());
+}
+
 BrowserDelegate* BrowserControllerImpl::GetLastUsedVisibleBrowser() {
   for (Browser* browser : BrowserList::GetInstance()->OrderedByActivation()) {
     if (browser->window()->IsVisible()) {
@@ -200,7 +204,20 @@ BrowserDelegate* BrowserControllerImpl::CreateCustomTab(
   return GetDelegate(browser);
 }
 
+void BrowserControllerImpl::AddObserver(Observer* observer) {
+  observers_.AddObserver(observer);
+}
+
+void BrowserControllerImpl::RemoveObserver(Observer* observer) {
+  observers_.RemoveObserver(observer);
+}
+
 void BrowserControllerImpl::OnBrowserRemoved(Browser* browser) {
+  if (BrowserList::GetInstance()->empty()) {
+    for (auto& observer : observers_) {
+      observer.OnLastBrowserClosed();
+    }
+  }
   browsers_.erase(browser);
   // The corresponding BrowserDelegateImpl, if any, is now dead.
 }

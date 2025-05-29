@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/observer_list.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ash/browser_delegate/browser_controller.h"
 #include "chrome/browser/ui/browser_list_observer.h"
@@ -28,6 +29,7 @@ class BrowserControllerImpl : public BrowserController,
 
   // BrowserController:
   BrowserDelegate* GetDelegate(Browser* browser) override;
+  BrowserDelegate* GetLastUsedBrowser() override;
   BrowserDelegate* GetLastUsedVisibleBrowser() override;
   BrowserDelegate* GetLastUsedVisibleOnTheRecordBrowser() override;
   BrowserDelegate* FindWebApp(const user_manager::User& user,
@@ -46,6 +48,9 @@ class BrowserControllerImpl : public BrowserController,
       const user_manager::User& user,
       std::unique_ptr<content::WebContents> contents) override;
 
+  void AddObserver(Observer* observer) override;
+  void RemoveObserver(Observer* observer) override;
+
   // BrowserListObserver:
   void OnBrowserRemoved(Browser* browser) override;
 
@@ -53,7 +58,7 @@ class BrowserControllerImpl : public BrowserController,
   BrowserDelegate* GetBrowserDelegate(Browser* browser);
 
   absl::flat_hash_map<Browser*, std::unique_ptr<BrowserDelegateImpl>> browsers_;
-
+  base::ObserverList<Observer> observers_;
   base::ScopedObservation<BrowserList, BrowserListObserver> observation_{this};
 };
 

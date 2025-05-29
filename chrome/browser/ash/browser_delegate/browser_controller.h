@@ -8,6 +8,7 @@
 #include <string_view>
 
 #include "base/containers/span.h"
+#include "base/observer_list_types.h"
 #include "chrome/browser/ash/browser_delegate/browser_type.h"
 #include "components/webapps/common/web_app_id.h"
 #include "url/gurl.h"
@@ -30,6 +31,26 @@ class BrowserDelegate;
 // ChromeBrowserMainExtraPartsAsh::PostProfileInit. See also README.md.
 class BrowserController {
  public:
+  // See AddObserver below.
+  class Observer : public base::CheckedObserver {
+   public:
+    // Called when the last browser is irrevocably being closed.
+    // TODO(crbug.com/369689187): Figure out if/how we want to allow inspection
+    // of the browser (the instance still exists but we shouldn't allow
+    // arbitrary operations).
+    virtual void OnLastBrowserClosed() {}
+  };
+
+  // See CreateWebApp below.
+  struct CreateParams {
+    bool allow_resize;
+    bool allow_maximize;
+    bool allow_fullscreen;
+    // TODO(crbug.com/369689187): Figure out if the restore_id field makes
+    // sense, and if so, add a description.
+    int32_t restore_id;
+  };
+
   static BrowserController* GetInstance();
 
   // Returns the corresponding delegate, possibly creating it first.
@@ -38,6 +59,10 @@ class BrowserController {
   // code from Browser to BrowserDelegate incrementally. See also
   // BrowserDelegate::GetBrowser.
   virtual BrowserDelegate* GetDelegate(Browser* browser) = 0;
+
+  // Returns (the delegate for) the most recently used browser that still
+  // exists. Returns nullptr if there's none.
+  virtual BrowserDelegate* GetLastUsedBrowser() = 0;
 
   // Returns (the delegate for) the most recently used browser that is
   // currently visible. Returns nullptr if there's none.
@@ -72,14 +97,6 @@ class BrowserController {
   // home tab is added if that feature is supported and a URL is registered for
   // the app.
   // Returns nullptr if the creation is not possible for the given arguments.
-  struct CreateParams {
-    bool allow_resize;
-    bool allow_maximize;
-    bool allow_fullscreen;
-    // TODO(crbug.com/369689187): Figure out if the restore_id field makes
-    // sense, and if so, add a description.
-    int32_t restore_id;
-  };
   virtual BrowserDelegate* CreateWebApp(const user_manager::User& user,
                                         webapps::AppId app_id,
                                         BrowserType browser_type,
@@ -92,6 +109,10 @@ class BrowserController {
   virtual BrowserDelegate* CreateCustomTab(
       const user_manager::User& user,
       std::unique_ptr<content::WebContents> contents) = 0;
+
+  // Facilitates observation of browser events.
+  virtual void AddObserver(Observer* observer) = 0;
+  virtual void RemoveObserver(Observer* observer) = 0;
 
  protected:
   BrowserController();
