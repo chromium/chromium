@@ -930,6 +930,10 @@ TEST_P(AudioAndroidOutputTest, CreateAndCloseOutputStream) {
 // closed. This test is only relevant for AAudioWithPerStreamDeviceSelection.
 TEST_F(AudioAndroidOutputTest, CreateAndCloseOutputStreamWithDevice) {
   InitFeatures(AudioApi::AAudioWithPerStreamDeviceSelection);
+  if (IsSkipped()) {
+    return;
+  }
+
   std::optional<AudioDeviceDescription> device =
       GetFirstNonDefaultOutputDevice();
   if (!device.has_value()) {
@@ -991,6 +995,10 @@ TEST_P(AudioAndroidOutputTest, OpenAndCloseOutputStream) {
 // device ID. This test is only relevant for AAudioWithPerStreamDeviceSelection.
 TEST_F(AudioAndroidOutputTest, OpenAndCloseOutputStreamWithDevice) {
   InitFeatures(AudioApi::AAudioWithPerStreamDeviceSelection);
+  if (IsSkipped()) {
+    return;
+  }
+
   std::optional<AudioDeviceDescription> device =
       GetFirstNonDefaultOutputDevice();
   if (!device.has_value()) {
