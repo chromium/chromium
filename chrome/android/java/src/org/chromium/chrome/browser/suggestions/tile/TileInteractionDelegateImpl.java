@@ -5,8 +5,6 @@
 package org.chromium.chrome.browser.suggestions.tile;
 
 import android.annotation.SuppressLint;
-import android.view.ContextMenu;
-import android.view.ContextMenu.ContextMenuInfo;
 import android.view.MotionEvent;
 import android.view.View;
 
@@ -126,22 +124,9 @@ class TileInteractionDelegateImpl
         mScheduldedPrerenderingUrl = null;
     }
 
-    // TileGroup.TileInteractionDelegate => View.OnCreateContextMenuListener implementation.
-    @Override
-    public void onCreateContextMenu(
-            ContextMenu contextMenu, View view, ContextMenuInfo contextMenuInfo) {
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.TILE_CONTEXT_MENU_REFACTOR)) return;
-
-        mContextMenuManager.createContextMenu(contextMenu, view, this);
-    }
-
     // TileGroup.TileInteractionDelegate => View.OnLongClickListener implementation.
     @Override
     public boolean onLongClick(View view) {
-        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.TILE_CONTEXT_MENU_REFACTOR)) {
-            return false;
-        }
-
         return mContextMenuManager.showListContextMenu(view, this);
     }
 

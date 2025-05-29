@@ -215,6 +215,7 @@ public class TileRenderer {
 
     /**
      * Override currently set maximum number of title lines.
+     *
      * @param titleLines The new max number of title lines to be shown under the tile icon.
      */
     public void setTitleLines(int titleLines) {
@@ -306,11 +307,7 @@ public class TileRenderer {
         }
 
         tileView.setOnClickListener(delegate);
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.TILE_CONTEXT_MENU_REFACTOR)) {
-            tileView.setOnLongClickListener(delegate);
-        } else {
-            tileView.setOnCreateContextMenuListener(delegate);
-        }
+        tileView.setOnLongClickListener(delegate);
 
         return tileView;
     }

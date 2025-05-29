@@ -382,7 +382,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kTabWindowManagerReportIndicesMismatch,
     &kTestDefaultDisabled,
     &kTestDefaultEnabled,
-    &kTileContextMenuRefactor,
     &kTopControlsRefactor,
     &kTraceBinderIpc,
     &kStartSurfaceReturnTime,
@@ -1285,10 +1284,6 @@ BASE_FEATURE(kTestDefaultDisabled,
 
 BASE_FEATURE(kTestDefaultEnabled,
              "TestDefaultEnabled",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kTileContextMenuRefactor,
-             "TileContextMenuRefactor",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables the use of the refactored Top Controls approach on Android.
