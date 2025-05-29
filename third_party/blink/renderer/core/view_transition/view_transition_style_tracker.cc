@@ -649,7 +649,10 @@ bool ViewTransitionStyleTracker::MatchForOnlyChild(
 
     case kPseudoIdViewTransitionImagePair:
       DCHECK(view_transition_name);
-      return true;
+      return ComputeContainedGroupNames(view_transition_name).empty();
+
+    case kPseudoIdViewTransitionGroupChildren:
+      return false;
 
     case kPseudoIdViewTransitionOld: {
       DCHECK(view_transition_name);
@@ -808,6 +811,8 @@ void ViewTransitionStyleTracker::AddTransitionElementsFromCSSRecursive(
   // children can have outer tree scope.
   PaintLayerPaintOrderIterator child_iterator(root, kAllChildren);
   while (auto* child = child_iterator.Next()) {
+    // Note that both 'contain' and 'nearest' contain descendant names, per
+    // https://www.w3.org/TR/css-view-transitions-2/#nearest-containing-group-name
     AddTransitionElementsFromCSSRecursive(
         child, tree_scope, containing_group_stack,
         root_style.ViewTransitionGroup().IsNormal() ? nearest_group_with_contain
@@ -912,6 +917,21 @@ AtomicString ViewTransitionStyleTracker::ComputeContainingGroupName(
   }
 
   return ComputeContainingGroupName(parent_state.nearest, group);
+}
+
+Vector<AtomicString> ViewTransitionStyleTracker::ComputeContainedGroupNames(
+    const AtomicString& container_name) const {
+  Vector<AtomicString> result;
+  // Iterate `view_transition_names_` since that is the correct order in which
+  // we should be creating contained elements.
+  for (const auto& candidate_name : view_transition_names_) {
+    CHECK(element_data_map_.Contains(candidate_name));
+    if (element_data_map_.at(candidate_name)->containing_group_name ==
+        container_name) {
+      result.push_back(candidate_name);
+    }
+  }
+  return result;
 }
 
 bool ViewTransitionStyleTracker::Capture(bool snap_browser_controls) {
@@ -1330,10 +1350,11 @@ PseudoElement* ViewTransitionStyleTracker::CreatePseudoElement(
       return MakeGarbageCollected<ViewTransitionTransitionElement>(parent,
                                                                    this);
 
-    case kPseudoIdViewTransitionGroup: {
+    case kPseudoIdViewTransitionGroup:
+    case kPseudoIdViewTransitionGroupChildren:
       return MakeGarbageCollected<ViewTransitionPseudoElementBase>(
           parent, pseudo_id, view_transition_name, is_generated_name, this);
-    }
+
     case kPseudoIdViewTransitionImagePair:
       return MakeGarbageCollected<ImageWrapperPseudoElement>(
           parent, pseudo_id, view_transition_name, is_generated_name, this);

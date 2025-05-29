@@ -258,6 +258,7 @@ inline unsigned CSSSelector::SpecificityForOneSelector() const {
           return kTagSpecificity + SelectorList()->First()->Specificity();
         case kPseudoViewTransitionGroup:
         case kPseudoViewTransitionImagePair:
+        case kPseudoViewTransitionGroupChildren:
         case kPseudoViewTransitionOld:
         case kPseudoViewTransitionNew: {
           CHECK(!IdentList().empty());
@@ -392,6 +393,8 @@ PseudoId CSSSelector::GetPseudoId(PseudoType type) {
       return kPseudoIdViewTransitionGroup;
     case kPseudoViewTransitionImagePair:
       return kPseudoIdViewTransitionImagePair;
+    case kPseudoViewTransitionGroupChildren:
+      return kPseudoIdViewTransitionGroupChildren;
     case kPseudoViewTransitionOld:
       return kPseudoIdViewTransitionOld;
     case kPseudoViewTransitionNew:
@@ -703,6 +706,8 @@ constexpr static NameToPseudoStruct kPseudoTypeWithArgumentsMap[] = {
     {"slotted", CSSSelector::kPseudoSlotted},
     {"state", CSSSelector::kPseudoState},
     {"view-transition-group", CSSSelector::kPseudoViewTransitionGroup},
+    {"view-transition-group-children",
+     CSSSelector::kPseudoViewTransitionGroupChildren},
     {"view-transition-image-pair", CSSSelector::kPseudoViewTransitionImagePair},
     {"view-transition-new", CSSSelector::kPseudoViewTransitionNew},
     {"view-transition-old", CSSSelector::kPseudoViewTransitionOld},
@@ -923,6 +928,7 @@ void CSSSelector::UpdatePseudoType(const AtomicString& value,
     case kPseudoViewTransition:
     case kPseudoViewTransitionGroup:
     case kPseudoViewTransitionImagePair:
+    case kPseudoViewTransitionGroupChildren:
     case kPseudoViewTransitionOld:
     case kPseudoViewTransitionNew:
     case kPseudoDetailsContent:
@@ -1287,6 +1293,7 @@ bool CSSSelector::SerializeSimpleSelector(StringBuilder& builder,
       }
       case kPseudoViewTransitionGroup:
       case kPseudoViewTransitionImagePair:
+      case kPseudoViewTransitionGroupChildren:
       case kPseudoViewTransitionNew:
       case kPseudoViewTransitionOld: {
         builder.Append('(');
@@ -1636,6 +1643,7 @@ bool CSSSelector::IsTreeAbidingPseudoElement() const {
           GetPseudoType() == kPseudoViewTransition ||
           GetPseudoType() == kPseudoViewTransitionGroup ||
           GetPseudoType() == kPseudoViewTransitionImagePair ||
+          GetPseudoType() == kPseudoViewTransitionGroupChildren ||
           GetPseudoType() == kPseudoViewTransitionOld ||
           GetPseudoType() == kPseudoViewTransitionNew ||
           IsElementBackedPseudoElement(GetPseudoType()));
@@ -1698,6 +1706,7 @@ bool CSSSelector::IsAllowedAfterPart() const {
     case kPseudoViewTransition:
     case kPseudoViewTransitionGroup:
     case kPseudoViewTransitionImagePair:
+    case kPseudoViewTransitionGroupChildren:
     case kPseudoViewTransitionNew:
     case kPseudoViewTransitionOld:
       return true;

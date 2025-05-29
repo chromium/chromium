@@ -9225,6 +9225,10 @@ Element* Element::GetStyledPseudoElement(
     return container_pseudo;
   }
 
+  if (pseudo_id == kPseudoIdViewTransitionGroupChildren) {
+    return container_pseudo->GetPseudoElement(pseudo_id, view_transition_name);
+  }
+
   auto* wrapper_pseudo = container_pseudo->GetPseudoElement(
       kPseudoIdViewTransitionImagePair, view_transition_name);
   if (!wrapper_pseudo || pseudo_id == kPseudoIdViewTransitionImagePair) {
@@ -11250,11 +11254,27 @@ void Element::RecalcTransitionPseudoTreeStyle(
           PseudoId::kPseudoIdViewTransitionGroup, view_transition_name);
     }
 
-    PseudoElement* container_pseudo =
-        parent ? parent->UpdatePseudoElement(
-                     kPseudoIdViewTransitionGroup, style_recalc_change,
-                     style_recalc_context, view_transition_name)
-               : nullptr;
+    // If the parent is not a ::view-transition element, we need a
+    // ::view-transition-group-children container.
+    if (parent && parent != transition_pseudo) {
+      bool needs_reattach = parent->NeedsReattachLayoutTree();
+      parent = parent->UpdatePseudoElement(
+          kPseudoIdViewTransitionGroupChildren, style_recalc_change,
+          style_recalc_context, parent->view_transition_name());
+      if (!parent) {
+        continue;
+      }
+      if (needs_reattach) {
+        parent->SetNeedsReattachLayoutTree();
+      }
+    } else {
+      parent = transition_pseudo;
+    }
+
+    PseudoElement* container_pseudo = parent->UpdatePseudoElement(
+        kPseudoIdViewTransitionGroup, style_recalc_change, style_recalc_context,
+        view_transition_name);
+
     if (!container_pseudo) {
       continue;
     }

@@ -90,6 +90,7 @@ enum PseudoId : uint8_t {
   kPseudoIdViewTransition,
   kPseudoIdViewTransitionGroup,
   kPseudoIdViewTransitionImagePair,
+  kPseudoIdViewTransitionGroupChildren,
   kPseudoIdViewTransitionOld,
   kPseudoIdViewTransitionNew,
   // Internal IDs follow:
@@ -148,6 +149,7 @@ inline bool IsTransitionPseudoElement(PseudoId pseudo_id) {
     case kPseudoIdViewTransition:
     case kPseudoIdViewTransitionGroup:
     case kPseudoIdViewTransitionImagePair:
+    case kPseudoIdViewTransitionGroupChildren:
     case kPseudoIdViewTransitionOld:
     case kPseudoIdViewTransitionNew:
       return true;
@@ -161,6 +163,7 @@ inline bool PseudoElementHasArguments(PseudoId pseudo_id) {
     case kPseudoIdHighlight:
     case kPseudoIdViewTransitionGroup:
     case kPseudoIdViewTransitionImagePair:
+    case kPseudoIdViewTransitionGroupChildren:
     case kPseudoIdViewTransitionNew:
     case kPseudoIdViewTransitionOld:
       return true;

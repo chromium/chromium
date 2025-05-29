@@ -251,6 +251,8 @@ TEST(CSSSelectorParserTest, TransitionPseudoStyles) {
        CSSSelector::kPseudoViewTransitionGroup},
       {"html::view-transition-image-pair(foo)", true, "foo",
        CSSSelector::kPseudoViewTransitionImagePair},
+      {"html::view-transition-group-children(foo)", true, "foo",
+       CSSSelector::kPseudoViewTransitionGroupChildren},
       {"html::view-transition-old(foo)", true, "foo",
        CSSSelector::kPseudoViewTransitionOld},
       {"html::view-transition-new(foo)", true, "foo",

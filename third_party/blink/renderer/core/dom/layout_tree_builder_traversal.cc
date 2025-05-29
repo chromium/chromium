@@ -237,6 +237,7 @@ Node* LayoutTreeBuilderTraversal::NextSibling(const Node& node) {
       return nullptr;
     }
     case kPseudoIdViewTransitionImagePair:
+    case kPseudoIdViewTransitionGroupChildren:
     case kPseudoIdViewTransitionOld:
     case kPseudoIdViewTransitionNew:
       return nullptr;

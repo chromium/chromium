@@ -234,6 +234,10 @@ class ViewTransitionStyleTracker
 
   void InvalidateInternalPseudoStyle();
 
+  // Computes a list of contained group names for a given view transition name.
+  Vector<AtomicString> ComputeContainedGroupNames(
+      const AtomicString& container_name) const;
+
  private:
   class ImageWrapperPseudoElement;
 

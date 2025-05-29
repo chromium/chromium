@@ -379,6 +379,7 @@ CompositingReasons CompositingReasonFinder::DirectReasonsForPaintProperties(
     case kPseudoIdViewTransition:
     case kPseudoIdViewTransitionGroup:
     case kPseudoIdViewTransitionImagePair:
+    case kPseudoIdViewTransitionGroupChildren:
     case kPseudoIdViewTransitionNew:
     case kPseudoIdViewTransitionOld:
       reasons |= CompositingReason::kViewTransitionPseudoElement;

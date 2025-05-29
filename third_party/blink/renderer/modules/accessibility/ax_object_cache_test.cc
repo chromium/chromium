@@ -443,6 +443,9 @@ TEST_F(AXViewTransitionTest, TransitionPseudoNotRelevant) {
   auto* image_wrapper_pseudo = container_pseudo->GetPseudoElement(
       kPseudoIdViewTransitionImagePair, AtomicString("shared"));
   ASSERT_TRUE(image_wrapper_pseudo);
+  auto* nested_groups_pseudo = container_pseudo->GetPseudoElement(
+      kPseudoIdViewTransitionGroupChildren, AtomicString("shared"));
+  ASSERT_FALSE(nested_groups_pseudo);
   auto* incoming_image_pseudo = image_wrapper_pseudo->GetPseudoElement(
       kPseudoIdViewTransitionNew, AtomicString("shared"));
   ASSERT_TRUE(incoming_image_pseudo);
