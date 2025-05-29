@@ -1875,6 +1875,58 @@ GraphBuilderTflite::CanFuseQuantizeAndGetOutput(const mojom::Reduce& reduce) {
 }
 
 std::optional<GraphBuilderTflite::TensorInfo>
+GraphBuilderTflite::CanFuseQuantizeAndGetOutput(
+    const mojom::Resample2d& resample2d) {
+  if (!IsDequantizeOutput(resample2d.input_operand_id)) {
+    return std::nullopt;
+  }
+
+  // TODO(crbug.com/413083273): Consider the restriction in GPU delegate.
+  // For XNNPack delegate, input and output operands have to be dequantized from
+  // ints8, the scale and zero point of input and output have to be scaler.
+  // https://source.chromium.org/chromium/chromium/src/+/main:third_party/tflite/src/tensorflow/lite/delegates/xnnpack/xnnpack_delegate.cc;l=5218;drc=884710320aa8a793be1407d8b8091b538658f5e6
+  const mojom::DequantizeLinear& input_dequantize =
+      GetDequantizeOp(resample2d.input_operand_id);
+  if (!IsInts8AndScalarScale(input_dequantize)) {
+    return std::nullopt;
+  }
+
+  std::optional<std::pair<OperationId, QuantizateParametersOffset>> next_op =
+      IsNextOpQuantize(resample2d.output_operand_id,
+                       {GetOperand(input_dequantize.input_operand_id)
+                            .descriptor.data_type()});
+  if (!next_op) {
+    return std::nullopt;
+  }
+
+  const mojom::QuantizeLinear& output_quantize = GetQuantizeOp(next_op->first);
+  if (!IsInts8AndScalarScale(output_quantize)) {
+    return std::nullopt;
+  }
+
+  // Input and output must all have same scale/zero_point, see quantization
+  // requirements of resize_bilinear at
+  // https://ai.google.dev/edge/litert/models/quantization_spec#int8_quantized_operator_specifications
+  base::span<const float> input_scale_values =
+      GetConstantValue<float>(input_dequantize.scale_operand_id);
+  base::span<const float> output_scale_values =
+      GetConstantValue<float>(output_quantize.scale_operand_id);
+  if (input_scale_values[0] != output_scale_values[0]) {
+    return std::nullopt;
+  }
+
+  base::FixedArray<int64_t> input_zero_point_values =
+      GetConstantInt64Value(input_dequantize.zero_point_operand_id);
+  base::FixedArray<int64_t> output_zero_point_values =
+      GetConstantInt64Value(output_quantize.zero_point_operand_id);
+  if (input_zero_point_values[0] != output_zero_point_values[0]) {
+    return std::nullopt;
+  }
+
+  return SerializeQuantizedOutput(*next_op);
+}
+
+std::optional<GraphBuilderTflite::TensorInfo>
 GraphBuilderTflite::CanFuseQuantizeAndGetOutput(const mojom::Reshape& reshape) {
   if (!IsDequantizeOutput(reshape.input_operand_id)) {
     return std::nullopt;
@@ -6532,10 +6584,19 @@ auto GraphBuilderTflite::SerializeResample2d(
       break;
   }
 
+  std::optional<TensorInfo> quantized_output =
+      CanFuseQuantizeAndGetOutput(resample2d);
+  const bool fuse_dequantize = quantized_output.has_value();
+  ASSIGN_OR_RETURN(const TensorInfo& input_tensor_info,
+                   SerializeInputTensorInfo(
+                       resample2d.input_operand_id, /*quantize_params=*/0,
+                       /*operation_supports_float16=*/false, fuse_dequantize));
+
   // Serialize the target sizes for the dimensions [OutputHeight,
   // OutputWidth].);
   const TensorInfo output_tensor_info =
-      SerializeOutputTensorInfo(resample2d.output_operand_id);
+      fuse_dequantize ? std::move(*quantized_output)
+                      : SerializeOutputTensorInfo(resample2d.output_operand_id);
   int32_t output_height = output_tensor_info.dimensions[resample2d.axes[0]];
   int32_t output_width = output_tensor_info.dimensions[resample2d.axes[1]];
 
@@ -6544,8 +6605,6 @@ auto GraphBuilderTflite::SerializeResample2d(
   const TensorIndex resize_tensor_index =
       SerializeTensorWithBuffer<int32_t>(resize_data, resize_shape);
 
-  ASSIGN_OR_RETURN(const TensorInfo& input_tensor_info,
-                   SerializeInputTensorInfo(resample2d.input_operand_id));
   const OperatorCodeIndex operator_code_index =
       GetOperatorCodeIndex(operator_code);
   const std::array<TensorIndex, 2> op_inputs = {input_tensor_info.index,
