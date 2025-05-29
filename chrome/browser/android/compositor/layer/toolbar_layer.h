@@ -51,7 +51,8 @@ class ToolbarLayer : public Layer {
                          int progress_bar_background_y,
                          int progress_bar_background_width,
                          int progress_bar_background_height,
-                         int progress_bar_background_color);
+                         int progress_bar_background_color,
+                         float corner_radius);
 
   void SetOpacity(float opacity);
 

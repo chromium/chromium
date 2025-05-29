@@ -33,6 +33,7 @@ public class ClipDrawableProgressBar extends ImageView {
 
         public int progressBarColor;
         public int progressBarBackgroundColor;
+        public float cornerRadius;
     }
 
     /** An observer for visible progress updates. */
@@ -231,6 +232,12 @@ public class ClipDrawableProgressBar extends ImageView {
         float effectiveAlpha = getVisibility() == VISIBLE ? getAlpha() : 0.0f;
         drawingInfoOut.progressBarColor = applyAlpha(mForegroundColor, effectiveAlpha);
         drawingInfoOut.progressBarBackgroundColor = applyAlpha(mBackgroundColor, effectiveAlpha);
+
+        float height = getBottom() - getTop();
+        drawingInfoOut.cornerRadius = 0;
+        if (useGradientDrawable()) {
+            drawingInfoOut.cornerRadius = height / 2;
+        }
 
         if (ViewCompat.getLayoutDirection(this) == LAYOUT_DIRECTION_LTR) {
             drawingInfoOut.progressBarRect.set(
