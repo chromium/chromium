@@ -96,7 +96,10 @@ jobs:
     timeout-minutes: 45
     steps:
       - uses: actions/checkout@v4
-      - uses: dtolnay/rust-toolchain@miri
+      - uses: dtolnay/rust-toolchain@master
+        with:
+          toolchain: nightly-2025-05-16  # https://github.com/rust-lang/miri/issues/4323
+          components: miri, rust-src
       - run: cargo miri setup
       - run: cargo miri test
         env:
