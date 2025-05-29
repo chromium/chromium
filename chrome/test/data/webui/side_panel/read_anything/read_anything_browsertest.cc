@@ -56,7 +56,14 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, Common) {
   RunSidePanelTest("side_panel/read_anything/common_test.js", "mocha.run()");
 }
 
-IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, Images) {
+// TODO(crbug.com/378139912): Re-enable test. The test suite contains only one
+// test, so it is safe to disable here.
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+#define MAYBE_Images DISABLED_Images
+#else
+#define MAYBE_Images Images
+#endif
+IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, MAYBE_Images) {
   RunSidePanelTest("side_panel/read_anything/image_test.js", "mocha.run()");
 }
 
