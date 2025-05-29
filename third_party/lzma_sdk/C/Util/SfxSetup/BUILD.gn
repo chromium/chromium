@@ -4,9 +4,7 @@
 
 source_set("7zS2_source") {
   sources = [ "SfxSetup.c" ]
-  defines = [
-    "_WIN32",
-  ]
+  defines = [ "_WIN32" ]
   include_dirs = [
     ".",
     "../..",

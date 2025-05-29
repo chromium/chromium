@@ -120,9 +120,7 @@ static_library("lzma_sdk") {
   ]
 
   if (enable_lzma_opt) {
-    sources += [
-      "Asm/x86/LzmaDecOpt.asm",
-    ]
+    sources += [ "Asm/x86/LzmaDecOpt.asm" ]
   }
 
   configs -= [ "//build/config/compiler:chromium_code" ]
