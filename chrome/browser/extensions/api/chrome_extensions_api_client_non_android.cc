@@ -7,7 +7,6 @@
 
 #include "chrome/browser/extensions/api/chrome_device_permissions_prompt.h"
 #include "chrome/browser/extensions/api/chrome_extensions_api_client.h"
-#include "chrome/browser/extensions/api/messaging/chrome_native_message_port_dispatcher.h"
 #include "chrome/browser/extensions/system_display/display_info_provider.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search/instant_service_factory.h"
@@ -69,15 +68,6 @@ ChromeExtensionsAPIClient::GetFactoryDependencies() {
       SupervisedUserServiceFactory::GetInstance(),
   };
   // clang-format on
-}
-
-std::unique_ptr<NativeMessagePortDispatcher>
-ChromeExtensionsAPIClient::CreateNativeMessagePortDispatcher(
-    std::unique_ptr<NativeMessageHost> host,
-    base::WeakPtr<NativeMessagePort> port,
-    scoped_refptr<base::SingleThreadTaskRunner> message_service_task_runner) {
-  return std::make_unique<ChromeNativeMessagePortDispatcher>(
-      std::move(host), std::move(port), std::move(message_service_task_runner));
 }
 
 }  // namespace extensions

@@ -5,7 +5,6 @@
 #include "chrome/browser/extensions/api/chrome_extensions_api_client.h"
 
 #include "base/notimplemented.h"
-#include "extensions/browser/api/messaging/native_message_host.h"
 #include "extensions/buildflags/buildflags.h"
 
 // TODO(crbug.com/417770773): This file contains stubs for the parts of
@@ -55,15 +54,6 @@ ChromeExtensionsAPIClient::GetFactoryDependencies() {
   // Don't use NOTIMPLEMENTED() here because this is the correct implementation
   // for this stub class.
   return {};
-}
-
-std::unique_ptr<NativeMessagePortDispatcher>
-ChromeExtensionsAPIClient::CreateNativeMessagePortDispatcher(
-    std::unique_ptr<NativeMessageHost> host,
-    base::WeakPtr<NativeMessagePort> port,
-    scoped_refptr<base::SingleThreadTaskRunner> message_service_task_runner) {
-  // TODO(crbug.com/417786914): Support native messaging on desktop Android.
-  return nullptr;
 }
 
 }  // namespace extensions
