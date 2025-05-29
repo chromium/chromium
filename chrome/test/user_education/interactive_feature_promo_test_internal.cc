@@ -234,6 +234,8 @@ InteractiveFeaturePromoTestPrivate::CreateMockTracker(
       std::make_unique<InteractiveFeaturePromoTestPrivate::MockTracker>();
 
   // Allow an unlimited number of calls to these methods.
+  EXPECT_CALL(*mock_tracker, IsInFeatureTestMode)
+      .WillRepeatedly(testing::Return(true));
   EXPECT_CALL(*mock_tracker, IsInitialized)
       .WillRepeatedly(testing::Return(true));
   EXPECT_CALL(*mock_tracker, AddOnInitializedCallback)

@@ -131,4 +131,8 @@ void WrappingTestTracker::SetClockForTesting(const base::Clock& clock,
   NOTIMPLEMENTED();
 }
 
+bool WrappingTestTracker::IsInFeatureTestMode() const {
+  return false;
+}
+
 }  // namespace feature_engagement

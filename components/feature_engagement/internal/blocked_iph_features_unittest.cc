@@ -35,11 +35,8 @@ class BlockedIphFeaturesTest : public testing::Test {
     {
       auto* const allowed = BlockedIphFeatures::GetInstance();
       base::AutoLock lock(allowed->GetLock());
-      if (expect_refcount_on_teardown_) {
-        EXPECT_GT(allowed->global_block_count_, 0U);
-      } else {
-        EXPECT_EQ(0U, allowed->global_block_count_);
-      }
+      EXPECT_EQ(expect_refcount_on_teardown_,
+                allowed->global_block_count_ != 0);
     }
 
     // Clear out the map data so it doesn't pollute later tests.
@@ -69,6 +66,7 @@ TEST_F(BlockedIphFeaturesTest, IsFeatureBlockedDefaultValue) {
   base::AutoLock lock(blocked->GetLock());
 
   // Allowed should be irrespective of enabled or disabled.
+  EXPECT_FALSE(blocked->AreAnyFeaturesBlocked());
   EXPECT_FALSE(blocked->IsFeatureBlocked(kBlockedIphFeaturesTestFeature1.name));
   EXPECT_FALSE(blocked->IsFeatureBlocked(kBlockedIphFeaturesTestFeature2.name));
 }
@@ -81,6 +79,7 @@ TEST_F(BlockedIphFeaturesTest, IsFeatureBlockedWithEmptyScope) {
     // Blocked should be irrespective of enabled or disabled.
     auto* const blocked = BlockedIphFeatures::GetInstance();
     base::AutoLock lock(blocked->GetLock());
+    EXPECT_TRUE(blocked->AreAnyFeaturesBlocked());
     EXPECT_TRUE(
         blocked->IsFeatureBlocked(kBlockedIphFeaturesTestFeature1.name));
     EXPECT_TRUE(
@@ -91,6 +90,7 @@ TEST_F(BlockedIphFeaturesTest, IsFeatureBlockedWithEmptyScope) {
     // Now no one is blocking IPH.
     auto* const blocked = BlockedIphFeatures::GetInstance();
     base::AutoLock lock(blocked->GetLock());
+    EXPECT_FALSE(blocked->AreAnyFeaturesBlocked());
     EXPECT_FALSE(
         blocked->IsFeatureBlocked(kBlockedIphFeaturesTestFeature1.name));
     EXPECT_FALSE(
