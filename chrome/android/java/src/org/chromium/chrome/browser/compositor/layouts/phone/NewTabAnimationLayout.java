@@ -321,7 +321,7 @@ public class NewTabAnimationLayout extends Layout {
         ensureSceneLayerExists();
 
         LayoutTab layoutTab = getLayoutTab();
-        layoutTab.set(LayoutTab.IS_ACTIVE_LAYOUT_SUPPLIER, this::isActive);
+        layoutTab.set(LayoutTab.IS_ACTIVE_LAYOUT, isActive());
         layoutTab.set(LayoutTab.CONTENT_OFFSET, browserControls.getContentOffset());
         mSceneLayer.update(layoutTab);
     }

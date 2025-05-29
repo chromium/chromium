@@ -122,12 +122,16 @@ public abstract class Layout {
     protected final float mDpToPx;
     protected final float mPxToDp;
 
+    // Whether the {@link Layout} is currently active.
+    private boolean mIsActive;
+
     /**
-     * The {@link Layout} is not usable until sizeChanged is called.
-     * This is convenient this way so we can pre-create the layout before the host is fully defined.
-     * @param context      The current Android's context.
-     * @param updateHost   The parent {@link LayoutUpdateHost}.
-     * @param renderHost   The parent {@link LayoutRenderHost}.
+     * The {@link Layout} is not usable until sizeChanged is called. This is convenient this way so
+     * we can pre-create the layout before the host is fully defined.
+     *
+     * @param context The current Android's context.
+     * @param updateHost The parent {@link LayoutUpdateHost}.
+     * @param renderHost The parent {@link LayoutRenderHost}.
      */
     public Layout(Context context, LayoutUpdateHost updateHost, LayoutRenderHost renderHost) {
         mContext = context;
@@ -165,11 +169,15 @@ public abstract class Layout {
         return mContext;
     }
 
+    protected void setIsActive(boolean active) {
+        mIsActive = active;
+    }
+
     /**
      * @return Whether the {@link Layout} is currently active.
      */
     public boolean isActive() {
-        return mUpdateHost.isActiveLayout(this);
+        return mIsActive;
     }
 
     /**
@@ -211,7 +219,7 @@ public abstract class Layout {
         final boolean doneAnimating = onUpdateAnimation(time, false);
 
         // Don't update the layout if onUpdateAnimation ended up making a new layout active.
-        if (mUpdateHost.isActiveLayout(this)) updateLayout(time, dt);
+        if (mIsActive) updateLayout(time, dt);
 
         return doneAnimating;
     }

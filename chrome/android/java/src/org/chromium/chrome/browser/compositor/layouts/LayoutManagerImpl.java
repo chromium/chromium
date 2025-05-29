@@ -1224,12 +1224,14 @@ public class LayoutManagerImpl
             if (oldLayout != null) {
                 oldLayout.forceAnimationToFinish();
                 oldLayout.detachViews();
+                oldLayout.setIsActive(false);
 
                 // TODO(crbug.com/40141330): hide oldLayout if it's not hidden.
             }
             layout.contextChanged(mHost.getContext());
             layout.attachViews(mContentContainer);
             mActiveLayout = layout;
+            mActiveLayout.setIsActive(true);
         }
 
         BrowserControlsVisibilityManager controlsVisibilityManager =
@@ -1291,11 +1293,6 @@ public class LayoutManagerImpl
     @Override
     public @LayoutType int getNextLayoutType() {
         return mNextActiveLayout != null ? mNextActiveLayout.getLayoutType() : LayoutType.NONE;
-    }
-
-    @Override
-    public boolean isActiveLayout(Layout layout) {
-        return layout == mActiveLayout;
     }
 
     @Override

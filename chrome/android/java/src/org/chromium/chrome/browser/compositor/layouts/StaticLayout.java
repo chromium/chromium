@@ -69,7 +69,7 @@ public class StaticLayout extends Layout {
 
     private final Supplier<TopUiThemeColorProvider> mTopUiThemeColorProvider;
 
-    private boolean mIsActive;
+    private boolean mIsShowing;
 
     private static Integer sToolbarTextBoxBackgroundColorForTesting;
 
@@ -153,7 +153,7 @@ public class StaticLayout extends Layout {
                         .with(LayoutTab.Y, 0.0f)
                         .with(LayoutTab.RENDER_X, 0.0f)
                         .with(LayoutTab.RENDER_Y, 0.0f)
-                        .with(LayoutTab.IS_ACTIVE_LAYOUT_SUPPLIER, this::isActive)
+                        .with(LayoutTab.IS_ACTIVE_LAYOUT, false)
                         .build();
 
         mTopUiThemeColorProvider = topUiThemeColorProvider;
@@ -236,7 +236,7 @@ public class StaticLayout extends Layout {
                 new TabModelSelectorTabModelObserver(tabModelSelector) {
                     @Override
                     public void didSelectTab(Tab tab, int type, int lastId) {
-                        if (!mIsActive) return;
+                        if (!mIsShowing) return;
 
                         setStaticTab(tab);
                         requestFocus(tab);
@@ -305,7 +305,7 @@ public class StaticLayout extends Layout {
     public void show(long time, boolean animate) {
         super.show(time, animate);
 
-        mIsActive = true;
+        mIsShowing = true;
         Tab tab = mTabModelSelector.getCurrentTab();
         if (tab == null) return;
         setStaticTab(tab);
@@ -327,7 +327,7 @@ public class StaticLayout extends Layout {
 
     @Override
     public void doneHiding() {
-        mIsActive = false;
+        mIsShowing = false;
         mModel.set(LayoutTab.TAB_ID, Tab.INVALID_TAB_ID);
 
         // Call super last because it might re-show this layout. If we do any work after
@@ -347,7 +347,7 @@ public class StaticLayout extends Layout {
             return;
         }
 
-        if (mIsActive && tab.getView() != null) tab.getView().requestFocus();
+        if (mIsShowing && tab.getView() != null) tab.getView().requestFocus();
     }
 
     private void updateVisibleIdsCheckingLiveLayer(int tabId, boolean useLiveTexture) {
@@ -462,6 +462,12 @@ public class StaticLayout extends Layout {
     @Override
     public int getLayoutType() {
         return LayoutType.BROWSING;
+    }
+
+    @Override
+    protected void setIsActive(boolean active) {
+        super.setIsActive(active);
+        mModel.set(LayoutTab.IS_ACTIVE_LAYOUT, active);
     }
 
     @Override
