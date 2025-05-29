@@ -20,6 +20,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.InsetObserver.WindowInsetsConsumer;
 import org.chromium.ui.util.WindowInsetsUtils;
+import org.chromium.ui.util.WindowInsetsUtils.UnoccludedRegion;
 
 import java.util.List;
 
@@ -64,6 +65,7 @@ public class InsetsRectProvider implements WindowInsetsConsumer {
     private List<Rect> mBoundingRects;
     private Rect mWidestUnoccludedRect = new Rect();
     private boolean mUnoccludedRectUpdateConsumed;
+    private boolean mIsUnoccludedRegionComplex;
 
     /**
      * Create a rect provider for a specific inset type. This class should only be used for Android
@@ -106,6 +108,14 @@ public class InsetsRectProvider implements WindowInsetsConsumer {
      */
     public Rect getWidestUnoccludedRect() {
         return mWidestUnoccludedRect;
+    }
+
+    /**
+     * @return {@code false} if the unoccluded region in the window insets region is a single rect
+     *     or is empty, {@code true} otherwise.
+     */
+    public boolean isUnoccludedRegionComplex() {
+        return mIsUnoccludedRegionComplex;
     }
 
     /**
@@ -209,11 +219,14 @@ public class InsetsRectProvider implements WindowInsetsConsumer {
         Rect insetRectInWindow = WindowInsetsUtils.toRectInWindow(mWindowRect, insets);
         if (!insetRectInWindow.isEmpty()) {
             mBoundingRects = getBoundingRectsFromInsets(windowInsetsCompat);
-            mWidestUnoccludedRect =
-                    WindowInsetsUtils.getWidestUnoccludedRect(insetRectInWindow, mBoundingRects);
+            UnoccludedRegion unoccludedRegion =
+                    WindowInsetsUtils.getUnoccludedRegion(insetRectInWindow, mBoundingRects);
+            mWidestUnoccludedRect = unoccludedRegion.getWidestUnoccludedRect();
+            mIsUnoccludedRegionComplex = unoccludedRegion.isRegionComplex();
         } else {
             mBoundingRects = List.of();
             mWidestUnoccludedRect = new Rect();
+            mIsUnoccludedRegionComplex = false;
         }
     }
 }

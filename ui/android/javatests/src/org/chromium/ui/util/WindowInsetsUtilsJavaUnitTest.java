@@ -5,6 +5,8 @@
 package org.chromium.ui.util;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import android.graphics.Rect;
 import android.os.Build.VERSION_CODES;
@@ -23,12 +25,13 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.MaxAndroidSdkLevel;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
+import org.chromium.ui.util.WindowInsetsUtils.UnoccludedRegion;
 
 import java.util.List;
 
 /**
- * Test for {@link WindowInsetsUtils#getWidestUnoccludedRect} to fill the gap where Region does not
- * work properly in Robolectric tests.
+ * Test for {@link WindowInsetsUtils#getUnoccludedRegion} to fill the gap where Region does not work
+ * properly in Robolectric tests.
  */
 @RunWith(BaseJUnit4ClassRunner.class)
 @Batch(Batch.UNIT_TESTS)
@@ -39,9 +42,9 @@ public class WindowInsetsUtilsJavaUnitTest {
     public void testGetWidestUnoccludedRect_Horizontal() {
         Rect region = new Rect(0, 0, 600, 800);
         List<Rect> blocks = List.of(new Rect(0, 0, 100, 800), new Rect(400, 0, 600, 800));
-        assertEquals(
-                new Rect(100, 0, 400, 800),
-                WindowInsetsUtils.getWidestUnoccludedRect(region, blocks));
+        UnoccludedRegion unoccludedRegion = WindowInsetsUtils.getUnoccludedRegion(region, blocks);
+        assertEquals(new Rect(100, 0, 400, 800), unoccludedRegion.getWidestUnoccludedRect());
+        assertFalse("Unoccluded region should not be complex.", unoccludedRegion.isRegionComplex());
     }
 
     @Test
@@ -49,9 +52,9 @@ public class WindowInsetsUtilsJavaUnitTest {
     public void testGetWidestUnoccludedRect_NoVerticalBlocker() {
         Rect region = new Rect(0, 0, 600, 800);
         List<Rect> blocks = List.of(new Rect(0, 0, 100, 300), new Rect(400, 400, 600, 800));
-        assertEquals(
-                new Rect(0, 300, 600, 400),
-                WindowInsetsUtils.getWidestUnoccludedRect(region, blocks));
+        UnoccludedRegion unoccludedRegion = WindowInsetsUtils.getUnoccludedRegion(region, blocks);
+        assertEquals(new Rect(0, 300, 600, 400), unoccludedRegion.getWidestUnoccludedRect());
+        assertTrue("Unoccluded region should be complex.", unoccludedRegion.isRegionComplex());
     }
 
     @Test
@@ -120,6 +123,8 @@ public class WindowInsetsUtilsJavaUnitTest {
     public void testGetWidestUnoccludedRect_NoBlockedRects() {
         Rect region = new Rect(0, 0, 600, 800);
         List<Rect> blocks = List.of();
-        assertEquals(new Rect(), WindowInsetsUtils.getWidestUnoccludedRect(region, blocks));
+        assertEquals(
+                new Rect(),
+                WindowInsetsUtils.getUnoccludedRegion(region, blocks).getWidestUnoccludedRect());
     }
 }
