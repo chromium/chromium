@@ -18,6 +18,7 @@ import com.google.android.material.color.MaterialColors;
 
 import org.chromium.base.Callback;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.omnibox.UrlBarProperties.AutocompleteText;
 import org.chromium.chrome.browser.omnibox.UrlBarProperties.UrlBarTextState;
 import org.chromium.ui.modelutil.PropertyKey;
@@ -97,6 +98,7 @@ class UrlBarViewBinder {
             view.setPaddingRelative(
                     view.getPaddingStart(), verticalPadding, view.getPaddingEnd(), verticalPadding);
             view.setUseSmallTextHeight(useSmallText);
+            view.setHint(getHintForTextSize(model));
         } else if (UrlBarProperties.HINT_TEXT_COLOR.equals(propertyKey)) {
             view.setHintTextColor(model.get(UrlBarProperties.HINT_TEXT_COLOR));
         } else if (UrlBarProperties.INCOGNITO_COLORS_ENABLED.equals(propertyKey)) {
@@ -129,7 +131,7 @@ class UrlBarViewBinder {
         } else if (UrlBarProperties.LONG_CLICK_LISTENER.equals(propertyKey)) {
             view.setOnLongClickListener(model.get(UrlBarProperties.LONG_CLICK_LISTENER));
         } else if (UrlBarProperties.HINT_TEXT.equals(propertyKey)) {
-            view.setHint(model.get(UrlBarProperties.HINT_TEXT));
+            view.setHint(getHintForTextSize(model));
         }
     }
 
@@ -170,6 +172,15 @@ class UrlBarViewBinder {
         textSelectHandle.mutate().setTint(color);
         textSelectHandleLeft.mutate().setTint(color);
         textSelectHandleRight.mutate().setTint(color);
+    }
+
+    private static @Nullable String getHintForTextSize(PropertyModel model) {
+        // Android TextView's set a desired size based on the max of the hint text width and the
+        // "regular" width. In small text mode, where we don't intend to show the hint, we set it to
+        // null to avoid over-allocating space for text that will never be shown.
+        return model.get(UrlBarProperties.USE_SMALL_TEXT)
+                ? null
+                : model.get(UrlBarProperties.HINT_TEXT);
     }
 
     private UrlBarViewBinder() {}
