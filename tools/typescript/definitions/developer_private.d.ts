@@ -236,10 +236,12 @@ declare global {
         disableReasons: DisableReasons;
         errorCollection: AccessModifier;
         fileAccess: AccessModifier;
+        fileAccessPendingChange: boolean;
         homePage: HomePage;
         iconUrl: string;
         id: string;
         incognitoAccess: AccessModifier;
+        incognitoAccessPendingChange: boolean;
         installWarnings: string[];
         launchUrl?: string;
         location: Location;

@@ -341,13 +341,23 @@ this text can be found by Ctrl + F because it isn't hidden. -->
             <div>
               <div>$i18n{itemAllowIncognito}</div>
               <div class="section-content">$i18n{incognitoInfoWarning}</div>
+              <div class="section-content" id="allow-incognito-warning"
+                  ?hidden="${!this.data.incognitoAccessPendingChange}">
+                $i18n{pendingChangeWarning}
+              </div>
             </div>
           </extensions-toggle-row>` : ''}
         ${this.data.fileAccess.isEnabled ? html`
           <extensions-toggle-row id="allow-on-file-urls"
               ?checked="${this.data.fileAccess.isActive}" class="hr"
               @change="${this.onAllowOnFileUrlsChange_}">
-            <span>$i18n{itemAllowOnFileUrls}</span>
+            <div>
+              <div>$i18n{itemAllowOnFileUrls}</div>
+              <div class="section-content" id="allow-on-file-urls-warning"
+                  ?hidden="${!this.data.fileAccessPendingChange}">
+                $i18n{pendingChangeWarning}</div>
+              </div>
+            </div>
           </extensions-toggle-row>` : ''}
         ${this.data.errorCollection.isEnabled ? html`
           <extensions-toggle-row id="collect-errors"

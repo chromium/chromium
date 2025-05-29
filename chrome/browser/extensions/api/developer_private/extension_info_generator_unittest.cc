@@ -1516,4 +1516,103 @@ INSTANTIATE_TEST_SUITE_P(
 
 #endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS)
 
+#if BUILDFLAG(IS_CHROMEOS)
+
+enum PendingSettingType { kAllowIncognito, kAllowOnFileUrls };
+
+class ExtensionInfoGeneratorSettingPendingUnitTest
+    : public ExtensionInfoGeneratorUnitTest,
+      public testing::WithParamInterface<std::tuple<PendingSettingType, bool>> {
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    SettingPending,
+    ExtensionInfoGeneratorSettingPendingUnitTest,
+    ::testing::Combine(::testing::Values(PendingSettingType::kAllowIncognito,
+                                         PendingSettingType::kAllowOnFileUrls),
+                       ::testing::Bool()));
+
+TEST_P(ExtensionInfoGeneratorSettingPendingUnitTest,
+       GenerateExtensionInfoWithPendingSettings) {
+  scoped_refptr<const Extension> extension = ExtensionBuilder("alpha").Build();
+  service()->AddExtension(extension.get());
+
+  auto [setting, initial_setting_value] = GetParam();
+  bool pending_setting_value = !initial_setting_value;
+  auto* prefs = ExtensionPrefs::Get(profile());
+
+  switch (setting) {
+    case PendingSettingType::kAllowIncognito:
+      prefs->SetIsIncognitoEnabled(extension->id(), initial_setting_value);
+      prefs->SetIsIncognitoEnabledDelayed(extension->id(),
+                                          pending_setting_value);
+      break;
+    case PendingSettingType::kAllowOnFileUrls:
+      prefs->SetAllowFileAccess(extension->id(), initial_setting_value);
+      prefs->SetAllowFileAccessDelayed(extension->id(), pending_setting_value);
+      break;
+    default:
+      break;
+  }
+
+  std::unique_ptr<api::developer_private::ExtensionInfo> info =
+      GenerateExtensionInfo(extension->id());
+  ASSERT_TRUE(info);
+
+  switch (setting) {
+    case PendingSettingType::kAllowIncognito:
+      ASSERT_TRUE(info->incognito_access_pending_change);
+      ASSERT_FALSE(info->file_access_pending_change);
+      ASSERT_EQ(info->incognito_access.is_active, pending_setting_value);
+      break;
+    case PendingSettingType::kAllowOnFileUrls:
+      ASSERT_TRUE(info->file_access_pending_change);
+      ASSERT_FALSE(info->incognito_access_pending_change);
+      ASSERT_EQ(info->file_access.is_active, pending_setting_value);
+      break;
+    default:
+      break;
+  }
+}
+
+TEST_P(ExtensionInfoGeneratorSettingPendingUnitTest,
+       GenerateExtensionInfoWithNoPendingSettings) {
+  scoped_refptr<const Extension> extension = ExtensionBuilder("alpha").Build();
+  service()->AddExtension(extension.get());
+
+  auto [setting, initial_setting_value] = GetParam();
+  auto* prefs = ExtensionPrefs::Get(profile());
+
+  switch (setting) {
+    case PendingSettingType::kAllowIncognito:
+      prefs->SetIsIncognitoEnabled(extension->id(), initial_setting_value);
+      prefs->SetIsIncognitoEnabledDelayed(extension->id(),
+                                          initial_setting_value);
+      break;
+    case PendingSettingType::kAllowOnFileUrls:
+      prefs->SetAllowFileAccess(extension->id(), initial_setting_value);
+      prefs->SetAllowFileAccessDelayed(extension->id(), initial_setting_value);
+      break;
+    default:
+      break;
+  }
+
+  std::unique_ptr<api::developer_private::ExtensionInfo> info =
+      GenerateExtensionInfo(extension->id());
+  ASSERT_TRUE(info);
+
+  ASSERT_FALSE(info->incognito_access_pending_change);
+  ASSERT_FALSE(info->file_access_pending_change);
+  switch (setting) {
+    case PendingSettingType::kAllowIncognito:
+      ASSERT_EQ(info->incognito_access.is_active, initial_setting_value);
+      break;
+    case PendingSettingType::kAllowOnFileUrls:
+      ASSERT_EQ(info->file_access.is_active, initial_setting_value);
+      break;
+    default:
+      break;
+  }
+}
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }  // namespace extensions
