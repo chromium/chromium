@@ -20,10 +20,10 @@ class TabFeaturesFake : public tabs::TabFeatures {
 
  protected:
   std::unique_ptr<commerce::CommerceUiTabHelper> CreateCommerceUiTabHelper(
-      tabs::TabInterface& tab,
+      content::WebContents* contents,
       Profile* profile) override {
     return std::make_unique<testing::NiceMock<MockCommerceUiTabHelper>>(
-        tab, side_panel_registry());
+        contents, side_panel_registry());
   }
 };
 }  // namespace
@@ -36,9 +36,9 @@ void MockCommerceUiTabHelper::ReplaceFactory() {
       }));
 }
 
-MockCommerceUiTabHelper::MockCommerceUiTabHelper(tabs::TabInterface& tab,
+MockCommerceUiTabHelper::MockCommerceUiTabHelper(content::WebContents* content,
                                                  SidePanelRegistry* registry)
-    : CommerceUiTabHelper(tab, nullptr, nullptr, nullptr, registry) {
+    : CommerceUiTabHelper(content, nullptr, nullptr, nullptr, registry) {
   SkBitmap bitmap;
   bitmap.allocN32Pixels(1, 1);
   valid_product_image_ = gfx::Image(gfx::ImageSkia::CreateFrom1xBitmap(bitmap));

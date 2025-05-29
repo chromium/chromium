@@ -95,12 +95,9 @@ class CommerceUiTabHelperTest : public testing::Test {
 
   void SetUp() override {
     web_contents_ = test_web_contents_factory_.CreateWebContents(&profile_);
-    ON_CALL(tab_interface_, GetContents())
-        .WillByDefault(testing::Return(web_contents_));
-
     side_panel_registry_ = std::make_unique<SidePanelRegistry>(&tab_interface_);
     tab_helper_ = std::make_unique<commerce::CommerceUiTabHelper>(
-        tab_interface_, shopping_service_.get(), bookmark_model_.get(),
+        web_contents_.get(), shopping_service_.get(), bookmark_model_.get(),
         image_fetcher_.get(), side_panel_registry_.get());
   }
 
@@ -151,18 +148,23 @@ class CommerceUiTabHelperTest : public testing::Test {
 
  protected:
   content::BrowserTaskEnvironment task_environment_;
-  TestingProfile profile_;
-  // Must outlive `web_contents_`.
-  content::TestWebContentsFactory test_web_contents_factory_;
-  raw_ptr<content::WebContents> web_contents_;
-  tabs::MockTabInterface tab_interface_;
   std::unique_ptr<CommerceUiTabHelper> tab_helper_;
   std::unique_ptr<MockShoppingService> shopping_service_;
   std::unique_ptr<bookmarks::BookmarkModel> bookmark_model_;
   std::unique_ptr<image_fetcher::MockImageFetcher> image_fetcher_;
+  tabs::MockTabInterface tab_interface_;
   std::unique_ptr<SidePanelRegistry> side_panel_registry_;
   std::unique_ptr<MockAccountChecker> account_checker_;
   base::test::ScopedFeatureList features_;
+
+ private:
+  TestingProfile profile_;
+
+  // Must outlive `web_contents_`.
+  content::TestWebContentsFactory test_web_contents_factory_;
+
+ protected:
+  raw_ptr<content::WebContents> web_contents_;
 };
 
 // The price tracking icon shouldn't be available if no image URL was provided
