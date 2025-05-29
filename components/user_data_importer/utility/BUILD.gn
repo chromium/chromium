@@ -10,5 +10,47 @@ source_set("safari_data_importer") {
     "safari_data_importer.h",
   ]
 
-  deps = [ "//components/password_manager/core/browser/import:importer" ]
+  deps = [
+    ":zip_ffi_glue",
+    "//components/password_manager/core/browser/import:importer",
+    "//components/password_manager/core/browser/ui",
+  ]
+}
+
+rust_static_library("zip_ffi_glue") {
+  allow_unsafe = true
+  crate_root = "zip_ffi_glue.rs"
+  sources = [ "zip_ffi_glue.rs" ]
+  cxx_bindings = [ "zip_ffi_glue.rs" ]
+  visibility = [ ":safari_data_importer" ]
+  deps = [
+    "//third_party/rust/anyhow/v1:lib",
+    "//third_party/rust/zip/v3:lib",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "safari_data_importer_unittest.cc" ]
+  deps = [
+    ":safari_data_importer",
+    "//base",
+    "//base/test:test_support",
+    "//components/affiliations/core/browser:test_support",
+    "//components/password_manager/core/browser/import:csv",
+    "//components/password_manager/core/browser/import:importer",
+    "//components/password_manager/core/browser/password_store:test_support",
+    "//components/password_manager/core/browser/ui",
+    "//components/password_manager/core/browser/ui:credential_ui_entry",
+    "//components/password_manager/core/common:constants",
+    "//mojo/public/cpp/bindings",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+
+  if (is_ios) {
+    deps += [ "//components/password_manager/services/csv_password/ios:fake_password_parser_service" ]
+  } else {
+    deps += [ "//components/password_manager/services/csv_password:fake_password_parser_service" ]
+  }
 }

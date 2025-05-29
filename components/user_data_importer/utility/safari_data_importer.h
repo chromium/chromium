@@ -44,21 +44,25 @@ class SafariDataImporter {
  private:
   friend class SafariDataImporterTest;
 
-  // Attempts to import bookmarks from the file provided by "zip_filename".
-  void ImportBookmarks(const std::string& zip_filename,
+  // Attempts to import bookmarks by parsing the provided HTML data.
+  // Calls "bookmarks_callback" when done.
+  void ImportBookmarks(std::string html_data,
                        ImportCallback bookmarks_callback);
 
   // Attempts to import history from the file provided by "zip_filename".
+  // Calls "history_callback" when done.
   void ImportHistory(const std::string& zip_filename,
                      ImportCallback history_callback);
 
-  // Attempts to import passwords from the file provided by "zip_filename".
-  void ImportPasswords(const std::string& zip_filename,
+  // Attempts to import passwords by parsing the provided CSV data.
+  // Calls "results_callback" when done.
+  void ImportPasswords(std::string csv_data,
                        password_manager::PasswordImporter::ImportResultsCallback
                            results_callback);
 
-  // Attempts to import payment cards from the file provided by "zip_filename".
-  void ImportPaymentCards(const std::string& zip_filename,
+  // Attempts to import payment cards by parsing the provided JSON data.
+  // Calls "payment_cards_callback" when done.
+  void ImportPaymentCards(std::string json_data,
                           ImportCallback payment_cards_callback);
 
   // The password importer used to import passwords and resolve conflicts.
