@@ -364,6 +364,12 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "activity_log_converter_strategy_unittest.cc",
+    "api/i18n_hooks_delegate_unittest.cc",
+    "api/messaging/gin_port_unittest.cc",
+    "api/messaging/messaging_util_unittest.cc",
+    "api/messaging/native_renderer_messaging_service_unittest.cc",
+    "api/messaging/one_time_message_handler_unittest.cc",
+    "api/runtime_hooks_delegate_unittest.cc",
     "api_activity_logger_unittest.cc",
     "bindings/api_binding_bridge_unittest.cc",
     "bindings/api_binding_hooks_test_delegate.cc",
@@ -433,12 +439,6 @@ source_set("unit_tests") {
     sources += [
       "api/automation/automation_internal_custom_bindings_unittests.cc",
       "api/feedback_private_hooks_delegate_unittest.cc",
-      "api/i18n_hooks_delegate_unittest.cc",
-      "api/messaging/gin_port_unittest.cc",
-      "api/messaging/messaging_util_unittest.cc",
-      "api/messaging/native_renderer_messaging_service_unittest.cc",
-      "api/messaging/one_time_message_handler_unittest.cc",
-      "api/runtime_hooks_delegate_unittest.cc",
       "bindings/declarative_event_unittest.cc",
       "native_extension_bindings_system_unittest.cc",
       "storage_area_unittest.cc",
