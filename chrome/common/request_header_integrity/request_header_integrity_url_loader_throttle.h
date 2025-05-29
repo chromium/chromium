@@ -25,6 +25,7 @@ class RequestHeaderIntegrityURLLoaderThrottle
   ~RequestHeaderIntegrityURLLoaderThrottle() override;
 
   // blink::URLLoaderThrottle:
+  void DetachFromCurrentSequence() override;
   void WillStartRequest(network::ResourceRequest* request,
                         bool* defer) override;
 
