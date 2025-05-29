@@ -4442,7 +4442,7 @@ as extensões fixadas na versão também são ignoradas.
 Se a política for definida como <ph name="ALLOW_UNPUBLISHED" /> (0) ou for deixada sem definição, as extensões não publicadas na Chrome Web Store serão permitidas.
 Se a política for definida como <ph name="DISABLE_UNPUBLISHED" /> (1), as extensões não publicadas na Chrome Web Store serão desativadas.</translation>
 <translation id="4164866067069311355">Controla o atalho usado para acionar F11/F12</translation>
-<translation id="4165986682804962316">Configurações do site</translation>
+<translation id="4165986682804962316">Configurações de sites</translation>
 <translation id="4166174702671320480">Se a política for definida como "Ativada", as políticas vindas de um grupo atômico que não compartilha a origem com a maior prioridade do grupo serão ignoradas.
 
       Se a política for definida como "Desativada", nenhuma política será ignorada por causa da origem. As políticas serão ignoradas apenas se houver um conflito e a política não tiver a maior prioridade.
@@ -5825,7 +5825,7 @@ Esta política é uma solução temporária para permitir que o conteúdo da Web
       for direcionada a URLs de autenticação, apps autenticadores de provedores de identidade correspondentes que podem processar esse URL vão ser inicializados.
 
       Esse fluxo de inicialização do app autenticador de provedores de identidade seria usado para ativar
-      casos de uso, como ao fornecer SSO entre apps ou melhorar a segurança coletando indicadores de dispositivos de confiança zero para entender a postura dos dispositivos durante a autenticação.
+      casos de uso, como ao fornecer SSO entre apps ou melhorar a segurança coletando indicadores de dispositivos de zero trust para entender a postura dos dispositivos durante a autenticação.
 
       Se não houver um app válido instalado para processar o URL de autenticação no dispositivo, a navegação vai continuar no <ph name="WEBVIEW_PRODUCT_NAME" />.
 

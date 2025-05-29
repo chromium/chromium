@@ -463,7 +463,7 @@
 <translation id="6912998170423641340">Impedisci ai siti di leggere testo e immagini negli appunti</translation>
 <translation id="6945221475159498467">Seleziona</translation>
 <translation id="6950072572526089586">Un sito che visiti può salvare informazioni su ciò che stai facendo affinché possa funzionare come previsto, ad esempio per mantenere l'accesso al sito o salvare gli articoli nel tuo carrello degli acquisti. Spesso i siti salvano temporaneamente queste informazioni sul dispositivo.</translation>
-<translation id="6965382102122355670">OK</translation>
+<translation id="6965382102122355670">Ok</translation>
 <translation id="6980861169612950611">Vuoi eliminare i dati del sito? <ph name="SITE_NAME" /></translation>
 <translation id="6981982820502123353">Accessibilità</translation>
 <translation id="6992289844737586249">Chiedi conferma prima di consentire ai siti di utilizzare il microfono (opzione consigliata)</translation>
@@ -520,7 +520,7 @@
 <translation id="7781829728241885113">Ieri</translation>
 <translation id="7791543448312431591">Aggiungi</translation>
 <translation id="7801888679188438140">{TILE_COUNT,plural, =1{Continua con questa scheda}other{Continua con queste schede}}</translation>
-<translation id="780301667611848630">No grazie</translation>
+<translation id="780301667611848630">No, grazie</translation>
 <translation id="7804248752222191302">Un sito sta utilizzando la fotocamera</translation>
 <translation id="7807060072011926525">Fornito da Google</translation>
 <translation id="7835852323729233924">Contenuti in riproduzione</translation>

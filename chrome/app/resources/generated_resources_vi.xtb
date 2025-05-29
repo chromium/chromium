@@ -279,7 +279,7 @@ Bạn có thể kiểm tra mật khẩu bất cứ lúc nào trong <ph name="GOO
 <translation id="1179400851034021914">IBAN không hợp lệ</translation>
 <translation id="1179902906564467236">Làm theo hướng dẫn trên điện thoại hoặc sử dụng ứng dụng máy ảnh</translation>
 <translation id="118057123461613219">Mức tiết kiệm rất lớn</translation>
-<translation id="1181037720776840403">Xóa</translation>
+<translation id="1181037720776840403">Xoá</translation>
 <translation id="1182876754474670069">home</translation>
 <translation id="1183237619868651138">Không thể cài đặt <ph name="EXTERNAL_CRX_FILE" /> trong bộ nhớ đệm cục bộ.</translation>
 <translation id="1184037892196730210">Không truyền được màn hình</translation>
@@ -2307,7 +2307,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="2559889124253841528">Lưu vào thiết bị</translation>
 <translation id="2561211427862644160">Xem tất cả dấu trang của bạn ở đây</translation>
 <translation id="2564520396658920462">Tùy chọn thực thi JavaScript qua AppleScript đã bị tắt. Để bật tùy chọn này, từ thanh menu, hãy chuyển đến Xem&gt; Nhà phát triển &gt; Cho phép JavaScript từ Apple Events. Để biết thêm thông tin, hãy truy cập vào https://support.google.com/chrome/?p=applescript</translation>
-<translation id="2564653188463346023">Cải thiện khả năng kiểm tra chính trả</translation>
+<translation id="2564653188463346023">Cải thiện khả năng kiểm tra chính tả</translation>
 <translation id="256481480019204378">Mã Tài khoản Google</translation>
 <translation id="256517381556987641">Cho đến giờ, tính năng đồng bộ hoá tệp đã tìm thấy <ph name="ITEMS_FOUND" /> tệp và vẫn đang kiểm tra dung lượng lưu trữ. Hãy thử bật lại tính năng Đồng bộ hoá tệp sau vài phút nữa.</translation>
 <translation id="2565214867520763227">Bật trình đọc màn hình</translation>
@@ -3160,7 +3160,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="3177914167275935955">Thiết bị của bạn có Bản nâng cấp Chrome Education, nhưng tên người dùng của bạn chưa liên kết với một tài khoản Google for Education. Vui lòng truy cập vào g.co/workspace/edusignup trên thiết bị phụ để tạo tài khoản Google for Education.</translation>
 <translation id="3179982752812949580">Phông chữ</translation>
 <translation id="3180990259147710757">Di chuyển hàm sang trái</translation>
-<translation id="3181825792072797598">Bật tính năng đồng bộ hóa</translation>
+<translation id="3181825792072797598">Bật tính năng đồng bộ hoá</translation>
 <translation id="3181954750937456830">Duyệt web an toàn (bảo vệ bạn cũng như thiết bị của bạn khỏi các trang web nguy hiểm)</translation>
 <translation id="3182749001423093222">Kiểm tra chính tả</translation>
 <translation id="3183139917765991655">Trình nhập hồ sơ</translation>
@@ -3564,7 +3564,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="3473241910002674503">Chuyển về trang chủ, quay lại và chuyển đổi ứng dụng bằng các nút ở chế độ máy tính bảng.</translation>
 <translation id="3473479545200714844">Phóng to màn hình</translation>
 <translation id="3474218480460386727">Sử dụng tối đa 99 chữ cái để thêm từ mới</translation>
-<translation id="3474624961160222204">Tiếp tục với tên <ph name="NAME" /></translation>
+<translation id="3474624961160222204">Tiếp tục bằng tài khoản <ph name="NAME" /></translation>
 <translation id="3477772589943384839">Tiết kiệm bộ nhớ ở mức trung bình. Các thẻ sẽ ngừng hoạt động sau một khoảng thời gian dài.</translation>
 <translation id="347785443197175480">Tiếp tục cho phép <ph name="HOST" /> truy cập vào máy ảnh và micrô của bạn</translation>
 <translation id="3479357084663933762">Mù màu xanh lục nhẹ</translation>
@@ -6087,7 +6087,7 @@ Nhấn tổ hợp phím Ctrl + Alt + Giảm độ sáng để thu nhỏ.</transl
 <translation id="5242724311594467048">Cho phép "<ph name="EXTENSION_NAME" />"?</translation>
 <translation id="5243522832766285132">Vui lòng thử lại sau giây lát</translation>
 <translation id="5244234799035360187">Giờ đây, OneDrive sẽ xuất hiện trong ứng dụng Files</translation>
-<translation id="5244466461749935369">Giữ lại</translation>
+<translation id="5244466461749935369">Tạm giữ lại</translation>
 <translation id="5244474230056479698">Đang đồng bộ hóa với <ph name="EMAIL" /></translation>
 <translation id="5245610266855777041">Bắt đầu với tài khoản trường học</translation>
 <translation id="5246282308050205996"><ph name="APP_NAME" /> đã xảy ra lỗi. Nhấp vào bong bóng này để khởi động lại ứng dụng.</translation>
@@ -7715,7 +7715,7 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 <translation id="6445450263907939268">Nếu không thích những thay đổi này, bạn có thể khôi phục cài đặt trước của mình.</translation>
 <translation id="6446213738085045933">Tạo lối tắt trên màn hình</translation>
 <translation id="6447842834002726250">Cookie</translation>
-<translation id="6450876761651513209">Thay đổi các cài đặt liên quan đến bảo mật của bạn</translation>
+<translation id="6450876761651513209">Thay đổi các chế độ cài đặt liên quan đến bảo mật của bạn</translation>
 <translation id="6451591602925140504">{NUM_PAGES,plural, =0{<ph name="PAGE_TITLE" />}=1{<ph name="PAGE_TITLE" /> và 1 thẻ khác}other{<ph name="PAGE_TITLE" /> và # thẻ khác}}</translation>
 <translation id="6451689256222386810">Nếu bạn quên cụm mật khẩu hoặc muốn thay đổi cài đặt này, hãy <ph name="BEGIN_LINK" />đặt lại đồng bộ hóa<ph name="END_LINK" />.</translation>
 <translation id="6451861213630784801">Bạn đã đăng xuất</translation>
@@ -10279,7 +10279,7 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="8247795734638043885">Tải tệp không an toàn xuống</translation>
 <translation id="8248050856337841185">&amp;Dán</translation>
 <translation id="8248381369318572865">Truy cập micrô và phân tích lời nói</translation>
-<translation id="8248887045858762645">Mẹo khi dùng Chrome</translation>
+<translation id="8248887045858762645">Mẹo dùng Chrome</translation>
 <translation id="8249048954461686687">Thư mục OEM</translation>
 <translation id="8249239468199142122">Trình tiết kiệm pin</translation>
 <translation id="8250210000648910632">Hết không gian lưu trữ</translation>

@@ -1048,7 +1048,7 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane wcześniej aplikacjom. U
 <translation id="170658918174941828">Oprócz informacji, które wybierzesz powyżej, przesłane zostaną również takie dane, jak wersja Chrome i systemu operacyjnego, ustawienia Cast, statystyki działania funkcji odbicia lustrzanego oraz dzienniki diagnostyczne kanału komunikacji. Te informacje pomogą nam znaleźć przyczynę problemów oraz ulepszyć daną funkcję. Wszelkie dane osobowe, które prześlesz celowo lub przypadkowo, będą chronione zgodnie z naszą polityką prywatności. Przesyłając to zgłoszenie, zgadzasz się na to, abyśmy mogli wykorzystać je do ulepszenia naszych produktów lub usług.</translation>
 <translation id="17081583771848899">Menu z aplikacjami + Alt + <ph name="TOP_ROW_KEY" /></translation>
 <translation id="1708291623166985230">Hotspot wyłączony</translation>
-<translation id="1708338024780164500">(Nieaktywne)</translation>
+<translation id="1708338024780164500">(nieaktywny)</translation>
 <translation id="1708563369218024896">Nie wybrano kolektora danych. Wybierz co najmniej 1.</translation>
 <translation id="1708713382908678956"><ph name="NAME_PH" /> (identyfikator: <ph name="ID_PH" />)</translation>
 <translation id="1708839673480942471">Zarządzaj powiadomieniami z aplikacji, trybem Nie przeszkadzać i plakietkami aplikacji</translation>

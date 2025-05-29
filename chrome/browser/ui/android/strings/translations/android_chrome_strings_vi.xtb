@@ -46,7 +46,7 @@
 <translation id="1174479719160874822">Chrome sẽ yêu cầu trang web dành cho thiết bị di động khi màn hình bị thu hẹp</translation>
 <translation id="1175241315203286684">Quản trị viên có thể thay đổi hồ sơ và trình duyệt của bạn từ xa, phân tích thông tin về trình duyệt thông qua báo cáo và thực hiện những nhiệm vụ cần thiết khác. Hoạt động trên thiết bị này cũng có thể được quản lý bên ngoài Chrome.</translation>
 <translation id="1177863135347784049">Tùy chỉnh</translation>
-<translation id="1181037720776840403">Xóa</translation>
+<translation id="1181037720776840403">Xoá</translation>
 <translation id="1183189057400844278">Xác minh danh tính của bạn để đảm bảo bạn luôn dùng được mật khẩu trong Tài khoản Google</translation>
 <translation id="1187810343066461819">Xoá cả dấu trang, nhật ký và các dữ liệu khác khỏi ô tô này</translation>
 <translation id="1193729455103054076">Dùng mật khẩu mạnh?</translation>
@@ -521,7 +521,7 @@ Chỉ những người có cụm mật khẩu mới đọc được dữ liệu 
 <translation id="3448874648066942074">Tóm tắt trang bằng AI</translation>
 <translation id="3452832259067974318">Để bảo vệ quyền riêng tư của bạn, Chrome sẽ không tự động điền mật khẩu của bạn vào trường này.</translation>
 <translation id="3467081767799433066">Ở chế độ đo lường quảng cáo, chỉ có một số loại dữ liệu được chia sẻ giữa các trang web để đo lường hiệu suất của quảng cáo mà các trang web đó hiển thị, chẳng hạn như dữ liệu cho biết bạn có mua hàng sau khi truy cập một trang web hay không.</translation>
-<translation id="3474624961160222204">Tiếp tục với tên <ph name="NAME" /></translation>
+<translation id="3474624961160222204">Tiếp tục bằng tài khoản <ph name="NAME" /></translation>
 <translation id="3478363558367712427">Bạn có thể chọn công cụ tìm kiếm theo ý mình</translation>
 <translation id="3479552764303398839">Để sau</translation>
 <translation id="3482805106082349287">Tìm kiếm bằng bàn phím, giọng nói, chế độ ẩn danh hoặc camera</translation>
@@ -1536,7 +1536,7 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="7959485987650214982">Thẻ trên thiết bị này</translation>
 <translation id="7961926449547174351">Bạn đã tắt Quyền truy cập bộ nhớ. Vui lòng chuyển đến phần Cài đặt để bật quyền này.</translation>
 <translation id="7963646190083259054">Nhà cung cấp:</translation>
-<translation id="7965838025086216108">Bạn có thể dùng mật khẩu đã lưu trên mọi thiết bị. Những mật khẩu này được lưu vào Trình quản lý mật khẩu cho tài khoản <ph name="ACCOUNT" />.</translation>
+<translation id="7965838025086216108">Bạn có thể dùng mật khẩu đã lưu trên mọi thiết bị. Những mật khẩu này được lưu vào Trình quản lý mật khẩu của Google cho tài khoản <ph name="ACCOUNT" />.</translation>
 <translation id="7968014550143838305">Đã thêm vào danh sách đọc</translation>
 <translation id="7971136598759319605">Hoạt động 1 ngày trước</translation>
 <translation id="7975379999046275268">Xem trước trang <ph name="BEGIN_NEW" />Mới<ph name="END_NEW" /></translation>

@@ -35,7 +35,7 @@
 <translation id="1580570086594302477">Откроется новая вкладка инкогнито в Chrome.</translation>
 <translation id="1634522710245925681">Сделайте Chrome браузером по умолчанию, чтобы быстро узнавать цены</translation>
 <translation id="1646463005043273333">Откроются настройки, где можно сделать Chrome браузером по умолчанию.</translation>
-<translation id="1670609221633730681">Совет по работе с Chrome: выберите удобное расположение адресной строки</translation>
+<translation id="1670609221633730681">Совет: выберите в Chrome расположение адресной строки</translation>
 <translation id="1683863426423719967">Чтобы получать напоминания Chrome о вкладках, включите уведомления в настройках iOS.</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1784567647421309104">Сохраняйте пароли в браузер Chrome</translation>
@@ -85,7 +85,7 @@
 <translation id="2876628302275096482">Подробнее о том, <ph name="BEGIN_LINK" />как Chrome обеспечивает конфиденциальность ваших данных<ph name="END_LINK" />…</translation>
 <translation id="292371311537977079">Настройки Chrome</translation>
 <translation id="2923827943290349720">Блокировать доступ к вкладкам инкогнито при закрытии Chrome</translation>
-<translation id="2940565985148833945">Совет по работе с Chrome: используйте Объектив для поиска информации</translation>
+<translation id="2940565985148833945">Совет: используйте Объектив для поиска информации</translation>
 <translation id="2957447865124070833">Выберите <ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" />.</translation>
 <translation id="2986402782150919988">Добавить закладки в Chrome</translation>
 <translation id="3030414234702425231">Вы выходите из аккаунта, которым управляет администратор домена <ph name="SIGNOUT_MANAGED_DOMAIN" />. Обратите внимание, что данные Chrome будут удалены с устройства, но останутся в вашем аккаунте Google.</translation>
@@ -237,7 +237,7 @@
 <translation id="7145599899567697473">Сохраняйте пароли и пользуйтесь автозаполнением в Chrome.</translation>
 <translation id="7161390184744336561">Версия Google Chrome устарела.</translation>
 <translation id="7165736900384873061">Используйте QR-сканер в Google Chrome</translation>
-<translation id="7175129790242719365">Совет по работе с Chrome: войдите в Chrome</translation>
+<translation id="7175129790242719365">Совет: войдите в Chrome</translation>
 <translation id="7187993566681480880">Позволяет избегать угроз при работе в браузере Chrome и может использоваться для повышения уровня безопасности в других приложениях Google, когда выполнен вход в аккаунт.</translation>
 <translation id="7200524487407690471">Chrome ежедневно автоматически запускает проверку безопасности, чтобы обеспечить защиту от утечки данных, подозрительных сайтов и других проблем. Больше о проверке безопасности можно узнать в настройках.</translation>
 <translation id="7203324561587388418">Не пропускайте новый контент и полезные советы Chrome.</translation>
@@ -259,7 +259,7 @@
 <translation id="7477056987201678345">Удаление данных Chrome…</translation>
 <translation id="7492574581995589075">В вашей организации отключена возможность использовать и сохранять данные Chrome в аккаунте Google. Новые закладки, пароли и другие данные будут сохраняться только на этом устройстве.</translation>
 <translation id="7540272326042438331">Поделиться Chrome</translation>
-<translation id="7575971113404272499">Совет по работе с Chrome: используйте Chrome по умолчанию</translation>
+<translation id="7575971113404272499">Совет: используйте Chrome по умолчанию</translation>
 <translation id="7581063337314642333">Страница вкладок в Chrome</translation>
 <translation id="7599894504325210080">Развернутый раздел автозаполнения в Chrome</translation>
 <translation id="7617512710641355143">Chrome находится под управлением</translation>
@@ -278,7 +278,7 @@
 <translation id="7855730255114109580">Последняя версия Google Chrome уже установлена</translation>
 <translation id="7897703007638178753">Недавние вкладки в Chrome</translation>
 <translation id="7948283758957877064">Что нового в Chrome</translation>
-<translation id="8000174216052461231">Совет по работе с Chrome: настройте максимальную защиту</translation>
+<translation id="8000174216052461231">Совет: настройте максимальную защиту в Chrome</translation>
 <translation id="8006014511203279255">Открывайте ссылки в сообщениях и других приложениях с помощью Chrome.</translation>
 <translation id="8014670471808569312">Chrome предложит сохранить пароль.</translation>
 <translation id="8018153653741938705">Безопасная работа с Google Chrome</translation>
@@ -301,7 +301,7 @@
 <translation id="8387459386171870978">Продолжить работу в Chrome</translation>
 <translation id="8392023217086447677">Открыто в режиме инкогнито в Chrome.</translation>
 <translation id="840168496893712993">Некоторые дополнения вызывают сбой Chrome. Попробуйте удалить их.</translation>
-<translation id="8413500425974960807">Совет по работе с Chrome: добавьте браузер на панель Dock</translation>
+<translation id="8413500425974960807">Совет: добавьте Chrome на панель Dock</translation>
 <translation id="8413795581997394485">Защита от сайтов, расширений и скачанных файлов, признанных опасными. Когда вы переходите на сайт, Chrome отправляет обфусцированную часть URL в Google через сервер обеспечения конфиденциальности, который скрывает ваш IP-адрес. Если сайт делает что-то подозрительное, передается полный URL и части контента со страницы.</translation>
 <translation id="84594714173170813">Продолжайте использовать данные Chrome в аккаунте Google.</translation>
 <translation id="8459495907675268833">Выбранные данные удалены из Chrome и с синхронизированных устройств. Остальная история ваших действий в Интернете может храниться в аккаунте Google, например в виде поисковых запросов и сведений из наших сервисов. Она доступна на странице history.google.com.</translation>

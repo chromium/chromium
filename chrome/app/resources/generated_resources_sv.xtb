@@ -3383,7 +3383,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="3345886924813989455">Det gick inte att hitta någon webbläsare som stöds</translation>
 <translation id="3346306152660142597">Anpassa den här sidan med AI</translation>
 <translation id="3347086966102161372">K&amp;opiera bildadress</translation>
-<translation id="3348038390189153836">Flyttbar enhet upptäckt</translation>
+<translation id="3348038390189153836">En mobil enhet har upptäckts</translation>
 <translation id="3348131053948466246">Föreslagen emoji. Tryck upp eller ned för att navigera och retur för att infoga.</translation>
 <translation id="3349933790966648062">Minnesanvändning</translation>
 <translation id="3350450887151703713">Spola bakåt 10 sekunder</translation>
@@ -7686,7 +7686,7 @@ Du kan tilldela flera brytare denna åtgärd.</translation>
 <translation id="641867537956679916">Administratören har loggat in för att undersöka ett problem. Du kan använda enheten igen när administratören har gett tillbaka kontrollen.</translation>
 <translation id="641899100123938294">Sök efter nya enheter</translation>
 <translation id="6419524191360800346">En uppgradering till Debian 11 (Bullseye) är tillgänglig</translation>
-<translation id="6419546358665792306">Läser in okomprimerat tillägg</translation>
+<translation id="6419546358665792306">Läs in okomprimerat tillägg</translation>
 <translation id="642469772702851743">Enheten (serienr: <ph name="SERIAL_NUMBER" />) har låsts av ägaren.</translation>
 <translation id="6425556984042222041">Hastighet för text till tal</translation>
 <translation id="642729974267661262">Får inte spela upp ljud</translation>

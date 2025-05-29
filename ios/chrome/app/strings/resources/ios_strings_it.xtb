@@ -1437,7 +1437,7 @@ Quando navighi in incognito, i siti non possono utilizzare i cookie per conoscer
 <translation id="6950522403736391608">Nascoste</translation>
 <translation id="6964300328304469089">Selezione attuale: <ph name="NAME" />, <ph name="EMAIL" />. Scegli un account.</translation>
 <translation id="6964760285928603117">Rimuovi dal gruppo</translation>
-<translation id="6965382102122355670">OK</translation>
+<translation id="6965382102122355670">Ok</translation>
 <translation id="6973630695168034713">Cartelle</translation>
 <translation id="69739764870135975">Se Google è anche il tuo motore di ricerca predefinito, riceverai suggerimenti migliori e pertinenti al contesto</translation>
 <translation id="6979158407327259162">Google Drive</translation>
@@ -1463,7 +1463,7 @@ Quando navighi in incognito, i siti non possono utilizzare i cookie per conoscer
 <translation id="707086654079606593">Gestisci indirizzi…</translation>
 <translation id="7080806333218412752">Invia gli URL a Navigazione sicura per verificarli. Invia anche piccoli esempi di pagine, download, attività delle estensioni e informazioni di sistema per contribuire al rilevamento di nuove minacce. Quando hai effettuato l'accesso, collega temporaneamente questi dati al tuo Account Google per proteggerti nelle app Google.</translation>
 <translation id="7082853213442715471">Quando è attiva questa modalità, alcune tecnologie web sono bloccate e per questo motivo alcuni siti web potrebbero caricarsi più lentamente o non funzionare correttamente.</translation>
-<translation id="7095110968493193530">Su Gestore delle password di Google per l'account <ph name="EMAIL" /></translation>
+<translation id="7095110968493193530">In Gestore delle password di Google per l'account <ph name="EMAIL" /></translation>
 <translation id="7097046145876891318">Nella barra degli indirizzi, tocca Cronologia dei prezzi per vedere le variazioni di prezzo nel tempo</translation>
 <translation id="7101580180124131336">Ora vedrai contenuti di e relativi a <ph name="CHANNEL_NAME" /> in Stai seguendo.</translation>
 <translation id="7102005569666697658">Download in corso… <ph name="FILE_SIZE" /></translation>
@@ -1617,7 +1617,7 @@ Quando navighi in incognito, i siti non possono utilizzare i cookie per conoscer
 <translation id="7791543448312431591">Aggiungi</translation>
 <translation id="7801064017114765401">Computer</translation>
 <translation id="7802239711290932774">Utilizza la password suggerita:</translation>
-<translation id="780301667611848630">No grazie</translation>
+<translation id="780301667611848630">No, grazie</translation>
 <translation id="7807060072011926525">Fornito da Google</translation>
 <translation id="7812377703891978671">Puoi accedere a tutta la cronologia di navigazione selezionando <ph name="HISTORY_BUTTON_ACCESSIBILITY_LABEL" />.</translation>
 <translation id="78146569776629510">Download</translation>
@@ -1673,7 +1673,7 @@ I siti possono utilizzare i cookie per conoscere la tua attività di navigazione
 <translation id="7993619969781047893">Le funzionalità su alcuni siti potrebbero non essere disponibili</translation>
 <translation id="7996239959906074962">Configura…</translation>
 <translation id="800361585186029508">Consente di aprire gli URL inseriti in Google Chrome.</translation>
-<translation id="8005666035647241369">Su Gestore delle password di Google su questo dispositivo</translation>
+<translation id="8005666035647241369">In Gestore delle password di Google su questo dispositivo</translation>
 <translation id="8010488806779226127">Esplora le funzionalità che possono aiutarti a fare di più mentre navighi</translation>
 <translation id="8011489434346330032">Inspector web</translation>
 <translation id="8017015647846870183">Da Gestore delle password di Google, incluse password e passkey</translation>

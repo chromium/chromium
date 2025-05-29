@@ -132,7 +132,7 @@
 <translation id="2681444469812712297">Mở <ph name="URL" /> trong thẻ mới trên Google Chrome.</translation>
 <translation id="2712141162840347885">Chọn nội dung bạn muốn tìm bằng Google Ống kính hoặc nhấn phím Escape để thoát khỏi Google Ống kính</translation>
 <translation id="2738871930057338499">Không thể kết nối với Internet. HTTP 403 bị cấm. Vui lòng kiểm tra cấu hình proxy.</translation>
-<translation id="2742320827292110288">Cảnh báo: Google Chrome không thể ngăn các tiện ích ghi lại nhật ký duyệt web của bạn. Để tắt tiện ích này trong chế độ Ẩn danh, hãy bỏ chọn tùy chọn này.</translation>
+<translation id="2742320827292110288">Cảnh báo: Google Chrome không thể ngăn các tiện ích ghi lại nhật ký duyệt web của bạn. Để tắt tiện ích này trong chế độ Ẩn danh, hãy bỏ chọn tuỳ chọn này.</translation>
 <translation id="2753623023919742414">Nhấp để tìm</translation>
 <translation id="2765403129283291972">Chrome cần có quyền truy cập vào micrô của bạn cho trang web này</translation>
 <translation id="2770231113462710648">Thay đổi trình duyệt mặc định thành:</translation>
@@ -203,7 +203,7 @@
 <translation id="3533694711092285624">Bạn chưa lưu mật khẩu nào. Chrome có thể kiểm tra các mật khẩu của bạn khi bạn lưu các mật khẩu đó.</translation>
 <translation id="3541482654983822893">Chrome không thể kiểm tra mật khẩu của bạn. Hãy thử lại sau 24 giờ.</translation>
 <translation id="3576528680708590453">Quản trị viên hệ thống của bạn đã định cấu hình Google Chrome để mở một trình duyệt thay thế khi truy cập vào <ph name="TARGET_URL_HOSTNAME" />.</translation>
-<translation id="3582972582564653026">Đồng bộ hóa và cá nhân hóa Chrome trên các thiết bị của bạn</translation>
+<translation id="3582972582564653026">Đồng bộ hoá và cá nhân hoá Chrome trên các thiết bị của bạn</translation>
 <translation id="3583751698304738917">Bạn đã đăng nhập bằng <ph name="USER_EMAIL_ADDRESS" /> trong một hồ sơ Chrome khác</translation>
 <translation id="3595784445906693824">Bạn muốn đăng nhập vào Chrome bằng hồ sơ mới?</translation>
 <translation id="3596080736082218006">{COUNT,plural, =0{Quản trị viên của bạn yêu cầu bạn chạy lại Chrome để áp dụng bản cập nhật}=1{Quản trị viên của bạn yêu cầu bạn chạy lại Chrome để áp dụng bản cập nhật. Cửa sổ ẩn danh của bạn sẽ không mở lại.}other{Quản trị viên của bạn yêu cầu bạn chạy lại Chrome để áp dụng bản cập nhật. # cửa sổ ẩn danh của bạn sẽ không mở lại.}}</translation>

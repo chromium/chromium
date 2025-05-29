@@ -67,7 +67,7 @@
 <translation id="1919130412786645364">允許登入 Chrome</translation>
 <translation id="1953553007165777902">下載中… 還剩 <ph name="MINUTE" /> 分鐘</translation>
 <translation id="2001586581944147178">讓可存取你網際網路流量的使用者難以查看你造訪的網站。Chrome 會透過安全連線在 DNS (網域名稱系統) 中查詢網站的 IP 位址。</translation>
-<translation id="2008942457798486387">{NUM_EXTENSIONS,plural, =1{Chrome 不再支援這項擴充功能，因此建議你移除。}other{Chrome 不再支援這些擴充功能，因此建議你移除。}}</translation>
+<translation id="2008942457798486387">{NUM_EXTENSIONS,plural, =1{Chrome 不再支援這項擴充功能，建議你移除。}other{Chrome 不再支援這些擴充功能，建議你移除。}}</translation>
 <translation id="2018528049276128029">每個設定檔都有獨立專屬的 Chrome 資訊，例如書籤、歷史記錄和密碼等等</translation>
 <translation id="2018879682492276940">無法安裝，請再試一次。</translation>
 <translation id="2024959665595762054">如要將 Chrome 資料儲存到 Google 帳戶，或使用帳戶中的 Chrome 資料，請驗證身分</translation>
@@ -192,7 +192,7 @@
 <translation id="3396977131400919238">安裝過程中發生作業系統錯誤，請再次下載 Google Chrome。</translation>
 <translation id="3428747202529429621">在已登入帳戶的狀態下，能確保你持續享有安全無虞的 Chrome 使用體驗，也有助於提升其他 Google 應用程式的安全機制</translation>
 <translation id="3434246496373299699">如果你使用 Google 帳戶登入，Chrome 可以檢查你的密碼</translation>
-<translation id="3438681572027105609">如要在裝置上使用你的密碼和其他資料，請登入 Chrome</translation>
+<translation id="3438681572027105609">如要在所有裝置上使用你的密碼和其他資料，請登入 Chrome</translation>
 <translation id="3450887623636316740">這個檔案可能不安全<ph name="LINE_BREAK" />下載之後，你可以提供密碼，讓 Chrome 幫忙檢查。該檔案的相關資訊將傳送給 Google 安全瀏覽功能，但檔案內容和密碼只會保存在裝置上。</translation>
 <translation id="3451115285585441894">正在新增至 Chrome...</translation>
 <translation id="345171907106878721">新增為 Chrome 使用者</translation>
@@ -201,9 +201,9 @@
 <translation id="3533694711092285624">未儲存任何密碼。你必須先儲存密碼，才能使用 Chrome 的密碼檢查功能。</translation>
 <translation id="3541482654983822893">Chrome 無法檢查你的密碼，請於 24 小時後再試。</translation>
 <translation id="3576528680708590453">系統管理員已設定 Google Chrome 開啟替代瀏覽器來存取 <ph name="TARGET_URL_HOSTNAME" />。</translation>
-<translation id="3582972582564653026">進行同步處理即可在你的所有裝置上享有個人化的 Chrome 體驗</translation>
+<translation id="3582972582564653026">讓所有裝置保持同步，享有個人化的 Chrome 體驗</translation>
 <translation id="3583751698304738917">你已經以另一個 Chrome 設定檔的 <ph name="USER_EMAIL_ADDRESS" /> 身分登入</translation>
-<translation id="3595784445906693824">要在新設定檔中登入 Chrome 嗎？</translation>
+<translation id="3595784445906693824">要以新設定檔登入 Chrome 嗎？</translation>
 <translation id="3596080736082218006">{COUNT,plural, =0{系統管理員要求你重新啟動 Chrome，以套用更新}=1{系統管理員要求你重新啟動 Chrome，以套用更新。你的無痕視窗不會重新開啟。}other{系統管理員要求你重新啟動 Chrome，以套用更新。你的 # 個無痕視窗不會重新開啟。}}</translation>
 <translation id="3597003331831379823">無法以進階權限執行設定。<ph name="METAINSTALLER_ERROR" /></translation>
 <translation id="3609788354808247807">由於近期沒有造訪記錄，Chrome 已移除「<ph name="PERMISSION_1" />」、「<ph name="PERMISSION_2" />」和「<ph name="PERMISSION_3" />」權限</translation>
@@ -236,7 +236,7 @@
 <translation id="4035053306113201399">Chrome OS 必須重新啟動，才能套用更新。</translation>
 <translation id="4050175100176540509">最新版本包含重要的安全性改善與新功能。</translation>
 <translation id="4053720452172726777">自訂及管理 Google Chrome</translation>
-<translation id="408393047846373801">如要在裝置上使用你的密碼和其他資料，請登入 Chrome。登入後，這個密碼就會儲存到 Google 帳戶。</translation>
+<translation id="408393047846373801">如要在任何裝置上使用你的密碼和其他資料，請登入 Chrome。登入後，這個密碼就會儲存到 Google 帳戶。</translation>
 <translation id="4110895483821904099">設定新的 Chrome 設定檔</translation>
 <translation id="4111566860456076004">Chrome 無法驗證擴充功能的來源，因此可能不安全。請從 Chrome 中移除這項擴充功能，使其無法再查看及變更你瀏覽網站時留下的資料，包括個人資訊。</translation>
 <translation id="4128488089242627000">提高 Chrome 執行速度，讓使用 JavaScript 的功能正常運作 (建議採用)</translation>

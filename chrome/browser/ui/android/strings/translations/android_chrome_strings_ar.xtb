@@ -1034,7 +1034,7 @@
 <translation id="5809361687334836369">{HOURS,plural, =1{قبل ساعة واحدة (#)}zero{قبل # ساعة}two{قبل ساعتين (#)}few{قبل # ساعات}many{قبل # ساعة}other{قبل # ساعة}}</translation>
 <translation id="5810288467834065221">‏حقوق الطبع والنشر لعام <ph name="YEAR" /> لشركة Google LLC. جميع الحقوق محفوظة.</translation>
 <translation id="5814749351757353073">متابعة المواقع الإلكترونية المفضّلة</translation>
-<translation id="5822875253699806474">يجب مزامنة علامات التبويب والسجلّ للانتقال بسرعة إلى المواقع الإلكترونية التي زرتها.</translation>
+<translation id="5822875253699806474">للانتقال بسرعة إلى المواقع الإلكترونية التي زرتها، ما عليك سوى مزامنة علامات التبويب والسجلّ.	</translation>
 <translation id="5828921839638612740">‏يمكنك حذف البيانات من خلال إعدادات Chrome</translation>
 <translation id="5829586821381540080">تم الحفظ في "<ph name="FOLDER_NAME" />"</translation>
 <translation id="583281660410589416">غير معروف</translation>

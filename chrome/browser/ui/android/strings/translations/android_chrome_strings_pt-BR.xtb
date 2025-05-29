@@ -785,7 +785,7 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="469286762610133730">Receba conteúdos melhores</translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 e mais <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}one{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 e mais <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 e mais <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}}</translation>
 <translation id="4698061626562952596">Revise suas guias inativas aqui</translation>
-<translation id="4699172675775169585">Imagens e arquivos armazenados em cache</translation>
+<translation id="4699172675775169585">Imagens e arquivos em cache</translation>
 <translation id="4710167854527459075">Ordenar por mais recente</translation>
 <translation id="4718044610319080485">Aciona o assistente de IA</translation>
 <translation id="4719927025381752090">Oferecer para traduzir</translation>
@@ -1087,7 +1087,7 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="605721222689873409">AA</translation>
 <translation id="6059830886158432458">Controle suas matérias e atividade aqui</translation>
 <translation id="6071995715087444295">Para verificar se há senhas comprometidas, faça login na sua Conta do Google</translation>
-<translation id="6078323886959318429">Adicionar atalho</translation>
+<translation id="6078323886959318429">Add atalho</translation>
 <translation id="6085886413119427067">Determina como se conectar a sites por uma conexão segura</translation>
 <translation id="6087286598828478206">Bloquear e sair do grupo?</translation>
 <translation id="60923314841986378"><ph name="HOURS" /> horas restantes</translation>

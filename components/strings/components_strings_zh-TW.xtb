@@ -889,7 +889,7 @@
 <translation id="2521736961081452453">建立表單</translation>
 <translation id="2524461107774643265">新增詳細資訊</translation>
 <translation id="2526062290525841862">如要執行這個應用程式，請重新啟用隔離網頁應用程式的開發人員模式</translation>
-<translation id="2526280916094749336">你可以在各項 Google 產品中使用已儲存的地址。這個地址將儲存至你的 Google 帳戶 (<ph name="ACCOUNT" />) 中。</translation>
+<translation id="2526280916094749336">你可以在各項 Google 產品中使用已儲存的地址。這個地址將儲存至你的 Google 帳戶 (<ph name="ACCOUNT" />)。</translation>
 <translation id="2527451058878391043">信用卡驗證碼位於卡片正面，即卡號右上方的 4 位數字。</translation>
 <translation id="2529899080962247600">這個欄位最多只能包含 <ph name="MAX_ITEMS_LIMIT" /> 個項目，超過的項目會遭到忽略。</translation>
 <translation id="2530042584066815841">滑鼠鎖定和使用</translation>
@@ -2315,7 +2315,7 @@
 <translation id="5018422839182700155">無法開啟這個網頁</translation>
 <translation id="5018802455907704660">16 x 20 吋</translation>
 <translation id="5019198164206649151">備份儲存狀態不佳</translation>
-<translation id="5019293549442035120">你可以在各項 Google 產品中使用已儲存的地址。這個地址將儲存至你的 Google 帳戶 (<ph name="USER_EMAIL" />) 中。</translation>
+<translation id="5019293549442035120">你可以在各項 Google 產品中使用已儲存的地址。這個地址將儲存至你的 Google 帳戶 (<ph name="USER_EMAIL" />)。</translation>
 <translation id="5019952743397118625"><ph name="EXTENSION_DEVELOPER_MODE_SETTINGS_POLICY_NAME" /> 政策已設定。<ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> 不會控管能否在擴充功能頁面上使用開發人員模式。</translation>
 <translation id="5021500396464456616">請與傳送這個連結的使用者聯絡</translation>
 <translation id="5021557570875267742">使用 Chrome 追蹤價格</translation>
