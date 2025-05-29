@@ -2190,7 +2190,7 @@ class WebUIBundledCodeCacheResourceRequestSenderTest
 #if DCHECK_IS_ON()
     WTF::SetIsBeforeThreadCreatedForTest();
 #endif
-    SchemeRegistry::RemoveURLSchemeAsWebUIBundledBytecodeForTesting("chrome");
+    SchemeRegistry::RemoveURLSchemeAsWebUIBundledBytecodeForTest("chrome");
     ResourceRequestSenderTestBase::TearDown();
   }
 

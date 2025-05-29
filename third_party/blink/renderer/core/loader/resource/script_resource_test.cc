@@ -130,7 +130,8 @@ TEST(ScriptResourceTest, WebUICodeCacheEnabled) {
 #if DCHECK_IS_ON()
   WTF::SetIsBeforeThreadCreatedForTest();  // Required for next operation:
 #endif
-  SchemeRegistry::RemoveURLSchemeAsCodeCacheWithHashing("codecachewithhashing");
+  SchemeRegistry::RemoveURLSchemeAsCodeCacheWithHashingForTest(
+      "codecachewithhashing");
 }
 
 TEST(ScriptResourceTest, WebUICodeCacheDisabled) {
@@ -234,7 +235,8 @@ TEST(ScriptResourceTest, WebUICodeCachePlatformOverride) {
     EXPECT_FALSE(handler);
   }
 
-  SchemeRegistry::RemoveURLSchemeAsCodeCacheWithHashing("codecachewithhashing");
+  SchemeRegistry::RemoveURLSchemeAsCodeCacheWithHashingForTest(
+      "codecachewithhashing");
 }
 
 class TestingPlatformForWebUIBundledCodeCache : public TestingPlatformSupport {
@@ -273,7 +275,7 @@ TEST(ScriptResourceTest, CreatesHandlerForWebUIBundledCodeCaching) {
     if (enable) {
       SchemeRegistry::RegisterURLSchemeAsWebUIBundledBytecode("chrome");
     } else {
-      SchemeRegistry::RemoveURLSchemeAsWebUIBundledBytecodeForTesting("chrome");
+      SchemeRegistry::RemoveURLSchemeAsWebUIBundledBytecodeForTest("chrome");
     }
   };
 
