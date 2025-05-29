@@ -112,7 +112,7 @@ class GPU_GLES2_EXPORT SharedContextState
       viz::VulkanContextProvider* vulkan_context_provider = nullptr,
       viz::MetalContextProvider* metal_context_provider = nullptr,
       DawnContextProvider* dawn_context_provider = nullptr,
-      base::WeakPtr<gpu::MemoryTracker::Observer> peak_memory_monitor = nullptr,
+      scoped_refptr<gpu::MemoryTracker::Observer> peak_memory_monitor = nullptr,
       bool created_on_compositor_gpu_thread = false,
       const gpu::SharedContextState::GrContextOptionsProvider*
           gr_context_options_provider = nullptr);
@@ -231,7 +231,7 @@ class GPU_GLES2_EXPORT SharedContextState
     return support_gl_external_object_flags_;
   }
   gpu::MemoryTracker::Observer* memory_tracker_observer() {
-    return &memory_tracker_observer_;
+    return memory_tracker_observer_.get();
   }
   gpu::MemoryTracker* memory_tracker() { return &memory_tracker_; }
   gpu::MemoryTypeTracker* memory_type_tracker() {
@@ -312,10 +312,9 @@ class GPU_GLES2_EXPORT SharedContextState
       : public gpu::MemoryTracker::Observer {
    public:
     explicit MemoryTrackerObserver(
-        base::WeakPtr<gpu::MemoryTracker::Observer> peak_memory_monitor);
+        scoped_refptr<gpu::MemoryTracker::Observer> peak_memory_monitor);
     MemoryTrackerObserver(MemoryTrackerObserver&) = delete;
     MemoryTrackerObserver& operator=(MemoryTrackerObserver&) = delete;
-    ~MemoryTrackerObserver() override;
 
     // gpu::MemoryTracker::Observer implementation:
     void OnMemoryAllocatedChange(
@@ -329,8 +328,10 @@ class GPU_GLES2_EXPORT SharedContextState
     uint64_t GetMemoryUsage() const { return size_; }
 
    private:
+    ~MemoryTrackerObserver() override;
+
     uint64_t size_ = 0;
-    base::WeakPtr<gpu::MemoryTracker::Observer> const peak_memory_monitor_;
+    scoped_refptr<gpu::MemoryTracker::Observer> const peak_memory_monitor_;
   };
 
   // MemoryTracker implementation used to track SharedImages owned by
@@ -397,7 +398,7 @@ class GPU_GLES2_EXPORT SharedContextState
   bool support_gl_external_object_flags_ = false;
   ContextLostCallback context_lost_callback_;
   const GrContextType gr_context_type_;
-  MemoryTrackerObserver memory_tracker_observer_;
+  scoped_refptr<MemoryTrackerObserver> memory_tracker_observer_;
   MemoryTracker memory_tracker_;
   gpu::MemoryTypeTracker memory_type_tracker_;
   const raw_ptr<viz::VulkanContextProvider> vk_context_provider_ = nullptr;

@@ -257,8 +257,8 @@ void SharedContextState::compileError(const char* shader,
 }
 
 SharedContextState::MemoryTrackerObserver::MemoryTrackerObserver(
-    base::WeakPtr<gpu::MemoryTracker::Observer> peak_memory_monitor)
-    : peak_memory_monitor_(peak_memory_monitor) {}
+    scoped_refptr<gpu::MemoryTracker::Observer> peak_memory_monitor)
+    : peak_memory_monitor_(std::move(peak_memory_monitor)) {}
 
 SharedContextState::MemoryTrackerObserver::~MemoryTrackerObserver() {
   DCHECK(!size_);
@@ -327,14 +327,15 @@ SharedContextState::SharedContextState(
     viz::VulkanContextProvider* vulkan_context_provider,
     viz::MetalContextProvider* metal_context_provider,
     DawnContextProvider* dawn_context_provider,
-    base::WeakPtr<gpu::MemoryTracker::Observer> peak_memory_monitor,
+    scoped_refptr<gpu::MemoryTracker::Observer> peak_memory_monitor,
     bool created_on_compositor_gpu_thread,
     const GrContextOptionsProvider* gr_context_options_provider)
     : use_virtualized_gl_contexts_(use_virtualized_gl_contexts),
       context_lost_callback_(std::move(context_lost_callback)),
       gr_context_type_(gr_context_type),
-      memory_tracker_observer_(peak_memory_monitor),
-      memory_tracker_(&memory_tracker_observer_),
+      memory_tracker_observer_(base::MakeRefCounted<MemoryTrackerObserver>(
+          std::move(peak_memory_monitor))),
+      memory_tracker_(memory_tracker_observer_.get()),
       memory_type_tracker_(&memory_tracker_),
       vk_context_provider_(vulkan_context_provider),
       metal_context_provider_(metal_context_provider),
@@ -398,7 +399,7 @@ SharedContextState::~SharedContextState() {
   // GPU memory allocations except skia_resource_cache_size_ tracked by this
   // memory_tracker_observer_ should have been released.
   DCHECK_EQ(skia_resource_cache_size_,
-            memory_tracker_observer_.GetMemoryUsage());
+            memory_tracker_observer_->GetMemoryUsage());
   // gr_context_ and all resources owned by it will be released soon, so set it
   // to null.
   gr_context_ = nullptr;
@@ -1147,7 +1148,7 @@ void SharedContextState::PurgeMemory(
 
 uint64_t SharedContextState::GetMemoryUsage() {
   UpdateSkiaOwnedMemorySize();
-  return memory_tracker_observer_.GetMemoryUsage();
+  return memory_tracker_observer_->GetMemoryUsage();
 }
 
 void SharedContextState::UpdateSkiaOwnedMemorySize() {
@@ -1156,7 +1157,7 @@ void SharedContextState::UpdateSkiaOwnedMemorySize() {
   // case, the Graphite GPU main recorder will also not have been created, while
   // in the latter case, it will imminently be destroyed.
   if (!gr_context_ && !graphite_shared_context()) {
-    memory_tracker_observer_.OnMemoryAllocatedChange(
+    memory_tracker_observer_->OnMemoryAllocatedChange(
         CommandBufferId(), skia_resource_cache_size_, 0u);
     skia_resource_cache_size_ = 0u;
     return;
@@ -1182,7 +1183,7 @@ void SharedContextState::UpdateSkiaOwnedMemorySize() {
   // Skia does not have a CommandBufferId. PeakMemoryMonitor currently does not
   // use CommandBufferId to identify source, so use zero here to separate
   // prevent confusion.
-  memory_tracker_observer_.OnMemoryAllocatedChange(
+  memory_tracker_observer_->OnMemoryAllocatedChange(
       CommandBufferId(), skia_resource_cache_size_,
       static_cast<uint64_t>(new_size));
   skia_resource_cache_size_ = static_cast<uint64_t>(new_size);

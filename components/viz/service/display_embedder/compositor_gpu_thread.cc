@@ -195,7 +195,8 @@ CompositorGpuThread::GetSharedContextState() {
 #else
       /*dawn_context_provider=*/nullptr,
 #endif
-      /*peak_memory_monitor=*/weak_ptr_factory_.GetWeakPtr(),
+      /*peak_memory_monitor=*/
+      gpu_channel_manager_->peak_memory_monitor(),
       /*created_on_compositor_gpu_thread=*/true);
 
   auto gles2_feature_info = base::MakeRefCounted<gpu::gles2::FeatureInfo>(
@@ -285,15 +286,6 @@ void CompositorGpuThread::CleanUp() {
 
   // WatchDogThread destruction should happen on the CompositorGpuThread.
   watchdog_thread_.reset();
-}
-
-void CompositorGpuThread::OnMemoryAllocatedChange(
-    gpu::CommandBufferId id,
-    uint64_t old_size,
-    uint64_t new_size,
-    gpu::GpuPeakMemoryAllocationSource source) {
-  gpu_channel_manager_->GetOnMemoryAllocatedChangeCallback().Run(
-      id, old_size, new_size, source);
 }
 
 void CompositorGpuThread::OnBackgrounded() {

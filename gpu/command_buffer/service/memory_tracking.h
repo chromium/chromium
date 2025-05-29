@@ -27,20 +27,22 @@ namespace gpu {
 class GPU_EXPORT MemoryTracker {
  public:
   // Observe all changes in memory notified to this MemoryTracker.
-  class Observer {
+  class Observer : public base::RefCountedThreadSafe<Observer> {
    public:
     Observer() = default;
 
     Observer(const Observer&) = delete;
     Observer& operator=(const Observer&) = delete;
 
-    virtual ~Observer() = default;
-
     virtual void OnMemoryAllocatedChange(
         CommandBufferId id,
         uint64_t old_size,
         uint64_t new_size,
         GpuPeakMemoryAllocationSource source) = 0;
+
+   protected:
+    friend class base::RefCountedThreadSafe<Observer>;
+    virtual ~Observer() = default;
   };
 
   virtual ~MemoryTracker() = default;

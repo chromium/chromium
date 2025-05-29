@@ -182,7 +182,7 @@ class GPU_IPC_SERVICE_EXPORT GpuChannelManager
   }
 
   MemoryTracker::Observer* peak_memory_monitor() {
-    return &peak_memory_monitor_;
+    return peak_memory_monitor_.get();
   }
 
   GpuProcessShmCount* use_shader_cache_shm_count() {
@@ -248,8 +248,6 @@ class GPU_IPC_SERVICE_EXPORT GpuChannelManager
   void LoseAllContexts();
 
   SharedContextState::ContextLostCallback GetContextLostCallback();
-  GpuChannelManager::OnMemoryAllocatedChangeCallback
-  GetOnMemoryAllocatedChangeCallback();
 
  private:
   friend class GpuChannelManagerTest;
@@ -260,14 +258,10 @@ class GPU_IPC_SERVICE_EXPORT GpuChannelManager
   class GPU_IPC_SERVICE_EXPORT GpuPeakMemoryMonitor
       : public MemoryTracker::Observer {
    public:
-    GpuPeakMemoryMonitor(
-        GpuChannelManager* channel_manager,
-        scoped_refptr<base::SingleThreadTaskRunner> task_runner);
+    GpuPeakMemoryMonitor();
 
     GpuPeakMemoryMonitor(const GpuPeakMemoryMonitor&) = delete;
     GpuPeakMemoryMonitor& operator=(const GpuPeakMemoryMonitor&) = delete;
-
-    ~GpuPeakMemoryMonitor() override;
 
     base::flat_map<GpuPeakMemoryAllocationSource, uint64_t> GetPeakMemoryUsage(
         uint32_t sequence_num,
@@ -275,8 +269,8 @@ class GPU_IPC_SERVICE_EXPORT GpuChannelManager
     void StartGpuMemoryTracking(uint32_t sequence_num);
     void StopGpuMemoryTracking(uint32_t sequence_num);
 
-    base::WeakPtr<MemoryTracker::Observer> GetWeakPtr();
-    void InvalidateWeakPtrs();
+   protected:
+    ~GpuPeakMemoryMonitor() override;
 
    private:
     struct SequenceTracker {
@@ -294,9 +288,12 @@ class GPU_IPC_SERVICE_EXPORT GpuChannelManager
       base::flat_map<GpuPeakMemoryAllocationSource, uint64_t>
           peak_memory_per_source_;
     };
-    std::unique_ptr<base::trace_event::TracedValue> StartTrackingTracedValue();
+
+    std::unique_ptr<base::trace_event::TracedValue> StartTrackingTracedValue()
+        EXCLUSIVE_LOCKS_REQUIRED(peak_mem_lock_);
     std::unique_ptr<base::trace_event::TracedValue> StopTrackingTracedValue(
-        SequenceTracker& sequence);
+        SequenceTracker& sequence) EXCLUSIVE_LOCKS_REQUIRED(peak_mem_lock_);
+
     // MemoryTracker::Observer:
     void OnMemoryAllocatedChange(
         CommandBufferId id,
@@ -306,15 +303,16 @@ class GPU_IPC_SERVICE_EXPORT GpuChannelManager
             GpuPeakMemoryAllocationSource::UNKNOWN) override;
 
     // Tracks all currently requested sequences mapped to the peak memory seen.
-    base::flat_map<uint32_t, SequenceTracker> sequence_trackers_;
+    base::flat_map<uint32_t, SequenceTracker> sequence_trackers_
+        GUARDED_BY(peak_mem_lock_);
 
     // Tracks the total current memory across all MemoryTrackers.
-    uint64_t current_memory_ = 0u;
+    uint64_t current_memory_ GUARDED_BY(peak_mem_lock_) = 0u;
 
     base::flat_map<GpuPeakMemoryAllocationSource, uint64_t>
-        current_memory_per_source_;
+        current_memory_per_source_ GUARDED_BY(peak_mem_lock_);
 
-    base::WeakPtrFactory<GpuPeakMemoryMonitor> weak_factory_;
+    mutable base::Lock peak_mem_lock_;
   };
 
 #if BUILDFLAG(IS_ANDROID)
@@ -398,7 +396,7 @@ class GPU_IPC_SERVICE_EXPORT GpuChannelManager
   // viz::GpuServiceImpl. The raster decoders may use it for rasterization.
   raw_ptr<DawnContextProvider> dawn_context_provider_ = nullptr;
 
-  GpuPeakMemoryMonitor peak_memory_monitor_;
+  scoped_refptr<GpuPeakMemoryMonitor> peak_memory_monitor_;
 
   raw_ptr<const SharedContextState::GrContextOptionsProvider>
       gr_context_options_provider_ = nullptr;
