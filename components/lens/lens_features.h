@@ -846,6 +846,10 @@ extern bool ShouldUseAltLoadingHintWeb();
 COMPONENT_EXPORT(LENS_FEATURES)
 extern bool ShouldUseAltLoadingHintPdf();
 
+// Whether to enable the summarize hint for contextual suggest.
+COMPONENT_EXPORT(LENS_FEATURES)
+extern bool ShouldEnableSummarizeHintForContextualSuggest();
+
 // Whether to enable upload chunking in the Lens Overlay.
 COMPONENT_EXPORT(LENS_FEATURES)
 extern bool IsLensOverlayUploadChunkingEnabled();
