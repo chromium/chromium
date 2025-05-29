@@ -949,13 +949,15 @@ WIN_ARM64_SNAPDRAGON_PLUS = PerfPlatform(
     is_fyi=True)
 
 # Android
-ANDROID_BRYA = PerfPlatform(name='android-brya-perf',
-                            description='AL Brya',
-                            num_shards=7,
-                            benchmark_configs=_ANDROID_AL_BENCHMARK_CONFIGS,
-                            platform_os='android',
-                            executables=None,
-                            crossbench=_CROSSBENCH_ANDROID_AL)
+ANDROID_BRYA = PerfPlatform(
+    name='android-brya-kano-i5-8gb-perf',
+    description='Brya SKU kano_12th_Gen_IntelR_CoreTM_i5_1235U_8GB',
+    num_shards=7,
+    benchmark_configs=_ANDROID_AL_BENCHMARK_CONFIGS,
+    platform_os='android',
+    executables=None,
+    crossbench=_CROSSBENCH_ANDROID_AL)
+# TODO(crbug.com/414619873) - deprecate byra-perf
 ANDROID_BYRA = PerfPlatform(name='android-byra-perf',
                             description='AL Byra',
                             num_shards=7,
@@ -963,15 +965,15 @@ ANDROID_BYRA = PerfPlatform(name='android-byra-perf',
                             platform_os='android',
                             executables=None,
                             crossbench=_CROSSBENCH_ANDROID_AL)
-ANDROID_CORSOLA = PerfPlatform(name='android-corsola-perf',
-                               description='AL corsola',
+ANDROID_CORSOLA = PerfPlatform(name='android-corsola-steelix-8gb-perf',
+                               description='Corsola SKU steelix_MT8186_8GB',
                                num_shards=7,
                                benchmark_configs=_ANDROID_AL_BENCHMARK_CONFIGS,
                                platform_os='android',
                                executables=None,
                                crossbench=_CROSSBENCH_ANDROID_AL)
-ANDROID_NISSA = PerfPlatform(name='android-nissa-perf',
-                             description='AL Nissa',
+ANDROID_NISSA = PerfPlatform(name='android-nissa-uldren-8gb-perf',
+                             description='Nissa SKU uldren_99C4LZ/Q1XT/6W_8GB',
                              num_shards=7,
                              benchmark_configs=_ANDROID_AL_BENCHMARK_CONFIGS,
                              platform_os='android',

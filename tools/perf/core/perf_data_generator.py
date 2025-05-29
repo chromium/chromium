@@ -592,7 +592,7 @@ BUILDERS = {
         },
     },
     'android-desktop-x64-builder-perf': {},
-    'android-brya-perf': {
+    'android-brya-kano-i5-8gb-perf': {
         'tests': [{
             'isolate':
             'performance_test_suite_android_trichrome_chrome_google_64_32_bundle',
@@ -644,7 +644,7 @@ BUILDERS = {
         'realm':
         'chromeos:chrome',
     },
-    'android-corsola-perf': {
+    'android-corsola-steelix-8gb-perf': {
         'tests': [{
             'isolate':
             'performance_test_suite_android_trichrome_chrome_google_64_32_bundle',
@@ -670,7 +670,7 @@ BUILDERS = {
         'realm':
         'chromeos:chrome',
     },
-    'android-nissa-perf': {
+    'android-nissa-uldren-8gb-perf': {
         'tests': [{
             'isolate':
             'performance_test_suite_android_trichrome_chrome_google_64_32_bundle',
