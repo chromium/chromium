@@ -1630,7 +1630,7 @@
 <translation id="211803431539496924">Кеңейтілген қауіпсіздік жаңартуларын растау қажет пе?</translation>
 <translation id="2118594521750010466">Қазір түзету</translation>
 <translation id="2119461801241504254">"Қауіпсіз шолу" функциясы қосулы және ол зиянды сайттар мен жүктеп алынған файлдардан қорғайды.</translation>
-<translation id="2119602978828978573">Қолдау көрсетілетін Live Caption тілдері</translation>
+<translation id="2119602978828978573">Қолдау көрсетілетін автоматты субтитр тілдері</translation>
 <translation id="2120297377148151361">Белсенділік және өзара әрекеттер</translation>
 <translation id="2120639962942052471"><ph name="PERMISSION" /> бөгелді.</translation>
 <translation id="2121055421682309734">{COUNT,plural, =0{Cookie файлдары бөгелді}=1{Cookie файлдары бөгелді (1 ерекше жағдай)}other{Cookie файлдары бөгелді ({COUNT} ерекше жағдай)}}</translation>
@@ -3457,7 +3457,7 @@
 <translation id="3414966631182382431"><ph name="MANAGER" /> <ph name="BEGIN_LINK" />браузеріңізді басқарады<ph name="END_LINK" />.</translation>
 <translation id="3414974735818878791">Ортасын басу</translation>
 <translation id="3415580428903497523">Операциялық жүйеден импортталған жергілікті сертификаттарды пайдалану</translation>
-<translation id="341589277604221596">Live Caption – <ph name="LANGUAGE" /></translation>
+<translation id="341589277604221596">Автоматты субтитр – <ph name="LANGUAGE" /></translation>
 <translation id="3416468988018290825">URL мекенжайларын әрдайым толық көрсету</translation>
 <translation id="3417835166382867856">Қойындыларды іздеу</translation>
 <translation id="3417836307470882032">24 сағаттық формат</translation>
@@ -3553,7 +3553,7 @@
 <translation id="3479552764303398839">Қазір емес</translation>
 <translation id="3479685872808224578">Басып шығару сервері анықталмады. Оны тексеріп, қайталап көріңіз.</translation>
 <translation id="3479753605053415848">Chrome-ды бейімдеу үшін басыңыз</translation>
-<translation id="3480612136143976912">Live Caption функциясы үшін жазу өлшемі мен стилін реттеңіз. Кейбір қолданбалар мен сайттар да осы параметрді пайдаланатын болады.</translation>
+<translation id="3480612136143976912">Автоматты субтитр функциясы үшін жазу өлшемі мен стилін реттеңіз. Кейбір қолданбалар мен сайттар да осы параметрді пайдаланатын болады.</translation>
 <translation id="3480827850068960424"><ph name="NUM" /> қойынды табылды.</translation>
 <translation id="3481268647794498892"><ph name="ALTERNATIVE_BROWSER_NAME" /> браузері <ph name="COUNTDOWN_SECONDS" /> секундта ашылады.</translation>
 <translation id="348247802372410699">Стиль таңдау</translation>
@@ -5064,7 +5064,7 @@
 <translation id="452750746583162491">Синхрондалған деректерді қарау</translation>
 <translation id="4528494169189661126">Аударма ұсынысы</translation>
 <translation id="4528638190900283934">Қосымша мүмкіндіктер үшін аккаунтқа кіру</translation>
-<translation id="4529455689802245339">Chrome Live Caption жұмыс істемеуі мүмкін.</translation>
+<translation id="4529455689802245339">Chrome-дағы автоматты субтитр жұмыс істемеуі мүмкін.</translation>
 <translation id="4531451811601110068">Әрекетті қайталауыңызға немесе әкімшіге хабарласып, көмек сұрауыңызға болады.</translation>
 <translation id="4531924570968473143"><ph name="DEVICE_TYPE" /> құрылғысына кімді қосқыңыз келеді?</translation>
 <translation id="4532183705767666195">{COUNT,plural, =1{1 кіру кілті}other{{COUNT} кіру кілті}}</translation>
@@ -6585,7 +6585,7 @@
 <translation id="5621272825308610394">Көрсетілетін атау жоқ</translation>
 <translation id="5621350029086078628">Бұл — эксперименттік AI функциясы.</translation>
 <translation id="5622357006621202569">USB құрылғысын қонақтармен тұрақты түрде бөлісуге рұқсат ету.</translation>
-<translation id="562250930904332809">Live Caption функциясын өшіру</translation>
+<translation id="562250930904332809">Автоматты субтитр функциясын өшіру</translation>
 <translation id="5623282979409330487">Бұл сайт қозғалыс датчиктерін пайдаланып жатыр.</translation>
 <translation id="5623842676595125836">Журнал</translation>
 <translation id="5624120631404540903">Құпия сөздерді басқару</translation>
@@ -8173,7 +8173,7 @@
 <translation id="6785739405821760313">Сақталған жұмыс үстелдерін көру. Жылжу үшін Tab пернесін басыңыз.</translation>
 <translation id="6785915470941880363">Кері айналдыру туралы <ph name="LINK_BEGIN" />қосымша ақпарат<ph name="LINK_END" /></translation>
 <translation id="67862343314499040">Ақшыл күлгін</translation>
-<translation id="6786480815699355166">Қолдау көрсетілетін Live Caption тілдерін ғана аударуға болады.</translation>
+<translation id="6786480815699355166">Қолдау көрсетілетін автоматты субтитр тілдерін ғана аударуға болады.</translation>
 <translation id="6786747875388722282">Кеңейтімдер</translation>
 <translation id="6787531944787756058"><ph name="USER_EMAIL" /> пайдаланушы аты тек осы құрылғыға сақталды. Мәліметтерді көру</translation>
 <translation id="6787839852456839824">Пернелер тіркесімі</translation>
@@ -11122,7 +11122,7 @@
 <translation id="8845001906332463065">Анықтама алу</translation>
 <translation id="8846132060409673887">Компьютердің өндірушісі және моделі туралы ақпаратты оқыңыз</translation>
 <translation id="8846163936679269230">eSIM профильдерін бастапқы күйге қайтару</translation>
-<translation id="8846239054091760429">Моно аудио, іске қосу, Live Caption және т. б.</translation>
+<translation id="8846239054091760429">Моно аудио, іске қосу, автоматты субтитр және т.б.</translation>
 <translation id="8847988622838149491">USB</translation>
 <translation id="8848709220963126773">Shift перне режимін ауыстыру</translation>
 <translation id="8849001918648564819">Жасырын</translation>
@@ -11294,7 +11294,7 @@
 <translation id="8970887620466824814">Бірдеңе дұрыс болмады.</translation>
 <translation id="89720367119469899">Шығу</translation>
 <translation id="8972513834460200407">Әкімшіге хабарласып, брандмауэр Google серверлерінен келген жүктеулерді бөгемейтінін тексеріңіз.</translation>
-<translation id="8973263196882835828">Live Caption функциясын қосу</translation>
+<translation id="8973263196882835828">Автоматты субтитр функциясын қосу</translation>
 <translation id="8973557916016709913">Масштабтау деңгейін өшіру</translation>
 <translation id="8973596347849323817">Бұл құрылғыны қажеттіліктерге сай реттей аласыз. Бұл арнайы мүмкіндіктерді кейінірек "Параметрлер" тармағында өзгертуге болады.</translation>
 <translation id="8973648401056792381">Құрылғы әкімшісі орнатқан веб-қолданба.</translation>
