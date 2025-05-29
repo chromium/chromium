@@ -157,7 +157,7 @@ def __step_config(ctx, step_config):
         ])
 
     cros_target_cc = cros_args.get("cros_target_cc")
-    if cros_target_cxx:
+    if cros_target_cc:
         step_config["rules"].extend([
             {
                 "name": "clang-cros/cc",
