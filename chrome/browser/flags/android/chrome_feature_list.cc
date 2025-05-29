@@ -201,6 +201,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kAndroidOmniboxFocusedNewTabPage,
     &kAndroidOpenPdfInlineBackport,
     &kAndroidPdfAssistContent,
+    &kAndroidTabGroupsColorUpdateGM3,
     &kAndroidSurfaceColorUpdate,
     &kAndroidTabDeclutterArchiveAllButActiveTab,
     &kAndroidTabDeclutterArchiveDuplicateTabs,
@@ -551,6 +552,10 @@ BASE_FEATURE(kAndroidOpenPdfInlineBackport,
 BASE_FEATURE(kAndroidPdfAssistContent,
              "AndroidPdfAssistContent",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kAndroidTabGroupsColorUpdateGM3,
+             "AndroidTabGroupsColorUpdateGM3",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kAndroidSurfaceColorUpdate,
              "AndroidSurfaceColorUpdate",

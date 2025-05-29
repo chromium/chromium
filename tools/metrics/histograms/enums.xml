@@ -13595,6 +13595,7 @@ from previous Chrome versions.
   <int value="-114925604" label="WebAppSyncGeneratedIconBackgroundFix:enabled"/>
   <int value="-114807608" label="TerminalSystemApp:disabled"/>
   <int value="-114768488" label="ImmersiveFullscreen:enabled"/>
+  <int value="-114308870" label="AndroidTabGroupsColorUpdateGM3:enabled"/>
   <int value="-113855291" label="RelatedSearchesUi:enabled"/>
   <int value="-113406427" label="ReadAnythingLocalSidePanel:enabled"/>
   <int value="-112971292" label="ShortcutCustomizationJelly:disabled"/>
@@ -14643,6 +14644,7 @@ from previous Chrome versions.
   <int value="284756778"
       label="SearchCustomizableShortcutsInLauncher:disabled"/>
   <int value="285387302" label="AvatarToolbarButton:enabled"/>
+  <int value="285502038" label="AndroidTabGroupsColorUpdateGM3:disabled"/>
   <int value="286001833" label="TabGroupsNewBadgePromo:enabled"/>
   <int value="286621673" label="FedCmIframeSupport:enabled"/>
   <int value="286717452" label="ContextualSearchDebug:disabled"/>

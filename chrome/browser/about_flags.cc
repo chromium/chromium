@@ -10841,6 +10841,11 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          chrome::android::kAndroidTabDeclutterPerformanceImprovements)},
 
+    {"android-tab-groups-color-update-gm3",
+     flag_descriptions::kAndroidTabGroupsColorUpdateGM3Name,
+     flag_descriptions::kAndroidTabGroupsColorUpdateGM3Description, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kAndroidTabGroupsColorUpdateGM3)},
+
     {"tab-group-sync-android", flag_descriptions::kTabGroupSyncAndroidName,
      flag_descriptions::kTabGroupSyncAndroidDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(tab_groups::kTabGroupSyncAndroid)},
@@ -12278,7 +12283,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAndroidSurfaceColorUpdateDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kAndroidSurfaceColorUpdate)},
 #endif  // BUILDFLAG(IS_ANDROID)
-
     {"zero-copy-rbp-partial-raster-with-gpu-compositor",
      flag_descriptions::kZeroCopyRBPPartialRasterWithGpuCompositorName,
      flag_descriptions::kZeroCopyRBPPartialRasterWithGpuCompositorDescription,

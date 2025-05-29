@@ -4656,6 +4656,12 @@ const char kAndroidPdfAssistContentName[] = "Provide assist content for PDF";
 const char kAndroidPdfAssistContentDescription[] =
     "Provide assist content for PDF on Android.";
 
+const char kAndroidTabGroupsColorUpdateGM3Name[] =
+    "Android tab groups color update";
+const char kAndroidTabGroupsColorUpdateGM3Description[] =
+    "If enabled, allows tab groups to have display the color chosen by the "
+    "user.";
+
 const char kAndroidSurfaceColorUpdateName[] = "Android surface color update.";
 const char kAndroidSurfaceColorUpdateDescription[] =
     "If enabled, updates the android surface colors for toolbar/omnibox.";
