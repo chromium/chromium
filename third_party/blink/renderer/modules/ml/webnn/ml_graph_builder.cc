@@ -541,6 +541,18 @@ webnn::RecurrentNetworkDirection BlinkRecurrentNetworkDirectionToComponent(
   }
 }
 
+webnn::PaddingMode BlinkPaddingModeToComponent(
+    blink::V8MLPaddingMode::Enum type) {
+  switch (type) {
+    case blink::V8MLPaddingMode::Enum::kConstant:
+      return webnn::PaddingMode::kConstant;
+    case blink::V8MLPaddingMode::Enum::kEdge:
+      return webnn::PaddingMode::kEdge;
+    case blink::V8MLPaddingMode::Enum::kReflection:
+      return webnn::PaddingMode::kReflection;
+  }
+}
+
 webnn::BatchNormalizationAttributes ConvertToBatchNormalizationAttributes(
     const blink::MLBatchNormalizationOptions* options) {
   CHECK(options);
@@ -2634,9 +2646,10 @@ MLOperand* MLGraphBuilder::pad(ScriptState* script_state,
   const std::string label = options->label().Utf8();
   ASSIGN_OR_THROW_AND_RETURN_IF_ERROR(
       webnn::OperandDescriptor output_descriptor,
-      webnn::ValidatePadAndInferOutput(ml_context_->GetProperties(),
-                                       input->Descriptor(), beginning_padding,
-                                       ending_padding, label));
+      webnn::ValidatePadAndInferOutput(
+          ml_context_->GetProperties(), input->Descriptor(), beginning_padding,
+          ending_padding, BlinkPaddingModeToComponent(options->mode().AsEnum()),
+          label));
 
   if (options->mode().AsEnum() != V8MLPaddingMode::Enum::kConstant &&
       fabs(options->value() - 0.0f) > std::numeric_limits<float>::epsilon()) {

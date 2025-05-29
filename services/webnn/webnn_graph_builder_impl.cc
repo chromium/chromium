@@ -91,6 +91,17 @@ webnn::RecurrentNetworkDirection MojoRecurrentNetworkDirectionToComponent(
   }
 }
 
+webnn::PaddingMode MojoPaddingModeToComponent(const mojom::PaddingMode& mode) {
+  switch (mode.which()) {
+    case mojom::PaddingMode::Tag::kConstant:
+      return webnn::PaddingMode::kConstant;
+    case mojom::PaddingMode::Tag::kEdge:
+      return webnn::PaddingMode::kEdge;
+    case mojom::PaddingMode::Tag::kReflection:
+      return webnn::PaddingMode::kReflection;
+  }
+}
+
 bool ValidateClampAttributes(const mojom::Clamp& clamp) {
   if (std::isnan(clamp.min_value) || std::isnan(clamp.max_value)) {
     // The min or max value are nan.
@@ -2014,9 +2025,9 @@ bool OperationValidationContext::ValidatePad(const mojom::Pad& pad,
   }
 
   const base::expected<OperandDescriptor, std::string> validated_output =
-      ValidatePadAndInferOutput(*context_properties_, input->descriptor,
-                                pad.beginning_padding, pad.ending_padding,
-                                pad.label);
+      ValidatePadAndInferOutput(
+          *context_properties_, input->descriptor, pad.beginning_padding,
+          pad.ending_padding, MojoPaddingModeToComponent(*pad.mode), pad.label);
   if (!validated_output.has_value()) {
     return false;
   }

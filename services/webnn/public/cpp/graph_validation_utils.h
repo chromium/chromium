@@ -37,6 +37,10 @@ enum class RoundingType { kFloor, kCeil };
 // direction of the input sequence.
 enum class RecurrentNetworkDirection { kForward, kBackward, kBoth };
 
+// Represents the `MLPaddingMode` that specifies the padding mode of the pad
+// operation.
+enum class PaddingMode { kConstant, kEdge, kReflection };
+
 enum class ReduceKind {
   kL1,
   kL2,
@@ -620,6 +624,7 @@ base::expected<OperandDescriptor, std::string> COMPONENT_EXPORT(
                               const OperandDescriptor& input,
                               base::span<const uint32_t> beginning_padding,
                               base::span<const uint32_t> ending_padding,
+                              PaddingMode mode,
                               std::string_view label);
 
 // Validate and infer output information of 2-D pooling operator defined in
