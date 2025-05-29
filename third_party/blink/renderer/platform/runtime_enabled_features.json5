@@ -4507,6 +4507,7 @@
       // If enabled, SharedWorker supports extendedLifetime
       // https://github.com/whatwg/html/issues/10997
       name: "SharedWorkerExtendedLifetime",
+      status: "experimental",
       origin_trial_feature_name: "SharedWorkerExtendedLifetime",
       origin_trial_allows_third_party: true,
     },
