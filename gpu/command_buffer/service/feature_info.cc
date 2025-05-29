@@ -36,8 +36,6 @@
 
 #if !BUILDFLAG(IS_MAC)
 #include "ui/gl/gl_fence_egl.h"
-#else
-#include "base/mac/mac_util.h"
 #endif
 
 namespace gpu {
@@ -1225,10 +1223,8 @@ void FeatureInfo::InitializeFeatures() {
 
 #if BUILDFLAG(IS_MAC)
   feature_flags_.gpu_memory_buffer_formats.Put(gfx::BufferFormat::RGBA_F16);
-  if (base::mac::MacOSMajorVersion() >= 11) {
-    feature_flags_.gpu_memory_buffer_formats.Put(
-        gfx::BufferFormat::YUVA_420_TRIPLANAR);
-  }
+  feature_flags_.gpu_memory_buffer_formats.Put(
+      gfx::BufferFormat::YUVA_420_TRIPLANAR);
 #endif  // BUILDFLAG(IS_MAC)
 
   // TODO(gman): Add support for these extensions.
