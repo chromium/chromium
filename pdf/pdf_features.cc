@@ -89,8 +89,4 @@ bool IsOopifPdfEnabled() {
          base::FeatureList::IsEnabled(kPdfOopif);
 }
 
-bool IsPdfSearchifySaveEnabled() {
-  return base::FeatureList::IsEnabled(kPdfSearchifySave);
-}
-
 }  // namespace chrome_pdf::features

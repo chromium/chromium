@@ -1596,7 +1596,7 @@ void PdfViewWebPlugin::OnHasSearchifyText() {
   client_->PostMessage(base::Value::Dict().Set("type", "setHasSearchifyText"));
 
   pdf_accessibility_data_handler_->OnHasSearchifyText();
-  if (chrome_pdf::features::IsPdfSearchifySaveEnabled()) {
+  if (base::FeatureList::IsEnabled(chrome_pdf::features::kPdfSearchifySave)) {
     SetPluginCanSave(true);
   }
 }
@@ -1901,7 +1901,8 @@ void PdfViewWebPlugin::HandleSaveMessage(const base::Value::Dict& message) {
       return;
     case SaveRequestType::kSearchified:
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
-      CHECK(chrome_pdf::features::IsPdfSearchifySaveEnabled());
+      CHECK(base::FeatureList::IsEnabled(
+          chrome_pdf::features::kPdfSearchifySave));
       // TODO(crbug.com/382610226): If engine has searchified text, ensure all
       // pages are searchified and then save.
       SaveToBuffer(request_type, token);

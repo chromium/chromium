@@ -43,9 +43,6 @@ void SetIsOopifPdfPolicyEnabled(bool is_oopif_pdf_policy_enabled);
 // PDF viewer should be used.
 bool IsOopifPdfEnabled();
 
-// Returns whether PDF Searchify Save features is enabled.
-bool IsPdfSearchifySaveEnabled();
-
 }  // namespace chrome_pdf::features
 
 #endif  // PDF_PDF_FEATURES_H_
