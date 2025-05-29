@@ -46,7 +46,7 @@
 using bookmarks::BookmarkModel;
 using bookmarks::BookmarkNode;
 
-namespace chrome {
+namespace bookmarks {
 
 size_t kNumBookmarkUrlsBeforePrompting = 15;
 
@@ -64,6 +64,9 @@ void BookmarkNavigationWrapper::SetInstanceForTesting(
     BookmarkNavigationWrapper* instance) {
   g_nav_wrapper_test_instance = instance;
 }
+}  // namespace bookmarks
+
+namespace chrome {
 
 namespace {
 
@@ -157,7 +160,7 @@ OpenedWebContentsSet OpenAllHelper(
   // browser depending on the URL type and `initial_disposition`.
   Browser* regular_browser = nullptr;
   Browser* incognito_browser = nullptr;
-  BookmarkNavigationWrapper nav_wrapper;
+  bookmarks::BookmarkNavigationWrapper nav_wrapper;
   Profile* profile = nullptr;
   if (browser) {
     profile = browser->profile();
@@ -335,7 +338,7 @@ void OpenAllIfAllowed(
 
   // Skip the prompt if there are few bookmarks.
   size_t child_count = url_and_ids.size();
-  if (child_count < kNumBookmarkUrlsBeforePrompting) {
+  if (child_count < bookmarks::kNumBookmarkUrlsBeforePrompting) {
     do_open(
         browser, std::move(url_and_ids), initial_disposition,
         context == bookmarks::OpenAllBookmarksContext::kInGroup

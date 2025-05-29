@@ -92,7 +92,7 @@ class BookmarkContextMenuTest : public testing::Test,
       AddAccountTestData();
     }
 
-    chrome::BookmarkNavigationWrapper::SetInstanceForTesting(&wrapper_);
+    bookmarks::BookmarkNavigationWrapper::SetInstanceForTesting(&wrapper_);
 
     // CutCopyPasteNode executes IDC_COPY and IDC_CUT commands.
     ui::TestClipboard::CreateForCurrentThread();

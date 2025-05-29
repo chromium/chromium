@@ -33,9 +33,7 @@ enum OpenAllBookmarksContext {
   kInSplit = 2,  // Open all bookmarks in a split tab.
   kMaxValue = kInSplit,
 };
-}  // namespace bookmarks
 
-namespace chrome {
 // Wraps bookmark navigations to support view testing.
 class BookmarkNavigationWrapper {
  public:
@@ -49,15 +47,18 @@ class BookmarkNavigationWrapper {
   static void SetInstanceForTesting(BookmarkNavigationWrapper* instance);
 };
 
-using TabGroupData =
-    std::pair<std::optional<tab_groups::TabGroupId>, std::u16string>;
-
 // Number of bookmarks we'll open before prompting the user to see if they
 // really want to open all.
 //
 // NOTE: treat this as a const. It is not const so unit tests can change the
 // value.
 extern size_t kNumBookmarkUrlsBeforePrompting;
+}  // namespace bookmarks
+
+namespace chrome {
+
+using TabGroupData =
+    std::pair<std::optional<tab_groups::TabGroupId>, std::u16string>;
 
 // Tries to open all bookmarks in `nodes`. If there are many, prompts
 // the user first. Returns immediately, opening the bookmarks

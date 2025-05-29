@@ -83,7 +83,7 @@ class BookmarkContextMenuControllerTest : public testing::Test {
     WaitForBookmarkMergedSurfaceServiceToLoad(
         BookmarkMergedSurfaceServiceFactory::GetForProfile(profile_.get()));
 
-    chrome::BookmarkNavigationWrapper::SetInstanceForTesting(&wrapper_);
+    bookmarks::BookmarkNavigationWrapper::SetInstanceForTesting(&wrapper_);
 
     // CutCopyPasteNode executes IDC_CUT and IDC_COPY commands.
     ui::TestClipboard::CreateForCurrentThread();
