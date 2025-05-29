@@ -2060,4 +2060,84 @@ TEST_F(MainThreadEventQueueTest, InputEventsDispatchedNotified) {
             handled_tasks_.at(2)->taskAsEvent()->Event().GetType());
 }
 
+TEST_F(MainThreadEventQueueTest, FirstBlockingTouchMoveNotThrottled) {
+  // Advance `frame_time_` so that when we process the event we aren't
+  // throttled.
+  frame_time_ += base::Milliseconds(200);
+  SyntheticWebTouchEvent touch_move;
+  touch_move.PressPoint(10, 10);
+  touch_move.MovePoint(0, 20, 20);
+  touch_move.moved_beyond_slop_region = true;
+  touch_move.dispatch_type = WebInputEvent::DispatchType::kEventNonBlocking;
+  // Post one rAF-aligned event.
+  HandleEvent(touch_move, blink::mojom::InputEventResultState::kNotConsumed);
+
+  // There should be two events, one is the `kTouchMove`, one is
+  // `kPointerRawUpdate`.
+  EXPECT_EQ(1u, event_queue().size());
+  // A main frame should be needed to dispatch the rAF-aligned event.
+  EXPECT_TRUE(needs_main_frame_);
+  EXPECT_FALSE(raf_aligned_events_dispatched_);
+
+  // Run pending tasks with a simulated rAF.
+  RunSimulatedRafOnce();
+  // Now, clients should be notified of rAF-aligned events dispatch.
+  EXPECT_TRUE(raf_aligned_events_dispatched_);
+  // No main frame should be needed anymore..
+  EXPECT_FALSE(needs_main_frame_);
+
+  // The rAF-alinged event should be handled out of the queue now.
+  EXPECT_EQ(0u, event_queue().size());
+  EXPECT_EQ(1u, handled_tasks_.size());
+  EXPECT_EQ(touch_move.GetType(),
+            handled_tasks_.at(0)->taskAsEvent()->Event().GetType());
+
+  // Reset test state:
+  raf_aligned_events_dispatched_ = false;
+
+  // Simulate a the first `kTouchMove` of another sequence, that is blocking,
+  // which arrives within the throttling time `kAsyncTouchMoveInterval`.
+  SyntheticWebTouchEvent touch_move_2;
+  touch_move_2.PressPoint(10, 10);
+  touch_move_2.MovePoint(0, 40, 40);
+  touch_move_2.moved_beyond_slop_region = true;
+  touch_move_2.touch_start_or_first_touch_move = true;
+  touch_move_2.dispatch_type = WebInputEvent::DispatchType::kBlocking;
+  HandleEvent(touch_move_2, blink::mojom::InputEventResultState::kNotConsumed);
+
+  // There should be two events, one is the `kTouchMove`, one is
+  // `kPointerRawUpdate`.
+  EXPECT_EQ(1u, event_queue().size());
+  // A main frame should be needed to dispatch the rAF-aligned event.
+  EXPECT_TRUE(needs_main_frame_);
+  EXPECT_FALSE(raf_aligned_events_dispatched_);
+
+  // Simulate an additional `kTouchMove` which is non-blocking. This will be
+  // merged with the original in the queue. However we should preserve the
+  // original blocking state, to prevent incorrectly throttling.
+  SyntheticWebTouchEvent touch_move_3;
+  touch_move_3.PressPoint(10, 10);
+  touch_move_3.MovePoint(0, 80, 80);
+  touch_move_3.moved_beyond_slop_region = true;
+  touch_move_3.touch_start_or_first_touch_move = true;
+  touch_move_3.dispatch_type = WebInputEvent::DispatchType::kEventNonBlocking;
+  HandleEvent(touch_move_3, blink::mojom::InputEventResultState::kNotConsumed);
+
+  // There should be one, merged event.
+  EXPECT_EQ(1u, event_queue().size());
+
+  // The rAF is only advanced `kFrameInterval` 16ms vs the
+  // `kAsyncTouchMoveInterval` of 200ms.
+  RunSimulatedRafOnce();
+  // Now, clients should be notified of rAF-aligned events dispatch.
+  EXPECT_TRUE(raf_aligned_events_dispatched_);
+  // No main frame should be needed anymore..
+  EXPECT_FALSE(needs_main_frame_);
+  // The rAF-alinged event should be handled out of the queue now.
+  EXPECT_EQ(0u, event_queue().size());
+  EXPECT_EQ(2u, handled_tasks_.size());
+  EXPECT_EQ(touch_move.GetType(),
+            handled_tasks_.at(1)->taskAsEvent()->Event().GetType());
+}
+
 }  // namespace blink
