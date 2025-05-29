@@ -4373,6 +4373,17 @@
       "--disable-features=CSSContainerStyleQueriesRange"
     ],
     "expires": "May 15, 2026"
+  },
+  {
+    "prefix": "disable-purpose-prefetch-header",
+    "owners": ["stevenwei@microsoft.com"],
+    "platforms": ["Mac", "Win", "Linux"],
+    "bases": ["external/wpt/preload/prefetch-headers.https.html"],
+    "exclusive_tests": "ALL",
+    "args": [
+      "--enable-features=RemovePurposeHeaderForPrefetch"
+    ],
+    "expires": "Nov 27, 2025"
   }
 
 ]

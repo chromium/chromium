@@ -1,6 +1,4 @@
 This is a testharness.js-based test.
-[FAIL] Prefetch should not include proprietary headers (X-moz/Purpose)
-  assert_false: expected false got true
 [FAIL] Prefetch should respect CORS mode
   assert_equals: expected (undefined) undefined but got (string) "https://web-platform.test:8444"
 Harness: the test ran to completion.

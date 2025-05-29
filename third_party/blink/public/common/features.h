@@ -1545,6 +1545,10 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
     kReleaseResourceStrongReferencesOnMemoryPressure);
 
+// If enabled, prefetches and prerenders will not include a Purpose: prefetch
+// header.
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kRemovePurposeHeaderForPrefetch);
+
 // Makes preloaded fonts render-blocking up to the limits below.
 // See https://crbug.com/1412861
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kRenderBlockingFonts);

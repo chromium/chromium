@@ -1775,8 +1775,11 @@ void PrefetchContainer::MakeResourceRequest(
 
   request->headers.MergeFrom(additional_headers_);
   request->headers.MergeFrom(additional_headers);
-  request->headers.SetHeader(blink::kPurposeHeaderName,
-                             blink::kSecPurposePrefetchHeaderValue);
+  if (!base::FeatureList::IsEnabled(
+          blink::features::kRemovePurposeHeaderForPrefetch)) {
+    request->headers.SetHeader(blink::kPurposeHeaderName,
+                               blink::kSecPurposePrefetchHeaderValue);
+  }
   request->headers.SetHeader(blink::kSecPurposeHeaderName,
                              GetSecPurposeHeaderValue(url));
   request->headers.SetHeader("Upgrade-Insecure-Requests", "1");

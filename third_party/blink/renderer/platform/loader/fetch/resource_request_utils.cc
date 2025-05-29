@@ -174,7 +174,11 @@ void UpgradeResourceRequestForLoader(
 
   if (resource_type == ResourceType::kLinkPrefetch) {
     // Add the "Purpose: prefetch" header to requests for prefetch.
-    resource_request.SetPurposeHeader(kSecPurposePrefetchHeaderValue);
+    // Depreciating Purpose prefetch header, see crbug.com/420724819.
+    if (!base::FeatureList::IsEnabled(
+            blink::features::kRemovePurposeHeaderForPrefetch)) {
+      resource_request.SetPurposeHeader(kSecPurposePrefetchHeaderValue);
+    }
     if (base::FeatureList::IsEnabled(
             blink::features::kSecPurposePrefetchHeaderRelPrefetch)) {
       // Add the "Sec-Purpose: prefetch" header to requests for prefetch.
@@ -185,10 +189,14 @@ void UpgradeResourceRequestForLoader(
     // Add the "Sec-Purpose: prefetch;prerender" header to requests issued from
     // prerendered pages. Add "Purpose: prefetch" as well for compatibility
     // concerns (See https://github.com/WICG/nav-speculation/issues/133).
+    // Depreciating Purpose prefetch header, see crbug.com/420724819.
     resource_request.SetHttpHeaderField(
         http_names::kSecPurpose,
         AtomicString(kSecPurposePrefetchPrerenderHeaderValue));
-    resource_request.SetPurposeHeader(kSecPurposePrefetchHeaderValue);
+    if (!base::FeatureList::IsEnabled(
+            blink::features::kRemovePurposeHeaderForPrefetch)) {
+      resource_request.SetPurposeHeader(kSecPurposePrefetchHeaderValue);
+    }
   }
 
   context.AddAdditionalRequestHeaders(resource_request);

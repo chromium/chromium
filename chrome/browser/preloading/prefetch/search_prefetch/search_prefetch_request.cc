@@ -46,6 +46,7 @@
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/client_hints.h"
 #include "services/network/public/cpp/resource_request.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/loader/url_loader_throttle.h"
 #include "third_party/blink/public/common/navigation/preloading_headers.h"
 #include "third_party/blink/public/mojom/loader/resource_load_info.mojom-shared.h"
@@ -269,8 +270,11 @@ bool SearchPrefetchRequest::StartPrefetchRequest(Profile* profile) {
   resource_request->headers.SetHeader(
       net::HttpRequestHeaders::kUserAgent,
       GetUserAgentValue(resource_request->headers));
-  resource_request->headers.SetHeader(blink::kPurposeHeaderName,
-                                      blink::kSecPurposePrefetchHeaderValue);
+  if (!base::FeatureList::IsEnabled(
+          blink::features::kRemovePurposeHeaderForPrefetch)) {
+    resource_request->headers.SetHeader(blink::kPurposeHeaderName,
+                                        blink::kSecPurposePrefetchHeaderValue);
+  }
   resource_request->headers.SetHeader(blink::kSecPurposeHeaderName,
                                       blink::kSecPurposePrefetchHeaderValue);
   resource_request->headers.SetHeader(
