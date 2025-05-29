@@ -50,7 +50,7 @@ import org.chromium.chrome.browser.compositor.layouts.eventfilter.AreaMotionEven
 import org.chromium.chrome.browser.compositor.layouts.eventfilter.MotionEventHandler;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutView.StripLayoutViewOnClickHandler;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutView.StripLayoutViewOnKeyboardFocusHandler;
-import org.chromium.chrome.browser.compositor.overlays.strip.reorder.TabDragSource;
+import org.chromium.chrome.browser.compositor.overlays.strip.reorder.TabStripDragHandler;
 import org.chromium.chrome.browser.compositor.scene_layer.TabStripSceneLayer;
 import org.chromium.chrome.browser.data_sharing.DataSharingTabManager;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -254,7 +254,7 @@ public class StripLayoutHelperManager
     private final ObservableSupplierImpl<Integer> mStripVisibilityStateSupplier;
 
     // Drag-Drop
-    @Nullable private TabDragSource mTabDragSource;
+    @Nullable private TabStripDragHandler mTabStripDragHandler;
 
     private class TabStripEventHandler implements MotionEventHandler {
         @Override
@@ -402,9 +402,9 @@ public class StripLayoutHelperManager
      *     lifecycle events.
      * @param multiInstanceManager The {@link MultiInstanceManager} used to move tabs to other
      *     windows.
-     * @param dragDropDelegate DragAndDropDelegate passed to TabDragSource to initiate tab drag and
-     *     drop.
-     * @param toolbarContainerView View passed to TabDragSource for drag and drop.
+     * @param dragDropDelegate DragAndDropDelegate passed to {@link TabStripDragHandler} to initiate
+     *     tab drag and drop.
+     * @param toolbarContainerView View passed to {@link TabStripDragHandler} for drag and drop.
      * @param tabHoverCardViewStub The ViewStub representing the strip tab hover card.
      * @param tabContentManagerSupplier Supplier of the TabContentManager instance.
      * @param browserControlsStateProvider BrowserControlsStateProvider for drag drop.
@@ -489,8 +489,8 @@ public class StripLayoutHelperManager
         mTabHoverCardViewStub = tabHoverCardViewStub;
 
         if (MultiWindowUtils.isMultiInstanceApi31Enabled()) {
-            mTabDragSource =
-                    new TabDragSource(
+            mTabStripDragHandler =
+                    new TabStripDragHandler(
                             context,
                             this::getActiveStripLayoutHelper,
                             () -> getStripVisibilityState() == StripVisibilityState.VISIBLE,
@@ -499,9 +499,9 @@ public class StripLayoutHelperManager
                             multiInstanceManager,
                             dragDropDelegate,
                             browserControlsStateProvider,
-                            windowAndroid,
+                            () -> windowAndroid.getActivity().get(),
                             toolbarManager.getTabStripHeightSupplier(),
-                            desktopWindowStateManager);
+                            this::isAppInDesktopWindow);
         }
 
         mToolbarManager = toolbarManager;
@@ -515,7 +515,7 @@ public class StripLayoutHelperManager
                         renderHost,
                         false,
                         mModelSelectorButton,
-                        mTabDragSource,
+                        mTabStripDragHandler,
                         toolbarContainerView,
                         windowAndroid,
                         actionConfirmationManager,
@@ -533,7 +533,7 @@ public class StripLayoutHelperManager
                         renderHost,
                         true,
                         mModelSelectorButton,
-                        mTabDragSource,
+                        mTabStripDragHandler,
                         toolbarContainerView,
                         windowAndroid,
                         actionConfirmationManager,
@@ -572,9 +572,13 @@ public class StripLayoutHelperManager
         } else {
             mIsTopResumedActivity = AppHeaderUtils.isActivityFocusedAtStartup(lifecycleDispatcher);
         }
-        if (AppHeaderUtils.isAppInDesktopWindow(mDesktopWindowStateManager)) {
+        if (isAppInDesktopWindow()) {
             onAppHeaderStateChanged(mDesktopWindowStateManager.getAppHeaderState());
         }
+    }
+
+    private boolean isAppInDesktopWindow() {
+        return AppHeaderUtils.isAppInDesktopWindow(mDesktopWindowStateManager);
     }
 
     private void setTabModelStartupInfo(TabModelStartupInfo startupInfo) {
@@ -697,9 +701,9 @@ public class StripLayoutHelperManager
             mTabModelSelectorTabModelObserver.destroy();
             mTabModelSelectorTabObserver.destroy();
         }
-        if (mTabDragSource != null) {
-            mTabDragSource.destroy();
-            mTabDragSource = null;
+        if (mTabStripDragHandler != null) {
+            mTabStripDragHandler.destroy();
+            mTabStripDragHandler = null;
         }
         if (mDesktopWindowStateManager != null) {
             mDesktopWindowStateManager.removeObserver(this);
@@ -1190,7 +1194,7 @@ public class StripLayoutHelperManager
 
     /** Returns drag listener for tab strip. */
     public OnDragListener getDragListener() {
-        return mTabDragSource;
+        return mTabStripDragHandler;
     }
 
     void setModelSelectorButtonVisibleForTesting(boolean isVisible) {
@@ -1432,8 +1436,8 @@ public class StripLayoutHelperManager
                 };
 
         mTabModelSelector.getCurrentTabModelSupplier().addObserver(mCurrentTabModelObserver);
-        if (mTabDragSource != null) {
-            mTabDragSource.setTabModelSelector(mTabModelSelector);
+        if (mTabStripDragHandler != null) {
+            mTabStripDragHandler.setTabModelSelector(mTabModelSelector);
         }
     }
 
@@ -1478,10 +1482,7 @@ public class StripLayoutHelperManager
 
     public @ColorInt int getBackgroundColor() {
         return TabUiThemeUtil.getTabStripBackgroundColor(
-                mContext,
-                mIsIncognito,
-                AppHeaderUtils.isAppInDesktopWindow(mDesktopWindowStateManager),
-                mIsTopResumedActivity);
+                mContext, mIsIncognito, isAppInDesktopWindow(), mIsTopResumedActivity);
     }
 
     @Override
@@ -1517,7 +1518,7 @@ public class StripLayoutHelperManager
         updateModelSwitcherButton();
 
         // If we are in DW mode, notify DW state provider since the model changed.
-        if (AppHeaderUtils.isAppInDesktopWindow(mDesktopWindowStateManager)) {
+        if (isAppInDesktopWindow()) {
             mDesktopWindowStateManager.updateForegroundColor(getBackgroundColor());
         }
 
@@ -1602,8 +1603,8 @@ public class StripLayoutHelperManager
         return mTabHoverCardViewStub;
     }
 
-    public TabDragSource getTabDragSourceForTesting() {
-        return mTabDragSource;
+    public TabStripDragHandler getTabStripDragHandlerForTesting() {
+        return mTabStripDragHandler;
     }
 
     public void setIsIncognitoForTesting(boolean isIncognito) {

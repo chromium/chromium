@@ -43,7 +43,7 @@ public class SourceViewDragDropReorderStrategyTest extends ReorderStrategyTestBa
     private static final float DELTA_X = 5f; // Arbitrary value.
 
     // Dependencies
-    @Mock private TabDragSource mTabDragSource;
+    @Mock private TabStripDragHandler mTabStripDragHandler;
     @Mock protected ReorderStrategy mTabStrategy;
     @Mock protected ReorderStrategy mGroupStrategy;
 
@@ -71,7 +71,7 @@ public class SourceViewDragDropReorderStrategyTest extends ReorderStrategyTestBa
                         mGroupIdToHideSupplier,
                         mTabWidthSupplier,
                         mLastReorderScrollTimeSupplier,
-                        mTabDragSource,
+                        mTabStripDragHandler,
                         mActionConfirmationManager,
                         mTabStrategy,
                         mGroupStrategy);
@@ -91,7 +91,7 @@ public class SourceViewDragDropReorderStrategyTest extends ReorderStrategyTestBa
     @Test
     public void testStartReorder_tabDragStarted() {
         setupForTabDrag();
-        when(mTabDragSource.startTabDragAction(
+        when(mTabStripDragHandler.startTabDragAction(
                         Mockito.eq(mContainerView),
                         eq(mTabForInteractingView),
                         eq(DRAG_START_POINT),
@@ -107,7 +107,7 @@ public class SourceViewDragDropReorderStrategyTest extends ReorderStrategyTestBa
         assertNotNull("Dragged view should not be null", mStrategy.getViewBeingDraggedForTesting());
 
         // Verify
-        verify(mTabDragSource)
+        verify(mTabStripDragHandler)
                 .startTabDragAction(
                         Mockito.eq(mContainerView),
                         eq(mTabForInteractingView),
@@ -119,7 +119,7 @@ public class SourceViewDragDropReorderStrategyTest extends ReorderStrategyTestBa
     @Test
     public void testStartReorder_tabDragFailed_fallback() {
         setupForTabDrag();
-        when(mTabDragSource.startTabDragAction(
+        when(mTabStripDragHandler.startTabDragAction(
                         Mockito.eq(mContainerView),
                         eq(mTabForInteractingView),
                         eq(DRAG_START_POINT),
@@ -152,7 +152,7 @@ public class SourceViewDragDropReorderStrategyTest extends ReorderStrategyTestBa
                 mStripViews, mStripTabs, mGroupTitles, mInteractingGroupTitle, DRAG_START_POINT);
 
         // Verify
-        verify(mTabDragSource)
+        verify(mTabStripDragHandler)
                 .startGroupDragAction(
                         mContainerView,
                         GROUP_ID1,
@@ -450,7 +450,7 @@ public class SourceViewDragDropReorderStrategyTest extends ReorderStrategyTestBa
     }
 
     private void startTabReorder() {
-        when(mTabDragSource.startTabDragAction(
+        when(mTabStripDragHandler.startTabDragAction(
                         Mockito.eq(mContainerView),
                         eq(mTabForInteractingView),
                         eq(DRAG_START_POINT),
@@ -462,7 +462,7 @@ public class SourceViewDragDropReorderStrategyTest extends ReorderStrategyTestBa
     }
 
     private void startGroupReorder() {
-        when(mTabDragSource.startGroupDragAction(
+        when(mTabStripDragHandler.startGroupDragAction(
                         Mockito.eq(mContainerView),
                         eq(GROUP_ID1),
                         anyBoolean(),

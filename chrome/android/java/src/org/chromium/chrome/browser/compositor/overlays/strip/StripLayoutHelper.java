@@ -77,7 +77,7 @@ import org.chromium.chrome.browser.compositor.overlays.strip.TabStripIphControll
 import org.chromium.chrome.browser.compositor.overlays.strip.reorder.ReorderDelegate;
 import org.chromium.chrome.browser.compositor.overlays.strip.reorder.ReorderDelegate.ReorderType;
 import org.chromium.chrome.browser.compositor.overlays.strip.reorder.ReorderDelegate.StripUpdateDelegate;
-import org.chromium.chrome.browser.compositor.overlays.strip.reorder.TabDragSource;
+import org.chromium.chrome.browser.compositor.overlays.strip.reorder.TabStripDragHandler;
 import org.chromium.chrome.browser.data_sharing.DataSharingServiceFactory;
 import org.chromium.chrome.browser.data_sharing.DataSharingTabManager;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
@@ -501,7 +501,7 @@ public class StripLayoutHelper
 
     // Tab Drag and Drop state to hold clicked tab being dragged.
     private final View mToolbarContainerView;
-    @Nullable private final TabDragSource mTabDragSource;
+    @Nullable private final TabStripDragHandler mTabStripDragHandler;
 
     // Tab hover state.
     private @Nullable StripLayoutTab mLastHoveredTab;
@@ -551,9 +551,10 @@ public class StripLayoutHelper
      * @param incognito Whether or not this tab strip is incognito.
      * @param modelSelectorButton The {@link CompositorButton} used to toggle between regular and
      *     incognito models.
-     * @param tabDragSource The @{@link TabDragSource} instance to initiate drag and drop.
-     * @param toolbarContainerView The @{link View} passed to @{link TabDragSource} for drag and
+     * @param tabStripDragHandler The @{@link TabStripDragHandler} instance to initiate drag and
      *     drop.
+     * @param toolbarContainerView The @{link View} passed to @{link TabStripDragHandler} for drag
+     *     and drop.
      * @param windowAndroid The @{@link WindowAndroid} instance to access Activity.
      * @param actionConfirmationManager The {@link ActionConfirmationManager} for group actions.
      * @param dataSharingTabManager The {@link DataSharingTabManager} for shared groups.
@@ -572,7 +573,7 @@ public class StripLayoutHelper
             LayoutRenderHost renderHost,
             boolean incognito,
             CompositorButton modelSelectorButton,
-            @Nullable TabDragSource tabDragSource,
+            @Nullable TabStripDragHandler tabStripDragHandler,
             @NonNull View toolbarContainerView,
             @NonNull WindowAndroid windowAndroid,
             ActionConfirmationManager actionConfirmationManager,
@@ -589,7 +590,7 @@ public class StripLayoutHelper
         mNewTabButtonWidth = NEW_TAB_BUTTON_BACKGROUND_WIDTH_DP;
         mModelSelectorButton = modelSelectorButton;
         mToolbarContainerView = toolbarContainerView;
-        mTabDragSource = tabDragSource;
+        mTabStripDragHandler = tabStripDragHandler;
         mWindowAndroid = windowAndroid;
         mLastHoverCardExitTime = INVALID_TIME;
         mTabStripVisibleSupplier = tabStripVisibleSupplier;
@@ -1124,7 +1125,7 @@ public class StripLayoutHelper
                 /* stripUpdateDelegate= */ this,
                 mTabGroupModelFilter,
                 mScrollDelegate,
-                mTabDragSource,
+                mTabStripDragHandler,
                 mActionConfirmationManager,
                 mCachedTabWidthSupplier,
                 mGroupIdToHideSupplier,
@@ -4869,7 +4870,7 @@ public class StripLayoutHelper
     }
 
     private boolean isViewDraggingInProgress() {
-        return mTabDragSource != null && mTabDragSource.isViewDraggingInProgress();
+        return mTabStripDragHandler != null && mTabStripDragHandler.isViewDraggingInProgress();
     }
 
     private void onWillCloseView(StripLayoutView view) {

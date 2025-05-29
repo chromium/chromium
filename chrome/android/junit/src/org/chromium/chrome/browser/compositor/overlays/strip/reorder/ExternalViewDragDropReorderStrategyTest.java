@@ -33,6 +33,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.TabGroupMetadata;
+import org.chromium.chrome.browser.tasks.tab_management.TabDragHandlerBase;
 import org.chromium.ui.dragdrop.DragDropGlobalState;
 import org.chromium.ui.dragdrop.DragDropGlobalState.TrackerToken;
 
@@ -522,6 +523,6 @@ public class ExternalViewDragDropReorderStrategyTest extends ReorderStrategyTest
         TrackerToken dragTrackerToken =
                 DragDropGlobalState.store(
                         /* dragSourceInstanceId= */ 1, dropData, /* dragShadowBuilder= */ null);
-        TabDragSource.setDragTrackerTokenForTesting(dragTrackerToken);
+        TabDragHandlerBase.setDragTrackerTokenForTesting(dragTrackerToken);
     }
 }

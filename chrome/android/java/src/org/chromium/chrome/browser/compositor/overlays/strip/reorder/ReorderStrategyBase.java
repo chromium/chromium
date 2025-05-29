@@ -225,7 +225,7 @@ abstract class ReorderStrategyBase implements ReorderStrategy {
         // Update group title bottom indicator width if needed.
         boolean isExpandedGroup = groupTitle != null && !groupTitle.isCollapsed();
         boolean shouldAnimateBottomIndicator =
-                !shouldHaveTrailingMargin || TabDragSource.canMergeIntoGroupOnDrop();
+                !shouldHaveTrailingMargin || TabStripDragHandler.canMergeIntoGroupOnDrop();
         if (isExpandedGroup && shouldAnimateBottomIndicator) {
             float startWidth = groupTitle.getBottomIndicatorWidth();
             float endWidth =

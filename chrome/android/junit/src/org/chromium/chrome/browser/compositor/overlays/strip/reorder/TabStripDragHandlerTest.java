@@ -1,4 +1,4 @@
-// Copyright 2023 The Chromium Authors
+// Copyright 2025 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -63,6 +63,7 @@ import org.chromium.base.Token;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.UserActionTester;
@@ -71,7 +72,7 @@ import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider
 import org.chromium.chrome.browser.compositor.LayerTitleCache;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutHelper;
 import org.chromium.chrome.browser.compositor.overlays.strip.TestTabModel;
-import org.chromium.chrome.browser.compositor.overlays.strip.reorder.TabDragSource.TabDragShadowBuilder;
+import org.chromium.chrome.browser.compositor.overlays.strip.reorder.TabStripDragHandler.TabDragShadowBuilder;
 import org.chromium.chrome.browser.dragdrop.ChromeDropDataAndroid;
 import org.chromium.chrome.browser.dragdrop.ChromeTabDropDataAndroid;
 import org.chromium.chrome.browser.dragdrop.ChromeTabGroupDropDataAndroid;
@@ -108,10 +109,10 @@ import org.chromium.url.GURL;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 
-/** Tests for {@link TabDragSource}. */
+/** Tests for {@link TabStripDragHandler}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(qualifiers = "sw600dp", sdk = VERSION_CODES.S, shadows = ShadowToast.class)
-public class TabDragSourceTest {
+public class TabStripDragHandlerTest {
 
     private static final int CURR_INSTANCE_ID = 100;
     private static final int ANOTHER_INSTANCE_ID = 200;
@@ -150,8 +151,8 @@ public class TabDragSourceTest {
     @Mock private TabGroupModelFilter mTabGroupModelFilter;
     @Mock private TabGroupModelFilterProvider mTabGroupModelFilterProvider;
     @Mock private ObservableSupplierImpl<TabGroupModelFilter> mTabGroupModelFilterSupplier;
-    private TabDragSource mSourceInstance;
-    private TabDragSource mDestInstance;
+    private TabStripDragHandler mSourceInstance;
+    private TabStripDragHandler mDestInstance;
 
     private Activity mActivity;
     private ViewGroup mTabsToolbarView;
@@ -219,8 +220,13 @@ public class TabDragSourceTest {
                 .thenReturn(mTabGroupModelFilterSupplier);
         when(mTabGroupModelFilterSupplier.get()).thenReturn(mTabGroupModelFilter);
 
+        Supplier<Boolean> isAppInDesktopWindow =
+                () -> AppHeaderUtils.isAppInDesktopWindow(mDesktopWindowStateManager);
+
+        Supplier<Activity> activitySupplier = () -> mWindowAndroid.getActivity().get();
+
         mSourceInstance =
-                new TabDragSource(
+                new TabStripDragHandler(
                         mActivity,
                         () -> mSourceStripLayoutHelper,
                         () -> mTabStripVisible,
@@ -229,13 +235,13 @@ public class TabDragSourceTest {
                         mSourceMultiInstanceManager,
                         mDragDropDelegate,
                         mBrowserControlsStateProvider,
-                        mWindowAndroid,
+                        activitySupplier,
                         mTabStripHeightSupplier,
-                        mDesktopWindowStateManager);
+                        isAppInDesktopWindow);
         mSourceInstance.setTabModelSelector(mTabModelSelector);
 
         mDestInstance =
-                new TabDragSource(
+                new TabStripDragHandler(
                         mActivity,
                         () -> mDestStripLayoutHelper,
                         () -> mTabStripVisible,
@@ -244,9 +250,9 @@ public class TabDragSourceTest {
                         mDestMultiInstanceManager,
                         mDragDropDelegate,
                         mBrowserControlsStateProvider,
-                        mWindowAndroid,
+                        activitySupplier,
                         mTabStripHeightSupplier,
-                        mDesktopWindowStateManager);
+                        isAppInDesktopWindow);
         mDestInstance.setTabModelSelector(mTabModelSelector);
 
         when(mSourceMultiInstanceManager.closeChromeWindowIfEmpty(anyInt())).thenReturn(false);
@@ -1469,7 +1475,7 @@ public class TabDragSourceTest {
             verifyShadowVisibility(false);
         }
 
-        public DragEventInvoker dragLocationY(TabDragSource instance, float distance) {
+        public DragEventInvoker dragLocationY(TabStripDragHandler instance, float distance) {
             mPosY += distance;
             instance.onDrag(
                     mTabsToolbarView,
@@ -1477,7 +1483,7 @@ public class TabDragSourceTest {
             return this;
         }
 
-        public DragEventInvoker dragExit(TabDragSource instance) {
+        public DragEventInvoker dragExit(TabStripDragHandler instance) {
             instance.onDrag(
                     mTabsToolbarView,
                     mockDragEvent(
@@ -1485,7 +1491,7 @@ public class TabDragSourceTest {
             return this;
         }
 
-        public DragEventInvoker dragEnter(TabDragSource instance) {
+        public DragEventInvoker dragEnter(TabStripDragHandler instance) {
             mPosY = mTabStripHeight - 2 * DRAG_MOVE_DISTANCE;
             instance.onDrag(
                     mTabsToolbarView,
@@ -1498,7 +1504,7 @@ public class TabDragSourceTest {
             return this;
         }
 
-        public DragEventInvoker drop(TabDragSource instance) {
+        public DragEventInvoker drop(TabStripDragHandler instance) {
             instance.onDrag(
                     mTabsToolbarView,
                     mockDragEvent(DragEvent.ACTION_DROP, POS_X, mPosY, mIsGroupDrag));

@@ -38,7 +38,7 @@ import java.util.List;
  */
 class SourceViewDragDropReorderStrategy extends ReorderStrategyBase {
     // Drag helpers
-    private final TabDragSource mTabDragSource;
+    private final TabStripDragHandler mTabStripDragHandler;
     private final ActionConfirmationManager mActionConfirmationManager;
     private final ReorderSubStrategy mTabSubStrategy;
     private final ReorderSubStrategy mGroupSubStrategy;
@@ -64,7 +64,7 @@ class SourceViewDragDropReorderStrategy extends ReorderStrategyBase {
             ObservableSupplierImpl<Integer> groupIdToHideSupplier,
             Supplier<Float> tabWidthSupplier,
             Supplier<Long> lastReorderScrollTimeSupplier,
-            @NonNull TabDragSource tabDragSource,
+            @NonNull TabStripDragHandler tabStripDragHandler,
             @NonNull ActionConfirmationManager actionConfirmationManager,
             ReorderStrategy tabStrategy,
             ReorderStrategy groupStrategy) {
@@ -79,7 +79,7 @@ class SourceViewDragDropReorderStrategy extends ReorderStrategyBase {
                 groupIdToHideSupplier,
                 tabWidthSupplier,
                 lastReorderScrollTimeSupplier);
-        mTabDragSource = tabDragSource;
+        mTabStripDragHandler = tabStripDragHandler;
         mActionConfirmationManager = actionConfirmationManager;
         mTabSubStrategy = new TabReorderSubStrategy(tabStrategy);
         mGroupSubStrategy = new GroupReorderSubStrategy(groupStrategy);
@@ -257,7 +257,7 @@ class SourceViewDragDropReorderStrategy extends ReorderStrategyBase {
         }
 
         /**
-         * Attempts to start the view tearing action through {@link TabDragSource}.
+         * Attempts to start the view tearing action through {@link TabStripDragHandler}.
          *
          * @param stripTabs The list of {@link StripLayoutTab}.
          * @param startPoint The location on-screen that the gesture started at.
@@ -338,7 +338,7 @@ class SourceViewDragDropReorderStrategy extends ReorderStrategyBase {
         boolean startViewDragAction(StripLayoutTab[] stripTabs, PointF startPoint) {
             Tab tab = mModel.getTabById(((StripLayoutTab) mViewBeingDragged).getTabId());
             assert tab != null : "No matching Tab found.";
-            return mTabDragSource.startTabDragAction(
+            return mTabStripDragHandler.startTabDragAction(
                     mContainerView,
                     tab,
                     startPoint,
@@ -429,7 +429,7 @@ class SourceViewDragDropReorderStrategy extends ReorderStrategyBase {
                     StripLayoutUtils.getGroupedTabs(
                             mModel, stripTabs, draggedGroupTitle.getRootId()));
 
-            return mTabDragSource.startGroupDragAction(
+            return mTabStripDragHandler.startGroupDragAction(
                     mContainerView,
                     draggedGroupTitle.getTabGroupId(),
                     draggedGroupTitle.isGroupShared(),
