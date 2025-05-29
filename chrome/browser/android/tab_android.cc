@@ -587,10 +587,12 @@ content::WebContents* TabAndroid::GetContents() const {
   return web_contents_.get();
 }
 
+// TODO(crbug.com/409366905): Finish TabInterface implementation.
 void TabAndroid::Close() {
   NOTIMPLEMENTED();
 }
 
+// TODO(crbug.com/409366905): Finish TabInterface implementation.
 base::CallbackListSubscription TabAndroid::RegisterWillDiscardContents(
     WillDiscardContentsCallback callback) {
   NOTIMPLEMENTED();
@@ -602,12 +604,14 @@ bool TabAndroid::IsActivated() const {
   return Java_TabImpl_isActivated(env, weak_java_tab_.get(env));
 }
 
+// TODO(crbug.com/409366905): Finish TabInterface implementation.
 base::CallbackListSubscription TabAndroid::RegisterDidActivate(
     DidActivateCallback callback) {
   NOTIMPLEMENTED();
   return base::CallbackListSubscription();
 }
 
+// TODO(crbug.com/409366905): Finish TabInterface implementation.
 base::CallbackListSubscription TabAndroid::RegisterWillDeactivate(
     WillDeactivateCallback callback) {
   NOTIMPLEMENTED();
@@ -618,52 +622,61 @@ bool TabAndroid::IsVisible() const {
   return !IsHidden();
 }
 
+// TODO(crbug.com/409366905): Finish TabInterface implementation.
 base::CallbackListSubscription TabAndroid::RegisterDidBecomeVisible(
     DidBecomeVisibleCallback callback) {
   NOTIMPLEMENTED();
   return base::CallbackListSubscription();
 }
 
+// TODO(crbug.com/409366905): Finish TabInterface implementation.
 base::CallbackListSubscription TabAndroid::RegisterWillBecomeHidden(
     WillBecomeHiddenCallback callback) {
   NOTIMPLEMENTED();
   return base::CallbackListSubscription();
 }
 
+// TODO(crbug.com/409366905): Finish TabInterface implementation.
 base::CallbackListSubscription TabAndroid::RegisterWillDetach(
     WillDetach callback) {
   NOTIMPLEMENTED();
   return base::CallbackListSubscription();
 }
 
+// TODO(crbug.com/409366905): Finish TabInterface implementation.
 base::CallbackListSubscription TabAndroid::RegisterDidInsert(
     DidInsertCallback callback) {
   NOTIMPLEMENTED();
   return base::CallbackListSubscription();
 }
 
+// TODO(crbug.com/409366905): Finish TabInterface implementation.
 base::CallbackListSubscription TabAndroid::RegisterPinnedStateChanged(
     PinnedStateChangedCallback callback) {
   NOTIMPLEMENTED();
   return base::CallbackListSubscription();
 }
 
+// TODO(crbug.com/409366905): Finish TabInterface implementation.
 base::CallbackListSubscription TabAndroid::RegisterGroupChanged(
     GroupChangedCallback callback) {
   NOTIMPLEMENTED();
   return base::CallbackListSubscription();
 }
 
+// TODO(crbug.com/409366905): Finish TabInterface implementation.
 bool TabAndroid::CanShowModalUI() const {
   NOTIMPLEMENTED();
   return false;
 }
 
+// TODO(crbug.com/409366905): Finish TabInterface implementation.
 std::unique_ptr<tabs::ScopedTabModalUI> TabAndroid::ShowModalUI() {
   NOTIMPLEMENTED();
   return nullptr;
 }
 
+// TODO(crbug.com/409366905): Finish TabInterface implementation.
 base::CallbackListSubscription TabAndroid::RegisterModalUIChanged(
     TabInterfaceCallback callback) {
   NOTIMPLEMENTED();
@@ -682,11 +695,13 @@ const tabs::TabFeatures* TabAndroid::GetTabFeatures() const {
   return tab_features_.get();
 }
 
+// TODO(crbug.com/420700781): Implement this once pinned tabs is further along.
 bool TabAndroid::IsPinned() const {
   NOTIMPLEMENTED();
   return false;
 }
 
+// Split tabs is currently desktop only.
 bool TabAndroid::IsSplit() const {
   NOTIMPLEMENTED();
   return false;
@@ -703,33 +718,30 @@ std::optional<tab_groups::TabGroupId> TabAndroid::GetGroup() const {
       base::android::TokenAndroid::FromJavaToken(env, j_token));
 }
 
+// Split tabs is currently desktop only.
 std::optional<split_tabs::SplitTabId> TabAndroid::GetSplit() const {
   NOTIMPLEMENTED();
   return std::nullopt;
 }
 
-// TODO(crbug.com/409366905): Finish implementing TabInterface.
 tabs::TabCollection* TabAndroid::GetParentCollection(
     base::PassKey<tabs::TabCollection>) const {
-  NOTIMPLEMENTED();
-  return nullptr;
+  return parent_collection_;
 }
 
-// TODO(crbug.com/409366905): Finish implementing TabInterface.
 const tabs::TabCollection* TabAndroid::GetParentCollection() const {
-  NOTIMPLEMENTED();
-  return nullptr;
+  return parent_collection_;
 }
 
-// TODO(crbug.com/409366905): Finish implementing TabInterface.
 void TabAndroid::OnReparented(tabs::TabCollection* parent,
-                              base::PassKey<tabs::TabCollection>) {
-  NOTIMPLEMENTED();
+                              base::PassKey<tabs::TabCollection> pass_key) {
+  parent_collection_ = parent;
+  OnAncestorChanged(pass_key);
 }
 
-// TODO(crbug.com/409366905): Finish implementing TabInterface.
 void TabAndroid::OnAncestorChanged(base::PassKey<tabs::TabCollection>) {
-  NOTIMPLEMENTED();
+  // TODO(crbug.com/409366905): implement something like
+  // TabModel::UpdateProperties.
 }
 
 TabAndroid::TabAndroid(Profile* profile, int tab_id)
