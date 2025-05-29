@@ -25,7 +25,6 @@ data/accessibility/accname/desc-from-content-of-describedby-element-expected-and
 data/accessibility/accname/desc-from-content-of-describedby-element-expected-android.txt
 data/accessibility/accname/desc-from-content-of-describedby-element-expected-auralinux.txt
 data/accessibility/accname/desc-from-content-of-describedby-element-expected-blink.txt
-data/accessibility/accname/desc-from-content-of-describedby-element-expected-mac-before-11.txt
 data/accessibility/accname/desc-from-content-of-describedby-element-expected-mac.txt
 data/accessibility/accname/desc-from-content-of-describedby-element-expected-win.txt
 data/accessibility/accname/desc-from-content-of-describedby-element-recursive-expected-blink.txt
@@ -664,7 +663,6 @@ data/accessibility/aria/aria-describedby-expected-android-external.txt
 data/accessibility/aria/aria-describedby-expected-android.txt
 data/accessibility/aria/aria-describedby-expected-auralinux.txt
 data/accessibility/aria/aria-describedby-expected-blink.txt
-data/accessibility/aria/aria-describedby-expected-mac-before-11.txt
 data/accessibility/aria/aria-describedby-expected-mac.txt
 data/accessibility/aria/aria-describedby-expected-uia-win.txt
 data/accessibility/aria/aria-describedby-expected-win.txt
@@ -1750,7 +1748,6 @@ data/accessibility/aria/aria-tooltip-expected-android-external.txt
 data/accessibility/aria/aria-tooltip-expected-android.txt
 data/accessibility/aria/aria-tooltip-expected-auralinux.txt
 data/accessibility/aria/aria-tooltip-expected-blink.txt
-data/accessibility/aria/aria-tooltip-expected-mac-before-11.txt
 data/accessibility/aria/aria-tooltip-expected-mac.txt
 data/accessibility/aria/aria-tooltip-expected-win.txt
 data/accessibility/aria/aria-tooltip.html
@@ -1889,7 +1886,6 @@ data/accessibility/aria/input-text-aria-placeholder-expected-android-assist-data
 data/accessibility/aria/input-text-aria-placeholder-expected-android-external.txt
 data/accessibility/aria/input-text-aria-placeholder-expected-android.txt
 data/accessibility/aria/input-text-aria-placeholder-expected-blink.txt
-data/accessibility/aria/input-text-aria-placeholder-expected-mac-before-11.txt
 data/accessibility/aria/input-text-aria-placeholder-expected-mac.txt
 data/accessibility/aria/input-text-aria-placeholder-expected-win.txt
 data/accessibility/aria/input-text-aria-placeholder.html
@@ -3304,7 +3300,6 @@ data/accessibility/html/button-name-calc-expected-android.txt
 data/accessibility/html/button-name-calc-expected-auralinux.txt
 data/accessibility/html/button-name-calc-expected-blink.txt
 data/accessibility/html/button-name-calc-expected-fuchsia.txt
-data/accessibility/html/button-name-calc-expected-mac-before-11.txt
 data/accessibility/html/button-name-calc-expected-mac.txt
 data/accessibility/html/button-name-calc-expected-uia-win.txt
 data/accessibility/html/button-name-calc-expected-win.txt
@@ -3347,7 +3342,6 @@ data/accessibility/html/canvas-fallback-expected-android.txt
 data/accessibility/html/canvas-fallback-expected-auralinux.txt
 data/accessibility/html/canvas-fallback-expected-blink.txt
 data/accessibility/html/canvas-fallback-expected-fuchsia.txt
-data/accessibility/html/canvas-fallback-expected-mac-before-11.txt
 data/accessibility/html/canvas-fallback-expected-mac.txt
 data/accessibility/html/canvas-fallback-expected-uia-win.txt
 data/accessibility/html/canvas-fallback-expected-win.txt
@@ -3384,7 +3378,6 @@ data/accessibility/html/checkbox-name-calc-expected-android.txt
 data/accessibility/html/checkbox-name-calc-expected-auralinux.txt
 data/accessibility/html/checkbox-name-calc-expected-blink.txt
 data/accessibility/html/checkbox-name-calc-expected-fuchsia.txt
-data/accessibility/html/checkbox-name-calc-expected-mac-before-11.txt
 data/accessibility/html/checkbox-name-calc-expected-mac.txt
 data/accessibility/html/checkbox-name-calc-expected-uia-win.txt
 data/accessibility/html/checkbox-name-calc-expected-win.txt
@@ -3542,7 +3535,6 @@ data/accessibility/html/contenteditable-with-no-descendants-expected-android.txt
 data/accessibility/html/contenteditable-with-no-descendants-expected-auralinux.txt
 data/accessibility/html/contenteditable-with-no-descendants-expected-blink.txt
 data/accessibility/html/contenteditable-with-no-descendants-expected-fuchsia.txt
-data/accessibility/html/contenteditable-with-no-descendants-expected-mac-before-11.txt
 data/accessibility/html/contenteditable-with-no-descendants-expected-mac.txt
 data/accessibility/html/contenteditable-with-no-descendants-expected-uia-win.txt
 data/accessibility/html/contenteditable-with-no-descendants-expected-win.txt
@@ -5930,7 +5922,6 @@ data/accessibility/mac/methods/accessibility-column-index-range-expected.txt
 data/accessibility/mac/methods/accessibility-column-index-range.html
 data/accessibility/mac/methods/accessibility-columns-expected.txt
 data/accessibility/mac/methods/accessibility-columns.html
-data/accessibility/mac/methods/accessibility-custom-content-expected-mac-before-11.txt
 data/accessibility/mac/methods/accessibility-custom-content-expected.txt
 data/accessibility/mac/methods/accessibility-custom-content.html
 data/accessibility/mac/methods/accessibility-disclosed-by-row-expected.txt

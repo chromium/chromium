@@ -184,26 +184,8 @@ DisplayMac BuildDisplayForScreen(NSScreen* screen) {
   display.set_is_monochrome(CGDisplayUsesForceToGray());
 
   // Query the display's refresh rate.
-  if (@available(macos 12.0, *)) {
-    // NSScreen.minimumRefreshInterval is available on macOS 12.0+
-    double refresh_rate = 1.0 / screen.minimumRefreshInterval;
-    display.set_display_frequency(refresh_rate);
-  } else {
-    // CVDisplayLink is available on macOS 10.4–15.0.
-    CVDisplayLinkRef display_link = nullptr;
-    if (CVDisplayLinkCreateWithCGDisplay(display_id, &display_link) ==
-        kCVReturnSuccess) {
-      DCHECK(display_link);
-      CVTime cv_time =
-          CVDisplayLinkGetNominalOutputVideoRefreshPeriod(display_link);
-      if (!(cv_time.flags & kCVTimeIsIndefinite)) {
-        double refresh_rate = (static_cast<double>(cv_time.timeScale) /
-                               static_cast<double>(cv_time.timeValue));
-        display.set_display_frequency(refresh_rate);
-      }
-      CVDisplayLinkRelease(display_link);
-    }
-  }
+  double refresh_rate = 1.0 / screen.minimumRefreshInterval;
+  display.set_display_frequency(refresh_rate);
 
   // CGDisplayRotation returns a double. Display::SetRotationAsDegree will
   // handle the unexpected situations were the angle is not a multiple of 90.
