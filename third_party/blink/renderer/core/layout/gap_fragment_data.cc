@@ -32,19 +32,6 @@ void GapGeometry::SetGapIntersections(
                                  : row_intersections_ = intersection_list;
 }
 
-void GapGeometry::MarkGapIntersectionBlocked(
-    GridTrackSizingDirection track_direction,
-    BlockedGapDirection blocked_direction,
-    wtf_size_t main_index,
-    wtf_size_t inner_index) {
-  auto& intersections = track_direction == kForColumns ? column_intersections_
-                                                       : row_intersections_;
-
-  blocked_direction == BlockedGapDirection::kBefore
-      ? intersections[main_index][inner_index].is_blocked_before = true
-      : intersections[main_index][inner_index].is_blocked_after = true;
-}
-
 const Vector<GapIntersectionList>& GapGeometry::GetGapIntersections(
     GridTrackSizingDirection track_direction) const {
   return track_direction == kForColumns ? column_intersections_
