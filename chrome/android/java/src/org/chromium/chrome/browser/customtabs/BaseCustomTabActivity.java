@@ -577,7 +577,8 @@ public abstract class BaseCustomTabActivity extends ChromeActivity {
                         this,
                         getBrowserServicesThemeColorProvider(),
                         getAppHeaderCoordinator(),
-                        getIntentDataProvider());
+                        getIntentDataProvider(),
+                        getLifecycleDispatcher());
 
         mCustomTabCompositorContentInitializer =
                 new CustomTabCompositorContentInitializer(
@@ -1537,7 +1538,9 @@ public abstract class BaseCustomTabActivity extends ChromeActivity {
                         getIntentDataProvider(),
                         getTopUiThemeColorProvider(),
                         getCustomTabActivityTabProvider(),
-                        getTabObserverRegistrar());
+                        getTabObserverRegistrar(),
+                        getLifecycleDispatcher(),
+                        getAppHeaderCoordinator());
         return mBrowserServicesThemeColorProvider;
     }
 

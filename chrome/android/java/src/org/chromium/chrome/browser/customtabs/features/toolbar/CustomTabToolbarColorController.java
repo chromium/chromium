@@ -13,6 +13,8 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.CustomTabProfileType;
+import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
+import org.chromium.chrome.browser.lifecycle.TopResumedActivityChangedObserver;
 import org.chromium.chrome.browser.theme.SurfaceColorUpdateUtils;
 import org.chromium.chrome.browser.theme.ThemeColorProvider;
 import org.chromium.chrome.browser.theme.ThemeUtils;
@@ -24,28 +26,43 @@ import org.chromium.ui.util.ColorUtils;
 
 /** Maintains the toolbar color for {@link CustomTabActivity}. */
 public class CustomTabToolbarColorController
-        implements ThemeColorProvider.ThemeColorObserver, ThemeColorProvider.TintObserver {
+        implements ThemeColorProvider.ThemeColorObserver,
+                ThemeColorProvider.TintObserver,
+                TopResumedActivityChangedObserver {
     private final BrowserServicesThemeColorProvider mBrowserServicesThemeColorProvider;
     private final @Nullable DesktopWindowStateManager mDesktopWindowStateManager;
     private final Context mContext;
     private final BrowserServicesIntentDataProvider mIntentDataProvider;
+    private final ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
 
     private DesktopWindowStateManager.AppHeaderObserver mHeaderObserver;
     private ToolbarManager mToolbarManager;
+
+    /** Whether the current activity is in a focused window, the top resumed activity. */
+    private boolean mIsTopResumedActivity;
 
     public CustomTabToolbarColorController(
             Context context,
             BrowserServicesThemeColorProvider browserServicesThemeColorProvider,
             DesktopWindowStateManager desktopWindowStateManager,
-            BrowserServicesIntentDataProvider intentDataProvider) {
+            BrowserServicesIntentDataProvider intentDataProvider,
+            ActivityLifecycleDispatcher activityLifecycleDispatcher) {
         mContext = context;
         mIntentDataProvider = intentDataProvider;
+        mActivityLifecycleDispatcher = activityLifecycleDispatcher;
+        mActivityLifecycleDispatcher.register(this);
 
         mDesktopWindowStateManager = desktopWindowStateManager;
         if (mDesktopWindowStateManager != null) {
             mHeaderObserver = createAppHeaderObserver();
             mDesktopWindowStateManager.addObserver(mHeaderObserver);
         }
+
+        // TODO(crbug.com/419860074): Use an IntDef enum to solidify desktop windowing focus state
+        // definitions.
+        mIsTopResumedActivity =
+                mDesktopWindowStateManager == null
+                        || !mDesktopWindowStateManager.isInUnfocusedDesktopWindow();
 
         mBrowserServicesThemeColorProvider = browserServicesThemeColorProvider;
         mBrowserServicesThemeColorProvider.addThemeColorObserver(this);
@@ -103,10 +120,21 @@ public class CustomTabToolbarColorController
         @ColorInt int themeColor = resolveThemeColor();
         @BrandedColorScheme int scheme = getColorScheme(themeColor);
         ColorStateList tint = resolveTint(scheme);
+        ColorStateList focusTint = calculateActivityFocusTint(mContext, scheme);
         mToolbarManager.setShouldUpdateToolbarPrimaryColor(true);
-        // TODO(https://crbug.com/396101043): support tint based on the activity focus state
-        mToolbarManager.onTintChanged(tint, tint, scheme);
+        mToolbarManager.onTintChanged(tint, focusTint, scheme);
         mToolbarManager.setShouldUpdateToolbarPrimaryColor(false);
+    }
+
+    private ColorStateList calculateActivityFocusTint(
+            Context context, @BrandedColorScheme int brandedColorScheme) {
+        var iconTint = ThemeUtils.getThemedToolbarIconTint(context, brandedColorScheme);
+
+        // Only consider activity state when in desktop windowing mode.
+        return shouldUseDefaultThemeForWebApp()
+                ? ThemeUtils.getThemedToolbarIconTintForActivityState(
+                        context, brandedColorScheme, mIsTopResumedActivity)
+                : iconTint;
     }
 
     private @ColorInt int resolveThemeColor() {
@@ -146,6 +174,12 @@ public class CustomTabToolbarColorController
         // should follow default system to not merge with header.
         return WebAppHeaderUtils.isMinimalUiVisible(
                 mIntentDataProvider, mDesktopWindowStateManager);
+    }
+
+    @Override
+    public void onTopResumedActivityChanged(boolean isTopResumedActivity) {
+        mIsTopResumedActivity = isTopResumedActivity;
+        updateTint();
     }
 
     @VisibleForTesting

@@ -134,7 +134,11 @@ public class AppThemeColorProvider extends ThemeColorProvider
                 ThemeUtils.getThemedToolbarIconTint(mActivityContext, brandedColorScheme);
 
         final ColorStateList activityFocusTint =
-                calculateActivityFocusTint(mActivityContext, brandedColorScheme);
+                mActivityLifecycleDispatcher == null
+                                || !AppHeaderUtils.isAppInDesktopWindow(mDesktopWindowStateManager)
+                        ? iconTint
+                        : ThemeColorProvider.calculateActivityFocusTint(
+                                mActivityContext, brandedColorScheme, mIsTopResumedActivity);
         updateTint(iconTint, activityFocusTint, brandedColorScheme);
     }
 
@@ -159,15 +163,5 @@ public class AppThemeColorProvider extends ThemeColorProvider
         // TODO (crbug/328055199): Check if losing focus to a non-Chrome task.
         mIsTopResumedActivity = isTopResumedActivity;
         updateTheme();
-    }
-
-    private ColorStateList calculateActivityFocusTint(
-            Context context, @BrandedColorScheme int brandedColorScheme) {
-        var iconTint = ThemeUtils.getThemedToolbarIconTint(context, brandedColorScheme);
-        return mActivityLifecycleDispatcher == null
-                        || !AppHeaderUtils.isAppInDesktopWindow(mDesktopWindowStateManager)
-                ? iconTint
-                : ThemeUtils.getThemedToolbarIconTintForActivityState(
-                        context, brandedColorScheme, mIsTopResumedActivity);
     }
 }

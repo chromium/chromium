@@ -21,13 +21,17 @@ import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntent
 import org.chromium.chrome.browser.browserservices.intents.WebappExtras;
 import org.chromium.chrome.browser.customtabs.content.CustomTabActivityTabProvider;
 import org.chromium.chrome.browser.customtabs.content.TabObserverRegistrar;
+import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
+import org.chromium.chrome.browser.lifecycle.TopResumedActivityChangedObserver;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.theme.SurfaceColorUpdateUtils;
 import org.chromium.chrome.browser.theme.ThemeColorProvider;
 import org.chromium.chrome.browser.theme.ThemeUtils;
 import org.chromium.chrome.browser.theme.TopUiThemeColorProvider;
+import org.chromium.chrome.browser.ui.desktop_windowing.AppHeaderUtils;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
+import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
 import org.chromium.ui.util.ColorUtils;
 import org.chromium.url.GURL;
 
@@ -40,7 +44,8 @@ import java.lang.annotation.RetentionPolicy;
  * default color theme (including dynamic colors).
  */
 @NullMarked
-public class BrowserServicesThemeColorProvider extends ThemeColorProvider {
+public class BrowserServicesThemeColorProvider extends ThemeColorProvider
+        implements TopResumedActivityChangedObserver {
 
     @Retention(RetentionPolicy.SOURCE)
     @IntDef({
@@ -78,6 +83,10 @@ public class BrowserServicesThemeColorProvider extends ThemeColorProvider {
     private final TopUiThemeColorProvider mTopUiThemeColorProvider;
     private boolean mShouldUseTabTheme;
 
+    private final ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
+    private boolean mIsTopResumedActivity;
+    private final @Nullable DesktopWindowStateManager mDesktopWindowStateManager;
+
     private final TabObserverRegistrar.CustomTabTabObserver mTabObserver =
             new TabObserverRegistrar.CustomTabTabObserver() {
                 @Override
@@ -112,19 +121,32 @@ public class BrowserServicesThemeColorProvider extends ThemeColorProvider {
      *     for example web app manifest properties.
      * @param tabSupplier provides current active tab in the browser service.
      * @param tabRegistrar allows to observe active tab changes, including the tab itself.
+     * @param activityLifecycleDispatcher The {@link ActivityLifecycleDispatcher} to dispatch {@link
+     *     TopResumedActivityChangedObserver#onTopResumedActivityChanged(boolean)} events observed
+     *     by this class.
+     * @param desktopWindowStateManager The {@link DesktopWindowStateManager) to observe for
+     *     desktopWindowing mode.
      */
     public BrowserServicesThemeColorProvider(
             Context context,
             BrowserServicesIntentDataProvider intentDataProvider,
             TopUiThemeColorProvider topUiThemeColorProvider,
             CustomTabActivityTabProvider tabSupplier,
-            TabObserverRegistrar tabRegistrar) {
+            TabObserverRegistrar tabRegistrar,
+            ActivityLifecycleDispatcher activityLifecycleDispatcher,
+            @Nullable DesktopWindowStateManager desktopWindowStateManager) {
         super(context);
         mContext = context;
         mIntentDataProvider = intentDataProvider;
         mTabSupplier = tabSupplier;
         mTabObserverRegistrar = tabRegistrar;
         mTopUiThemeColorProvider = topUiThemeColorProvider;
+
+        mDesktopWindowStateManager = desktopWindowStateManager;
+        mActivityLifecycleDispatcher = activityLifecycleDispatcher;
+        mActivityLifecycleDispatcher.register(this);
+
+        mIsTopResumedActivity = !AppHeaderUtils.isAppInDesktopWindow(mDesktopWindowStateManager);
 
         tabRegistrar.registerActivityTabObserver(mTabObserver);
 
@@ -195,10 +217,14 @@ public class BrowserServicesThemeColorProvider extends ThemeColorProvider {
         BrowserServiceTheme theme = calculateTheme(colorType, tab);
         ColorStateList tint =
                 ThemeUtils.getThemedToolbarIconTint(mContext, theme.brandedColorScheme);
+        ColorStateList focusTint =
+                AppHeaderUtils.isAppInDesktopWindow(mDesktopWindowStateManager)
+                        ? ThemeColorProvider.calculateActivityFocusTint(
+                                mContext, theme.brandedColorScheme, mIsTopResumedActivity)
+                        : tint;
 
         updatePrimaryColor(theme.color, /* shouldAnimate= */ false);
-        // TODO(https://crbug.com/396101043): support tint based on the activity focus state
-        updateTint(tint, tint, theme.brandedColorScheme);
+        updateTint(tint, focusTint, theme.brandedColorScheme);
     }
 
     private @ColorInt int computeColor(@ThemeColorSource int colorType, @Nullable Tab tab) {
@@ -241,10 +267,18 @@ public class BrowserServicesThemeColorProvider extends ThemeColorProvider {
         };
     }
 
+    // TopResumedActivityChangedObserver implementation.
+    @Override
+    public void onTopResumedActivityChanged(boolean isTopResumedActivity) {
+        mIsTopResumedActivity = isTopResumedActivity;
+        updateTheme();
+    }
+
     @Override
     public void destroy() {
         super.destroy();
         mTabObserverRegistrar.unregisterActivityTabObserver(mTabObserver);
+        mActivityLifecycleDispatcher.unregister(this);
     }
 
     private static boolean shouldUseDefaultThemeColorForFullscreen(
