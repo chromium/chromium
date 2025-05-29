@@ -8284,28 +8284,6 @@
             ]
         }
     ],
-    "DomStorageAblation": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "linux",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "factor": "0",
-                        "offset": "5ms"
-                    },
-                    "enable_features": [
-                        "DomStorageAblation"
-                    ]
-                }
-            ]
-        }
-    ],
     "DownloadLater": [
         {
             "platforms": [
