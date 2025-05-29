@@ -416,6 +416,7 @@ class CORE_EXPORT HTMLElement : public Element {
   void OnNonceAttrChanged(const AttributeModificationParams&);
   void OnPopoverChanged(const AttributeModificationParams&);
   void OnContainerTimingAttrChanged(const AttributeModificationParams&);
+  void OnContainerTimingIgnoreAttrChanged(const AttributeModificationParams&);
   void OnRoleAttrChanged(const AttributeModificationParams&);
 
   int AdjustedOffsetForZoom(LayoutUnit);

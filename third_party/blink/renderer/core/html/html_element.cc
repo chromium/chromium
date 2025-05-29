@@ -439,6 +439,8 @@ const AttributeTriggers* HTMLElement::TriggersForAttributeName(
        &HTMLElement::OnPopoverChanged},
       {html_names::kContainertimingAttr, kNoWebFeature, kNoEvent,
        &HTMLElement::OnContainerTimingAttrChanged},
+      {html_names::kContainertimingIgnoreAttr, kNoWebFeature, kNoEvent,
+       &HTMLElement::OnContainerTimingIgnoreAttrChanged},
 
       {html_names::kOnabortAttr, kNoWebFeature, event_type_names::kAbort,
        nullptr},
@@ -3130,6 +3132,31 @@ void HTMLElement::OnContainerTimingAttrChanged(
   } else if (!had_container_timing && has_container_timing) {
     SetSelfOrAncestorHasContainerTiming();
     UpdateDescendantHasContainerTiming(true /* has_container_timing */);
+  }
+}
+
+void HTMLElement::OnContainerTimingIgnoreAttrChanged(
+    const AttributeModificationParams& params) {
+  if (!RuntimeEnabledFeatures::ContainerTimingEnabled()) {
+    return;
+  }
+  bool had_container_timing_ignore = !params.old_value.IsNull();
+  bool has_container_timing_ignore = !params.new_value.IsNull();
+  if (had_container_timing_ignore == has_container_timing_ignore) {
+    return;
+  }
+
+  if (had_container_timing_ignore && !has_container_timing_ignore) {
+    if (RecalcSelfOrAncestorHasContainerTiming()) {
+      SetSelfOrAncestorHasContainerTiming();
+      UpdateDescendantHasContainerTiming(true /* has_container_timing */);
+    }
+  } else if (!had_container_timing_ignore && has_container_timing_ignore &&
+             !FastHasAttribute(html_names::kContainertimingAttr)) {
+    // containertiming has precedence over containertiming-ignore, only unset
+    // the tree if the node has ignore only
+    ClearSelfOrAncestorHasContainerTiming();
+    UpdateDescendantHasContainerTiming(false /* has_container_timing */);
   }
 }
 

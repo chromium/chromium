@@ -61,6 +61,7 @@
     "commandfor",
     "compact",
     "containertiming",
+    "containertiming-ignore",
     "content",
     "contenteditable",
     "controls",
