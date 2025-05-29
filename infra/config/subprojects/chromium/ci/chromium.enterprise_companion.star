@@ -211,7 +211,7 @@ ci.builder(
     ),
     builderless = True,
     cores = None,
-    os = os.MAC_ANY,
+    os = os.MAC_DEFAULT,
     cpu = cpu.ARM64,
     console_view_entry = consoles.console_view_entry(
         category = "debug|mac",
@@ -253,7 +253,7 @@ ci.builder(
     ),
     builderless = True,
     cores = None,
-    os = os.MAC_ANY,
+    os = os.MAC_DEFAULT,
     cpu = cpu.ARM64,
     console_view_entry = consoles.console_view_entry(
         category = "release|mac",
@@ -295,7 +295,7 @@ ci.builder(
     ),
     builderless = True,
     cores = None,
-    os = os.MAC_ANY,
+    os = os.MAC_DEFAULT,
     cpu = cpu.ARM64,
     console_view_entry = consoles.console_view_entry(
         category = "debug|mac",
@@ -337,7 +337,7 @@ ci.builder(
     ),
     builderless = True,
     cores = None,
-    os = os.MAC_ANY,
+    os = os.MAC_DEFAULT,
     cpu = cpu.ARM64,
     console_view_entry = consoles.console_view_entry(
         category = "release|mac",
@@ -380,147 +380,11 @@ ci.builder(
     ),
     builderless = True,
     cores = None,
-    os = os.MAC_ANY,
+    os = os.MAC_DEFAULT,
     cpu = cpu.ARM64,
     console_view_entry = consoles.console_view_entry(
         category = "debug|mac",
         short_name = "bld-asan",
-    ),
-    contact_team_email = "omaha-client-dev@google.com",
-)
-
-ci.thin_tester(
-    name = "mac11-arm64-enterprise-companion-tester-dbg",
-    description_html = linkify("https://source.chromium.org/chromium/chromium/src/+/main:chrome/enterprise_companion/README.md", "Chrome Enterprise Companion App") + " MacOS 11 ARM64 Debug Tester.",
-    triggered_by = ["mac-enterprise-companion-builder-arm64-dbg"],
-    builder_spec = builder_config.builder_spec(
-        execution_mode = builder_config.execution_mode.TEST,
-        gclient_config = builder_config.gclient_config(
-            config = "chromium",
-        ),
-        chromium_config = builder_config.chromium_config(
-            config = "chromium",
-            apply_configs = [
-                "mb",
-            ],
-            build_config = builder_config.build_config.DEBUG,
-            target_bits = 64,
-            target_platform = builder_config.target_platform.MAC,
-        ),
-    ),
-    targets = targets.bundle(
-        targets = [
-            "enterprise_companion_gtests_mac",
-        ],
-        mixins = [
-            "mac_11_arm64",
-        ],
-    ),
-    console_view_entry = consoles.console_view_entry(
-        category = "debug|mac",
-        short_name = "11 arm64",
-    ),
-    contact_team_email = "omaha-client-dev@google.com",
-)
-
-ci.thin_tester(
-    name = "mac11-arm64-enterprise-companion-tester-rel",
-    description_html = linkify("https://source.chromium.org/chromium/chromium/src/+/main:chrome/enterprise_companion/README.md", "Chrome Enterprise Companion App") + " MacOS 11 ARM64 Release Tester.",
-    triggered_by = ["mac-enterprise-companion-builder-arm64-rel"],
-    builder_spec = builder_config.builder_spec(
-        execution_mode = builder_config.execution_mode.TEST,
-        gclient_config = builder_config.gclient_config(
-            config = "chromium",
-        ),
-        chromium_config = builder_config.chromium_config(
-            config = "chromium",
-            apply_configs = [
-                "mb",
-            ],
-            build_config = builder_config.build_config.RELEASE,
-            target_bits = 64,
-            target_platform = builder_config.target_platform.MAC,
-        ),
-    ),
-    targets = targets.bundle(
-        targets = [
-            "enterprise_companion_gtests_mac",
-        ],
-        mixins = [
-            "mac_11_arm64",
-        ],
-    ),
-    console_view_entry = consoles.console_view_entry(
-        category = "release|mac",
-        short_name = "11 arm64",
-    ),
-    contact_team_email = "omaha-client-dev@google.com",
-)
-
-ci.thin_tester(
-    name = "mac11-x64-enterprise-companion-tester-dbg",
-    description_html = linkify("https://source.chromium.org/chromium/chromium/src/+/main:chrome/enterprise_companion/README.md", "Chrome Enterprise Companion App") + " MacOS 11 x64 Debug Tester.",
-    triggered_by = ["mac-enterprise-companion-builder-dbg"],
-    builder_spec = builder_config.builder_spec(
-        execution_mode = builder_config.execution_mode.TEST,
-        gclient_config = builder_config.gclient_config(
-            config = "chromium",
-        ),
-        chromium_config = builder_config.chromium_config(
-            config = "chromium",
-            apply_configs = [
-                "mb",
-            ],
-            build_config = builder_config.build_config.DEBUG,
-            target_bits = 64,
-            target_platform = builder_config.target_platform.MAC,
-        ),
-    ),
-    targets = targets.bundle(
-        targets = [
-            "enterprise_companion_gtests_mac",
-        ],
-        mixins = [
-            "mac_11_x64",
-        ],
-    ),
-    console_view_entry = consoles.console_view_entry(
-        category = "debug|mac",
-        short_name = "11",
-    ),
-    contact_team_email = "omaha-client-dev@google.com",
-)
-
-ci.thin_tester(
-    name = "mac11-x64-enterprise-companion-tester-rel",
-    description_html = linkify("https://source.chromium.org/chromium/chromium/src/+/main:chrome/enterprise_companion/README.md", "Chrome Enterprise Companion App") + " MacOS 11 x64 Release Tester.",
-    triggered_by = ["mac-enterprise-companion-builder-rel"],
-    builder_spec = builder_config.builder_spec(
-        execution_mode = builder_config.execution_mode.TEST,
-        gclient_config = builder_config.gclient_config(
-            config = "chromium",
-        ),
-        chromium_config = builder_config.chromium_config(
-            config = "chromium",
-            apply_configs = [
-                "mb",
-            ],
-            build_config = builder_config.build_config.RELEASE,
-            target_bits = 64,
-            target_platform = builder_config.target_platform.MAC,
-        ),
-    ),
-    targets = targets.bundle(
-        targets = [
-            "enterprise_companion_gtests_mac",
-        ],
-        mixins = [
-            "mac_11_x64",
-        ],
-    ),
-    console_view_entry = consoles.console_view_entry(
-        category = "release|mac",
-        short_name = "11",
     ),
     contact_team_email = "omaha-client-dev@google.com",
 )

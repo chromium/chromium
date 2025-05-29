@@ -7,10 +7,6 @@ ci/mac-enterprise-companion-builder-arm64-rel
 ci/mac-enterprise-companion-builder-asan-dbg
 ci/mac-enterprise-companion-builder-dbg
 ci/mac-enterprise-companion-builder-rel
-ci/mac11-arm64-enterprise-companion-tester-dbg
-ci/mac11-arm64-enterprise-companion-tester-rel
-ci/mac11-x64-enterprise-companion-tester-dbg
-ci/mac11-x64-enterprise-companion-tester-rel
 ci/mac12-arm64-enterprise-companion-tester-rel
 ci/mac12-x64-enterprise-companion-tester-asan-dbg
 ci/mac13-arm64-enterprise-companion-tester-dbg
