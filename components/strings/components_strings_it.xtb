@@ -1939,7 +1939,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="4304049446746819918">{0,plural, =1{La policy dell'amministratore sconsiglia di spostare questo file su <ph name="DESTINATION_NAME" />}other{La policy dell'amministratore sconsiglia di spostare questi file su <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="4304485328308299773">Leggi le valutazioni dei clienti su prodotti, servizi o esperienze per prendere decisioni più consapevoli in merito alle recensioni.</translation>
 <translation id="4305666528087210886">Impossibile accedere al file</translation>
-<translation id="4306529830550717874">Vuoi salvare l'indirizzo?</translation>
+<translation id="4306529830550717874">Salvare l'indirizzo?</translation>
 <translation id="4306812610847412719">appunti</translation>
 <translation id="4308567447483056043">Questa policy viene ignorata perché l'utente non è affiliato. Per applicare questa policy, il browser e il profilo Chrome devono essere gestiti tramite la Console di amministrazione dalla stessa organizzazione.</translation>
 <translation id="4310496734563057511">Se condividi questo dispositivo con altre persone, puoi attivare Windows Hello per verificare la tua identità ogni volta che usi una password salvata</translation>
@@ -3951,7 +3951,7 @@ Ulteriori dettagli:
 <translation id="7800977246388195491">Chrome rileva argomenti di interesse in base alla tua cronologia di navigazione recente. Inoltre, i siti che visiti possono individuare i tuoi interessi. In seguito, i siti possono chiedere queste informazioni per mostrarti annunci personalizzati. Puoi scegliere gli argomenti e i siti da usare per mostrarti annunci.</translation>
 <translation id="7802523362929240268">Il sito è legittimo</translation>
 <translation id="7802989406998618639">Inserisci il codice di sicurezza a <ph name="NUMBER_OF_DIGITS" /> cifre che trovi sul <ph name="SIDE_OF_CARD" /> della carta per consentire alla banca di verificare la tua identità</translation>
-<translation id="780301667611848630">No grazie</translation>
+<translation id="780301667611848630">No, grazie</translation>
 <translation id="7805768142964895445">Stato</translation>
 <translation id="7805906048382884326">Chiudi suggerimento</translation>
 <translation id="7810410097247356677">Per pagare più velocemente la prossima volta, salva la carta e il codice di sicurezza criptato sul tuo dispositivo</translation>

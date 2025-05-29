@@ -363,7 +363,7 @@
 <translation id="1236009322878349843">スマートフォンの編集</translation>
 <translation id="1237251612871334180">パスワードを保存するには更新してください</translation>
 <translation id="1237950098253310325"><ph name="BUTTON_NAME" /> を並べ替えるにはCtrl+上または下矢印を使用します</translation>
-<translation id="1238293488628890871">プロフィールを切り替え？</translation>
+<translation id="1238293488628890871">プロファイルの切り替え</translation>
 <translation id="1239594683407221485">ファイルアプリでデバイスのコンテンツを検索します。</translation>
 <translation id="1239841552505950173">アプリケーションを起動</translation>
 <translation id="1241066500170667906"><ph name="EXPERIMENT_NAME" /> の試験運用機能の状態を選択</translation>
@@ -8910,7 +8910,7 @@
 <translation id="7324020307732396723">言語設定を開く</translation>
 <translation id="7324297612904500502">ベータ版フォーラム</translation>
 <translation id="7325209047678309347">紙詰まりです</translation>
-<translation id="7325953439504232954">プロフィールを切り替え？</translation>
+<translation id="7325953439504232954">プロファイルの切り替え</translation>
 <translation id="7326004502692201767">この <ph name="DEVICE_TYPE" /> をお子様向けに設定する</translation>
 <translation id="732659786514229249">デバイスを組織に登録しますか？</translation>
 <translation id="7327989755579928735"><ph name="MANAGER" /> により ADB デバッグが無効になりました。<ph name="DEVICE_TYPE" /> を再起動すると、アプリをサイドローディングできなくなります。</translation>

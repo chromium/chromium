@@ -61,7 +61,7 @@
 <translation id="1722488837206509557">이렇게 하면 사용 가능한 기기 중에서 선택하고 해당 기기에 콘텐츠를 표시할 수 있습니다.</translation>
 <translation id="1786003790898721085"><ph name="TARGET_DEVICE_NAME" />에서 Chrome에 로그인되어 있는지 확인한 다음 다시 전송해 보세요.</translation>
 <translation id="1786044937610313874">Chrome에서 바로가기 열기</translation>
-<translation id="178701303897325119">이 확장 프로그램은 더 이상 지원되지 않습니다. 대신 Chrome에서는 이 프로그램을 삭제할 것을 권장합니다.</translation>
+<translation id="178701303897325119">이 확장 프로그램은 더 이상 지원되지 않습니다. 대신 Chrome에서 삭제할 것을 권장합니다.</translation>
 <translation id="1812689907177901597">이 기능을 사용 중지하면 Chrome에 로그인하지 않고도 Gmail 등의 Google 사이트에 로그인할 수 있습니다.</translation>
 <translation id="1821644463306970002">{NUM_TABS,plural, =1{브라우저 속도를 저하시키는 탭을 일시중지하는 것이 좋습니다}other{브라우저 속도를 저하시키는 탭을 일시중지하는 것이 좋습니다}}</translation>
 <translation id="1838374766361614909">검색어 지우기</translation>
@@ -73,7 +73,7 @@
 <translation id="1919130412786645364">Chrome 로그인 허용</translation>
 <translation id="1953553007165777902">다운로드 중... <ph name="MINUTE" />분 남음</translation>
 <translation id="2001586581944147178">내 인터넷 트래픽에 액세스할 수 있는 사용자가 내가 방문하는 사이트를 확인하기가 더 어려워집니다. Chrome은 DNS(도메인 이름 시스템)에서 사이트의 IP 주소를 조회하는 데 보안 연결을 사용합니다.</translation>
-<translation id="2008942457798486387">{NUM_EXTENSIONS,plural, =1{이 확장 프로그램은 더 이상 지원되지 않습니다. Chrome에서는 삭제할 것을 권장합니다.}other{이 확장 프로그램은 더 이상 지원되지 않습니다. Chrome에서는 삭제할 것을 권장합니다.}}</translation>
+<translation id="2008942457798486387">{NUM_EXTENSIONS,plural, =1{이 확장 프로그램은 더 이상 지원되지 않습니다. Chrome에서 삭제할 것을 권장합니다.}other{이 확장 프로그램은 더 이상 지원되지 않습니다. Chrome에서 삭제할 것을 권장합니다.}}</translation>
 <translation id="2018528049276128029">각 프로필에는 북마크, 방문 기록, 비밀번호 등과 같은 Chrome 정보가 보관됩니다.</translation>
 <translation id="2018879682492276940">설치할 수 없습니다. 다시 시도해 보세요.</translation>
 <translation id="2024959665595762054">Google 계정에서 Chrome 데이터를 사용하고 저장하려면 본인 인증을 완료하세요.</translation>
@@ -135,7 +135,7 @@
 <translation id="2681444469812712297">Chrome의 새 탭에서 <ph name="URL" /> 주소를 엽니다.</translation>
 <translation id="2712141162840347885">Google 렌즈로 검색할 항목을 선택하거나 Esc 키를 눌러 Google 렌즈를 종료하세요</translation>
 <translation id="2738871930057338499">인터넷에 연결할 수 없습니다(HTTP 403 Forbidden). 프록시 설정을 확인하시기 바랍니다.</translation>
-<translation id="2742320827292110288">경고: Chrome에서는 확장 프로그램에 인터넷 사용 기록이 저장될 수 있습니다. 시크릿 모드에서 이 확장 프로그램을 사용 중지하려면 옵션을 선택 해제하세요.</translation>
+<translation id="2742320827292110288">경고: Chrome에서는 확장 프로그램에 방문 기록이 저장될 수 있습니다. 시크릿 모드에서 이 확장 프로그램을 사용 중지하려면 옵션을 선택 해제하세요.</translation>
 <translation id="2753623023919742414">클릭하여 검색</translation>
 <translation id="2765403129283291972">이 사이트에서 마이크에 액세스하려면 Chrome에 권한이 필요합니다</translation>
 <translation id="2770231113462710648">다음으로 기본 브라우저 변경:</translation>
@@ -417,7 +417,7 @@ Chrome에서 설정을 복구할 수 없습니다.</translation>
 <translation id="6291089322031436445">Chrome 개발자 앱</translation>
 <translation id="6291549208091401781">컴퓨터에 Chrome이 이미 설치되어 있으며 모든 사용자가 사용할 수 있습니다.</translation>
 <translation id="6319856120645568262">Chrome에서 주변 환경을 매핑하고 손을 추적하려면 권한이 필요합니다</translation>
-<translation id="6321592572353357376">"<ph name="EXTENSION_NAME" />" 확장 프로그램에서 Chrome 로그인을 요청합니다</translation>
+<translation id="6321592572353357376">'<ph name="EXTENSION_NAME" />' 확장 프로그램에서 Chrome 로그인을 요청합니다</translation>
 <translation id="6326175484149238433">Chrome에서 삭제</translation>
 <translation id="6327105987658262776">사용 가능한 업데이트가 없습니다.</translation>
 <translation id="6360449101159168105">이 탭이 비활성 상태인 동안 Chrome의 속도를 빠르게 유지하기 위해 메모리를 확보했습니다. 이 사이트가 비활성 상태가 되지 않도록 항상 제외할 수 있습니다.</translation>
