@@ -43,7 +43,7 @@ namespace {
 
 // An entry can store sparse data taking up to 1 / kMaxSparseDataSizeDivisor of
 // the cache.
-const int64_t kMaxSparseDataSizeDivisor = 10;
+constexpr int64_t kMaxSparseDataSizeDivisor = 10;
 
 OpenEntryIndexEnum ComputeIndexState(SimpleBackendImpl* backend,
                                      uint64_t entry_hash) {

@@ -22,21 +22,21 @@ namespace disk_cache {
 //     Upgrade.
 //
 // Use `kSimpleVersion` for the fake index file.
-const uint32_t kSimpleVersion = 9;
+inline constexpr uint32_t kSimpleVersion = 9;
 
 // The version of the index file. Must be updated iff the index format changes.
-const uint32_t kSimpleIndexFileVersion = 9;
+inline constexpr uint32_t kSimpleIndexFileVersion = 9;
 
 // Minimum version to support upgrade for the index file.
-const uint32_t kMinSimpleIndexFileVersionSupported = 8;
+inline constexpr uint32_t kMinSimpleIndexFileVersionSupported = 8;
 
 // The version of the sparse entry file. Must be updated iff the sparse file
 // format changes.
-const uint32_t kSimpleSparseEntryVersion = 9;
+inline constexpr uint32_t kSimpleSparseEntryVersion = 9;
 
 // The version of the entry file(s) as written to disk. Must be updated iff the
 // entry format changes.
-const uint32_t kSimpleEntryVersionOnDisk = 5;
+inline constexpr uint32_t kSimpleEntryVersionOnDisk = 5;
 
 }  // namespace disk_cache
 

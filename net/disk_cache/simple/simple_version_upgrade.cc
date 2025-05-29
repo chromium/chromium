@@ -23,7 +23,7 @@ namespace {
 
 // It is not possible to upgrade cache structures on disk that are of version
 // below this, the entire cache should be dropped for them.
-const uint32_t kMinVersionAbleToUpgrade = 8;
+constexpr uint32_t kMinVersionAbleToUpgrade = 8;
 
 constexpr char kFakeIndexFileName[] = "index";
 constexpr char kIndexDirName[] = "index-dir";
