@@ -7207,6 +7207,10 @@ void Element::UpdateSelectionOnFocus(
     if (this == frame->Selection()
                     .ComputeVisibleSelectionInDOMTreeDeprecated()
                     .RootEditableElement()) {
+      if (!options->preventScroll() &&
+          RuntimeEnabledFeatures::RevealSelectionInIframeEnabled()) {
+        frame->Selection().RevealSelection();
+      }
       return;
     }
 
