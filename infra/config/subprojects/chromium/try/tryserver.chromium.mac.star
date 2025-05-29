@@ -762,6 +762,15 @@ ios_builder(
 )
 
 ios_builder(
+    name = "tvos-dbg-fyi",
+    mirrors = ["ci/tvos-dbg-fyi"],
+    gn_args = "ci/tvos-dbg-fyi",
+    builderless = True,
+    cpu = cpu.ARM64,
+    contact_team_email = "cobalt-appletv@google.com",
+)
+
+ios_builder(
     name = "ios-vm",
     mirrors = ["ci/ios-vm"],
     gn_args = "ci/ios-vm",

@@ -347,6 +347,7 @@
     "mac-perfetto-rel": "ci/mac-perfetto-rel/gn-args.json",
     "mac-vm": "ci/mac-vm/gn-args.json",
     "mac13-wpt-chromium-rel": "ci/mac13-wpt-chromium-rel/gn-args.json",
+    "tvos-dbg-fyi": "ci/tvos-dbg-fyi/gn-args.json",
     "win-annotator-rel": "ci/win-annotator-rel/gn-args.json",
     "win-fieldtrial-rel": "ci/win-fieldtrial-rel/gn-args.json",
     "win-no-safe-browsing-rel": "ci/win-no-safe-browsing-rel/gn-args.json",
@@ -926,7 +927,8 @@
     "mac_chromium_compile_dbg_ng": "try/mac_chromium_compile_dbg_ng/gn-args.json",
     "mac_chromium_compile_rel_ng": "try/mac_chromium_compile_rel_ng/gn-args.json",
     "mac_chromium_dbg_ng": "try/mac_chromium_dbg_ng/gn-args.json",
-    "mac_optional_gpu_tests_rel": "try/mac_optional_gpu_tests_rel/gn-args.json"
+    "mac_optional_gpu_tests_rel": "try/mac_optional_gpu_tests_rel/gn-args.json",
+    "tvos-dbg-fyi": "try/tvos-dbg-fyi/gn-args.json"
   },
   "tryserver.chromium.rust": {
     "android-rust-arm32-rel": "try/android-rust-arm32-rel/gn-args.json",
