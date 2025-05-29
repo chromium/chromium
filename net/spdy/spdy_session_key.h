@@ -45,7 +45,6 @@ class NET_EXPORT_PRIVATE SpdySessionKey {
 
   // Equality tests of contents.
   bool operator==(const SpdySessionKey& other) const;
-  bool operator!=(const SpdySessionKey& other) const;
 
   // Struct returned by CompareForAliasing().
   struct CompareForAliasingResult {

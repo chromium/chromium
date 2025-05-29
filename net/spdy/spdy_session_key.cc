@@ -78,10 +78,6 @@ bool SpdySessionKey::operator==(const SpdySessionKey& other) const {
          socket_tag_ == other.socket_tag_;
 }
 
-bool SpdySessionKey::operator!=(const SpdySessionKey& other) const {
-  return !(*this == other);
-}
-
 SpdySessionKey::CompareForAliasingResult SpdySessionKey::CompareForAliasing(
     const SpdySessionKey& other) const {
   CompareForAliasingResult result;
