@@ -16,6 +16,7 @@ edition = "2021"
 [workspace]
 
 [dependencies]
+anyhow = "1.0.98"
 base64 = "0.22"
 bitflags = "2"
 bytes = "1"

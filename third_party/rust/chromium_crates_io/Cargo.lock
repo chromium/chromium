@@ -89,6 +89,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 name = "chromium"
 version = "0.1.0"
 dependencies = [
+ "anyhow",
  "base64",
  "bitflags",
  "bytemuck",
