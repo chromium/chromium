@@ -8533,6 +8533,7 @@ static_library("browser_public_dependencies") {
   }
   if (is_chromeos) {
     public_deps += [
+      "//ash/webui/common/mojom",
       "//ash/webui/os_feedback_ui/mojom",
       "//chrome/common/extensions/api",
       "//chrome/services/printing/public/mojom",
