@@ -9,11 +9,13 @@
 #include "base/notimplemented.h"
 #include "gpu/command_buffer/client/gles2_interface_stub.h"
 #include "third_party/blink/public/platform/web_url.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_htmlcanvaselement_offscreencanvas.h"
 #include "third_party/blink/renderer/bindings/modules/v8/webgl_any.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/html/canvas/html_canvas_element.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
+#include "third_party/blink/renderer/core/offscreencanvas/offscreen_canvas.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/modules/webgl/webgl_buffer.h"
 #include "third_party/blink/renderer/modules/webgl/webgl_framebuffer.h"
@@ -465,18 +467,20 @@ void WebGLRenderingContextWebGPUBase::InitRequestDeviceCallback(
 
 V8UnionHTMLCanvasElementOrOffscreenCanvas*
 WebGLRenderingContextWebGPUBase::getHTMLOrOffscreenCanvas() const {
-  NOTIMPLEMENTED();
-  return nullptr;
+  if (canvas()) {
+    return MakeGarbageCollected<V8UnionHTMLCanvasElementOrOffscreenCanvas>(
+        static_cast<HTMLCanvasElement*>(Host()));
+  }
+  return MakeGarbageCollected<V8UnionHTMLCanvasElementOrOffscreenCanvas>(
+      static_cast<OffscreenCanvas*>(Host()));
 }
 
 int WebGLRenderingContextWebGPUBase::drawingBufferWidth() const {
-  NOTIMPLEMENTED();
-  return 0;
+  return isContextLost() ? 0 : swap_buffers_->Size().height();
 }
 
 int WebGLRenderingContextWebGPUBase::drawingBufferHeight() const {
-  NOTIMPLEMENTED();
-  return 0;
+  return isContextLost() ? 0 : swap_buffers_->Size().width();
 }
 
 GLenum WebGLRenderingContextWebGPUBase::drawingBufferFormat() const {
