@@ -35,6 +35,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/browser/ui/unload_controller.h"
+#include "chrome/browser/ui/unowned_user_data/unowned_user_data_host.h"
 #include "chrome/browser/ui/user_education/browser_user_education_interface.h"
 #include "components/paint_preview/buildflags/buildflags.h"
 #include "components/prefs/pref_change_registrar.h"
@@ -867,7 +868,6 @@ class Browser : public TabStripModelObserver,
       BrowserDidCloseCallback callback) override;
   views::View* TopContainer() override;
   bool IsMinimized() const override;
-  bool IsVisibleOnScreen() const override;
   bool IsVisible() const override;
   base::WeakPtr<BrowserWindowInterface> GetWeakPtr() override;
   views::View* LensOverlayView() override;
@@ -875,6 +875,8 @@ class Browser : public TabStripModelObserver,
       ActiveTabChangeCallback callback) override;
   tabs::TabInterface* GetActiveTabInterface() override;
   BrowserWindowFeatures& GetFeatures() override;
+  UnownedUserDataHost& GetUnownedUserDataHost() override;
+  const UnownedUserDataHost& GetUnownedUserDataHost() const override;
   web_modal::WebContentsModalDialogHost*
   GetWebContentsModalDialogHostForWindow() override;
   bool IsActive() const override;
@@ -894,6 +896,8 @@ class Browser : public TabStripModelObserver,
   bool IsTabModalPopupDeprecated() const override;
   bool CanShowCallToAction() const override;
   std::unique_ptr<ScopedWindowCallToAction> ShowCallToAction() override;
+  DesktopBrowserWindowCapabilities* capabilities() override;
+  const DesktopBrowserWindowCapabilities* capabilities() const override;
 
   // Called by BrowserView.
   void set_is_tab_modal_popup_deprecated(bool is_tab_modal_popup_deprecated) {
@@ -1561,6 +1565,8 @@ class Browser : public TabStripModelObserver,
 #endif
   // Tracks whether a modal UI is showing.
   bool showing_call_to_action_ = false;
+
+  UnownedUserDataHost unowned_user_data_host_;
 
   // The following factory is used for chrome update coalescing.
   base::WeakPtrFactory<Browser> chrome_updater_factory_{this};

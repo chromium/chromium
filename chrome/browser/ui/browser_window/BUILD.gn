@@ -14,6 +14,7 @@ source_set("browser_window") {
     "public/browser_window_features.h",
     "public/browser_window_interface.h",
     "public/browser_window_interface_iterator.h",
+    "public/desktop_browser_window_capabilities.h",
   ]
   public_deps = [
     "//base",
@@ -21,12 +22,14 @@ source_set("browser_window") {
     "//content/public/browser",
     "//ui/base:types",
   ]
+  deps = [ "//chrome/browser/ui/unowned_user_data" ]
 }
 
 source_set("impl") {
   sources = [
     "browser_window_features.cc",
     "browser_window_interface_iterator.cc",
+    "desktop_browser_window_capabilities.cc",
   ]
   public_deps = [ "//chrome/browser:browser_public_dependencies" ]
   deps = [
@@ -40,6 +43,7 @@ source_set("impl") {
     "//chrome/browser/ui/lens",
     "//chrome/browser/ui/tabs/tab_strip_api",
     "//chrome/browser/ui/toasts",
+    "//chrome/browser/ui/unowned_user_data",
     "//chrome/browser/ui/views/download",
     "//chrome/browser/ui/views/new_tab_footer",
     "//chrome/browser/ui/views/side_panel",

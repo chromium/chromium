@@ -24,6 +24,7 @@
 #include "chrome/browser/ui/browser_instant_controller.h"
 #include "chrome/browser/ui/browser_tab_menu_model_delegate.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/desktop_browser_window_capabilities.h"
 #include "chrome/browser/ui/commerce/product_specifications_entry_point_controller.h"
 #include "chrome/browser/ui/extensions/mv2_disabled_dialog_controller.h"
 #include "chrome/browser/ui/lens/lens_overlay_entry_point_controller.h"
@@ -205,6 +206,10 @@ void BrowserWindowFeatures::Init(BrowserWindowInterface* browser) {
 }
 
 void BrowserWindowFeatures::InitPostWindowConstruction(Browser* browser) {
+  desktop_browser_window_capabilities_ =
+      std::make_unique<DesktopBrowserWindowCapabilities>(
+          browser->window(), browser->GetUnownedUserDataHost());
+
   // Features that are only enabled for normal browser windows (e.g. a window
   // with an omnibox and a tab strip). By default most features should be
   // instantiated in this block.
@@ -376,6 +381,8 @@ void BrowserWindowFeatures::TearDownPreBrowserViewDestruction() {
   if (new_tab_footer_controller_) {
     new_tab_footer_controller_->TearDown();
   }
+
+  desktop_browser_window_capabilities_.reset();
 }
 
 SidePanelUI* BrowserWindowFeatures::side_panel_ui() {

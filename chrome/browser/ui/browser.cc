@@ -109,6 +109,7 @@
 #include "chrome/browser/ui/browser_ui_prefs.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/browser_window/public/desktop_browser_window_capabilities.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/chrome_select_file_policy.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
@@ -1261,10 +1262,6 @@ bool Browser::IsMinimized() const {
   return window_->IsMinimized();
 }
 
-bool Browser::IsVisibleOnScreen() const {
-  return window_->IsVisibleOnScreen();
-}
-
 bool Browser::IsVisible() const {
   return window_->IsVisible();
 }
@@ -1288,6 +1285,14 @@ tabs::TabInterface* Browser::GetActiveTabInterface() {
 
 BrowserWindowFeatures& Browser::GetFeatures() {
   return *features_.get();
+}
+
+UnownedUserDataHost& Browser::GetUnownedUserDataHost() {
+  return unowned_user_data_host_;
+}
+
+const UnownedUserDataHost& Browser::GetUnownedUserDataHost() const {
+  return unowned_user_data_host_;
 }
 
 web_modal::WebContentsModalDialogHost*
@@ -1370,6 +1375,14 @@ bool Browser::CanShowCallToAction() const {
 
 std::unique_ptr<ScopedWindowCallToAction> Browser::ShowCallToAction() {
   return std::make_unique<ScopedWindowCallToActionImpl>(this);
+}
+
+DesktopBrowserWindowCapabilities* Browser::capabilities() {
+  return DesktopBrowserWindowCapabilities::From(this);
+}
+
+const DesktopBrowserWindowCapabilities* Browser::capabilities() const {
+  return DesktopBrowserWindowCapabilities::From(this);
 }
 
 void Browser::DidBecomeActive() {

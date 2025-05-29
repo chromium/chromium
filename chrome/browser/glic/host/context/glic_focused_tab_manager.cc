@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/desktop_browser_window_capabilities.h"
 #include "content/public/common/url_constants.h"
 #include "ui/views/widget/widget.h"
 #if BUILDFLAG(IS_MAC)
@@ -379,7 +380,7 @@ bool GlicFocusedTabManager::IsBrowserStateValid(
     return false;
   }
 
-  if (!browser_interface->IsVisibleOnScreen()) {
+  if (!browser_interface->capabilities()->IsVisibleOnScreen()) {
     return false;
   }
 

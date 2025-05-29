@@ -23,6 +23,7 @@ class BrowserView;
 class BrowserWindowInterface;
 class ChromeLabsCoordinator;
 class CookieControlsBubbleCoordinator;
+class DesktopBrowserWindowCapabilities;
 class HistorySidePanelCoordinator;
 class BookmarksSidePanelCoordinator;
 class MemorySaverOptInIPHController;
@@ -250,6 +251,10 @@ class BrowserWindowFeatures {
   // virtual std::unique_ptr<FooFeature> CreateFooFeature();
 
  private:
+  // A collection of features specific to desktop versions of Chrome.
+  std::unique_ptr<DesktopBrowserWindowCapabilities>
+      desktop_browser_window_capabilities_;
+
   // Features that are per-browser window will each have a controller. e.g.
   // std::unique_ptr<FooFeature> foo_feature_;
 
