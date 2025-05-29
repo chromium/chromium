@@ -17,6 +17,7 @@ enum {
 
 #if BUILDFLAG(IS_ANDROID)
   kAndroidPropertyDescriptor,
+  kAndroidICUDataDescriptor,
 #endif
 
   kHistogramSharedMemoryDescriptor,
