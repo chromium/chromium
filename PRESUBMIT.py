@@ -2350,7 +2350,9 @@ _KNOWN_ROBOTS = set(
                     'global-integration-ci-builder')
   ) | set('%s@prod.google.com' % s
           for s in ('chops-security-borg',
-                    'chops-security-cronjobs-cpesuggest'))
+                    'chops-security-cronjobs-cpesuggest')
+  ) | set('%s@chromeos-release-bot.iam.gserviceaccount.com' % s
+          for s in ('chromeos-ci-release', ))
 
 _INVALID_GRD_FILE_LINE = [
         (r'<file lang=.* path=.*', 'Path should come before lang in GRD files.')
