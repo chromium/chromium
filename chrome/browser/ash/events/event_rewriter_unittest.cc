@@ -5612,6 +5612,24 @@ TEST_P(EventRewriterSettingsSplitTest, TopRowAreFKeys) {
   EXPECT_EQ(KeyF1::Typed(), RunRewriter(KeyF1::Typed()));
 }
 
+TEST_P(EventRewriterSettingsSplitTest,
+       TopRowAreFKeys_unknownDeviceRespectsPreference) {
+  // Create the preference.
+  Preferences::RegisterProfilePrefs(prefs()->registry());
+  BooleanPrefMember top_row_as_fn_key_pref;
+  top_row_as_fn_key_pref.Init(prefs::kSendFunctionKeys, prefs());
+
+  // Pretend the settings controller doesn't know the keyboard.
+  EXPECT_CALL(*input_device_settings_controller_mock_, GetKeyboardSettings)
+      .WillRepeatedly(testing::Return(nullptr));
+
+  top_row_as_fn_key_pref.SetValue(true);
+  EXPECT_EQ(RunRewriter(KeyF1::Typed()), KeyF1::Typed());
+
+  top_row_as_fn_key_pref.SetValue(false);
+  EXPECT_EQ(RunRewriter(KeyF1::Typed()), KeyBrowserBack::Typed());
+}
+
 TEST_P(EventRewriterSettingsSplitTest, RewriteMetaTopRowKeyComboEvents) {
   mojom::KeyboardSettings settings;
   settings.top_row_are_fkeys = true;
@@ -5881,7 +5899,6 @@ class FKeysRewritingPeripheralCustomizationTest
 
  protected:
   mojom::MouseSettings mouse_settings_;
-  mojom::KeyboardSettings keyboard_settings_;
 };
 
 INSTANTIATE_TEST_SUITE_P(All,
