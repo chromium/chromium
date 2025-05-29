@@ -5,8 +5,6 @@ Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
 
-<resources xmlns:tools="http://schemas.android.com/tools"
-    tools:ignore="UnusedResources" >
-    <color name="ntp_customization_edit_icon_fill_color">@color/material_primary_20</color>
-    <color name="ntp_customization_edit_icon_background_color">@color/material_primary_80</color>
+<resources>
+    <color name="ntp_customization_edit_icon_background_color">@color/color_primary_with_alpha_20</color>
 </resources>
