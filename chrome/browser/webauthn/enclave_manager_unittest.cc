@@ -2079,14 +2079,8 @@ TEST_F(EnclaveUVTest, ChromeHandlesBiometrics) {
 
   scoped_fake_apple_keychain_.SetUVMethod(
       crypto::ScopedFakeAppleKeychainV2::UVMethod::kBiometrics);
-  // The TouchID view is only available on macOS 12+.
-  if (__builtin_available(macos 12, *)) {
-    EXPECT_EQ(manager_.uv_key_state(/*platform_has_biometrics=*/true),
-              EnclaveManager::UvKeyState::kUsesChromeUI);
-  } else {
-    EXPECT_EQ(manager_.uv_key_state(/*platform_has_biometrics=*/false),
-              EnclaveManager::UvKeyState::kUsesSystemUI);
-  }
+  EXPECT_EQ(manager_.uv_key_state(/*platform_has_biometrics=*/true),
+            EnclaveManager::UvKeyState::kUsesChromeUI);
 
   scoped_fake_apple_keychain_.SetUVMethod(
       crypto::ScopedFakeAppleKeychainV2::UVMethod::kPasswordOnly);

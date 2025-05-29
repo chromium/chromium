@@ -154,10 +154,7 @@ void AddMSAuthHeadersFromSSOCookiesResponse(
   ASAuthorizationSingleSignOnRequest* request = [_auth_provider createRequest];
 
   request.requestedOperation = @"get_sso_cookies";
-  if (@available(macOS 12, *)) {
-    request.userInterfaceEnabled = NO;
-  }
-
+  request.userInterfaceEnabled = NO;
   request.authorizationOptions = @[
     [NSURLQueryItem queryItemWithName:@"sso_url"
                                 value:_auth_provider.url.absoluteString],

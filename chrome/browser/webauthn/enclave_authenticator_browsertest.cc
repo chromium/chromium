@@ -3199,19 +3199,8 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorBrowserTest,
 
 #if BUILDFLAG(IS_MAC)
 
-bool MacBiometricApisAvailable() {
-  if (__builtin_available(macOS 12, *)) {
-    return true;
-  }
-  return false;
-}
-
 IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorBrowserTest,
                        BiometricsDisabledDuringRequest) {
-  if (!MacBiometricApisAvailable()) {
-    GTEST_SKIP() << "Need macOS >= 12";
-  }
-
   // If Touch ID is disabled during the course of a request, the UV disposition
   // shouldn't also change. I.e. if we started with the expectation of doing
   // UV=true, the UI expects that to continue, even if we need macOS to prompt
@@ -3933,11 +3922,6 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorBrowserTest,
 
   // On Linux biometrics is not available so the test is done.
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-#if BUILDFLAG(IS_MAC)
-  if (!MacBiometricApisAvailable()) {
-    return;
-  }
-#endif
   SetBiometricsEnabled(true);
   content::ExecuteScriptAsync(web_contents, kGetAssertionUvPreferred);
   delegate_observer()->WaitForUI();
@@ -4601,9 +4585,6 @@ class EnclaveAuthenticatorImmediateMediationBrowserTest
 IN_PROC_BROWSER_TEST_F(
     EnclaveAuthenticatorImmediateMediationBrowserTest,
     GivenOnlyOneGpmPasskeyWithBiometricsEnabled_WhenImmediateRequestWithUv_TouchIdShown) {
-  if (!MacBiometricApisAvailable()) {
-    GTEST_SKIP() << "Need macOS biometric support for this test.";
-  }
   base::HistogramTester histogram_tester;
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();

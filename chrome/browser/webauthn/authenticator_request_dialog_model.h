@@ -278,7 +278,7 @@ struct AuthenticatorRequestDialogModel
     kGPMChangeArbitraryPin,
     kGPMCreateArbitraryPin,
     kGPMEnterArbitraryPin,
-    // User verification prompt for GPM. Only valid on macOS 12+.
+    // User verification prompt for GPM.
     kGPMTouchID,
     // GPM passkey creation.
     kGPMCreatePasskey,

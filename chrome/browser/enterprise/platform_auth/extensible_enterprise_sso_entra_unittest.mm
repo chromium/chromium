@@ -87,9 +87,7 @@ TEST_F(ExtensibleEnterpriseSSOUtil, CreateRequestForUrl) {
   ASSERT_TRUE(request);
   EXPECT_EQ(request.requestedOperation, @"get_sso_cookies");
   EXPECT_TRUE([request.authorizationOptions isEqual:expectedOptions]);
-  if (@available(macOS 12, *)) {
-    EXPECT_EQ(request.userInterfaceEnabled, NO);
-  }
+  EXPECT_EQ(request.userInterfaceEnabled, NO);
 }
 
 TEST_F(ExtensibleEnterpriseSSOUtil,

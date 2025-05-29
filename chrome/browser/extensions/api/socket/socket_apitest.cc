@@ -123,7 +123,8 @@ IN_PROC_BROWSER_TEST_F(SocketApiTest, SocketTCPServerUnbindOnUnload) {
   EXPECT_TRUE(catcher.GetNextResult()) << catcher.message();
 }
 
-// Fails on MacOS 11, crbug.com/1211141 .
+// Failed on an old version of macOS, unclear if it still does.
+// TODO(https://crbug.com/40182775): re-enable.
 #if BUILDFLAG(IS_MAC)
 #define MAYBE_SocketMulticast DISABLED_SocketMulticast
 #else

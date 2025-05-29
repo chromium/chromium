@@ -252,8 +252,8 @@ void MacNotificationServiceUN::DoDisplayNotification(
   if (should_replace && can_replace && !is_new_notification) {
     // If the notification has been delivered before, it will get updated in the
     // notification center. We should only call this if the notification is
-    // currently displayed, as since macOS 12 this method will no longer deliver
-    // a notification that isn't already delivered.
+    // currently displayed, as this method will not deliver a notification that
+    // isn't already delivered.
     [notification_center_
         replaceContentForRequestWithIdentifier:notification_id_ns
                             replacementContent:content

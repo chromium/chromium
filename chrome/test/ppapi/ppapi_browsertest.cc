@@ -929,7 +929,9 @@ PPAPI_SOCKET_TEST(UDPSocket_SetOption)
 PPAPI_SOCKET_TEST(UDPSocket_SetOption_1_0)
 PPAPI_SOCKET_TEST(UDPSocket_SetOption_1_1)
 
-// Fails on MacOS 11, crbug.com/1211138.
+// Tested on an old version of macOS and found to fail
+// (https://crbug.com/40182772), but not worth fixing as PPAPI is going to be
+// removed soon.
 #if !BUILDFLAG(IS_MAC)
 PPAPI_SOCKET_TEST(UDPSocket_Broadcast)
 #endif
@@ -941,7 +943,9 @@ PPAPI_SOCKET_TEST(UDPSocket_Multicast)
 TEST_PPAPI_OUT_OF_PROCESS_VIA_HTTP(UDPSocketPrivate_Connect)
 TEST_PPAPI_OUT_OF_PROCESS_VIA_HTTP(UDPSocketPrivate_ConnectFailure)
 
-// Fails on MacOS 11, crbug.com/1211138.
+// Tested on an old version of macOS and found to fail
+// (https://crbug.com/40182772), but not worth fixing as PPAPI is going to be
+// removed soon.
 #if !BUILDFLAG(IS_MAC)
 TEST_PPAPI_OUT_OF_PROCESS_VIA_HTTP(UDPSocketPrivate_Broadcast)
 #endif
@@ -950,7 +954,9 @@ TEST_PPAPI_OUT_OF_PROCESS_VIA_HTTP(UDPSocketPrivate_SetSocketFeatureErrors)
 TEST_PPAPI_NACL(UDPSocketPrivate_Connect)
 TEST_PPAPI_NACL(UDPSocketPrivate_ConnectFailure)
 
-// Fails on MacOS 11, crbug.com/1211138.
+// Tested on an old version of macOS and found to fail
+// (https://crbug.com/40182772), but not worth fixing as PPAPI is going to be
+// removed soon.
 #if !BUILDFLAG(IS_MAC)
 TEST_PPAPI_NACL(UDPSocketPrivate_Broadcast)
 #endif

@@ -730,12 +730,11 @@ struct NSEdgeAndCornerThicknesses {
 
   _willUpdateRestorableState = NO;
 
-  // On macOS 12+, create restorable state archives with secure encoding. See
-  // the article at
+  // Create restorable state archives with secure encoding. See the article at
   // https://sector7.computest.nl/post/2022-08-process-injection-breaking-all-macos-security-layers-with-a-single-vulnerability/
   // for more details.
-  NSKeyedArchiver* encoder = [[NSKeyedArchiver alloc]
-      initRequiringSecureCoding:base::mac::MacOSMajorVersion() >= 12];
+  NSKeyedArchiver* encoder =
+      [[NSKeyedArchiver alloc] initRequiringSecureCoding:YES];
   encoder.delegate = self;
   [self encodeRestorableStateWithCoder:encoder];
   [encoder finishEncoding];
