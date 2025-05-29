@@ -2336,6 +2336,17 @@ void UserSessionManager::DoBrowserLaunchInternal(Profile* profile,
     }
   }
 
+  if (!IsFullRestoreEnabled(profile)) {
+    // Under some conditions, full restore is not triggered, but
+    // the recorder waits for the event from full restore service.
+    // It causes infinite wait of the following tasks.
+    // For the mitigation, we notify the recorder directly from here.
+    ash::Shell::Get()
+        ->login_unlock_throughput_recorder()
+        ->FullSessionRestoreDataLoaded(
+            /*window_ids=*/{}, /*restore_automatically=*/false);
+  }
+
   if (HatsNotificationController::ShouldShowSurveyToProfile(
           profile, kHatsGeneralSurvey)) {
     hats_notification_controller_ =
