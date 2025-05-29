@@ -50,8 +50,9 @@ namespace blink {
 ViewTransition::ScopedPauseRendering::ScopedPauseRendering(
     const Element& element) {
   const Document& document = element.GetDocument();
-  if (!document.GetFrame()->IsLocalRoot())
+  if (!document.GetFrame() || !document.GetFrame()->IsLocalRoot()) {
     return;
+  }
 
   if (!element.IsDocumentElement()) {
     return;
