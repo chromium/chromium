@@ -11279,17 +11279,30 @@ NavigationDiscardReason NavigationRequest::GetTypeForNavigationDiscardReason() {
   return NavigationDiscardReason::kNewOtherNavigationBrowserInitiated;
 }
 
+std::optional<ukm::builders::NavigationTimeline>
+NavigationRequest::GetNavigationTimelineUkmBuilder() {
+  if (ShouldRecordNavigationTimelineUkm() && IsInMainFrame() &&
+      // UKM data is sampled at a frequency of `kUkmSamplingRate`.
+      base::RandDouble() < kUkmSamplingRate) {
+    return ukm::builders::NavigationTimeline(GetNextPageUkmSourceId());
+  }
+  return std::nullopt;
+}
+
+bool NavigationRequest::ShouldRecordNavigationTimelineUkm() const {
+  return !IsSameDocument() && !IsRestore() &&
+         !NavigationTypeUtils::IsHistory(common_params_->navigation_type) &&
+         !NavigationTypeUtils::IsReload(common_params_->navigation_type) &&
+         common_params_->url.SchemeIsHTTPOrHTTPS() &&
+         !IsPrerenderedPageActivation();
+}
+
 void NavigationRequest::MaybeRecordTraceEventsAndHistograms() {
   if (navigation_handle_timing_.navigation_commit_sent_time.is_null()) {
     return;
   }
 
-  bool record_uma =
-      !IsSameDocument() && !IsRestore() &&
-      !NavigationTypeUtils::IsHistory(common_params_->navigation_type) &&
-      !NavigationTypeUtils::IsReload(common_params_->navigation_type) &&
-      common_params_->url.SchemeIsHTTPOrHTTPS() &&
-      !IsPrerenderedPageActivation();
+  bool record_metrics = ShouldRecordNavigationTimelineUkm();
 
   DCHECK(!blink::IsRendererDebugURL(common_params_->url));
   base::TimeTicks navigation_start_time = common_params_->navigation_start;
@@ -11312,7 +11325,7 @@ void NavigationRequest::MaybeRecordTraceEventsAndHistograms() {
                                                        trace_id, begin_time); \
       TRACE_EVENT_NESTABLE_ASYNC_END_WITH_TIMESTAMP0("navigation", name,      \
                                                      trace_id, end_time);     \
-      if (record_uma) {                                                       \
+      if (record_metrics) {                                                   \
         base::UmaHistogramTimes(                                              \
             "Navigation.MainFrame.NewNavigation.IgnoreRestore."               \
             "IsHTTPOrHTTPS." name ".Time2",                                   \
@@ -11331,7 +11344,7 @@ void NavigationRequest::MaybeRecordTraceEventsAndHistograms() {
           "navigation", name, trace_id, begin_time, arg1_name, arg1_val); \
       TRACE_EVENT_NESTABLE_ASYNC_END_WITH_TIMESTAMP0("navigation", name,  \
                                                      trace_id, end_time); \
-      if (record_uma) {                                                   \
+      if (record_metrics) {                                               \
         base::UmaHistogramTimes(                                          \
             "Navigation.MainFrame.NewNavigation.IgnoreRestore."           \
             "IsHTTPOrHTTPS." name ".Time2",                               \
@@ -11372,7 +11385,7 @@ void NavigationRequest::MaybeRecordTraceEventsAndHistograms() {
                                     navigation_commit_sent_time);
 
   // UKM data is sampled at a frequency of `kUkmSamplingRate`.
-  if (record_uma && base::RandDouble() < kUkmSamplingRate &&
+  if (record_metrics && base::RandDouble() < kUkmSamplingRate &&
       !navigation_start_time.is_null() && !begin_navigation_time_.is_null() &&
       !loader_start_time.is_null() && !receive_response_time_.is_null() &&
       navigation_start_time <= begin_navigation_time_ &&

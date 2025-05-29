@@ -16156,6 +16156,182 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="NavigationTimeline" singular="True">
+  <owner>hayato@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    Metrics to measure the navigation timings. These metrics correspond to the
+    UMAs under Navigation.Timeline.*. This is recorded at the frequency of
+    0.001. These metrics are based on the equivalent UMA metrics defined under
+    Navigation.Timeline.{DurationFromTo}.Duration.
+  </summary>
+  <metric name="BeforeUnloadPhase1Duration">
+    <summary>
+      The start and end of beforeunload phase 1 in the initiating renderer
+      process, if that phase runs in a given navigation.
+    </summary>
+  </metric>
+  <metric name="BeforeUnloadPhase1ToNavigationRequestCreationDuration">
+    <summary>
+      When beforeunload phase 1 is finished to when the NavigationRequest is
+      created.
+    </summary>
+  </metric>
+  <metric name="BeforeUnloadPhase2Duration">
+    <summary>
+      The start and end of beforeunload phase 2 in the browser process, if that
+      phase runs in a given navigation.
+    </summary>
+  </metric>
+  <metric name="BeforeUnloadPhase2ToBeginNavigationDuration">
+    <summary>
+      When beforeunload phase 2 is finished to when
+      NavigationRequest::BeginNavigation() is called.
+    </summary>
+  </metric>
+  <metric name="BeginNavigationToCommitDuration">
+    <summary>
+      When NavigationRequest::BeginNavigation() is called to start the
+      navigation, to when the CommitNavigation message is sent. This is only
+      logged for navigations that don't go through the network stack, such as
+      about:blank navigations or browser-initiated same-document navigations.
+    </summary>
+  </metric>
+  <metric name="BeginNavigationToLoaderStartDuration">
+    <summary>
+      When NavigationRequest::BeginNavigation() is called to when the
+      NavigationURLLoader starts. Represents the browser process initialization
+      work between beforeunload processing and starting the network request.
+    </summary>
+  </metric>
+  <metric name="CommitToDidCommitDuration">
+    <summary>
+      When the CommitNavigation IPC is sent to the renderer process to when its
+      reply is received by RenderFrameHostImpl::DidCommitNavigation.
+    </summary>
+  </metric>
+  <metric name="DidCommitToFinishDuration">
+    <summary>
+      When the browser process receives the DidCommitNavigation IPC to when the
+      browser process finishes processing that IPC, making the navigation
+      committed.
+    </summary>
+  </metric>
+  <metric name="FetchStartToReceiveHeadersDuration">
+    <summary>
+      When fetch of the document via an HTTP(S) request starts, to when the
+      final response headers are received in the network service. This can
+      include redirects.
+    </summary>
+  </metric>
+  <metric name="IgnoredCorrectlyDuration">
+    <summary>
+      Reports how much time from beforeunload phases 1 and 2 was correctly
+      excluded from the Navigation.Timeline.TotalExcludingBeforeUnload.Duration
+      metric, so that beforeunload handlers and dialogs would not be counted as
+      part of the navigation.
+
+      Recorded at the point when a navigation finishes committing, i.e. finishes
+      processing the DidCommitNavigation message. A corresponding event is also
+      emitted for tracing.
+    </summary>
+  </metric>
+  <metric name="IgnoredIncorrectlyDuration">
+    <summary>
+      Reports how much time navigation guardrail metrics like FCP are
+      incorrectly excluding from the navigation duration, due to collecting
+      start times after beforeunload phase 1 finishes and possibly adjusting
+      them to after beforeunload phase 2 finishes. This excluded time represents
+      actual time the user is waiting that is not accounted for in current
+      metrics.
+
+      Recorded at the point when a navigation finishes committing, i.e. finishes
+      processing the DidCommitNavigation message. A corresponding event is also
+      emitted for tracing.
+    </summary>
+  </metric>
+  <metric name="LoaderStartToFetchStartDuration">
+    <summary>
+      When the NavigationURLLoader starts, to when the browser is ready to fetch
+      the document using an HTTP(S) request.
+    </summary>
+  </metric>
+  <metric name="LoaderStartToReceiveResponseDuration">
+    <summary>
+      When the NavigationURLLoader starts to when
+      NavigationRequest::OnResponseStarted() is called.
+    </summary>
+  </metric>
+  <metric name="NavigationRequestToBeforeUnloadPhase2Duration">
+    <summary>
+      When the NavigationRequest is created to when beforeunload phase 2 is
+      started in the browser process. Includes time to pick a target
+      RenderFrameHost, SiteInstance, and process.
+    </summary>
+  </metric>
+  <metric name="NavigationRequestToBeginNavigationDuration">
+    <summary>
+      When the NavigationRequest is created to when
+      NavigationRequest::BeginNavigation() is called. Logged only when no
+      beforeunload handler processing occurs (otherwise, see
+      NavigationRequestToBeforeUnloadPhase2Duration and
+      BeforeUnloadPhase2ToBeginNavigationDuration). Includes time to pick a
+      target RenderFrameHost, SiteInstance, and proces.
+    </summary>
+  </metric>
+  <metric name="ReceiveHeadersToReceiveResponseDuration">
+    <summary>
+      When the final response headers are received in the network service to
+      when NavigationRequest::OnResponseStarted() is called in the browser
+      process.
+    </summary>
+  </metric>
+  <metric name="ReceiveResponseToCommitDuration">
+    <summary>
+      When NavigationRequest::OnResponseStarted() is called to when the
+      CommitNavigation IPC is sent to the renderer process.
+    </summary>
+  </metric>
+  <metric name="RendererCommitToDidCommitDuration">
+    <summary>
+      When the renderer process receives a CommitNavigation IPC to when the
+      renderer process sends a DidCommitNavigation reply.
+    </summary>
+  </metric>
+  <metric name="StartToBeforeUnloadPhase1Duration">
+    <summary>
+      When the navigation starts, which could be in the renderer process, to
+      when beforeunload phase 1 starts in that process.
+    </summary>
+  </metric>
+  <metric name="StartToNavigationRequestCreationDuration">
+    <summary>
+      When the navigation starts, which could be in the renderer process, to
+      when the NavigationRequest is created.
+    </summary>
+  </metric>
+  <metric name="StartToSyncRendererCommitDuration">
+    <summary>
+      When the navigation starts in the renderer process, to when the renderer
+      process begins a synchronous renderer commit.
+    </summary>
+  </metric>
+  <metric name="TotalDuration">
+    <summary>
+      When the navigation starts to when the browser process finishes processing
+      the DidCommitNavigation IPC, at which point the navigation is committed.
+      Includes the time spent running any beforeunload handlers/dialogs.
+    </summary>
+  </metric>
+  <metric name="TotalExcludingBeforeUnloadDuration">
+    <summary>
+      When the navigation starts to when the browser process finishes processing
+      the DidCommitNavigation IPC, at which point the navigation is committed.
+      Excludes the time spent running any beforeunload handlers/dialogs.
+    </summary>
+  </metric>
+</event>
+
 <event name="NavigationTiming" singular="True">
   <owner>nhiroki@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
