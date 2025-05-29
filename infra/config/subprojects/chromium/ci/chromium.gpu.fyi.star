@@ -2048,6 +2048,9 @@ ci.thin_tester(
                         # effect on stability. Otherwise, update this comment.
                         "--jobs=1",
                     ],
+                    swarming = targets.swarming(
+                        shards = 2,
+                    ),
                 ),
                 replacements = targets.replacements(
                     args = {
