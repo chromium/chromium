@@ -1288,7 +1288,7 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="WebApp.Isolated.FirstPolicyProcessingDelay" units="seconds"
+<histogram name="WebApp.Isolated.FirstPolicyProcessingDelay" units="ms"
     expires_after="2026-01-01">
   <owner>greengrape@google.com</owner>
   <owner>iwa-team@google.com</owner>
