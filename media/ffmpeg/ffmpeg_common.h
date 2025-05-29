@@ -22,7 +22,7 @@
 #include "media/base/media_export.h"
 #include "media/base/sample_format.h"
 #include "media/base/video_codecs.h"
-#include "media/base/video_frame.h"
+#include "media/base/video_types.h"
 #include "media/ffmpeg/ffmpeg_deleters.h"
 #include "third_party/ffmpeg/ffmpeg_features.h"
 

@@ -10,6 +10,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
+#include "media/base/video_transformation.h"
 #include "media/ffmpeg/ffmpeg_common.h"
 #include "media/filters/blocking_url_protocol.h"
 #include "media/filters/ffmpeg_glue.h"

@@ -5,6 +5,7 @@
 #include "media/ffmpeg/ffmpeg_common.h"
 
 #include "base/containers/span.h"
+#include "base/feature_list.h"
 #include "base/hash/sha1.h"
 #include "base/logging.h"
 #include "base/no_destructor.h"
@@ -20,6 +21,7 @@
 #include "media/base/video_aspect_ratio.h"
 #include "media/base/video_color_space.h"
 #include "media/base/video_decoder_config.h"
+#include "media/base/video_frame.h"
 #include "media/base/video_util.h"
 #include "media/formats/mp4/box_definitions.h"
 #include "media/media_buildflags.h"
