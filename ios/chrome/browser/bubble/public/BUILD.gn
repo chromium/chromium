@@ -3,6 +3,6 @@
 # found in the LICENSE file.
 
 source_set("public") {
-  sources = ["in_product_help_type.h"]
+  sources = [ "in_product_help_type.h" ]
   frameworks = [ "Foundation.framework" ]
 }
