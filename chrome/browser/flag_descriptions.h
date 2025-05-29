@@ -2289,8 +2289,8 @@ extern const char kSystemProxyForSystemServicesDescription[];
 extern const char kSystemShortcutBehaviorName[];
 extern const char kSystemShortcutBehaviorDescription[];
 
-extern const char kTabDragDropName[];
-extern const char kTabDragDropDescription[];
+extern const char kTabSwitcherDragDropName[];
+extern const char kTabSwitcherDragDropDescription[];
 
 extern const char kTabGroupEntryPointsAndroidName[];
 extern const char kTabGroupEntryPointsAndroidDescription[];

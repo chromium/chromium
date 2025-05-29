@@ -9344,6 +9344,16 @@
     "expiry_milestone": 140
   },
   {
+    "name": "tab-switcher-drag-drop",
+    "owners": [
+      "desiatyrikov@google.com",
+      "skavuluru@google.com",
+      "ckitagawa@google.com",
+      "clank-large-form-factors@google.com"
+    ],
+    "expiry_milestone": 150
+  },
+  {
     "name": "tablet-tab-strip-animation",
     "owners": [ "jtanaristy@google.org", "wenyufu@chromium.org" ],
     "expiry_milestone": 140

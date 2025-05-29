@@ -19044,6 +19044,7 @@ from previous Chrome versions.
   <int value="1915178511" label="disable-blink-features"/>
   <int value="1915397372" label="WifiConcurrency:disabled"/>
   <int value="1916637435" label="TranslateSubFrames:enabled"/>
+  <int value="1917635667" label="TabSwitcherDragDropAndroid:disabled"/>
   <int value="1917650219" label="ClassifyUrlOnProcessResponseEvent:enabled"/>
   <int value="1917756422" label="AIWriterAPI:enabled"/>
   <int value="1918061181" label="HoldingSpaceInProgressAnimationV2:enabled"/>
@@ -19510,6 +19511,7 @@ from previous Chrome versions.
   <int value="2087069781" label="ui-debug-tools:enabled"/>
   <int value="2087994185" label="PasspointSettings:disabled"/>
   <int value="2088061188" label="LibinputHandleTouchpad:enabled"/>
+  <int value="2088165200" label="TabSwitcherDragDropAndroid:enabled"/>
   <int value="2088438916" label="CrosShortstand:disabled"/>
   <int value="2088446947" label="enable-ephemeral-guest-profiles-on-desktop"/>
   <int value="2088963066" label="ArcResizeCompat:disabled"/>
