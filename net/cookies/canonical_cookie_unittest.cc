@@ -376,7 +376,9 @@ TEST(CanonicalCookieTest, CreateNonAsciiCookieNameAndValue) {
       {net::features::kDisallowNonAsciiCookies}, {});
 
   // Now that feature is enabled this should return false.
-  EXPECT_FALSE(cc->IsCanonical());
+  EXPECT_EQ(
+      cc->IsCanonical(),
+      CanonicalCookie::CanonicalizationFailure::kNonAsciiCharactersDisallowed);
 
   // Valid cookie which should be included.
   cc = CanonicalCookie::Create(GURL("https://www.foo.com/path"), "A=2",
@@ -460,7 +462,9 @@ TEST(CanonicalCookieTest, CreateSanitizedNonAsciiCookieNameAndValue) {
       {net::features::kDisallowNonAsciiCookies}, {});
 
   // Now that feature is enabled this should return false.
-  EXPECT_FALSE(cc->IsCanonical());
+  EXPECT_EQ(
+      cc->IsCanonical(),
+      CanonicalCookie::CanonicalizationFailure::kNonAsciiCharactersDisallowed);
 
   // Valid cookie which should be included.
   cc = CanonicalCookie::CreateSanitizedCookie(
@@ -1048,7 +1052,8 @@ TEST(CanonicalCookieTest, CreateWithExpires) {
   EXPECT_FALSE(cookie->IsExpired(creation_time));
   EXPECT_EQ(base::Time::Max(), cookie->ExpiryDate());
   EXPECT_EQ(base::Time(), cookie->LastUpdateDate());
-  EXPECT_FALSE(cookie->IsCanonical());
+  EXPECT_EQ(cookie->IsCanonical(),
+            CanonicalCookie::CanonicalizationFailure::kInvalidExpiryDate);
 
   // Expires in the far future using FromStorage.
   cookie = CanonicalCookie::FromStorage(
@@ -1062,7 +1067,8 @@ TEST(CanonicalCookieTest, CreateWithExpires) {
   EXPECT_FALSE(cookie->IsExpired(creation_time));
   EXPECT_EQ(base::Time::Max(), cookie->ExpiryDate());
   EXPECT_EQ(base::Time(), cookie->LastUpdateDate());
-  EXPECT_FALSE(cookie->IsCanonical());
+  EXPECT_EQ(cookie->IsCanonical(),
+            CanonicalCookie::CanonicalizationFailure::kInvalidExpiryDate);
 }
 
 TEST(CanonicalCookieTest, EmptyExpiry) {
@@ -3206,39 +3212,44 @@ TEST(CanonicalCookieTest, IsCanonical) {
                   ->IsCanonical());
 
   // Newline in name.
-  EXPECT_FALSE(CanonicalCookie::CreateUnsafeCookieForTesting(
-                   "A\n", "B", "x.y", "/path", base::Time(), base::Time(),
-                   base::Time(), base::Time(), false, false,
-                   CookieSameSite::NO_RESTRICTION, COOKIE_PRIORITY_LOW)
-                   ->IsCanonical());
+  EXPECT_EQ(CanonicalCookie::CreateUnsafeCookieForTesting(
+                "A\n", "B", "x.y", "/path", base::Time(), base::Time(),
+                base::Time(), base::Time(), false, false,
+                CookieSameSite::NO_RESTRICTION, COOKIE_PRIORITY_LOW)
+                ->IsCanonical(),
+            CanonicalCookie::CanonicalizationFailure::kUnparseableName);
 
   // Carriage return in name.
-  EXPECT_FALSE(CanonicalCookie::CreateUnsafeCookieForTesting(
-                   "A\r", "B", "x.y", "/path", base::Time(), base::Time(),
-                   base::Time(), base::Time(), false, false,
-                   CookieSameSite::NO_RESTRICTION, COOKIE_PRIORITY_LOW)
-                   ->IsCanonical());
+  EXPECT_EQ(CanonicalCookie::CreateUnsafeCookieForTesting(
+                "A\r", "B", "x.y", "/path", base::Time(), base::Time(),
+                base::Time(), base::Time(), false, false,
+                CookieSameSite::NO_RESTRICTION, COOKIE_PRIORITY_LOW)
+                ->IsCanonical(),
+            CanonicalCookie::CanonicalizationFailure::kUnparseableName);
 
   // Null character in name.
-  EXPECT_FALSE(CanonicalCookie::CreateUnsafeCookieForTesting(
-                   std::string("A\0Z", 3), "B", "x.y", "/path", base::Time(),
-                   base::Time(), base::Time(), base::Time(), false, false,
-                   CookieSameSite::NO_RESTRICTION, COOKIE_PRIORITY_LOW)
-                   ->IsCanonical());
+  EXPECT_EQ(CanonicalCookie::CreateUnsafeCookieForTesting(
+                std::string("A\0Z", 3), "B", "x.y", "/path", base::Time(),
+                base::Time(), base::Time(), base::Time(), false, false,
+                CookieSameSite::NO_RESTRICTION, COOKIE_PRIORITY_LOW)
+                ->IsCanonical(),
+            CanonicalCookie::CanonicalizationFailure::kUnparseableName);
 
   // Name begins with whitespace.
-  EXPECT_FALSE(CanonicalCookie::CreateUnsafeCookieForTesting(
-                   " A", "B", "x.y", "/path", base::Time(), base::Time(),
-                   base::Time(), base::Time(), false, false,
-                   CookieSameSite::NO_RESTRICTION, COOKIE_PRIORITY_LOW)
-                   ->IsCanonical());
+  EXPECT_EQ(CanonicalCookie::CreateUnsafeCookieForTesting(
+                " A", "B", "x.y", "/path", base::Time(), base::Time(),
+                base::Time(), base::Time(), false, false,
+                CookieSameSite::NO_RESTRICTION, COOKIE_PRIORITY_LOW)
+                ->IsCanonical(),
+            CanonicalCookie::CanonicalizationFailure::kUnparseableName);
 
   // Name ends with whitespace.
-  EXPECT_FALSE(CanonicalCookie::CreateUnsafeCookieForTesting(
-                   "A ", "B", "x.y", "/path", base::Time(), base::Time(),
-                   base::Time(), base::Time(), false, false,
-                   CookieSameSite::NO_RESTRICTION, COOKIE_PRIORITY_LOW)
-                   ->IsCanonical());
+  EXPECT_EQ(CanonicalCookie::CreateUnsafeCookieForTesting(
+                "A ", "B", "x.y", "/path", base::Time(), base::Time(),
+                base::Time(), base::Time(), false, false,
+                CookieSameSite::NO_RESTRICTION, COOKIE_PRIORITY_LOW)
+                ->IsCanonical(),
+            CanonicalCookie::CanonicalizationFailure::kUnparseableName);
 
   // Empty name.  (Note this is against the spec but compatible with other
   // browsers.)
@@ -3256,25 +3267,28 @@ TEST(CanonicalCookieTest, IsCanonical) {
                   ->IsCanonical());
 
   // Extra space suffixing name.
-  EXPECT_FALSE(CanonicalCookie::CreateUnsafeCookieForTesting(
-                   "A ", "B", "x.y", "/path", base::Time(), base::Time(),
-                   base::Time(), base::Time(), false, false,
-                   CookieSameSite::NO_RESTRICTION, COOKIE_PRIORITY_LOW)
-                   ->IsCanonical());
+  EXPECT_EQ(CanonicalCookie::CreateUnsafeCookieForTesting(
+                "A ", "B", "x.y", "/path", base::Time(), base::Time(),
+                base::Time(), base::Time(), false, false,
+                CookieSameSite::NO_RESTRICTION, COOKIE_PRIORITY_LOW)
+                ->IsCanonical(),
+            CanonicalCookie::CanonicalizationFailure::kUnparseableName);
 
   // '=' character in name.
-  EXPECT_FALSE(CanonicalCookie::CreateUnsafeCookieForTesting(
-                   "A=", "B", "x.y", "/path", base::Time(), base::Time(),
-                   base::Time(), base::Time(), false, false,
-                   CookieSameSite::NO_RESTRICTION, COOKIE_PRIORITY_LOW)
-                   ->IsCanonical());
+  EXPECT_EQ(CanonicalCookie::CreateUnsafeCookieForTesting(
+                "A=", "B", "x.y", "/path", base::Time(), base::Time(),
+                base::Time(), base::Time(), false, false,
+                CookieSameSite::NO_RESTRICTION, COOKIE_PRIORITY_LOW)
+                ->IsCanonical(),
+            CanonicalCookie::CanonicalizationFailure::kUnparseableName);
 
   // Separator in name.
-  EXPECT_FALSE(CanonicalCookie::CreateUnsafeCookieForTesting(
-                   "A;", "B", "x.y", "/path", base::Time(), base::Time(),
-                   base::Time(), base::Time(), false, false,
-                   CookieSameSite::NO_RESTRICTION, COOKIE_PRIORITY_LOW)
-                   ->IsCanonical());
+  EXPECT_EQ(CanonicalCookie::CreateUnsafeCookieForTesting(
+                "A;", "B", "x.y", "/path", base::Time(), base::Time(),
+                base::Time(), base::Time(), false, false,
+                CookieSameSite::NO_RESTRICTION, COOKIE_PRIORITY_LOW)
+                ->IsCanonical(),
+            CanonicalCookie::CanonicalizationFailure::kUnparseableName);
 
   // '=' character in value.
   EXPECT_TRUE(CanonicalCookie::CreateUnsafeCookieForTesting(
@@ -3284,18 +3298,19 @@ TEST(CanonicalCookieTest, IsCanonical) {
                   ->IsCanonical());
 
   // Separator in value.
-  EXPECT_FALSE(CanonicalCookie::CreateUnsafeCookieForTesting(
-                   "A", "B;", "x.y", "/path", base::Time(), base::Time(),
-                   base::Time(), base::Time(), false, false,
-                   CookieSameSite::NO_RESTRICTION, COOKIE_PRIORITY_LOW)
-                   ->IsCanonical());
+  EXPECT_EQ(CanonicalCookie::CreateUnsafeCookieForTesting(
+                "A", "B;", "x.y", "/path", base::Time(), base::Time(),
+                base::Time(), base::Time(), false, false,
+                CookieSameSite::NO_RESTRICTION, COOKIE_PRIORITY_LOW)
+                ->IsCanonical(),
+            CanonicalCookie::CanonicalizationFailure::kUnparseableValue);
 
   // Separator in domain.
   //
-  // TODO(crbug.com/40256677): The character ';' is permitted in the URL
-  // host. That makes IsCanonical() return true here. However, previously,
-  // IsCanonical() used to false because ';' was a forbidden character. We need
-  // to verify whether this change is acceptable or not.
+  // TODO(crbug.com/40256677): The character ';' is permitted in the URL host.
+  // That makes IsCanonical() succeed here. However, previously, IsCanonical()
+  // used to fail because ';' was a forbidden character. We need to verify
+  // whether this change is acceptable or not.
   EXPECT_TRUE(CanonicalCookie::CreateUnsafeCookieForTesting(
                   "A", "B", ";x.y", "/path", base::Time(), base::Time(),
                   base::Time(), base::Time(), false, false,
@@ -3303,18 +3318,20 @@ TEST(CanonicalCookieTest, IsCanonical) {
                   ->IsCanonical());
 
   // Garbage in domain.
-  EXPECT_FALSE(CanonicalCookie::CreateUnsafeCookieForTesting(
-                   "A", "B", "@:&", "/path", base::Time(), base::Time(),
-                   base::Time(), base::Time(), false, false,
-                   CookieSameSite::NO_RESTRICTION, COOKIE_PRIORITY_LOW)
-                   ->IsCanonical());
+  EXPECT_EQ(CanonicalCookie::CreateUnsafeCookieForTesting(
+                "A", "B", "@:&", "/path", base::Time(), base::Time(),
+                base::Time(), base::Time(), false, false,
+                CookieSameSite::NO_RESTRICTION, COOKIE_PRIORITY_LOW)
+                ->IsCanonical(),
+            CanonicalCookie::CanonicalizationFailure::kInvalidDomain);
 
   // Space in domain.
-  EXPECT_FALSE(CanonicalCookie::CreateUnsafeCookieForTesting(
-                   "A", "B", "x.y ", "/path", base::Time(), base::Time(),
-                   base::Time(), base::Time(), false, false,
-                   CookieSameSite::NO_RESTRICTION, COOKIE_PRIORITY_LOW)
-                   ->IsCanonical());
+  EXPECT_EQ(CanonicalCookie::CreateUnsafeCookieForTesting(
+                "A", "B", "x.y ", "/path", base::Time(), base::Time(),
+                base::Time(), base::Time(), false, false,
+                CookieSameSite::NO_RESTRICTION, COOKIE_PRIORITY_LOW)
+                ->IsCanonical(),
+            CanonicalCookie::CanonicalizationFailure::kInvalidDomain);
 
   // Empty domain.  (This is against cookie spec, but needed for Chrome's
   // out-of-spec use of cookies for extensions; see http://crbug.com/730633.
@@ -3325,18 +3342,20 @@ TEST(CanonicalCookieTest, IsCanonical) {
                   ->IsCanonical());
 
   // Path does not start with a "/".
-  EXPECT_FALSE(CanonicalCookie::CreateUnsafeCookieForTesting(
-                   "A", "B", "x.y", "path", base::Time(), base::Time(),
-                   base::Time(), base::Time(), false, false,
-                   CookieSameSite::NO_RESTRICTION, COOKIE_PRIORITY_LOW)
-                   ->IsCanonical());
+  EXPECT_EQ(CanonicalCookie::CreateUnsafeCookieForTesting(
+                "A", "B", "x.y", "path", base::Time(), base::Time(),
+                base::Time(), base::Time(), false, false,
+                CookieSameSite::NO_RESTRICTION, COOKIE_PRIORITY_LOW)
+                ->IsCanonical(),
+            CanonicalCookie::CanonicalizationFailure::kInvalidPath);
 
   // Empty path.
-  EXPECT_FALSE(CanonicalCookie::CreateUnsafeCookieForTesting(
-                   "A", "B", "x.y", "", base::Time(), base::Time(),
-                   base::Time(), base::Time(), false, false,
-                   CookieSameSite::NO_RESTRICTION, COOKIE_PRIORITY_LOW)
-                   ->IsCanonical());
+  EXPECT_EQ(CanonicalCookie::CreateUnsafeCookieForTesting(
+                "A", "B", "x.y", "", base::Time(), base::Time(), base::Time(),
+                base::Time(), false, false, CookieSameSite::NO_RESTRICTION,
+                COOKIE_PRIORITY_LOW)
+                ->IsCanonical(),
+            CanonicalCookie::CanonicalizationFailure::kInvalidPath);
 
   // "localhost" as domain.
   EXPECT_TRUE(CanonicalCookie::CreateUnsafeCookieForTesting(
@@ -3346,11 +3365,12 @@ TEST(CanonicalCookieTest, IsCanonical) {
                   ->IsCanonical());
 
   // non-ASCII domain.
-  EXPECT_FALSE(CanonicalCookie::CreateUnsafeCookieForTesting(
-                   "A", "B", "\xC3\xA9xample.com", "/path", base::Time(),
-                   base::Time(), base::Time(), base::Time(), false, false,
-                   CookieSameSite::NO_RESTRICTION, COOKIE_PRIORITY_LOW)
-                   ->IsCanonical());
+  EXPECT_EQ(CanonicalCookie::CreateUnsafeCookieForTesting(
+                "A", "B", "\xC3\xA9xample.com", "/path", base::Time(),
+                base::Time(), base::Time(), base::Time(), false, false,
+                CookieSameSite::NO_RESTRICTION, COOKIE_PRIORITY_LOW)
+                ->IsCanonical(),
+            CanonicalCookie::CanonicalizationFailure::kInvalidDomain);
 
   // punycode domain.
   EXPECT_TRUE(CanonicalCookie::CreateUnsafeCookieForTesting(
@@ -3374,46 +3394,52 @@ TEST(CanonicalCookieTest, IsCanonical) {
                   ->IsCanonical());
 
   // period-prefixed IPv4 address as domain.
-  EXPECT_FALSE(CanonicalCookie::CreateUnsafeCookieForTesting(
-                   "A", "B", ".1.3.2.4", "/path", base::Time(), base::Time(),
-                   base::Time(), base::Time(), false, false,
-                   CookieSameSite::NO_RESTRICTION, COOKIE_PRIORITY_LOW)
-                   ->IsCanonical());
+  EXPECT_EQ(CanonicalCookie::CreateUnsafeCookieForTesting(
+                "A", "B", ".1.3.2.4", "/path", base::Time(), base::Time(),
+                base::Time(), base::Time(), false, false,
+                CookieSameSite::NO_RESTRICTION, COOKIE_PRIORITY_LOW)
+                ->IsCanonical(),
+            CanonicalCookie::CanonicalizationFailure::kInvalidDomain);
 
   // period-prefixed truncated IPv4 address as domain.
-  EXPECT_FALSE(CanonicalCookie::CreateUnsafeCookieForTesting(
-                   "A", "B", ".3.2.4", "/path", base::Time(), base::Time(),
-                   base::Time(), base::Time(), true, false,
-                   CookieSameSite::NO_RESTRICTION, COOKIE_PRIORITY_LOW)
-                   ->IsCanonical());
+  EXPECT_EQ(CanonicalCookie::CreateUnsafeCookieForTesting(
+                "A", "B", ".3.2.4", "/path", base::Time(), base::Time(),
+                base::Time(), base::Time(), true, false,
+                CookieSameSite::NO_RESTRICTION, COOKIE_PRIORITY_LOW)
+                ->IsCanonical(),
+            CanonicalCookie::CanonicalizationFailure::kInvalidDomain);
 
   // truncated IPv4 address as domain.
-  EXPECT_FALSE(CanonicalCookie::CreateUnsafeCookieForTesting(
-                   "A", "B", "3.2.4", "/path", base::Time(), base::Time(),
-                   base::Time(), base::Time(), true, false,
-                   CookieSameSite::NO_RESTRICTION, COOKIE_PRIORITY_LOW)
-                   ->IsCanonical());
+  EXPECT_EQ(CanonicalCookie::CreateUnsafeCookieForTesting(
+                "A", "B", "3.2.4", "/path", base::Time(), base::Time(),
+                base::Time(), base::Time(), true, false,
+                CookieSameSite::NO_RESTRICTION, COOKIE_PRIORITY_LOW)
+                ->IsCanonical(),
+            CanonicalCookie::CanonicalizationFailure::kInvalidDomain);
 
   // Non-canonical IPv4 address as domain.
-  EXPECT_FALSE(CanonicalCookie::CreateUnsafeCookieForTesting(
-                   "A", "B", "01.2.03.4", "/path", base::Time(), base::Time(),
-                   base::Time(), base::Time(), false, false,
-                   CookieSameSite::NO_RESTRICTION, COOKIE_PRIORITY_LOW)
-                   ->IsCanonical());
+  EXPECT_EQ(CanonicalCookie::CreateUnsafeCookieForTesting(
+                "A", "B", "01.2.03.4", "/path", base::Time(), base::Time(),
+                base::Time(), base::Time(), false, false,
+                CookieSameSite::NO_RESTRICTION, COOKIE_PRIORITY_LOW)
+                ->IsCanonical(),
+            CanonicalCookie::CanonicalizationFailure::kInvalidDomain);
 
   // Non-canonical IPv4 address as domain.
-  EXPECT_FALSE(CanonicalCookie::CreateUnsafeCookieForTesting(
-                   "A", "B", "16843009", "/path", base::Time(), base::Time(),
-                   base::Time(), base::Time(), false, false,
-                   CookieSameSite::NO_RESTRICTION, COOKIE_PRIORITY_LOW)
-                   ->IsCanonical());
+  EXPECT_EQ(CanonicalCookie::CreateUnsafeCookieForTesting(
+                "A", "B", "16843009", "/path", base::Time(), base::Time(),
+                base::Time(), base::Time(), false, false,
+                CookieSameSite::NO_RESTRICTION, COOKIE_PRIORITY_LOW)
+                ->IsCanonical(),
+            CanonicalCookie::CanonicalizationFailure::kInvalidDomain);
 
   // Non-canonical IPv4 address as domain.
-  EXPECT_FALSE(CanonicalCookie::CreateUnsafeCookieForTesting(
-                   "A", "B", "0x1010101", "/path", base::Time(), base::Time(),
-                   base::Time(), base::Time(), false, false,
-                   CookieSameSite::NO_RESTRICTION, COOKIE_PRIORITY_LOW)
-                   ->IsCanonical());
+  EXPECT_EQ(CanonicalCookie::CreateUnsafeCookieForTesting(
+                "A", "B", "0x1010101", "/path", base::Time(), base::Time(),
+                base::Time(), base::Time(), false, false,
+                CookieSameSite::NO_RESTRICTION, COOKIE_PRIORITY_LOW)
+                ->IsCanonical(),
+            CanonicalCookie::CanonicalizationFailure::kInvalidDomain);
 
   // Null IPv6 address as domain.
   EXPECT_TRUE(CanonicalCookie::CreateUnsafeCookieForTesting(
@@ -3430,28 +3456,30 @@ TEST(CanonicalCookieTest, IsCanonical) {
                   ->IsCanonical());
 
   // Fully speced IPv6 address as domain.
-  EXPECT_FALSE(CanonicalCookie::CreateUnsafeCookieForTesting(
-                   "A", "B", "[2001:0DB8:AC10:FE01:0000:0000:0000:0000]",
-                   "/path", base::Time(), base::Time(), base::Time(),
-                   base::Time(), false, false, CookieSameSite::NO_RESTRICTION,
-                   COOKIE_PRIORITY_LOW)
-                   ->IsCanonical());
+  EXPECT_EQ(CanonicalCookie::CreateUnsafeCookieForTesting(
+                "A", "B", "[2001:0DB8:AC10:FE01:0000:0000:0000:0000]", "/path",
+                base::Time(), base::Time(), base::Time(), base::Time(), false,
+                false, CookieSameSite::NO_RESTRICTION, COOKIE_PRIORITY_LOW)
+                ->IsCanonical(),
+            CanonicalCookie::CanonicalizationFailure::kInvalidDomain);
 
   // Zero abbreviated IPv6 address as domain.  Not canonical because of leading
   // zeros & uppercase hex letters.
-  EXPECT_FALSE(CanonicalCookie::CreateUnsafeCookieForTesting(
-                   "A", "B", "[2001:0DB8:AC10:FE01::]", "/path", base::Time(),
-                   base::Time(), base::Time(), base::Time(), false, false,
-                   CookieSameSite::NO_RESTRICTION, COOKIE_PRIORITY_LOW)
-                   ->IsCanonical());
+  EXPECT_EQ(CanonicalCookie::CreateUnsafeCookieForTesting(
+                "A", "B", "[2001:0DB8:AC10:FE01::]", "/path", base::Time(),
+                base::Time(), base::Time(), base::Time(), false, false,
+                CookieSameSite::NO_RESTRICTION, COOKIE_PRIORITY_LOW)
+                ->IsCanonical(),
+            CanonicalCookie::CanonicalizationFailure::kInvalidDomain);
 
   // Zero prefixes removed IPv6 address as domain.  Not canoncial because of
   // uppercase hex letters.
-  EXPECT_FALSE(CanonicalCookie::CreateUnsafeCookieForTesting(
-                   "A", "B", "[2001:DB8:AC10:FE01::]", "/path", base::Time(),
-                   base::Time(), base::Time(), base::Time(), false, false,
-                   CookieSameSite::NO_RESTRICTION, COOKIE_PRIORITY_LOW)
-                   ->IsCanonical());
+  EXPECT_EQ(CanonicalCookie::CreateUnsafeCookieForTesting(
+                "A", "B", "[2001:DB8:AC10:FE01::]", "/path", base::Time(),
+                base::Time(), base::Time(), base::Time(), false, false,
+                CookieSameSite::NO_RESTRICTION, COOKIE_PRIORITY_LOW)
+                ->IsCanonical(),
+            CanonicalCookie::CanonicalizationFailure::kInvalidDomain);
 
   // Lowercased hex IPv6 address as domain.
   EXPECT_TRUE(CanonicalCookie::CreateUnsafeCookieForTesting(
@@ -3461,26 +3489,28 @@ TEST(CanonicalCookieTest, IsCanonical) {
                   ->IsCanonical());
 
   // Lowercased hex IPv6 address as domain for domain cookie.
-  EXPECT_FALSE(CanonicalCookie::CreateUnsafeCookieForTesting(
-                   "A", "B", ".[2001:db8:ac10:fe01::]", "/path", base::Time(),
-                   base::Time(), base::Time(), base::Time(), false, false,
-                   CookieSameSite::NO_RESTRICTION, COOKIE_PRIORITY_LOW)
-                   ->IsCanonical());
+  EXPECT_EQ(CanonicalCookie::CreateUnsafeCookieForTesting(
+                "A", "B", ".[2001:db8:ac10:fe01::]", "/path", base::Time(),
+                base::Time(), base::Time(), base::Time(), false, false,
+                CookieSameSite::NO_RESTRICTION, COOKIE_PRIORITY_LOW)
+                ->IsCanonical(),
+            CanonicalCookie::CanonicalizationFailure::kInvalidDomain);
 
   // Incomplete lowercased hex IPv6 address as domain.
-  EXPECT_FALSE(CanonicalCookie::CreateUnsafeCookieForTesting(
-                   "A", "B", "[2001:db8:ac10:fe01:]", "/path", base::Time(),
-                   base::Time(), base::Time(), base::Time(), false, false,
-                   CookieSameSite::NO_RESTRICTION, COOKIE_PRIORITY_LOW)
-                   ->IsCanonical());
+  EXPECT_EQ(CanonicalCookie::CreateUnsafeCookieForTesting(
+                "A", "B", "[2001:db8:ac10:fe01:]", "/path", base::Time(),
+                base::Time(), base::Time(), base::Time(), false, false,
+                CookieSameSite::NO_RESTRICTION, COOKIE_PRIORITY_LOW)
+                ->IsCanonical(),
+            CanonicalCookie::CanonicalizationFailure::kInvalidDomain);
 
   // Missing square brackets in IPv6 address as domain.
-  EXPECT_FALSE(CanonicalCookie::CreateUnsafeCookieForTesting(
-                   "A", "B", "2606:2800:220:1:248:1893:25c8:1946", "/path",
-                   base::Time(), base::Time(), base::Time(), base::Time(),
-                   false, false, CookieSameSite::NO_RESTRICTION,
-                   COOKIE_PRIORITY_LOW)
-                   ->IsCanonical());
+  EXPECT_EQ(CanonicalCookie::CreateUnsafeCookieForTesting(
+                "A", "B", "2606:2800:220:1:248:1893:25c8:1946", "/path",
+                base::Time(), base::Time(), base::Time(), base::Time(), false,
+                false, CookieSameSite::NO_RESTRICTION, COOKIE_PRIORITY_LOW)
+                ->IsCanonical(),
+            CanonicalCookie::CanonicalizationFailure::kInvalidDomain);
 
   // Properly formatted host cookie.
   EXPECT_TRUE(CanonicalCookie::CreateUnsafeCookieForTesting(
@@ -3490,32 +3520,36 @@ TEST(CanonicalCookieTest, IsCanonical) {
                   ->IsCanonical());
 
   // Insecure host cookie.
-  EXPECT_FALSE(CanonicalCookie::CreateUnsafeCookieForTesting(
-                   "__Host-A", "B", "x.y", "/", base::Time(), base::Time(),
-                   base::Time(), base::Time(), false, false,
-                   CookieSameSite::NO_RESTRICTION, COOKIE_PRIORITY_LOW)
-                   ->IsCanonical());
+  EXPECT_EQ(CanonicalCookie::CreateUnsafeCookieForTesting(
+                "__Host-A", "B", "x.y", "/", base::Time(), base::Time(),
+                base::Time(), base::Time(), false, false,
+                CookieSameSite::NO_RESTRICTION, COOKIE_PRIORITY_LOW)
+                ->IsCanonical(),
+            CanonicalCookie::CanonicalizationFailure::kInvalidHostPrefix);
 
   // Host cookie with non-null path.
-  EXPECT_FALSE(CanonicalCookie::CreateUnsafeCookieForTesting(
-                   "__Host-A", "B", "x.y", "/path", base::Time(), base::Time(),
-                   base::Time(), base::Time(), true, false,
-                   CookieSameSite::NO_RESTRICTION, COOKIE_PRIORITY_LOW)
-                   ->IsCanonical());
+  EXPECT_EQ(CanonicalCookie::CreateUnsafeCookieForTesting(
+                "__Host-A", "B", "x.y", "/path", base::Time(), base::Time(),
+                base::Time(), base::Time(), true, false,
+                CookieSameSite::NO_RESTRICTION, COOKIE_PRIORITY_LOW)
+                ->IsCanonical(),
+            CanonicalCookie::CanonicalizationFailure::kInvalidHostPrefix);
 
   // Host cookie with empty domain.
-  EXPECT_FALSE(CanonicalCookie::CreateUnsafeCookieForTesting(
-                   "__Host-A", "B", "", "/", base::Time(), base::Time(),
-                   base::Time(), base::Time(), true, false,
-                   CookieSameSite::NO_RESTRICTION, COOKIE_PRIORITY_LOW)
-                   ->IsCanonical());
+  EXPECT_EQ(CanonicalCookie::CreateUnsafeCookieForTesting(
+                "__Host-A", "B", "", "/", base::Time(), base::Time(),
+                base::Time(), base::Time(), true, false,
+                CookieSameSite::NO_RESTRICTION, COOKIE_PRIORITY_LOW)
+                ->IsCanonical(),
+            CanonicalCookie::CanonicalizationFailure::kInvalidHostPrefix);
 
   // Host cookie with period prefixed domain.
-  EXPECT_FALSE(CanonicalCookie::CreateUnsafeCookieForTesting(
-                   "__Host-A", "B", ".x.y", "/", base::Time(), base::Time(),
-                   base::Time(), base::Time(), true, false,
-                   CookieSameSite::NO_RESTRICTION, COOKIE_PRIORITY_LOW)
-                   ->IsCanonical());
+  EXPECT_EQ(CanonicalCookie::CreateUnsafeCookieForTesting(
+                "__Host-A", "B", ".x.y", "/", base::Time(), base::Time(),
+                base::Time(), base::Time(), true, false,
+                CookieSameSite::NO_RESTRICTION, COOKIE_PRIORITY_LOW)
+                ->IsCanonical(),
+            CanonicalCookie::CanonicalizationFailure::kInvalidHostPrefix);
 
   // Properly formatted secure cookie.
   EXPECT_TRUE(CanonicalCookie::CreateUnsafeCookieForTesting(
@@ -3525,11 +3559,12 @@ TEST(CanonicalCookieTest, IsCanonical) {
                   ->IsCanonical());
 
   // Insecure secure cookie.
-  EXPECT_FALSE(CanonicalCookie::CreateUnsafeCookieForTesting(
-                   "__Secure-A", "B", "x.y", "/", base::Time(), base::Time(),
-                   base::Time(), base::Time(), false, false,
-                   CookieSameSite::NO_RESTRICTION, COOKIE_PRIORITY_LOW)
-                   ->IsCanonical());
+  EXPECT_EQ(CanonicalCookie::CreateUnsafeCookieForTesting(
+                "__Secure-A", "B", "x.y", "/", base::Time(), base::Time(),
+                base::Time(), base::Time(), false, false,
+                CookieSameSite::NO_RESTRICTION, COOKIE_PRIORITY_LOW)
+                ->IsCanonical(),
+            CanonicalCookie::CanonicalizationFailure::kInvalidSecurePrefix);
 
   // Partitioned attribute used correctly (__Host- prefix).
   EXPECT_TRUE(CanonicalCookie::CreateUnsafeCookieForTesting(
@@ -3553,14 +3588,15 @@ TEST(CanonicalCookieTest, IsCanonical) {
                   ->IsCanonical());
 
   // Partitioned attribute invalid, not Secure.
-  EXPECT_FALSE(CanonicalCookie::CreateUnsafeCookieForTesting(
-                   "A", "B", "x.y", "/", base::Time(), base::Time(),
-                   base::Time(), base::Time(), /*secure=*/false,
-                   /*httponly=*/false, CookieSameSite::UNSPECIFIED,
-                   COOKIE_PRIORITY_LOW,
-                   CookiePartitionKey::FromURLForTesting(
-                       GURL("https://toplevelsite.com")))
-                   ->IsCanonical());
+  EXPECT_EQ(
+      CanonicalCookie::CreateUnsafeCookieForTesting(
+          "A", "B", "x.y", "/", base::Time(), base::Time(), base::Time(),
+          base::Time(), /*secure=*/false,
+          /*httponly=*/false, CookieSameSite::UNSPECIFIED, COOKIE_PRIORITY_LOW,
+          CookiePartitionKey::FromURLForTesting(
+              GURL("https://toplevelsite.com")))
+          ->IsCanonical(),
+      CanonicalCookie::CanonicalizationFailure::kPartitionedInsecure);
 
   // Partitioned attribute is valid when Path != "/".
   EXPECT_TRUE(CanonicalCookie::CreateUnsafeCookieForTesting(
@@ -3583,29 +3619,37 @@ TEST(CanonicalCookieTest, IsCanonical) {
                   ->IsCanonical());
 
   // Hidden cookie prefixes.
-  EXPECT_FALSE(CanonicalCookie::CreateUnsafeCookieForTesting(
-                   "", "__Secure-a=b", "x.y", "/", base::Time(), base::Time(),
-                   base::Time(), base::Time(), true, false,
-                   CookieSameSite::NO_RESTRICTION, COOKIE_PRIORITY_LOW)
-                   ->IsCanonical());
+  EXPECT_EQ(
+      CanonicalCookie::CreateUnsafeCookieForTesting(
+          "", "__Secure-a=b", "x.y", "/", base::Time(), base::Time(),
+          base::Time(), base::Time(), true, false,
+          CookieSameSite::NO_RESTRICTION, COOKIE_PRIORITY_LOW)
+          ->IsCanonical(),
+      CanonicalCookie::CanonicalizationFailure::kEmptyNameWithHiddenPrefix);
 
-  EXPECT_FALSE(CanonicalCookie::CreateUnsafeCookieForTesting(
-                   "", "__Secure-a", "x.y", "/", base::Time(), base::Time(),
-                   base::Time(), base::Time(), true, false,
-                   CookieSameSite::NO_RESTRICTION, COOKIE_PRIORITY_LOW)
-                   ->IsCanonical());
+  EXPECT_EQ(
+      CanonicalCookie::CreateUnsafeCookieForTesting(
+          "", "__Secure-a", "x.y", "/", base::Time(), base::Time(),
+          base::Time(), base::Time(), true, false,
+          CookieSameSite::NO_RESTRICTION, COOKIE_PRIORITY_LOW)
+          ->IsCanonical(),
+      CanonicalCookie::CanonicalizationFailure::kEmptyNameWithHiddenPrefix);
 
-  EXPECT_FALSE(CanonicalCookie::CreateUnsafeCookieForTesting(
-                   "", "__Host-a=b", "x.y", "/", base::Time(), base::Time(),
-                   base::Time(), base::Time(), true, false,
-                   CookieSameSite::NO_RESTRICTION, COOKIE_PRIORITY_LOW)
-                   ->IsCanonical());
+  EXPECT_EQ(
+      CanonicalCookie::CreateUnsafeCookieForTesting(
+          "", "__Host-a=b", "x.y", "/", base::Time(), base::Time(),
+          base::Time(), base::Time(), true, false,
+          CookieSameSite::NO_RESTRICTION, COOKIE_PRIORITY_LOW)
+          ->IsCanonical(),
+      CanonicalCookie::CanonicalizationFailure::kEmptyNameWithHiddenPrefix);
 
-  EXPECT_FALSE(CanonicalCookie::CreateUnsafeCookieForTesting(
-                   "", "__Host-a", "x.y", "/", base::Time(), base::Time(),
-                   base::Time(), base::Time(), true, false,
-                   CookieSameSite::NO_RESTRICTION, COOKIE_PRIORITY_LOW)
-                   ->IsCanonical());
+  EXPECT_EQ(
+      CanonicalCookie::CreateUnsafeCookieForTesting(
+          "", "__Host-a", "x.y", "/", base::Time(), base::Time(), base::Time(),
+          base::Time(), true, false, CookieSameSite::NO_RESTRICTION,
+          COOKIE_PRIORITY_LOW)
+          ->IsCanonical(),
+      CanonicalCookie::CanonicalizationFailure::kEmptyNameWithHiddenPrefix);
 
   EXPECT_TRUE(CanonicalCookie::CreateUnsafeCookieForTesting(
                   "a", "__Secure-a=b", "x.y", "/", base::Time(), base::Time(),

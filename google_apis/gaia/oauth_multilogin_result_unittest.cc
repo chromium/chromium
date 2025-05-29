@@ -28,6 +28,7 @@ using ::testing::ElementsAre;
 using ::testing::Eq;
 using ::testing::FieldsAre;
 using ::testing::IsEmpty;
+using ::testing::IsTrue;
 using ::testing::Property;
 
 namespace {
@@ -220,10 +221,10 @@ TEST(OAuthMultiloginResultTest, TryParseCookiesFromValue) {
                   Property(&CanonicalCookie::IsDomainCookie, Eq(false)),
                   Property(&CanonicalCookie::IsDomainCookie, Eq(true))));
   EXPECT_THAT(result.cookies(),
-              ElementsAre(Property(&CanonicalCookie::IsCanonical, Eq(true)),
-                          Property(&CanonicalCookie::IsCanonical, Eq(true)),
-                          Property(&CanonicalCookie::IsCanonical, Eq(true)),
-                          Property(&CanonicalCookie::IsCanonical, Eq(true))));
+              ElementsAre(Property(&CanonicalCookie::IsCanonical, IsTrue()),
+                          Property(&CanonicalCookie::IsCanonical, IsTrue()),
+                          Property(&CanonicalCookie::IsCanonical, IsTrue()),
+                          Property(&CanonicalCookie::IsCanonical, IsTrue())));
   EXPECT_THAT(result.cookies(),
               ElementsAre(Property(&CanonicalCookie::IsHttpOnly, Eq(false)),
                           Property(&CanonicalCookie::IsHttpOnly, Eq(true)),

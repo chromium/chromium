@@ -7,6 +7,7 @@
 #include <optional>
 #include <utility>
 
+#include "base/dcheck_is_on.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -156,7 +157,11 @@ void CookieManager::SetCanonicalCookie(const net::CanonicalCookie& cookie,
       return;
     }
   }
-  DCHECK(cookie_ptr->IsCanonical());
+  if constexpr (DCHECK_IS_ON()) {
+    net::CanonicalCookie::CanonicalizationResult result =
+        cookie_ptr->IsCanonical();
+    DCHECK(result) << result;
+  }
   cookie_store_->SetCanonicalCookieAsync(std::move(cookie_ptr), source_url,
                                          cookie_options, std::move(callback));
 }

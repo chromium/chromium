@@ -48,6 +48,49 @@ using CookieAccessResultList = std::vector<CookieWithAccessResult>;
 // response if the request context and attributes allow it.
 class NET_EXPORT CanonicalCookie : public CookieBase {
  public:
+  // Various reasons why `IsCanonical` and `IsCanonicalForFromStorage` can fail.
+  enum class CanonicalizationFailure {
+    kInvalidExpiryDate,
+    kUnparseableName,
+    kUnparseableValue,
+    kInvalidName,
+    kInvalidValue,
+    kInconsistentCreationAndLastAccessDate,
+    kNonAsciiCharactersDisallowed,
+    kInvalidDomain,
+    kInvalidPath,
+    kInvalidHostPrefix,
+    kInvalidSecurePrefix,
+    kEmptyNameWithHiddenPrefix,
+    kPartitionedInsecure,
+  };
+
+  // Carries metadata related to the canonicalization results for a given
+  // cookie.
+  class CanonicalizationResult {
+   public:
+    CanonicalizationResult() = delete;
+
+    CanonicalizationResult(base::PassKey<CanonicalCookie>,
+                           std::optional<CanonicalizationFailure> failure);
+
+    friend bool operator==(const CanonicalizationResult&,
+                           const CanonicalizationResult&) = default;
+
+    bool operator==(CanonicalizationFailure failure) const {
+      return failure_ == failure;
+    }
+
+    explicit operator bool() const { return !failure_.has_value(); }
+
+    NET_EXPORT friend std::ostream& operator<<(
+        std::ostream& os,
+        const CanonicalizationResult& result);
+
+   private:
+    std::optional<CanonicalizationFailure> failure_;
+  };
+
   CanonicalCookie();
   CanonicalCookie(const CanonicalCookie& other);
   CanonicalCookie(CanonicalCookie&& other);
@@ -333,8 +376,9 @@ class NET_EXPORT CanonicalCookie : public CookieBase {
                                                 const base::Time& creation_date,
                                                 net::CookieSourceScheme scheme);
 
-  // Return whether this object is a valid CanonicalCookie().  Invalid
-  // cookies may be constructed by the detailed constructor.
+  // Return whether this object is a valid CanonicalCookie(). If the object is
+  // invalid, return the first reason found why not. Invalid cookies may be
+  // constructed by the detailed constructor.
   // A cookie is considered canonical if-and-only-if:
   // * It can be created by CanonicalCookie::Create, or
   // * It is identical to a cookie created by CanonicalCookie::Create except
@@ -346,23 +390,24 @@ class NET_EXPORT CanonicalCookie : public CookieBase {
   // An additional requirement on a CanonicalCookie is that if the last
   // access time is non-null, the creation time must also be non-null and
   // greater than the last access time.
-  bool IsCanonical() const;
+  CanonicalizationResult IsCanonical() const;
 
   // Return whether this object is a valid CanonicalCookie() when retrieving the
-  // cookie from the persistent store. Cookie that exist in the persistent store
+  // cookie from the persistent store; and if the CanonicalCookie is invalid,
+  // return the first reason why not. Cookie that exist in the persistent store
   // may have been created before more recent changes to the definition of
   // "canonical". To ease the transition to the new definitions, and to prevent
   // users from having their cookies deleted, this function supports the older
   // definition of canonical. This function is intended to be temporary because
   // as the number of older cookies (which are non-compliant with the newer
-  // definition of canonical) decay toward zero it can eventually be replaced
-  // by `IsCanonical()` to enforce the newer definition of canonical.
+  // definition of canonical) decay toward zero it can eventually be replaced by
+  // `IsCanonical()` to enforce the newer definition of canonical.
   //
   // A cookie is considered canonical by this function if-and-only-if:
   // * It is considered canonical by IsCanonical()
   // * TODO(crbug.com/40787717): Add exceptions once IsCanonical() starts
   // enforcing them.
-  bool IsCanonicalForFromStorage() const;
+  CanonicalizationResult IsCanonicalForFromStorage() const;
 
   // Returns whether the effective SameSite mode is SameSite=None (i.e. no
   // SameSite restrictions).
@@ -406,6 +451,10 @@ class NET_EXPORT CanonicalCookie : public CookieBase {
 
   // Checks for values that could be misinterpreted as a cookie name prefix.
   static bool HasHiddenPrefixName(std::string_view cookie_value);
+
+  // Helpers for use in canonicalization checks.
+  static CanonicalizationResult Pass();
+  static CanonicalizationResult Fail(CanonicalizationFailure failure);
 
   // CookieBase:
   base::TimeDelta GetLaxAllowUnsafeThresholdAge() const override;
@@ -458,6 +507,10 @@ struct CookieWithAccessResult {
   CanonicalCookie cookie;
   CookieAccessResult access_result;
 };
+
+NET_EXPORT std::ostream& operator<<(
+    std::ostream& os,
+    CanonicalCookie::CanonicalizationFailure failure);
 
 // Provided to allow gtest to create more helpful error messages, instead of
 // printing hex.

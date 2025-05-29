@@ -52,6 +52,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/containers/contains.h"
+#include "base/dcheck_is_on.h"
 #include "base/feature_list.h"
 #include "base/format_macros.h"
 #include "base/logging.h"
@@ -110,6 +111,22 @@ CookieAccessParams::CookieAccessParams(CookieAccessSemantics access_semantics,
     : access_semantics(access_semantics),
       scope_semantics(scope_semantics),
       delegate_treats_url_as_trustworthy(delegate_treats_url_as_trustworthy) {}
+
+CanonicalCookie::CanonicalizationResult::CanonicalizationResult(
+    base::PassKey<CanonicalCookie>,
+    std::optional<CanonicalizationFailure> failure)
+    : failure_(failure) {}
+
+std::ostream& operator<<(
+    std::ostream& os,
+    const CanonicalCookie::CanonicalizationResult& result) {
+  if (result) {
+    os << "(ok)";
+  } else {
+    os << result.failure_.value();
+  }
+  return os;
+}
 
 CanonicalCookie::CanonicalCookie() = default;
 
@@ -686,7 +703,10 @@ std::unique_ptr<CanonicalCookie> CanonicalCookie::CreateSanitizedCookie(
       last_access_time,
       /*last_update=*/base::Time::Now(), secure, http_only, same_site, priority,
       partition_key, source_scheme, source_port, CookieSourceType::kOther);
-  DCHECK(cc->IsCanonical());
+  if constexpr (DCHECK_IS_ON()) {
+    CanonicalCookie::CanonicalizationResult result = cc->IsCanonical();
+    DCHECK(result) << result;
+  }
 
   return cc;
 }
@@ -929,7 +949,7 @@ std::string CanonicalCookie::DebugString() const {
       static_cast<int64_t>(CreationDate().ToTimeT()));
 }
 
-bool CanonicalCookie::IsCanonical() const {
+CanonicalCookie::CanonicalizationResult CanonicalCookie::IsCanonical() const {
   // TODO(crbug.com/40787717) Eventually we should check the size of name+value,
   // assuming we collect metrics and determine that a low percentage of cookies
   // would fail this check. Note that we still don't want to enforce length
@@ -940,36 +960,41 @@ bool CanonicalCookie::IsCanonical() const {
   // high expiration dates to be retrieved.
   if (ValidateAndAdjustExpiryDate(expiry_date_, CreationDate(),
                                   SourceScheme()) != expiry_date_) {
-    return false;
+    return Fail(CanonicalizationFailure::kInvalidExpiryDate);
   }
 
   return IsCanonicalForFromStorage();
 }
 
-bool CanonicalCookie::IsCanonicalForFromStorage() const {
+CanonicalCookie::CanonicalizationResult
+CanonicalCookie::IsCanonicalForFromStorage() const {
   // Not checking domain or path against ParsedCookie as it may have
   // come purely from the URL. Also, don't call IsValidCookieNameValuePair()
   // here because we don't want to enforce the size checks on names or values
   // that may have been reconstituted from the cookie store.
-  if (ParsedCookie::ParseTokenString(Name()) != Name() ||
-      !ParsedCookie::ValueMatchesParsedValue(Value())) {
-    return false;
+  if (ParsedCookie::ParseTokenString(Name()) != Name()) {
+    return Fail(CanonicalizationFailure::kUnparseableName);
+  }
+  if (!ParsedCookie::ValueMatchesParsedValue(Value())) {
+    return Fail(CanonicalizationFailure::kUnparseableValue);
   }
 
-  if (!ParsedCookie::IsValidCookieName(Name()) ||
-      !ParsedCookie::IsValidCookieValue(Value())) {
-    return false;
+  if (!ParsedCookie::IsValidCookieName(Name())) {
+    return Fail(CanonicalizationFailure::kInvalidName);
+  }
+  if (!ParsedCookie::IsValidCookieValue(Value())) {
+    return Fail(CanonicalizationFailure::kInvalidValue);
   }
 
   if (!last_access_date_.is_null() && CreationDate().is_null()) {
-    return false;
+    return Fail(
+        CanonicalizationFailure::kInconsistentCreationAndLastAccessDate);
   }
 
   // Check if name or value contains any non-ascii values, fail if they do.
-  if (base::FeatureList::IsEnabled(features::kDisallowNonAsciiCookies)) {
-    if (!base::IsStringASCII(Name()) || !base::IsStringASCII(Value())) {
-      return false;
-    }
+  if (base::FeatureList::IsEnabled(features::kDisallowNonAsciiCookies) &&
+      (!base::IsStringASCII(Name()) || !base::IsStringASCII(Value()))) {
+    return Fail(CanonicalizationFailure::kNonAsciiCharactersDisallowed);
   }
 
   url::CanonHostInfo canon_host_info;
@@ -984,11 +1009,11 @@ bool CanonicalCookie::IsCanonicalForFromStorage() const {
   // Domain() is ever valid and update this code accordingly.
   // See http://crbug.com/730633 for more information.
   if (canonical_domain != Domain()) {
-    return false;
+    return Fail(CanonicalizationFailure::kInvalidDomain);
   }
 
   if (Path().empty() || Path()[0] != '/') {
-    return false;
+    return Fail(CanonicalizationFailure::kInvalidPath);
   }
 
   CookiePrefix prefix = cookie_util::GetCookiePrefix(Name());
@@ -996,12 +1021,12 @@ bool CanonicalCookie::IsCanonicalForFromStorage() const {
     case COOKIE_PREFIX_HOST:
       if (!SecureAttribute() || Path() != "/" || Domain().empty() ||
           Domain()[0] == '.') {
-        return false;
+        return Fail(CanonicalizationFailure::kInvalidHostPrefix);
       }
       break;
     case COOKIE_PREFIX_SECURE:
       if (!SecureAttribute()) {
-        return false;
+        return Fail(CanonicalizationFailure::kInvalidSecurePrefix);
       }
       break;
     default:
@@ -1009,19 +1034,19 @@ bool CanonicalCookie::IsCanonicalForFromStorage() const {
   }
 
   if (Name() == "" && HasHiddenPrefixName(Value())) {
-    return false;
+    return Fail(CanonicalizationFailure::kEmptyNameWithHiddenPrefix);
   }
 
   if (IsPartitioned()) {
     if (CookiePartitionKey::HasNonce(PartitionKey())) {
-      return true;
+      return Pass();
     }
     if (!SecureAttribute()) {
-      return false;
+      return Fail(CanonicalizationFailure::kPartitionedInsecure);
     }
   }
 
-  return true;
+  return Pass();
 }
 
 bool CanonicalCookie::IsEffectivelySameSiteNone(
@@ -1150,6 +1175,17 @@ bool CanonicalCookie::HasHiddenPrefixName(std::string_view cookie_value) {
   return false;
 }
 
+// static
+CanonicalCookie::CanonicalizationResult CanonicalCookie::Pass() {
+  return CanonicalizationResult(base::PassKey<CanonicalCookie>(), std::nullopt);
+}
+
+// static
+CanonicalCookie::CanonicalizationResult CanonicalCookie::Fail(
+    CanonicalCookie::CanonicalizationFailure failure) {
+  return CanonicalizationResult(base::PassKey<CanonicalCookie>(), failure);
+}
+
 CookieAndLineWithAccessResult::CookieAndLineWithAccessResult() = default;
 
 CookieAndLineWithAccessResult::CookieAndLineWithAccessResult(
@@ -1171,5 +1207,43 @@ CookieAndLineWithAccessResult::CookieAndLineWithAccessResult(
     CookieAndLineWithAccessResult&&) = default;
 
 CookieAndLineWithAccessResult::~CookieAndLineWithAccessResult() = default;
+
+std::ostream& operator<<(std::ostream& os,
+                         CanonicalCookie::CanonicalizationFailure failure) {
+  os << [&]() -> std::string_view {
+    switch (failure) {
+      case CanonicalCookie::CanonicalizationFailure::kInvalidExpiryDate:
+        return "kInvalidExpiryDate";
+      case CanonicalCookie::CanonicalizationFailure::kUnparseableName:
+        return "kUnparseableName";
+      case CanonicalCookie::CanonicalizationFailure::kUnparseableValue:
+        return "kUnparseableValue";
+      case CanonicalCookie::CanonicalizationFailure::kInvalidName:
+        return "kInvalidName";
+      case CanonicalCookie::CanonicalizationFailure::kInvalidValue:
+        return "kInvalidValue";
+      case CanonicalCookie::CanonicalizationFailure::
+          kInconsistentCreationAndLastAccessDate:
+        return "kInconsistentCreationAndLastAccessDate";
+      case CanonicalCookie::CanonicalizationFailure::
+          kNonAsciiCharactersDisallowed:
+        return "kNonAsciiCharactersDisallowed";
+      case CanonicalCookie::CanonicalizationFailure::kInvalidDomain:
+        return "kInvalidDomain";
+      case CanonicalCookie::CanonicalizationFailure::kInvalidPath:
+        return "kInvalidPath";
+      case CanonicalCookie::CanonicalizationFailure::kInvalidHostPrefix:
+        return "kInvalidHostPrefix";
+      case CanonicalCookie::CanonicalizationFailure::kInvalidSecurePrefix:
+        return "kInvalidSecurePrefix";
+      case CanonicalCookie::CanonicalizationFailure::kEmptyNameWithHiddenPrefix:
+        return "kEmptyNameWithHiddenPrefix";
+      case CanonicalCookie::CanonicalizationFailure::kPartitionedInsecure:
+        return "kPartitionedInsecure";
+    }
+    NOTREACHED();
+  }();
+  return os;
+}
 
 }  // namespace net

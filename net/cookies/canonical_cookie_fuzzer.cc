@@ -20,7 +20,9 @@ DEFINE_BINARY_PROTO_FUZZER(
       canonical_cookie_proto::Convert(cookie);
 
   if (sanitized_cookie) {
-    CHECK(sanitized_cookie->IsCanonical());
+    CanonicalCookie::CanonicalizationResult result =
+        sanitized_cookie->IsCanonical();
+    CHECK(result) << result;
 
     // Check identity property of various comparison functions
     const CanonicalCookie copied_cookie = *sanitized_cookie;
