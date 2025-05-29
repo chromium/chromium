@@ -250,15 +250,6 @@ targets.variant(
 )
 
 targets.variant(
-    name = "MAC_RETINA_NVIDIA_GPU_STABLE",
-    identifier = "10de:0fe9",
-    generate_pyl_entry = False,
-    mixins = [
-        "mac_retina_nvidia_gpu_stable",
-    ],
-)
-
-targets.variant(
     name = "NVIDIA_GEFORCE_GTX_1660",
     identifier = "NVIDIA GeForce GTX 1660",
     mixins = [

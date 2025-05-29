@@ -37,11 +37,10 @@
 #         arm
 #         google google-0xffff google-0xc0de
 #         imagination
-#         intel intel-gen-9 intel-gen-12 intel-0xa2e intel-0xd26 intel-0xa011
-#             intel-0x3e92 intel-0x3e9b intel-0x4680 intel-0x46a8 intel-0x5912
-#             intel-0x9bc5
+#         intel intel-gen-9 intel-gen-12 intel-0xa2e intel-0xa011 intel-0x3e92
+#             intel-0x3e9b intel-0x4680 intel-0x46a8 intel-0x5912 intel-0x9bc5
 #         microsoft microsoft-0xffff
-#         nvidia nvidia-0xfe9 nvidia-0x1cb3 nvidia-0x2184 nvidia-0x2783
+#         nvidia nvidia-0x1cb3 nvidia-0x2184 nvidia-0x2783
 #         qualcomm qualcomm-0x41333430 qualcomm-0x36333630 qualcomm-0x36334330 ]
 # Architecture
 # tags: [ mac-arm64 mac-x86_64 ]
@@ -157,7 +156,6 @@ crbug.com/419454905 [ android graphite-enabled ] WebCodecs_EncodeDecode_capture_
 crbug.com/419454905 [ android graphite-enabled ] WebCodecs_MixedSourceEncoding_vp8_prefer-software [ Failure ]
 
 # Known issues with hvc1 variants with hvc1 + camera + prefers-software to reproduce
-crbug.com/371802469 [ angle-opengl bigsur graphite-disabled no-asan nvidia-0xfe9 ] WebCodecs_EncodeDecode_camera_hvc1.1.6.L123.00_prefer-software [ Failure ]
 crbug.com/371802469 [ mac intel ] WebCodecs_Encode_camera_hvc1.1.6.L123.00_prefer-software [ Failure ]
 crbug.com/371802469 [ mac intel ] WebCodecs_FrameSizeChange_hvc1.1.6.L123.00_camera [ Failure ]
 # Same with prefer-hardware

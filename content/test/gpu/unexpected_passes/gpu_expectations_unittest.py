@@ -88,13 +88,6 @@ class ConsolidateKnownOverlappingTagsUnittest(unittest.TestCase):
     consolidated_tags = self.expectations._ConsolidateKnownOverlappingTags(tags)
     self.assertEqual(consolidated_tags, tags)
 
-  def testMacbookPro2015(self) -> None:
-    """Tests that Macbook Pro 2015 tags are properly consolidated."""
-    tags = frozenset(
-        ['mac', 'amd', 'amd-0x6821', 'release', 'intel', 'intel-0xd26'])
-    consolidated_tags = self.expectations._ConsolidateKnownOverlappingTags(tags)
-    self.assertEqual(consolidated_tags, {'mac', 'amd', 'amd-0x6821', 'release'})
-
   def test15InchMacbookPro2019(self) -> None:
     """Tests that 15" Macbook Pro 2019 tags are properly consolidated."""
     tags = frozenset([

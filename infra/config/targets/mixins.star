@@ -1883,41 +1883,6 @@ targets.mixin(
 )
 
 targets.mixin(
-    name = "mac_retina_nvidia_gpu_experimental",
-    # We always need this entry to be generated since it is used by
-    # //content/test/gpu/find_bad_machines.py.
-    generate_pyl_entry = targets.IGNORE_UNUSED,
-    # Currently the same as the stable version.
-    swarming = targets.swarming(
-        dimensions = {
-            "cpu": "x86-64",
-            "gpu": "10de:0fe9",
-            "hidpi": "1",
-            "os": "Mac-11.7.9",
-            "pool": "chromium.tests.gpu",
-            "display_attached": "1",
-        },
-    ),
-)
-
-targets.mixin(
-    name = "mac_retina_nvidia_gpu_stable",
-    # We always need this entry to be generated since it is used by
-    # //content/test/gpu/find_bad_machines.py.
-    generate_pyl_entry = targets.IGNORE_UNUSED,
-    swarming = targets.swarming(
-        dimensions = {
-            "cpu": "x86-64",
-            "gpu": "10de:0fe9",
-            "hidpi": "1",
-            "os": "Mac-11.7.9",
-            "pool": "chromium.tests.gpu",
-            "display_attached": "1",
-        },
-    ),
-)
-
-targets.mixin(
     name = "mac_toolchain",
     swarming = targets.swarming(
         cipd_packages = [

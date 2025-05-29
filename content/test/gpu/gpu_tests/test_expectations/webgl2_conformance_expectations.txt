@@ -37,11 +37,10 @@
 #         arm
 #         google google-0xffff google-0xc0de
 #         imagination
-#         intel intel-gen-9 intel-gen-12 intel-0xa2e intel-0xd26 intel-0xa011
-#             intel-0x3e92 intel-0x3e9b intel-0x4680 intel-0x46a8 intel-0x5912
-#             intel-0x9bc5
+#         intel intel-gen-9 intel-gen-12 intel-0xa2e intel-0xa011 intel-0x3e92
+#             intel-0x3e9b intel-0x4680 intel-0x46a8 intel-0x5912 intel-0x9bc5
 #         microsoft microsoft-0xffff
-#         nvidia nvidia-0xfe9 nvidia-0x1cb3 nvidia-0x2184 nvidia-0x2783
+#         nvidia nvidia-0x1cb3 nvidia-0x2184 nvidia-0x2783
 #         qualcomm qualcomm-0x41333430 qualcomm-0x36333630 qualcomm-0x36334330 ]
 # Architecture
 # tags: [ mac-arm64 mac-x86_64 ]
@@ -642,12 +641,6 @@ crbug.com/angleproject/6430 [ angle-metal intel mac passthrough ] deqp/functiona
 
 crbug.com/angleproject/4242 [ angle-opengl mac mac-x86_64 ] conformance2/glsl3/matrix-row-major-dynamic-indexing.html [ Failure ]
 
-# Regressed in 10.13, still fails in 10.14 and 11.7
-crbug.com/774827 [ bigsur nvidia-0xfe9 angle-opengl ] deqp/functional/gles3/fborender/resize_03.html [ Failure ]
-crbug.com/774827 [ bigsur nvidia-0xfe9 angle-opengl ] deqp/functional/gles3/shaderindexing/mat_00.html [ Failure ]
-crbug.com/774827 [ bigsur nvidia-0xfe9 angle-opengl ] deqp/functional/gles3/shaderindexing/mat_02.html [ Failure ]
-crbug.com/774827 [ bigsur nvidia-0xfe9 angle-opengl ] deqp/functional/gles3/texturespecification/teximage2d_pbo_cube_00.html [ Failure ]
-
 # Fails on multiple GPU types.
 crbug.com/844311 [ angle-opengl mac ] conformance/glsl/misc/fragcolor-fragdata-invariant.html [ Failure ]
 crbug.com/630800 [ angle-opengl intel mac ] conformance2/rendering/framebuffer-completeness-unaffected.html [ Failure ]
@@ -656,17 +649,6 @@ crbug.com/630800 [ angle-opengl intel mac ] deqp/functional/gles3/fbocompletenes
 crbug.com/630800 [ nvidia mac ] deqp/functional/gles3/fbocompleteness.html [ Failure ]
 crbug.com/1289803 [ angle-opengl mac-x86_64 mac ] conformance2/extensions/webgl-multi-draw-instanced-base-vertex-base-instance.html [ Failure ]
 crbug.com/407622671 [ mac asan graphite-disabled ] deqp/functional/gles3/clipping.html [ RetryOnFailure ]
-
-## Mac Retina NVIDIA ##
-
-crbug.com/728271 [ mac nvidia-0xfe9 ] deqp/functional/gles3/shaderindexing/mat_01.html [ Failure ]
-crbug.com/728271 [ mac nvidia-0xfe9 ] deqp/functional/gles3/shaderindexing/tmp.html [ Failure ]
-crbug.com/996344 [ mac nvidia-0xfe9 ] conformance/glsl/bugs/vector-scalar-arithmetic-inside-loop.html [ Failure ]
-crbug.com/996344 [ mac nvidia-0xfe9 ] conformance2/textures/misc/tex-base-level-bug.html [ Failure ]
-crbug.com/784817 [ mac nvidia-0xfe9 ] conformance/glsl/bugs/init-array-with-loop.html [ Failure ]
-crbug.com/772651 [ mac nvidia ] conformance/glsl/bugs/vector-scalar-arithmetic-inside-loop-complex.html [ Failure ]
-crbug.com/795052 [ mac nvidia-0xfe9 ] conformance2/uniforms/draw-with-uniform-blocks.html [ Failure ]
-crbug.com/1488444 [ mac-x86_64 nvidia-0xfe9 angle-opengl passthrough ] conformance2/rendering/vertex-id-large-count.html [ Failure ]
 
 ## Mac AMD ##
 

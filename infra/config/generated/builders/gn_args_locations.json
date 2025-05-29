@@ -880,8 +880,6 @@
     "gpu-fyi-try-mac-intel-dbg": "try/gpu-fyi-try-mac-intel-dbg/gn-args.json",
     "gpu-fyi-try-mac-intel-exp": "try/gpu-fyi-try-mac-intel-exp/gn-args.json",
     "gpu-fyi-try-mac-intel-rel": "try/gpu-fyi-try-mac-intel-rel/gn-args.json",
-    "gpu-fyi-try-mac-nvidia-retina-exp": "try/gpu-fyi-try-mac-nvidia-retina-exp/gn-args.json",
-    "gpu-fyi-try-mac-nvidia-retina-rel": "try/gpu-fyi-try-mac-nvidia-retina-rel/gn-args.json",
     "gpu-try-mac-amd-retina-dbg": "try/gpu-try-mac-amd-retina-dbg/gn-args.json",
     "gpu-try-mac-intel-dbg": "try/gpu-try-mac-intel-dbg/gn-args.json",
     "ios-asan": "try/ios-asan/gn-args.json",

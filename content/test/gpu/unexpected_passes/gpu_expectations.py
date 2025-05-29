@@ -44,15 +44,6 @@ def _GenerateMacIdentifierTags(gpu: str) -> List[Set[str]]:
 
 
 _DUAL_GPU_MAC_TAG_CONFIGS = [
-    # 2015 Macbook Pros.
-    _OverlappingTagConfig(identifier_tags=[
-        {'amd-0x6821', 'mac'},
-        {'amd-0x6821', 'intel-0xd26'},
-    ] + _GenerateMacIdentifierTags('amd-0x6821'),
-                          tags_to_remove={
-                              'intel',
-                              'intel-0xd26',
-                          }),
     # 15" 2019 Macbook Pros.
     _OverlappingTagConfig(identifier_tags=[
         {'amd-0x67ef', 'mac'},

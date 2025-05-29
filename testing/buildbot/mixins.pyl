@@ -693,32 +693,6 @@
       },
     },
   },
-  'mac_retina_nvidia_gpu_experimental': {
-    'fail_if_unused': False,
-    'swarming': {
-      'dimensions': {
-        'cpu': 'x86-64',
-        'gpu': '10de:0fe9',
-        'hidpi': '1',
-        'os': 'Mac-11.7.9',
-        'pool': 'chromium.tests.gpu',
-        'display_attached': '1',
-      },
-    },
-  },
-  'mac_retina_nvidia_gpu_stable': {
-    'fail_if_unused': False,
-    'swarming': {
-      'dimensions': {
-        'cpu': 'x86-64',
-        'gpu': '10de:0fe9',
-        'hidpi': '1',
-        'os': 'Mac-11.7.9',
-        'pool': 'chromium.tests.gpu',
-        'display_attached': '1',
-      },
-    },
-  },
   'mac_toolchain': {
     'swarming': {
       'cipd_packages': [

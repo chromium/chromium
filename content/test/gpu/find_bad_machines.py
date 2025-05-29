@@ -48,8 +48,6 @@ MIXIN_GROUPS = {
         'mac_pro_amd_gpu',
         'mac_retina_amd_gpu_experimental',
         'mac_retina_amd_gpu_stable',
-        'mac_retina_nvidia_gpu_experimental',
-        'mac_retina_nvidia_gpu_stable',
         'win10_amd_rx_5500_xt_stable',
         'win10_intel_uhd_630_experimental',
         'win10_intel_uhd_630_stable',

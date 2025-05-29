@@ -104,7 +104,6 @@ TAG_SPECIALIZATIONS = {
             'intel-gen-9',
             'intel-gen-12',
             'intel-0xa2e',
-            'intel-0xd26',
             'intel-0xa011',
             'intel-0x3e92',
             'intel-0x3e9b',
@@ -117,7 +116,6 @@ TAG_SPECIALIZATIONS = {
             'microsoft-0xffff',
         ],
         'nvidia': [
-            'nvidia-0xfe9',
             'nvidia-0x1cb3',
             'nvidia-0x2184',
             'nvidia-0x2783',
