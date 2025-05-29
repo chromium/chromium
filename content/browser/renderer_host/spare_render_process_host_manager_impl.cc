@@ -386,9 +386,9 @@ void SpareRenderProcessHostManagerImpl::RemoveObserver(Observer* observer) {
   observer_list_.RemoveObserver(observer);
 }
 
-void SpareRenderProcessHostManagerImpl::WarmupSpare(
+RenderProcessHost* SpareRenderProcessHostManagerImpl::WarmupSpare(
     BrowserContext* browser_context) {
-  WarmupSpare(browser_context, std::nullopt);
+  return WarmupSpare(browser_context, std::nullopt);
 }
 
 const std::vector<RenderProcessHost*>&
@@ -409,7 +409,7 @@ void SpareRenderProcessHostManagerImpl::CleanupSparesForTesting() {
   CleanupSpares(std::nullopt);
 }
 
-void SpareRenderProcessHostManagerImpl::WarmupSpare(
+RenderProcessHost* SpareRenderProcessHostManagerImpl::WarmupSpare(
     BrowserContext* browser_context,
     std::optional<base::TimeDelta> timeout) {
   if (delay_timer_) {
@@ -437,7 +437,7 @@ void SpareRenderProcessHostManagerImpl::WarmupSpare(
       deferred_destroy_timer_.Stop();
       StartDestroyTimer(timeout);
     }
-    return;
+    return nullptr;
   }
 
   bool had_spare_renderer = !!spare_rph;
@@ -457,21 +457,21 @@ void SpareRenderProcessHostManagerImpl::WarmupSpare(
     // any problematic callers.
     base::debug::DumpWithoutCrashing();
 
-    return;
+    return nullptr;
   }
 
   if (BrowserMainRunner::ExitedMainMessageLoop()) {
     // Don't create a new process when the browser is shutting down. No
     // DumpWithoutCrashing here since there are known cases in the wild. See
     // https://crbug.com/40274462 for details.
-    return;
+    return nullptr;
   }
 
   // Don't create a spare renderer if we're using --single-process or if we've
   // got too many processes.
   if (RenderProcessHost::IsProcessLimitReached()) {
     no_spare_renderer_reason_ = NoSpareRendererReason::kProcessLimit;
-    return;
+    return nullptr;
   }
 
   // Don't create a spare renderer when the system is under load.  This is
@@ -481,14 +481,14 @@ void SpareRenderProcessHostManagerImpl::WarmupSpare(
   if (memory_monitor && memory_monitor->GetCurrentPressureLevel() >=
                             GetMemoryPressureLevelThreshold()) {
     no_spare_renderer_reason_ = NoSpareRendererReason::kMemoryPressure;
-    return;
+    return nullptr;
   }
 
 #if BUILDFLAG(IS_ANDROID)
   if (features::kAndroidSpareRendererKillWhenBackgrounded.Get() &&
       is_app_backgroud_) {
     no_spare_renderer_reason_ = NoSpareRendererReason::kOnceBackgrounded;
-    return;
+    return nullptr;
   }
 #endif
 
@@ -517,6 +517,7 @@ void SpareRenderProcessHostManagerImpl::WarmupSpare(
 
   // The spare render process isn't ready, so wait and do the "spare render
   // process changed" callback in RenderProcessReady().
+  return new_spare_rph;
 }
 
 void SpareRenderProcessHostManagerImpl::DeferredWarmupSpare(

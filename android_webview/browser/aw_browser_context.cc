@@ -44,6 +44,7 @@
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/path_service.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
@@ -73,6 +74,7 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/download_request_utils.h"
+#include "content/public/browser/render_process_host.h"
 #include "content/public/browser/spare_render_process_host_manager.h"
 #include "content/public/browser/ssl_host_state_delegate.h"
 #include "content/public/browser/storage_partition.h"
@@ -690,7 +692,13 @@ void AwBrowserContext::SetAllowedPrerenderingCount(JNIEnv* const env,
 
 void AwBrowserContext::WarmUpSpareRenderer(JNIEnv* const env) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  content::SpareRenderProcessHostManager::Get().WarmupSpare(this);
+  base::TimeTicks start_time = base::TimeTicks::Now();
+  content::RenderProcessHost* rph =
+      content::SpareRenderProcessHostManager::Get().WarmupSpare(this);
+  base::UmaHistogramTimes("Android.WebView.WarmUpSpareRenderer.Duration",
+                          base::TimeTicks::Now() - start_time);
+  base::UmaHistogramBoolean(
+      "Android.WebView.WarmUpSpareRenderer.StartsNewRenderer", rph != nullptr);
 }
 
 std::unique_ptr<AwContentsIoThreadClient>
