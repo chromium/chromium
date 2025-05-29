@@ -24,9 +24,9 @@ std::ostream& operator<<(std::ostream& stream, WindowStateType state) {
     case WindowStateType::kFullscreen:
       return stream << "kFullscreen";
     case WindowStateType::kPrimarySnapped:
-      return stream << "kLeftSnapped";
+      return stream << "kPrimarySnapped";
     case WindowStateType::kSecondarySnapped:
-      return stream << "kRightSnapped";
+      return stream << "kSecondarySnapped";
     case WindowStateType::kPinned:
       return stream << "kPinned";
     case WindowStateType::kTrustedPinned:
