@@ -103,11 +103,12 @@ class StyleShape final : public BasicShape {
   struct ArcSegment : public SegmentWithTargetPoint<Type> {
     double angle;
     LengthSize radius;
+    Length direction_agnostic_radius;
     bool large;
     bool sweep;
-    bool has_direction_agnostic_radius;
     bool operator==(const ArcSegment& other) const = default;
   };
+
   struct ArcToSegment : public ArcSegment<SVGPathSegType::kPathSegArcAbs> {};
   struct ArcBySegment : public ArcSegment<SVGPathSegType::kPathSegArcRel> {};
 
