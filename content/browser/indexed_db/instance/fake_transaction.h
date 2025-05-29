@@ -64,11 +64,10 @@ class FakeTransaction : public BackingStore::Transaction {
       int64_t index_id,
       const blink::IndexedDBKey& key,
       const BackingStore::RecordIdentifier& record) override;
-  Status GetPrimaryKeyViaIndex(
+  StatusOr<blink::IndexedDBKey> GetPrimaryKeyViaIndex(
       int64_t object_store_id,
       int64_t index_id,
-      const blink::IndexedDBKey& key,
-      std::unique_ptr<blink::IndexedDBKey>* primary_key) override;
+      const blink::IndexedDBKey& key) override;
   Status KeyExistsInIndex(
       int64_t object_store_id,
       int64_t index_id,

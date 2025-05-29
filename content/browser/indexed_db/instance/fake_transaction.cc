@@ -132,13 +132,12 @@ Status FakeTransaction::PutIndexDataForRecord(
                                                      key, record);
 }
 
-Status FakeTransaction::GetPrimaryKeyViaIndex(
+StatusOr<blink::IndexedDBKey> FakeTransaction::GetPrimaryKeyViaIndex(
     int64_t object_store_id,
     int64_t index_id,
-    const blink::IndexedDBKey& key,
-    std::unique_ptr<blink::IndexedDBKey>* primary_key) {
+    const blink::IndexedDBKey& key) {
   return wrapped_transaction_->GetPrimaryKeyViaIndex(object_store_id, index_id,
-                                                     key, primary_key);
+                                                     key);
 }
 
 Status FakeTransaction::KeyExistsInIndex(

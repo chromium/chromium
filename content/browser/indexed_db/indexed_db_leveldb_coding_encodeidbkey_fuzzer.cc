@@ -9,6 +9,7 @@
 #include <string_view>
 #include <tuple>
 
+#include "base/check.h"
 #include "base/strings/utf_string_conversions.h"
 #include "content/browser/indexed_db/indexed_db_leveldb_coding.h"
 #include "third_party/blink/public/common/indexeddb/indexeddb_key.h"
@@ -111,10 +112,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   }
 
   // Ensure that |result| can be decoded back into the original key.
-  auto decoded_key = std::make_unique<IndexedDBKey>();
   auto result_str_view = std::string_view(result);
-  std::ignore =
-      content::indexed_db::DecodeIDBKey(&result_str_view, &decoded_key);
-  assert(decoded_key->Equals(key));
+  CHECK(content::indexed_db::DecodeIDBKey(&result_str_view).Equals(key));
   return 0;
 }

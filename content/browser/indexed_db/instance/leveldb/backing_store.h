@@ -193,11 +193,10 @@ class CONTENT_EXPORT BackingStore : public indexed_db::BackingStore,
                                  int64_t index_id,
                                  const blink::IndexedDBKey& key,
                                  const RecordIdentifier& record) override;
-    Status GetPrimaryKeyViaIndex(
+    StatusOr<blink::IndexedDBKey> GetPrimaryKeyViaIndex(
         int64_t object_store_id,
         int64_t index_id,
-        const blink::IndexedDBKey& key,
-        std::unique_ptr<blink::IndexedDBKey>* primary_key) override;
+        const blink::IndexedDBKey& key) override;
     Status KeyExistsInIndex(
         int64_t object_store_id,
         int64_t index_id,
@@ -409,7 +408,7 @@ class CONTENT_EXPORT BackingStore : public indexed_db::BackingStore,
     const int64_t database_id_;
     const CursorOptions cursor_options_;
     std::unique_ptr<TransactionalLevelDBIterator> iterator_;
-    std::unique_ptr<blink::IndexedDBKey> current_key_;
+    blink::IndexedDBKey current_key_;
     RecordIdentifier record_identifier_;
 
    private:
