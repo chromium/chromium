@@ -9,11 +9,8 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 import android.app.Activity;
 
@@ -44,7 +41,6 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelperJni;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.bookmarks.BookmarkId;
-import org.chromium.components.bookmarks.BookmarkItem;
 import org.chromium.components.bookmarks.BookmarkType;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.commerce.core.CommerceFeatureUtils;
@@ -220,92 +216,6 @@ public class BookmarkUtilsTest {
                 mBookmarkManagerOpener,
                 mPriceDropNotificationManager);
 
-        histograms.assertExpected();
-    }
-
-    @Test
-    public void testAddBookmarkInternal() {
-        HistogramWatcher histograms =
-                HistogramWatcher.newBuilder()
-                        .expectIntRecords("Bookmarks.AddBookmarkType", BookmarkType.NORMAL)
-                        .expectIntRecords(
-                                "Bookmarks.AddedPerProfileType", BrowserProfileType.REGULAR)
-                        .expectNoRecords("BookmarkAdded.Failure")
-                        .build();
-        BookmarkModel mMockBookmarkModel = mock(BookmarkModel.class);
-        BookmarkId root = new BookmarkId(0, BookmarkType.NORMAL);
-        BookmarkUtils.setLastUsedParent(root);
-        assertTrue(BookmarkUtils.getLastUsedParent().equals(root));
-
-        BookmarkId parent = new BookmarkId(1, BookmarkType.NORMAL);
-        BookmarkItem parentBookmarkItem =
-                new BookmarkItem(
-                        parent, "parent", null, false, null, false, false, 0, false, 0, false);
-        when(mMockBookmarkModel.getBookmarkById(parent)).thenReturn(parentBookmarkItem);
-        when(mMockBookmarkModel.getDefaultBookmarkFolder()).thenReturn(parent);
-        BookmarkId addedBookmark = new BookmarkId(2, BookmarkType.NORMAL);
-        when(mMockBookmarkModel.addBookmark(
-                        any(BookmarkId.class), anyInt(), anyString(), any(GURL.class)))
-                .thenReturn(addedBookmark);
-
-        BookmarkId bookmark =
-                BookmarkUtils.addBookmarkInternal(
-                        null,
-                        mProfile,
-                        mMockBookmarkModel,
-                        "Test title",
-                        new GURL("https://test.com"),
-                        parent,
-                        BookmarkType.NORMAL);
-        verify(mMockBookmarkModel).getBookmarkById(parent);
-        verify(mMockBookmarkModel).getDefaultBookmarkFolder();
-        verify(mMockBookmarkModel)
-                .addBookmark(parent, 0, "Test title", new GURL("https://test.com"));
-        assertTrue(bookmark.equals(addedBookmark));
-        // Ensure that cached bookmark parent is set to parent bookmark folder and not null
-        assertTrue(BookmarkUtils.getLastUsedParent().equals(parent));
-        histograms.assertExpected();
-    }
-
-    @Test
-    public void testAddBookmarkInternal_failToAddBookmark() {
-        // Do not expect to see any histograms for failed bookmark add
-        HistogramWatcher histograms =
-                HistogramWatcher.newBuilder()
-                        .expectNoRecords("Bookmarks.AddBookmarkType")
-                        .expectNoRecords("Bookmarks.AddedPerProfileType")
-                        .expectIntRecords("BookmarkAdded.Failure")
-                        .build();
-        BookmarkModel mMockBookmarkModel = mock(BookmarkModel.class);
-        BookmarkId parent = new BookmarkId(0, BookmarkType.NORMAL);
-        BookmarkItem parentBookmarkItem =
-                new BookmarkItem(
-                        parent, "parent", null, false, null, false, false, 0, false, 0, false);
-        when(mMockBookmarkModel.getBookmarkById(parent)).thenReturn(parentBookmarkItem);
-        when(mMockBookmarkModel.getDefaultBookmarkFolder()).thenReturn(parent);
-        BookmarkUtils.setLastUsedParent(parent);
-        assertTrue(BookmarkUtils.getLastUsedParent() != null);
-        // Simulate failing to add bookmark by returning null in addBookmark
-        when(mMockBookmarkModel.addBookmark(
-                        any(BookmarkId.class), anyInt(), anyString(), any(GURL.class)))
-                .thenReturn(null);
-
-        BookmarkId bookmark =
-                BookmarkUtils.addBookmarkInternal(
-                        null,
-                        mProfile,
-                        mMockBookmarkModel,
-                        "Test title",
-                        new GURL("https://test.com"),
-                        parent,
-                        BookmarkType.NORMAL);
-        verify(mMockBookmarkModel).getBookmarkById(parent);
-        verify(mMockBookmarkModel).getDefaultBookmarkFolder();
-        verify(mMockBookmarkModel)
-                .addBookmark(parent, 0, "Test title", new GURL("https://test.com"));
-        assertTrue(bookmark == null);
-        // Ensure that cached bookmark parent is reset to default after failing to add bookmark
-        assertTrue(BookmarkUtils.getLastUsedParent() == null);
         histograms.assertExpected();
     }
 

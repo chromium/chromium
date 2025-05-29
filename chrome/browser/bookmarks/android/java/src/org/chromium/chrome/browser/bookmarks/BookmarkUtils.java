@@ -504,11 +504,7 @@ public class BookmarkUtils {
                             parent, bookmarkModel.getChildCount(parent), title, url);
         }
 
-        if (bookmarkId == null) {
-            // Adding bookmark failed, so clear cache for parent bookmark folder
-            RecordUserAction.record("BookmarkAdded.Failure");
-            BookmarkBridge.clearLastUsedParent();
-        } else {
+        if (bookmarkId != null) {
             BookmarkMetrics.recordBookmarkAdded(profile, bookmarkId);
             setLastUsedParent(parent);
         }
