@@ -47,6 +47,7 @@ group("api_implementations") {
     "//extensions/browser/api/system_memory",
     "//extensions/browser/api/system_network",
     "//extensions/browser/api/test",
+    "//extensions/browser/api/user_scripts",
   ]
 
   # APIs that are currently not supported on desktop-android.
@@ -76,7 +77,6 @@ group("api_implementations") {
       "//extensions/browser/api/system_display",
       "//extensions/browser/api/system_info",
       "//extensions/browser/api/system_storage",
-      "//extensions/browser/api/user_scripts",
       "//extensions/browser/api/virtual_keyboard_private",
     ]
 

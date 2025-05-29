@@ -6,7 +6,10 @@
 #define CHROME_BROWSER_EXTENSIONS_API_USER_SCRIPTS_USER_SCRIPTS_APITEST_H_
 
 #include "chrome/browser/extensions/extension_apitest.h"
+#include "extensions/buildflags/buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace base {
 class FilePath;
