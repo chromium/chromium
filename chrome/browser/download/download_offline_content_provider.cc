@@ -20,6 +20,7 @@
 #include "chrome/browser/offline_items_collection/offline_content_aggregator_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/thumbnail/generator/image_thumbnail_request.h"
+#include "components/download/public/common/download_danger_type.h"
 #include "components/download/public/common/download_features.h"
 #include "components/download/public/common/download_item.h"
 #include "content/public/browser/browser_context.h"
@@ -68,7 +69,7 @@ const int kInvalidSystemDownloadId = -1;
 #endif
 
 bool ShouldShowDownloadItem(const DownloadItem* item) {
-  return !item->IsTemporary() && !item->IsTransient() && !item->IsDangerous() &&
+  return !item->IsTemporary() && !item->IsTransient() &&
          !item->GetTargetFilePath().empty();
 }
 
@@ -467,6 +468,15 @@ void DownloadOfflineContentProvider::OnDownloadUpdated(DownloadItem* item) {
     update_delta.state_changed = true;
     if (item->GetState() == DownloadItem::COMPLETE)
       AddCompletedDownload(item);
+  }
+
+  // If the download was newly marked dangerous or validated, then visuals may
+  // change (e.g. new icon to denote dangerous status).
+  if (offline_item.state != OfflineItemState::CANCELLED &&
+      (item->IsDangerous() ||
+       item->GetDangerType() ==
+           download::DOWNLOAD_DANGER_TYPE_USER_VALIDATED)) {
+    update_delta.visuals_changed = true;
   }
 
   UpdateObservers(offline_item, update_delta);

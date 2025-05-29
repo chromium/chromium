@@ -3605,6 +3605,9 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_DOWNLOAD_FILE_TYPE_NOT_SUPPORTED" desc="Error message shown to user when a file can't de downloaded due to it's file format (e.g. .pdf, .docx, .apk).">
         Cannot download file. File format not supported.
       </message>
+      <message name="IDS_DOWNLOAD_MANAGER_DANGEROUS_BLOCKED" desc="Caption shown below a file that was blocked for being dangerous.">
+        Dangerous download blocked
+      </message>
 
       <!-- Browsing History UI -->
       <message name="IDS_HISTORY_MANAGER_EMPTY_STATE" desc="Indicates that there are no browsing history items.">

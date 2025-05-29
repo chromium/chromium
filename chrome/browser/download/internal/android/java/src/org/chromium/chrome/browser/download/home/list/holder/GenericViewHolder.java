@@ -70,7 +70,9 @@ public class GenericViewHolder extends OfflineItemViewHolder {
 
             Drawable drawable =
                     org.chromium.ui.UiUtils.getTintedDrawable(
-                            itemView.getContext(), iconId, R.color.default_icon_color_tint_list);
+                            itemView.getContext(),
+                            iconId,
+                            UiUtils.getIconColorForItem(offlineItem.item));
 
             mThumbnail.setUnavailableDrawable(drawable);
             mThumbnail.setWaitingDrawable(drawable);

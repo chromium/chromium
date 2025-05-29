@@ -11,6 +11,7 @@ import android.content.res.Resources;
 import android.text.format.DateUtils;
 import android.text.format.Formatter;
 
+import androidx.annotation.ColorRes;
 import androidx.annotation.DrawableRes;
 
 import org.chromium.base.BuildInfo;
@@ -26,6 +27,7 @@ import org.chromium.chrome.browser.download.internal.R;
 import org.chromium.components.browser_ui.util.DownloadUtils;
 import org.chromium.components.browser_ui.util.date.CalendarFactory;
 import org.chromium.components.browser_ui.util.date.CalendarUtils;
+import org.chromium.components.download.DownloadDangerType;
 import org.chromium.components.offline_items_collection.LegacyHelpers;
 import org.chromium.components.offline_items_collection.OfflineItem;
 import org.chromium.components.offline_items_collection.OfflineItem.Progress;
@@ -132,6 +134,22 @@ public final class UiUtils {
     }
 
     /**
+     * @return Whether the {@code item} should be displayed as "dangerous". Used for items with Safe
+     *     Browsing download warnings.
+     */
+    public static boolean shouldDisplayAsDangerous(OfflineItem item) {
+        // TODO(crbug.com/397407934): These are the only danger types which we
+        // currently choose to show warning UI for. In the future, this may or
+        // may not expand to other danger types.
+        boolean dangerTypeShouldDisplayAsDangerous =
+                item.dangerType == DownloadDangerType.DANGEROUS_CONTENT
+                        || item.dangerType == DownloadDangerType.POTENTIALLY_UNWANTED;
+        // Only isDangerous items should display as dangerous.
+        assert !dangerTypeShouldDisplayAsDangerous || item.isDangerous;
+        return dangerTypeShouldDisplayAsDangerous && item.state != OfflineItemState.CANCELLED;
+    }
+
+    /**
      * Generates a caption for a generic item.
      *
      * @param item The {@link OfflineItem} to generate a caption for.
@@ -139,6 +157,10 @@ public final class UiUtils {
      */
     public static CharSequence generateGenericCaption(OfflineItem item) {
         Context context = ContextUtils.getApplicationContext();
+        if (shouldDisplayAsDangerous(item)) {
+            return context.getString(R.string.download_manager_dangerous_blocked);
+        }
+
         String displayUrl =
                 DownloadUtils.formatUrlForDisplayInNotification(
                         item.url, DownloadUtils.MAX_ORIGIN_LENGTH_FOR_DOWNLOAD_HOME_CAPTION);
@@ -163,8 +185,13 @@ public final class UiUtils {
         return StringUtils.getAbbreviatedFileName(item.title, MAX_FILE_NAME_LENGTH_FOR_TITLE);
     }
 
-    /** @return Whether or not {@code item} can show a thumbnail in the UI. */
+    /**
+     * @return Whether or not {@code item} can show a thumbnail in the UI.
+     */
     public static boolean canHaveThumbnails(OfflineItem item) {
+        if (shouldDisplayAsDangerous(item)) {
+            return false;
+        }
         switch (item.filter) {
             case OfflineItemFilter.PAGE:
             case OfflineItemFilter.VIDEO:
@@ -176,8 +203,14 @@ public final class UiUtils {
         }
     }
 
-    /** @return A drawable resource id representing an icon for {@code item}. */
+    /**
+     * @return A drawable resource id representing an icon for {@code item}.
+     */
     public static @DrawableRes int getIconForItem(OfflineItem item) {
+        if (shouldDisplayAsDangerous(item)) {
+            return R.drawable.dangerous_filled_24dp;
+        }
+
         switch (Filters.fromOfflineItem(item)) {
             case Filters.FilterType.NONE:
                 return R.drawable.ic_file_download_24dp;
@@ -198,8 +231,18 @@ public final class UiUtils {
     }
 
     /**
+     * @return A color list resource for the icon for {@code item}.
+     */
+    public static @ColorRes int getIconColorForItem(OfflineItem item) {
+        if (shouldDisplayAsDangerous(item)) {
+            return R.color.error_icon_color_tint_list;
+        }
+        return R.color.default_icon_color_tint_list;
+    }
+
+    /**
      * @return A drawable resource id representing the small media icon to be shown on prefetch
-     *         cards.
+     *     cards.
      */
     public static @DrawableRes int getMediaPlayIconForPrefetchCards(OfflineItem item) {
         switch (item.filter) {
@@ -384,8 +427,13 @@ public final class UiUtils {
         }
     }
 
-    /** @return Whether the given {@link OfflineItem} can be shared. */
+    /**
+     * @return Whether the given {@link OfflineItem} can be shared.
+     */
     public static boolean canShare(OfflineItem item) {
+        if (shouldDisplayAsDangerous(item)) {
+            return false;
+        }
         // Sharing functionality that leads directly to the Android share sheet is
         // currently disabled.
         if (BuildInfo.getInstance().isAutomotive) {

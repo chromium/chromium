@@ -47,7 +47,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.BuildInfo;
 import org.chromium.base.Callback;
@@ -71,6 +72,7 @@ import org.chromium.chrome.test.AutomotiveContextWrapperTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.browser_ui.modaldialog.AppModalPresenter;
 import org.chromium.components.browser_ui.util.date.StringUtils;
+import org.chromium.components.download.DownloadDangerType;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.offline_items_collection.ContentId;
@@ -96,6 +98,8 @@ import java.util.List;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Batch(Batch.UNIT_TESTS)
 public class DownloadActivityV2Test {
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
+
     @ClassRule
     public static BaseActivityTestRule<BlankUiTestActivity> sActivityTestRule =
             new BaseActivityTestRule<>(BlankUiTestActivity.class);
@@ -149,7 +153,6 @@ public class DownloadActivityV2Test {
 
     @Before
     public void setUp() throws Exception {
-        MockitoAnnotations.initMocks(this);
         UrlFormatterJni.setInstanceForTesting(mUrlFormatterJniMock);
         when(mUrlFormatterJniMock.formatUrlForSecurityDisplay(
                         any(), eq(SchemeDisplay.OMIT_HTTP_AND_HTTPS)))
@@ -186,10 +189,15 @@ public class DownloadActivityV2Test {
     }
 
     private void setUpUi() {
+        setUpUi(false);
+    }
+
+    private void setUpUi(boolean showDangerousItems) {
         DownloadManagerUiConfig config =
                 DownloadManagerUiConfigHelper.fromFlags()
                         .setOtrProfileId(null)
                         .setIsSeparateActivity(true)
+                        .setShowDangerousItems(showDangerousItems)
                         .build();
 
         mAppModalPresenter = new AppModalPresenter(sActivity);
@@ -376,6 +384,102 @@ public class DownloadActivityV2Test {
                 () -> mStubbedOfflineContentProvider.removeItem(item5.id));
         onView(withText("page 5")).check(doesNotExist());
         onView(withText(containsString("Using 1.10 KB of"))).check(matches(isDisplayed()));
+    }
+
+    @Test
+    @MediumTest
+    public void testAddRemoveDangerousItem() throws Exception {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    setUpUi(/*showDangerousItems*/ true);
+                });
+
+        String storageHeaderText = "Using 1.10 KB of";
+        onView(withText(containsString(storageHeaderText))).check(matches(isDisplayed()));
+
+        // Add a dangerous item. The new item should be visible and the storage text should not
+        // include the size of the dangerous item.
+        OfflineItem dangerousItem =
+                StubbedProvider.createOfflineItem(
+                        "offline_guid_5",
+                        JUnitTestGURLs.URL_2,
+                        OfflineItemState.COMPLETE,
+                        1024,
+                        "dangerous",
+                        "/data/fake_path/Downloads/file_5",
+                        System.currentTimeMillis(),
+                        100000,
+                        OfflineItemFilter.OTHER);
+        dangerousItem.dangerType = DownloadDangerType.DANGEROUS_CONTENT;
+        dangerousItem.isDangerous = true;
+        dangerousItem.canRename = false;
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> mStubbedOfflineContentProvider.addItem(dangerousItem));
+        onView(withText("dangerous")).check(matches(isDisplayed()));
+        onView(withText(containsString("Using 1.10 KB of"))).check(matches(isDisplayed()));
+        onView(withText(containsString("Dangerous download blocked")))
+                .check(matches(isDisplayed()));
+
+        // Open menu for a dangerous download, it should not have share, rename options.
+        onView(allOf(withId(R.id.more), hasSibling(withText("dangerous"))))
+                .check(matches(isDisplayed()))
+                .perform(ViewActions.click());
+
+        // TODO(crbug.com/397407934): Menu options should reflect the actions available for a
+        // dangerous download ("Delete from history" and "Download").
+        onView(withText("Delete")).check(matches(isDisplayed()));
+        onView(withText("Rename")).check(doesNotExist());
+        onView(withText("Share")).check(doesNotExist());
+
+        // Delete the item. The item should be gone and the storage text should be unchanged.
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> mStubbedOfflineContentProvider.removeItem(dangerousItem.id));
+        onView(withText("dangerous")).check(doesNotExist());
+        onView(withText(containsString("Using 1.10 KB of"))).check(matches(isDisplayed()));
+        onView(withText(containsString("Dangerous download blocked"))).check(doesNotExist());
+    }
+
+    @Test
+    @MediumTest
+    public void testDangerousItemNotShownDueToConfig() throws Exception {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    setUpUi(/*showDangerousItems*/ false);
+                });
+
+        String storageHeaderText = "Using 1.10 KB of";
+        onView(withText(containsString(storageHeaderText))).check(matches(isDisplayed()));
+
+        // Attempt to add a dangerous item. The new item should not be visible because the config
+        // does not specify showDangerousItems.
+        OfflineItem dangerousItem =
+                StubbedProvider.createOfflineItem(
+                        "offline_guid_5",
+                        JUnitTestGURLs.URL_2,
+                        OfflineItemState.COMPLETE,
+                        1024,
+                        "dangerous",
+                        "/data/fake_path/Downloads/file_5",
+                        System.currentTimeMillis(),
+                        100000,
+                        OfflineItemFilter.OTHER);
+        dangerousItem.dangerType = DownloadDangerType.DANGEROUS_CONTENT;
+        dangerousItem.isDangerous = true;
+        dangerousItem.canRename = false;
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> mStubbedOfflineContentProvider.addItem(dangerousItem));
+        onView(withText("dangerous")).check(doesNotExist());
+        onView(withText(containsString("Using 1.10 KB of"))).check(matches(isDisplayed()));
+        onView(withText(containsString("Dangerous download blocked"))).check(doesNotExist());
+
+        // Delete the item. Nothing should change because it was never displayed.
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> mStubbedOfflineContentProvider.removeItem(dangerousItem.id));
+        onView(withText("dangerous")).check(doesNotExist());
+        onView(withText(containsString("Using 1.10 KB of"))).check(matches(isDisplayed()));
+        onView(withText(containsString("Dangerous download blocked"))).check(doesNotExist());
     }
 
     @Test

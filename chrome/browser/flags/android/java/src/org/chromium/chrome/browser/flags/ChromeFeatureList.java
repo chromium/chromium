@@ -424,6 +424,7 @@ public abstract class ChromeFeatureList {
     public static final String LOOKALIKE_NAVIGATION_URL_SUGGESTIONS_UI =
             "LookalikeUrlNavigationSuggestionsUI";
     public static final String MAGIC_STACK_ANDROID = "MagicStackAndroid";
+    public static final String MALICIOUS_APK_DOWNLOAD_CHECK = "MaliciousApkDownloadCheck";
     public static final String MAYLAUNCHURL_USES_SEPARATE_STORAGE_PARTITION =
             "MayLaunchUrlUsesSeparateStoragePartition";
     public static final String MINI_ORIGIN_BAR = "MiniOriginBar";
@@ -807,6 +808,11 @@ public abstract class ChromeFeatureList {
     public static final CachedFlag sLockBackPressHandlerAtStart =
             newCachedFlag(LOCK_BACK_PRESS_HANDLER_AT_START, true);
     public static final CachedFlag sMagicStackAndroid = newCachedFlag(MAGIC_STACK_ANDROID, true);
+    public static final CachedFlag sMaliciousApkDownloadCheck =
+            newCachedFlag(
+                    MALICIOUS_APK_DOWNLOAD_CHECK,
+                    /* defaultValue= */ false,
+                    /* defaultValueInTests= */ true);
     public static final CachedFlag sMiniOriginBar = newCachedFlag(MINI_ORIGIN_BAR, false, true);
     public static final CachedFlag sMostVisitedTilesCustomization =
             newCachedFlag(
@@ -996,6 +1002,7 @@ public abstract class ChromeFeatureList {
                     sLegacyTabStateDeprecation,
                     sLockBackPressHandlerAtStart,
                     sMagicStackAndroid,
+                    sMaliciousApkDownloadCheck,
                     sMiniOriginBar,
                     sMostVisitedTilesCustomization,
                     sMostVisitedTilesReselect,
@@ -1412,6 +1419,8 @@ public abstract class ChromeFeatureList {
 
     public static final BooleanCachedFeatureParam sMagicStackAndroidShowAllModules =
             newBooleanCachedFeatureParam(MAGIC_STACK_ANDROID, "show_all_modules", false);
+    public static final BooleanCachedFeatureParam sMaliciousApkDownloadCheckTelemetryOnly =
+            newBooleanCachedFeatureParam(MALICIOUS_APK_DOWNLOAD_CHECK, "telemetry_only", false);
     public static final BooleanCachedFeatureParam sMostVisitedTilesReselectLaxSchemeHost =
             newBooleanCachedFeatureParam(MOST_VISITED_TILES_RESELECT, "lax_scheme_host", false);
     public static final BooleanCachedFeatureParam sMostVisitedTilesReselectLaxRef =
@@ -1550,6 +1559,7 @@ public abstract class ChromeFeatureList {
                     sEdgeToEdgeEverywhereOemList,
                     sEdgeToEdgeEverywhereOemMinVersions,
                     sMagicStackAndroidShowAllModules,
+                    sMaliciousApkDownloadCheckTelemetryOnly,
                     sMaxLegacyTabStateFilesDeletedPerSession,
                     sMostVisitedTilesReselectLaxQuery,
                     sMostVisitedTilesReselectLaxPath,
