@@ -89,14 +89,14 @@ class TestResultSinkMessage(TestResultSinkTestBase):
 
     def test_sink(self):
         tr = test_results.TestResult(test_name='test-name')
-        tr.total_run_time = 123.456
+        tr.total_run_time = 123.45678901234
         tr.type = ResultType.Crash
         sent_data = self.sink(True, tr)
 
         self.assertEqual(sent_data['testId'], 'test-name')
         self.assertEqual(sent_data['expected'], True)
         self.assertEqual(sent_data['status'], 'CRASH')
-        self.assertEqual(sent_data['duration'], '123.456s')
+        self.assertEqual(sent_data['duration'], '123.456789012s')
 
     def test_sink_with_expectations(self):
         class FakeTestExpectation(object):
