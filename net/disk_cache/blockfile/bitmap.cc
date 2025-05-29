@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "net/disk_cache/blockfile/bitmap.h"
 
 #include <algorithm>
@@ -31,6 +26,16 @@ int FindLSBNonEmpty(uint32_t word, bool value) {
 
 namespace disk_cache {
 
+base::span<uint32_t> ToUint32Span(base::span<uint8_t> in) {
+  CHECK_EQ(in.size() % 4, 0u);
+  CHECK_EQ(reinterpret_cast<uintptr_t>(in.data()) % alignof(uint32_t), 0u);
+
+  // SAFETY: Above check ensures that `in` is aligned for 32-bit access;
+  // and below accesses the same memory.
+  return UNSAFE_BUFFERS(base::span<uint32_t>(
+      reinterpret_cast<uint32_t*>(in.data()), in.size() / 4));
+}
+
 Bitmap::Bitmap() = default;
 
 Bitmap::Bitmap(int num_bits, bool clear_bits)
@@ -44,14 +49,11 @@ Bitmap::Bitmap(int num_bits, bool clear_bits)
     Clear();
 }
 
-Bitmap::Bitmap(uint32_t* map, int num_bits, int num_words)
+Bitmap::Bitmap(base::span<uint32_t> map, size_t num_bits)
     : num_bits_(num_bits),
       // If size is larger than necessary, trim. base::span will guard against
       // out-of-bounds accesses.
-      map_(base::span<uint32_t>(
-          map,
-          base::checked_cast<size_t>(
-              std::min(RequiredArraySize(num_bits), num_words)))) {}
+      map_(map.first(std::min(RequiredArraySize(num_bits), map.size()))) {}
 
 Bitmap::~Bitmap() = default;
 
@@ -114,10 +116,8 @@ uint32_t Bitmap::GetMapElement(int array_index) const {
   return map_[array_index];
 }
 
-void Bitmap::SetMap(const uint32_t* map, int size) {
-  auto src = base::span<const uint32_t>(
-      map, std::min(base::checked_cast<size_t>(size), map_.size()));
-  map_.copy_prefix_from(src);
+void Bitmap::SetMap(base::span<const uint32_t> map) {
+  map_.copy_prefix_from(map);
 }
 
 void Bitmap::SetRange(int begin, int end, bool value) {

@@ -6,6 +6,7 @@
 
 #include <stdint.h>
 
+#include "base/compiler_specific.h"
 #include "base/containers/heap_array.h"
 #include "base/containers/span.h"
 #include "base/format_macros.h"
@@ -112,7 +113,9 @@ void ChildrenDeleter::Start(base::HeapArray<char> buffer, int len) {
 
   int num_bits = (len - sizeof(disk_cache::SparseHeader)) * 8;
   children_map_.Resize(num_bits, false);
-  children_map_.SetMap(data->bitmap, num_bits / 32);
+  base::span<uint8_t> bitmap_bytes = base::as_writable_bytes(
+      buffer_.subspan(offsetof(disk_cache::SparseData, bitmap)));
+  children_map_.SetMap(disk_cache::ToUint32Span(bitmap_bytes));
   buffer_ = {};
 
   DeleteChildren();
@@ -201,7 +204,9 @@ namespace disk_cache {
 
 SparseControl::SparseControl(EntryImpl* entry)
     : entry_(entry),
-      child_map_(child_data_.bitmap, kNumSparseBits, kNumSparseBits / 32) {
+      child_map_(ToUint32Span(base::as_writable_byte_span(child_data_.bitmap)),
+                 kNumSparseBits) {
+  static_assert(sizeof(child_data_.bitmap) == kNumSparseBits / 8);
 }
 
 SparseControl::~SparseControl() {
@@ -466,7 +471,7 @@ int SparseControl::OpenSparseEntry(int data_len) {
 
   // Grow the bitmap to the current size and copy the bits.
   children_map_.Resize(map_len * 8, false);
-  children_map_.SetMap(reinterpret_cast<uint32_t*>(buf->data()), map_len);
+  children_map_.SetMap(ToUint32Span(buf->span()));
   return net::OK;
 }
 
