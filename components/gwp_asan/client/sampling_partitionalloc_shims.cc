@@ -73,13 +73,15 @@ GWP_ASAN_EXPORT GuardedPageAllocator& GetPartitionAllocGpaForTesting() {
   return *gpa;
 }
 
-void InstallPartitionAllocHooks(
+bool InstallPartitionAllocHooks(
     const AllocatorSettings& settings,
     GuardedPageAllocator::OutOfMemoryCallback callback) {
   static crash_reporter::CrashKeyString<24> pa_crash_key(
       kPartitionAllocCrashKey);
   gpa = new GuardedPageAllocator();
-  gpa->Init(settings, std::move(callback), true);
+  if (!gpa->Init(settings, std::move(callback), true)) {
+    return false;
+  }
   pa_crash_key.Set(gpa->GetCrashKey());
   sampling_state.Init(settings.sampling_frequency);
   sampling_state.SetSampleSizeRestriction(settings.sampling_min_size,
@@ -88,6 +90,7 @@ void InstallPartitionAllocHooks(
   // PDFium's PartitionAlloc fork.
   partition_alloc::PartitionAllocHooks::SetOverrideHooks(
       &AllocationHook, &FreeHook, &ReallocHook);
+  return true;
 }
 
 }  // namespace internal

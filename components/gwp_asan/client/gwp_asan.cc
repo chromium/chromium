@@ -515,16 +515,17 @@ void EnableForMalloc(bool boost_sampling, std::string_view process_type) {
   static bool init_once = [&]() -> bool {
     const auto settings = internal::GetAllocatorSettings(
         internal::kGwpAsanMalloc, boost_sampling, process_type);
+    bool activated_gwp_asan = false;
+    if (settings.has_value()) {
+      activated_gwp_asan = internal::InstallMallocHooks(
+          settings.value(),
+          internal::CreateOomCallback("Malloc", process_type,
+                                      settings->sampling_frequency));
+    }
     internal::ReportGwpAsanActivated("Malloc", process_type,
-                                     settings.has_value());
-    if (!settings)
-      return false;
+                                     activated_gwp_asan);
 
-    internal::InstallMallocHooks(
-        settings.value(),
-        internal::CreateOomCallback("Malloc", process_type,
-                                    settings->sampling_frequency));
-    return true;
+    return activated_gwp_asan;
   }();
   std::ignore = init_once;
 #else
@@ -539,16 +540,16 @@ void EnableForPartitionAlloc(bool boost_sampling,
   static bool init_once = [&]() -> bool {
     const auto settings = internal::GetAllocatorSettings(
         internal::kGwpAsanPartitionAlloc, boost_sampling, process_type);
+    bool activated_gwp_asan = false;
+    if (settings.has_value()) {
+      activated_gwp_asan = internal::InstallPartitionAllocHooks(
+          settings.value(),
+          internal::CreateOomCallback("PartitionAlloc", process_type,
+                                      settings->sampling_frequency));
+    }
     internal::ReportGwpAsanActivated("PartitionAlloc", process_type,
-                                     settings.has_value());
-    if (!settings)
-      return false;
-
-    internal::InstallPartitionAllocHooks(
-        settings.value(),
-        internal::CreateOomCallback("PartitionAlloc", process_type,
-                                    settings->sampling_frequency));
-    return true;
+                                     activated_gwp_asan);
+    return activated_gwp_asan;
   }();
   std::ignore = init_once;
 #else

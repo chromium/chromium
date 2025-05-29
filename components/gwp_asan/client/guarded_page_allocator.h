@@ -56,9 +56,9 @@ class GWP_ASAN_EXPORT GuardedPageAllocator {
   //
   // The OOM callback is called the first time the allocator fails to allocate
   // kOutOfMemoryCount allocations consecutively due to lack of memory.
-  void Init(const AllocatorSettings& settings,
-            OutOfMemoryCallback oom_callback,
-            bool is_partition_alloc);
+  [[nodiscard]] bool Init(const AllocatorSettings& settings,
+                          OutOfMemoryCallback oom_callback,
+                          bool is_partition_alloc);
 
   // On success, returns a pointer to size bytes of page-guarded memory. On
   // failure, returns nullptr. The allocation is not guaranteed to be

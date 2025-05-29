@@ -69,7 +69,7 @@ void* GwpAsanSupport::MapRegion(size_t slot_count,
   {
     internal::ScopedGuard locker{internal::PartitionRootLock(root)};
     super_page_span_start = bucket->AllocNewSuperPageSpanForGwpAsan(
-        root, super_page_count, AllocFlags::kNone);
+        root, super_page_count, AllocFlags::kReturnNull);
 
     if (!super_page_span_start) {
       return nullptr;
