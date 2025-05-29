@@ -228,6 +228,8 @@ source_set("audio") {
       "win/audio_low_latency_output_win.h",
       "win/audio_manager_win.cc",
       "win/audio_manager_win.h",
+      "win/audio_session_creation_observer_win.cc",
+      "win/audio_session_creation_observer_win.h",
       "win/audio_session_event_listener_win.cc",
       "win/audio_session_event_listener_win.h",
       "win/avrt_wrapper_win.cc",

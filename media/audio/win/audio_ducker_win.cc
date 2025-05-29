@@ -15,6 +15,7 @@
 #include "base/task/bind_post_task.h"
 #include "base/win/scoped_co_mem.h"
 #include "media/audio/win/audio_device_listener_win.h"
+#include "media/audio/win/audio_session_creation_observer_win.h"
 #include "media/audio/win/core_audio_util_win.h"
 #include "media/base/media_switches.h"
 
@@ -22,10 +23,11 @@ using Microsoft::WRL::ComPtr;
 
 namespace {
 
-// Acquires the current default output device and sets `out_device` to the
-// device found. Returns `true` if no errors are received from the system
-// APIs. When this function returns false, `out_device` remains unchanged.
-bool GetCurrentDefaultDevice(ComPtr<IMMDevice>& out_device) {
+// Acquires a ComPtr to the AudioSession manager for the default output device
+// and sets `out_manager` to the found manager. Returns `true` if no errors are
+// received from the system APIs. When this function returns `false`,
+// `out_manager` remains unchanged.
+bool GetAudioSessionManager(ComPtr<IAudioSessionManager2>& out_manager) {
   ComPtr<IMMDeviceEnumerator> device_enumerator =
       media::CoreAudioUtil::CreateDeviceEnumerator();
   if (!device_enumerator) {
@@ -37,25 +39,25 @@ bool GetCurrentDefaultDevice(ComPtr<IMMDevice>& out_device) {
   if (!SUCCEEDED(hr)) {
     return false;
   }
-  out_device = device;
-  return true;
-}
-
-// Runs the given callback with each audio session on the given audio device.
-// Returns `true` if it is able to iterate over all sessions with no failures
-// reported by the Windows APIs.
-bool ForEachAudioSession(
-    ComPtr<IMMDevice>& device,
-    base::RepeatingCallback<void(ComPtr<IAudioSessionControl2>& session)>
-        callback) {
   ComPtr<IAudioSessionManager2> audio_session_manager;
-  HRESULT hr = device->Activate(__uuidof(IAudioSessionManager2), CLSCTX_ALL,
-                                nullptr, &audio_session_manager);
+  hr = device->Activate(__uuidof(IAudioSessionManager2), CLSCTX_ALL, nullptr,
+                        &audio_session_manager);
   if (!SUCCEEDED(hr)) {
     return false;
   }
+  out_manager = audio_session_manager;
+  return true;
+}
+
+// Runs the given callback with each audio session managed by the given
+// `audio_session_manager`. Returns `true` if it is able to iterate over all
+// sessions with no failures reported by the Windows APIs.
+bool ForEachAudioSession(
+    ComPtr<IAudioSessionManager2>& audio_session_manager,
+    base::RepeatingCallback<void(ComPtr<IAudioSessionControl2>& session)>
+        callback) {
   ComPtr<IAudioSessionEnumerator> session_enumerator;
-  hr = audio_session_manager->GetSessionEnumerator(&session_enumerator);
+  HRESULT hr = audio_session_manager->GetSessionEnumerator(&session_enumerator);
   if (!SUCCEEDED(hr)) {
     return false;
   }
@@ -107,15 +109,30 @@ AudioDuckerWin::~AudioDuckerWin() {
 }
 
 void AudioDuckerWin::StartDuckingOtherWindowsApplications() {
-  ducked_device_.Reset();
-  if (!GetCurrentDefaultDevice(ducked_device_)) {
+  if (ducked_audio_session_manager_) {
+    // If `ducked_audio_session_manager_` exists then we're already ducking
+    // other applications, so nothing needs to be done.
     return;
   }
+
+  if (!GetAudioSessionManager(ducked_audio_session_manager_)) {
+    return;
+  }
+
+  if (!session_creation_observer_) {
+    session_creation_observer_ =
+        std::make_unique<AudioSessionCreationObserverWin>(
+            base::BindPostTaskToCurrentDefault(base::BindRepeating(
+                &AudioDuckerWin::DuckNewAudioSessionsIfNecessary,
+                weak_factory_.GetWeakPtr())));
+  }
+  ducked_audio_session_manager_->RegisterSessionNotification(
+      session_creation_observer_.get());
 
   // `base::Unretained()` is safe here because this callback is called
   // synchronously.
   ForEachAudioSession(
-      ducked_device_,
+      ducked_audio_session_manager_,
       base::BindRepeating(&AudioDuckerWin::StartDuckingAudioSessionIfNecessary,
                           base::Unretained(this)));
 
@@ -131,14 +148,24 @@ void AudioDuckerWin::StartDuckingOtherWindowsApplications() {
 
 void AudioDuckerWin::StopDuckingOtherWindowsApplications() {
   if (ducked_applications_.empty()) {
-    ducked_device_.Reset();
+    if (ducked_audio_session_manager_) {
+      CHECK(session_creation_observer_);
+      ducked_audio_session_manager_->UnregisterSessionNotification(
+          session_creation_observer_.get());
+      ducked_audio_session_manager_.Reset();
+    }
     return;
   }
+
+  // If we're currently ducking applications, then we must have the associated
+  // audio session manager.
+  CHECK(ducked_audio_session_manager_);
+  CHECK(session_creation_observer_);
 
   // `base::Unretained()` is safe here because this callback is called
   // synchronously.
   bool no_errors = ForEachAudioSession(
-      ducked_device_,
+      ducked_audio_session_manager_,
       base::BindRepeating(&AudioDuckerWin::StopDuckingAudioSessionIfNecessary,
                           base::Unretained(this)));
 
@@ -146,7 +173,9 @@ void AudioDuckerWin::StopDuckingOtherWindowsApplications() {
                             no_errors);
 
   ducked_applications_.clear();
-  ducked_device_.Reset();
+  ducked_audio_session_manager_->UnregisterSessionNotification(
+      session_creation_observer_.get());
+  ducked_audio_session_manager_.Reset();
 }
 
 void AudioDuckerWin::StartDuckingAudioSessionIfNecessary(
@@ -164,6 +193,14 @@ void AudioDuckerWin::StartDuckingAudioSessionIfNecessary(
   if (!SUCCEEDED(hr)) {
     return;
   }
+
+  // If we're already ducking this audio session, don't reduck it. We can get
+  // here when we're ducking applications due to a new session being created.
+  auto iter = ducked_applications_.find(session_id.get());
+  if (iter != ducked_applications_.end()) {
+    return;
+  }
+
   ComPtr<ISimpleAudioVolume> simple_audio_volume;
   hr = session->QueryInterface(IID_PPV_ARGS(&simple_audio_volume));
   if (!SUCCEEDED(hr)) {
@@ -206,7 +243,7 @@ void AudioDuckerWin::StopDuckingAudioSessionIfNecessary(
 
 void AudioDuckerWin::OnDefaultDeviceChanged() {
   // If we're not currently ducking, then do nothing.
-  if (!ducked_device_) {
+  if (!ducked_audio_session_manager_) {
     return;
   }
 
@@ -214,6 +251,23 @@ void AudioDuckerWin::OnDefaultDeviceChanged() {
   // previous default device) and start ducking sessions for the new device.
   StopDuckingOtherWindowsApplications();
   StartDuckingOtherWindowsApplications();
+}
+
+void AudioDuckerWin::DuckNewAudioSessionsIfNecessary() {
+  // If we're not currently ducking, then do nothing.
+  if (!ducked_audio_session_manager_) {
+    return;
+  }
+
+  // Otherwise, loop through all audio sessions and duck them. Note that
+  // `StartDuckingAudioSessionIfNecessary()` will not re-duck already ducked
+  // sessions, so it's safe to loop through them all to catch new ones.
+  // `base::Unretained()` is safe here because this callback is called
+  // synchronously.
+  ForEachAudioSession(
+      ducked_audio_session_manager_,
+      base::BindRepeating(&AudioDuckerWin::StartDuckingAudioSessionIfNecessary,
+                          base::Unretained(this)));
 }
 
 }  // namespace media

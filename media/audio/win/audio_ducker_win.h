@@ -21,6 +21,7 @@
 namespace media {
 
 class AudioDeviceListenerWin;
+class AudioSessionCreationObserverWin;
 
 // The AudioDuckerWin is responsible for ducking Windows applications.
 class MEDIA_EXPORT AudioDuckerWin {
@@ -30,7 +31,7 @@ class MEDIA_EXPORT AudioDuckerWin {
 
   // `callback` should return true if the application associated with the given
   // process ID should be ducked.
-  AudioDuckerWin(ShouldDuckProcessCallback callback);
+  explicit AudioDuckerWin(ShouldDuckProcessCallback callback);
   AudioDuckerWin(const AudioDuckerWin&) = delete;
   AudioDuckerWin& operator=(const AudioDuckerWin&) = delete;
   ~AudioDuckerWin();
@@ -53,6 +54,12 @@ class MEDIA_EXPORT AudioDuckerWin {
   // changes.
   void OnDefaultDeviceChanged();
 
+  // Called when the system notifies us of a new audio session being created.
+  void DuckNewAudioSessionsIfNecessary();
+
+  // Listens for audio session creation notifications from the OS.
+  std::unique_ptr<AudioSessionCreationObserverWin> session_creation_observer_;
+
   // Used to determine which applications we should duck.
   ShouldDuckProcessCallback should_duck_process_callback_;
 
@@ -60,8 +67,10 @@ class MEDIA_EXPORT AudioDuckerWin {
   // volume so we can restore it when we stop ducking.
   std::map<std::wstring, float> ducked_applications_;
 
-  // The device that we're currently ducking the audio sessions of.
-  Microsoft::WRL::ComPtr<IMMDevice> ducked_device_;
+  // The AudioSession manager for the device that we're currently ducking. We
+  // need to keep a connection to this alive so we can receive notifications of
+  // new audio sessions.
+  Microsoft::WRL::ComPtr<IAudioSessionManager2> ducked_audio_session_manager_;
 
   std::unique_ptr<AudioDeviceListenerWin> output_device_listener_;
 
