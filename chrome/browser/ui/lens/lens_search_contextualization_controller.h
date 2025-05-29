@@ -11,6 +11,7 @@
 #include "components/lens/lens_overlay_invocation_source.h"
 #include "components/omnibox/browser/autocomplete_match_type.h"
 #include "components/tabs/public/tab_interface.h"
+#include "mojo/public/cpp/bindings/associated_remote.h"
 #include "pdf/buildflags.h"
 
 #if BUILDFLAG(ENABLE_PDF)

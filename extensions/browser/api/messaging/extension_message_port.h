@@ -24,6 +24,7 @@
 #include "extensions/common/api/messaging/port_id.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/common/mojom/message_port.mojom.h"
+#include "mojo/public/cpp/bindings/associated_remote.h"
 #include "url/origin.h"
 
 class GURL;

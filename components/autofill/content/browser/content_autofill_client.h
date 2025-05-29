@@ -11,7 +11,6 @@
 #include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_user_data.h"
-#include "mojo/public/cpp/bindings/associated_remote.h"
 
 namespace credential_management {
 class ContentCredentialManager;

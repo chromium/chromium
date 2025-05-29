@@ -9,7 +9,6 @@
 #include "extensions/common/dom_action_types.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/common/mojom/renderer_host.mojom.h"
-#include "mojo/public/cpp/bindings/associated_remote.h"
 #include "third_party/blink/public/web/web_dom_activity_logger.h"
 #include "v8/include/v8-forward.h"
 

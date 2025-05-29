@@ -34,7 +34,6 @@
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/common/media_playback_renderer_type.mojom.h"
 #include "mojo/public/cpp/bindings/associated_receiver_set.h"
-#include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
 #include "third_party/blink/public/mojom/favicon/favicon_url.mojom-forward.h"

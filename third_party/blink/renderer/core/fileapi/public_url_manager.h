@@ -27,7 +27,6 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_FILEAPI_PUBLIC_URL_MANAGER_H_
 
 #include "base/types/pass_key.h"
-#include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "services/network/public/mojom/url_loader_factory.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/blob/blob_url_store.mojom-blink.h"

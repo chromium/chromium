@@ -42,6 +42,7 @@
 #include "gin/handle.h"
 #include "gin/per_context_data.h"
 #include "ipc/ipc_mojo_bootstrap.h"
+#include "mojo/public/cpp/bindings/associated_remote.h"
 #include "third_party/blink/public/mojom/frame/user_activation_notification_type.mojom.h"
 #include "third_party/blink/public/web/web_document.h"
 #include "third_party/blink/public/web/web_local_frame.h"
