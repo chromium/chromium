@@ -57,7 +57,6 @@ void ParseAndExercise(FuzzedDataProvider& data_provider) {
     service->default_alpn();
     service->port();
     service->ech_config();
-    service->unparsed_params();
     service->IsCompatible();
 
     CHECK(!base::Contains(service->mandatory_keys(),

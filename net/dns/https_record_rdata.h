@@ -13,7 +13,6 @@
 #include <string_view>
 #include <vector>
 
-#include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/containers/span.h"
 #include "net/base/ip_address.h"
@@ -74,17 +73,15 @@ class NET_EXPORT_PRIVATE AliasFormHttpsRecordRdata : public HttpsRecordRdata {
 
 class NET_EXPORT_PRIVATE ServiceFormHttpsRecordRdata : public HttpsRecordRdata {
  public:
-  ServiceFormHttpsRecordRdata(
-      uint16_t priority,
-      std::string service_name,
-      base::flat_set<uint16_t> mandatory_keys,
-      std::vector<std::string> alpn_ids,
-      bool default_alpn,
-      std::optional<uint16_t> port,
-      std::vector<IPAddress> ipv4_hint,
-      base::span<const uint8_t> ech_config,
-      std::vector<IPAddress> ipv6_hint,
-      base::flat_map<uint16_t, std::string> unparsed_params);
+  ServiceFormHttpsRecordRdata(uint16_t priority,
+                              std::string service_name,
+                              base::flat_set<uint16_t> mandatory_keys,
+                              std::vector<std::string> alpn_ids,
+                              bool default_alpn,
+                              std::optional<uint16_t> port,
+                              std::vector<IPAddress> ipv4_hint,
+                              base::span<const uint8_t> ech_config,
+                              std::vector<IPAddress> ipv6_hint);
   static std::unique_ptr<ServiceFormHttpsRecordRdata> Parse(
       base::span<const uint8_t> data);
 
@@ -104,9 +101,6 @@ class NET_EXPORT_PRIVATE ServiceFormHttpsRecordRdata : public HttpsRecordRdata {
   const std::vector<IPAddress>& ipv4_hint() const { return ipv4_hint_; }
   base::span<const uint8_t> ech_config() const { return ech_config_; }
   const std::vector<IPAddress>& ipv6_hint() const { return ipv6_hint_; }
-  const base::flat_map<uint16_t, std::string>& unparsed_params() const {
-    return unparsed_params_;
-  }
 
   // Returns whether or not this rdata parser is considered "compatible" with
   // the parsed rdata. That is that all keys listed by mandatory_keys() (and all
@@ -128,8 +122,6 @@ class NET_EXPORT_PRIVATE ServiceFormHttpsRecordRdata : public HttpsRecordRdata {
   const std::vector<IPAddress> ipv4_hint_;
   std::vector<uint8_t> ech_config_;
   const std::vector<IPAddress> ipv6_hint_;
-
-  const base::flat_map<uint16_t, std::string> unparsed_params_;
 };
 
 }  // namespace net

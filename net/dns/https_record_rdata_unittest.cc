@@ -10,7 +10,6 @@
 #include <string_view>
 #include <vector>
 
-#include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/containers/span.h"
 #include "net/base/ip_address.h"
@@ -119,9 +118,7 @@ TEST(HttpsRecordRdataTest, ParsesService) {
       false /* default_alpn */, std::optional<uint16_t>(46) /* port */,
       std::vector<IPAddress>({IPAddress(8, 8, 8, 8)}) /* ipv4_hint */,
       ech_config_testdata /* ech_config */,
-      std::vector<IPAddress>({expected_ipv6}) /* ipv6_hint */,
-      base::flat_map<uint16_t, std::string>(
-          {{7, "foo"}}) /* unparsed_params */);
+      std::vector<IPAddress>({expected_ipv6}) /* ipv6_hint */);
   EXPECT_TRUE(rdata->IsEqual(&expected));
 
   EXPECT_FALSE(rdata->IsAlias());
@@ -139,8 +136,6 @@ TEST(HttpsRecordRdataTest, ParsesService) {
   EXPECT_THAT(service_rdata->ech_config(),
               testing::ElementsAreArray(ech_config_testdata));
   EXPECT_THAT(service_rdata->ipv6_hint(), testing::ElementsAre(expected_ipv6));
-  EXPECT_THAT(service_rdata->unparsed_params(),
-              testing::ElementsAre(testing::Pair(7, "foo")));
   EXPECT_TRUE(service_rdata->IsCompatible());
 }
 
@@ -163,8 +158,7 @@ TEST(HttpsRecordRdataTest, AliasIsEqualRejectsWrongType) {
   ServiceFormHttpsRecordRdata service(
       1u /* priority */, "service.name.test", {} /* mandatory_keys */,
       {} /* alpn_ids */, true /* default_alpn */, std::nullopt /* port */,
-      {} /* ipv4_hint */, {} /* ech_config */, {} /* ipv6_hint */,
-      {} /* unparsed_params */);
+      {} /* ipv4_hint */, {} /* ech_config */, {} /* ipv6_hint */);
 
   EXPECT_TRUE(alias.IsEqual(&alias));
   EXPECT_FALSE(alias.IsEqual(&service));
@@ -175,8 +169,7 @@ TEST(HttpsRecordRdataTest, ServiceIsEqualRejectsWrongType) {
   ServiceFormHttpsRecordRdata service(
       1u /* priority */, "service.name.test", {} /* mandatory_keys */,
       {} /* alpn_ids */, true /* default_alpn */, std::nullopt /* port */,
-      {} /* ipv4_hint */, {} /* ech_config */, {} /* ipv6_hint */,
-      {} /* unparsed_params */);
+      {} /* ipv4_hint */, {} /* ech_config */, {} /* ipv6_hint */);
 
   EXPECT_FALSE(service.IsEqual(&alias));
   EXPECT_TRUE(service.IsEqual(&service));
