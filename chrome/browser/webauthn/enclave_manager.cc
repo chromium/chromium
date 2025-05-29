@@ -3678,9 +3678,8 @@ void EnclaveManager::Act() {
     loading_ = true;
 
     if (!encryptor_.has_value()) {
-      os_crypt_subscription_ =
-          g_browser_process->os_crypt_async()->GetInstance(base::BindOnce(
-              &EnclaveManager::OnOsCryptReady, weak_ptr_factory_.GetWeakPtr()));
+      g_browser_process->os_crypt_async()->GetInstance(base::BindOnce(
+          &EnclaveManager::OnOsCryptReady, weak_ptr_factory_.GetWeakPtr()));
       return;
     }
 
@@ -4079,8 +4078,7 @@ bool EnclaveManager::IsSecurityDomainReset(
               user_->wrapped_security_domain_secrets().end());
 }
 
-void EnclaveManager::OnOsCryptReady(os_crypt_async::Encryptor encryptor,
-                                    bool result) {
+void EnclaveManager::OnOsCryptReady(os_crypt_async::Encryptor encryptor) {
   CHECK(!encryptor_.has_value());
   encryptor_.emplace(std::move(encryptor));
   loading_ = false;

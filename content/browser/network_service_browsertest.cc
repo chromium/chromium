@@ -1972,11 +1972,12 @@ IN_PROC_BROWSER_TEST_F(NetworkServiceCookieEncryptionBrowserTest,
   EXPECT_CALL(provider, GetEncryptor)
       .WillOnce([&os_crypt_async](network::mojom::CookieEncryptionProvider::
                                       GetEncryptorCallback callback) {
-        std::ignore = os_crypt_async.GetInstance(base::BindOnce(
+        os_crypt_async.GetInstance(base::BindOnce(
             [](network::mojom::CookieEncryptionProvider::GetEncryptorCallback
                    callback,
-               os_crypt_async::Encryptor encryptor,
-               bool result) { std::move(callback).Run(std::move(encryptor)); },
+               os_crypt_async::Encryptor encryptor) {
+              std::move(callback).Run(std::move(encryptor));
+            },
             std::move(callback)));
       });
 

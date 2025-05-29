@@ -1473,16 +1473,12 @@ void BrowserProcessImpl::PreMainMessageLoopRun() {
       std::make_unique<os_crypt_async::OSCryptAsync>(std::move(providers));
 
   // Trigger async initialization of OSCrypt key providers.
-  os_crypt_async_init_subscription_.emplace(
-      os_crypt_async_->GetInstance(base::BindOnce(
-          [](base::TimeTicks start_time, os_crypt_async::Encryptor encryptor,
-             bool success) {
-            base::UmaHistogramTimes("OSCrypt.AsyncInitialization.Time",
-                                    base::TimeTicks::Now() - start_time);
-            base::UmaHistogramBoolean("OSCrypt.AsyncInitialization.Result",
-                                      success);
-          },
-          base::TimeTicks::Now())));
+  os_crypt_async_->GetInstance(base::BindOnce(
+      [](base::TimeTicks start_time, os_crypt_async::Encryptor encryptor) {
+        base::UmaHistogramTimes("OSCrypt.AsyncInitialization.Time",
+                                base::TimeTicks::Now() - start_time);
+      },
+      base::TimeTicks::Now()));
 }
 
 void BrowserProcessImpl::CreateIconManager() {

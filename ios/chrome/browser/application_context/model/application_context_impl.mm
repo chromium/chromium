@@ -132,7 +132,7 @@ void ApplicationContextImpl::PostCreateThreads() {
                             std::unique_ptr<os_crypt_async::KeyProvider>>>());
 
   // Trigger an instance grab on a background thread if necessary.
-  std::ignore = os_crypt_async_->GetInstance(base::DoNothing());
+  os_crypt_async_->GetInstance(base::DoNothing());
 
   web::GetIOThreadTaskRunner({})->PostTask(
       FROM_HERE, base::BindOnce(&IOSChromeIOThread::InitOnIO,

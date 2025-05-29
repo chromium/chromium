@@ -11,7 +11,6 @@
 
 #include <memory>
 
-#include "base/callback_list.h"
 #include "base/compiler_specific.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
@@ -148,11 +147,9 @@ class WEBDATA_EXPORT WebDatabaseService
   void OnDatabaseLoadDone(sql::InitStatus status,
                           const std::string& diagnostics);
 
-  void CompleteLoadDatabase(os_crypt_async::Encryptor encryptor, bool success);
+  void CompleteLoadDatabase(os_crypt_async::Encryptor encryptor);
 
   base::FilePath path_;
-
-  base::CallbackListSubscription subscription_;
 
   // The primary owner is |WebDatabaseService| but is refcounted because
   // PostTask on DB sequence may outlive us.

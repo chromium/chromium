@@ -486,8 +486,6 @@ class BrowserProcessImpl : public BrowserProcess,
       application_breadcrumbs_logger_;
 
   std::unique_ptr<os_crypt_async::OSCryptAsync> os_crypt_async_;
-  std::optional<base::CallbackListSubscription>
-      os_crypt_async_init_subscription_;
 
   std::optional<std::pair<size_t, std::unique_ptr<os_crypt_async::KeyProvider>>>
       additional_provider_for_test_;

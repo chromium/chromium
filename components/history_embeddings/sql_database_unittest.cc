@@ -100,11 +100,9 @@ class HistoryEmbeddingsSqlDatabaseTest : public testing::Test {
 
  protected:
   os_crypt_async::Encryptor GetEncryptorInstance() {
-    base::test::TestFuture<os_crypt_async::Encryptor, bool> future;
-    std::ignore = os_crypt_->GetInstance(future.GetCallback());
-    auto [encryptor, result] = future.Take();
-    EXPECT_TRUE(result);
-    return std::move(encryptor);
+    base::test::TestFuture<os_crypt_async::Encryptor> future;
+    os_crypt_->GetInstance(future.GetCallback());
+    return future.Take();
   }
 
   base::test::TaskEnvironment env_;

@@ -78,18 +78,9 @@ os_crypt_async::Encryptor GetInstanceSync(
     os_crypt_async::OSCryptAsync& factory,
     os_crypt_async::Encryptor::Option option =
         os_crypt_async::Encryptor::Option::kNone) {
-  base::RunLoop run_loop;
-  std::optional<os_crypt_async::Encryptor> encryptor;
-  auto sub = factory.GetInstance(
-      base::BindLambdaForTesting(
-          [&](os_crypt_async::Encryptor instance, bool result) {
-            EXPECT_TRUE(result);
-            encryptor.emplace(std::move(instance));
-            run_loop.Quit();
-          }),
-      option);
-  run_loop.Run();
-  return std::move(*encryptor);
+  base::test::TestFuture<os_crypt_async::Encryptor> future;
+  factory.GetInstance(future.GetCallback(), option);
+  return future.Take();
 }
 
 }  // namespace

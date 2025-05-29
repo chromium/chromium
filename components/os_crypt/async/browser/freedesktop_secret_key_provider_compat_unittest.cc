@@ -11,6 +11,7 @@
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "components/os_crypt/async/browser/fallback_linux_key_provider.h"
 #include "components/os_crypt/async/browser/freedesktop_secret_key_provider.h"
 #include "components/os_crypt/async/browser/os_crypt_async.h"
@@ -62,18 +63,9 @@ class FreedesktopSecretKeyProviderCompatTest : public ::testing::Test {
     }
     OSCryptAsync factory(std::move(providers));
 
-    base::RunLoop run_loop;
-    std::optional<Encryptor> encryptor;
-    auto subscription =
-        factory.GetInstance(base::BindLambdaForTesting(
-                                [&](Encryptor encryptor_param, bool success) {
-                                  EXPECT_TRUE(success);
-                                  encryptor.emplace(std::move(encryptor_param));
-                                  run_loop.Quit();
-                                }),
-                            Encryptor::Option::kNone);
-    run_loop.Run();
-    return std::move(*encryptor);
+    base::test::TestFuture<Encryptor> future;
+    factory.GetInstance(future.GetCallback(), Encryptor::Option::kNone);
+    return future.Take();
   }
 
   void TearDown() override { OSCrypt::ClearCacheForTesting(); }

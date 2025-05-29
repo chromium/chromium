@@ -20,6 +20,7 @@
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "base/win/scoped_localalloc.h"
 #include "components/os_crypt/async/browser/os_crypt_async.h"
 #include "components/os_crypt/async/common/algorithm.mojom.h"
@@ -76,18 +77,9 @@ class DPAPIKeyProviderTestBase : public ::testing::Test {
   Encryptor GetInstanceSync(
       OSCryptAsync& factory,
       Encryptor::Option option = Encryptor::Option::kNone) {
-    base::RunLoop run_loop;
-    std::optional<Encryptor> encryptor;
-    auto sub =
-        factory.GetInstance(base::BindLambdaForTesting(
-                                [&](Encryptor encryptor_param, bool success) {
-                                  EXPECT_TRUE(success);
-                                  encryptor.emplace(std::move(encryptor_param));
-                                  run_loop.Quit();
-                                }),
-                            option);
-    run_loop.Run();
-    return std::move(*encryptor);
+    base::test::TestFuture<Encryptor> future;
+    factory.GetInstance(future.GetCallback(), option);
+    return future.Take();
   }
 
   Encryptor GetInstanceWithDPAPI() {

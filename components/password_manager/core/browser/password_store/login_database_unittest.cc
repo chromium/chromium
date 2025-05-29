@@ -268,11 +268,11 @@ MATCHER(IsBasicAuthAccount, "") {
 
 os_crypt_async::Encryptor GetInstanceSync(
     os_crypt_async::OSCryptAsync* factory) {
-  base::test::TestFuture<os_crypt_async::Encryptor, bool> future;
+  base::test::TestFuture<os_crypt_async::Encryptor> future;
 
-  auto sub = factory->GetInstance(future.GetCallback(),
-                                  os_crypt_async::Encryptor::Option::kNone);
-  return std::move(std::get<0>(future.Take()));
+  factory->GetInstance(future.GetCallback(),
+                       os_crypt_async::Encryptor::Option::kNone);
+  return future.Take();
 }
 
 }  // namespace

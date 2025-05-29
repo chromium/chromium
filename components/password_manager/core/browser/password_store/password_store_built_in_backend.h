@@ -9,7 +9,6 @@
 #include <string>
 #include <vector>
 
-#include "base/callback_list.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
@@ -162,9 +161,6 @@ class PasswordStoreBuiltInBackend : public PasswordStoreBackend,
   raw_ptr<PrefService> pref_service_;
 
   raw_ptr<os_crypt_async::OSCryptAsync> const os_crypt_async_
-      GUARDED_BY_CONTEXT(sequence_checker_);
-
-  base::CallbackListSubscription subscription_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
   base::WeakPtrFactory<PasswordStoreBuiltInBackend> weak_ptr_factory_{this};

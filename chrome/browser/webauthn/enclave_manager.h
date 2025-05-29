@@ -11,7 +11,6 @@
 #include <string>
 #include <vector>
 
-#include "base/callback_list.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback_forward.h"
 #include "base/gtest_prod_util.h"
@@ -459,7 +458,7 @@ class EnclaveManager : public EnclaveManagerInterface {
           state);
 
   // Called when the OSCrypt encryptor is available.
-  void OnOsCryptReady(os_crypt_async::Encryptor encryptor, bool result);
+  void OnOsCryptReady(os_crypt_async::Encryptor encryptor);
 
   const base::FilePath file_path_;
   const raw_ptr<signin::IdentityManager> identity_manager_;
@@ -516,9 +515,6 @@ class EnclaveManager : public EnclaveManagerInterface {
   std::optional<os_crypt_async::Encryptor> encryptor_;
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  base::CallbackListSubscription os_crypt_subscription_
-      GUARDED_BY_CONTEXT(sequence_checker_);
 
   base::WeakPtrFactory<EnclaveManager> weak_ptr_factory_{this};
 };

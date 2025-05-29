@@ -85,8 +85,7 @@ void WebDatabaseService::AddTable(std::unique_ptr<WebDatabaseTable> table) {
 }
 
 void WebDatabaseService::CompleteLoadDatabase(
-    os_crypt_async::Encryptor encryptor,
-    bool success) {
+    os_crypt_async::Encryptor encryptor) {
   DCHECK(web_db_backend_);
   // All AddTable calls must have happened by the time LoadDatabase is called.
   web_db_backend_->MaybeInitEncryptorOnUiSequence(std::move(encryptor));
@@ -104,7 +103,7 @@ void WebDatabaseService::LoadDatabase(os_crypt_async::OSCryptAsync* os_crypt) {
           : os_crypt_async::Encryptor::Option::kEncryptSyncCompat;
   // TODO(crbug.com/40267945): Place kEncryptSyncCompat behind base::Feature and
   // then remove it.
-  subscription_ = os_crypt->GetInstance(
+  os_crypt->GetInstance(
       base::BindOnce(&WebDatabaseService::CompleteLoadDatabase, this), option);
 }
 
