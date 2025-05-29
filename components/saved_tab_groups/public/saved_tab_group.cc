@@ -496,7 +496,7 @@ void SavedTabGroup::RemoveTabImpl(const base::Uuid& saved_tab_guid,
 }
 
 SavedTabGroup SavedTabGroup::CopyBaseFieldsWithTabs() const {
-  SavedTabGroup cloned_group(title(), color(), /*urls=*/{});
+  SavedTabGroup cloned_group(title(), color(), /*urls=*/{}, position_);
 
   for (size_t i = 0; i < saved_tabs().size(); ++i) {
     const SavedTabGroupTab& tab = saved_tabs()[i];

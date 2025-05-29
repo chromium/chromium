@@ -378,6 +378,18 @@ TEST(SavedTabGroupTest, GetOriginatingTabGroupGuid) {
             kOriginatingTabGroupGuid);
 }
 
+TEST(SavedTabGroupTest, ConvertToSharedTabGroupAndBackRetainsPosition) {
+  std::optional<size_t> position = 0;
+  SavedTabGroup saved_group(std::u16string(u"default_group"),
+                            tab_groups::TabGroupColorId::kGrey, {}, position);
+  EXPECT_EQ(position, saved_group.position());
+  SavedTabGroup shared_group =
+      saved_group.CloneAsSharedTabGroup(CollaborationId("collaboration"));
+  EXPECT_EQ(position, shared_group.position());
+  SavedTabGroup saved_group2 = shared_group.CloneAsSavedTabGroup();
+  EXPECT_EQ(position, saved_group2.position());
+}
+
 TEST(SavedTabGroupTest, MergeRemoteGroupPosition) {
   std::u16string title = u"title";
   tab_groups::TabGroupColorId color = tab_groups::TabGroupColorId::kBlue;
