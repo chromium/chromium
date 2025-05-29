@@ -16,7 +16,6 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.core.view.WindowInsetsCompat.Type.InsetsType;
 
-import org.chromium.base.ObserverList;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.InsetObserver.WindowInsetsConsumer;
@@ -35,27 +34,36 @@ import java.util.List;
  * area within the window insets region that is not covered by the bounding rects of that window
  * insets.
  *
+ * <p>The {@link Consumer} dictates consumption of the specific type of insets that this class
+ * manages by deciding whether any view adjustments have to be made within the app based on the
+ * nature of the widest unoccluded rect in the insets region.
+ *
  * <p>This class works only when the criteria is satisfied:
  * <li>1. Android version is at least R.
  * <li>2. WindowInsets of given type has insets from one side exactly.
  */
 @NullMarked
 public class InsetsRectProvider implements WindowInsetsConsumer {
-    /** Observer interface that's interested in bounding rect updates. */
-    public interface Observer {
-
-        /** Notified when the bounding rect provided has an update. */
-        void onBoundingRectsUpdated(Rect widestUnoccludedRect);
+    /** Consumer that dictates the consumption of insets of type |mInsetType|. */
+    public interface Consumer {
+        /**
+         * Notified when the bounding rects for |mInsetType| has an update.
+         *
+         * @param widestUnoccludedRect The widest unoccluded rect in the inset region.
+         * @return {@code true} if the insets are consumed, {@code false} otherwise.
+         */
+        boolean onWidestUnoccludedRectUpdated(Rect widestUnoccludedRect);
     }
 
     private final @InsetsType int mInsetType;
     private final Rect mWindowRect = new Rect();
-    private final ObserverList<Observer> mObservers = new ObserverList<>();
+    private final Consumer mInsetsRectConsumer;
     private final InsetObserver mInsetObserver;
 
     private @Nullable WindowInsetsCompat mCachedInsets;
     private List<Rect> mBoundingRects;
     private Rect mWidestUnoccludedRect = new Rect();
+    private boolean mUnoccludedRectUpdateConsumed;
 
     /**
      * Create a rect provider for a specific inset type. This class should only be used for Android
@@ -64,6 +72,7 @@ public class InsetsRectProvider implements WindowInsetsConsumer {
      * @param insetObserver {@link InsetObserver} that's attached to the root view.
      * @param insetType {@link InsetsType} this provider is observing.
      * @param initialInsets The initial window insets that will be used to read the bounding rects.
+     * @param insetsRectConsumer The {@link Consumer} that dictates inset consumption.
      * @param insetConsumerSource The {@link InsetConsumerSource} of inset observation and
      *     consumption.
      */
@@ -71,10 +80,12 @@ public class InsetsRectProvider implements WindowInsetsConsumer {
             InsetObserver insetObserver,
             @InsetsType int insetType,
             @Nullable WindowInsetsCompat initialInsets,
+            Consumer insetsRectConsumer,
             @InsetConsumerSource int insetConsumerSource) {
         mInsetType = insetType;
         mBoundingRects = List.of();
         mInsetObserver = insetObserver;
+        mInsetsRectConsumer = insetsRectConsumer;
 
         assert VERSION.SDK_INT >= VERSION_CODES.R;
         mInsetObserver.addInsetsConsumer(this, insetConsumerSource);
@@ -111,19 +122,8 @@ public class InsetsRectProvider implements WindowInsetsConsumer {
         return mWindowRect;
     }
 
-    /** Add an observer for updates of bounding rects. */
-    public void addObserver(Observer obs) {
-        mObservers.addObserver(obs);
-    }
-
-    /** Remove an observer for updates of bounding rects. */
-    public void removeObserver(Observer obs) {
-        mObservers.removeObserver(obs);
-    }
-
-    /** Destroy the dependencies and clear the observers. */
+    /** Destroy dependencies. */
     public void destroy() {
-        mObservers.clear();
         mInsetObserver.removeInsetsConsumer(this);
     }
 
@@ -172,7 +172,7 @@ public class InsetsRectProvider implements WindowInsetsConsumer {
     /**
      * @return Whether the applied window insets should be consumed by this class. {@code false}
      *     when the insets are not used to adjust any view, {@code true} otherwise. The insets
-     *     should be consumed only if |mWidestUnoccludedRect| is non-empty to be customized.
+     *     should be consumed only if the {@link Consumer} consumes the update.
      */
     private boolean maybeUpdateWidestUnoccludedRect(WindowInsetsCompat windowInsetsCompat) {
         // Do nothing if the window frame is empty, or there's no update from the cached insets, or
@@ -183,7 +183,8 @@ public class InsetsRectProvider implements WindowInsetsConsumer {
 
         Rect windowRect = new Rect(0, 0, windowSize.getWidth(), windowSize.getHeight());
         if (windowInsetsCompat.equals(mCachedInsets) && windowRect.equals(mWindowRect)) {
-            return !mWidestUnoccludedRect.isEmpty();
+            // Avoid repeated processing if the insets have already been processed.
+            return mUnoccludedRectUpdateConsumed;
         }
 
         mCachedInsets = windowInsetsCompat;
@@ -191,11 +192,10 @@ public class InsetsRectProvider implements WindowInsetsConsumer {
 
         updateWidestUnoccludedRect(windowInsetsCompat);
 
-        // Notify observers about the update.
-        for (Observer observer : mObservers) {
-            observer.onBoundingRectsUpdated(mWidestUnoccludedRect);
-        }
-        return !mWidestUnoccludedRect.isEmpty();
+        // Notify the consumer about the update.
+        mUnoccludedRectUpdateConsumed =
+                mInsetsRectConsumer.onWidestUnoccludedRectUpdated(mWidestUnoccludedRect);
+        return mUnoccludedRectUpdateConsumed;
     }
 
     /**

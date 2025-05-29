@@ -29,17 +29,20 @@ public class CaptionBarInsetsRectProvider extends InsetsRectProvider {
      *
      * @param insetObserver {@link InsetObserver} that's attached to the root view.
      * @param initialInsets The initial window insets that will be used to read the bounding rects.
+     * @param insetsRectConsumer The {@link Consumer} that dictates inset consumption.
      * @param insetConsumerSource The {@link InsetConsumerSource} of inset observation and
      *     consumption.
      */
     public CaptionBarInsetsRectProvider(
             InsetObserver insetObserver,
             @Nullable WindowInsetsCompat initialInsets,
+            Consumer insetsRectConsumer,
             int insetConsumerSource) {
         super(
                 insetObserver,
                 WindowInsetsCompat.Type.captionBar(),
                 initialInsets,
+                insetsRectConsumer,
                 insetConsumerSource);
     }
 

@@ -56,7 +56,8 @@ public class AppHeaderCoordinator
         implements DesktopWindowStateManager,
                 TopResumedActivityChangedObserver,
                 SaveInstanceStateObserver,
-                WindowInsetsConsumer {
+                WindowInsetsConsumer,
+                InsetsRectProvider.Consumer {
     @VisibleForTesting
     public static final String INSTANCE_STATE_KEY_IS_APP_IN_UNFOCUSED_DW =
             "is_app_in_unfocused_desktop_window";
@@ -135,15 +136,12 @@ public class AppHeaderCoordinator
                         : new CaptionBarInsetsRectProvider(
                                 insetObserver,
                                 insetObserver.getLastRawWindowInsets(),
+                                this,
                                 InsetConsumerSource.APP_HEADER_COORDINATOR_CAPTION);
-
-        InsetsRectProvider.Observer insetsRectUpdateRunnable = this::onInsetsRectsUpdated;
-        mCaptionBarRectProvider.addObserver(insetsRectUpdateRunnable);
 
         // Populate the initial value if the rect provider is ready.
         if (!mCaptionBarRectProvider.getWidestUnoccludedRect().isEmpty()) {
-            insetsRectUpdateRunnable.onBoundingRectsUpdated(
-                    mCaptionBarRectProvider.getWidestUnoccludedRect());
+            onWidestUnoccludedRectUpdated(mCaptionBarRectProvider.getWidestUnoccludedRect());
         }
     }
 
@@ -181,6 +179,12 @@ public class AppHeaderCoordinator
         updateIconColorForCaptionBars(backgroundColor);
     }
 
+    // InsetsRectProvider.Consumer implementation
+    @Override
+    public boolean onWidestUnoccludedRectUpdated(Rect widestUnoccludedRect) {
+        return onInsetsRectsUpdated(widestUnoccludedRect);
+    }
+
     // TopResumedActivityChangedObserver implementation.
     @Override
     public void onTopResumedActivityChanged(boolean isTopResumedActivity) {
@@ -193,7 +197,8 @@ public class AppHeaderCoordinator
         outState.putBoolean(INSTANCE_STATE_KEY_IS_APP_IN_UNFOCUSED_DW, mIsInUnfocusedDesktopWindow);
     }
 
-    private void onInsetsRectsUpdated(Rect widestUnoccludedRect) {
+    /* Returns true if app header is customized. */
+    private boolean onInsetsRectsUpdated(Rect widestUnoccludedRect) {
         // mActivity is only set to null in destroy().
         boolean isOnExternalDisplay =
                 !DisplayUtil.isContextInDefaultDisplay(assumeNonNull(mActivity));
@@ -217,7 +222,7 @@ public class AppHeaderCoordinator
                         mCaptionBarRectProvider.getWindowRect(),
                         widestUnoccludedRect,
                         isInDesktopWindow);
-        if (appHeaderState.equals(mAppHeaderState)) return;
+        if (appHeaderState.equals(mAppHeaderState)) return isInDesktopWindow;
 
         boolean desktopWindowingModeChanged = mIsInDesktopWindow != isInDesktopWindow;
         mIsInDesktopWindow = isInDesktopWindow;
@@ -228,7 +233,7 @@ public class AppHeaderCoordinator
         }
 
         // If whether we are in DW mode does not change, we can end this method now.
-        if (!desktopWindowingModeChanged) return;
+        if (!desktopWindowingModeChanged) return isInDesktopWindow;
 
         for (var observer : mObservers) {
             observer.onDesktopWindowingModeChanged(mIsInDesktopWindow);
@@ -248,6 +253,8 @@ public class AppHeaderCoordinator
         } else {
             mBrowserControlsVisibilityDelegate.releasePersistentShowingToken(mBrowserControlsToken);
         }
+
+        return isInDesktopWindow;
     }
 
     /**
