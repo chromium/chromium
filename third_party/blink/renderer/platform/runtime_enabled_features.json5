@@ -2607,8 +2607,9 @@
       status: "stable",
     },
     {
+      // crbug.com/409809761
       name: "ICUCapitalization",
-      status: "experimental",
+      status: "stable",
     },
     {
       name: "IgnoreLetterSpacingInCursiveScripts",
