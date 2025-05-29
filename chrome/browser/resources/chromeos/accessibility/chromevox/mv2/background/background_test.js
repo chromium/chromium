@@ -4022,7 +4022,7 @@ AX_TEST_F(
 
           // Wrap.
           .call(doCmd('nextObject'))
-          .expectSpeech('second', 'Button', 'first, window')
+          .expectSpeech('first, window', 'second', 'Button')
 
           // Wrap.
           .call(doCmd('previousObject'))
