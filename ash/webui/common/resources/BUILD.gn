@@ -242,6 +242,7 @@ html_to_wrapper("html_wrapper_files") {
   in_folder = preprocessed_dir
   out_folder = preprocessed_dir
   in_files = html_files + icons_html_files
+  template = "polymer"
   use_js = true
 
   if (is_chrome_branded) {

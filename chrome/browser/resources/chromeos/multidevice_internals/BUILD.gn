@@ -233,6 +233,7 @@ html_to_wrapper("html_wrapper_files") {
     "notification_manager.html",
     "camera_roll_manager_form.html",
   ]
+  template = "polymer"
   use_js = true
 }
 

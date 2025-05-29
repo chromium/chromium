@@ -184,5 +184,6 @@ html_to_wrapper("html_wrapper_files") {
     "setting_zippy.html",
     "voice_match_entry.html",
   ]
+  template = "polymer"
   use_js = true
 }
