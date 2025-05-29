@@ -117,31 +117,6 @@ class LensSearchContextualizationController {
   // Resets the state of the contextualization controller to kOff.
   void ResetState();
 
-  // Records the UMA for the metrics relating to the document where the
-  // contextual search box was shown. If this is a webpage, records the size of
-  // the innerHtml and the innerText. If this is a PDF, records the byte size of
-  // the PDF and the number of pages. `pdf_page_count` is only used for PDFs.
-  void RecordDocumentMetrics(std::optional<uint32_t> pdf_page_count);
-
-  // Posts a task to the background thread to calculate the OCR DOM similarity
-  // and then records the result. Only records the similarity once per session.
-  // Only records the similarity if the OCR text and page content are available.
-  void TryCalculateAndRecordOcrDomSimilarity();
-
-  // Sets the text of the page. Used to calculate the OCR DOM similarity.
-  // Should only be called once per session.
-  void SetText(lens::mojom::TextPtr text);
-
-  // TODO(crbug.com/418825720): Remove this code once the early start query flow
-  // optimization is fully launched as this will no longer be needed as all
-  // context updates will go through this controller. Sets the page content and
-  // primary content type for the controller. Only used in when the start query
-  // flow optimization is not enabled to ensure that the page content is still
-  // passed to the contextualization controller even if it does not make the
-  // request to the server.
-  void SetPageContent(std::vector<lens::PageContent> page_contents,
-                      lens::MimeType primary_content_type);
-
   bool IsActive() const { return state_ == State::kActive; }
 
  private:
@@ -270,13 +245,6 @@ class LensSearchContextualizationController {
       OnPageContextUpdatedCallback callback,
       const std::vector<gfx::Rect>& bounds);
 
-  // Callback to record the size of the innerText once it is fetched.
-  void RecordInnerTextSize(
-      std::unique_ptr<content_extraction::InnerTextResult> result);
-
-  // Callback to record the size of the innerHtml once it is fetched.
-  void RecordInnerHtmlSize(const std::optional<std::string>& result);
-
   float GetUiScaleFactor();
 
   lens::LensOverlayQueryController* GetQueryController();
@@ -325,15 +293,8 @@ class LensSearchContextualizationController {
   // the page context has been updated and sent to the server.
   OnPageContextUpdatedCallback on_page_context_updated_callback_;
 
-  // The text of the page. Used to calculate the OCR DOM similarity. Used once
-  // per session and then cleared.
-  lens::mojom::TextPtr text_;
-
   // The source of the invocation.
   lens::LensOverlayInvocationSource invocation_source_;
-
-  // Whether the OCR DOM similarity has been recorded in the current session.
-  bool ocr_dom_similarity_recorded_in_session_ = false;
 
   // Owns this.
   const raw_ptr<LensSearchController> lens_search_controller_;

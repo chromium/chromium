@@ -443,6 +443,19 @@ class LensOverlayController : public lens::mojom::LensPageHandler,
       bool is_zero_prefix_suggestion,
       lens::LensOverlayInvocationSource invocation_source);
 
+  // Starts the contextualization flow without the overlay being shown to the
+  // user.
+  // TODO(crbug.com/404941800): This still goes through the entire
+  // TODO(crbug.com/404941800): This still goes through the entire
+  // initialization flow for the overlay. This is not efficient, but is being
+  // done to unblock the contextual searchbox prototype. This should be
+  // refactored to be done in the LensSearchController to not go through the
+  // overlay controller.
+  // Virtual for testing.
+  virtual void StartContextualizationWithoutOverlay(
+      lens::LensOverlayInvocationSource invocation_source,
+      lens::LensOverlayQueryController* lens_overlay_query_controller);
+
   // Sets a region to search after the overlay loads, then calls ShowUI().
   // All units are in device pixels. region_bitmap contains the high definition
   // image bytes to use for the search instead of cropping the region from the
@@ -707,6 +720,34 @@ class LensOverlayController : public lens::mojom::LensPageHandler,
   std::vector<lens::mojom::CenterRotatedBoxPtr> ConvertSignificantRegionBoxes(
       const std::vector<gfx::Rect>& all_bounds);
 
+  // Tries to fetch the underlying page content bytes and update the query flow
+  // with them.
+  void TryUpdatePageContextualization();
+
+  // Begin updating page contextualization by potentially taking a new
+  // screenshot.
+  void UpdatePageContextualization(std::vector<lens::PageContent> page_contents,
+                                   lens::MimeType primary_content_type,
+                                   std::optional<uint32_t> pdf_page_count);
+
+  // Continue updating page contextualization by potentially getting the current
+  // PDF page.
+  void UpdatePageContextualizationPart2(
+      std::vector<lens::PageContent> page_contents,
+      lens::MimeType primary_content_type,
+      std::optional<uint32_t> pdf_page_count,
+      const SkBitmap& bitmap);
+
+  // Updates the query flow with the new page content bytes and/or screenshot. A
+  // request will only be sent if the bytes are different from the previous
+  // bytes sent or the screenshot is different from the previous screenshot.
+  void UpdatePageContextualizationPart3(
+      std::vector<lens::PageContent> page_contents,
+      lens::MimeType primary_content_type,
+      std::optional<uint32_t> pdf_page_count,
+      const SkBitmap& bitmap,
+      std::optional<uint32_t> pdf_current_page);
+
   // Updates state of the ghost loader. |suppress_ghost_loader| is true when
   // the page bytes can't be uploaded.
   void SuppressGhostLoader();
@@ -888,6 +929,26 @@ class LensOverlayController : public lens::mojom::LensPageHandler,
       bool is_zero_prefix_suggestion,
       std::map<std::string, std::string> additional_query_params);
 
+  // Records the UMA for the metrics relating to the document where the
+  // contextual search box was shown. If this is a webpage, records the size of
+  // the innerHtml and the innerText. If this is a PDF, records the byte size of
+  // the PDF and the number of pages. `pdf_page_count` is only used for PDFs.
+  // TODO(crbug.com/404941800): Move the document metrics to where the page
+  // content bytes are stored.
+  void RecordDocumentMetrics(std::optional<uint32_t> pdf_page_count);
+
+  // Posts a task to the background thread to calculate the OCR DOM similarity
+  // and then records the result. Only records the similarity once per session.
+  // Only records the similarity if the OCR text and page content are available.
+  void TryCalculateAndRecordOcrDomSimilarity();
+
+  // Callback to record the size of the innerText once it is fetched.
+  void RecordInnerTextSize(
+      std::unique_ptr<content_extraction::InnerTextResult> result);
+
+  // Callback to record the size of the innerHtml once it is fetched.
+  void RecordInnerHtmlSize(const std::optional<std::string>& result);
+
   // Launches the Lens overlay HaTS survey if eligible.
   void MaybeLaunchSurvey();
 
@@ -914,9 +975,8 @@ class LensOverlayController : public lens::mojom::LensPageHandler,
   void OnPdfPartialPageTextRetrieved(
       std::vector<std::u16string> pdf_pages_text);
 
-  // Callback to run when the page context has been updated and the suggestion
-  // query should now be issued.
-  void OnPageContextUpdatedForSuggestion(
+  // Callback to run when the page context has been updated.
+  void OnPageContextUpdated(
       const GURL& destination_url,
       AutocompleteMatchType::Type match_type,
       bool is_zero_prefix_suggestion,
@@ -955,6 +1015,11 @@ class LensOverlayController : public lens::mojom::LensPageHandler,
   // Invocation source for the lens overlay.
   lens::LensOverlayInvocationSource invocation_source_ =
       lens::LensOverlayInvocationSource::kAppMenu;
+
+  // Whether the overlay should be visible when it is opened. This is a hacky
+  // approach to start contextual searchbox flow without the overlay UI being
+  // shown. See StartContextualizationWithoutOverlay todo for more details.
+  bool should_show_overlay_ = true;
 
   // A contextual search request to be issued once the overlay is initialized.
   base::OnceClosure pending_contextual_search_request_;
