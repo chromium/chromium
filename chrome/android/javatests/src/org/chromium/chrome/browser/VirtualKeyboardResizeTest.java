@@ -238,6 +238,7 @@ public class VirtualKeyboardResizeTest {
      */
     @Test
     @MediumTest
+    @DisabledTest(message = "https://crbug.com/419874405")
     public void testVirtualKeyboardDefaultResizeModeWithPref() throws Throwable {
         startMainActivityWithURL("/chrome/test/data/android/about.html");
         ThreadUtils.runOnUiThreadBlocking(
