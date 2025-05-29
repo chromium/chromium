@@ -768,11 +768,7 @@ public class LocationBarTest {
         startActivityNormally();
 
         mActivityTestRule.loadUrl(UrlConstants.NTP_URL);
-        if (OmniboxFeatures.sOmniboxMobileParityUpdate.isEnabled()) {
-            onView(withId(R.id.location_bar_status_icon)).check(matches(isDisplayed()));
-        } else {
-            onView(withId(R.id.location_bar_status_icon)).check(matches(not(isDisplayed())));
-        }
+        onView(withId(R.id.location_bar_status_icon)).check(matches(not(isDisplayed())));
     }
 
     @Test
@@ -783,11 +779,7 @@ public class LocationBarTest {
         startActivityNormally();
 
         mActivityTestRule.loadUrl(UrlConstants.NTP_URL);
-        if (OmniboxFeatures.sOmniboxMobileParityUpdate.isEnabled()) {
-            onView(withId(R.id.location_bar_status_icon)).check(matches(isDisplayed()));
-        } else {
-            onView(withId(R.id.location_bar_status_icon)).check(matches(not(isDisplayed())));
-        }
+        onView(withId(R.id.location_bar_status_icon)).check(matches(isDisplayed()));
     }
 
     @Test
@@ -821,11 +813,7 @@ public class LocationBarTest {
         startActivityNormally();
 
         mActivityTestRule.loadUrl(UrlConstants.NTP_URL);
-        if (OmniboxFeatures.sOmniboxMobileParityUpdate.isEnabled()) {
-            onView(withId(R.id.location_bar_status_icon)).check(matches(isDisplayed()));
-        } else {
-            onView(withId(R.id.location_bar_status_icon)).check(matches(not(isDisplayed())));
-        }
+        onView(withId(R.id.location_bar_status_icon)).check(matches(not(isDisplayed())));
 
         mActivityTestRule.loadUrl(UrlConstants.ABOUT_URL);
         onView(withId(R.id.location_bar_status_icon)).check(matches(isDisplayed()));

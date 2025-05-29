@@ -24,7 +24,6 @@ import org.chromium.chrome.test.transit.omnibox.OmniboxFacility;
 import org.chromium.chrome.test.transit.page.NativePageCondition;
 import org.chromium.chrome.test.transit.page.PageStation;
 import org.chromium.components.embedder_support.util.UrlConstants;
-import org.chromium.components.omnibox.OmniboxFeatures;
 
 import java.util.List;
 
@@ -44,8 +43,7 @@ public class RegularNewTabPageStation extends PageStation {
         declareElementFactory(
                 mActivityElement,
                 delayedElements -> {
-                    if (mActivityElement.get().isTablet()
-                            || OmniboxFeatures.sOmniboxMobileParityUpdate.isEnabled()) {
+                    if (mActivityElement.get().isTablet()) {
                         urlBarElement = delayedElements.declareView(URL_BAR);
                     } else {
                         delayedElements.declareNoView(URL_BAR);
