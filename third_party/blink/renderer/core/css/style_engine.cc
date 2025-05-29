@@ -3553,8 +3553,9 @@ bool StyleEngine::RecalcHighlightStylesForContainer(Element& container) {
           container.ParentComputedStyle());
       new_style != &style) {
     container.SetComputedStyle(new_style);
-    container.GetLayoutObject()->SetStyle(new_style,
-                                          LayoutObject::ApplyStyleChanges::kNo);
+    if (LayoutObject* layout_object = container.GetLayoutObject()) {
+      layout_object->SetStyle(new_style, LayoutObject::ApplyStyleChanges::kNo);
+    }
   }
 
   return depends_on_container_queries;
