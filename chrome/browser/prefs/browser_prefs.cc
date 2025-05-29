@@ -1121,6 +1121,16 @@ inline constexpr char kModuleBlocklistCacheMD5Digest[] =
     "module_blocklist_cache_md5_digest";
 #endif  // BUILDFLAG(IS_WIN)
 
+// Deprecated 05/2025.
+inline constexpr char kPrivacySandboxFakeNoticePromptShownTimeSync[] =
+    "privacy_sandbox.fake_notice.prompt_shown_time_sync";
+inline constexpr char kPrivacySandboxFakeNoticePromptShownTime[] =
+    "privacy_sandbox.fake_notice.prompt_shown_time";
+inline constexpr char kPrivacySandboxFakeNoticeFirstSignInTime[] =
+    "privacy_sandbox.fake_notice.first_sign_in_time";
+inline constexpr char kPrivacySandboxFakeNoticeFirstSignOutTime[] =
+    "privacy_sandbox.fake_notice.first_sign_out_time";
+
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
@@ -1241,6 +1251,16 @@ void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
 // Register prefs used only for migration (clearing or moving to a new key).
 void RegisterProfilePrefsForMigration(
     user_prefs::PrefRegistrySyncable* registry) {
+  // Deprecated 05/28.
+  registry->RegisterTimePref(kPrivacySandboxFakeNoticePromptShownTimeSync,
+                             base::Time());
+  registry->RegisterTimePref(kPrivacySandboxFakeNoticePromptShownTime,
+                             base::Time());
+  registry->RegisterTimePref(kPrivacySandboxFakeNoticeFirstSignInTime,
+                             base::Time());
+  registry->RegisterTimePref(kPrivacySandboxFakeNoticeFirstSignOutTime,
+                             base::Time());
+
   chrome_browser_net::secure_dns::RegisterProbesSettingBackupPref(registry);
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -2534,6 +2554,12 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs,
 
   // BEGIN_MIGRATE_OBSOLETE_PROFILE_PREFS
   // Please don't delete the preceding line. It is used by PRESUBMIT.py.
+
+  // Added 05/2025.
+  profile_prefs->ClearPref(kPrivacySandboxFakeNoticePromptShownTimeSync);
+  profile_prefs->ClearPref(kPrivacySandboxFakeNoticePromptShownTime);
+  profile_prefs->ClearPref(kPrivacySandboxFakeNoticeFirstSignInTime);
+  profile_prefs->ClearPref(kPrivacySandboxFakeNoticeFirstSignOutTime);
 
   privacy_sandbox::PrivacySandboxNoticeStorage::UpdateNoticeSchemaV2(
       profile_prefs);

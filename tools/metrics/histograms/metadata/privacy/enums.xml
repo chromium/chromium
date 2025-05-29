@@ -375,16 +375,6 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//chrome/browser/privacy_sandbox/notice/notice.mojom:PrivacySandboxNoticeEvent) -->
 
-<enum name="PrivacySandboxPrimaryAccountUserGroups">
-  <int value="0" label="NotSet"/>
-  <int value="1" label="SignedOut"/>
-  <int value="2" label="SignedInCapabilityFalse"/>
-  <int value="3" label="SignedInCapabilityTrue"/>
-  <int value="4" label="SignedInCapabilityUnknown"/>
-</enum>
-
-<!-- LINT.IfChange(PrivacySandboxPrimaryAccountUserGroups) -->
-
 <enum name="PrivacySandboxPrivateAggregationBudgeterBudgetValidityStatus2">
   <int value="0" label="Valid"/>
   <int value="1" label="Valid but empty; no budget data stored"/>
@@ -400,8 +390,6 @@ chromium-metrics-reviews@google.com.
   <int value="6" label="Contains budget data that spans more than a day"/>
   <int value="7" label="Contains an entry with a nonpositive budget value"/>
 </enum>
-
-<!-- LINT.ThenChange(//chrome/browser/privacy_sandbox/privacy_sandbox_service.h:PrimaryAccountUserGroups) -->
 
 <enum name="PrivacySandboxPrivateAggregationBudgeterRequestResult3">
   <int value="0" label="Approved"/>
@@ -466,20 +454,6 @@ chromium-metrics-reviews@google.com.
 </enum>
 
 <!-- LINT.ThenChange(//content/browser/private_aggregation/private_aggregation_pending_contributions.h:TruncationResult) -->
-
-<!-- LINT.IfChange(PrivacySandboxPromptSuppressionReason) -->
-
-<enum name="PrivacySandboxPromptSuppressionReason">
-<!-- Used as a bitfield so values must be ascending powers of 2 -->
-
-  <int value="0" label="None"/>
-  <int value="1" label="3PC_Blocked"/>
-  <int value="2" label="CapabilityFalse"/>
-  <int value="4" label="ManagedDevice"/>
-  <int value="8" label="NoticeShownBefore"/>
-</enum>
-
-<!-- LINT.ThenChange(//chrome/browser/privacy_sandbox/privacy_sandbox_service.h:FakeNoticePromptSuppressionReason) -->
 
 <!-- LINT.IfChange(PrivacySandboxSentimentSurveyStatus) -->
 

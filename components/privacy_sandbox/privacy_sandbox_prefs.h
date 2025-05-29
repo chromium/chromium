@@ -150,26 +150,6 @@ inline constexpr char kPrivacySandboxTopicsConsentTextAtLastUpdate[] =
 inline constexpr char kPrivacySandboxActivityTypeRecord2[] =
     "privacy_sandbox.activity_type.record2";
 
-// Pref that records when a generic prompt is shown to understand the behavior
-// of synced prefs.
-inline constexpr char kPrivacySandboxFakeNoticePromptShownTimeSync[] =
-    "privacy_sandbox.fake_notice.prompt_shown_time_sync";
-
-// Pref that records when a generic prompt is shown to compare against synced
-// pref behavior.
-inline constexpr char kPrivacySandboxFakeNoticePromptShownTime[] =
-    "privacy_sandbox.fake_notice.prompt_shown_time";
-
-// Pref that records the timestamp of when a profile first signed in to its
-// primary account.
-inline constexpr char kPrivacySandboxFakeNoticeFirstSignInTime[] =
-    "privacy_sandbox.fake_notice.first_sign_in_time";
-
-// Pref that records the timestamp of when a profile first signed out of its
-// primary account.
-inline constexpr char kPrivacySandboxFakeNoticeFirstSignOutTime[] =
-    "privacy_sandbox.fake_notice.first_sign_out_time";
-
 inline constexpr char kPrivacySandboxAllowNoticeFor3PCBlockedTrial[] =
     "privacy_sandbox.allow_notice_for_3PC_blocked_trial";
 

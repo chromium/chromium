@@ -374,7 +374,7 @@ enum {
   kDesktopToiOSPaymentPromoOptOut = 100307,
   kDesktopToiOSNtpPromoAppearanceTimestamps = 100308,
   kDesktopToiOSNtpPromoDismissed = 100309,
-  kPrivacySandboxFakeNoticePromptShownTimeSync = 100310,
+  // kPrivacySandboxFakeNoticePromptShownTimeSync = 100310, (deprecated)
   kAccessibilityBounceKeysDelayMs = 100311,
   kAccessibilitySlowKeysDelayMs = 100312,
   kAccessibilityFaceGazePrecisionClick = 100313,
@@ -1675,10 +1675,6 @@ constexpr auto kChromeSyncablePrefsAllowlist = base::MakeFixedFlatMap<
     {promos_prefs::kDesktopToiOSNtpPromoDismissed,
      {syncable_prefs_ids::kDesktopToiOSNtpPromoDismissed, syncer::PREFERENCES,
       sync_preferences::PrefSensitivity::kNone,
-      sync_preferences::MergeBehavior::kNone}},
-    {prefs::kPrivacySandboxFakeNoticePromptShownTimeSync,
-     {syncable_prefs_ids::kPrivacySandboxFakeNoticePromptShownTimeSync,
-      syncer::PREFERENCES, sync_preferences::PrefSensitivity::kNone,
       sync_preferences::MergeBehavior::kNone}},
 #if BUILDFLAG(ENABLE_GLIC)
     {glic::prefs::kGlicRolloutEligibility,
