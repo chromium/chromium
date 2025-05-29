@@ -13,6 +13,7 @@
 #include "base/barrier_callback.h"
 #include "base/base64.h"
 #include "base/check.h"
+#include "base/check_deref.h"
 #include "base/containers/contains.h"
 #include "base/containers/to_vector.h"
 #include "base/functional/callback.h"
@@ -156,6 +157,10 @@ PasskeyBrowserBinder::UnboundKey::~UnboundKey() {
   if (!browser_bound_key_id_.empty()) {
     key_store_->DeleteBrowserBoundKey(browser_bound_key_id_);
   }
+}
+
+BrowserBoundKey& PasskeyBrowserBinder::UnboundKey::Get() {
+  return CHECK_DEREF(browser_bound_key_.get());
 }
 
 void PasskeyBrowserBinder::UnboundKey::MarkKeyBoundAndReset() {

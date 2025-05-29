@@ -87,6 +87,10 @@ class PasskeyBrowserBinder : public WebDataServiceConsumer {
   // BrowserBoundKey will be deleted.
   class UnboundKey {
    public:
+    // Creates an UnboundKey. `browser_bound_key_id` will be used to delete the
+    // key from `key_store` when UnboundKey goes out of scope without having
+    // been bound. UnboundKey takes ownership of `browser_bound_key` which can
+    // be accessed via Get() while the key has not yet been bound.
     UnboundKey(std::vector<uint8_t> browser_bound_key_id,
                std::unique_ptr<BrowserBoundKey> browser_bound_key,
                scoped_refptr<BrowserBoundKeyStore> key_store);
@@ -99,7 +103,7 @@ class PasskeyBrowserBinder : public WebDataServiceConsumer {
     // Returns a reference to the underlying browser bound key, this is the only
     // way by which the browser bound key can be accessed before having been
     // associated.
-    BrowserBoundKey& Get() { return *browser_bound_key_; }
+    BrowserBoundKey& Get();
 
    private:
     friend PasskeyBrowserBinder;
@@ -111,8 +115,16 @@ class PasskeyBrowserBinder : public WebDataServiceConsumer {
     // MarkKeyBoundAndReset().
     void MarkKeyBoundAndReset();
 
+    // The browser bound key id. This is passed to the key store if the BBK
+    // needs to be deleted.
     std::vector<uint8_t> browser_bound_key_id_;
+
+    // An owned reference to the browser bound key. This member may be `nullptr`
+    // in some PasskeyBrowserBinder internal usages of UnboundKey.
     std::unique_ptr<BrowserBoundKey> browser_bound_key_;
+
+    // A reference to the key store. This key store is invoked if the browser
+    // bound key needs to be deleted.
     scoped_refptr<BrowserBoundKeyStore> key_store_;
   };
 
