@@ -32,6 +32,8 @@ gl::DCompPresenter::Settings CreatDCompPresenterSettings(
   settings.disable_vp_scaling = workarounds.disable_vp_scaling;
   settings.disable_vp_super_resolution =
       workarounds.disable_vp_super_resolution;
+  settings.disable_dc_letterbox_video_optimization =
+      workarounds.disable_direct_composition_letterbox_video_optimization;
   settings.force_dcomp_triple_buffer_video_swap_chain =
       workarounds.force_dcomp_triple_buffer_video_swap_chain;
   return settings;
