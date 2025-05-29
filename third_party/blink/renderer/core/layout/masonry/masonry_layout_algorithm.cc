@@ -49,7 +49,11 @@ const LayoutResult* MasonryLayoutAlgorithm::Layout() {
 
   const auto& node = Node();
   auto masonry_items = node.ConstructMasonryItems(line_resolver, start_offset);
-  PlaceMasonryItems(track_collection, masonry_items);
+  if (!masonry_items.IsEmpty()) {
+    PlaceMasonryItems(track_collection, masonry_items);
+  }
+  // Account for border, scrollbar, and padding in the intrinsic block size.
+  intrinsic_block_size_ += BorderScrollbarPadding().BlockSum();
 
   container_builder_.SetFragmentsTotalBlockSize(ComputeBlockSizeForFragment(
       GetConstraintSpace(), node, BorderPadding(), intrinsic_block_size_,
@@ -92,13 +96,10 @@ void MasonryLayoutAlgorithm::PlaceMasonryItems(
   const auto grid_axis_direction = track_collection.Direction();
   const bool is_for_columns = grid_axis_direction == kForColumns;
 
-  // Initialize data structure to keep track of running positions, where the
-  // initial running positions are set to border, scrollbar, and padding.
+  // Initialize data structure to keep track of running positions.
   MasonryRunningPositions running_positions(
       /*track_count=*/track_collection.EndLineOfImplicitGrid(),
-      /*initial_running_position=*/
-      is_for_columns ? border_scrollbar_padding.block_start
-                     : border_scrollbar_padding.inline_start,
+      /*initial_running_position=*/LayoutUnit(),
       ResolveItemToleranceForMasonry(style, available_size));
 
   const auto stacking_axis_gap = GridTrackSizingAlgorithm::CalculateGutterSize(
@@ -122,10 +123,13 @@ void MasonryLayoutAlgorithm::PlaceMasonryItems(
     running_positions.UpdateAutoPlacementCursor(item_span.EndLine());
 
     // This item is ultimately placed below the maximum running position among
-    // its spanned tracks.
+    // its spanned tracks. Account for border, scrollbar, and padding in the
+    // offset of the item.
     LogicalRect containing_rect;
-    is_for_columns ? containing_rect.offset.block_offset = max_position
-                   : containing_rect.offset.inline_offset = max_position;
+    is_for_columns ? containing_rect.offset.block_offset =
+                         max_position + border_scrollbar_padding.block_start
+                   : containing_rect.offset.inline_offset =
+                         max_position + border_scrollbar_padding.inline_start;
 
     const auto space = CreateConstraintSpaceForLayout(
         masonry_item, track_collection, &containing_rect);
@@ -173,12 +177,12 @@ void MasonryLayoutAlgorithm::PlaceMasonryItems(
         running_positions.GetMaxPositionForSpan(
             GridSpan::TranslatedDefiniteGridSpan(
                 /*start_line=*/0,
-                /*end_line=*/track_collection.EndLineOfImplicitGrid())) +
-        border_scrollbar_padding.block_end - stacking_axis_gap;
+                /*end_line=*/track_collection.EndLineOfImplicitGrid())) -
+        stacking_axis_gap;
   } else {
-    // Set `intrinsic_block_size_` to be the size of the tracks.
-    intrinsic_block_size_ = track_collection.CalculateSetSpanSize() +
-                            border_scrollbar_padding.BlockSum();
+    // If the stacking axis is the inline axis, add the size of the tracks to
+    // `intrinsic_block_size_`.
+    intrinsic_block_size_ = track_collection.CalculateSetSpanSize();
   }
 }
 
