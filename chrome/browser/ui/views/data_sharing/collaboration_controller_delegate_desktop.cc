@@ -495,6 +495,8 @@ void CollaborationControllerDelegateDesktop::MaybeCloseDialogs() {
     return;
   }
 
+  DataSharingBubbleController::GetOrCreateForBrowser(browser_)->Close();
+
   if (prompt_dialog_widget_) {
     if (!prompt_dialog_widget_->IsClosed()) {
       prompt_dialog_widget_->Close();
