@@ -36,6 +36,8 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -60,6 +62,7 @@ import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateMa
 import org.chromium.components.browser_ui.edge_to_edge.EdgeToEdgeStateProvider;
 import org.chromium.ui.CaptionBarInsetsRectProvider;
 import org.chromium.ui.InsetObserver;
+import org.chromium.ui.InsetsRectProvider;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.display.DisplayUtil;
 
@@ -108,6 +111,7 @@ public class AppHeaderCoordinatorUnitTest {
     @Mock private CaptionBarInsetsRectProvider mInsetsRectProvider;
     @Mock private ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
     @Mock private DesktopWindowStateManager.AppHeaderObserver mObserver;
+    @Captor private ArgumentCaptor<InsetsRectProvider.Observer> mInsetRectObserverCaptor;
 
     private AppHeaderCoordinator mAppHeaderCoordinator;
     private Activity mSpyActivity;
@@ -115,7 +119,6 @@ public class AppHeaderCoordinatorUnitTest {
     private WindowInsetsCompat mLastSeenRawWindowInsets = new WindowInsetsCompat(null);
     private Bundle mSavedInstanceStateBundle;
     private EdgeToEdgeStateProvider mEdgeToEdgeStateProvider;
-    private boolean mInsetsRectUpdateConsumed;
 
     @Before
     public void setup() {
@@ -128,7 +131,6 @@ public class AppHeaderCoordinatorUnitTest {
         doAnswer(inv -> mLastSeenRawWindowInsets).when(mInsetObserver).getLastRawWindowInsets();
         setupWithNoCaptionInsets();
         mSavedInstanceStateBundle = new Bundle();
-        mInsetsRectUpdateConsumed = false;
         initAppHeaderCoordinator();
     }
 
@@ -152,7 +154,7 @@ public class AppHeaderCoordinatorUnitTest {
         Rect widestUnOccludedRect =
                 new Rect(LEFT_BLOCK, WINDOW_HEIGHT - 30, WINDOW_WIDTH - RIGHT_BLOCK, WINDOW_HEIGHT);
         setupInsetsRectProvider(bottomInsets, blockedRects, widestUnOccludedRect, WINDOW_RECT);
-        notifyInsetsRectConsumer();
+        notifyInsetsRectObserver();
 
         verifyDesktopWindowingDisabled(
                 /* error= */ "Desktop Windowing not enabled for bottom insets.");
@@ -175,7 +177,7 @@ public class AppHeaderCoordinatorUnitTest {
         Rect widestUnoccludedRect =
                 new Rect(LEFT_BLOCK, 0, WINDOW_WIDTH - RIGHT_BLOCK, HEADER_HEIGHT - 10);
         setupInsetsRectProvider(insets, blockedRects, widestUnoccludedRect, WINDOW_RECT);
-        notifyInsetsRectConsumer();
+        notifyInsetsRectObserver();
 
         verifyDesktopWindowingDisabled(
                 /* error= */ "Desktop Windowing enabled for widestUnOccludedRect with less height"
@@ -190,7 +192,7 @@ public class AppHeaderCoordinatorUnitTest {
                         "Android.DesktopWindowHeuristicResult3",
                         DesktopWindowHeuristicResult.WIDEST_UNOCCLUDED_RECT_EMPTY);
         setupInsetsRectProvider(Insets.NONE, List.of(), new Rect(), WINDOW_RECT);
-        notifyInsetsRectConsumer();
+        notifyInsetsRectObserver();
 
         verifyDesktopWindowingDisabled(
                 /* error= */ "Desktop windowing should not be enabled when widest unoccluded rect"
@@ -207,7 +209,7 @@ public class AppHeaderCoordinatorUnitTest {
         ShadowDisplayUtil.setOnDefaultDisplay(false);
         updateFeatureParams(/* enableOnExternalDisplay= */ false, /* oemDenylist= */ "");
         setupWithLeftAndRightBoundingRect();
-        notifyInsetsRectConsumer();
+        notifyInsetsRectObserver();
 
         verifyDesktopWindowingDisabled(
                 /* error= */ "Desktop windowing should not be enabled on an external display when"
@@ -226,7 +228,7 @@ public class AppHeaderCoordinatorUnitTest {
         ShadowDisplayUtil.setOnDefaultDisplay(false);
         updateFeatureParams(/* enableOnExternalDisplay= */ true, /* oemDenylist= */ "samsung");
         setupWithLeftAndRightBoundingRect();
-        notifyInsetsRectConsumer();
+        notifyInsetsRectObserver();
 
         verifyDesktopWindowingDisabled(
                 /* error= */ "Desktop windowing should not be enabled on an external display when"
@@ -241,7 +243,7 @@ public class AppHeaderCoordinatorUnitTest {
         ShadowDisplayUtil.setOnDefaultDisplay(false);
         updateFeatureParams(/* enableOnExternalDisplay= */ true, /* oemDenylist= */ "samsung");
         setupWithLeftAndRightBoundingRect();
-        notifyInsetsRectConsumer();
+        notifyInsetsRectObserver();
 
         verifyDesktopWindowingEnabled();
     }
@@ -251,7 +253,7 @@ public class AppHeaderCoordinatorUnitTest {
         ShadowDisplayUtil.setOnDefaultDisplay(false);
         updateFeatureParams(/* enableOnExternalDisplay= */ true, /* oemDenylist= */ "");
         setupWithLeftAndRightBoundingRect();
-        notifyInsetsRectConsumer();
+        notifyInsetsRectObserver();
 
         verifyDesktopWindowingEnabled();
     }
@@ -270,7 +272,7 @@ public class AppHeaderCoordinatorUnitTest {
                                 1)
                         .build();
         setupWithLeftAndRightBoundingRect();
-        notifyInsetsRectConsumer();
+        notifyInsetsRectObserver();
 
         verifyDesktopWindowingEnabled();
 
@@ -298,8 +300,8 @@ public class AppHeaderCoordinatorUnitTest {
 
         // Simulate multiple rect updates that will trigger the heuristic checks for desktop
         // windowing mode.
-        notifyInsetsRectConsumer();
-        notifyInsetsRectConsumer();
+        notifyInsetsRectObserver();
+        notifyInsetsRectObserver();
 
         // Histogram should be emitted just once.
         watcher.assertExpected();
@@ -308,7 +310,7 @@ public class AppHeaderCoordinatorUnitTest {
     @Test
     public void changeBoundingRects() {
         setupWithLeftAndRightBoundingRect();
-        notifyInsetsRectConsumer();
+        notifyInsetsRectObserver();
 
         // Assume the window size changed.
         // Top insets with height of 30.
@@ -323,7 +325,7 @@ public class AppHeaderCoordinatorUnitTest {
         Rect widestUnoccludedRect =
                 new Rect(LEFT_BLOCK, 0, newWindowWidth - RIGHT_BLOCK, HEADER_HEIGHT);
         setupInsetsRectProvider(insets, blockedRects, widestUnoccludedRect, windowRect);
-        notifyInsetsRectConsumer();
+        notifyInsetsRectObserver();
 
         verifyDesktopWindowingEnabled();
 
@@ -339,9 +341,6 @@ public class AppHeaderCoordinatorUnitTest {
     public void initializeWithDesktopWindowingThenExit() {
         setupWithLeftAndRightBoundingRect();
         initAppHeaderCoordinator();
-        // Explicitly state rect update consumption since the instantiation is expected to call
-        // InsetsRectProvider.Observer#onBoundingRectsUpdated() to set DW mode.
-        mInsetsRectUpdateConsumed = true;
         verifyDesktopWindowingEnabled();
 
         var expectedState = new AppHeaderState(WINDOW_RECT, WIDEST_UNOCCLUDED_RECT, true);
@@ -351,7 +350,7 @@ public class AppHeaderCoordinatorUnitTest {
                 mAppHeaderCoordinator.getAppHeaderState());
 
         setupWithNoCaptionInsets();
-        notifyInsetsRectConsumer();
+        notifyInsetsRectObserver();
         verifyDesktopWindowingDisabled(
                 /* error= */ "DesktopWindowing should exit when no insets is supplied.");
         verify(mBrowserControlsVisDelegate).releasePersistentShowingToken(anyInt());
@@ -374,7 +373,7 @@ public class AppHeaderCoordinatorUnitTest {
     @Test
     public void activityLostFocusInDesktopWindow() {
         setupWithLeftAndRightBoundingRect();
-        notifyInsetsRectConsumer();
+        notifyInsetsRectObserver();
 
         // Assume that the current activity lost focus.
         mAppHeaderCoordinator.onTopResumedActivityChanged(false);
@@ -399,7 +398,7 @@ public class AppHeaderCoordinatorUnitTest {
     public void saveInstanceStateForUnfocusedWindow() {
         mSavedInstanceStateBundle.putBoolean(INSTANCE_STATE_KEY_IS_APP_IN_UNFOCUSED_DW, false);
         setupWithLeftAndRightBoundingRect();
-        notifyInsetsRectConsumer();
+        notifyInsetsRectObserver();
 
         // Verify initial value.
         assertFalse(
@@ -435,7 +434,7 @@ public class AppHeaderCoordinatorUnitTest {
     public void noImeOrNavBarInsets() {
         // Simulate switching to desktop windowing mode, without any bottom insets.
         setupWithLeftAndRightBoundingRect();
-        notifyInsetsRectConsumer();
+        notifyInsetsRectObserver();
         verify(mSpyRootView, never()).setPadding(anyInt(), anyInt(), anyInt(), anyInt());
     }
 
@@ -454,7 +453,7 @@ public class AppHeaderCoordinatorUnitTest {
 
         // Simulate switching to desktop windowing mode.
         setupWithLeftAndRightBoundingRect();
-        notifyInsetsRectConsumer();
+        notifyInsetsRectObserver();
         insets = applyWindowInsets(KEYBOARD_INSET, UNSPECIFIED_INSET);
         assertEquals(
                 "Ime insets should be consumed when root view is bottom-padded.",
@@ -468,7 +467,7 @@ public class AppHeaderCoordinatorUnitTest {
 
         // Simulate switching out of desktop windowing mode.
         setupWithNoCaptionInsets();
-        notifyInsetsRectConsumer();
+        notifyInsetsRectObserver();
         insets = applyWindowInsets(KEYBOARD_INSET, UNSPECIFIED_INSET);
         assertNotEquals(
                 "Ime insets should not be consumed when root view is not adjusted.",
@@ -482,7 +481,7 @@ public class AppHeaderCoordinatorUnitTest {
     public void overlappingKeyboard_MoveDesktopWindow() {
         // Simulate switching to desktop windowing mode.
         setupWithLeftAndRightBoundingRect();
-        notifyInsetsRectConsumer();
+        notifyInsetsRectObserver();
 
         // Simulate overlapping keyboard.
         var insets = applyWindowInsets(KEYBOARD_INSET, UNSPECIFIED_INSET);
@@ -522,7 +521,7 @@ public class AppHeaderCoordinatorUnitTest {
 
         // Simulate switching to desktop windowing mode.
         setupWithLeftAndRightBoundingRect();
-        notifyInsetsRectConsumer();
+        notifyInsetsRectObserver();
         insets = applyWindowInsets(UNSPECIFIED_INSET, NAV_BAR_INSET);
         assertEquals(
                 "Nav bar insets should be consumed when root view is bottom-padded.",
@@ -536,7 +535,7 @@ public class AppHeaderCoordinatorUnitTest {
 
         // Simulate switching out of desktop windowing mode.
         setupWithNoCaptionInsets();
-        notifyInsetsRectConsumer();
+        notifyInsetsRectObserver();
         insets = applyWindowInsets(UNSPECIFIED_INSET, NAV_BAR_INSET);
         assertNotEquals(
                 "Nav bar insets should not be consumed when root view is not adjusted.",
@@ -550,7 +549,7 @@ public class AppHeaderCoordinatorUnitTest {
     public void overlappingNavBar_MoveDesktopWindow() {
         // Simulate switching to desktop windowing mode.
         setupWithLeftAndRightBoundingRect();
-        notifyInsetsRectConsumer();
+        notifyInsetsRectObserver();
 
         // Simulate overlapping nav bar bottom inset.
         var insets = applyWindowInsets(UNSPECIFIED_INSET, NAV_BAR_INSET);
@@ -575,7 +574,7 @@ public class AppHeaderCoordinatorUnitTest {
     public void overlappingKeyboardAndNavBar() {
         // Simulate switching to desktop windowing mode.
         setupWithLeftAndRightBoundingRect();
-        notifyInsetsRectConsumer();
+        notifyInsetsRectObserver();
 
         // Simulate overlapping keyboard and nav bar bottom insets.
         applyWindowInsets(KEYBOARD_INSET, NAV_BAR_INSET);
@@ -589,7 +588,7 @@ public class AppHeaderCoordinatorUnitTest {
     public void windowingModeHistogram_EnterFullScreen() {
         // Simulate starting in desktop windowing mode for an initial state.
         setupWithLeftAndRightBoundingRect();
-        notifyInsetsRectConsumer();
+        notifyInsetsRectObserver();
 
         // Simulate switching to fullscreen mode.
         var watcher =
@@ -606,7 +605,7 @@ public class AppHeaderCoordinatorUnitTest {
                 new WindowInsetsCompat.Builder()
                         .setInsets(WindowInsetsCompat.Type.navigationBars(), Insets.of(0, 0, 0, 10))
                         .build();
-        notifyInsetsRectConsumer();
+        notifyInsetsRectObserver();
 
         // Histogram should be emitted as expected.
         watcher.assertExpected();
@@ -616,7 +615,7 @@ public class AppHeaderCoordinatorUnitTest {
     public void windowingModeHistogram_EnterSplitScreen() {
         // Simulate starting in desktop windowing mode for an initial state.
         setupWithLeftAndRightBoundingRect();
-        notifyInsetsRectConsumer();
+        notifyInsetsRectObserver();
 
         // Simulate switching to split screen mode.
         var watcher =
@@ -634,7 +633,7 @@ public class AppHeaderCoordinatorUnitTest {
                 new WindowInsetsCompat.Builder()
                         .setInsets(WindowInsetsCompat.Type.navigationBars(), Insets.of(0, 0, 0, 10))
                         .build();
-        notifyInsetsRectConsumer();
+        notifyInsetsRectObserver();
 
         // Histogram should be emitted as expected.
         watcher.assertExpected();
@@ -644,7 +643,7 @@ public class AppHeaderCoordinatorUnitTest {
     public void windowingModeHistogram_EnterPipMode() {
         // Simulate starting in desktop windowing mode for an initial state.
         setupWithLeftAndRightBoundingRect();
-        notifyInsetsRectConsumer();
+        notifyInsetsRectObserver();
 
         // Simulate switching to picture-in-picture mode.
         var watcher =
@@ -662,7 +661,7 @@ public class AppHeaderCoordinatorUnitTest {
                 new WindowInsetsCompat.Builder()
                         .setInsets(WindowInsetsCompat.Type.navigationBars(), Insets.of(0, 0, 0, 10))
                         .build();
-        notifyInsetsRectConsumer();
+        notifyInsetsRectObserver();
 
         // Histogram should be emitted as expected.
         watcher.assertExpected();
@@ -677,7 +676,7 @@ public class AppHeaderCoordinatorUnitTest {
         // Override the last seen raw insets and trigger an insets rect update.
         mLastSeenRawWindowInsets = new WindowInsetsCompat.Builder().build();
         setupWithNoCaptionInsets();
-        notifyInsetsRectConsumer();
+        notifyInsetsRectObserver();
 
         // Histogram should not be emitted.
         watcher.assertExpected();
@@ -690,8 +689,8 @@ public class AppHeaderCoordinatorUnitTest {
                         "Android.MultiWindowMode.Configuration", WindowingMode.DESKTOP_WINDOW);
         setupWithLeftAndRightBoundingRect();
         // Simulate multiple rect updates that will be triggered when windowing mode changes.
-        notifyInsetsRectConsumer();
-        notifyInsetsRectConsumer();
+        notifyInsetsRectObserver();
+        notifyInsetsRectObserver();
 
         // Histogram should be emitted just once.
         watcher.assertExpected();
@@ -740,10 +739,11 @@ public class AppHeaderCoordinatorUnitTest {
         doReturn(blockedRects).when(mInsetsRectProvider).getBoundingRects();
     }
 
-    private void notifyInsetsRectConsumer() {
-        mInsetsRectUpdateConsumed =
-                mAppHeaderCoordinator.onWidestUnoccludedRectUpdated(
-                        mInsetsRectProvider.getWidestUnoccludedRect());
+    private void notifyInsetsRectObserver() {
+        verify(mInsetsRectProvider, atLeastOnce()).addObserver(mInsetRectObserverCaptor.capture());
+        mInsetRectObserverCaptor
+                .getValue()
+                .onBoundingRectsUpdated(mInsetsRectProvider.getWidestUnoccludedRect());
     }
 
     private void verifyDesktopWindowingEnabled() {
@@ -753,7 +753,6 @@ public class AppHeaderCoordinatorUnitTest {
         verify(mBrowserControlsVisDelegate, atLeastOnce())
                 .showControlsPersistentAndClearOldToken(anyInt());
         assertTrue("Edge to edge should be active.", mEdgeToEdgeStateProvider.get());
-        assertTrue("Insets rect update should be consumed.", mInsetsRectUpdateConsumed);
     }
 
     private void verifyDesktopWindowingDisabled(String error) {
@@ -762,7 +761,6 @@ public class AppHeaderCoordinatorUnitTest {
                 mAppHeaderCoordinator.getAppHeaderState() != null
                         && mAppHeaderCoordinator.getAppHeaderState().isInDesktopWindow());
         assertFalse("Edge to edge should not be active.", mEdgeToEdgeStateProvider.get());
-        assertFalse("Insets rect update should not be consumed.", mInsetsRectUpdateConsumed);
     }
 
     private WindowInsetsCompat applyWindowInsets(int keyboardInset, int navBarInset) {

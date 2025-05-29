@@ -39,7 +39,6 @@ import org.robolectric.annotation.Implements;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.ui.InsetObserver.WindowInsetsConsumer.InsetConsumerSource;
-import org.chromium.ui.InsetsRectProvider.Consumer;
 import org.chromium.ui.InsetsRectProviderTest.ShadowWindowInsetsUtils;
 import org.chromium.ui.util.WindowInsetsUtils;
 
@@ -58,7 +57,6 @@ public class InsetsRectProviderTest {
     private static final Size INSETS_FRAME_SIZE = new Size(WINDOW_WIDTH, WINDOW_HEIGHT);
 
     private InsetsRectProvider mInsetsRectProvider;
-    private final CallbackHelper mConsumerCallback = new CallbackHelper();
 
     @Mock private View mView;
     @Mock private InsetObserver mInsetObserver;
@@ -100,11 +98,7 @@ public class InsetsRectProviderTest {
                         type, insets, availableArea, INSETS_FRAME_SIZE, blockingRects);
         mInsetsRectProvider =
                 new InsetsRectProvider(
-                        mInsetObserver,
-                        type,
-                        windowInsets,
-                        createInsetsRectConsumer(/* consumeRectUpdate= */ true),
-                        InsetConsumerSource.TEST_SOURCE);
+                        mInsetObserver, type, windowInsets, InsetConsumerSource.TEST_SOURCE);
 
         assertSuppliedValues(insets, availableArea, blockingRects);
     }
@@ -113,18 +107,13 @@ public class InsetsRectProviderTest {
     public void testInitializationEmpty() {
         int type = WindowInsetsCompat.Type.captionBar();
         mInsetsRectProvider =
-                new InsetsRectProvider(
-                        mInsetObserver,
-                        type,
-                        null,
-                        createInsetsRectConsumer(/* consumeRectUpdate= */ false),
-                        InsetConsumerSource.TEST_SOURCE);
+                new InsetsRectProvider(mInsetObserver, type, null, InsetConsumerSource.TEST_SOURCE);
 
         assertSuppliedValues(Insets.NONE, new Rect(), List.of());
     }
 
     @Test
-    public void testObservation_UpdateConsumed() {
+    public void testObservation() {
         // Assume inset is at the bottom for this test.
         int type = WindowInsetsCompat.Type.navigationBars();
         Insets insets = Insets.of(0, 0, 0, 10);
@@ -142,47 +131,19 @@ public class InsetsRectProviderTest {
         WindowInsetsCompat emptyWindowInsets = new WindowInsetsCompat.Builder().build();
         mInsetsRectProvider =
                 new InsetsRectProvider(
-                        mInsetObserver,
-                        type,
-                        emptyWindowInsets,
-                        createInsetsRectConsumer(/* consumeRectUpdate= */ true),
-                        InsetConsumerSource.TEST_SOURCE);
+                        mInsetObserver, type, emptyWindowInsets, InsetConsumerSource.TEST_SOURCE);
         assertSuppliedValues(Insets.NONE, new Rect(), List.of());
 
+        // Attach an observer and supply a new window insets.
+        CallbackHelper observer = new CallbackHelper();
+        mInsetsRectProvider.addObserver(rect -> observer.notifyCalled());
         WindowInsetsCompat windowInsets =
                 buildTestWindowInsets(
                         type, insets, availableArea, INSETS_FRAME_SIZE, blockingRects);
         mInsetsRectProvider.onApplyWindowInsets(mView, windowInsets);
 
-        assertEquals("Consumer callback not called.", 1, mConsumerCallback.getCallCount());
+        assertEquals("Observer not called.", 1, observer.getCallCount());
         assertSuppliedValues(insets, availableArea, blockingRects);
-    }
-
-    @Test
-    public void testObservation_UpdateNotConsumed() {
-        int type = WindowInsetsCompat.Type.captionBar();
-        Insets insets = Insets.of(0, 30, 0, 0);
-        List<Rect> blockingRects = List.of(new Rect(10, 0, 20, WINDOW_HEIGHT));
-        Rect widestArea = new Rect(20, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
-
-        // Initialize with empty window insets.
-        WindowInsetsCompat emptyWindowInsets = new WindowInsetsCompat.Builder().build();
-        mInsetsRectProvider =
-                new InsetsRectProvider(
-                        mInsetObserver,
-                        type,
-                        emptyWindowInsets,
-                        createInsetsRectConsumer(/* consumeRectUpdate= */ false),
-                        InsetConsumerSource.TEST_SOURCE);
-        assertSuppliedValues(Insets.NONE, new Rect(), List.of());
-
-        WindowInsetsCompat windowInsets =
-                buildTestWindowInsets(type, insets, widestArea, INSETS_FRAME_SIZE, blockingRects);
-        var appliedInsets = mInsetsRectProvider.onApplyWindowInsets(mView, windowInsets);
-
-        assertEquals("Insets should not be consumed.", windowInsets, appliedInsets);
-        assertEquals("Consumer callback should be called.", 1, mConsumerCallback.getCallCount());
-        assertSuppliedValues(insets, widestArea, blockingRects);
     }
 
     @Test
@@ -206,12 +167,12 @@ public class InsetsRectProviderTest {
                         type, insets, availableArea, INSETS_FRAME_SIZE, blockingRects);
         mInsetsRectProvider =
                 new InsetsRectProvider(
-                        mInsetObserver,
-                        type,
-                        windowInsets,
-                        createInsetsRectConsumer(/* consumeRectUpdate= */ true),
-                        InsetConsumerSource.TEST_SOURCE);
+                        mInsetObserver, type, windowInsets, InsetConsumerSource.TEST_SOURCE);
         assertSuppliedValues(insets, availableArea, blockingRects);
+
+        // Attach an observer and supply a new window insets.
+        CallbackHelper observer = new CallbackHelper();
+        mInsetsRectProvider.addObserver(rect -> observer.notifyCalled());
 
         // Create an insets with a different type so it removes the exists insets.
         WindowInsetsCompat newWindowInsets =
@@ -223,8 +184,7 @@ public class InsetsRectProviderTest {
                         List.of());
         mInsetsRectProvider.onApplyWindowInsets(mView, newWindowInsets);
 
-        // Consumer callback will be called twice, for each of the inset updates.
-        assertEquals("Consumer callback not called.", 2, mConsumerCallback.getCallCount());
+        assertEquals("Observer not called.", 1, observer.getCallCount());
         assertSuppliedValues(Insets.NONE, new Rect(), List.of());
     }
 
@@ -240,18 +200,16 @@ public class InsetsRectProviderTest {
         WindowInsetsCompat emptyWindowInsets = new WindowInsetsCompat.Builder().build();
         mInsetsRectProvider =
                 new InsetsRectProvider(
-                        mInsetObserver,
-                        type,
-                        emptyWindowInsets,
-                        createInsetsRectConsumer(/* consumeRectUpdate= */ true),
-                        InsetConsumerSource.TEST_SOURCE);
+                        mInsetObserver, type, emptyWindowInsets, InsetConsumerSource.TEST_SOURCE);
 
+        // Attach an observer to verify that input insets are not processed or consumed.
+        CallbackHelper observer = new CallbackHelper();
+        mInsetsRectProvider.addObserver(rect -> observer.notifyCalled());
         WindowInsetsCompat newWindowInsets =
                 buildTestWindowInsets(type, insets, new Rect(), new Size(0, 0), List.of());
         var appliedInsets = mInsetsRectProvider.onApplyWindowInsets(mView, newWindowInsets);
-        assertEquals("Insets should not be consumed.", appliedInsets, newWindowInsets);
-        assertEquals(
-                "Consumer callback should not be called.", 0, mConsumerCallback.getCallCount());
+        assertEquals("Input should not be consumed.", appliedInsets, newWindowInsets);
+        assertEquals("Observer should not be called.", 0, observer.getCallCount());
         assertSuppliedValues(Insets.NONE, new Rect(), List.of());
     }
 
@@ -265,14 +223,13 @@ public class InsetsRectProviderTest {
         WindowInsetsCompat emptyWindowInsets = new WindowInsetsCompat.Builder().build();
         mInsetsRectProvider =
                 new InsetsRectProvider(
-                        mInsetObserver,
-                        type,
-                        emptyWindowInsets,
-                        createInsetsRectConsumer(/* consumeRectUpdate= */ true),
-                        InsetConsumerSource.TEST_SOURCE);
+                        mInsetObserver, type, emptyWindowInsets, InsetConsumerSource.TEST_SOURCE);
 
-        // Verify that new insets are processed once, with back to back updates. Also verify that
-        // the insets are consumed in both cases.
+        // Attach an observer to verify that new insets are processed once, with back to back
+        // updates. Also verify that the insets are consumed in both cases.
+        CallbackHelper observer = new CallbackHelper();
+        mInsetsRectProvider.addObserver(rect -> observer.notifyCalled());
+
         Rect availableArea = new Rect(0, 0, WINDOW_WIDTH - 20, 10);
         List<Rect> blockingRects = List.of(new Rect(WINDOW_WIDTH - 20, 0, WINDOW_WIDTH, 10));
         WindowInsetsCompat newWindowInsets =
@@ -286,9 +243,33 @@ public class InsetsRectProviderTest {
         assertEquals(
                 "Input insets should be consumed.", Insets.NONE, appliedInsets.getInsets(type));
 
-        assertEquals(
-                "Consumer callback should be called once.", 1, mConsumerCallback.getCallCount());
+        assertEquals("Observer should be called once.", 1, observer.getCallCount());
         assertSuppliedValues(insets, availableArea, blockingRects);
+    }
+
+    @Test
+    public void testAppliedInsetsNotConsumed_UnoccludedAreaUnavailable() {
+        // Assume caption bar has top insets.
+        int type = WindowInsetsCompat.Type.captionBar();
+        Insets insets = Insets.of(0, 10, 0, 0);
+
+        // Initialize with empty window insets.
+        WindowInsetsCompat emptyWindowInsets = new WindowInsetsCompat.Builder().build();
+        mInsetsRectProvider =
+                new InsetsRectProvider(
+                        mInsetObserver, type, emptyWindowInsets, InsetConsumerSource.TEST_SOURCE);
+
+        // Attach an observer to verify that new insets are not consumed when there is no available
+        // area in the insets region for customization. Verify that the insets are not consumed.
+        CallbackHelper observer = new CallbackHelper();
+        mInsetsRectProvider.addObserver(rect -> observer.notifyCalled());
+
+        WindowInsetsCompat newWindowInsets =
+                buildTestWindowInsets(type, insets, new Rect(), INSETS_FRAME_SIZE, List.of());
+        var appliedInsets = mInsetsRectProvider.onApplyWindowInsets(mView, newWindowInsets);
+        assertEquals("Input insets should not be consumed.", newWindowInsets, appliedInsets);
+        assertEquals("Observer should be called once.", 1, observer.getCallCount());
+        assertSuppliedValues(insets, new Rect(), List.of());
     }
 
     @Test
@@ -301,15 +282,14 @@ public class InsetsRectProviderTest {
         WindowInsetsCompat emptyWindowInsets = new WindowInsetsCompat.Builder().build();
         mInsetsRectProvider =
                 new InsetsRectProvider(
-                        mInsetObserver,
-                        type,
-                        emptyWindowInsets,
-                        createInsetsRectConsumer(/* consumeRectUpdate= */ false),
-                        InsetConsumerSource.TEST_SOURCE);
+                        mInsetObserver, type, emptyWindowInsets, InsetConsumerSource.TEST_SOURCE);
 
-        // Verify that new insets are processed once but never consumed, with back to back updates,
-        // assuming that the consumer does not consume the rect update due to no unoccluded area.
-        // Also verify that the insets are not consumed in both cases.
+        // Attach an observer to verify that new insets are processed once but never consumed, with
+        // back to back updates, when there is no unoccluded area available for customization in
+        // the insets region. Also verify that the insets are not consumed in both cases.
+        CallbackHelper observer = new CallbackHelper();
+        mInsetsRectProvider.addObserver(rect -> observer.notifyCalled());
+
         WindowInsetsCompat newWindowInsets =
                 buildTestWindowInsets(type, insets, new Rect(), INSETS_FRAME_SIZE, List.of());
         var appliedInsets = mInsetsRectProvider.onApplyWindowInsets(mView, newWindowInsets);
@@ -318,8 +298,7 @@ public class InsetsRectProviderTest {
         appliedInsets = mInsetsRectProvider.onApplyWindowInsets(mView, newWindowInsets);
         assertEquals("Input insets should not be consumed.", newWindowInsets, appliedInsets);
 
-        assertEquals(
-                "Consumer callback should be called once.", 1, mConsumerCallback.getCallCount());
+        assertEquals("Observer should be called once.", 1, observer.getCallCount());
         assertSuppliedValues(insets, new Rect(), List.of());
     }
 
@@ -337,9 +316,11 @@ public class InsetsRectProviderTest {
                         new CaptionBarInsetsRectProvider(
                                 mInsetObserver,
                                 emptyWindowInsets,
-                                createInsetsRectConsumer(/* consumeRectUpdate= */ true),
                                 InsetConsumerSource.TEST_SOURCE));
         doAnswer(mBuildNewMockInsets).when(mInsetsRectProvider).buildInsets(any(), anyInt(), any());
+
+        CallbackHelper observer = new CallbackHelper();
+        mInsetsRectProvider.addObserver(rect -> observer.notifyCalled());
 
         Rect availableArea = new Rect(0, 0, WINDOW_WIDTH - 20, 30);
         List<Rect> blockingRects = List.of(new Rect(WINDOW_WIDTH - 20, 0, WINDOW_WIDTH, 30));
@@ -381,8 +362,7 @@ public class InsetsRectProviderTest {
                 navigationBarInsets,
                 appliedInsets.getInsets(navigationBars()));
 
-        assertEquals(
-                "Consumer callback should be called once.", 1, mConsumerCallback.getCallCount());
+        assertEquals("Observer should be called once.", 1, observer.getCallCount());
         assertSuppliedValues(captionBarInsets, availableArea, blockingRects);
     }
 
@@ -400,9 +380,11 @@ public class InsetsRectProviderTest {
                         new CaptionBarInsetsRectProvider(
                                 mInsetObserver,
                                 emptyWindowInsets,
-                                createInsetsRectConsumer(/* consumeRectUpdate= */ true),
                                 InsetConsumerSource.TEST_SOURCE));
         doAnswer(mBuildNewMockInsets).when(mInsetsRectProvider).buildInsets(any(), anyInt(), any());
+
+        CallbackHelper observer = new CallbackHelper();
+        mInsetsRectProvider.addObserver(rect -> observer.notifyCalled());
 
         Rect availableArea = new Rect(0, 10, WINDOW_WIDTH - 20, 30);
         List<Rect> blockingRects = List.of(new Rect(WINDOW_WIDTH - 20, 0, WINDOW_WIDTH, 30));
@@ -444,8 +426,7 @@ public class InsetsRectProviderTest {
                 navigationBarInsets,
                 appliedInsets.getInsets(navigationBars()));
 
-        assertEquals(
-                "Consumer callback should be called once.", 1, mConsumerCallback.getCallCount());
+        assertEquals("Observer should be called once.", 1, observer.getCallCount());
         var finalBlockedRects =
                 List.of(
                         new Rect(WINDOW_WIDTH - 20, 0, WINDOW_WIDTH, 30),
@@ -462,15 +443,16 @@ public class InsetsRectProviderTest {
 
         // Initialize with empty window insets.
         WindowInsetsCompat emptyWindowInsets = new WindowInsetsCompat.Builder().build();
-        // Simulate the consumer not consuming the rect update due to the status-caption overlap.
         mInsetsRectProvider =
                 Mockito.spy(
                         new CaptionBarInsetsRectProvider(
                                 mInsetObserver,
                                 emptyWindowInsets,
-                                createInsetsRectConsumer(/* consumeRectUpdate= */ false),
                                 InsetConsumerSource.TEST_SOURCE));
         doAnswer(mBuildNewMockInsets).when(mInsetsRectProvider).buildInsets(any(), anyInt(), any());
+
+        CallbackHelper observer = new CallbackHelper();
+        mInsetsRectProvider.addObserver(rect -> observer.notifyCalled());
 
         // Available area should be empty because of the status-caption overlap.
         Rect availableArea = new Rect(0, 0, 0, 0);
@@ -513,17 +495,18 @@ public class InsetsRectProviderTest {
         Insets statusBarInsets = Insets.of(0, 30, 0, 0);
         Insets navigationBarInsets = Insets.of(0, 0, 0, 15);
 
-        // Initialize with empty window insets. Simulate the consumer not consuming the rect update
-        // due to the status-caption overlap.
+        // Initialize with empty window insets.
         WindowInsetsCompat emptyWindowInsets = new WindowInsetsCompat.Builder().build();
         mInsetsRectProvider =
                 Mockito.spy(
                         new CaptionBarInsetsRectProvider(
                                 mInsetObserver,
                                 emptyWindowInsets,
-                                createInsetsRectConsumer(/* consumeRectUpdate= */ false),
                                 InsetConsumerSource.TEST_SOURCE));
         doAnswer(mBuildNewMockInsets).when(mInsetsRectProvider).buildInsets(any(), anyInt(), any());
+
+        CallbackHelper observer = new CallbackHelper();
+        mInsetsRectProvider.addObserver(rect -> observer.notifyCalled());
 
         // Available area should be empty because of the status-caption overlap.
         Rect availableArea = new Rect(0, 0, 0, 0);
@@ -567,8 +550,7 @@ public class InsetsRectProviderTest {
                 navigationBarInsets,
                 appliedInsets.getInsets(navigationBars()));
 
-        assertEquals(
-                "Consumer callback should be called once.", 1, mConsumerCallback.getCallCount());
+        assertEquals("Observer should be called once.", 1, observer.getCallCount());
         var finalBlockedRects =
                 List.of(
                         new Rect(WINDOW_WIDTH - 20, 0, WINDOW_WIDTH, 10),
@@ -632,13 +614,6 @@ public class InsetsRectProviderTest {
                 "Supplied #getCachedInset is different.",
                 insets,
                 mInsetsRectProvider.getCachedInset());
-    }
-
-    private Consumer createInsetsRectConsumer(boolean consumeRectUpdate) {
-        return widestUnoccludedRect -> {
-            mConsumerCallback.notifyCalled();
-            return consumeRectUpdate;
-        };
     }
 
     /** Helper class to get the results using test values. */
