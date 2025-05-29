@@ -50,6 +50,7 @@ import org.chromium.components.browser_ui.widget.TouchEventObserver;
 import org.chromium.ui.InsetObserver;
 
 import java.util.Collections;
+import java.util.function.BooleanSupplier;
 
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
@@ -91,6 +92,8 @@ public class MiniOriginBarControllerTest {
             new WindowInsetsAnimationCompat(WindowInsetsCompat.Type.ime(), null, 160);
     private final WindowInsetsAnimationCompat mNonImeAnimation =
             new WindowInsetsAnimationCompat(WindowInsetsCompat.Type.systemBars(), null, 160);
+    private boolean mOmniboxFocused;
+    private final BooleanSupplier mIsOmniboxFocusedSupplier = () -> mOmniboxFocused;
 
     @Before
     public void setUp() {
@@ -114,7 +117,8 @@ public class MiniOriginBarControllerTest {
                         mInsetObserver,
                         mControlContainerTranslationSupplier,
                         mControlContainerHeightSupplier,
-                        mIsKeyboardAccessorySheetShowing);
+                        mIsKeyboardAccessorySheetShowing,
+                        mIsOmniboxFocusedSupplier);
     }
 
     @Test
@@ -470,6 +474,22 @@ public class MiniOriginBarControllerTest {
         assertEquals(0, (int) mControlContainerTranslationSupplier.get());
         Assert.assertEquals(
                 MiniOriginState.SHOWING, mMiniOriginBarController.getCurrentStateForTesting());
+    }
+
+    @Test
+    public void testOmniboxFocused() {
+        doReturn(ControlsPosition.BOTTOM).when(mBrowserControlsSizer).getControlsPosition();
+        mMiniOriginBarController.onControlsPositionChanged(ControlsPosition.BOTTOM);
+
+        mIsFormFieldFocused.onNodeAttributeUpdated(true, false);
+        mOmniboxFocused = true;
+
+        final MiniOriginWindowInsetsAnimationListener animationListener =
+                mMiniOriginBarController.getAnimationListenerForTesting();
+
+        animationListener.onPrepare(mImeAnimation);
+        mKeyboardVisibilityDelegate.setVisibilityForTests(true);
+        verify(mLocationBar, never()).setShowOriginOnly(anyBoolean());
     }
 
     // show again, start, finish showing (predictive back)

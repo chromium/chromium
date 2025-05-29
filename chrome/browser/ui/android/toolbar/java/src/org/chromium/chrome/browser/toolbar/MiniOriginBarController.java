@@ -125,6 +125,7 @@ public class MiniOriginBarController implements Observer {
     private FrameLayout.LayoutParams mDefaultLocationBarLayoutParams;
     private final TouchEventObserver mTouchEventObserver;
     private final InsetObserver mInsetObserver;
+    private final BooleanSupplier mIsOmniboxFocusedSupplier;
     private final int mDefaultLocationBarRightPadding;
     // The starting horizontal position of the location bar when the mini origin bar is in its
     // least-minimized state.
@@ -154,7 +155,8 @@ public class MiniOriginBarController implements Observer {
             InsetObserver insetObserver,
             ObservableSupplierImpl<Integer> controlContainerTranslationSupplier,
             ObservableSupplierImpl<Integer> controlContainerHeightSupplier,
-            ObservableSupplier<Boolean> isKeyboardAccessorySheetShowing) {
+            ObservableSupplier<Boolean> isKeyboardAccessorySheetShowing,
+            BooleanSupplier isOmniboxFocusedSupplier) {
         mLocationBar = locationBar;
         mIsFormFieldFocusedSupplier = isFormFieldFocusedSupplier;
         mKeyboardVisibilityDelegate = keyboardVisibilityDelegate;
@@ -165,6 +167,7 @@ public class MiniOriginBarController implements Observer {
         mControlContainerHeightSupplier = controlContainerHeightSupplier;
         mIsKeyboardAccessorySheetShowing = isKeyboardAccessorySheetShowing;
         mInsetObserver = insetObserver;
+        mIsOmniboxFocusedSupplier = isOmniboxFocusedSupplier;
         mDefaultLocationBarRightPadding = mLocationBar.getContainerView().getPaddingRight();
         mDefaultLocationBarLayoutParams =
                 (FrameLayout.LayoutParams) mLocationBar.getContainerView().getLayoutParams();
@@ -193,11 +196,13 @@ public class MiniOriginBarController implements Observer {
                                     : MiniOriginEvent.FORM_FIELD_LOST_FOCUS);
                 };
         mKeyboardVisibilityObserver =
-                (showing) ->
-                        updateMiniOriginBarState(
-                                showing
-                                        ? MiniOriginEvent.KEYBOARD_APPEARED
-                                        : MiniOriginEvent.KEYBOARD_DISAPPEARED);
+                (showing) -> {
+                    if (mIsOmniboxFocusedSupplier.getAsBoolean()) return;
+                    updateMiniOriginBarState(
+                            showing
+                                    ? MiniOriginEvent.KEYBOARD_APPEARED
+                                    : MiniOriginEvent.KEYBOARD_DISAPPEARED);
+                };
 
         mIsFormFieldFocusedSupplier.addObserver(mIsFormFieldFocusedObserver);
         mKeyboardVisibilityDelegate.addKeyboardVisibilityListener(mKeyboardVisibilityObserver);
@@ -341,9 +346,10 @@ public class MiniOriginBarController implements Observer {
     }
 
     private boolean waitingForImeAnimationToStart() {
-        return mMiniOriginBarState == MiniOriginState.READY
-                || mMiniOriginBarState == MiniOriginState.SHOWING
-                || mMiniOriginBarState == MiniOriginState.SUPPRESSED_BY_CLICK;
+        return !mIsOmniboxFocusedSupplier.getAsBoolean()
+                && (mMiniOriginBarState == MiniOriginState.READY
+                        || mMiniOriginBarState == MiniOriginState.SHOWING
+                        || mMiniOriginBarState == MiniOriginState.SUPPRESSED_BY_CLICK);
     }
 
     /**

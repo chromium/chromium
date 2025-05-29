@@ -1719,7 +1719,8 @@ public class ToolbarManager
                             mWindowAndroid.getInsetObserver(),
                             controlContainerTranslationSupplier,
                             controlContainerHeightSupplier,
-                            keyboardAccessoryStateSupplier.getIsSheetShowingSupplier());
+                            keyboardAccessoryStateSupplier.getIsSheetShowingSupplier(),
+                            this::isUrlBarFocused);
         }
     }
 
