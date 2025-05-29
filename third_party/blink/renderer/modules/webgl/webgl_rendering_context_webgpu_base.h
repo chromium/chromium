@@ -1363,6 +1363,8 @@ class MODULES_EXPORT WebGLRenderingContextWebGPUBase
   void PrintGLErrorToConsole(const String& message);
   void PrintWarningToConsole(const String& message);
 
+  WebGLFramebuffer* GetBoundFramebuffer(GLenum target) const;
+
   scoped_refptr<DawnControlClientHolder> dawn_control_client_;
   wgpu::Adapter adapter_;
   wgpu::Device device_;
@@ -1387,6 +1389,30 @@ class MODULES_EXPORT WebGLRenderingContextWebGPUBase
   bool supports_separate_framebuffer_targets_ = false;
   Member<WebGLFramebuffer> draw_framebuffer_binding_;
   Member<WebGLFramebuffer> read_framebuffer_binding_;
+
+  enum class TextureTarget : uint8_t {
+    k2D = 0,
+    kCubeMap = 1,
+    k2DArray = 2,
+    k3D = 3,
+    k2DMultisample = 4,
+
+    kUnkown = 5,
+    kCount = kUnkown,
+  };
+  static TextureTarget GLenumToTextureTarget(GLenum target);
+
+  // Track the current texture unit to know where to index in bound_textures_
+  size_t active_texture_unit_ = 0;
+
+  // Use a limit that is at least ANGLE's IMPLEMENTATION_MAX_ACTIVE_TEXTURES
+  // constant
+  static constexpr size_t kMaxTextureUnits = 64;
+  static constexpr size_t kNumTextureTypes =
+      static_cast<size_t>(TextureTarget::kCount);
+  std::array<std::array<Member<WebGLTexture>, kMaxTextureUnits>,
+             kNumTextureTypes>
+      bound_textures_;
 };
 
 }  // namespace blink

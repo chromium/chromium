@@ -19,6 +19,7 @@
 #include "third_party/blink/renderer/modules/webgl/webgl_object.h"
 #include "third_party/blink/renderer/modules/webgl/webgl_program.h"
 #include "third_party/blink/renderer/modules/webgl/webgl_shader.h"
+#include "third_party/blink/renderer/modules/webgl/webgl_texture.h"
 #include "third_party/blink/renderer/modules/webgl/webgl_uniform_location.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/dawn_control_client_holder.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/webgpu_callback.h"
@@ -497,7 +498,14 @@ void WebGLRenderingContextWebGPUBase::setUnpackColorSpace(
 }
 
 void WebGLRenderingContextWebGPUBase::activeTexture(GLenum texture) {
-  NOTIMPLEMENTED();
+  CheckAndClearErrorCallbackState();
+  driver_gl_.fn.glActiveTextureFn(texture);
+  if (!CheckAndClearErrorCallbackState()) {
+    return;
+  }
+
+  active_texture_unit_ = texture - GL_TEXTURE0;
+  DCHECK(active_texture_unit_ < kMaxTextureUnits);
 }
 
 void WebGLRenderingContextWebGPUBase::attachShader(WebGLProgram* program,
@@ -569,8 +577,20 @@ void WebGLRenderingContextWebGPUBase::bindRenderbuffer(GLenum target,
 }
 
 void WebGLRenderingContextWebGPUBase::bindTexture(GLenum target,
-                                                  WebGLTexture*) {
-  NOTIMPLEMENTED();
+                                                  WebGLTexture* texture) {
+  if (!ValidateNullableObject("bindTexture", texture)) {
+    return;
+  }
+
+  CheckAndClearErrorCallbackState();
+  driver_gl_.fn.glBindTextureFn(target, ObjectOrZero(texture));
+  if (CheckAndClearErrorCallbackState()) {
+    return;
+  }
+
+  texture->SetTarget(target);
+  bound_textures_[static_cast<size_t>(GLenumToTextureTarget(target))]
+                 [active_texture_unit_] = texture;
 }
 
 void WebGLRenderingContextWebGPUBase::blendColor(GLfloat red,
@@ -740,8 +760,7 @@ WebGLShader* WebGLRenderingContextWebGPUBase::createShader(GLenum type) {
 }
 
 WebGLTexture* WebGLRenderingContextWebGPUBase::createTexture() {
-  NOTIMPLEMENTED();
-  return nullptr;
+  return MakeGarbageCollected<WebGLTexture>(this);
 }
 
 void WebGLRenderingContextWebGPUBase::cullFace(GLenum mode) {
@@ -784,8 +803,31 @@ void WebGLRenderingContextWebGPUBase::deleteShader(WebGLShader*) {
   NOTIMPLEMENTED();
 }
 
-void WebGLRenderingContextWebGPUBase::deleteTexture(WebGLTexture*) {
-  NOTIMPLEMENTED();
+void WebGLRenderingContextWebGPUBase::deleteTexture(WebGLTexture* texture) {
+  if (!DeleteObject(texture)) {
+    return;
+  }
+
+  size_t texture_type_idx =
+      static_cast<size_t>(GLenumToTextureTarget(texture->GetTarget()));
+  for (size_t texture_unit_idx = 0; texture_unit_idx < bound_textures_.size();
+       texture_unit_idx++) {
+    Member<WebGLTexture>& bound_texture =
+        bound_textures_[texture_type_idx][texture_unit_idx];
+    if (bound_texture == texture) {
+      bound_texture = nullptr;
+    }
+  }
+
+  if (draw_framebuffer_binding_) {
+    draw_framebuffer_binding_->RemoveAttachmentFromBoundFramebuffer(
+        GL_FRAMEBUFFER, texture);
+  }
+  if (read_framebuffer_binding_ &&
+      read_framebuffer_binding_ != draw_framebuffer_binding_) {
+    read_framebuffer_binding_->RemoveAttachmentFromBoundFramebuffer(
+        GL_READ_FRAMEBUFFER, texture);
+  }
 }
 
 void WebGLRenderingContextWebGPUBase::depthFunc(GLenum func) {
@@ -857,12 +899,31 @@ void WebGLRenderingContextWebGPUBase::framebufferRenderbuffer(
   NOTIMPLEMENTED();
 }
 
-void WebGLRenderingContextWebGPUBase::framebufferTexture2D(GLenum target,
-                                                           GLenum attachment,
-                                                           GLenum textarget,
-                                                           WebGLTexture*,
-                                                           GLint level) {
-  NOTIMPLEMENTED();
+void WebGLRenderingContextWebGPUBase::framebufferTexture2D(
+    GLenum target,
+    GLenum attachment,
+    GLenum textarget,
+    WebGLTexture* texture,
+    GLint level) {
+  if (!ValidateNullableObject("framebufferTexture2D", texture)) {
+    return;
+  }
+
+  WebGLFramebuffer* framebuffer = GetBoundFramebuffer(target);
+
+  // Disallow modifying the default framebuffer. The WebGL framebuffer object
+  // will be null but default_framebuffer_ will actually be bound and we do not
+  // want to modify it.
+  if (!framebuffer || !framebuffer->Object()) {
+    InsertGLError(GL_INVALID_OPERATION, "framebufferTexture2D",
+                  "no framebuffer bound");
+    return;
+  }
+
+  // TODO(413078308): If the internal glFramebufferTexture2D call fails, state
+  // tracking should not be updated.
+  framebuffer->SetAttachmentForBoundFramebuffer(target, attachment, textarget,
+                                                texture, level, 0, 0);
 }
 
 void WebGLRenderingContextWebGPUBase::frontFace(GLenum mode) {
@@ -1183,13 +1244,13 @@ void WebGLRenderingContextWebGPUBase::stencilOpSeparate(GLenum face,
 void WebGLRenderingContextWebGPUBase::texParameterf(GLenum target,
                                                     GLenum pname,
                                                     GLfloat param) {
-  NOTIMPLEMENTED();
+  driver_gl_.fn.glTexParameterfFn(target, pname, param);
 }
 
 void WebGLRenderingContextWebGPUBase::texParameteri(GLenum target,
                                                     GLenum pname,
                                                     GLint param) {
-  NOTIMPLEMENTED();
+  driver_gl_.fn.glTexParameteriFn(target, pname, param);
 }
 
 void WebGLRenderingContextWebGPUBase::texImage2D(
@@ -1201,8 +1262,19 @@ void WebGLRenderingContextWebGPUBase::texImage2D(
     GLint border,
     GLenum format,
     GLenum type,
-    MaybeShared<DOMArrayBufferView>) {
-  NOTIMPLEMENTED();
+    MaybeShared<DOMArrayBufferView> pixels) {
+  const void* pixel_data = nullptr;
+  GLsizei pixel_data_size = 0;
+  if (pixels) {
+    pixel_data = pixels->BaseAddress();
+
+    // TODO(420793500): Validate that byteLength fits in a GLsizei
+    pixel_data_size = static_cast<GLsizei>(pixels->byteLength());
+  }
+
+  driver_gl_.fn.glTexImage2DRobustANGLEFn(target, level, internalformat, width,
+                                          height, border, format, type,
+                                          pixel_data_size, pixel_data);
 }
 
 void WebGLRenderingContextWebGPUBase::texImage2D(GLenum target,
@@ -1277,8 +1349,19 @@ void WebGLRenderingContextWebGPUBase::texSubImage2D(
     GLsizei height,
     GLenum format,
     GLenum type,
-    MaybeShared<DOMArrayBufferView>) {
-  NOTIMPLEMENTED();
+    MaybeShared<DOMArrayBufferView> pixels) {
+  const void* pixel_data = nullptr;
+  GLsizei pixel_data_size = 0;
+  if (pixels) {
+    pixel_data = pixels->BaseAddress();
+
+    // TODO(420793500): Validate that byteLength fits in a GLsizei
+    pixel_data_size = static_cast<GLsizei>(pixels->byteLength());
+  }
+
+  driver_gl_.fn.glTexSubImage2DRobustANGLEFn(target, level, xoffset, yoffset,
+                                             width, height, format, type,
+                                             pixel_data_size, pixel_data);
 }
 
 void WebGLRenderingContextWebGPUBase::texSubImage2D(GLenum target,
@@ -3076,6 +3159,14 @@ bool WebGLRenderingContextWebGPUBase::IsGPUDeviceDestroyed() {
 void WebGLRenderingContextWebGPUBase::Trace(Visitor* visitor) const {
   visitor->Trace(draw_framebuffer_binding_);
   visitor->Trace(read_framebuffer_binding_);
+  for (size_t texture_type_idx = 0; texture_type_idx < bound_textures_.size();
+       texture_type_idx++) {
+    for (size_t texture_unit_idx = 0;
+         texture_unit_idx < bound_textures_[texture_type_idx].size();
+         texture_unit_idx++) {
+      visitor->Trace(bound_textures_[texture_type_idx][texture_unit_idx]);
+    }
+  }
   WebGLContextObjectSupport::Trace(visitor);
   CanvasRenderingContext::Trace(visitor);
 }
@@ -3408,6 +3499,37 @@ void WebGLRenderingContextWebGPUBase::PrintWarningToConsole(
     context->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
         mojom::blink::ConsoleMessageSource::kRendering,
         mojom::blink::ConsoleMessageLevel::kWarning, message));
+  }
+}
+
+WebGLFramebuffer* WebGLRenderingContextWebGPUBase::GetBoundFramebuffer(
+    GLenum target) const {
+  switch (target) {
+    case GL_FRAMEBUFFER:
+    case GL_DRAW_FRAMEBUFFER:
+      return draw_framebuffer_binding_;
+    case GL_READ_FRAMEBUFFER:
+      return read_framebuffer_binding_;
+    default:
+      return nullptr;
+  }
+}
+
+WebGLRenderingContextWebGPUBase::TextureTarget
+WebGLRenderingContextWebGPUBase::GLenumToTextureTarget(GLenum target) {
+  switch (target) {
+    case GL_TEXTURE_2D:
+      return TextureTarget::k2D;
+    case GL_TEXTURE_CUBE_MAP:
+      return TextureTarget::kCubeMap;
+    case GL_TEXTURE_2D_ARRAY:
+      return TextureTarget::k2DArray;
+    case GL_TEXTURE_3D:
+      return TextureTarget::k3D;
+    case GL_TEXTURE_2D_MULTISAMPLE:
+      return TextureTarget::k2DMultisample;
+    default:
+      return TextureTarget::kUnkown;
   }
 }
 }  // namespace blink
