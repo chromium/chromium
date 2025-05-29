@@ -35,6 +35,10 @@
   padding-inline-start: 16px;
 }
 
+:host([enable-csb-motion-tweaks]) #loadingState.status-container {
+  display: none;
+}
+
 .loader-text {
   position: absolute;
   padding-inline-start: 38px;
@@ -78,6 +82,76 @@
 .spinner {
   --cr-spinner-color: var(--color-searchbox-ghost-loader-spinner);
   --cr-spinner-size: 20px;
+}
+
+.suggestion-loader-container {
+  display: none;
+}
+
+:host([enable-csb-motion-tweaks]) .suggestion-loader-container {
+  display: flex;
+  flex-direction: column;
+  flex-wrap: wrap;
+  margin: 4px 20px 0 12px;
+}
+
+.ghost-loader-item {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  height: 48px;
+}
+
+.searchbox-icon {
+  --cr-searchbox-icon-border-radius: 12px;
+  margin-right: 10px;
+}
+
+/* Individual animation delays for each bar */
+.ghost-loader-item:nth-child(1) .loading-bar {
+  --loading-bar-animation-delay: 1;
+}
+
+.ghost-loader-item:nth-child(2) .loading-bar {
+  --loading-bar-animation-delay: 2;
+}
+
+.ghost-loader-item:nth-child(3) .loading-bar {
+  --loading-bar-animation-delay: 3;
+}
+
+.ghost-loader-item:nth-child(4) .loading-bar {
+  --loading-bar-animation-delay: 4;
+}
+
+.ghost-loader-item:nth-child(5) .loading-bar {
+  --loading-bar-animation-delay: 5;
+}
+
+.loading-bar {
+  animation: 2s fadeInOut calc(0.1s * var(--loading-bar-animation-delay)) infinite;
+  background-color: #e0e0e0;
+  border-radius: 4px;
+  height: 20px;
+  width: 100%;
+}
+
+:host([dark-mode]) .loading-bar {
+  background-color: #9e9e9e;
+}
+
+@keyframes fadeInOut {
+  0% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.25;
+  }
+
+  100% {
+    opacity: 1;
+  }
 }
 
 #loadingState,
@@ -138,6 +212,18 @@
       <span id="hint-text2" class="loader-text">
         $i18n{searchboxGhostLoaderHintTextSecondary}
       </span>
+    </div>
+    <div class="suggestion-loader-container">
+      <template is="dom-repeat" items="[0, 1, 2, 3, 4]" as="item">
+        <div class="ghost-loader-item">
+          <cr-searchbox-icon
+            class="searchbox-icon"
+            match=""
+            default-icon="//resources/cr_components/searchbox/icons/search_cr23.svg"
+          ></cr-searchbox-icon>
+          <div class="loading-bar"></div>
+        </div>
+      </template>
     </div>
     <div id="errorState" class="status-container">
       <div id="errorIconContainer">

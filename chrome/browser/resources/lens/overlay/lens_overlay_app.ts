@@ -638,6 +638,11 @@ export class LensOverlayAppElement extends LensOverlayAppElementBase {
 
   private onScreenshotRendered() {
     this.isImageRendered = true;
+    // Focus the searchbox simultaneously with the initial flash animation.
+    if (this.enableCsbMotionTweaks && this.autoFocusSearchbox &&
+        this.isLensOverlayContextualSearchboxVisible) {
+      this.focusSearchbox();
+    }
   }
 
   private onInitialFlashAnimationEnd() {
@@ -646,8 +651,9 @@ export class LensOverlayAppElement extends LensOverlayAppElementBase {
       this.$.initialGradient.setScrimVisible();
     }
     // The searchbox is not focusable until the animation has ended.
+    // Only called here if not already called in onScreenshotRendered
     if (this.autoFocusSearchbox &&
-        this.isLensOverlayContextualSearchboxVisible) {
+        this.isLensOverlayContextualSearchboxVisible && !this.enableCsbMotionTweaks) {
       this.focusSearchbox();
     }
   }

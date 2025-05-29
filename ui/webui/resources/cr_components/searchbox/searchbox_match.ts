@@ -163,6 +163,12 @@ export class SearchboxMatchElement extends PolymerElement {
         computed: `computeDescriptionHtml_(match)`,
       },
 
+      enableCsbMotionTweaks_: {
+        type: Boolean,
+        value: () => loadTimeData.getBoolean('enableCsbMotionTweaks'),
+        reflectToAttribute: true,
+      },
+
       /** Remove button's 'aria-label' attribute. */
       removeButtonAriaLabel_: {
         type: String,
@@ -202,6 +208,7 @@ export class SearchboxMatchElement extends PolymerElement {
   declare private forceHideEllipsis_: boolean;
   declare private contentsHtml_: TrustedHTML;
   declare private descriptionHtml_: TrustedHTML;
+  declare private enableCsbMotionTweaks_: boolean;
   declare private removeButtonAriaLabel_: string;
   declare private removeButtonTitle_: string;
   declare private separatorText_: string;
