@@ -530,6 +530,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="NewTabPage.Footer.ToggledVisibility" enum="BooleanVisible"
+    expires_after="2026-02-01">
+  <owner>pauladedeji@google.com</owner>
+  <owner>tiborg@chromium.org</owner>
+  <owner>chrome-desktop-ntp@google.com</owner>
+  <summary>
+    Logged when New Tab Footer visibility is toggled via Customize Chrome.
+  </summary>
+</histogram>
+
 <histogram name="NewTabPage.GoogleCalendar.EventClickIndex" units="count"
     expires_after="2025-10-05">
   <owner>rtatum@google.com</owner>
