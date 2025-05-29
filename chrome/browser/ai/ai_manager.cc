@@ -365,7 +365,7 @@ AIManager::AIManager(
     : component_update_service_(*component_update_service),
       context_bound_object_set_(GetPriorityFromVisibility(rfh)),
       browser_context_(browser_context),
-      rfh_(rfh->GetWeakDocumentPtr()) {
+      rfh_(rfh ? rfh->GetWeakDocumentPtr() : content::WeakDocumentPtr()) {
   if (rfh && rfh->GetRenderWidgetHost()) {
     widget_observer_.Observe(rfh->GetRenderWidgetHost());
   }

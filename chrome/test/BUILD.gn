@@ -2990,7 +2990,6 @@ if (!is_android) {
       "../browser/accessibility/page_colors_browsertest.cc",
       "../browser/accessibility/phrase_segmentation/dependency_parser_model_loader_browsertest.cc",
       "../browser/ai/ai_data_keyed_service_browsertest.cc",
-      "../browser/ai/ai_on_device_browsertest.cc",
       "../browser/attribution_reporting/chrome_attribution_browsertest.cc",
       "../browser/autocomplete/autocomplete_browsertest.cc",
       "../browser/autocomplete/chrome_autocomplete_provider_client_browsertest.cc",
@@ -10903,6 +10902,7 @@ if (!is_android && !is_chromeos_device) {
 
     sources = [
       "../browser/about_flags_browsertest.cc",
+      "../browser/ai/ai_on_device_browsertest.cc",
       "../browser/browser_keyevents_browsertest.cc",
       "../browser/chrome_render_widget_host_browsertests.cc",
       "../browser/controlled_frame/controlled_frame_interactive_browsertest.cc",

@@ -45,6 +45,32 @@ constexpr char kAIWriterAPIOTToken[] =
     "Q4AAABSeyJvcmlnaW4iOiAiaHR0cHM6Ly9hLnRlc3Q6MzIxMjMiLCAiZmVhdHVyZSI6ICJBSVd"
     "yaXRlckFQSSIsICJleHBpcnkiOiAyMDA2OTcwNjU4fQ==";
 
+// Execute script on the current Window and yield the posted message.
+constexpr char kRunWindowCheck[] = R"JS(
+    new Promise(r => { self.onmessage = e => { r(e.data); }; %s });
+    )JS";
+
+// Execute script on a new Worker and yield the posted message.
+constexpr char kRunWorkerCheck[] = R"JS(
+    const workerScript = `%s`;
+    const blob = new Blob([workerScript], { type: 'text/javascript' });
+    const worker = new Worker(URL.createObjectURL(blob));
+    new Promise(r => { worker.onmessage = e => { r(e.data); }});
+    )JS";
+
+// Check if a global identifier is exposed and post an OK/error message.
+constexpr char kCheckExposed[] = R"JS(
+    try { %s; self.postMessage('OK');
+    } catch (e) { self.postMessage(e.name); }
+    )JS";
+
+// Check if FooAPI.availability() yields a string and post an OK/error message.
+constexpr char kCheckAvailability[] = R"JS(
+    try { %s.availability().then(a => {
+              self.postMessage(typeof(a) == 'string' ? 'OK' : 'NO'); });
+    } catch (e) { self.postMessage(e.name); }
+    )JS";
+
 // The boolean tuple describing:
 // 1. if the `kAIFooAPI` chrome://flag entries are explicitly enabled;
 // 2. if the `kAIFooAPIForWorkers` are explicitly enabled;
@@ -78,6 +104,11 @@ std::string DescribeTestVariant(const testing::TestParamInfo<Variant> info) {
   return base::JoinString({api_flag, worker_flag, kill_switch, ot_token}, "_");
 }
 
+// Get the names of all the APIs tested in this suite.
+std::vector<std::string> GetAPINames() {
+  return {"LanguageModel", "Rewriter", "Summarizer", "Writer"};
+}
+
 // Returns whether the API name matches those currently in origin trial.
 bool IsAPIInOT(std::string_view name) {
   return name == "Summarizer" || name == "Rewriter" || name == "Writer";
@@ -95,8 +126,15 @@ void InjectOTToken(content::WebContents* tab, std::string_view token) {
   EXPECT_TRUE(ExecJs(tab, base::StringPrintf(kScript, token)));
 }
 
-class AIOnDeviceBrowserTest : public InProcessBrowserTest,
-                              public testing::WithParamInterface<Variant> {
+// TODO(crbug.com/419321441): Support Built-In AI APIs on ChromeOS.
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_AIOnDeviceBrowserTest DISABLED_AIOnDeviceBrowserTest
+#else
+#define MAYBE_AIOnDeviceBrowserTest AIOnDeviceBrowserTest
+#endif  // BUILDFLAG(IS_CHROMEOS)
+class MAYBE_AIOnDeviceBrowserTest
+    : public InProcessBrowserTest,
+      public testing::WithParamInterface<Variant> {
  public:
   void SetUpCommandLine(base::CommandLine* command_line) override {
     if (IsAPIFlagEnabled(GetParam())) {
@@ -130,6 +168,7 @@ class AIOnDeviceBrowserTest : public InProcessBrowserTest,
         net::EmbeddedTestServer::CERT_TEST_NAMES);
     net::test_server::RegisterDefaultHandlers(&embedded_https_test_server());
     // Specify a port to match the generated test OT tokens.
+    // TODO(421053094): Remove port and move to browser_tests target after OTs.
     ASSERT_TRUE(embedded_https_test_server().Start(/*port=*/32123));
 
     auto* tab = browser()->tab_strip_model()->GetActiveWebContents();
@@ -143,43 +182,53 @@ class AIOnDeviceBrowserTest : public InProcessBrowserTest,
     }
   }
 
+  bool ExpectExposedToWindow(std::string_view name) const {
+    return IsAPIFlagEnabled(GetParam()) ||
+           (IsAPIInOT(name) && IsOTTokenSupplied(GetParam()) &&
+            !IsAPIKillSwitchTriggered(GetParam()));
+  }
+
+  bool ExpectExposedToWorker(std::string_view name) const {
+    // Worker access requires an additional flag, even with a valid OT.
+    return ExpectExposedToWindow(name) && IsAPIWorkerFlagEnabled(GetParam());
+  }
+
  private:
   base::test::ScopedFeatureList feature_list_;
 };
 
 INSTANTIATE_TEST_SUITE_P(
     /* no prefix */,
-    AIOnDeviceBrowserTest,
+    MAYBE_AIOnDeviceBrowserTest,
     testing::Combine(testing::Bool(),
                      testing::Bool(),
                      testing::Bool(),
                      testing::Bool()),
     &DescribeTestVariant);
 
-IN_PROC_BROWSER_TEST_P(AIOnDeviceBrowserTest, APIsExposedToWindowAndWorker) {
-  static constexpr char kWindow[] = "try { %s; 'OK'; } catch (e) { e.name; }";
-  static constexpr char kWorker[] =
-      R"JS(
-      const workerCode = `try { %s; self.postMessage('OK'); }
-                          catch (e) { self.postMessage(e.name); }`;
-      const blob = new Blob([workerCode], { type: 'text/javascript' });
-      const worker = new Worker(URL.createObjectURL(blob));
-      new Promise(r => { worker.onmessage = e => { r(e.data); }});
-    )JS";
+// Check whether the APIs are exposed to the window or worker when expected.
+IN_PROC_BROWSER_TEST_P(MAYBE_AIOnDeviceBrowserTest, ExposedToWindowOrWorker) {
   auto* tab = browser()->tab_strip_model()->GetActiveWebContents();
-  for (const auto& id : {"LanguageModel", "Rewriter", "Summarizer", "Writer"}) {
-    bool is_api_exposed = IsAPIFlagEnabled(GetParam()) ||
-                          (IsAPIInOT(id) && IsOTTokenSupplied(GetParam()) &&
-                           !IsAPIKillSwitchTriggered(GetParam()));
-    std::string expected = is_api_exposed ? "OK" : "ReferenceError";
-    EXPECT_EQ(expected, content::EvalJs(tab, absl::StrFormat(kWindow, id)))
-        << "Unexpected " << id << " result in window context.";
+  for (const auto& name : GetAPINames()) {
+    auto check = absl::StrFormat(kCheckExposed, name);
+    SCOPED_TRACE(testing::Message() << "Checking " << name);
+    EXPECT_EQ(ExpectExposedToWindow(name) ? "OK" : "ReferenceError",
+              content::EvalJs(tab, absl::StrFormat(kRunWindowCheck, check)));
+    EXPECT_EQ(ExpectExposedToWorker(name) ? "OK" : "ReferenceError",
+              content::EvalJs(tab, absl::StrFormat(kRunWorkerCheck, check)));
+  }
+}
 
-    // Worker access requires an additional flag, even with a valid OT.
-    is_api_exposed &= IsAPIWorkerFlagEnabled(GetParam());
-    expected = is_api_exposed ? "OK" : "ReferenceError";
-    EXPECT_EQ(expected, content::EvalJs(tab, absl::StrFormat(kWorker, id)))
-        << "Unexpected " << id << " result in worker context.";
+// Invoke availability() for basic API functionality coverage beyond WPTs.
+IN_PROC_BROWSER_TEST_P(MAYBE_AIOnDeviceBrowserTest, AvailableInWindowOrWorker) {
+  auto* tab = browser()->tab_strip_model()->GetActiveWebContents();
+  for (const auto& name : GetAPINames()) {
+    auto check = absl::StrFormat(kCheckAvailability, name);
+    SCOPED_TRACE(testing::Message() << "Checking " << name);
+    EXPECT_EQ(ExpectExposedToWindow(name) ? "OK" : "ReferenceError",
+              content::EvalJs(tab, absl::StrFormat(kRunWindowCheck, check)));
+    EXPECT_EQ(ExpectExposedToWorker(name) ? "OK" : "ReferenceError",
+              content::EvalJs(tab, absl::StrFormat(kRunWorkerCheck, check)));
   }
 }
 
