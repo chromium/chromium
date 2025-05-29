@@ -5677,6 +5677,15 @@ should be able to be added at any place in this file.
   <description>Please enter the description of this user action.</description>
 </action>
 
+<action name="BookmarkAdded.Failure">
+  <owner>wylieb@google.com</owner>
+  <owner>evanluo@google.com</owner>
+  <owner>chrome-collections@google.com</owner>
+  <description>
+    Recorded when the user tries to add a bookmark and it fails.
+  </description>
+</action>
+
 <action name="BookmarkAllTabs">
   <owner>wittman@chromium.org</owner>
   <description>
