@@ -1251,10 +1251,13 @@ WebContents* GetFocusedWebContents(WebContents* web_contents);
 // set.
 class TitleWatcher : public WebContentsObserver {
  public:
-  // |web_contents| must be non-NULL and needs to stay alive for the
-  // entire lifetime of |this|. |expected_title| is the title that |this|
-  // will wait for.
-  TitleWatcher(WebContents* web_contents, std::u16string_view expected_title);
+  // `web_contents` must be non-NULL and needs to stay alive for the
+  // entire lifetime of |this|. `expected_title` is the title that |this|
+  // will wait for. `include_nestable_tasks` allows processing of
+  // application tasks while waiting for a title change.
+  TitleWatcher(WebContents* web_contents,
+               std::u16string_view expected_title,
+               bool include_nestable_tasks = false);
 
   TitleWatcher(const TitleWatcher&) = delete;
   TitleWatcher& operator=(const TitleWatcher&) = delete;

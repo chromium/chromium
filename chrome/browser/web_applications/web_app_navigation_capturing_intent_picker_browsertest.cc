@@ -5,8 +5,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/run_loop.h"
-#include "base/task/sequenced_task_runner.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/apps/link_capturing/enable_link_capturing_infobar_delegate.h"
 #include "chrome/browser/apps/link_capturing/link_capturing_feature_test_support.h"
@@ -48,13 +46,6 @@ class WebAppNavigationCapturingIntentPickerBrowserTest
   GURL GetAppUrlWithWCO() {
     return https_server()->GetURL(
         "/web_apps/intent_picker_nav_capture/index_wco.html");
-  }
-
-  void FlushTaskRunner() {
-    base::RunLoop run_loop;
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, run_loop.QuitClosure());
-    run_loop.Run();
   }
 };
 
@@ -213,14 +204,16 @@ IN_PROC_BROWSER_TEST_F(WebAppNavigationCapturingIntentPickerBrowserTest,
 
   // Click on the intent picker icon, and verify an app browser gets launched
   // with no WCO. The link capturing infobar is shown.
-  content::TitleWatcher title_watcher2(new_contents, u"WCO Disabled");
+  // `include_nestable_tasks` is set to true because the "default" RunLoop
+  // hangs, waiting for certain nested tasks to finish.
+  content::TitleWatcher title_watcher2(new_contents, u"WCO Disabled",
+                                       /*include_nestable_tasks=*/true);
   std::pair<Browser*, webapps::AppId> post_intent_picker_data =
       ensure_app_browser([&] {
         EXPECT_TRUE(web_app::ClickIntentPickerChip(browser()));
         return app_id;
       });
   Browser* new_app_browser = post_intent_picker_data.first;
-  FlushTaskRunner();
   std::ignore = title_watcher2.WaitAndGetTitle();
   EXPECT_FALSE(
       new_app_browser->GetBrowserView().IsWindowControlsOverlayEnabled());
@@ -228,9 +221,11 @@ IN_PROC_BROWSER_TEST_F(WebAppNavigationCapturingIntentPickerBrowserTest,
       apps::EnableLinkCapturingInfoBarDelegate::FindInfoBar(new_contents));
 
   // Close the infobar, and wait for the WCO to come back on.
-  content::TitleWatcher title_watcher3(new_contents, u"WCO Enabled");
+  // `include_nestable_tasks` is set to true because the "default" RunLoop
+  // hangs, waiting for certain nested tasks to finish.
+  content::TitleWatcher title_watcher3(new_contents, u"WCO Enabled",
+                                       /*include_nestable_tasks=*/true);
   apps::EnableLinkCapturingInfoBarDelegate::RemoveInfoBar(new_contents);
-  FlushTaskRunner();
   std::ignore = title_watcher3.WaitAndGetTitle();
   EXPECT_TRUE(
       new_app_browser->GetBrowserView().IsWindowControlsOverlayEnabled());
