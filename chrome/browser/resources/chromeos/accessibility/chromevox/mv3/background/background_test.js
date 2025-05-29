@@ -3499,13 +3499,8 @@ AX_TEST_F(
       const root = await this.runWithLoadedTree(site);
       // Different ways to navigate to the next object.
       const keyboardHandler = BackgroundKeyboardHandler.instance;
-      const nextObjectKeyboard =
-          keyboardHandler.onKeyDown.bind(keyboardHandler, {
-            keyCode: KeyCode.RIGHT,
-            metaKey: true,
-            preventDefault: () => {},
-            stopPropagation: () => {},
-          });
+      const nextObjectKeyboard = keyboardHandler.onKeyDown_.bind(
+          keyboardHandler, {keyCode: KeyCode.RIGHT, metaKey: true}, () => {});
       const nextObjectBraille = BrailleCommandHandler.onBrailleKeyEvent.bind(
           BrailleCommandHandler, {command: BrailleKeyCommand.PAN_RIGHT});
       const nextObjectGesture =
