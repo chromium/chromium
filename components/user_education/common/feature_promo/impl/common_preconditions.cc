@@ -14,6 +14,7 @@
 #include "components/user_education/common/feature_promo/feature_promo_result.h"
 #include "components/user_education/common/feature_promo/feature_promo_specification.h"
 #include "ui/base/interaction/element_tracker.h"
+#include "ui/base/interaction/typed_data_collection.h"
 #include "ui/base/interaction/typed_identifier.h"
 
 namespace user_education {
@@ -92,7 +93,7 @@ MeetsFeatureEngagementCriteriaPrecondition::
 
 FeaturePromoResult
 MeetsFeatureEngagementCriteriaPrecondition::CheckPrecondition(
-    ComputedData& data) const {
+    ui::UnownedTypedDataCollection& data) const {
   if (tracker_->IsInitialized()) {
     // Note: if we don't have access to `ListEvents()` this is a no-op.
 #if !BUILDFLAG(IS_ANDROID)
@@ -129,8 +130,8 @@ AnchorElementPrecondition::AnchorElementPrecondition(
 AnchorElementPrecondition::~AnchorElementPrecondition() = default;
 
 FeaturePromoResult AnchorElementPrecondition::CheckPrecondition(
-    ComputedData& data) const {
-  const auto& lifecycle = data.Get(LifecyclePrecondition::kLifecycle);
+    ui::UnownedTypedDataCollection& data) const {
+  const auto& lifecycle = data[LifecyclePrecondition::kLifecycle];
   std::optional<int> index;
   if (lifecycle->promo_type() ==
       FeaturePromoSpecification::PromoType::kRotating) {
@@ -164,7 +165,7 @@ LifecyclePrecondition::LifecyclePrecondition(
 LifecyclePrecondition::~LifecyclePrecondition() = default;
 
 FeaturePromoResult LifecyclePrecondition::CheckPrecondition(
-    ComputedData& data) const {
+    ui::UnownedTypedDataCollection& data) const {
   auto* const lifecycle = GetCachedDataForComputation(data, kLifecycle).get();
   return for_demo_ ? FeaturePromoResult::Success() : lifecycle->CanShow();
 }
@@ -184,7 +185,7 @@ SessionPolicyPrecondition::~SessionPolicyPrecondition() = default;
 
 // FeaturePromoPrecondition:
 FeaturePromoResult SessionPolicyPrecondition::CheckPrecondition(
-    ComputedData& data) const {
+    ui::UnownedTypedDataCollection& data) const {
   return session_policy_->CanShowPromo(priority_info_,
                                        get_current_promo_info_callback_.Run());
 }

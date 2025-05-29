@@ -40,14 +40,13 @@ class TypedIdentifier final {
 
 template <typename T>
 extern void PrintTo(TypedIdentifier<T> identifier, std::ostream* os) {
-  *os << "TypedIdentifier " << identifier.identifier().GetRawValue() << " ["
-      << identifier.identifier().GetName() << "]";
+  *os << "TypedIdentifier [" << identifier.identifier().GetName() << "]";
 }
 
 template <typename T>
 extern std::ostream& operator<<(std::ostream& os,
                                 TypedIdentifier<T> identifier) {
-  PrintTo(identifier, os);
+  PrintTo(identifier, &os);
   return os;
 }
 

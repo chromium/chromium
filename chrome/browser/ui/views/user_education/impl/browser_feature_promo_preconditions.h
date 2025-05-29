@@ -16,6 +16,7 @@
 #include "components/user_education/common/feature_promo/feature_promo_precondition.h"
 #include "components/user_education/common/feature_promo/feature_promo_result.h"
 #include "components/user_education/common/user_education_storage_service.h"
+#include "ui/base/interaction/typed_data_collection.h"
 #include "ui/events/event.h"
 #include "ui/events/event_observer.h"
 #include "ui/views/event_monitor.h"
@@ -44,7 +45,7 @@ class WindowActivePrecondition
 
   // FeaturePromoPreconditionBase:
   user_education::FeaturePromoResult CheckPrecondition(
-      ComputedData& data) const override;
+      ui::UnownedTypedDataCollection& data) const override;
 };
 
 // Requires that the window isn't in content-fullscreen.
@@ -56,7 +57,7 @@ class ContentNotFullscreenPrecondition
 
   // FeaturePromoPreconditionBase:
   user_education::FeaturePromoResult CheckPrecondition(
-      ComputedData& data) const override;
+      ui::UnownedTypedDataCollection& data) const override;
 
  private:
   const raw_ref<Browser> browser_;
@@ -71,7 +72,7 @@ class OmniboxNotOpenPrecondition
 
   // FeaturePromoPreconditionBase:
   user_education::FeaturePromoResult CheckPrecondition(
-      ComputedData& data) const override;
+      ui::UnownedTypedDataCollection& data) const override;
 
  private:
   const raw_ref<const BrowserView> browser_view_;
@@ -89,7 +90,7 @@ class ToolbarNotCollapsedPrecondition
 
   // FeaturePromoPreconditionBase:
   user_education::FeaturePromoResult CheckPrecondition(
-      ComputedData& data) const override;
+      ui::UnownedTypedDataCollection& data) const override;
 
  private:
   const raw_ref<BrowserView> browser_view_;
@@ -107,7 +108,7 @@ class BrowserNotClosingPrecondition
 
   // FeaturePromoPreconditionBase:
   user_education::FeaturePromoResult CheckPrecondition(
-      ComputedData& data) const override;
+      ui::UnownedTypedDataCollection& data) const override;
 
  private:
   const raw_ref<BrowserView> browser_view_;
@@ -124,7 +125,7 @@ class NoCriticalNoticeShowingPrecondition
 
   // FeaturePromoPreconditionBase:
   user_education::FeaturePromoResult CheckPrecondition(
-      ComputedData& data) const override;
+      ui::UnownedTypedDataCollection& data) const override;
 
  private:
   const raw_ref<BrowserView> browser_view_;
@@ -143,7 +144,7 @@ class UserNotActivePrecondition
 
   // FeaturePromoPreconditionBase:
   user_education::FeaturePromoResult CheckPrecondition(
-      ComputedData& data) const override;
+      ui::UnownedTypedDataCollection& data) const override;
 
  private:
   void CreateEventMonitor();

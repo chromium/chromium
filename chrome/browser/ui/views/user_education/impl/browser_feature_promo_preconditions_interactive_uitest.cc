@@ -32,7 +32,6 @@
 #include "components/user_education/common/feature_promo/feature_promo_precondition.h"
 #include "components/user_education/common/feature_promo/feature_promo_result.h"
 #include "components/user_education/common/feature_promo/impl/common_preconditions.h"
-#include "components/user_education/common/feature_promo/impl/precondition_data.h"
 #include "components/user_education/common/user_education_features.h"
 #include "components/user_education/common/user_education_storage_service.h"
 #include "components/webui/chrome_urls/pref_names.h"
@@ -41,6 +40,8 @@
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_tracker.h"
+#include "ui/base/interaction/scoped_typed_data.h"
+#include "ui/base/interaction/typed_data.h"
 #include "ui/base/test/ui_controls.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/gfx/geometry/point.h"
@@ -66,26 +67,22 @@ class BrowserFeaturePromoPreconditionsUiTest : public InteractiveBrowserTest {
 
  protected:
   auto CaptureAnchor(ui::ElementIdentifier id) {
-    return AfterShow(id, [this](ui::TrackedElement* el) {
-      anchor_element_data_.data() = el;
-    });
+    return AfterShow(
+        id, [this](ui::TrackedElement* el) { *anchor_element_data_ = el; });
   }
 
   auto CheckWindowActiveResult(user_education::FeaturePromoResult expected) {
     return CheckResult(
         [this]() {
           WindowActivePrecondition active_precond;
-          user_education::FeaturePromoPrecondition::ComputedData data;
-          data.Add(user_education::AnchorElementPrecondition::kAnchorElement,
-                   anchor_element_data_);
-          return active_precond.CheckPrecondition(data);
+          return active_precond.CheckPrecondition(data_);
         },
         expected);
   }
 
-  user_education::internal::TypedPreconditionData<ui::SafeElementReference>
-      anchor_element_data_{
-          user_education::AnchorElementPrecondition::kAnchorElement};
+  ui::UnownedTypedDataCollection data_;
+  ui::test::ScopedTypedData<ui::SafeElementReference> anchor_element_data_{
+      data_, user_education::AnchorElementPrecondition::kAnchorElement};
 };
 
 using WindowActivePreconditionUiTest = BrowserFeaturePromoPreconditionsUiTest;
@@ -108,7 +105,7 @@ IN_PROC_BROWSER_TEST_F(WindowActivePreconditionUiTest,
                       ActivateSurface(kToolbarAppMenuButtonElementId))),
       WithElement(kToolbarAppMenuButtonElementId,
                   [this](ui::TrackedElement* anchor) {
-                    anchor_element_data_.data() = anchor;
+                    *anchor_element_data_ = anchor;
                   }),
       CheckWindowActiveResult(
           user_education::FeaturePromoResult::kAnchorSurfaceNotActive));
@@ -157,8 +154,7 @@ IN_PROC_BROWSER_TEST_F(ContentNotFullscreenPreconditionUiTest, NotFullscreen) {
       CheckResult(
           [this]() {
             ContentNotFullscreenPrecondition precond(*browser());
-            user_education::FeaturePromoPrecondition::ComputedData data;
-            return precond.CheckPrecondition(data);
+            return precond.CheckPrecondition(data_);
           },
           user_education::FeaturePromoResult::Success()));
 }
@@ -174,8 +170,7 @@ IN_PROC_BROWSER_TEST_F(ContentNotFullscreenPreconditionUiTest,
       CheckResult(
           [this]() {
             ContentNotFullscreenPrecondition precond(*browser());
-            user_education::FeaturePromoPrecondition::ComputedData data;
-            return precond.CheckPrecondition(data);
+            return precond.CheckPrecondition(data_);
           },
           user_education::FeaturePromoResult::Success()));
 }
@@ -207,8 +202,7 @@ IN_PROC_BROWSER_TEST_F(ContentNotFullscreenPreconditionUiTest, Fullscreen) {
       CheckResult(
           [this]() {
             ContentNotFullscreenPrecondition precond(*browser());
-            user_education::FeaturePromoPrecondition::ComputedData data;
-            return precond.CheckPrecondition(data);
+            return precond.CheckPrecondition(data_);
           },
           user_education::FeaturePromoResult::kBlockedByUi));
 }
@@ -248,8 +242,7 @@ IN_PROC_BROWSER_TEST_F(ContentNotFullscreenPreconditionUiTest, ExitFullscreen) {
       CheckResult(
           [this]() {
             ContentNotFullscreenPrecondition precond(*browser());
-            user_education::FeaturePromoPrecondition::ComputedData data;
-            return precond.CheckPrecondition(data);
+            return precond.CheckPrecondition(data_);
           },
           user_education::FeaturePromoResult::Success()));
 }
@@ -261,10 +254,9 @@ IN_PROC_BROWSER_TEST_F(OmniboxNotOpenPreconditionUiTest,
   RunTestSequence(
       CheckView(
           kBrowserViewElementId,
-          [](BrowserView* browser_view) {
+          [this](BrowserView* browser_view) {
             OmniboxNotOpenPrecondition precond(*browser_view);
-            user_education::FeaturePromoPrecondition::ComputedData data;
-            return precond.CheckPrecondition(data);
+            return precond.CheckPrecondition(data_);
           },
           user_education::FeaturePromoResult::Success()),
       WithView(
@@ -281,10 +273,9 @@ IN_PROC_BROWSER_TEST_F(OmniboxNotOpenPreconditionUiTest,
           }),
       CheckView(
           kBrowserViewElementId,
-          [](BrowserView* browser_view) {
+          [this](BrowserView* browser_view) {
             OmniboxNotOpenPrecondition precond(*browser_view);
-            user_education::FeaturePromoPrecondition::ComputedData data;
-            return precond.CheckPrecondition(data);
+            return precond.CheckPrecondition(data_);
           },
           user_education::FeaturePromoResult::kBlockedByUi));
 }
@@ -306,10 +297,9 @@ IN_PROC_BROWSER_TEST_F(ToolbarNotCollapsedPreconditionUiTest,
   RunTestSequence(
       CheckView(
           kBrowserViewElementId,
-          [](BrowserView* browser_view) {
+          [this](BrowserView* browser_view) {
             ToolbarNotCollapsedPrecondition precond(*browser_view);
-            user_education::FeaturePromoPrecondition::ComputedData data;
-            return precond.CheckPrecondition(data);
+            return precond.CheckPrecondition(data_);
           },
           user_education::FeaturePromoResult::Success()),
 
@@ -343,10 +333,9 @@ IN_PROC_BROWSER_TEST_F(ToolbarNotCollapsedPreconditionUiTest,
 
       CheckView(
           kBrowserViewElementId,
-          [](BrowserView* browser_view) {
+          [this](BrowserView* browser_view) {
             ToolbarNotCollapsedPrecondition precond(*browser_view);
-            user_education::FeaturePromoPrecondition::ComputedData data;
-            return precond.CheckPrecondition(data);
+            return precond.CheckPrecondition(data_);
           },
           user_education::FeaturePromoResult::kWindowTooSmall));
 }
@@ -356,26 +345,23 @@ using BrowserNotClosingPreconditionUiTest =
 
 IN_PROC_BROWSER_TEST_F(BrowserNotClosingPreconditionUiTest,
                        BrowserClosingOrNotClosing) {
-  RunTestSequence(
-      WaitForShow(kBrowserViewElementId),
-      CheckView(
-          kBrowserViewElementId,
-          [](BrowserView* browser_view) {
-            BrowserNotClosingPrecondition precond(*browser_view);
-            user_education::FeaturePromoPrecondition::ComputedData data;
-            return precond.CheckPrecondition(data);
-          },
-          user_education::FeaturePromoResult::Success()),
-      CheckView(
-          kBrowserViewElementId,
-          [](BrowserView* browser_view) {
-            BrowserNotClosingPrecondition precond(*browser_view);
-            user_education::FeaturePromoPrecondition::ComputedData data;
-            browser_view->GetWidget()->Close();
-            return precond.CheckPrecondition(data);
-          },
-          user_education::FeaturePromoResult::kBlockedByContext)
-          .SetMustRemainVisible(false));
+  RunTestSequence(WaitForShow(kBrowserViewElementId),
+                  CheckView(
+                      kBrowserViewElementId,
+                      [this](BrowserView* browser_view) {
+                        BrowserNotClosingPrecondition precond(*browser_view);
+                        return precond.CheckPrecondition(data_);
+                      },
+                      user_education::FeaturePromoResult::Success()),
+                  CheckView(
+                      kBrowserViewElementId,
+                      [this](BrowserView* browser_view) {
+                        BrowserNotClosingPrecondition precond(*browser_view);
+                        browser_view->GetWidget()->Close();
+                        return precond.CheckPrecondition(data_);
+                      },
+                      user_education::FeaturePromoResult::kBlockedByContext)
+                      .SetMustRemainVisible(false));
 }
 
 class UserNotActivePreconditionUiTest
@@ -423,8 +409,7 @@ class UserNotActivePreconditionUiTest
     return CheckView(
         kBrowserViewElementId,
         [this](BrowserView* browser_view) {
-          user_education::FeaturePromoPrecondition::ComputedData data;
-          return precondition_->CheckPrecondition(data);
+          return precondition_->CheckPrecondition(data_);
         },
         result);
   }
