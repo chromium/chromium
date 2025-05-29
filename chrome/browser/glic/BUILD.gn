@@ -185,6 +185,9 @@ source_set("impl") {
   if (is_mac) {
     deps += [ "//ui/accelerated_widget_mac" ]
   }
+  if (use_ozone) {
+    deps += [ "//ui/ozone" ]
+  }
 }
 
 mojom("mojo_bindings") {
@@ -316,6 +319,9 @@ source_set("interactive_ui_tests") {
     "//content/test:test_support",
     "//ui/display:test_support",
   ]
+  if (use_ozone) {
+    deps += [ "//ui/ozone" ]
+  }
   data_deps = [ "//chrome/test/data/webui/glic:generate_test_files" ]
 }
 

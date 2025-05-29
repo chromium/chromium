@@ -17,6 +17,10 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/widget/widget.h"
 
+#if BUILDFLAG(IS_OZONE)
+#include "ui/ozone/public/ozone_platform.h"
+#endif
+
 namespace glic {
 namespace {
 
@@ -28,6 +32,16 @@ void Append(std::string* a, const char* b) {
 
 base::OnceClosure BindAppend(std::string* a, const char* b) {
   return base::BindOnce(&Append, a, b);
+}
+
+bool PlatformSupportsScreenCoordinates() {
+#if BUILDFLAG(IS_OZONE)
+  return ui::OzonePlatform::GetInstance()
+      ->GetPlatformProperties()
+      .supports_global_screen_coordinates;
+#else
+  return true;
+#endif  // BUILDFLAG(IS_OZONE)
 }
 
 // Tests for size and position animations on the glic window. The results of
@@ -124,17 +138,11 @@ IN_PROC_BROWSER_TEST_F(GlicWindowResizeAnimationTest, ShrinksWidgetSize) {
   EXPECT_EQ(test_new_bounds, GetWidgetBounds());
 }
 
-// TODO(419581863): Disabled on Linux because some Linux testing environments
-// use a screen size of 0x0 which causes the window position to be clamped. This
-// doesn't reflect a real condition that the code under test needs to handle so
-// the test is disabled.
-#if BUILDFLAG(IS_LINUX)
-#define MAYBE_MovesAndChangesWidgetSize DISABLED_MovesAndChangesWidgetSize
-#else
-#define MAYBE_MovesAndChangesWidgetSize MovesAndChangesWidgetSize
-#endif
 IN_PROC_BROWSER_TEST_F(GlicWindowResizeAnimationTest,
-                       MAYBE_MovesAndChangesWidgetSize) {
+                       MovesAndChangesWidgetSize) {
+  if (!PlatformSupportsScreenCoordinates()) {
+    GTEST_SKIP() << "Global screen coordinates unavailable";
+  }
   gfx::Rect test_initial_bounds = GetWidgetBounds();
   gfx::Rect test_new_bounds(
       gfx::Point(test_initial_bounds.x() - 10, test_initial_bounds.y() + 10),
@@ -152,6 +160,9 @@ IN_PROC_BROWSER_TEST_F(GlicWindowResizeAnimationTest,
 }
 
 IN_PROC_BROWSER_TEST_F(GlicWindowResizeAnimationTest, UpdateTargetPosition) {
+  if (!PlatformSupportsScreenCoordinates()) {
+    GTEST_SKIP() << "Global screen coordinates unavailable";
+  }
   gfx::Rect initial_bounds = GetWidgetBounds();
   gfx::Rect target_bounds_1(initial_bounds.origin(), {400, 400});
 
@@ -195,17 +206,7 @@ IN_PROC_BROWSER_TEST_F(GlicWindowResizeAnimationTest, UpdateTargetSize) {
             GetWidgetBounds());
 }
 
-// TODO(419581863): Disabled on Linux because some Linux testing environments
-// use a screen size of 0x0 which causes the window position to be clamped. This
-// doesn't reflect a real condition that the code under test needs to handle so
-// the test is disabled.
-#if BUILDFLAG(IS_LINUX)
-#define MAYBE_AllCallbacksRunInOrder DISABLED_AllCallbacksRunInOrder
-#else
-#define MAYBE_AllCallbacksRunInOrder AllCallbacksRunInOrder
-#endif
-IN_PROC_BROWSER_TEST_F(GlicWindowResizeAnimationTest,
-                       MAYBE_AllCallbacksRunInOrder) {
+IN_PROC_BROWSER_TEST_F(GlicWindowResizeAnimationTest, AllCallbacksRunInOrder) {
   gfx::Rect initial_bounds = GetWidgetBounds();
   gfx::Rect target_bounds_1(initial_bounds.origin(), {400, 400});
 
@@ -220,13 +221,19 @@ IN_PROC_BROWSER_TEST_F(GlicWindowResizeAnimationTest,
 
   // Make some updates, being careful to avoid reaching the right edge of the
   // screen so the x position isn't clamped.
-  gfx::Rect target_bounds_2(target_bounds_1.origin() + gfx::Vector2d(-500, 10),
-                            gfx::Size(500, 500));
+  gfx::Rect target_bounds_2(
+      target_bounds_1.origin() + (PlatformSupportsScreenCoordinates()
+                                      ? gfx::Vector2d(-500, 10)
+                                      : gfx::Vector2d()),
+      gfx::Size(500, 500));
   animation->UpdateTargetBounds(target_bounds_2, BindAppend(&call_log, " 2"));
   gfx::Rect target_bounds_3(target_bounds_2.origin(), gfx::Size(600, 600));
   animation->UpdateTargetBounds(target_bounds_3, BindAppend(&call_log, " 3"));
-  gfx::Rect target_bounds_4(target_bounds_3.origin() - gfx::Vector2d(10, 10),
-                            target_bounds_3.size());
+  gfx::Rect target_bounds_4(
+      target_bounds_3.origin() - (PlatformSupportsScreenCoordinates()
+                                      ? gfx::Vector2d(10, 10)
+                                      : gfx::Vector2d()),
+      target_bounds_3.size());
   animation->UpdateTargetBounds(target_bounds_4, BindAppend(&call_log, " 4"));
 
   // Advance to the end. Widget should be at its final bounds.
