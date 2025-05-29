@@ -202,7 +202,7 @@ TEST_F(SandboxMacTest, SSLInitTest) {
 MULTIPROCESS_TEST_MAIN(BuiltinAvailable) {
   CheckCreateSeatbeltServer();
 
-  if (__builtin_available(macOS 11, *)) {
+  if (__builtin_available(macOS 12, *)) {
     // Can't negate a __builtin_available condition. But success!
   } else {
     return 15;

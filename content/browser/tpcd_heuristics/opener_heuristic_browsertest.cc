@@ -1223,8 +1223,7 @@ IN_PROC_BROWSER_TEST_F(OpenerHeuristicBrowserTest,
   EXPECT_EQ(entries[0].metrics["UrlIndex"], 1);
 }
 
-// TODO(crbug.com/408234441): Re-enable this test
-// Very flaky on macOS 11 Tests: https://crbug.com/1486448
+// Very flaky on macOS: https://crbug.com/40933721
 #if BUILDFLAG(IS_MAC)
 #define MAYBE_PopupInteraction_IsFollowedByPostPopupCookieAccess \
   DISABLED_PopupInteraction_IsFollowedByPostPopupCookieAccess
