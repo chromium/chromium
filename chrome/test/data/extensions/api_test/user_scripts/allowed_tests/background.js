@@ -44,8 +44,14 @@ async function registerUserScripts() {
       runAt: kRunAt,
     }
   ];
-  await chrome.userScripts.register(userScripts);
-  chrome.test.sendScriptResult('success');
+
+  try {
+    await chrome.userScripts.register(userScripts);
+    chrome.test.sendScriptResult('success');
+  } catch (e) {
+    chrome.test.sendScriptResult(
+        'chrome.userScripts.register() threw error:' + error);
+  }
 }
 
 async function registerContentScript() {
