@@ -215,9 +215,9 @@ void NavigationThrottleRunner::RegisterNavigationThrottles() {
   // Unit tests that do not use NavigationRequest should never call
   // RegisterNavigationThrottles as this function expects |delegate_| to be a
   // NavigationRequest.
-  NavigationRequest* request = static_cast<NavigationRequest*>(delegate_);
-
-  request->GetDelegate()->CreateThrottlesForNavigation(*this);
+  static_cast<NavigationRequest*>(delegate_)
+      ->GetDelegate()
+      ->CreateThrottlesForNavigation(*this);
 
   // Check for renderer-inititated main frame navigations to blocked URL schemes
   // (data, filesystem). This is done early as it may block the main frame
@@ -257,34 +257,28 @@ void NavigationThrottleRunner::RegisterNavigationThrottles() {
   // commit an error page instead. Note that this should take lower priority
   // than other throttles that might care about those navigations, e.g.
   // throttles handling pages with 407 errors that require extra authentication.
-  MaybeAddThrottle(
-      HttpErrorNavigationThrottle::MaybeCreateThrottleFor(*request));
+  HttpErrorNavigationThrottle::MaybeCreateAndAdd(*this);
 
   // Wait for renderer-initiated navigation cancelation window to end. This will
   // wait for the JS task that starts the navigation to finish, so add it close
   // to the end to not delay running other throttles.
-  MaybeAddThrottle(
-      RendererCancellationThrottle::MaybeCreateThrottleFor(request));
+  RendererCancellationThrottle::MaybeCreateAndAdd(*this);
 
   // Defer any cross-document subframe history navigations if there is an
   // associated main-frame same-document history navigation in progress, until
   // the main frame has had an opportunity to fire a navigate event in the
   // renderer. If the navigate event cancels the history navigation, the
   // subframe navigations should not proceed.
-  MaybeAddThrottle(
-      SubframeHistoryNavigationThrottle::MaybeCreateThrottleFor(request));
+  SubframeHistoryNavigationThrottle::MaybeCreateAndAdd(*this);
 
   // Defer subframe navigation in bfcached page if it hasn't sent a network
   // request.
   // This must be the last throttle to run. See https://crrev.com/c/5316738.
-  MaybeAddThrottle(
-      BackForwardCacheSubframeNavigationThrottle::MaybeCreateThrottleFor(
-          request));
+  BackForwardCacheSubframeNavigationThrottle::MaybeCreateAndAdd(*this);
 
   // Add a throttle to manage top-frame navigations from a partitioned popin.
   // See https://explainers-by-googlers.github.io/partitioned-popins/
-  MaybeAddThrottle(
-      PartitionedPopinsNavigationThrottle::MaybeCreateThrottleFor(request));
+  PartitionedPopinsNavigationThrottle::MaybeCreateAndAdd(*this);
   // DO NOT ADD any throttles after this line.
 
   // Insert all testing NavigationThrottles last.
@@ -306,31 +300,20 @@ void NavigationThrottleRunner::
   std::vector<std::unique_ptr<NavigationThrottle>> testing_throttles =
       std::move(throttles_);
 
-  // The NavigationRequest associated with the NavigationThrottles this
-  // NavigationThrottleRunner manages.
-  // Unit tests that do not use NavigationRequest should never call
-  // RegisterNavigationThrottlesForCommitWithoutUrlLoader as this function
-  // expects |delegate_| to be a NavigationRequest.
-  NavigationRequest* request = static_cast<NavigationRequest*>(delegate_);
-
   // Defer any same-document subframe history navigations if there is an
   // associated main-frame same-document history navigation in progress, until
   // the main frame has had an opportunity to fire a navigate event in the
   // renderer. If the navigate event cancels the history navigation, the
   // subframe navigations should not proceed.
-  MaybeAddThrottle(
-      SubframeHistoryNavigationThrottle::MaybeCreateThrottleFor(request));
+  SubframeHistoryNavigationThrottle::MaybeCreateAndAdd(*this);
 
   // Defer cross-origin about:srcdoc subframe loading during prerendering state.
   PrerenderSubframeNavigationThrottle::MaybeCreateAndAdd(*this);
 
   // Defer subframe navigation in bfcached page.
-  MaybeAddThrottle(
-      BackForwardCacheSubframeNavigationThrottle::MaybeCreateThrottleFor(
-          request));
+  BackForwardCacheSubframeNavigationThrottle::MaybeCreateAndAdd(*this);
 
-  MaybeAddThrottle(
-      RendererCancellationThrottle::MaybeCreateThrottleFor(request));
+  RendererCancellationThrottle::MaybeCreateAndAdd(*this);
 
   // Insert all testing NavigationThrottles last.
   throttles_.insert(throttles_.end(),

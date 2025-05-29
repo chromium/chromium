@@ -24,13 +24,12 @@ class BackForwardCacheSubframeNavigationThrottle : public NavigationThrottle,
  public:
   ~BackForwardCacheSubframeNavigationThrottle() override;
 
-  CONTENT_EXPORT static std::unique_ptr<
-      BackForwardCacheSubframeNavigationThrottle>
-  MaybeCreateThrottleFor(NavigationHandle* navigation_handle);
+  CONTENT_EXPORT static void MaybeCreateAndAdd(
+      NavigationThrottleRegistry& registry);
 
  private:
   explicit BackForwardCacheSubframeNavigationThrottle(
-      NavigationHandle* navigation_handle);
+      NavigationThrottleRegistry& registry);
 
   // NavigationThrottle
   const char* GetNameForLogging() override;

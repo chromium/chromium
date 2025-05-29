@@ -40,14 +40,13 @@ namespace content {
 // that point.
 class CONTENT_EXPORT RendererCancellationThrottle : public NavigationThrottle {
  public:
-  static std::unique_ptr<RendererCancellationThrottle> MaybeCreateThrottleFor(
-      NavigationHandle* handle);
+  static void MaybeCreateAndAdd(NavigationThrottleRegistry& registry);
 
   // Sets the cancellation timeout. Resets the timeout to the default value if
   // `timeout` is zero.
   static void SetCancellationTimeoutForTesting(base::TimeDelta timeout);
 
-  explicit RendererCancellationThrottle(NavigationHandle* navigation_handle);
+  explicit RendererCancellationThrottle(NavigationThrottleRegistry& registry);
   ~RendererCancellationThrottle() override;
   RendererCancellationThrottle() = delete;
   RendererCancellationThrottle(const RendererCancellationThrottle&) = delete;
