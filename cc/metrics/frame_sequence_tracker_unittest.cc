@@ -129,12 +129,6 @@ class FrameSequenceTrackerTest : public testing::Test, FrameSorterObserver {
     return collection_.frame_trackers_.contains(key);
   }
 
-  bool RemovalTrackerExists(unsigned index,
-                            FrameSequenceTrackerType type) const {
-    DCHECK_GT(collection_.removal_trackers_.size(), index);
-    return collection_.removal_trackers_[index]->type() == type;
-  }
-
   void GenerateSequence(const char* str) {
     const uint64_t source_id = 1;
     viz::BeginFrameArgs last_activated_main_args;
@@ -289,8 +283,6 @@ class FrameSequenceTrackerTest : public testing::Test, FrameSorterObserver {
     }
   }
 
-  void ReportMetrics() { tracker_->metrics_->ReportMetrics(); }
-
   base::TimeDelta TimeDeltaToReport() const {
     return tracker_->time_delta_to_report_;
   }
@@ -303,10 +295,6 @@ class FrameSequenceTrackerTest : public testing::Test, FrameSorterObserver {
   }
   unsigned NumberOfRemovalTrackers() const {
     return collection_.removal_trackers_.size();
-  }
-
-  uint64_t BeginImplFrameDataPreviousSequence() const {
-    return tracker_->begin_impl_frame_data_.previous_sequence;
   }
 
   void IncrementFramesExpected(uint32_t frames) {
@@ -331,9 +319,6 @@ class FrameSequenceTrackerTest : public testing::Test, FrameSorterObserver {
       FrameSequenceTracker* tracker) {
     return tracker->termination_status_;
   }
-  FrameSequenceTracker::TerminationStatus GetTerminationStatus() {
-    return tracker_->termination_status_;
-  }
 
   // FrameSorter observer function.
   void AddSortedFrame(const viz::BeginFrameArgs& args,
@@ -351,7 +336,7 @@ class FrameSequenceTrackerTest : public testing::Test, FrameSorterObserver {
   // cleaned up first.
   std::unique_ptr<CompositorFrameReportingController>
       compositor_frame_reporting_controller_;
-  raw_ptr<FrameSequenceTracker, DanglingUntriaged> tracker_;
+  raw_ptr<FrameSequenceTracker> tracker_;
 };
 
 // Tests that the tracker works correctly when the source-id for the
@@ -418,6 +403,9 @@ TEST_F(FrameSequenceTrackerTest, ReportMetricsAtFixedInterval) {
   collection_.NotifyFrameEnd(args, args);
   FrameInfo frame_info;
   frame_info.final_state = FrameInfo::FrameFinalState::kPresentedAll;
+  // AddSortedFrame triggers metrics reporting and then calls `DestroyTrackers`,
+  // which also destroys tracker_.
+  tracker_ = nullptr;
   collection_.AddSortedFrame(args, frame_info);
   EXPECT_EQ(NumberOfTrackers(), 1u);
   // At NotifyFrameEnd, the tracker is removed from removal_tracker_ list.
@@ -624,6 +612,9 @@ TEST_F(FrameSequenceTrackerTest, TrackLastImplFrame24) {
   GenerateSequence("b(1)P(1)");
   collection_.StopSequence(FrameSequenceTrackerType::kTouchScroll);
   EXPECT_EQ(NumberOfRemovalTrackers(), 1u);
+  // GenerateSequence processes presentation events that complete the stopped
+  // tracker, tracker_, and destroys it.
+  tracker_ = nullptr;
   GenerateSequence("e(1,0)p(1)");
   EXPECT_EQ(NumberOfRemovalTrackers(), 0u);
 }
@@ -645,6 +636,9 @@ TEST_F(FrameSequenceTrackerTest, IgnoreImplFrameBeforeTermination) {
   EXPECT_EQ(NumberOfRemovalTrackers(), 1u);
   EXPECT_EQ(GetTerminationStatus(removal_tracker),
             FrameSequenceTracker::TerminationStatus::kScheduledForTermination);
+  // GenerateSequence will processes presentation events that will complete and
+  // destroy the scheduled-for-termination tracker, tracker_.
+  tracker_ = nullptr;
   GenerateSequence("P(1)");
   EXPECT_EQ(NumberOfRemovalTrackers(), 0u);
 }
@@ -653,6 +647,9 @@ TEST_F(FrameSequenceTrackerTest, TerminationWithNullPresentationTimeStamp) {
   GenerateSequence("b(1)");
   collection_.StopSequence(FrameSequenceTrackerType::kTouchScroll);
   EXPECT_EQ(NumberOfRemovalTrackers(), 1u);
+  // GenerateSequence will process and delete trackers on the removal list,
+  // including tracker_.
+  tracker_ = nullptr;
   // Even if the presentation timestamp is null, as long as this presentation
   // is acking the last impl frame, we consider that impl frame completed and
   // so the tracker is ready for termination.
@@ -884,6 +881,9 @@ TEST_F(FrameSequenceTrackerTest, CustomTrackerOutOfOrderFramesMissingV3Data) {
   DispatchCompleteFrame(frame2_args, kImplDamage | kMainDamage);
   sorter_.AddNewFrame(frame2_args);
   sorter_.AddFrameResult(frame2_args, frame_info);
+
+  // The upcoming call to ClearAll will destroy tracker_.
+  tracker_ = nullptr;
 
   // Trigger metrics report.
   collection_.ClearAll();
