@@ -103,6 +103,56 @@
       }
     ]
   },
+  "android-corsola-perf": {
+    "isolated_scripts": [
+      {
+        "args": [
+          "-v",
+          "-v",
+          "--browser=android-trichrome-chrome-google-64-32-bundle",
+          "--upload-results",
+          "--test-shard-map-filename=android-corsola-perf_map.json",
+          "--ignore-benchmark-exit-code",
+          "--device",
+          "variable_lab_dut_hostname",
+          "--connect-to-device-over-network"
+        ],
+        "merge": {
+          "script": "//tools/perf/process_perf_results.py"
+        },
+        "name": "performance_test_suite_android_trichrome_chrome_google_64_32_bundle",
+        "resultdb": {
+          "enable": true
+        },
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimensions": {
+            "dut_state": "ready",
+            "label-board": "corsola",
+            "label-pool": "chrome.tests.perf",
+            "os": "Android",
+            "pool": "chrome"
+          },
+          "expiration": 7200,
+          "hard_timeout": 14400,
+          "io_timeout": 21600,
+          "realm": "chromeos:chrome",
+          "server": "https://chromeos-swarming.appspot.com",
+          "service_account": "chromeos-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 7
+        },
+        "test": "performance_test_suite_android_trichrome_chrome_google_64_32_bundle",
+        "trigger_script": {
+          "args": [
+            "--multiple-dimension-script-verbose",
+            "True"
+          ],
+          "requires_simultaneous_shard_dispatch": true,
+          "script": "//testing/trigger_scripts/perf_device_trigger.py"
+        }
+      }
+    ]
+  },
   "android-go-processor-perf": {},
   "android-go-wembley-perf": {
     "isolated_scripts": [
@@ -187,6 +237,56 @@
           "shards": 20
         },
         "test": "performance_webview_test_suite",
+        "trigger_script": {
+          "args": [
+            "--multiple-dimension-script-verbose",
+            "True"
+          ],
+          "requires_simultaneous_shard_dispatch": true,
+          "script": "//testing/trigger_scripts/perf_device_trigger.py"
+        }
+      }
+    ]
+  },
+  "android-nissa-perf": {
+    "isolated_scripts": [
+      {
+        "args": [
+          "-v",
+          "-v",
+          "--browser=android-trichrome-chrome-google-64-32-bundle",
+          "--upload-results",
+          "--test-shard-map-filename=android-nissa-perf_map.json",
+          "--ignore-benchmark-exit-code",
+          "--device",
+          "variable_lab_dut_hostname",
+          "--connect-to-device-over-network"
+        ],
+        "merge": {
+          "script": "//tools/perf/process_perf_results.py"
+        },
+        "name": "performance_test_suite_android_trichrome_chrome_google_64_32_bundle",
+        "resultdb": {
+          "enable": true
+        },
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimensions": {
+            "dut_state": "ready",
+            "label-board": "nissa",
+            "label-pool": "chrome.tests.perf",
+            "os": "Android",
+            "pool": "chrome"
+          },
+          "expiration": 7200,
+          "hard_timeout": 14400,
+          "io_timeout": 21600,
+          "realm": "chromeos:chrome",
+          "server": "https://chromeos-swarming.appspot.com",
+          "service_account": "chromeos-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 7
+        },
+        "test": "performance_test_suite_android_trichrome_chrome_google_64_32_bundle",
         "trigger_script": {
           "args": [
             "--multiple-dimension-script-verbose",

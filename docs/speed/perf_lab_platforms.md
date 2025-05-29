@@ -10,8 +10,10 @@
 
  * [android-brya-perf](https://ci.chromium.org/p/chrome/builders/ci/android-brya-perf): AL Brya.
  * [android-byra-perf](https://ci.chromium.org/p/chrome/builders/ci/android-byra-perf): AL Byra.
+ * [android-corsola-perf](https://ci.chromium.org/p/chrome/builders/ci/android-corsola-perf): AL corsola.
  * [android-go-wembley-perf](https://ci.chromium.org/p/chrome/builders/ci/android-go-wembley-perf): Android U.
  * [android-go-wembley_webview-perf](https://ci.chromium.org/p/chrome/builders/ci/android-go-wembley_webview-perf): Android U.
+ * [android-nissa-perf](https://ci.chromium.org/p/chrome/builders/ci/android-nissa-perf): AL Nissa.
  * [android-pixel-fold-perf](https://ci.chromium.org/p/chrome/builders/ci/android-pixel-fold-perf): Android U.
  * [android-pixel-tangor-perf](https://ci.chromium.org/p/chrome/builders/ci/android-pixel-tangor-perf): Android U.
  * [android-pixel4-perf](https://ci.chromium.org/p/chrome/builders/ci/android-pixel4-perf): Android R.

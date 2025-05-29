@@ -548,7 +548,7 @@ _CROSSBENCH_PIXEL9 = frozenset([
     ]),
 ])
 
-_CROSSBENCH_ANDROID_BRYA = frozenset([
+_CROSSBENCH_ANDROID_AL = frozenset([
     _crossbench_speedometer3(arguments=['--fileserver', '--debug']),
 ])
 
@@ -781,7 +781,7 @@ _ANDROID_PIXEL_TANGOR_BENCHMARK_CONFIGS = PerfSuite(
         _GetBenchmarkConfig('speedometer3-minorms')
     ])
 # Android Desktop (AL)
-_ANDROID_BRYA_BENCHMARK_CONFIGS = PerfSuite([
+_ANDROID_AL_BENCHMARK_CONFIGS = PerfSuite([
     _GetBenchmarkConfig('rendering.mobile'),
 ])
 
@@ -952,18 +952,31 @@ WIN_ARM64_SNAPDRAGON_PLUS = PerfPlatform(
 ANDROID_BRYA = PerfPlatform(name='android-brya-perf',
                             description='AL Brya',
                             num_shards=7,
-                            benchmark_configs=_ANDROID_BRYA_BENCHMARK_CONFIGS,
+                            benchmark_configs=_ANDROID_AL_BENCHMARK_CONFIGS,
                             platform_os='android',
                             executables=None,
-                            crossbench=_CROSSBENCH_ANDROID_BRYA)
+                            crossbench=_CROSSBENCH_ANDROID_AL)
 ANDROID_BYRA = PerfPlatform(name='android-byra-perf',
                             description='AL Byra',
                             num_shards=7,
-                            benchmark_configs=_ANDROID_BRYA_BENCHMARK_CONFIGS,
+                            benchmark_configs=_ANDROID_AL_BENCHMARK_CONFIGS,
                             platform_os='android',
                             executables=None,
-                            crossbench=_CROSSBENCH_ANDROID_BRYA)
-
+                            crossbench=_CROSSBENCH_ANDROID_AL)
+ANDROID_CORSOLA = PerfPlatform(name='android-corsola-perf',
+                               description='AL corsola',
+                               num_shards=7,
+                               benchmark_configs=_ANDROID_AL_BENCHMARK_CONFIGS,
+                               platform_os='android',
+                               executables=None,
+                               crossbench=_CROSSBENCH_ANDROID_AL)
+ANDROID_NISSA = PerfPlatform(name='android-nissa-perf',
+                             description='AL Nissa',
+                             num_shards=7,
+                             benchmark_configs=_ANDROID_AL_BENCHMARK_CONFIGS,
+                             platform_os='android',
+                             executables=None,
+                             crossbench=_CROSSBENCH_ANDROID_AL)
 ANDROID_PIXEL4 = PerfPlatform('android-pixel4-perf',
                               'Android R',
                               _ANDROID_PIXEL4_BENCHMARK_CONFIGS,
