@@ -1793,7 +1793,7 @@ void LensOverlayController::InitializeOverlayUI(
   if (should_show_csb &&
       lens::features::GetVisualSelectionUpdatesEnableCsbThumbnail()) {
     GetLensSearchboxController()->HandleThumbnailCreatedBitmap(
-        init_data.initial_rgb_screenshot_);
+        init_data.initial_screenshot_);
   }
 
   // Send the initial document type to the overlay web UI.

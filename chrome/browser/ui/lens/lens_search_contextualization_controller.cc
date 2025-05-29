@@ -473,6 +473,9 @@ void LensSearchContextualizationController::UpdatePageContextualizationPart3(
        !lens::AreBitmapsEqual(viewport_screenshot_, bitmap))) {
     viewport_screenshot_ = bitmap;
     sending_bitmap = true;
+
+    // Send the updated bitmap to the searchbox controller.
+    GetSearchboxController()->HandleThumbnailCreatedBitmap(bitmap);
   }
   last_retrieved_most_visible_page_ = most_visible_page;
 
