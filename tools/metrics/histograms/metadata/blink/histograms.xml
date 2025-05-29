@@ -5087,6 +5087,29 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Blink.ThrottleFrameRate.AllowedBySecurity.API" enum="Boolean"
+    expires_after="2025-12-31">
+  <owner>gjc@google.com</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    Whether the frame rate throttling feature is allowed by the security check.
+    Recorded each time the link blocking=&quot;full-frame-rate&quot; API is
+    triggered.
+  </summary>
+</histogram>
+
+<histogram
+    name="Blink.ThrottleFrameRate.AllowedBySecurity.DocumentInitialization"
+    enum="Boolean" expires_after="2025-12-31">
+  <owner>gjc@google.com</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    Whether the frame rate throttling feature is allowed by the security check.
+    Recorded each time the browser attempts to throttle the frame rate when the
+    document is initialized and the corresponding feature is enabled.
+  </summary>
+</histogram>
+
 <histogram name="Blink.UpdateViewportIntersection.RemoteFrameNeedsUpdate"
     enum="BooleanYesNo" expires_after="2025-10-26">
   <owner>lizeb@chromium.org</owner>

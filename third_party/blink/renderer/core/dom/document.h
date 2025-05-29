@@ -2517,6 +2517,8 @@ class CORE_EXPORT Document : public ContainerNode,
                                      const String& html,
                                      ExceptionState& exception_state);
 
+  bool CanThrottleFrameRate();
+
   // Mutable because the token is lazily-generated on demand if no token is
   // explicitly set.
   mutable std::optional<DocumentToken> token_;
