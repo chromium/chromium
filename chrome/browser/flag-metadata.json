@@ -7249,6 +7249,11 @@
     "expiry_milestone": 140
   },
   {
+    "name": "omnibox-show-popup-on-mouse-released",
+    "owners": ["jdonnelly@chromium.org", "chrome-desktop-search@google.com" ],
+    "expiry_milestone": 145
+  },
+  {
     "name": "omnibox-starter-pack-expansion",
     "owners": [
       "yoangela@chromium.org",

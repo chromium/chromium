@@ -1246,8 +1246,10 @@ bool OmniboxViewViews::OnMousePressed(const ui::MouseEvent& event) {
   // Show on-focus suggestions if either:
   //  - The textfield doesn't already have focus.
   //  - Or if the textfield is empty, to cover the NTP ZeroSuggest case.
-  if (event.IsOnlyLeftMouseButton() && (!HasFocus() || GetText().empty())) {
-    model()->StartZeroSuggestRequest();
+  if (!base::FeatureList::IsEnabled(omnibox::kShowPopupOnMouseReleased)) {
+    if (event.IsOnlyLeftMouseButton() && (!HasFocus() || GetText().empty())) {
+      model()->StartZeroSuggestRequest();
+    }
   }
 
   const bool handled = views::Textfield::OnMousePressed(event);
@@ -1332,6 +1334,21 @@ void OmniboxViewViews::OnMouseReleased(const ui::MouseEvent& event) {
     // Select all in the reverse direction so as not to scroll the caret
     // into view and shift the contents jarringly.
     SelectAll(true);
+  }
+  // When the user has released the left mouse button only, show on-focus
+  // suggestions if `select_all_on_mouse_release_` is true (or if the textfield
+  // is empty, to cover the NTP ZeroSuggest case).
+  //
+  // Note that ZeroSuggest is run on mouse release rather than on mouse press in
+  // order to delay the omnibox text shift (due to presenting the popup) until
+  // after the mouse events are handled. Otherwise, when a small, unintentional
+  // drag is detected, the mouse cursor might end up a few characters distant
+  // from the original click position, leading to selection of some characters
+  // rather than the whole-URL selection the user intended.
+  if (base::FeatureList::IsEnabled(omnibox::kShowPopupOnMouseReleased) &&
+      event.IsOnlyLeftMouseButton() &&
+      (select_all_on_mouse_release_ || GetText().empty())) {
+    model()->StartZeroSuggestRequest();
   }
   select_all_on_mouse_release_ = false;
 
