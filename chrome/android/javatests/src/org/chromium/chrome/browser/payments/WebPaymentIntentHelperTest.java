@@ -837,6 +837,34 @@ public class WebPaymentIntentHelperTest {
     @Test
     @SmallTest
     @Feature({"Payments"})
+    public void parsePaymentResponseDoesNotRequireIntentForCancel() throws Throwable {
+        mErrorString = null;
+        WebPaymentIntentHelper.parsePaymentResponse(
+                Activity.RESULT_CANCELED,
+                /* data= */ null,
+                /* requestedPaymentOptions= */ null,
+                (errorString) -> mErrorString = errorString,
+                (methodName, details, payerData) -> Assert.fail("Payment should have error."));
+        Assert.assertEquals(ErrorStrings.RESULT_CANCELED, mErrorString);
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Payments"})
+    public void parsePaymentResponseDoesNotRequireIntentExtrasForCancel() throws Throwable {
+        mErrorString = null;
+        WebPaymentIntentHelper.parsePaymentResponse(
+                Activity.RESULT_CANCELED,
+                /* data= */ new Intent(),
+                /* requestedPaymentOptions= */ null,
+                (errorString) -> mErrorString = errorString,
+                (methodName, details, payerData) -> Assert.fail("Payment should have error."));
+        Assert.assertEquals(ErrorStrings.RESULT_CANCELED, mErrorString);
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Payments"})
     public void parsePaymentResponseMissingIntentExtrasTest() throws Throwable {
         Intent intent = new Intent();
         mErrorString = null;
@@ -861,7 +889,7 @@ public class WebPaymentIntentHelperTest {
                 intent,
                 /* requestedPaymentOptions= */ null,
                 (errorString) -> mErrorString = errorString,
-                (methodName, details, payerData) -> Assert.fail("Parsing should fail."));
+                (methodName, details, payerData) -> Assert.fail("Payment should have error."));
         Assert.assertEquals(ErrorStrings.RESULT_CANCELED, mErrorString);
     }
 

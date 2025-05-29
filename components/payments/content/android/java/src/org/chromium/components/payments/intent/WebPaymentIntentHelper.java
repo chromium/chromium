@@ -138,14 +138,6 @@ public class WebPaymentIntentHelper {
             @Nullable PaymentOptions requestedPaymentOptions,
             PaymentErrorCallback errorCallback,
             PaymentSuccessCallback successCallback) {
-        if (data == null) {
-            errorCallback.onPaymentError(ErrorStrings.MISSING_INTENT_DATA);
-            return;
-        }
-        if (data.getExtras() == null) {
-            errorCallback.onPaymentError(ErrorStrings.MISSING_INTENT_EXTRAS);
-            return;
-        }
         if (resultCode == Activity.RESULT_CANCELED) {
             errorCallback.onPaymentError(ErrorStrings.RESULT_CANCELED);
             return;
@@ -154,6 +146,15 @@ public class WebPaymentIntentHelper {
             errorCallback.onPaymentError(
                     String.format(
                             Locale.US, ErrorStrings.UNRECOGNIZED_ACTIVITY_RESULT, resultCode));
+            return;
+        }
+
+        if (data == null) {
+            errorCallback.onPaymentError(ErrorStrings.MISSING_INTENT_DATA);
+            return;
+        }
+        if (data.getExtras() == null) {
+            errorCallback.onPaymentError(ErrorStrings.MISSING_INTENT_EXTRAS);
             return;
         }
 
