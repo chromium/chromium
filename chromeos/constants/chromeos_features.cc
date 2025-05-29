@@ -315,7 +315,14 @@ const base::FeatureParam<std::string> kMicrosoft365ScopeExtensionsURLs{
 
     // The old branding of the Microsoft 365 web app. Many links within
     // Microsoft 365 still link to the old www.office.com origin.
-    "https://www.office.com/"};
+    "https://www.office.com/,"
+
+    // The new branding for the Microsoft 365 web app.
+    "https://m365.cloud.microsoft/,"
+
+    // The current Microsoft 365 web app. The scope of the new Microsoft 365
+    // Copilot web app remains unclear, so this is added for safety.
+    "https://www.microsoft365.com/"};
 
 // Comma separated list of scope extension domains for the Microsoft 365 PWA.
 const base::FeatureParam<std::string> kMicrosoft365ScopeExtensionsDomains{
