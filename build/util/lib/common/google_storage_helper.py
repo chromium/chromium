@@ -14,9 +14,8 @@ import platform
 import sys
 import time
 
-lib_path_root = os.path.join(os.path.dirname(__file__), os.pardir)
-sys.path.append(str(lib_path_root))
-from common import decorators
+sys.path.append(os.path.dirname(__file__))
+import decorators
 
 try:
   from urllib.parse import urlparse
