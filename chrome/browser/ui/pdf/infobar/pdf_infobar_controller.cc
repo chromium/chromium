@@ -68,7 +68,7 @@ bool IsAppropriateForInfoBar(BrowserWindowInterface* browser) {
 
 }  // namespace
 
-std::optional<bool> PdfInfoBarController::default_browser_prompt_shown_;
+std::optional<bool> PdfInfoBarController::higher_priority_infobar_shown_;
 
 PdfInfoBarController::PdfInfoBarController(BrowserWindowInterface* browser)
     : browser_(browser) {
@@ -96,8 +96,8 @@ PdfInfoBarController::~PdfInfoBarController() = default;
 // static
 void PdfInfoBarController::MaybeShowInfoBarAtStartup(
     base::WeakPtr<BrowserWindowInterface> startup_browser,
-    bool default_browser_prompt_shown) {
-  default_browser_prompt_shown_ = default_browser_prompt_shown;
+    bool higher_priority_infobar_shown) {
+  higher_priority_infobar_shown_ = higher_priority_infobar_shown;
   if (!startup_browser) {
     return;
   }
@@ -185,11 +185,10 @@ void PdfInfoBarController::MaybeShowInfoBarCallback(
   if (InfoBarShownRecentlyOrMaxTimes()) {
     return;
   }
-  // Don't show the infobar if the default-browser prompt has been shown or
-  // might be about to show, to avoid asking too many similar questions in a
-  // session.
-  if (!default_browser_prompt_shown_.has_value() ||
-      default_browser_prompt_shown_.value()) {
+  // Don't show the infobar if a higher priority infobar has been shown or might
+  // be about to show, to avoid asking too many similar questions in a session.
+  if (!higher_priority_infobar_shown_.has_value() ||
+      higher_priority_infobar_shown_.value()) {
     return;
   }
 
@@ -204,7 +203,7 @@ void PdfInfoBarController::MaybeShowInfoBarCallback(
 }
 
 // static
-void PdfInfoBarController::SetDefaultBrowserPromptShownForTesting(
-    bool default_browser_prompt_shown) {
-  default_browser_prompt_shown_ = default_browser_prompt_shown;
+void PdfInfoBarController::SetHigherPriorityInfoBarShownForTesting(
+    bool higher_priority_infobar_shown) {
+  higher_priority_infobar_shown_ = higher_priority_infobar_shown;
 }
