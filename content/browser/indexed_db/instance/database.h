@@ -311,6 +311,7 @@ class CONTENT_EXPORT Database {
 
   list_set<Connection*> connections_;
 
+  // True once `ForceCloseAndRunTasks()` is called.
   bool force_closing_ = false;
 
   ConnectionCoordinator connection_coordinator_;

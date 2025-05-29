@@ -13,6 +13,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
+#include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/updateable_sequenced_task_runner.h"
 #include "base/test/run_until.h"
@@ -87,11 +88,15 @@ class TransactionTest : public testing::Test {
         /*file_system_access_context=*/mojo::NullRemote());
 
     bucket_context_->InitBackingStoreIfNeeded(true);
-    db_ = bucket_context_->AddDatabase(
-        u"db", std::make_unique<Database>(u"db", *bucket_context_));
+    SetDatabaseUnderTest(u"db");
   }
 
   void TearDown() override { db_ = nullptr; }
+
+  void SetDatabaseUnderTest(std::u16string name) {
+    db_ = bucket_context_->AddDatabase(
+        name, std::make_unique<Database>(name, *bucket_context_));
+  }
 
   storage::BucketInfo GetOrCreateBucket(
       const storage::BucketInitParams& params) {
@@ -317,7 +322,10 @@ TEST_F(TransactionTest, TimeoutWithPriorities) {
   const std::vector<int64_t> object_store_ids{1};
   int txn_id = 0;
 
+  int i = 0;
   for (auto test_case : test_cases) {
+    SetDatabaseUnderTest(base::ASCIIToUTF16(base::StringPrintf("db_%d", i++)));
+
     std::unique_ptr<Connection> connection = CreateConnection(test_case.pri_1);
     Transaction* transaction =
         CreateTransaction(connection.get(), txn_id++, object_store_ids,

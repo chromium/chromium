@@ -155,6 +155,9 @@ class CONTENT_EXPORT BucketContext
 
   ~BucketContext() override;
 
+  // True if the backing store is SQLite, or would be SQLite if it existed.
+  bool ShouldUseSqlite();
+
   void QueueRunTasks();
 
   // Normally, in-memory bucket contexts never self-close. If this is called
@@ -289,7 +292,10 @@ class CONTENT_EXPORT BucketContext
   // Called when a fatal error has occurred that should result in tearing down
   // the backing store. `BucketContext` *may* be synchronously destroyed after
   // this is invoked. The string, if non-empty, is used as an error message.
-  void OnDatabaseError(Status status, const std::string& message);
+  // `database` is used in SQLite mode only.
+  void OnDatabaseError(Database* database,
+                       Status status,
+                       const std::string& message);
 
   // Called when the backing store has been corrupted.
   void HandleBackingStoreCorruption(const std::string& error_message);
@@ -381,8 +387,6 @@ class CONTENT_EXPORT BucketContext
   void RecordInternalsSnapshot();
 
   std::string SanitizeErrorMessage(const std::string& message);
-
-  bool ShouldUseSqliteBackingStore();
 
   SEQUENCE_CHECKER(sequence_checker_);
 

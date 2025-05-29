@@ -702,7 +702,7 @@ Status Transaction::BlobWriteComplete(
                             "Failed to write blobs (%s)",
                             WriteBlobToFileResultToString(error).c_str()))));
       if (!status.ok()) {
-        bucket_context_->OnDatabaseError(status, {});
+        bucket_context_->OnDatabaseError(database_.get(), status, {});
       }
       // The result is ignored.
       return Status::OK();
@@ -1019,7 +1019,7 @@ void Transaction::TimeoutFired() {
         Abort(DatabaseError(blink::mojom::IDBException::kTimeoutError,
                             u"Transaction timed out due to inactivity."));
     if (!result.ok()) {
-      bucket_context_->OnDatabaseError(result, {});
+      bucket_context_->OnDatabaseError(database_.get(), result, {});
     }
     ResetTimeoutTimer();
   }

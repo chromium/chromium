@@ -226,7 +226,7 @@ void Connection::AbortTransactionAndTearDownOnError(
                transaction->id());
   Status status = transaction->Abort(error);
   if (!status.ok()) {
-    bucket_context_handle_->OnDatabaseError(status, {});
+    bucket_context_handle_->OnDatabaseError(database_.get(), status, {});
   }
 }
 
@@ -902,7 +902,7 @@ std::unique_ptr<DatabaseCallbacks> Connection::AbortTransactionsAndClose(
   bucket_context_handle_->quota_manager()->NotifyBucketAccessed(
       bucket_context_handle_->bucket_locator(), base::Time::Now());
   if (!status.ok()) {
-    bucket_context_handle_->OnDatabaseError(status, {});
+    bucket_context_handle_->OnDatabaseError(database_.get(), status, {});
   }
   bucket_context_handle_.Release();
   return callbacks;

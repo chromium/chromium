@@ -504,7 +504,7 @@ void BucketContext::RunTasks() {
     Database& db = *db_it->second;
     Status status = db.RunTasks();
     if (!status.ok()) {
-      OnDatabaseError(status, {});
+      OnDatabaseError(&db, status, {});
       return;
     }
 
@@ -675,13 +675,13 @@ void BucketContext::DeleteDatabase(
   auto it = databases_.find(name);
   if (it != databases_.end()) {
     base::WeakPtr<Database> database = it->second->AsWeakPtr();
-    it->second->ScheduleDeleteDatabase(
+    database->ScheduleDeleteDatabase(
         std::make_unique<FactoryClient>(std::move(factory_client)),
         std::move(on_deletion_complete));
     if (force_close) {
       Status status = database->ForceCloseAndRunTasks(force_close_message);
       if (!status.ok()) {
-        OnDatabaseError(status, "Error aborting transactions.");
+        OnDatabaseError(database.get(), status, "Error aborting transactions.");
       }
     }
     return;
@@ -718,7 +718,7 @@ void BucketContext::DeleteDatabase(
   if (force_close) {
     Status status = database_ptr->ForceCloseAndRunTasks(force_close_message);
     if (!status.ok()) {
-      OnDatabaseError(status, "Error aborting transactions.");
+      OnDatabaseError(database_ptr, status, "Error aborting transactions.");
     }
   }
 }
@@ -887,7 +887,7 @@ std::string BucketContext::SanitizeErrorMessage(const std::string& message) {
   return sanitized_message;
 }
 
-bool BucketContext::ShouldUseSqliteBackingStore() {
+bool BucketContext::ShouldUseSqlite() {
   // Additional checks may be added subsequently.
   return base::FeatureList::IsEnabled(kSqliteBackingStore);
 }
@@ -911,19 +911,32 @@ void BucketContext::HandleBackingStoreCorruption(
   std::move(handle_corruption).Run();
 }
 
-void BucketContext::OnDatabaseError(Status status, const std::string& message) {
+void BucketContext::OnDatabaseError(Database* database,
+                                    Status status,
+                                    const std::string& message) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!status.ok());
-  const std::string error_message =
-      message.empty() ? status.ToString() : message;
-  if (status.IsCorruption()) {
-    HandleBackingStoreCorruption(error_message);
-    return;
-  }
+
   if (status.IsIOError()) {
     quota_manager_proxy_->OnClientWriteFailed(bucket_info_.storage_key);
   }
-  ForceClose(/*doom=*/false, error_message);
+
+  const std::string error_message =
+      message.empty() ? status.ToString() : message;
+  if (ShouldUseSqlite()) {
+    // TODO(crbug.com/419203257): for now, database errors are most likely due
+    // to unimplemented functionality; in the future, we'll need to deal with
+    // corruption. Unlike in the LevelDB case, an error in one database doesn't
+    // indicate a problem with the entire bucket.
+    DCHECK(database);
+    database->ForceCloseAndRunTasks(error_message);
+  } else {
+    if (status.IsCorruption()) {
+      HandleBackingStoreCorruption(error_message);
+      return;
+    }
+    ForceClose(/*doom=*/false, error_message);
+  }
 }
 
 bool BucketContext::OnMemoryDump(const base::trace_event::MemoryDumpArgs& args,
@@ -978,7 +991,7 @@ BucketContext::InitBackingStoreIfNeeded(bool create_if_missing) {
   for (int i = 0; i < kNumOpenTries; ++i) {
     const bool is_first_attempt = i == 0;
     std::tie(backing_store, status, data_loss_info, disk_full) =
-        ShouldUseSqliteBackingStore()
+        ShouldUseSqlite()
             ? sqlite::BackingStoreImpl::OpenAndVerify(data_path_)
             : level_db::BackingStore::OpenAndVerify(
                   *this, data_path_, database_path, blob_path,

@@ -278,7 +278,14 @@ Status Database::RunTasks() {
 }
 
 Status Database::ForceCloseAndRunTasks(const std::string& message) {
-  DCHECK(!force_closing_);
+  if (!bucket_context_->ShouldUseSqlite()) {
+    DCHECK(!force_closing_);
+  } else if (force_closing_) {
+    // Re-entrancy can validly occur if there's an error in the code below,
+    // e.g. in `CloseAndReportForceClose`.
+    return Status::OK();
+  }
+
   force_closing_ = true;
   for (Connection* connection : connections_) {
     connection->CloseAndReportForceClose(message);
@@ -299,7 +306,6 @@ Status Database::ForceCloseAndRunTasks(const std::string& message) {
   } while (task_state != ConnectionCoordinator::ExecuteTaskResult::kDone &&
            task_state != ConnectionCoordinator::ExecuteTaskResult::kError);
   DCHECK(connections_.empty());
-  force_closing_ = false;
   bucket_context_->QueueRunTasks();
   return status;
 }

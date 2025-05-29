@@ -1529,7 +1529,8 @@ BackingStore::DoOpenAndVerify(BucketContext& bucket_context,
                    on_fatal_error,
                leveldb::Status s) { on_fatal_error.Run(std::move(s), {}); },
             base::BindRepeating(&BucketContext::OnDatabaseError,
-                                bucket_context.AsWeakPtr())));
+                                bucket_context.AsWeakPtr(),
+                                /*database=*/nullptr)));
     status = scopes->Initialize();
     if (!status.ok()) [[unlikely]] {
       return {nullptr, status, std::move(data_loss_info),
