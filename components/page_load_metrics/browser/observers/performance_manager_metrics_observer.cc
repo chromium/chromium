@@ -332,7 +332,14 @@ void PerformanceManagerMetricsObserver::LogFinalMetrics() {
 
   if (!logged_load_metrics_) {
     // Log that navigation stopped without receiving LoadIdleTime.
-    CHECK(loaded_idle_time_.is_null());
+    if (!loaded_idle_time_.is_null()) {
+      // After calling LogMetricsIfAvailable() above, only expects non null
+      // loaded_idle_time_ when timestamps from different processes are out of
+      // order.
+      CHECK(!DeltaFromNavigationStartTime(loaded_idle_time_).has_value());
+      // Skip logging data, timestamps are not reliable.
+      return;
+    }
 
     const std::optional<base::TimeDelta> navigation_delta =
         DeltaFromNavigationStartTime(base::TimeTicks::Now());
