@@ -144,6 +144,7 @@ source_set("unit_tests") {
     "//components/policy/core/common",
     "//components/prefs",
     "//components/prefs:test_support",
+    "//components/safe_browsing/core/common:features",
     "//components/safe_browsing/core/common:safe_browsing_prefs",
     "//testing/gtest",
     "//url",

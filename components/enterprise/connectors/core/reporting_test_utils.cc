@@ -150,6 +150,7 @@ safe_browsing::ReferrerChainEntry MakeReferrerChainEntry() {
   referrers.set_ip("1.2.3.4");
   return referrers;
 }
+
 std::unique_ptr<policy::EmbeddedPolicyTestServer>
 CreatePolicyTestServerForSecurityEvents(
     const std::set<std::string>& enabled_event_names,
@@ -344,6 +345,30 @@ void EventReportValidatorBase::ExpectLoginEvent(
             ASSERT_TRUE(request.events().Get(0).has_login_event());
             auto login_event = request.events().Get(0).login_event();
             EXPECT_THAT(login_event, EqualsProto(expected_login_event));
+
+            if (!done_closure_.is_null()) {
+              done_closure_.Run();
+            }
+          });
+}
+
+void EventReportValidatorBase::ExpectSecurityInterstitialEvent(
+    chrome::cros::reporting::proto::SafeBrowsingInterstitialEvent
+        expected_interstitial_event) {
+  EXPECT_CALL(*client_, UploadSecurityEvent)
+      .WillOnce(
+          [this, expected_interstitial_event](
+              bool include_device_info,
+              ::chrome::cros::reporting::proto::UploadEventsRequest request,
+              base::OnceCallback<void(policy::CloudPolicyClient::Result)>
+                  callback) {
+            // There should only be 1 event per test.
+            ASSERT_EQ(1, request.events_size());
+            ASSERT_TRUE(request.events().Get(0).has_interstitial_event());
+            auto interstitial_event =
+                request.events().Get(0).interstitial_event();
+            EXPECT_THAT(interstitial_event,
+                        EqualsProto(expected_interstitial_event));
 
             if (!done_closure_.is_null()) {
               done_closure_.Run();

@@ -480,11 +480,6 @@ TEST_P(ReportingEventRouterTest,
 }
 
 TEST_P(ReportingEventRouterTest, TestInterstitialShownWarned) {
-  // TODO(crbug.com/396437371): Migrate secutiry interstital event to proto
-  // format.
-  if (use_proto_format()) {
-    return;
-  }
   EnableEnhancedFieldsForSecOps();
   test::SetOnSecurityEventReporting(
       profile_->GetPrefs(), /*enabled=*/true,
@@ -492,10 +487,28 @@ TEST_P(ReportingEventRouterTest, TestInterstitialShownWarned) {
       /*enabled_opt_in_events=*/{});
 
   test::EventReportValidatorBase validator(client_.get());
-  validator.ExpectSecurityInterstitialEventWithReferrers(
-      "https://phishing.com/", "PHISHING", profile_->GetProfileUserName(),
-      GetProfileIdentifier(), "EVENT_RESULT_WARNED", false, 0,
-      test::MakeUrlInfoReferrer());
+  chrome::cros::reporting::proto::SafeBrowsingInterstitialEvent expected_event;
+
+  if (use_proto_format()) {
+    expected_event.set_url("https://phishing.com/");
+    expected_event.set_reason(chrome::cros::reporting::proto::
+                                  SafeBrowsingInterstitialEvent::PHISHING);
+    expected_event.set_profile_user_name(profile_->GetProfileUserName());
+    expected_event.set_profile_identifier(GetProfileIdentifier());
+    expected_event.set_event_result(
+        chrome::cros::reporting::proto::EVENT_RESULT_WARNED);
+    expected_event.set_clicked_through(false);
+    expected_event.set_net_error_code(0);
+    expected_event.mutable_referrers()->Add(test::MakeUrlInfoReferrer());
+
+    validator.ExpectSecurityInterstitialEvent(std::move(expected_event));
+  } else {
+    validator.ExpectSecurityInterstitialEventWithReferrers(
+        "https://phishing.com/", "PHISHING", profile_->GetProfileUserName(),
+        GetProfileIdentifier(), "EVENT_RESULT_WARNED", false, 0,
+        test::MakeUrlInfoReferrer());
+  }
+
   ReferrerChain referrer_chain;
   referrer_chain.Add(test::MakeReferrerChainEntry());
   reporting_event_router_->OnSecurityInterstitialShown(
@@ -503,11 +516,6 @@ TEST_P(ReportingEventRouterTest, TestInterstitialShownWarned) {
 }
 
 TEST_P(ReportingEventRouterTest, TestInterstitialShownBlocked) {
-  // TODO(crbug.com/396437371): Migrate secutiry interstital event to proto
-  // format.
-  if (use_proto_format()) {
-    return;
-  }
   EnableEnhancedFieldsForSecOps();
   test::SetOnSecurityEventReporting(
       profile_->GetPrefs(), /*enabled=*/true,
@@ -515,10 +523,27 @@ TEST_P(ReportingEventRouterTest, TestInterstitialShownBlocked) {
       /*enabled_opt_in_events=*/{});
 
   test::EventReportValidatorBase validator(client_.get());
-  validator.ExpectSecurityInterstitialEventWithReferrers(
-      "https://phishing.com/", "PHISHING", profile_->GetProfileUserName(),
-      GetProfileIdentifier(), "EVENT_RESULT_BLOCKED", false, 0,
-      test::MakeUrlInfoReferrer());
+  chrome::cros::reporting::proto::SafeBrowsingInterstitialEvent expected_event;
+
+  if (use_proto_format()) {
+    expected_event.set_url("https://phishing.com/");
+    expected_event.set_reason(chrome::cros::reporting::proto::
+                                  SafeBrowsingInterstitialEvent::PHISHING);
+    expected_event.set_profile_user_name(profile_->GetProfileUserName());
+    expected_event.set_profile_identifier(GetProfileIdentifier());
+    expected_event.set_event_result(
+        chrome::cros::reporting::proto::EVENT_RESULT_BLOCKED);
+    expected_event.set_clicked_through(false);
+    expected_event.set_net_error_code(0);
+    expected_event.mutable_referrers()->Add(test::MakeUrlInfoReferrer());
+
+    validator.ExpectSecurityInterstitialEvent(std::move(expected_event));
+  } else {
+    validator.ExpectSecurityInterstitialEventWithReferrers(
+        "https://phishing.com/", "PHISHING", profile_->GetProfileUserName(),
+        GetProfileIdentifier(), "EVENT_RESULT_BLOCKED", false, 0,
+        test::MakeUrlInfoReferrer());
+  }
   ReferrerChain referrer_chain;
   referrer_chain.Add(test::MakeReferrerChainEntry());
   reporting_event_router_->OnSecurityInterstitialShown(
@@ -526,11 +551,6 @@ TEST_P(ReportingEventRouterTest, TestInterstitialShownBlocked) {
 }
 
 TEST_P(ReportingEventRouterTest, TestInterstitialProceeded) {
-  // TODO(crbug.com/396437371): Migrate secutiry interstital event to proto
-  // format.
-  if (use_proto_format()) {
-    return;
-  }
   EnableEnhancedFieldsForSecOps();
   test::SetOnSecurityEventReporting(
       profile_->GetPrefs(), /*enabled=*/true,
@@ -538,10 +558,27 @@ TEST_P(ReportingEventRouterTest, TestInterstitialProceeded) {
       /*enabled_opt_in_events=*/{});
 
   test::EventReportValidatorBase validator(client_.get());
-  validator.ExpectSecurityInterstitialEventWithReferrers(
-      "https://phishing.com/", "PHISHING", profile_->GetProfileUserName(),
-      GetProfileIdentifier(), "EVENT_RESULT_BYPASSED", true, 0,
-      test::MakeUrlInfoReferrer());
+  chrome::cros::reporting::proto::SafeBrowsingInterstitialEvent expected_event;
+
+  if (use_proto_format()) {
+    expected_event.set_url("https://phishing.com/");
+    expected_event.set_reason(chrome::cros::reporting::proto::
+                                  SafeBrowsingInterstitialEvent::PHISHING);
+    expected_event.set_profile_user_name(profile_->GetProfileUserName());
+    expected_event.set_profile_identifier(GetProfileIdentifier());
+    expected_event.set_event_result(
+        chrome::cros::reporting::proto::EVENT_RESULT_BYPASSED);
+    expected_event.set_clicked_through(true);
+    expected_event.set_net_error_code(0);
+    expected_event.mutable_referrers()->Add(test::MakeUrlInfoReferrer());
+
+    validator.ExpectSecurityInterstitialEvent(std::move(expected_event));
+  } else {
+    validator.ExpectSecurityInterstitialEventWithReferrers(
+        "https://phishing.com/", "PHISHING", profile_->GetProfileUserName(),
+        GetProfileIdentifier(), "EVENT_RESULT_BYPASSED", true, 0,
+        test::MakeUrlInfoReferrer());
+  }
   ReferrerChain referrer_chain;
   referrer_chain.Add(test::MakeReferrerChainEntry());
   reporting_event_router_->OnSecurityInterstitialProceeded(

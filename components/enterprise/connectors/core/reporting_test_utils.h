@@ -77,8 +77,8 @@ class EventReportValidatorBase {
       const std::string& expected_profile_username,
       const std::string& expected_profile_identifier);
 
-  // TODO(crbug.com/396437371): Use secutiry interstital event proto instead of
-  // raw json string for validation.
+  // TODO(crbug.com/396437371):  Delete this method once proto migration is
+  // complete.
   void ExpectSecurityInterstitialEvent(
       const std::string& expected_url,
       const std::string& expected_reason,
@@ -88,6 +88,12 @@ class EventReportValidatorBase {
       const bool expected_click_through,
       int expected_net_error_code);
 
+  void ExpectSecurityInterstitialEvent(
+      chrome::cros::reporting::proto::SafeBrowsingInterstitialEvent
+          expected_interstitial_event);
+
+  // TODO(crbug.com/396437371):  Delete this method once proto migration is
+  // complete.
   void ExpectSecurityInterstitialEventWithReferrers(
       const std::string& expected_url,
       const std::string& expected_reason,
