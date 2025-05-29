@@ -54,6 +54,18 @@
   width: 1px;
 }
 
+#customizeButtons {
+  position: absolute;
+}
+
+:host-context([dir='ltr']) #customizeButtons {
+  right: 16px;
+}
+
+:host-context([dir='rtl']) #customizeButtons {
+  left: 16px;
+}
+
 #managementNoticeContainer {
   display: flex;
 }

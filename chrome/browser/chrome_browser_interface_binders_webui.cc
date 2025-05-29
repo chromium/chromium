@@ -536,8 +536,8 @@ void PopulateChromeWebUIFrameBinders(
       NewTabFooterUI>(map);
 
   RegisterWebUIControllerInterfaceBinder<
-      customize_buttons::mojom::CustomizeButtonsHandlerFactory, NewTabPageUI>(
-      map);
+      customize_buttons::mojom::CustomizeButtonsHandlerFactory, NewTabPageUI,
+      NewTabFooterUI>(map);
 
   RegisterWebUIControllerInterfaceBinder<
       new_tab_page::mojom::PageHandlerFactory, NewTabPageUI>(map);

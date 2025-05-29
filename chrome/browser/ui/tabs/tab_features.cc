@@ -445,4 +445,13 @@ void TabFeatures::WillDiscardContents(tabs::TabInterface* tab,
   }
 }
 
+customize_chrome::SidePanelController*
+TabFeatures::SetCustomizeChromeSidePanelControllerForTesting(
+    std::unique_ptr<customize_chrome::SidePanelController>
+        customize_chrome_side_panel_controller) {
+  customize_chrome_side_panel_controller_ =
+      std::move(customize_chrome_side_panel_controller);
+  return customize_chrome_side_panel_controller_.get();
+}
+
 }  // namespace tabs

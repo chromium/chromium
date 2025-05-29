@@ -30,6 +30,12 @@ separated from each other by a divider.
             ${this.extensionName_}
         </button>
       </div>` : ''}
+  <ntp-customize-buttons id="customizeButtons"
+      ?show-customize="${this.showCustomize_}"
+      ?show-customize-chrome-text="${this.showCustomizeChromeText_}"
+      @customize-click="${this.onCustomizeClick_}">
+  </ntp-customize-buttons>
 </div>
 <!--_html_template_end_-->`;
+  // clang-format off
 }

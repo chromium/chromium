@@ -7,74 +7,69 @@
 #include <utility>
 
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_enums.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "chrome/common/pref_names.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/prefs/pref_service.h"
-#include "components/tabs/public/tab_interface.h"
+#include "content/public/browser/web_ui.h"
 
 CustomizeButtonsHandler::CustomizeButtonsHandler(
     mojo::PendingReceiver<customize_buttons::mojom::CustomizeButtonsHandler>
         pending_handler,
     mojo::PendingRemote<customize_buttons::mojom::CustomizeButtonsDocument>
         pending_page,
-    Profile* profile,
-    content::WebContents* web_contents,
+    content::WebUI* web_ui,
+    tabs::TabInterface* tab_interface,
     std::unique_ptr<NewTabPageFeaturePromoHelper>
         customize_chrome_feature_promo_helper)
-    : profile_(profile),
-      web_contents_(web_contents),
+    : profile_(Profile::FromWebUI(web_ui)),
+      web_ui_(web_ui),
+      tab_interface_(tab_interface),
       feature_promo_helper_(std::move(customize_chrome_feature_promo_helper)),
-      tab_changed_subscription_(webui::RegisterTabInterfaceChanged(
-          web_contents,
-          base::BindRepeating(&CustomizeButtonsHandler::OnTabInterfaceChanged,
-                              base::Unretained(this)))),
       page_{std::move(pending_page)},
       receiver_{this, std::move(pending_handler)} {
-  CHECK(web_contents_);
+  CHECK(web_ui_);
   CHECK(feature_promo_helper_);
-  OnTabInterfaceChanged();
 }
 
 CustomizeButtonsHandler::~CustomizeButtonsHandler() = default;
 
-void CustomizeButtonsHandler::OnTabInterfaceChanged() {
-  tabs::TabInterface* tab_interface =
-      webui::GetTabInterface(web_contents_.get());
-  if (!tab_interface) {
+customize_chrome::SidePanelController*
+CustomizeButtonsHandler::GetSidePanelControllerForActiveTab() {
+  tabs::TabInterface* active_tab = GetActiveTab();
+  if (!active_tab) {
+    return nullptr;
+  }
+
+  return active_tab->GetTabFeatures()->customize_chrome_side_panel_controller();
+}
+
+tabs::TabInterface* CustomizeButtonsHandler::GetActiveTab() {
+  if (tab_interface_) {
+    return tab_interface_;
+  }
+
+  auto* browser_window_interface =
+      webui::GetBrowserWindowInterface(web_ui_->GetWebContents());
+  if (!browser_window_interface) {
+    return nullptr;
+  }
+
+  tabs::TabInterface* active_tab =
+      browser_window_interface->GetTabStripModel()->GetActiveTab();
+  if (!active_tab) {
     // TODO(crbug.com/378475391): NTP or Footer should always load into a
     // WebContents owned by a TabModel. Remove this once NTP loading has been
     // restricted to browser tabs only.
     LOG(ERROR)
         << "NewTabPage or NewTabFooter loaded into a non-browser-tab context";
-
-    // Reset any composed tab features here.
-    SetCustomizeChromeSidePanelController(nullptr);
-    return;
+    return nullptr;
   }
 
-  SetCustomizeChromeSidePanelController(
-      tab_interface->GetTabFeatures()
-          ->customize_chrome_side_panel_controller());
-}
-
-void CustomizeButtonsHandler::SetCustomizeChromeSidePanelController(
-    customize_chrome::SidePanelController* side_panel_controller) {
-  customize_chrome_side_panel_controller_ = side_panel_controller;
-
-  if (customize_chrome_side_panel_controller_) {
-    page_->SetCustomizeChromeSidePanelVisibility(
-        customize_chrome_side_panel_controller_
-            ->IsCustomizeChromeEntryShowing());
-    customize_chrome_side_panel_controller_->SetEntryChangedCallback(
-        base::BindRepeating(&CustomizeButtonsHandler::
-                                NotifyCustomizeChromeSidePanelVisibilityChanged,
-                            weak_ptr_factory_.GetWeakPtr()));
-  } else {
-    page_->SetCustomizeChromeSidePanelVisibility(false);
-  }
+  return active_tab;
 }
 
 void CustomizeButtonsHandler::NotifyCustomizeChromeSidePanelVisibilityChanged(
@@ -86,9 +81,16 @@ void CustomizeButtonsHandler::SetCustomizeChromeSidePanelVisible(
     bool visible,
     customize_buttons::mojom::CustomizeChromeSection section,
     customize_buttons::mojom::SidePanelOpenTrigger trigger) {
-  CHECK(customize_chrome_side_panel_controller_);
-  if (!visible) {
-    customize_chrome_side_panel_controller_->CloseSidePanel();
+  customize_chrome::SidePanelController*
+      customize_chrome_side_panel_controller =
+          GetSidePanelControllerForActiveTab();
+  CHECK(customize_chrome_side_panel_controller);
+
+  bool is_side_panel_showing =
+      customize_chrome_side_panel_controller->IsCustomizeChromeEntryShowing();
+
+  if (is_side_panel_showing) {
+    customize_chrome_side_panel_controller->CloseSidePanel();
     return;
   }
 
@@ -125,15 +127,17 @@ void CustomizeButtonsHandler::SetCustomizeChromeSidePanelVisible(
       break;
   }
 
-  customize_chrome_side_panel_controller_->OpenSidePanel(trigger_enum,
-                                                         section_enum);
+  customize_chrome_side_panel_controller->OpenSidePanel(trigger_enum,
+                                                        section_enum);
 
   // Record usage for customize chrome promo.
-  auto* tab = web_contents_.get();
+  auto* tab = GetActiveTab();
+  CHECK(tab);
+  auto* contents = tab->GetContents();
   feature_promo_helper_->RecordPromoFeatureUsageAndClosePromo(
-      feature_engagement::kIPHDesktopCustomizeChromeRefreshFeature, tab);
+      feature_engagement::kIPHDesktopCustomizeChromeRefreshFeature, contents);
   feature_promo_helper_->RecordPromoFeatureUsageAndClosePromo(
-      feature_engagement::kIPHDesktopCustomizeChromeFeature, tab);
+      feature_engagement::kIPHDesktopCustomizeChromeFeature, contents);
 }
 
 void CustomizeButtonsHandler::IncrementCustomizeChromeButtonOpenCount() {
@@ -151,9 +155,4 @@ void CustomizeButtonsHandler::IncrementWallpaperSearchButtonShownCount() {
       prefs::kNtpWallpaperSearchButtonShownCount);
   profile_->GetPrefs()->SetInteger(prefs::kNtpWallpaperSearchButtonShownCount,
                                    shown_count + 1);
-}
-
-void CustomizeButtonsHandler::SetCustomizeChromeSidePanelControllerForTesting(
-    customize_chrome::SidePanelController* side_panel_controller) {
-  SetCustomizeChromeSidePanelController(side_panel_controller);
 }

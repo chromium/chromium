@@ -35,10 +35,7 @@ export class CustomizeButtonsElement extends CrLitElement {
         reflect: true,
         type: Boolean,
       },
-      showCustomize: {
-        notify: true,
-        type: Boolean,
-      },
+      showCustomize: {type: Boolean},
       showCustomizeChromeText: {type: Boolean},
       showWallpaperSearch: {
         reflect: true,

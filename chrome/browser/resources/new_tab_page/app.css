@@ -226,6 +226,19 @@ ntp-middle-slot-promo:not([hidden]) ~ #modules {
   font-size: .75rem;
 }
 
+#customizeButtons {
+  bottom: 16px;
+  position: fixed;
+}
+
+:host-context([dir='ltr']) #customizeButtons {
+  right: 16px;
+}
+
+:host-context([dir='rtl']) #customizeButtons {
+  left: 16px;
+}
+
 #contentBottomSpacer {
   flex-shrink: 0;
   height: 32px;
