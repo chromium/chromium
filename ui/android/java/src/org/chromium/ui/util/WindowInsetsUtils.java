@@ -35,37 +35,6 @@ public final class WindowInsetsUtils {
     private static @Nullable Size sFrameForTesting;
     private static @Nullable Rect sWidestUnoccludedRectForTesting;
 
-    /**
-     * Class to encapsulate information about the uncoccluded region determined by {@link
-     * #getUnoccludedRegion(Rect, List)}.
-     */
-    public static class UnoccludedRegion {
-        private final Rect mWidestUnoccludedRect;
-        private final boolean mIsRegionComplex;
-
-        /* Constructor to get the unoccluded region info. */
-        public UnoccludedRegion(Rect widestUnoccludedRect, boolean isRegionComplex) {
-            mWidestUnoccludedRect = widestUnoccludedRect;
-            mIsRegionComplex = isRegionComplex;
-        }
-
-        /**
-         * @return The widest rect in the unoccluded region. See docs for {@link
-         *     #getUnoccludedRegion(Rect, List)} for more details.
-         */
-        public Rect getWidestUnoccludedRect() {
-            return mWidestUnoccludedRect;
-        }
-
-        /**
-         * @return {@code true} if the unoccluded region is complex and contains multiple unoccluded
-         *     rects, {@code false} if it is empty or contains a single unoccluded rect.
-         */
-        public boolean isRegionComplex() {
-            return mIsRegionComplex;
-        }
-    }
-
     /** Private constructor to stop instantiation. */
     private WindowInsetsUtils() {}
 
@@ -131,38 +100,26 @@ public final class WindowInsetsUtils {
     }
 
     /**
-     * Get the {@link UnoccludedRegion} within the |regionRect|. This includes the rect with the
-     * maximum width that is not blocked by any rects within the |blockedRects|. This algorithm only
-     * prioritizes the width of the returned rects, so the returned area does not necessarily have
-     * the maximum area. If there are multiple rects with the same width, this method will bias the
-     * first rect found in the region. If |blockedRects| is empty, this method will return an empty
-     * rect.
+     * Get the Rect with the maximum width within the |regionRect| that is not blocked by any rects
+     * within the |blockedRects|. This algorithm only prioritizes the width of the returned Rects,
+     * so the returned area does not necessarily have the maximum area. If there are multiple rects
+     * with the same width, this method will bias the first Rect found in the region. If
+     * |blockedRects| is empty, this method will return an empty rect.
      *
      * @see Region
      * @see RegionIterator
      * @param regionRect The un-blocked rect area.
      * @param blockedRects Areas within the regionRect that are blocked.
-     * @return The {@link UnoccludedRegion} in |regionRect| that is not blocked by any
-     *     |blockedRects|.
+     * @return The widest Rect seen in the regionRect that's not blocked by any blockedRects.
      */
-    public static UnoccludedRegion getUnoccludedRegion(Rect regionRect, List<Rect> blockedRects) {
-        if (sWidestUnoccludedRectForTesting != null) {
-            return new UnoccludedRegion(
-                    sWidestUnoccludedRectForTesting, /* isRegionComplex= */ false);
-        }
-        if (blockedRects.isEmpty()) {
-            return new UnoccludedRegion(new Rect(), /* isRegionComplex= */ false);
-        }
+    public static Rect getWidestUnoccludedRect(Rect regionRect, List<Rect> blockedRects) {
+        if (sWidestUnoccludedRectForTesting != null) return sWidestUnoccludedRectForTesting;
+        if (regionRect.isEmpty() || blockedRects.isEmpty()) return new Rect();
 
         Region region = new Region(regionRect);
         for (Rect rect : blockedRects) {
             region.op(rect, Region.Op.DIFFERENCE);
         }
-
-        if (region.isEmpty()) {
-            return new UnoccludedRegion(new Rect(), /* isRegionComplex= */ false);
-        }
-
         Rect widestUnoccludedRect = new Rect();
         forEachRect(
                 region,
@@ -171,7 +128,7 @@ public final class WindowInsetsUtils {
                         widestUnoccludedRect.set(rect);
                     }
                 });
-        return new UnoccludedRegion(widestUnoccludedRect, region.isComplex());
+        return widestUnoccludedRect;
     }
 
     /** See {@link WindowInsets#getFrame()} for details. */

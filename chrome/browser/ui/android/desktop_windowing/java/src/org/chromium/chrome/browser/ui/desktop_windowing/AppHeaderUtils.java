@@ -37,7 +37,6 @@ public class AppHeaderUtils {
         DesktopWindowHeuristicResult.CAPTION_BAR_BOUNDING_RECT_INVALID_HEIGHT,
         DesktopWindowHeuristicResult.WIDEST_UNOCCLUDED_RECT_EMPTY,
         DesktopWindowHeuristicResult.DISALLOWED_ON_EXTERNAL_DISPLAY,
-        DesktopWindowHeuristicResult.COMPLEX_UNOCCLUDED_REGION,
         DesktopWindowHeuristicResult.NUM_ENTRIES,
     })
     public @interface DesktopWindowHeuristicResult {
@@ -47,10 +46,9 @@ public class AppHeaderUtils {
         int CAPTION_BAR_BOUNDING_RECT_INVALID_HEIGHT = 3;
         int WIDEST_UNOCCLUDED_RECT_EMPTY = 4;
         int DISALLOWED_ON_EXTERNAL_DISPLAY = 5;
-        int COMPLEX_UNOCCLUDED_REGION = 6;
 
         // Be sure to also update enums.xml when updating these values.
-        int NUM_ENTRIES = 7;
+        int NUM_ENTRIES = 6;
     }
 
     // These values are persisted to logs. Entries should not be renumbered and
@@ -132,7 +130,7 @@ public class AppHeaderUtils {
             @DesktopWindowHeuristicResult int result) {
         assert result != DesktopWindowHeuristicResult.UNKNOWN;
         RecordHistogram.recordEnumeratedHistogram(
-                "Android.DesktopWindowHeuristicResult4",
+                "Android.DesktopWindowHeuristicResult3",
                 result,
                 DesktopWindowHeuristicResult.NUM_ENTRIES);
     }

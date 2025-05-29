@@ -289,8 +289,6 @@ public class AppHeaderCoordinator
             newResult = DesktopWindowHeuristicResult.CAPTION_BAR_BOUNDING_RECT_INVALID_HEIGHT;
         } else if (!allowHeaderCustomization) {
             newResult = DesktopWindowHeuristicResult.DISALLOWED_ON_EXTERNAL_DISPLAY;
-        } else if (insetsRectProvider.isUnoccludedRegionComplex()) {
-            newResult = DesktopWindowHeuristicResult.COMPLEX_UNOCCLUDED_REGION;
         } else {
             newResult = DesktopWindowHeuristicResult.IN_DESKTOP_WINDOW;
         }

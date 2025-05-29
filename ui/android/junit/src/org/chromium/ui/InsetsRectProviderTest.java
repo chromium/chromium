@@ -9,7 +9,6 @@ import static androidx.core.view.WindowInsetsCompat.Type.navigationBars;
 import static androidx.core.view.WindowInsetsCompat.Type.statusBars;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
@@ -43,7 +42,6 @@ import org.chromium.ui.InsetObserver.WindowInsetsConsumer.InsetConsumerSource;
 import org.chromium.ui.InsetsRectProvider.Consumer;
 import org.chromium.ui.InsetsRectProviderTest.ShadowWindowInsetsUtils;
 import org.chromium.ui.util.WindowInsetsUtils;
-import org.chromium.ui.util.WindowInsetsUtils.UnoccludedRegion;
 
 import java.util.List;
 
@@ -255,38 +253,6 @@ public class InsetsRectProviderTest {
         assertEquals(
                 "Consumer callback should not be called.", 0, mConsumerCallback.getCallCount());
         assertSuppliedValues(Insets.NONE, new Rect(), List.of());
-    }
-
-    @Test
-    public void testAppliedInsetsNotConsumed_ComplexUnoccludedRegion() {
-        // Assume caption bar has top insets.
-        int type = WindowInsetsCompat.Type.captionBar();
-        Insets insets = Insets.of(0, 10, 0, 0);
-
-        // Initialize with empty window insets.
-        WindowInsetsCompat emptyWindowInsets = new WindowInsetsCompat.Builder().build();
-        mInsetsRectProvider =
-                new InsetsRectProvider(
-                        mInsetObserver,
-                        type,
-                        emptyWindowInsets,
-                        createInsetsRectConsumer(/* consumeRectUpdate= */ false),
-                        InsetConsumerSource.TEST_SOURCE);
-
-        // Simulate a complex unoccluded region.
-        ShadowWindowInsetsUtils.sUnoccludedRegionComplex = true;
-        List<Rect> blockingRects = List.of(new Rect(10, 0, 20, WINDOW_HEIGHT));
-        Rect availableArea = new Rect(20, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
-
-        WindowInsetsCompat newWindowInsets =
-                buildTestWindowInsets(
-                        type, insets, availableArea, INSETS_FRAME_SIZE, blockingRects);
-        var appliedInsets = mInsetsRectProvider.onApplyWindowInsets(mView, newWindowInsets);
-
-        assertEquals("Input insets should not be consumed.", newWindowInsets, appliedInsets);
-        assertTrue("Region should be complex.", mInsetsRectProvider.isUnoccludedRegionComplex());
-        assertEquals("Consumer callback should be called.", 1, mConsumerCallback.getCallCount());
-        assertSuppliedValues(insets, availableArea, blockingRects);
     }
 
     @Test
@@ -681,20 +647,16 @@ public class InsetsRectProviderTest {
         static Rect sWidestUnoccludedRect;
         static Size sFrame = new Size(0, 0);
         static List<Rect> sTestRects = List.of();
-        static boolean sUnoccludedRegionComplex;
 
         private static void reset() {
             sWidestUnoccludedRect = null;
             sFrame = new Size(0, 0);
             sTestRects = List.of();
-            sUnoccludedRegionComplex = false;
         }
 
         @Implementation
-        protected static UnoccludedRegion getUnoccludedRegion(
-                Rect regionRect, List<Rect> blockedRects) {
-            Rect widestRect = sWidestUnoccludedRect != null ? sWidestUnoccludedRect : new Rect();
-            return new UnoccludedRegion(widestRect, sUnoccludedRegionComplex);
+        protected static Rect getWidestUnoccludedRect(Rect regionRect, List<Rect> blockedRects) {
+            return sWidestUnoccludedRect != null ? sWidestUnoccludedRect : new Rect();
         }
 
         @Implementation
