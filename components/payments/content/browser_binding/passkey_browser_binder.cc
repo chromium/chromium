@@ -130,6 +130,7 @@ PasskeyBrowserBinder::PasskeyBrowserBinder(
       web_data_service_(std::move(web_data_service)),
       random_bytes_as_vector_callback_(
           base::BindRepeating(crypto::RandBytesAsVector)) {
+  CHECK(key_store_);
   CHECK(web_data_service_);
 }
 

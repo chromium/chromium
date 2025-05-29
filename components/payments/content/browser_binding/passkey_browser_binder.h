@@ -74,7 +74,7 @@ struct BrowserBoundKeyMetadata;
 // identifiers.
 class PasskeyBrowserBinder : public WebDataServiceConsumer {
  public:
-  // `web_data_service` is required and must be set.
+  // `key_store` and `web_data_service` are required and must be set.
   PasskeyBrowserBinder(
       scoped_refptr<BrowserBoundKeyStore> key_store,
       scoped_refptr<PaymentManifestWebDataService> web_data_service);
