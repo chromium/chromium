@@ -10,6 +10,7 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
+#include "cc/metrics/event_metrics.h"
 
 namespace cc {
 
@@ -90,8 +91,14 @@ void EventsMetricsManager::OnScopedMonitorEnded(
   DCHECK_GT(active_scoped_monitors_.size(), 0u);
   active_scoped_monitors_.pop_back();
 
-  if (metrics)
+  if (metrics) {
+    if (metrics->type() == EventMetrics::EventType::kGestureScrollUpdate) {
+      auto* scroll_update = metrics->AsScrollUpdate();
+      scroll_update->set_did_scroll(did_scroll_);
+    }
     saved_events_.push_back(std::move(metrics));
+  }
+  did_scroll_ = false;
 }
 
 }  // namespace cc

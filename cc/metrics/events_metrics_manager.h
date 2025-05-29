@@ -73,6 +73,8 @@ class CC_EXPORT EventsMetricsManager {
     return saved_events_.size();
   }
 
+  void set_did_scroll(bool did_scroll) { did_scroll_ = did_scroll; }
+
  private:
   class ScopedMonitorImpl;
 
@@ -86,6 +88,11 @@ class CC_EXPORT EventsMetricsManager {
 
   // List of event metrics saved for reporting.
   EventMetrics::List saved_events_;
+
+  // Scroll updates may not result in applying a scroll delta. This is used to
+  // denote that a scroll did occur. `OnScopedMonitorEnded` will clear this,
+  // applying the flag to the `EventMetric` that was saved.
+  bool did_scroll_ = false;
 };
 
 }  // namespace cc
