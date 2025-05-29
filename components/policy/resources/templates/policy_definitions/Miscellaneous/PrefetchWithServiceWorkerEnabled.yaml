@@ -29,9 +29,9 @@ owners:
 schema:
   type: boolean
 supported_on:
-- android:137-
-- chrome.*:137-
-- chrome_os:137-
-- fuchsia:137-
+- android:138-
+- chrome.*:138-
+- chrome_os:138-
+- fuchsia:138-
 tags: []
 type: main
