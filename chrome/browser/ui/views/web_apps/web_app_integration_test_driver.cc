@@ -2730,15 +2730,13 @@ void WebAppIntegrationTestDriver::CorruptAppShim(Site site,
       EXPECT_TRUE(base::WriteFile(bin_path, bin_contents));
 
       // Since we modified the binary, we need to re-sign it.
-      if (base::mac::MacOSMajorVersion() >= 12) {
-        std::string codesign_output;
-        std::vector<std::string> codesign_argv = {
-            "codesign", "--force", "--sign", "-", bin_path.value()};
-        EXPECT_TRUE(base::GetAppOutputAndError(base::CommandLine(codesign_argv),
-                                               &codesign_output))
-            << "Failed to sign executable at " << bin_path << ": "
-            << codesign_output;
-      }
+      std::string codesign_output;
+      std::vector<std::string> codesign_argv = {"codesign", "--force", "--sign",
+                                                "-", bin_path.value()};
+      EXPECT_TRUE(base::GetAppOutputAndError(base::CommandLine(codesign_argv),
+                                             &codesign_output))
+          << "Failed to sign executable at " << bin_path << ": "
+          << codesign_output;
       break;
     }
   }

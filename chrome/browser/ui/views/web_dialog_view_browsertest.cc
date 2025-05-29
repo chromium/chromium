@@ -134,10 +134,9 @@ void WebDialogBrowserTest::SimulateEscapeKey() {
 #endif
 IN_PROC_BROWSER_TEST_F(WebDialogBrowserTest, MAYBE_SizeWindow) {
 #if BUILDFLAG(IS_MAC)
-  // On macOS 11 (and presumably later) the new mechanism for sheets, which are
-  // used for window modals like this dialog, always centers them within the
-  // parent window regardless of the requested origin. The size is still
-  // honored.
+  // On macOS, the new mechanism for sheets, which are used for window modals
+  // like this dialog, always centers them within the parent window regardless
+  // of the requested origin. The size is still honored.
   bool centered_in_window = true;
 #else
   bool centered_in_window = false;

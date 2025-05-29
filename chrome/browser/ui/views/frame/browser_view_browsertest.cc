@@ -463,7 +463,7 @@ IN_PROC_BROWSER_TEST_F(BrowserViewTest, ScrimForTabModal) {
 }
 
 // MacOS does not need views window scrim. We use sheet to show window modals
-// (-[NSWindow beginSheet:]), which natively draws a scrim since macOS 11.
+// (-[NSWindow beginSheet:]), which natively draws a scrim.
 #if !BUILDFLAG(IS_MAC)
 IN_PROC_BROWSER_TEST_F(BrowserViewTest, ScrimForBrowserWindowModal) {
   if (!base::FeatureList::IsEnabled(features::kScrimForBrowserWindowModal)) {

@@ -3298,7 +3298,7 @@ void BrowserView::OnWidgetWindowModalVisibilityChanged(views::Widget* widget,
 
 #if !BUILDFLAG(IS_MAC)
   // MacOS does not need views window scrim. We use sheets to show window modals
-  // (-[NSWindow beginSheet:]), which natively draw a scrim since macOS 11.
+  // (-[NSWindow beginSheet:]), which natively draw a scrim.
   window_scrim_view_->SetVisible(visible);
 #endif
 }

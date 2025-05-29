@@ -3414,10 +3414,8 @@ static_library("ui") {
     include_dirs = [ "$target_gen_dir" ]
     frameworks = [
       "Carbon.framework",
+      "LocalAuthenticationEmbeddedUI.framework",
       "Quartz.framework",
-    ]
-    weak_frameworks = [
-      "LocalAuthenticationEmbeddedUI.framework",  # macOS 12+
     ]
 
     # For version_ui.cc:
