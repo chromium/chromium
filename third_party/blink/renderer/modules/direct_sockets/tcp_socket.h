@@ -121,7 +121,10 @@ class MODULES_EXPORT TCPSocket final
   void OnReadError(int32_t net_error) override;
   void OnWriteError(int32_t net_error) override;
 
-  void OnBothStreamsClosed(std::vector<ScriptValue> args);
+  // Invoked when one of the streams (readable or writable) closes.
+  // `exception` is non-empty iff the stream closed with an error.
+  void OnStreamClosed(v8::Local<v8::Value> exception);
+  void OnBothStreamsClosed();
 
   HeapMojoRemote<network::mojom::blink::TCPConnectedSocket> tcp_socket_;
   HeapMojoReceiver<network::mojom::blink::SocketObserver, TCPSocket>
@@ -131,6 +134,13 @@ class MODULES_EXPORT TCPSocket final
 
   Member<TCPReadableStreamWrapper> readable_stream_wrapper_;
   Member<TCPWritableStreamWrapper> writable_stream_wrapper_;
+
+  // Always less or equal to 2 (readable + writable).
+  int streams_closed_count_ = 0;
+
+  // Stores the first encountered stream error to be reported after both streams
+  // close.
+  TraceWrapperV8Reference<v8::Value> stream_error_;
 
   FRIEND_TEST_ALL_PREFIXES(TCPSocketTest, OnSocketObserverConnectionError);
   FRIEND_TEST_ALL_PREFIXES(TCPSocketCloseTest, OnErrorOrClose);
