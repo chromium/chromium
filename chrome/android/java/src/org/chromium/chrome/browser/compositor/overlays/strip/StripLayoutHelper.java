@@ -504,8 +504,8 @@ public class StripLayoutHelper
     @Nullable private final TabDragSource mTabDragSource;
 
     // Tab hover state.
-    private StripLayoutTab mLastHoveredTab;
-    private StripTabHoverCardView mTabHoverCardView;
+    private @Nullable StripLayoutTab mLastHoveredTab;
+    private @Nullable StripTabHoverCardView mTabHoverCardView;
     private long mLastHoverCardExitTime;
 
     // Tab Group Sync.
@@ -2476,6 +2476,10 @@ public class StripLayoutHelper
     @VisibleForTesting
     void setTabHoverCardView(StripTabHoverCardView tabHoverCardView) {
         mTabHoverCardView = tabHoverCardView;
+        // If onHoverEnter was already processed before this method call, show card now.
+        if (mLastHoveredTab != null && !mTabHoverCardView.isShown()) {
+            showTabHoverCardView(/* isDelayedCall= */ false);
+        }
     }
 
     StripTabHoverCardView getTabHoverCardViewForTesting() {
@@ -2505,18 +2509,21 @@ public class StripLayoutHelper
         if (mLastHoveredTab == null) {
             return;
         }
-
         // Clear close button hover state.
         mLastHoveredTab.setCloseHovered(false);
-
         // Remove the highlight from the last hovered tab.
         updateHoveredTabAttachedState(mLastHoveredTab, false);
-        mStripTabEventHandler.removeMessages(MESSAGE_HOVER_CARD);
-        if (mTabHoverCardView.isShown()) {
-            mLastHoverCardExitTime = SystemClock.uptimeMillis();
-        }
-        mTabHoverCardView.hide();
         mLastHoveredTab = null;
+
+        // Hide hover card view.
+        mStripTabEventHandler.removeMessages(MESSAGE_HOVER_CARD);
+        // Hover card view can be null if hover event was processed before view inflation completes.
+        if (mTabHoverCardView != null) {
+            if (mTabHoverCardView.isShown()) {
+                mLastHoverCardExitTime = SystemClock.uptimeMillis();
+            }
+            mTabHoverCardView.hide();
+        }
     }
 
     @VisibleForTesting
