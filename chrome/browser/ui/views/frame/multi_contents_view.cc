@@ -38,6 +38,7 @@ MultiContentsView::MultiContentsView(
           gfx::Insets(kSplitViewContentInset).set_top(0).set_right(0)),
       end_contents_view_inset_(
           gfx::Insets(kSplitViewContentInset).set_top(0).set_left(0)) {
+  SetLayoutManager(std::make_unique<views::DelegatingLayoutManager>(this));
   contents_container_views_.push_back(
       AddChildView(std::make_unique<ContentsContainerView>(browser_view_)));
   contents_container_views_[0]
@@ -80,7 +81,7 @@ ContentsWebView* MultiContentsView::GetInactiveContentsView() {
   return contents_container_views_[GetInactiveIndex()]->GetContentsView();
 }
 
-bool MultiContentsView::IsInSplitView() {
+bool MultiContentsView::IsInSplitView() const {
   return resize_area_->GetVisible();
 }
 
@@ -171,27 +172,6 @@ void MultiContentsView::OnResize(int resize_amount, bool done_resizing) {
   }
 }
 
-// TODO(crbug.com/397777917): Consider using FlexSpecification weights and
-// interior margins instead of overriding layout once this bug is resolved.
-void MultiContentsView::Layout(PassKey) {
-  const gfx::Rect available_space(GetContentsBounds());
-  ViewWidths widths = GetViewWidths(available_space);
-  gfx::Rect start_rect(available_space.origin(),
-                       gfx::Size(widths.start_width, available_space.height()));
-  const gfx::Rect resize_rect(
-      start_rect.top_right(),
-      gfx::Size(widths.resize_width, available_space.height()));
-  gfx::Rect end_rect(resize_rect.top_right(),
-                     gfx::Size(widths.end_width, available_space.height()));
-  if (IsInSplitView()) {
-    start_rect.Inset(start_contents_view_inset_);
-    end_rect.Inset(end_contents_view_inset_);
-  }
-  contents_container_views_[0]->SetBoundsRect(start_rect);
-  resize_area_->SetBoundsRect(resize_rect);
-  contents_container_views_[1]->SetBoundsRect(end_rect);
-}
-
 void MultiContentsView::OnPaint(gfx::Canvas* canvas) {
   // Paint the multi contents area background to match the toolbar.
   TopContainerBackground::PaintBackground(canvas, this, browser_view_);
@@ -217,8 +197,47 @@ void MultiContentsView::OnWebContentsFocused(views::WebView* web_view) {
   }
 }
 
+// TODO(crbug.com/397777917): Consider using FlexSpecification weights and
+// interior margins instead of a custom layout once this bug is resolved.
+views::ProposedLayout MultiContentsView::CalculateProposedLayout(
+    const views::SizeBounds& size_bounds) const {
+  views::ProposedLayout layouts;
+  if (!size_bounds.is_fully_bounded()) {
+    return layouts;
+  }
+
+  int height = size_bounds.height().value();
+  int width = size_bounds.width().value();
+
+  const gfx::Rect available_space(width, height);
+  ViewWidths widths = GetViewWidths(available_space);
+  gfx::Rect start_rect(available_space.origin(),
+                       gfx::Size(widths.start_width, available_space.height()));
+  const gfx::Rect resize_rect(
+      start_rect.top_right(),
+      gfx::Size(widths.resize_width, available_space.height()));
+  gfx::Rect end_rect(resize_rect.top_right(),
+                     gfx::Size(widths.end_width, available_space.height()));
+  if (IsInSplitView()) {
+    start_rect.Inset(start_contents_view_inset_);
+    end_rect.Inset(end_contents_view_inset_);
+  }
+
+  layouts.child_layouts.emplace_back(contents_container_views_[0],
+                                     contents_container_views_[0]->GetVisible(),
+                                     start_rect);
+  layouts.child_layouts.emplace_back(resize_area_.get(),
+                                     resize_area_->GetVisible(), resize_rect);
+  layouts.child_layouts.emplace_back(contents_container_views_[1],
+                                     contents_container_views_[1]->GetVisible(),
+                                     end_rect);
+
+  layouts.host_size = gfx::Size(width, height);
+  return layouts;
+}
+
 MultiContentsView::ViewWidths MultiContentsView::GetViewWidths(
-    gfx::Rect available_space) {
+    gfx::Rect available_space) const {
   ViewWidths widths;
   if (IsInSplitView()) {
     CHECK(contents_container_views_[0]->GetVisible() &&
@@ -236,7 +255,7 @@ MultiContentsView::ViewWidths MultiContentsView::GetViewWidths(
 }
 
 MultiContentsView::ViewWidths MultiContentsView::ClampToMinWidth(
-    ViewWidths widths) {
+    ViewWidths widths) const {
   const int min_percentage =
       kMinWebContentsWidthPercentage * browser_view_->GetBounds().width();
   const int min_fixed_value = min_contents_width_for_testing_.has_value()

@@ -40,7 +40,9 @@ DECLARE_ELEMENT_IDENTIFIER_VALUE(kMultiContentsViewDropTargetElementId);
 
 // MultiContentsView shows up to two contents web views side by side, and
 // manages their layout relative to each other.
-class MultiContentsView : public views::View, public views::ResizeAreaDelegate {
+class MultiContentsView : public views::View,
+                          public views::ResizeAreaDelegate,
+                          public views::LayoutDelegate {
   METADATA_HEADER(MultiContentsView, views::View)
 
  public:
@@ -74,7 +76,7 @@ class MultiContentsView : public views::View, public views::ResizeAreaDelegate {
   ContentsWebView* GetInactiveContentsView();
 
   // Returns true if more than one WebContents is displayed.
-  bool IsInSplitView();
+  bool IsInSplitView() const;
 
   // Assigns the given |web_contents| to the ContentsContainerView's
   // ContentsWebView at |index| in contents_container_views_. |index| must be
@@ -104,7 +106,6 @@ class MultiContentsView : public views::View, public views::ResizeAreaDelegate {
   void OnResize(int resize_amount, bool done_resizing) override;
 
   // views::View:
-  void Layout(PassKey) override;
   void OnPaint(gfx::Canvas* canvas) override;
   void OnThemeChanged() override;
 
@@ -142,16 +143,20 @@ class MultiContentsView : public views::View, public views::ResizeAreaDelegate {
   static constexpr int kMinWebContentsWidth = 200;
   static constexpr double kMinWebContentsWidthPercentage = 0.1;
 
+  // LayoutDelegate:
+  views::ProposedLayout CalculateProposedLayout(
+      const views::SizeBounds& size_bounds) const override;
+
   int GetInactiveIndex();
 
   void OnWebContentsFocused(views::WebView*);
 
-  ViewWidths GetViewWidths(gfx::Rect available_space);
+  ViewWidths GetViewWidths(gfx::Rect available_space) const;
 
   // Clamps to the minimum of kMinWebContentsWidth or
   // kMinWebContentsWidthPercentage multiplied by the window width. This allows
   // for some flexibility when it comes to particularly narrow windows.
-  ViewWidths ClampToMinWidth(ViewWidths widths);
+  ViewWidths ClampToMinWidth(ViewWidths widths) const;
 
   void UpdateContentsBorderAndOverlay();
 
