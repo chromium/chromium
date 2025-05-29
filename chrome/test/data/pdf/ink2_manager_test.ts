@@ -430,8 +430,53 @@ chrome.test.runTests([
     chrome.test.assertEq(152.5, initEvent.detail.pageCoordinates.x);
     chrome.test.assertEq(1.5, initEvent.detail.pageCoordinates.y);
 
-    // Reset zoom, window size and annotation id for next test.
+    // Reset zoom and annotation id for next test.
     viewport.setZoom(1.0);
+    manager.resetAnnotationIdForTest();
+
+    chrome.test.succeed();
+  },
+
+  async function testInitializeTextboxClampToPage() {
+    let whenInitEvent = eventToPromise('initialize-text-box', manager);
+
+    // Test initializing with the top left corner of the box near the right edge
+    // of the page. Instead of initializing at this point, this should
+    // initialize within the page boundaries.
+    manager.initializeTextAnnotation({x: 425, y: 400});
+    let initEvent = await whenInitEvent;
+
+    chrome.test.assertEq(
+        MIN_TEXTBOX_SIZE_PX, initEvent.detail.annotation.textBoxRect.height);
+    // Offset the box from the page edge by the width of the box. The box gets a
+    // width of 2x the minimum allowed by Blink.
+    chrome.test.assertEq(
+        445 - 2 * MIN_TEXTBOX_SIZE_PX,
+        initEvent.detail.annotation.textBoxRect.locationX);
+    // y doesn't need adjusted in this case, since we're far enough from the
+    // bottom boundary of the page.
+    chrome.test.assertEq(
+        400, initEvent.detail.annotation.textBoxRect.locationY);
+    chrome.test.assertEq(
+        2 * MIN_TEXTBOX_SIZE_PX, initEvent.detail.annotation.textBoxRect.width);
+
+    // Now test initializing very close to the bottom of the page. This should
+    // instead initialize far enough from bottom to fit the box.
+    whenInitEvent = eventToPromise('initialize-text-box', manager);
+    manager.initializeTextAnnotation({x: 200, y: 490});
+    initEvent = await whenInitEvent;
+
+    chrome.test.assertEq(
+        MIN_TEXTBOX_SIZE_PX, initEvent.detail.annotation.textBoxRect.height);
+    chrome.test.assertEq(
+        200, initEvent.detail.annotation.textBoxRect.locationX);
+    chrome.test.assertEq(
+        493 - MIN_TEXTBOX_SIZE_PX,
+        initEvent.detail.annotation.textBoxRect.locationY);
+    chrome.test.assertEq(
+        DEFAULT_TEXTBOX_WIDTH, initEvent.detail.annotation.textBoxRect.width);
+
+    // Reset annotation id for next test.
     manager.resetAnnotationIdForTest();
 
     chrome.test.succeed();
