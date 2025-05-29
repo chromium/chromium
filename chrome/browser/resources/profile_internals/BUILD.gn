@@ -15,7 +15,7 @@ build_webui("build") {
 
   css_files = [ "profile_internals_app.css" ]
 
-  html_to_wrapper_template = "detect"
+  html_to_wrapper_template = "lit"
 
   ts_definitions = [ "//tools/typescript/definitions/chrome_send.d.ts" ]
   ts_deps = [

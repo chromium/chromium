@@ -123,7 +123,7 @@ build_webui("build") {
     ]
   }
 
-  html_to_wrapper_template = "detect"
+  html_to_wrapper_template = "lit"
 
   ts_composite = true
   ts_definitions = [ "//tools/typescript/definitions/chrome_send.d.ts" ]

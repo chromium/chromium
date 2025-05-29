@@ -107,7 +107,7 @@ build_webui("build") {
     "$root_gen_dir/components/tab_groups/public/mojom/tab_group_types.mojom-webui.ts",
   ]
 
-  html_to_wrapper_template = "detect"
+  html_to_wrapper_template = "lit"
 
   ts_composite = true
   ts_definitions = [
