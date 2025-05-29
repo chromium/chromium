@@ -3451,9 +3451,30 @@ TEST_F(DiskCacheTest, Backend_UsageStatsTimer) {
   cache->SetUnitTestMode();
   ASSERT_THAT(cache->SyncInit(), IsOk());
 
-  // Wait for a callback that never comes... about 2 secs :). The message loop
-  // has to run to allow invocation of the usage timer.
-  helper.WaitUntilCacheIoFinished(1);
+  EXPECT_TRUE(cache->GetTimerForTest());
+
+  // Helper lambda to retrieve the 'Last report' statistic from the cache.
+  auto get_last_report = [&]() -> std::optional<std::string> {
+    disk_cache::StatsItems stats;
+    cache->GetStats(&stats);
+    if (auto it = std::find_if(
+            stats.begin(), stats.end(),
+            [](const std::pair<std::string, std::string>& element) {
+              return element.first == "Last report";
+            });
+        it != stats.end()) {
+      return it->second;
+    }
+    return std::nullopt;
+  };
+
+  EXPECT_EQ(get_last_report(), "0x0");
+
+  // Forwards the virtual time by 2 secs to allow invocation of the usage
+  // timer.
+  FastForwardBy(base::Seconds(2));
+
+  EXPECT_NE(get_last_report(), "0x0");
 }
 
 TEST_F(DiskCacheBackendTest, TimerNotCreated) {

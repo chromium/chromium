@@ -12,6 +12,7 @@
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/raw_ptr.h"
+#include "base/test/task_environment.h"
 #include "base/threading/thread.h"
 #include "net/base/cache_type.h"
 #include "net/disk_cache/disk_cache.h"
@@ -42,7 +43,9 @@ class SimpleFileTracker;
 // to this problem; all such tests should use TEST_F(DiskCacheTest, ...).
 class DiskCacheTest : public PlatformTest, public net::WithTaskEnvironment {
  protected:
-  DiskCacheTest();
+  explicit DiskCacheTest(
+      base::test::TaskEnvironment::TimeSource time_source =
+          base::test::TaskEnvironment::TimeSource::MOCK_TIME);
   ~DiskCacheTest() override;
 
   // Copies a set of cache files from the data folder to the test folder.
@@ -74,7 +77,9 @@ class DiskCacheTestWithCache : public DiskCacheTest {
     std::unique_ptr<disk_cache::Backend::Iterator> iterator_;
   };
 
-  DiskCacheTestWithCache();
+  explicit DiskCacheTestWithCache(
+      base::test::TaskEnvironment::TimeSource time_source =
+          base::test::TaskEnvironment::TimeSource::MOCK_TIME);
 
   DiskCacheTestWithCache(const DiskCacheTestWithCache&) = delete;
   DiskCacheTestWithCache& operator=(const DiskCacheTestWithCache&) = delete;

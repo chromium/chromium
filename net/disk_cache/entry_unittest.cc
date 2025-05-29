@@ -5198,6 +5198,11 @@ TEST_F(DiskCacheEntryTest, MemoryOnlyCloseSparseAfterBackendDestruction) {
 }
 
 void DiskCacheEntryTest::LastUsedTimePersists() {
+  // In some environments, when using MOCK_TIME, base::Time::Now() might return
+  // a time very close to the Epoch. To avoid underflow when subtracting 5
+  // minutes in the test below, advance the clock by 10 minutes here.
+  AdvanceClock(base::Minutes(10));
+
   // Make sure that SetLastUsedTimeForTest persists. When used with SimpleCache,
   // this also checks that Entry::GetLastUsed is based on information in index,
   // when available, not atime on disk, which can be inaccurate.

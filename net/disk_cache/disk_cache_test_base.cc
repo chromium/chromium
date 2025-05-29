@@ -32,7 +32,9 @@
 
 using net::test::IsOk;
 
-DiskCacheTest::DiskCacheTest() {
+DiskCacheTest::DiskCacheTest(
+    base::test::TaskEnvironment::TimeSource time_source)
+    : WithTaskEnvironment(time_source) {
   CHECK(temp_dir_.CreateUniqueTempDir());
   // Put the cache into a subdir of |temp_dir_|, to permit tests to safely
   // remove the cache directory without risking collisions with other tests.
@@ -79,7 +81,9 @@ int DiskCacheTestWithCache::TestIterator::OpenNextEntry(
   return rv;
 }
 
-DiskCacheTestWithCache::DiskCacheTestWithCache() = default;
+DiskCacheTestWithCache::DiskCacheTestWithCache(
+    base::test::TaskEnvironment::TimeSource time_source)
+    : DiskCacheTest(time_source) {}
 
 DiskCacheTestWithCache::~DiskCacheTestWithCache() = default;
 
@@ -311,20 +315,10 @@ void DiskCacheTestWithCache::TrimDeletedListForTest(bool empty) {
 }
 
 void DiskCacheTestWithCache::AddDelay() {
-  if (simple_cache_mode_) {
-    // The simple cache uses second resolution for many timeouts, so it's safest
-    // to advance by at least whole seconds before falling back into the normal
-    // disk cache epsilon advance.
-    const base::Time initial_time = base::Time::Now();
-    do {
-      base::PlatformThread::YieldCurrentThread();
-    } while (base::Time::Now() - initial_time < base::Seconds(1));
-  }
-
-  base::Time initial = base::Time::Now();
-  while (base::Time::Now() <= initial) {
-    base::PlatformThread::Sleep(base::Milliseconds(1));
-  };
+  // Advance time by 1 second. This ensures that time-sensitive operations,
+  // particularly those in Simple Cache which has second-level timestamp
+  // granularity, will see a change in time.
+  FastForwardBy(base::Seconds(1));
 }
 
 void DiskCacheTestWithCache::OnExternalCacheHit(const std::string& key) {
