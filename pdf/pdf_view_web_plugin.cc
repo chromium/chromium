@@ -143,11 +143,13 @@ constexpr base::TimeDelta kAccessibilityPageDelay = base::Milliseconds(100);
 
 constexpr base::TimeDelta kFindResultCooldown = base::Milliseconds(100);
 
+#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 // This constant should have the same value as the one in
 // `pdf_view_web_plugin_unittest.cc`.
 // LINT.IfChange(searchify_state_propagation_delay)
 constexpr base::TimeDelta kSearchifyStatePropagationDelay = base::Seconds(1);
 // LINT.ThenChange(//pdf/pdf_view_web_plugin_unittest.cc:searchify_state_propagation_delay)
+#endif
 
 constexpr std::string_view kChromeExtensionHost =
     "chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/";
@@ -1378,6 +1380,7 @@ void PdfViewWebPlugin::DocumentLoadComplete() {
   if (accessibility_state_ == AccessibilityState::kPending)
     LoadAccessibility();
 
+#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
   // To avoid delaying page load for searchify, start searchify after document
   // load is completed.
   // Maximum image dimension is asked once and stored for the next usages, so
@@ -1386,6 +1389,7 @@ void PdfViewWebPlugin::DocumentLoadComplete() {
   engine_->StartSearchify(
       base::BindOnce(&Client::GetOcrMaxImageDimension, client_->GetWeakPtr()),
       base::BindRepeating(&Client::PerformOcr, client_->GetWeakPtr()));
+#endif
 
   if (!full_frame_)
     return;
@@ -2997,6 +3001,7 @@ void PdfViewWebPlugin::PrepareAndSetAccessibilityPageInfo(int32_t page_index) {
     return;
   }
 
+#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
   // Wait for the page to be loaded and searchified before getting accessibility
   // page info.
   // Ensure page is loaded so that it can schedule a searchify operation if
@@ -3010,6 +3015,7 @@ void PdfViewWebPlugin::PrepareAndSetAccessibilityPageInfo(int32_t page_index) {
         kAccessibilityPageDelay * 10);
     return;
   }
+#endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 
   ++next_accessibility_page_index_;
 

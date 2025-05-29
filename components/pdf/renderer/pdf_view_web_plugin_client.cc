@@ -203,6 +203,7 @@ PdfViewWebPluginClient::CreateAssociatedURLLoader(
   return GetFrame()->CreateAssociatedURLLoader(options);
 }
 
+#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 void PdfViewWebPluginClient::GetOcrMaxImageDimension(
     base::OnceCallback<void(uint32_t)> callback) {
   ConnectOcrIfNeeded();
@@ -241,6 +242,7 @@ void PdfViewWebPluginClient::ConnectOcrIfNeeded() {
                        weak_factory_.GetWeakPtr()));
   }
 }
+#endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 
 void PdfViewWebPluginClient::UpdateTextInputState() {
   // `widget` is null in Print Preview.

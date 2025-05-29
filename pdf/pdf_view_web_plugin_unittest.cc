@@ -137,11 +137,13 @@ constexpr SkColor kDefaultColor = SK_ColorGREEN;
 
 constexpr SkColor kPaintColor = SK_ColorRED;
 
+#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 // This constant should have the same value as the one in
 // `pdf_view_web_plugin.cc`.
 // LINT.IfChange(searchify_state_propagation_delay)
 constexpr base::TimeDelta kSearchifyStatePropagationDelay = base::Seconds(1);
 // LINT.ThenChange(//pdf/pdf_view_web_plugin.cc:searchify_state_propagation_delay)
+#endif
 
 struct PaintParams {
   // The plugin container's device scale.
@@ -198,11 +200,13 @@ SkBitmap GenerateExpectedBitmapForPaint(const gfx::Rect& expected_clipped_rect,
   return expected_bitmap;
 }
 
+#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 base::Value::Dict GenerateShowSearchifyInProgressMessage(bool show) {
   return base::Value::Dict()
       .Set("type", "showSearchifyInProgress")
       .Set("show", show);
 }
+#endif
 
 class MockHeaderVisitor : public blink::WebHTTPHeaderVisitor {
  public:
@@ -1846,6 +1850,7 @@ TEST_F(PdfViewWebPluginTest, OnDocumentLoadComplete) {
   plugin_->DocumentLoadComplete();
 }
 
+#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 TEST_F(PdfViewWebPluginTest, OnSearchifyStarted) {
   base::Value::Dict message = GenerateShowSearchifyInProgressMessage(true);
 
@@ -1934,6 +1939,7 @@ TEST_F(PdfViewWebPluginTest, OnHasSearchifyText) {
   EXPECT_CALL(*client_ptr_, PostMessage(Eq(std::ref(message))));
   plugin_->OnHasSearchifyText();
 }
+#endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 
 TEST_F(PdfViewWebPluginTest, HighlightTextFragments) {
   EXPECT_CALL(*engine_ptr_, HighlightTextFragments(

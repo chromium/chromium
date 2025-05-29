@@ -85,6 +85,7 @@ class PdfViewWebPluginClient : public chrome_pdf::PdfViewWebPlugin::Client {
   CreateAccessibilityDataHandler(
       chrome_pdf::PdfAccessibilityActionHandler* action_handler,
       blink::WebPluginContainer* plugin_element) override;
+#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
   void GetOcrMaxImageDimension(
       base::OnceCallback<void(uint32_t)> callback) override;
   void PerformOcr(
@@ -92,12 +93,15 @@ class PdfViewWebPluginClient : public chrome_pdf::PdfViewWebPlugin::Client {
       base::OnceCallback<void(screen_ai::mojom::VisualAnnotationPtr)> callback)
       override;
   void SetOcrDisconnectedCallback(base::RepeatingClosure callback) override;
+#endif
 
  private:
   blink::WebLocalFrame* GetFrame() const;
 
+#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
   void OnOcrDisconnected();
   void ConnectOcrIfNeeded();
+#endif
 
   const raw_ptr<content::RenderFrame> render_frame_;
 

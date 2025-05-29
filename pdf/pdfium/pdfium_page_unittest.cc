@@ -39,8 +39,10 @@ namespace chrome_pdf {
 
 namespace {
 
+#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 // The maximum image dimension which is processed without downsampling by OCR.
 constexpr uint32_t kMaxImageDimensionForOcr = 2048;
+#endif
 
 TEST(PDFiumPageHelperTest, ToPDFiumRotation) {
   EXPECT_EQ(ToPDFiumRotation(PageOrientation::kOriginal), 0);
@@ -542,6 +544,7 @@ TEST_P(PDFiumPageImageTest, ImageAltText) {
 
 INSTANTIATE_TEST_SUITE_P(All, PDFiumPageImageTest, testing::Bool());
 
+#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 class PDFiumPageImageForOcrTest : public PDFiumPageImageTest {
  public:
   PDFiumPageImageForOcrTest() = default;
@@ -666,6 +669,7 @@ TEST_P(PDFiumPageImageForOcrTest, NonImage) {
 }
 
 INSTANTIATE_TEST_SUITE_P(All, PDFiumPageImageForOcrTest, testing::Bool());
+#endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 
 using PDFiumPageTextTest = PDFiumTestBase;
 
