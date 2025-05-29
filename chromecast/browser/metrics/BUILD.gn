@@ -33,9 +33,7 @@ cast_source_set("metrics") {
   ]
 
   if (is_linux || is_chromeos) {
-    deps += [
-      ":external_metrics",
-    ]
+    deps += [ ":external_metrics" ]
   }
 }
 
@@ -46,9 +44,7 @@ if (is_linux || is_chromeos) {
       "external_metrics.h",
     ]
 
-    public_deps = [
-      "//base",
-    ]
+    public_deps = [ "//base" ]
 
     deps = [
       "//chromecast/base/metrics",
