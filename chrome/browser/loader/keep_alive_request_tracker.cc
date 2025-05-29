@@ -144,8 +144,8 @@ void ChromeKeepAliveRequestTracker::AddStageMetrics(const RequestStage& stage) {
     case RequestStageType::kRequestFailed:
       ukm_builder_.SetTimeDelta_RequestFailed(
           relative_to_created_time.InMilliseconds());
-      ukm_builder_.SetCompletionStatus_ErrorCode(stage.status->error_code);
-      ukm_builder_.SetCompletionStatus_ExtendedErrorCode(
+      ukm_builder_.SetRequestFailed_ErrorCode(stage.status->error_code);
+      ukm_builder_.SetRequestFailed_ExtendedErrorCode(
           stage.status->extended_error_code);
       break;
 
@@ -172,8 +172,8 @@ void ChromeKeepAliveRequestTracker::AddStageMetrics(const RequestStage& stage) {
     case RequestStageType::kLoaderCompleted:
       ukm_builder_.SetTimeDelta_LoaderCompleted(
           relative_to_created_time.InMilliseconds());
-      ukm_builder_.SetCompletionStatus_ErrorCode(stage.status->error_code);
-      ukm_builder_.SetCompletionStatus_ExtendedErrorCode(
+      ukm_builder_.SetLoaderCompleted_ErrorCode(stage.status->error_code);
+      ukm_builder_.SetLoaderCompleted_ExtendedErrorCode(
           stage.status->extended_error_code);
       break;
   }

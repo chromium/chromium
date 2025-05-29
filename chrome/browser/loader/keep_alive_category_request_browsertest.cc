@@ -167,8 +167,10 @@ IN_PROC_BROWSER_TEST_P(ChromeKeepAliveCategoryRequestBrowserTest, OneRequest) {
       content::KeepAliveRequestTracker::RequestStageType::kLoaderCompleted,
       content::KeepAliveRequestTracker::RequestStageType::kResponseReceived,
       /*keepalive_token=*/std::nullopt,
-      /*error_code=*/net::OK,
-      /*extended_error_code=*/0);
+      /*failed_error_code=*/std::nullopt,
+      /*failed_extended_error_code=*/std::nullopt,
+      /*completed_error_code=*/net::OK,
+      /*completed_extended_error_code=*/0);
   ExpectTimeSortedTimeDeltaUkm(
       {"TimeDelta.RequestStarted", "TimeDelta.ResponseReceived",
        "TimeDelta.LoaderCompleted", "TimeDelta.EventLogged"});
@@ -245,8 +247,10 @@ IN_PROC_BROWSER_TEST_P(ChromeKeepAliveCategoryRequestBrowserTest,
       content::KeepAliveRequestTracker::RequestStageType::kLoaderCompleted,
       content::KeepAliveRequestTracker::RequestStageType::kResponseReceived,
       /*keepalive_token=*/std::nullopt,
-      /*error_code=*/net::OK,
-      /*extended_error_code=*/0);
+      /*failed_error_code=*/std::nullopt,
+      /*failed_extended_error_code=*/std::nullopt,
+      /*completed_error_code=*/net::OK,
+      /*completed_extended_error_code=*/0);
   ExpectTimeSortedTimeDeltaUkm(
       {"TimeDelta.RequestStarted", "TimeDelta.ResponseReceived",
        "TimeDelta.LoaderCompleted", "TimeDelta.EventLogged"});
@@ -360,8 +364,10 @@ IN_PROC_BROWSER_TEST_P(FromGWSNavigationAndKeepAliveRequestBrowserTest,
       content::KeepAliveRequestTracker::RequestStageType::kLoaderCompleted,
       content::KeepAliveRequestTracker::RequestStageType::kResponseReceived,
       /*keepalive_token=*/std::nullopt,
-      /*error_code=*/net::OK,
-      /*extended_error_code=*/0);
+      /*failed_error_code=*/std::nullopt,
+      /*failed_extended_error_code=*/std::nullopt,
+      /*completed_error_code=*/net::OK,
+      /*completed_extended_error_code=*/0);
   ExpectTimeSortedTimeDeltaUkm(
       {"TimeDelta.RequestStarted", "TimeDelta.ResponseReceived",
        "TimeDelta.LoaderCompleted", "TimeDelta.EventLogged"});
@@ -400,8 +406,10 @@ IN_PROC_BROWSER_TEST_P(FromGWSNavigationAndKeepAliveRequestBrowserTest,
       content::KeepAliveRequestTracker::RequestStageType::kLoaderCompleted,
       content::KeepAliveRequestTracker::RequestStageType::kResponseReceived,
       /*keepalive_token=*/std::nullopt,
-      /*error_code=*/net::OK,
-      /*extended_error_code=*/0);
+      /*failed_error_code=*/std::nullopt,
+      /*failed_extended_error_code=*/std::nullopt,
+      /*completed_error_code=*/net::OK,
+      /*completed_extended_error_code=*/0);
   ExpectTimeSortedTimeDeltaUkm(
       {"TimeDelta.RequestStarted", "TimeDelta.ResponseReceived",
        "TimeDelta.LoaderCompleted", "TimeDelta.EventLogged"});
@@ -449,8 +457,10 @@ IN_PROC_BROWSER_TEST_P(FromGWSNavigationAndKeepAliveRequestBrowserTest,
         content::KeepAliveRequestTracker::RequestStageType::kLoaderCompleted,
         content::KeepAliveRequestTracker::RequestStageType::kResponseReceived,
         /*keepalive_token=*/std::nullopt,
-        /*error_code=*/net::OK,
-        /*extended_error_code=*/0},
+        /*failed_error_code=*/std::nullopt,
+        /*failed_extended_error_code=*/std::nullopt,
+        /*completed_error_code=*/net::OK,
+        /*completed_extended_error_code=*/0},
        {content::KeepAliveRequestTracker::RequestType::kFetch,
         /*category_id=*/2,
         /*num_redirects=*/0,
@@ -458,8 +468,10 @@ IN_PROC_BROWSER_TEST_P(FromGWSNavigationAndKeepAliveRequestBrowserTest,
         content::KeepAliveRequestTracker::RequestStageType::kLoaderCompleted,
         content::KeepAliveRequestTracker::RequestStageType::kResponseReceived,
         /*keepalive_token=*/std::nullopt,
-        /*error_code=*/net::OK,
-        /*extended_error_code=*/0}});
+        /*failed_error_code=*/std::nullopt,
+        /*failed_extended_error_code=*/std::nullopt,
+        /*completed_error_code=*/net::OK,
+        /*completed_extended_error_code=*/0}});
   // Only request with `category2` should be paired with the navigation
   // request.
   ExpectNavigationUkm(/*category_id=*/2, /*navigation_id=*/std::nullopt,
@@ -503,8 +515,10 @@ IN_PROC_BROWSER_TEST_P(FromGWSNavigationAndKeepAliveRequestBrowserTest,
         content::KeepAliveRequestTracker::RequestStageType::kLoaderCompleted,
         content::KeepAliveRequestTracker::RequestStageType::kResponseReceived,
         /*keepalive_token=*/std::nullopt,
-        /*error_code=*/net::OK,
-        /*extended_error_code=*/0},
+        /*failed_error_code=*/std::nullopt,
+        /*failed_extended_error_code=*/std::nullopt,
+        /*completed_error_code=*/net::OK,
+        /*completed_extended_error_code=*/0},
        {content::KeepAliveRequestTracker::RequestType::kFetch,
         /*category_id=*/1,
         /*num_redirects=*/0,
@@ -512,8 +526,10 @@ IN_PROC_BROWSER_TEST_P(FromGWSNavigationAndKeepAliveRequestBrowserTest,
         content::KeepAliveRequestTracker::RequestStageType::kLoaderCompleted,
         content::KeepAliveRequestTracker::RequestStageType::kResponseReceived,
         /*keepalive_token=*/std::nullopt,
-        /*error_code=*/net::OK,
-        /*extended_error_code=*/0}});
+        /*failed_error_code=*/std::nullopt,
+        /*failed_extended_error_code=*/std::nullopt,
+        /*completed_error_code=*/net::OK,
+        /*completed_extended_error_code=*/0}});
   // Only one request should be paired with the navigation request, event though
   // both requests have the same category ID.
   ExpectNavigationUkm(/*category_id=*/1, /*navigation_id=*/std::nullopt,
@@ -550,8 +566,10 @@ IN_PROC_BROWSER_TEST_P(FromGWSNavigationAndKeepAliveRequestBrowserTest,
       content::KeepAliveRequestTracker::RequestStageType::kLoaderCompleted,
       content::KeepAliveRequestTracker::RequestStageType::kResponseReceived,
       /*keepalive_token=*/std::nullopt,
-      /*error_code=*/net::OK,
-      /*extended_error_code=*/0);
+      /*failed_error_code=*/std::nullopt,
+      /*failed_extended_error_code=*/std::nullopt,
+      /*completed_error_code=*/net::OK,
+      /*completed_extended_error_code=*/0);
   ExpectTimeSortedTimeDeltaUkm(
       {"TimeDelta.RequestStarted", "TimeDelta.ResponseReceived",
        "TimeDelta.LoaderCompleted", "TimeDelta.EventLogged"});
@@ -594,8 +612,10 @@ IN_PROC_BROWSER_TEST_P(FromGWSNavigationAndKeepAliveRequestBrowserTest,
       content::KeepAliveRequestTracker::RequestStageType::kLoaderCompleted,
       content::KeepAliveRequestTracker::RequestStageType::kResponseReceived,
       /*keepalive_token=*/std::nullopt,
-      /*error_code=*/net::OK,
-      /*extended_error_code=*/0);
+      /*failed_error_code=*/std::nullopt,
+      /*failed_extended_error_code=*/std::nullopt,
+      /*completed_error_code=*/net::OK,
+      /*completed_extended_error_code=*/0);
   ExpectTimeSortedTimeDeltaUkm(
       {"TimeDelta.RequestStarted", "TimeDelta.ResponseReceived",
        "TimeDelta.LoaderCompleted", "TimeDelta.EventLogged"});
@@ -647,8 +667,10 @@ IN_PROC_BROWSER_TEST_P(
         content::KeepAliveRequestTracker::RequestStageType::kLoaderCompleted,
         content::KeepAliveRequestTracker::RequestStageType::kResponseReceived,
         /*keepalive_token=*/std::nullopt,
-        /*error_code=*/net::OK,
-        /*extended_error_code=*/0},
+        /*failed_error_code=*/std::nullopt,
+        /*failed_extended_error_code=*/std::nullopt,
+        /*completed_error_code=*/net::OK,
+        /*completed_extended_error_code=*/0},
        {content::KeepAliveRequestTracker::RequestType::kFetch,
         /*category_id=*/2,
         /*num_redirects=*/0,
@@ -656,8 +678,10 @@ IN_PROC_BROWSER_TEST_P(
         content::KeepAliveRequestTracker::RequestStageType::kLoaderCompleted,
         content::KeepAliveRequestTracker::RequestStageType::kResponseReceived,
         /*keepalive_token=*/std::nullopt,
-        /*error_code=*/net::OK,
-        /*extended_error_code=*/0}});
+        /*failed_error_code=*/std::nullopt,
+        /*failed_extended_error_code=*/std::nullopt,
+        /*completed_error_code=*/net::OK,
+        /*completed_extended_error_code=*/0}});
   // Only one navigation should be paired with the fetch keepalive request.
   ExpectNavigationUkms({{/*category_id=*/1, /*navigation_id=*/std::nullopt,
                          /*keepalive_token=*/std::nullopt},
@@ -695,8 +719,10 @@ IN_PROC_BROWSER_TEST_P(FromGWSNavigationAndKeepAliveRequestBrowserTest,
       content::KeepAliveRequestTracker::RequestStageType::kLoaderCompleted,
       content::KeepAliveRequestTracker::RequestStageType::kResponseReceived,
       /*keepalive_token=*/std::nullopt,
-      /*error_code=*/net::OK,
-      /*extended_error_code=*/0);
+      /*failed_error_code=*/std::nullopt,
+      /*failed_extended_error_code=*/std::nullopt,
+      /*completed_error_code=*/net::OK,
+      /*completed_extended_error_code=*/0);
   ExpectTimeSortedTimeDeltaUkm(
       {"TimeDelta.RequestStarted", "TimeDelta.ResponseReceived",
        "TimeDelta.LoaderCompleted", "TimeDelta.EventLogged"});

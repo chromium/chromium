@@ -438,6 +438,8 @@ TEST_P(ChromeKeepAliveRequestTrackerTest, LoaderCompleted) {
                   /*is_context_detached=*/false,
                   RequestStageType::kLoaderCompleted,
                   RequestStageType::kResponseReceived, *request.keepalive_token,
+                  /*failed_error_code=*/std::nullopt,
+                  /*failed_extended_error_code=*/std::nullopt,
                   status.error_code, status.extended_error_code);
   ExpectTimeSortedTimeDeltaUkm(
 
@@ -466,6 +468,8 @@ TEST_P(ChromeKeepAliveRequestTrackerTest, LoaderCompletedWithError) {
                   /*is_context_detached=*/false,
                   RequestStageType::kLoaderCompleted,
                   RequestStageType::kRequestStarted, *request.keepalive_token,
+                  /*failed_error_code=*/std::nullopt,
+                  /*failed_extended_error_code=*/std::nullopt,
                   failed_status.error_code, failed_status.extended_error_code);
   ExpectTimeSortedTimeDeltaUkm(
 
