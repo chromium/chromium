@@ -1596,12 +1596,10 @@ void ReplaceSelectionCommand::DoApply(EditingState* editing_state) {
 
   GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kEditing);
 
-  bool is_root_display_inline = false;
-  if (RuntimeEnabledFeatures::RemovePlaceholderBRForDisplayInlineEnabled()) {
-    is_root_display_inline =
-        current_root && current_root->GetComputedStyle() &&
-        current_root->GetComputedStyle()->IsDisplayInlineType();
-  }
+  bool is_root_display_inline =
+      current_root && current_root->GetComputedStyle() &&
+      current_root->GetComputedStyle()->IsDisplayInlineType();
+
   if (end_br &&
       (plain_text_fragment || is_root_display_inline ||
        (ShouldRemoveEndBR(end_br, original_vis_pos_before_end_br) &&

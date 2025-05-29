@@ -3931,11 +3931,6 @@
       status: "stable",
     },
     {
-      // crbug.com/41047725
-      name: "RemovePlaceholderBRForDisplayInline",
-      status: "stable",
-    },
-    {
       // See https://issues.chromium.org/issues/41474791
       name: "RemoveSelectionCanonicalizationInMoveParagraph",
       status: "stable",
