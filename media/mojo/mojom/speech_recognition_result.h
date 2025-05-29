@@ -67,6 +67,9 @@ struct TimingInformation {
 struct SpeechRecognitionResult {
   SpeechRecognitionResult();
   SpeechRecognitionResult(const std::string transcript, bool is_final);
+  SpeechRecognitionResult(const std::string transcript,
+                          bool is_final,
+                          std::optional<TimingInformation> timing_information);
   SpeechRecognitionResult(const SpeechRecognitionResult&);
   SpeechRecognitionResult(SpeechRecognitionResult&&);
   SpeechRecognitionResult& operator=(const SpeechRecognitionResult&);
