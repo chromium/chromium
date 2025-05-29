@@ -702,4 +702,14 @@ void HTMLIFrameElement::CheckPotentialPermissionsPolicyViolation() {
   }
 }
 
+void HTMLIFrameElement::NaturalSizingInfoChanged() {
+  if (!RuntimeEnabledFeatures::ResponsiveIframesEnabled()) {
+    return;
+  }
+  if (auto* object = DynamicTo<LayoutIFrame>(GetLayoutObject())) {
+    object->SetNeedsLayoutAndIntrinsicWidthsRecalcAndFullPaintInvalidation(
+        layout_invalidation_reason::kSizeChanged);
+  }
+}
+
 }  // namespace blink

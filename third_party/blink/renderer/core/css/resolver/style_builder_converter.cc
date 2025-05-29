@@ -3521,11 +3521,17 @@ StyleIntrinsicLength StyleBuilderConverter::ConvertIntrinsicDimension(
   // The valid grammar for this value is the following:
   // none | <length> | auto && <length> | auto && none.
 
-  // Handle "none", which is the only case where we get an identifier.
   auto* identifier_value = DynamicTo<CSSIdentifierValue>(value);
   if (identifier_value) {
-    DCHECK(identifier_value->GetValueID() == CSSValueID::kNone);
-    return StyleIntrinsicLength(/*has_auto=*/false, std::nullopt);
+    if (identifier_value->GetValueID() == CSSValueID::kNone) {
+      return StyleIntrinsicLength(/*has_auto=*/false, /*matches_element=*/false,
+                                  std::nullopt);
+    } else {
+      DCHECK(RuntimeEnabledFeatures::ResponsiveIframesEnabled());
+      DCHECK(identifier_value->GetValueID() == CSSValueID::kFromElement);
+      return StyleIntrinsicLength(/*has_auto=*/false, /*matches_element=*/true,
+                                  std::nullopt);
+    }
   }
 
   // Handle "<length> | auto && <length> | auto && none, which will all come
@@ -3538,7 +3544,8 @@ StyleIntrinsicLength StyleBuilderConverter::ConvertIntrinsicDimension(
   if (auto* primitive_value = DynamicTo<CSSPrimitiveValue>(list->Item(0))) {
     DCHECK_EQ(list->length(), 1u);
     return StyleIntrinsicLength(
-        /*has_auto=*/false, ConvertLength(state, *primitive_value));
+        /*has_auto=*/false, /*matches_element=*/false,
+        ConvertLength(state, *primitive_value));
   }
 
   // The rest of the syntax will have "auto" as the first keyword.
@@ -3550,7 +3557,8 @@ StyleIntrinsicLength StyleBuilderConverter::ConvertIntrinsicDimension(
   // Handle "auto && <length>"
   if (auto* primitive_value = DynamicTo<CSSPrimitiveValue>(list->Item(1))) {
     return StyleIntrinsicLength(
-        /*has_auto=*/true, ConvertLength(state, *primitive_value));
+        /*has_auto=*/true, /*matches_element=*/false,
+        ConvertLength(state, *primitive_value));
   }
 
   // The only grammar left is "auto && none".
@@ -3558,7 +3566,8 @@ StyleIntrinsicLength StyleBuilderConverter::ConvertIntrinsicDimension(
   DCHECK(To<CSSIdentifierValue>(list->Item(1)).GetValueID() ==
          CSSValueID::kNone);
 
-  return StyleIntrinsicLength(/*has_auto=*/true, std::nullopt);
+  return StyleIntrinsicLength(/*has_auto=*/true, /*matches_element=*/false,
+                              std::nullopt);
 }
 
 ColorSchemeFlags StyleBuilderConverter::ExtractColorSchemes(

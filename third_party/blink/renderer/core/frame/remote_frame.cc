@@ -742,8 +742,10 @@ void RemoteFrame::IntrinsicSizingInfoOfChildChanged(
   FrameOwner* owner = Owner();
   // Only communication from HTMLPluginElement-owned subframes is allowed
   // at present. This includes <embed> and <object> tags.
-  if (!owner || !owner->IsPlugin())
+  if (!owner || (!owner->IsPlugin() &&
+                 !RuntimeEnabledFeatures::ResponsiveIframesEnabled())) {
     return;
+  }
 
   // TODO(https://crbug.com/1044304): Should either remove the native
   // C++ Blink type and use the Mojo type everywhere or typemap the

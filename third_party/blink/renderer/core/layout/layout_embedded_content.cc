@@ -135,6 +135,11 @@ AffineTransform LayoutEmbeddedContent::EmbeddedContentTransform() const {
   return translate_and_scale;
 }
 
+bool LayoutEmbeddedContent::ShowsUnavailablePluginIndicator() const {
+  NOT_DESTROYED();
+  return false;
+}
+
 PhysicalOffset LayoutEmbeddedContent::EmbeddedContentFromBorderBox(
     const PhysicalOffset& offset) const {
   NOT_DESTROYED();

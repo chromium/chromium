@@ -71,14 +71,14 @@ void RemoteFrameOwner::DispatchLoad() {
 
 void RemoteFrameOwner::NaturalSizingInfoChanged() {
   LocalFrame& local_frame = To<LocalFrame>(*frame_);
-  std::optional<NaturalSizingInfo> natural_sizing_info =
-      local_frame.View()->GetNaturalDimensions();
-  auto sizing_info = mojom::blink::IntrinsicSizingInfo::New(
-      natural_sizing_info->size, natural_sizing_info->aspect_ratio,
-      natural_sizing_info->has_width, natural_sizing_info->has_height);
-  WebLocalFrameImpl::FromFrame(local_frame)
-      ->FrameWidgetImpl()
-      ->IntrinsicSizingInfoChanged(std::move(sizing_info));
+  if (auto natural_sizing_info = local_frame.View()->GetNaturalDimensions()) {
+    auto sizing_info = mojom::blink::IntrinsicSizingInfo::New(
+        natural_sizing_info->size, natural_sizing_info->aspect_ratio,
+        natural_sizing_info->has_width, natural_sizing_info->has_height);
+    WebLocalFrameImpl::FromFrame(local_frame)
+        ->FrameWidgetImpl()
+        ->IntrinsicSizingInfoChanged(std::move(sizing_info));
+  }
 }
 
 void RemoteFrameOwner::SetNeedsOcclusionTracking(bool needs_tracking) {

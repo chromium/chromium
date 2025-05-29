@@ -1917,6 +1917,10 @@ class CORE_EXPORT Document : public ContainerNode,
   // modified. Re-collect the META values.
   void SupportsReducedMotionMetaChanged();
 
+  // A META element with name=responsive-embedded-sizing was added, removed, or
+  // modified. Re-collect the META values.
+  void ResponsiveEmbeddedSizingChanged();
+
   // Use counter related functions.
   void CountUse(mojom::WebFeature feature) final;
   void CountDeprecation(mojom::WebFeature feature) final;
@@ -3091,6 +3095,8 @@ class CORE_EXPORT Document : public ContainerNode,
   // If a payment link is handled before.
   bool payment_link_handled_ = false;
 #endif
+
+  bool responsive_embedded_sizing_ = false;
 
   // If you want to add new data members to blink::Document, please reconsider
   // if the members really should be in blink::Document.  document.h is a very
