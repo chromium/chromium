@@ -2669,15 +2669,6 @@ void PDFiumEngine::HandleLongPress(const blink::WebTouchEvent& event) {
   OnMouseDown(mouse_event);
 }
 
-SkBitmap PDFiumEngine::GetImageForOcr(int page_index, int image_index) {
-  DCHECK(PageIndexInBounds(page_index));
-  // This function is not used after launch of PDF Searchify. Default OCR
-  // expected resolution is used to avoid unnecessary update of the call chain.
-  // TODO(crbug.com/360803943): Remove this function and call chain.
-  return pages_[page_index]->GetImageForOcr(image_index,
-                                            /*max_image_dimension=*/2048);
-}
-
 bool PDFiumEngine::GetPrintScaling() {
   return !!FPDF_VIEWERREF_GetPrintScaling(doc());
 }

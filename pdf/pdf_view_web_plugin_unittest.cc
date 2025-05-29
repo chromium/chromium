@@ -38,7 +38,6 @@
 #include "pdf/mojom/pdf.mojom.h"
 #include "pdf/paint_ready_rect.h"
 #include "pdf/pdf_accessibility_data_handler.h"
-#include "pdf/pdf_accessibility_image_fetcher.h"
 #include "pdf/pdf_features.h"
 #include "pdf/pdf_ink_annotation_mode.h"
 #include "pdf/test/mock_web_associated_url_loader.h"
@@ -351,10 +350,7 @@ class FakePdfViewWebPluginClient : public PdfViewWebPlugin::Client {
 
   MOCK_METHOD(std::unique_ptr<PdfAccessibilityDataHandler>,
               CreateAccessibilityDataHandler,
-              (PdfAccessibilityActionHandler*,
-               PdfAccessibilityImageFetcher*,
-               blink::WebPluginContainer*,
-               bool),
+              (PdfAccessibilityActionHandler*, blink::WebPluginContainer*),
               (override));
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
   MOCK_METHOD(void,

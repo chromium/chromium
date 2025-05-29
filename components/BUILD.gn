@@ -1136,7 +1136,6 @@ if (use_blink) {
     if (enable_screen_ai_service) {
       deps += [
         "//services/screen_ai",
-        "//services/screen_ai:test_support",
         "//services/screen_ai/public/mojom",
         "//skia",
       ]

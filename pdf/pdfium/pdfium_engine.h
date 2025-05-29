@@ -320,9 +320,6 @@ class PDFiumEngine : public DocumentLoader::Client, public IFSDK_PAUSE {
   // Set color / grayscale rendering modes.
   virtual void SetGrayscale(bool grayscale);
 
-  // Returns the image as a 32-bit bitmap format for OCR.
-  SkBitmap GetImageForOcr(int page_index, int image_index);
-
   // Gets the PDF document's print scaling preference. True if the document can
   // be scaled to fit.
   bool GetPrintScaling();
