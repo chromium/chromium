@@ -261,8 +261,8 @@
       <message name="IDS_IOS_ADVANCED_SIGNIN_SETTINGS_CANCEL_SYNC_ALERT_MESSAGE" desc="Alert title to ask if the user really wants to cancel sign-in and sync.">
         Cancel sync? You can turn on sync anytime in settings.
       </message>
-      <message name="IDS_IOS_AI_HUB_GEMINI_LABEL" desc="The button label for the Gemini entry point of the AI hub.">
-        Ask Gemini
+      <message name="IDS_IOS_AI_HUB_BWG_LABEL" translateable="false" desc="The button label for the Gemini entry point of the AI hub.">
+        Ask Me
       </message>
       <message name="IDS_IOS_AI_HUB_LENS_LABEL" desc="The button label for the Lens entry point of the AI hub.">
         Search screen
@@ -1031,6 +1031,15 @@
         {count, plural,
           =1 {Item saved in your Google Account, {email}}
           other {Items saved in your Google Account, {email}}}
+      </message>
+      <message name="IDS_IOS_BWG_CONSENT_PRIMARY_BUTTON" desc="Text for the BWG Consent primary button.">
+        Yes, I'm in
+      </message>
+      <message name="IDS_IOS_BWG_FIRST_RUN_SECONDARY_BUTTON" desc="Text for the BWG First Run secondary button.">
+        No thanks
+      </message>
+      <message name="IDS_IOS_BWG_PROMO_PRIMARY_BUTTON" desc="Text for the BWG Promo primary button.">
+        Try it out
       </message>
       <message name="IDS_IOS_CALL_OMNIBOX_ACTION" desc="Call suggestion action button [iOS only]">
         Call
@@ -2551,15 +2560,6 @@ See your search engine’s instructions for deleting your search history, if app
       </message>
       <message name="IDS_IOS_GENERIC_PASSKIT_ERROR" desc="Generic error message on failure reading a PassKit object. [Length: 60em] [iOS only]">
         Sorry, your Pass cannot be installed to Passbook at this time.
-      </message>
-      <message name="IDS_IOS_GLIC_CONSENT_PRIMARY_BUTTON" desc="Text for the GLIC Consent primary button.">
-        Yes, I'm in
-      </message>
-      <message name="IDS_IOS_GLIC_FIRST_RUN_SECONDARY_BUTTON" desc="Text for the GLIC First Run secondary button.">
-        No thanks
-      </message>
-      <message name="IDS_IOS_GLIC_PROMO_PRIMARY_BUTTON" desc="Text for the GLIC Promo primary button.">
-        Try it out
       </message>
       <message name="IDS_IOS_GOOGLE_ACCOUNTS_MANAGEMENT_FROM_ACCOUNT_SETTINGS_TITLE" desc="Title of a page that shows all accounts on the user's device and lets them add, remove and otherwise manage their accounts. Avoid long strings given the limited space between surrounding buttons.">
         Accounts on this device

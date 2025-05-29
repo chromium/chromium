@@ -664,8 +664,8 @@ extern const char kOneTapForMapsDescription[];
 extern const char kPageActionMenuName[];
 extern const char kPageActionMenuDescription[];
 
-extern const char kGLICPromoConsentName[];
-extern const char kGLICPromoConsentDescription[];
+extern const char kBWGPromoConsentName[];
+extern const char kBWGPromoConsentDescription[];
 
 extern const char kPageContentAnnotationsName[];
 extern const char kPageContentAnnotationsDescription[];

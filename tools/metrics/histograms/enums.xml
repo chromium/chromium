@@ -5297,16 +5297,6 @@ to ensure that the crash string is shown properly on the user-facing crash UI.
   <int value="9" label="kErrorDeserializingJSonLogs"/>
 </enum>
 
-<!-- LINT.IfChange(GLICConsentType) -->
-
-<enum name="GLICConsentType">
-  <int value="0" label="kCancel"/>
-  <int value="1" label="kDismiss"/>
-  <int value="2" label="kAccept"/>
-</enum>
-
-<!-- LINT.ThenChange(//ios/chrome/browser/intelligence/gemini/metrics/glic_metrics.h:GLICConsentType) -->
-
 <enum name="GoogleRpcCode">
   <summary>Canonical error codes for gRPC APIs.</summary>
   <int value="0" label="OK"/>

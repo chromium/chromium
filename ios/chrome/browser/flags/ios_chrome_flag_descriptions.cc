@@ -1132,8 +1132,8 @@ const char kPageActionMenuDescription[] =
     "When enabled, the entry point for the Page Action Menu becomes available "
     "for actions relating to the web page.";
 
-const char kGLICPromoConsentName[] = "GLIC Promo Consent";
-const char kGLICPromoConsentDescription[] =
+const char kBWGPromoConsentName[] = "BWG Promo Consent";
+const char kBWGPromoConsentDescription[] =
     "Whether the promo consent flow is composed of a single or a double screen "
     "view.";
 

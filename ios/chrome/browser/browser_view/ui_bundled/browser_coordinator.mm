@@ -123,10 +123,10 @@
 #import "ios/chrome/browser/incognito_reauth/ui_bundled/incognito_reauth_scene_agent.h"
 #import "ios/chrome/browser/infobars/model/infobar_ios.h"
 #import "ios/chrome/browser/infobars/model/infobar_manager_impl.h"
+#import "ios/chrome/browser/intelligence/bwg/coordinator/bwg_coordinator.h"
 #import "ios/chrome/browser/intelligence/enhanced_calendar/coordinator/enhanced_calendar_coordinator.h"
 #import "ios/chrome/browser/intelligence/enhanced_calendar/model/enhanced_calendar_configuration.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
-#import "ios/chrome/browser/intelligence/gemini/coordinator/glic_coordinator.h"
 #import "ios/chrome/browser/intelligence/page_action_menu/coordinator/page_action_menu_coordinator.h"
 #import "ios/chrome/browser/intents/model/intents_donation_helper.h"
 #import "ios/chrome/browser/lens/ui_bundled/lens_coordinator.h"
@@ -214,6 +214,7 @@
 #import "ios/chrome/browser/shared/public/commands/auto_deletion_commands.h"
 #import "ios/chrome/browser/shared/public/commands/autofill_commands.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
+#import "ios/chrome/browser/shared/public/commands/bwg_commands.h"
 #import "ios/chrome/browser/shared/public/commands/collaboration_group_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/contextual_panel_entrypoint_commands.h"
@@ -224,7 +225,6 @@
 #import "ios/chrome/browser/shared/public/commands/enhanced_calendar_commands.h"
 #import "ios/chrome/browser/shared/public/commands/feed_commands.h"
 #import "ios/chrome/browser/shared/public/commands/find_in_page_commands.h"
-#import "ios/chrome/browser/shared/public/commands/glic_commands.h"
 #import "ios/chrome/browser/shared/public/commands/google_one_commands.h"
 #import "ios/chrome/browser/shared/public/commands/help_commands.h"
 #import "ios/chrome/browser/shared/public/commands/lens_overlay_commands.h"
@@ -364,7 +364,7 @@ enum class ToolbarKind {
     EditMenuBuilder,
     EnterprisePromptCoordinatorDelegate,
     FormInputAccessoryCoordinatorNavigator,
-    GlicCommands,
+    BWGCommands,
     GoogleOneCommands,
     MiniMapCommands,
     NetExportTabHelperDelegate,
@@ -702,8 +702,8 @@ enum class ToolbarKind {
   // group is closed.
   TabGroupConfirmationCoordinator* _lastTabClosingAlert;
 
-  // The coordinator for GLIC related logic.
-  GLICCoordinator* _glicCoordinator;
+  // The coordinator for BWG related logic.
+  BWGCoordinator* _BWGCoordinator;
 
   // The coordinator for the Search What You See promo.
   SearchWhatYouSeePromoCoordinator* _searchWhatYouSeePromoCoordinator;
@@ -1120,7 +1120,7 @@ enum class ToolbarKind {
     @protocol(FeedCommands),
     @protocol(PromosManagerCommands),
     @protocol(FindInPageCommands),
-    @protocol(GlicCommands),
+    @protocol(BWGCommands),
     @protocol(ReaderModeCommands),
     @protocol(NewTabPageCommands),
     @protocol(NonModalSignInPromoCommands),
@@ -1719,8 +1719,8 @@ enum class ToolbarKind {
   [_lastTabClosingAlert stop];
   _lastTabClosingAlert = nil;
 
-  [_glicCoordinator stop];
-  _glicCoordinator = nil;
+  [_BWGCoordinator stop];
+  _BWGCoordinator = nil;
 
   [self hideDriveFilePicker];
   [self hideContextualSheet];
@@ -2884,21 +2884,20 @@ enum class ToolbarKind {
   _countryCodePickerCoordinator = nil;
 }
 
-#pragma mark - GlicCommands
+#pragma mark - BWGCommands
 
-- (void)startGlicFlow {
-  _glicCoordinator = [[GLICCoordinator alloc]
+- (void)startBWGFlow {
+  _BWGCoordinator = [[BWGCoordinator alloc]
       initWithBaseViewController:self.viewController
                          browser:self.browser
-                  fromEntryPoint:glic::EntryPointOverflow];
-  _glicCoordinator.promosUIHandler = self.promosManagerCoordinator;
-
-  [_glicCoordinator start];
+                  fromEntryPoint:bwg::EntryPointOverflow];
+  _BWGCoordinator.promosUIHandler = self.promosManagerCoordinator;
+  [_BWGCoordinator start];
 }
 
-- (void)dismissGlicFlow {
-  [_glicCoordinator stop];
-  _glicCoordinator = nil;
+- (void)dismissBWGFlow {
+  [_BWGCoordinator stop];
+  _BWGCoordinator = nil;
 }
 
 #pragma mark - PromosManagerCommands
@@ -2987,14 +2986,14 @@ enum class ToolbarKind {
       }];
 }
 
-- (void)showGLICPromo {
+- (void)showBWGPromo {
   if (IsPageActionMenuEnabled()) {
-    _glicCoordinator = [[GLICCoordinator alloc]
+    _BWGCoordinator = [[BWGCoordinator alloc]
         initWithBaseViewController:self.viewController
                            browser:self.browser
-                    fromEntryPoint:glic::EntryPointPromo];
-    _glicCoordinator.promosUIHandler = self.promosManagerCoordinator;
-    [_glicCoordinator start];
+                    fromEntryPoint:bwg::EntryPointPromo];
+    _BWGCoordinator.promosUIHandler = self.promosManagerCoordinator;
+    [_BWGCoordinator start];
   }
 }
 

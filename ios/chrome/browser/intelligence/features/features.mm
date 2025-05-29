@@ -22,28 +22,28 @@ bool IsPageActionMenuEnabled() {
   return base::FeatureList::IsEnabled(kPageActionMenu);
 }
 
-const char kGLICPromoConsentParams[] = "GLICPromoConsentVariations";
+const char kBWGPromoConsentParams[] = "BWGPromoConsentVariations";
 
-GLICPromoConsentVariations GLICPromoConsentVariationsParam() {
-  int param = base::GetFieldTrialParamByFeatureAsInt(
-      kGLICPromoConsent, kGLICPromoConsentParams, 0);
+BWGPromoConsentVariations BWGPromoConsentVariationsParam() {
+  int param = base::GetFieldTrialParamByFeatureAsInt(kBWGPromoConsent,
+                                                     kBWGPromoConsentParams, 0);
   if (!IsPageActionMenuEnabled()) {
-    return GLICPromoConsentVariations::kDisabled;
+    return BWGPromoConsentVariations::kDisabled;
   }
   if (param == 1) {
-    return GLICPromoConsentVariations::kSinglePage;
+    return BWGPromoConsentVariations::kSinglePage;
   }
   if (param == 2) {
-    return GLICPromoConsentVariations::kDoublePage;
+    return BWGPromoConsentVariations::kDoublePage;
   }
   if (param == 3) {
-    return GLICPromoConsentVariations::kSkipConsent;
+    return BWGPromoConsentVariations::kSkipConsent;
   }
-  return GLICPromoConsentVariations::kDisabled;
+  return BWGPromoConsentVariations::kDisabled;
 }
 
-BASE_FEATURE(kGLICPromoConsent,
-             "GLICPromoConsent",
+BASE_FEATURE(kBWGPromoConsent,
+             "BWGPromoConsent",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 const char kExplainGeminiEditMenuParams[] = "PositionForExplainGeminiEditMenu";

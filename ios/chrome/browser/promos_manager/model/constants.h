@@ -48,8 +48,8 @@ enum class Promo {
   PostDefaultAbandonment = 16,     // Post-default browser abandonment alert.
   SigninFullscreen = 17,           // Sign-in fullscreen promo.
   WelcomeBack = 18,                // Welcome Back promo.
-  GLICPromo = 19,                  // GLIC promo.
-  kMaxValue = GLICPromo,
+  BWGPromo = 19,                   // BWG promo.
+  kMaxValue = BWGPromo,
 };
 // LINT.ThenChange(/ios/chrome/browser/promos_manager/model/constants.cc)
 // Also update IOSPromosManagerPromo in

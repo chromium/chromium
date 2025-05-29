@@ -1264,6 +1264,11 @@
       "expiry_milestone": 140
   },
   {
+    "name": "bwg-promo-consent",
+    "owners": ["adamta@google.com", "bling-alchemy-eng@google.com"],
+    "expiry_milestone":150
+  },
+  {
     "name": "by-date-history-in-side-panel",
     "owners": [
       "mfacey@chromium.org",
@@ -5283,11 +5288,6 @@
       "//chrome/browser/actor/OWNERS"
     ],
     "expiry_milestone": 150
-  },
-  {
-    "name": "glic-promo-consent",
-    "owners": ["prasanaa@google.com", "adamta@google.com", "bling-alchemy-eng@google.com"],
-    "expiry_milestone":150
   },
   {
     "name": "glic-user-resize",

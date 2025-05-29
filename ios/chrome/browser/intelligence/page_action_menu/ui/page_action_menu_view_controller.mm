@@ -6,7 +6,7 @@
 
 #import "build/branding_buildflags.h"
 #import "ios/chrome/browser/intelligence/page_action_menu/utils/ai_hub_constants.h"
-#import "ios/chrome/browser/shared/public/commands/glic_commands.h"
+#import "ios/chrome/browser/shared/public/commands/bwg_commands.h"
 #import "ios/chrome/browser/shared/public/commands/lens_overlay_commands.h"
 #import "ios/chrome/browser/shared/public/commands/page_action_menu_commands.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
@@ -229,7 +229,7 @@ const CGFloat kMenuHeaderHeight = 58;
     NSFontAttributeName : font,
   };
   NSMutableAttributedString* string = [[NSMutableAttributedString alloc]
-      initWithString:l10n_util::GetNSString(IDS_IOS_AI_HUB_GEMINI_LABEL)];
+      initWithString:l10n_util::GetNSString(IDS_IOS_AI_HUB_BWG_LABEL)];
   [string addAttributes:titleAttributes range:NSMakeRange(0, string.length)];
   buttonConfiguration.attributedTitle = string;
 
@@ -237,7 +237,7 @@ const CGFloat kMenuHeaderHeight = 58;
                                          primaryAction:nil];
   button.translatesAutoresizingMaskIntoConstraints = NO;
   [button addTarget:self
-                action:@selector(handleGlicTapped:)
+                action:@selector(handleBWGTapped:)
       forControlEvents:UIControlEventTouchUpInside];
 
   return button;
@@ -280,11 +280,11 @@ const CGFloat kMenuHeaderHeight = 58;
   return button;
 }
 
-// Dismisses this view controller and starts the GLIC overlay.
-- (void)handleGlicTapped:(UIButton*)button {
+// Dismisses this view controller and starts the BWG overlay.
+- (void)handleBWGTapped:(UIButton*)button {
   PageActionMenuViewController* __weak weakSelf = self;
   [self.pageActionMenuHandler dismissPageActionMenuWithCompletion:^{
-    [weakSelf.glicHandler startGlicFlow];
+    [weakSelf.BWGHandler startBWGFlow];
   }];
 }
 

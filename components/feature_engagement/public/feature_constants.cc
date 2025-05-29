@@ -770,8 +770,8 @@ BASE_FEATURE(kIPHiOSWelcomeBackFeature,
              "IPH_iOSWelcomeBack",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kIPHIOSGLICPromoFeature,
-             "IPH_IOSGLICPromo",
+BASE_FEATURE(kIPHIOSBWGPromoFeature,
+             "IPH_iOSBWGPromo",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Non-FET feature.

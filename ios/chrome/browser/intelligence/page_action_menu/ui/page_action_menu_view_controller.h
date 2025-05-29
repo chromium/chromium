@@ -7,15 +7,15 @@
 
 #import <UIKit/UIKit.h>
 
-@protocol GlicCommands;
+@protocol BWGCommands;
 @protocol LensOverlayCommands;
 @protocol PageActionMenuCommands;
 
 // The view controller representing the presented page action menu UI.
 @interface PageActionMenuViewController : UIViewController
 
-// The handler for sending GLIC commands.
-@property(nonatomic, weak) id<GlicCommands> glicHandler;
+// The handler for sending BWG commands.
+@property(nonatomic, weak) id<BWGCommands> BWGHandler;
 
 // The handler for sending page action menu commands.
 @property(nonatomic, weak) id<PageActionMenuCommands> pageActionMenuHandler;

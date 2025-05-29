@@ -19,21 +19,21 @@ BASE_DECLARE_FEATURE(kPageActionMenu);
 // Returns true if the page action menu is enabled.
 bool IsPageActionMenuEnabled();
 
-extern const char kGLICPromoConsentParams[];
+extern const char kBWGPromoConsentParams[];
 
-// Holds the variations of the GLIC Promo Consent flow.
-enum class GLICPromoConsentVariations {
+// Holds the variations of the BWG Promo Consent flow.
+enum class BWGPromoConsentVariations {
   kDisabled = 0,
   kSinglePage = 1,
   kDoublePage = 2,
   kSkipConsent = 3,
 };
 
-// Returns the variation of the GLIC Promo Consent flow.
-GLICPromoConsentVariations GLICPromoConsentVariationsParam();
+// Returns the variation of the BWG Promo Consent flow.
+BWGPromoConsentVariations BWGPromoConsentVariationsParam();
 
-// Feature flag to enable GLIC Promo Consent.
-BASE_DECLARE_FEATURE(kGLICPromoConsent);
+// Feature flag to enable BWG Promo Consent.
+BASE_DECLARE_FEATURE(kBWGPromoConsent);
 
 extern const char kExplainGeminiEditMenuParams[];
 

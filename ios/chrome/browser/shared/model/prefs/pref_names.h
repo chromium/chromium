@@ -763,8 +763,8 @@ inline constexpr char kProvisionalNotificationsAllowedByPolicy[] =
 inline constexpr char kIosSyncInfobarErrorLastDismissedTimestamp[] =
     "ios.sync_infobar_error.last_dismissed_timestamp";
 
-// A boolean specifying whether the glic consent form has been accepted.
-inline constexpr char kIOSGLICConsent[] = "ios.glic.consent";
+// A boolean specifying whether the bwg consent form has been accepted.
+inline constexpr char kIOSBwgConsent[] = "ios.bwg.consent";
 
 // A time object storing the first browser startup with a managed primary
 // identity in the personal profile after multi-profile becomes supported. Used
