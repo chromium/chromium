@@ -79,7 +79,8 @@ AtomicString AtomicString::FromUTF8(base::span<const uint8_t> bytes) {
   if (bytes.empty()) {
     return g_empty_atom;
   }
-  return AtomicString(AtomicStringTable::Instance().AddUTF8(bytes));
+  return AtomicString(AtomicStringTable::Instance().AddUTF8(
+      bytes.data(), bytes.data() + bytes.size()));
 }
 
 AtomicString AtomicString::FromUTF8(const char* chars) {
@@ -88,7 +89,7 @@ AtomicString AtomicString::FromUTF8(const char* chars) {
   if (!*chars)
     return g_empty_atom;
   return AtomicString(AtomicStringTable::Instance().AddUTF8(
-      base::as_byte_span(std::string_view(chars))));
+      reinterpret_cast<const uint8_t*>(chars), nullptr));
 }
 
 AtomicString AtomicString::FromUTF8(std::string_view utf8_string) {
