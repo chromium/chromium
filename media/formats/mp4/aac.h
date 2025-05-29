@@ -68,6 +68,11 @@ class MEDIA_EXPORT AAC {
   // If known, returns the AudioCodecProfile.
   AudioCodecProfile GetProfile() const;
 
+  // If true CreateAdtsFromEsds() will return a valid ADTS packing.
+  bool fits_in_adts() const {
+    return profile_ != kXHeAAcType && frequency_index_ != 0xF;
+  }
+
   // Returns the codec specific data needed by android MediaCodec.
   std::vector<uint8_t> codec_specific_data() const {
     return codec_specific_data_;

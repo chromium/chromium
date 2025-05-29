@@ -193,12 +193,13 @@ base::HeapArray<uint8_t> AAC::CreateAdtsFromEsds(
     base::span<const uint8_t> buffer,
     int* adts_header_size) const {
   *adts_header_size = 0;
-  if (profile_ == kXHeAAcType) {
+  if (!fits_in_adts()) {
     return {};
   }
 
-  DCHECK(profile_ >= 1 && profile_ <= 4 && frequency_index_ != 0xf &&
-         channel_config_ <= 7);
+  DCHECK_GE(profile_, 1);
+  DCHECK_LE(profile_, 4);
+  DCHECK_LE(channel_config_, 7);
 
   // `total_size` might be too big; ADTS represents packet size in 13 bits.
   const size_t total_size = buffer.size() + kADTSHeaderMinSize;
