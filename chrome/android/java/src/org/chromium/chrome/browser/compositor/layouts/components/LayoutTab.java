@@ -31,14 +31,6 @@ public class LayoutTab extends PropertyModel {
 
     // End section --------------
 
-    /** Supplier for determining if the current layout is active. */
-    public interface IsActiveLayoutSupplier {
-        /**
-         * @return whether the current layout is active.
-         */
-        public boolean isActiveLayout();
-    }
-
     // TODO(crbug.com/40126260): Maybe make this a ReadableIntPropertyKey
     public static final WritableIntPropertyKey TAB_ID = new WritableIntPropertyKey();
 
