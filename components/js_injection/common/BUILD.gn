@@ -53,9 +53,7 @@ mojom("common_mojom") {
 }
 
 source_set("common") {
-  public = [
-    "origin_matcher.h",
-  ]
+  public = [ "origin_matcher.h" ]
   sources = [
     "origin_matcher.cc",
     "origin_matcher_internal.cc",
