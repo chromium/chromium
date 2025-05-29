@@ -168,9 +168,7 @@ cast_source_set("test_support") {
 cast_source_set("unittests") {
   testonly = true
 
-  sources = [
-    "redirected_audio_connection_unittest.cc",
-  ]
+  sources = [ "redirected_audio_connection_unittest.cc" ]
 
   deps = [
     ":common",
