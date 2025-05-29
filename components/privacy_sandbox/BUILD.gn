@@ -34,9 +34,7 @@ component("features") {
 }
 
 source_set("privacy_sandbox_survey_service") {
-  public = [
-    "privacy_sandbox_survey_service.h",
-  ]
+  public = [ "privacy_sandbox_survey_service.h" ]
 }
 
 source_set("tracking_protection_onboarding") {
@@ -209,9 +207,7 @@ if (use_blink) {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [
-    "tracking_protection_onboarding_unittest.cc",
-  ]
+  sources = [ "tracking_protection_onboarding_unittest.cc" ]
 
   data = [ "//tools/metrics/histograms/metadata/privacy/histograms.xml" ]
 
