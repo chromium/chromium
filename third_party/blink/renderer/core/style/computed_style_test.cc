@@ -1191,7 +1191,18 @@ TEST_F(ComputedStyleTest, BorderWidthZoom) {
           false /* allow_visited_style */, CSSValuePhase::kComputedValue);
       AtomicString prop_name = longhand.GetCSSPropertyName().ToAtomicString();
       ASSERT_TRUE(computed_value) << prop_name;
-      auto* numeric_value = DynamicTo<CSSNumericLiteralValue>(computed_value);
+      const CSSNumericLiteralValue* numeric_value = nullptr;
+      // With CSSGapDecorations, ColumnRuleWidth is a list of values. Thus,
+      // for this case we must get the first value before we attempt to cast.
+      if (RuntimeEnabledFeatures::CSSGapDecorationEnabled() &&
+          property == &GetCSSPropertyColumnRuleWidth()) {
+        auto* list = DynamicTo<CSSValueList>(computed_value);
+        ASSERT_TRUE(list);
+        ASSERT_EQ(list->length(), 1);
+        numeric_value = DynamicTo<CSSNumericLiteralValue>(list->First());
+      } else {
+        numeric_value = DynamicTo<CSSNumericLiteralValue>(computed_value);
+      }
       ASSERT_TRUE(numeric_value) << prop_name;
       EXPECT_TRUE(numeric_value->IsPx()) << prop_name;
       EXPECT_EQ(test.expected_px, numeric_value->DoubleValue()) << prop_name;
@@ -1264,7 +1275,18 @@ TEST_F(ComputedStyleTest, BorderWidthConversion) {
           *test.style, nullptr /* layout_object */,
           false /* allow_visited_style */, CSSValuePhase::kComputedValue);
       ASSERT_NE(computed_value, nullptr);
-      auto* numeric_value = DynamicTo<CSSNumericLiteralValue>(computed_value);
+      const CSSNumericLiteralValue* numeric_value = nullptr;
+      // With CSSGapDecorations, ColumnRuleWidth is a list of values. Thus,
+      // for this case we must get the first value before we attempt to cast.
+      if (RuntimeEnabledFeatures::CSSGapDecorationEnabled() &&
+          longhand == &GetCSSPropertyColumnRuleWidth()) {
+        auto* list = DynamicTo<CSSValueList>(computed_value);
+        ASSERT_TRUE(list);
+        ASSERT_EQ(list->length(), 1);
+        numeric_value = DynamicTo<CSSNumericLiteralValue>(list->First());
+      } else {
+        numeric_value = DynamicTo<CSSNumericLiteralValue>(computed_value);
+      }
       ASSERT_NE(numeric_value, nullptr);
       EXPECT_TRUE(numeric_value->IsPx());
       EXPECT_DOUBLE_EQ(test.expected_px, numeric_value->DoubleValue());
