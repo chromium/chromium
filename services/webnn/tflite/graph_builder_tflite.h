@@ -712,11 +712,32 @@ class GraphBuilderTflite final {
 
   bool RequiresFloat32Precision(const mojom::Operation& op);
 
+  // The output information of the fusable activation operation.
+  struct FusedActivationOutputInfo {
+    FusedActivationOutputInfo(OperandId output_operand_id,
+                              TensorIndex output_tensor_index,
+                              ::tflite::ActivationFunctionType activation_type)
+        : output_operand_id(output_operand_id),
+          output_tensor_index(output_tensor_index),
+          activation_type(activation_type) {}
+
+    OperandId output_operand_id;
+    TensorIndex output_tensor_index;
+    ::tflite::ActivationFunctionType activation_type;
+  };
+  // Check if the next operation is relu / clamp and the range specified by the
+  // minimum and maximum can be mapped to tflite::ActivationFunctionType, if so
+  // we can remove the relu / clamp operation and fuse the
+  // ActivationFunctionType.
+  std::optional<FusedActivationOutputInfo> CanFuseActivationAndGetOutput(
+      OperandId output_operand_id);
+
   // Check if inputs and outputs are quantized tensors and matches
   // op specific fusion criteria required by TFLite, if so we can remove the
   // preceding `dequantizeLinear` and subsequent `quantizeLinear`.
   std::optional<TensorInfo> CanFuseQuantizeAndGetOutput(
-    const mojom::Conv2d& conv2d);
+      const mojom::Conv2d& conv2d,
+      std::optional<OperandId> activation_output_operand_id);
   std::optional<TensorInfo> CanFuseQuantizeAndGetOutput(
       const mojom::Concat& concat);
   std::optional<TensorInfo> CanFuseQuantizeAndGetOutput(
@@ -771,6 +792,10 @@ class GraphBuilderTflite final {
   // mark the `quantize_linear` to be skipped.
   TensorInfo SerializeQuantizedOutput(
       std::pair<OperationId, QuantizateParametersOffset> quantize_op_info);
+  // Get next operation id if it exists and is the only one with the output
+  // operand id of current operation.
+  std::optional<OperationId> GetSoleDependentOperationId(
+      OperandId output_operand_id);
   // Check if next op is quantize and its parameters can be serialized, if so
   // mark it to-be skipped and return the quantized output.
   std::optional<std::pair<OperationId, QuantizateParametersOffset>>
@@ -878,7 +903,7 @@ class GraphBuilderTflite final {
   base::flat_map<OperandId, std::pair<OperationId, bool>>
       lazy_serialized_dequantize_operations_;
 
-  base::flat_set<OperationId> quantize_ops_to_skip_;
+  base::flat_set<OperationId> fused_ops_to_skip_;
 
   // Mapping of the offset to scale_operand_id and zero_point_operand_id.
   // Because there is no way to retrieve the underlying data from the flatbuffer
