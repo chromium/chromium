@@ -16,6 +16,9 @@
           "--connect-to-device-over-network"
         ],
         "merge": {
+          "args": [
+            "--upload-skia-json"
+          ],
           "script": "//tools/perf/process_perf_results.py"
         },
         "name": "performance_test_suite_android_trichrome_chrome_google_64_32_bundle",
@@ -26,7 +29,7 @@
           "can_use_on_swarming_builders": true,
           "dimensions": {
             "dut_state": "ready",
-            "label-board": "brya",
+            "label-hwid_sku": "kano_12th_Gen_IntelR_CoreTM_i5_1235U_8GB",
             "label-pool": "chrome.tests.perf",
             "os": "Android",
             "pool": "chrome"
@@ -149,6 +152,9 @@
           "--connect-to-device-over-network"
         ],
         "merge": {
+          "args": [
+            "--upload-skia-json"
+          ],
           "script": "//tools/perf/process_perf_results.py"
         },
         "name": "performance_test_suite_android_trichrome_chrome_google_64_32_bundle",
@@ -159,7 +165,7 @@
           "can_use_on_swarming_builders": true,
           "dimensions": {
             "dut_state": "ready",
-            "label-board": "corsola",
+            "label-hwid_sku": "steelix_MT8186_8GB",
             "label-pool": "chrome.tests.perf",
             "os": "Android",
             "pool": "chrome"
@@ -295,6 +301,9 @@
           "--connect-to-device-over-network"
         ],
         "merge": {
+          "args": [
+            "--upload-skia-json"
+          ],
           "script": "//tools/perf/process_perf_results.py"
         },
         "name": "performance_test_suite_android_trichrome_chrome_google_64_32_bundle",
@@ -305,7 +314,7 @@
           "can_use_on_swarming_builders": true,
           "dimensions": {
             "dut_state": "ready",
-            "label-board": "nissa",
+            "label-hwid_sku": "uldren_99C4LZ/Q1XT/6W_8GB",
             "label-pool": "chrome.tests.perf",
             "os": "Android",
             "pool": "chrome"

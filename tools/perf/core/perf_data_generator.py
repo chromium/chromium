@@ -125,6 +125,9 @@ UPLOAD_SKIA_JSON_BUILDERS = frozenset([
     'android-pixel9-perf',
     'android-pixel9-pro-perf',
     'android-pixel9-pro-xl-perf',
+    'android-brya-kano-i5-8gb-perf',
+    'android-corsola-steelix-8gb-perf',
+    'android-nissa-uldren-8gb-perf',
     'linux-builder-perf',
     'linux-perf-fyi',
     'linux-perf-rel',
@@ -609,7 +612,7 @@ BUILDERS = {
             'pool': 'chrome',
             'os': 'Android',
             'label-pool': 'chrome.tests.perf',
-            'label-board': 'brya',
+            'label-hwid_sku': 'kano_12th_Gen_IntelR_CoreTM_i5_1235U_8GB',
         },
         'server':
         'https://chromeos-swarming.appspot.com',
@@ -635,7 +638,7 @@ BUILDERS = {
             'pool': 'chrome',
             'os': 'Android',
             'label-pool': 'chrome.tests.perf',
-            'label-board': 'corsola',
+            'label-hwid_sku': 'steelix_MT8186_8GB',
         },
         'server':
         'https://chromeos-swarming.appspot.com',
@@ -661,7 +664,7 @@ BUILDERS = {
             'pool': 'chrome',
             'os': 'Android',
             'label-pool': 'chrome.tests.perf',
-            'label-board': 'nissa',
+            'label-hwid_sku': 'uldren_99C4LZ/Q1XT/6W_8GB',
         },
         'server':
         'https://chromeos-swarming.appspot.com',
