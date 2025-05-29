@@ -572,7 +572,7 @@ void PrerenderHost::ReadyToCommitNavigation(
   // ReadyToCommitNavigation is called when the headers are received.
   were_headers_received_ = true;
   for (auto& observer : observers_) {
-    observer.OnHeadersReceived();
+    observer.OnHeadersReceived(*navigation_handle);
   }
 }
 
