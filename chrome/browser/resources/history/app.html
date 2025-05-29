@@ -123,15 +123,16 @@
         margin-block-end: var(--card-padding-between);
       }
     </style>
-    <history-query-manager query-state="{{queryState_}}"
-        query-result="{{queryResult_}}"
-        router="[[$$('#router')]]"
-        on-query-finished="onQueryFinished_">
+    <history-query-manager
+        query-result="[[queryResult_]]"
+        on-query-finished="onQueryFinished_"
+        on-query-state-changed="onQueryStateChanged_">
     </history-query-manager>
     <history-router id="router"
-        selected-page="{{selectedPage_}}"
+        selected-page="[[selectedPage_]]"
         query-state="[[queryState_]]"
-        last-selected-tab="[[lastSelectedTab_]]">
+        last-selected-tab="[[lastSelectedTab_]]"
+        on-selected-page-changed="onSelectedPageChanged_">
     </history-router>
     <history-toolbar id="toolbar"
         has-drawer="[[hasDrawer_]]"

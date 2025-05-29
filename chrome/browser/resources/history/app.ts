@@ -308,10 +308,6 @@ export class HistoryAppElement extends HistoryAppElementBase {
     };
   }
 
-  static get observers() {
-    return ['onQueryStateChanged_(queryState_.*)'];
-  }
-
   declare footerInfo: FooterInfo;
   private browserService_: BrowserService = BrowserServiceImpl.getInstance();
   private callbackRouter_: PageCallbackRouter;
@@ -426,6 +422,9 @@ export class HistoryAppElement extends HistoryAppElementBase {
   }
 
   private onShowResultsByGroupChanged_(e: CustomEvent<{value: boolean}>) {
+    if (!this.selectedPage_) {
+      return;
+    }
     const showResultsByGroup = e.detail.value;
     if (showResultsByGroup) {
       this.selectedTab_ = TABBED_PAGES.indexOf(Page.HISTORY_CLUSTERS);
@@ -524,9 +523,9 @@ export class HistoryAppElement extends HistoryAppElementBase {
     this.$.history.deleteSelectedWithPrompt();
   }
 
-  private onQueryFinished_() {
-    this.$.history.historyResult(
-        this.queryResult_.info!, this.queryResult_.value!);
+  private onQueryFinished_(e: CustomEvent<{result: QueryResult}>) {
+    this.queryResult_ = e.detail.result;
+    this.$.history.historyResult(e.detail.result.info!, e.detail.result.value!);
     if (document.body.classList.contains('loading')) {
       document.body.classList.remove('loading');
       this.onFirstRender_();
@@ -912,8 +911,16 @@ export class HistoryAppElement extends HistoryAppElementBase {
     this.historyEmbeddingsResizeObserver_.observe(historyEmbeddingsContainer);
   }
 
-  private onQueryStateChanged_() {
+  private onQueryStateChanged_(e: CustomEvent<{value: QueryState}>) {
     this.nonEmbeddingsResultClicked_ = false;
+    this.queryState_ = e.detail.value;
+    if (this.selectedPage_ && this.$.router) {
+      this.$.router.serializeUrl();
+    }
+  }
+
+  private onSelectedPageChanged_(e: CustomEvent<{value: string}>) {
+    this.selectedPage_ = e.detail.value;
   }
 
   private onToolbarSearchInputNativeBeforeInput_(

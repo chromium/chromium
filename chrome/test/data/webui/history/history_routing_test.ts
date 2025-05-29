@@ -9,7 +9,6 @@ import {BrowserProxyImpl, BrowserServiceImpl, CrRouter, HistoryEmbeddingsBrowser
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {keyDownOn} from 'chrome://webui-test/keyboard_mock_interactions.js';
-import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
 import {eventToPromise, isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
@@ -51,7 +50,7 @@ import {navigateTo} from './test_util.js';
 
       assertEquals('chrome://history/', window.location.href);
       sidebar = app.$['content-side-bar'];
-      return flushTasks();
+      return microtasksFinished();
     });
 
     test('changing route changes active view', async () => {
@@ -77,7 +76,7 @@ import {navigateTo} from './test_util.js';
           app.$['tabs-content'].selectedItem);
 
       navigateTo('/grouped', app);
-      await flushTasks();
+      await microtasksFinished();
 
       assertEquals('chrome://history/grouped', window.location.href);
       await microtasksFinished();
@@ -97,7 +96,7 @@ import {navigateTo} from './test_util.js';
       assertEquals('history', sidebar.$.history.getAttribute('path'));
 
       navigateTo('/grouped', app);
-      return flushTasks().then(function() {
+      return microtasksFinished().then(function() {
         // Currently selected history view is preserved in sidebar menu item.
         assertEquals(
             isHistoryClustersEnabled ? 'chrome://history/grouped' :
@@ -152,20 +151,22 @@ import {navigateTo} from './test_util.js';
       }
     });
 
-    test('search updates from route', function() {
+    test('search updates from route', async function() {
       assertEquals('chrome://history/', window.location.href);
       const searchTerm = 'Mei';
       assertEquals('history', app.$.content.selected);
       navigateTo('/?q=' + searchTerm, app);
+      await microtasksFinished();
       assertEquals(searchTerm, app.$.toolbar.searchTerm);
     });
 
-    test('route updates from search', function() {
+    test('route updates from search', async function() {
       const searchTerm = 'McCree';
       assertEquals('history', app.$.content.selected);
       app.dispatchEvent(new CustomEvent(
           'change-query',
           {bubbles: true, composed: true, detail: {search: searchTerm}}));
+      await microtasksFinished();
       assertEquals('chrome://history/?q=' + searchTerm, window.location.href);
     });
 
@@ -245,7 +246,7 @@ suite(`routing-test-with-history-clusters-pref-set`, () => {
     testMetricsProxy = new TestMetricsProxy();
     MetricsProxyImpl.setInstance(testMetricsProxy);
 
-    return flushTasks();
+    return microtasksFinished();
   });
 
   function initialize() {
@@ -253,24 +254,30 @@ suite(`routing-test-with-history-clusters-pref-set`, () => {
     document.body.appendChild(app);
   }
 
-  test(`route to non default last selected tab when no url params set `, () => {
-    initialize();
-    assertEquals(`chrome://history/grouped`, window.location.href);
-  });
+  test(
+      `route to non default last selected tab when no url params set `,
+      async () => {
+        initialize();
+        await microtasksFinished();
+        assertEquals(`chrome://history/grouped`, window.location.href);
+      });
 
   test(`route to grouped url when last tab is grouped`, async () => {
     initialize();
+    await microtasksFinished();
     assertEquals(`chrome://history/grouped`, window.location.href);
     navigateTo('/grouped', app);
+    await microtasksFinished();
     assertEquals(`chrome://history/grouped`, window.location.href);
     const lastSelectedTab =
         await testBrowserService.handler.whenCalled('setLastSelectedTab');
     assertEquals(lastSelectedTab, 1);
   });
 
-  test(`route to list url when last tab is list`, () => {
+  test(`route to list url when last tab is list`, async () => {
     loadTimeData.overrideValues({lastSelectedTab: 0});
     initialize();
+    await microtasksFinished();
     assertEquals(`chrome://history/`, window.location.href);
   });
 });
@@ -305,10 +312,10 @@ suite(`routing-test-with-history-embeddings-enabled`, () => {
 
     app = document.createElement('history-app');
     document.body.appendChild(app);
-    return flushTasks();
+    return microtasksFinished();
   });
 
-  test('route updates from group filter chip', () => {
+  test('route updates from group filter chip', async () => {
     // Tabs should be hidden.
     assertEquals(null, app.shadowRoot!.querySelector('cr-tabs'));
 
@@ -320,15 +327,18 @@ suite(`routing-test-with-history-embeddings-enabled`, () => {
     // Changing the "By group" chip to should change the URL.
     filterChips.dispatchEvent(new CustomEvent(
         'show-results-by-group-changed', {detail: {value: true}}));
+    await microtasksFinished();
     assertEquals('chrome://history/grouped', window.location.href);
 
     filterChips.dispatchEvent(new CustomEvent(
         'show-results-by-group-changed', {detail: {value: false}}));
+    await microtasksFinished();
     assertEquals('chrome://history/', window.location.href);
   });
 
-  test('route updates from date filter chip', () => {
+  test('route updates from date filter chip', async () => {
     navigateTo('/?q=test', app);
+    await microtasksFinished();
 
     const filterChips =
         app.shadowRoot!.querySelector('cr-history-embeddings-filter-chips');
@@ -344,17 +354,21 @@ suite(`routing-test-with-history-embeddings-enabled`, () => {
       composed: true,
       bubbles: true,
     }));
+    await microtasksFinished();
+
     assertEquals(
         'chrome://history/?q=test&after=2011-01-01', window.location.href);
   });
 
-  test('route clears date if invalid', () => {
+  test('route clears date if invalid', async () => {
     navigateTo('/?q=test&after=2022-invalid-date', app);
+    await microtasksFinished();
     assertEquals('chrome://history/?q=test', window.location.href);
   });
 
-  test('route sets correct date', () => {
+  test('route sets correct date', async () => {
     navigateTo('/?q=test&after=2022-12-04', app);
+    await microtasksFinished();
 
     function stringAsDateObject(dateString: string) {
       const dateObject = new Date(dateString + 'T00:00:00');
@@ -369,11 +383,13 @@ suite(`routing-test-with-history-embeddings-enabled`, () => {
         filterChips.timeRangeStart?.getTime());
 
     navigateTo('/?q=test&after=1999-01-30', app);
+    await microtasksFinished();
     assertEquals(
         stringAsDateObject('1999-01-30').getTime(),
         filterChips.timeRangeStart?.getTime());
 
     navigateTo('/?q=test', app);
+    await microtasksFinished();
     assertEquals(undefined, filterChips.timeRangeStart);
   });
 });
