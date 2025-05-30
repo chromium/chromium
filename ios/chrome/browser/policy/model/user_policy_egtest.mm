@@ -157,12 +157,8 @@ id<GREYMatcher> ManagedProfileCreationSubtitleMatcher() {
         base::UTF8ToUTF16(
             std::string(policy::SignatureProvider::kTestDomain1))));
   }
-  return grey_accessibilityLabel([NSString
-      stringWithFormat:
-          @"%@\n\n%@",
-          l10n_util::GetNSString(IDS_IOS_ENTERPRISE_PROFILE_CREATION_SUBTITLE),
-          l10n_util::GetNSString(
-              IDS_IOS_ENTERPRISE_PROFILE_CREATION_ACCOUNT_KEEP_BROWSING_DATA_DESCRIPTION)]);
+  return grey_accessibilityLabel(
+      l10n_util::GetNSString(IDS_IOS_ENTERPRISE_PROFILE_CREATION_SUBTITLE));
 }
 
 void VerifyTheNotificationUI() {
