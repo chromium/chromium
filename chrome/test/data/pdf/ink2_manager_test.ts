@@ -189,6 +189,8 @@ chrome.test.runTests([
       locationY: 65,
       width: 50,
     };
+    testAnnotation2.textAttributes.color = {r: 100, g: 0, b: 0};
+    testAnnotation2.textAttributes.size = 10;
     mockPlugin.clearMessages();
     mockPlugin.setMessageReply('getAllTextAnnotations', {
       annotations: [testAnnotation1, testAnnotation2],
@@ -205,22 +207,12 @@ chrome.test.runTests([
     chrome.test.assertEq(
         'getAllTextAnnotations', getAllTextAnnotationsMessage.type);
 
-    // Check that initializing a new annotation in a different location sets
-    // a different id.
-    let whenInitEvent = eventToPromise('initialize-text-box', testManager);
-    chrome.test.assertTrue(
-        testManager.initializeTextAnnotation({x: 200, y: 200}));
-    let initEvent = await whenInitEvent;
-    chrome.test.assertEq(2, initEvent.detail.annotation.id);
-    chrome.test.assertEq('', initEvent.detail.annotation.text);
-    verifyStartTextAnnotationMessage(false);
-
     // Check that the two existing annotations can be activated.
     mockPlugin.clearMessages();
-    whenInitEvent = eventToPromise('initialize-text-box', testManager);
+    let whenInitEvent = eventToPromise('initialize-text-box', testManager);
     chrome.test.assertTrue(
         testManager.initializeTextAnnotation({x: 120, y: 30}));
-    initEvent = await whenInitEvent;
+    let initEvent = await whenInitEvent;
     const testAnnotation1ScreenCoords = structuredClone(testAnnotation1);
     // Add page offsets. These are the defaults for the test viewport setup
     // of a 400x500 page in a 500x500 window.
@@ -229,13 +221,45 @@ chrome.test.runTests([
     testAnnotation1ScreenCoords.textBoxRect.locationY =
         testAnnotation1.textBoxRect.locationY + 3;
     assertDeepEquals(testAnnotation1ScreenCoords, initEvent.detail.annotation);
+    // Verify that the init event does not contain a reference to the current
+    // attributes.
+    chrome.test.assertFalse(
+        initEvent.detail.annotation.textAttributes ===
+        testManager.getCurrentTextAttributes());
     verifyStartTextAnnotationMessage(true, testAnnotation1.id);
+
+    // Simulate making a change.
+    const whenUpdatedColor = eventToPromise('attributes-changed', testManager);
+    const blue = {r: 0, g: 0, b: 100};
+    testManager.setTextColor(blue);
+    const updateEvent = await whenUpdatedColor;
+    // Check that the event does not fire with a reference to the current
+    // attributes.
+    chrome.test.assertFalse(
+        updateEvent.detail === testManager.getCurrentTextAttributes());
+    testAnnotation1ScreenCoords.textAttributes = updateEvent.detail;
 
     mockPlugin.clearMessages();
     whenInitEvent = eventToPromise('initialize-text-box', testManager);
     chrome.test.assertTrue(
         testManager.initializeTextAnnotation({x: 120, y: 70}));
     initEvent = await whenInitEvent;
+
+    // Simulate committing the annotation when the init event is received.
+    // This is what ink-text-box does in production.
+    testManager.commitTextAnnotation(testAnnotation1ScreenCoords, true);
+
+    // Confirm that the finish annotation message is sent with the correct
+    // parameters.
+    const finishTextAnnotationMessage =
+        mockPlugin.findMessage('finishTextAnnotation');
+    chrome.test.assertTrue(finishTextAnnotationMessage !== undefined);
+    chrome.test.assertEq(
+        'finishTextAnnotation', finishTextAnnotationMessage.type);
+    testAnnotation1.textAttributes.color = blue;
+    assertDeepEquals(testAnnotation1, finishTextAnnotationMessage.data);
+
+    // Confirm annotation 2 is initialized with the correct parameters.
     const testAnnotation2ScreenCoords = structuredClone(testAnnotation2);
     testAnnotation2ScreenCoords.textBoxRect.locationX =
         testAnnotation2.textBoxRect.locationX + 55;
@@ -243,6 +267,23 @@ chrome.test.runTests([
         testAnnotation2.textBoxRect.locationY + 3;
     assertDeepEquals(testAnnotation2ScreenCoords, initEvent.detail.annotation);
     verifyStartTextAnnotationMessage(true, testAnnotation2.id);
+
+    // Check that initializing a new annotation in a different location sets
+    // a different id, and uses the default settings.
+    mockPlugin.clearMessages();
+    whenInitEvent = eventToPromise('initialize-text-box', testManager);
+    chrome.test.assertTrue(
+        testManager.initializeTextAnnotation({x: 200, y: 200}));
+    initEvent = await whenInitEvent;
+    chrome.test.assertEq(2, initEvent.detail.annotation.id);
+    chrome.test.assertEq('', initEvent.detail.annotation.text);
+    assertDeepEquals(
+        {r: 0, b: 0, g: 0}, initEvent.detail.annotation.textAttributes.color);
+    assertDeepEquals(
+        {bold: false, italic: false},
+        initEvent.detail.annotation.textAttributes.styles);
+    chrome.test.assertEq(12, initEvent.detail.annotation.textAttributes.size);
+    verifyStartTextAnnotationMessage(false);
 
     mockPlugin.clearMessages();
     chrome.test.succeed();
@@ -694,6 +735,7 @@ chrome.test.runTests([
     // Since this is an existing annotation, it should send a start message to
     // the plugin.
     verifyStartTextAnnotationMessage(true);
+
     chrome.test.succeed();
   },
 

@@ -243,7 +243,8 @@ export class Ink2Manager extends EventTarget {
 
     if (existing) {
       this.pluginController_.startTextAnnotation(existing.id);
-      this.existingAnnotationAttributes_ = existing.textAttributes;
+      this.existingAnnotationAttributes_ =
+          structuredClone(existing.textAttributes);
     } else {
       this.nextAnnotationId_++;
       this.existingAnnotationAttributes_ = null;
