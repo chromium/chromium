@@ -25,6 +25,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
+#include "chrome/browser/ui/tabs/saved_tab_groups/tab_group_sync_service_initialized_observer.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -113,6 +114,13 @@ class TabGroupsApiUnitTest : public ExtensionServiceTestBase {
     return web_contentses_[index];
   }
 
+  void WaitForTabGroupSyncServiceInitialized() {
+    auto observer =
+        std::make_unique<tab_groups::TabGroupSyncServiceInitializedObserver>(
+            tab_groups::TabGroupSyncServiceFactory::GetForProfile(profile()));
+    observer->Wait();
+  }
+
   // ExtensionServiceTestBase:
   void SetUp() override;
   void TearDown() override;
@@ -159,6 +167,10 @@ void TabGroupsApiUnitTest::SetUp() {
   // We need to call TabGroupsEventRouterFactory::Get() in order to instantiate
   // the keyed service, since it's not created by default in unit tests.
   TabGroupsEventRouterFactory::Get(browser_context());
+
+  // Wait for the TabGroupSyncService to properly initialize before making any
+  // changes to tab groups.
+  WaitForTabGroupSyncServiceInitialized();
 }
 
 void TabGroupsApiUnitTest::TearDown() {

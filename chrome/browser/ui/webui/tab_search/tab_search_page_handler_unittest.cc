@@ -18,6 +18,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/sessions/chrome_tab_restore_service_client.h"
 #include "chrome/browser/sessions/tab_restore_service_factory.h"
+#include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -26,6 +27,7 @@
 #include "chrome/browser/ui/tabs/alert/tab_alert.h"
 #include "chrome/browser/ui/tabs/organization/tab_declutter_controller.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
+#include "chrome/browser/ui/tabs/saved_tab_groups/tab_group_sync_service_initialized_observer.h"
 #include "chrome/browser/ui/tabs/tab_utils.h"
 #include "chrome/browser/ui/tabs/test_tab_strip_model_delegate.h"
 #include "chrome/browser/ui/tabs/test_util.h"
@@ -192,8 +194,19 @@ class TabSearchPageHandlerTest : public BrowserWithTestWindowTest {
     browser5_ = CreateTestBrowser(profile1(), true);
     browser1()->DidBecomeActive();
     webui_controller_ = std::make_unique<TabSearchUI>(web_ui());
+
+    // Handle any mock calls that might occur during the instantiation of the
+    // TabSearchPageHandler. Tests are able to override these calls with more
+    // specific EXPECT_CALLS.
+    EXPECT_CALL(page_, UnusedTabsChanged(testing::_))
+        .WillRepeatedly(testing::Return());
+
     handler_ = std::make_unique<TestTabSearchPageHandler>(
         page_.BindAndGetRemote(), web_ui(), webui_controller_.get());
+
+    // Wait for the TabGroupSyncService to properly initialize before making any
+    // changes to tab groups.
+    WaitForTabGroupSyncServiceInitialized();
   }
 
   void TearDown() override {
@@ -241,6 +254,21 @@ class TabSearchPageHandlerTest : public BrowserWithTestWindowTest {
         std::make_unique<ChromeTabRestoreServiceClient>(
             Profile::FromBrowserContext(browser_context)),
         nullptr, nullptr);
+  }
+
+  void WaitForTabGroupSyncServiceInitialized() {
+    tab_groups::TabGroupSyncService* tab_group_service_1 =
+        tab_groups::TabGroupSyncServiceFactory::GetForProfile(profile1());
+    tab_groups::TabGroupSyncService* tab_group_service_2 =
+        tab_groups::TabGroupSyncServiceFactory::GetForProfile(profile2());
+    auto observer_1 =
+        std::make_unique<tab_groups::TabGroupSyncServiceInitializedObserver>(
+            tab_group_service_1);
+    auto observer_2 =
+        std::make_unique<tab_groups::TabGroupSyncServiceInitializedObserver>(
+            tab_group_service_2);
+    observer_1->Wait();
+    observer_2->Wait();
   }
 
  protected:
@@ -934,10 +962,14 @@ TEST_F(TabSearchPageHandlerTest,
 
 class TabSearchPageHandlerDeclutterTest : public TabSearchPageHandlerTest {
  public:
-  void SetUp() override {
-    TabSearchPageHandlerTest::SetUp();
+  TabSearchPageHandlerDeclutterTest() {
     feature_list_.InitWithFeatures(
         {features::kTabstripDeclutter, features::kTabstripDedupe}, {});
+  }
+
+  void SetUp() override {
+    TabSearchPageHandlerTest::SetUp();
+
     testing_profile_ = std::make_unique<TestingProfile>();
     tab_strip_model_delegate_ = std::make_unique<TestTabStripModelDelegate>();
     tab_strip_model_ = std::make_unique<TabStripModel>(
@@ -986,8 +1018,8 @@ class TabSearchPageHandlerDeclutterTest : public TabSearchPageHandlerTest {
   }
 
  private:
-  std::unique_ptr<TestingProfile> testing_profile_;
   base::test::ScopedFeatureList feature_list_;
+  std::unique_ptr<TestingProfile> testing_profile_;
   std::unique_ptr<TestTabStripModelDelegate> tab_strip_model_delegate_;
   std::unique_ptr<TabStripModel> tab_strip_model_;
   std::unique_ptr<MockTabDeclutterController> tab_declutter_controller_;
