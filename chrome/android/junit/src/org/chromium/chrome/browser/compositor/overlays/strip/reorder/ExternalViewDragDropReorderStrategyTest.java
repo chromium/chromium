@@ -24,6 +24,7 @@ import org.chromium.base.Token;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutGroupTitle;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutTab;
+import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutUtils;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutView;
 import org.chromium.chrome.browser.compositor.overlays.strip.reorder.ReorderDelegate.ReorderType;
 import org.chromium.chrome.browser.dragdrop.ChromeDropDataAndroid;
@@ -315,7 +316,12 @@ public class ExternalViewDragDropReorderStrategyTest extends ReorderStrategyTest
 
     @Test
     public void testUpdateReorder_hoveredTabDiffThanInteractingView_updateInteractingView() {
+        float initialBottomIndicatorWidth =
+                StripLayoutUtils.calculateBottomIndicatorWidth(
+                        mInteractingGroupTitle, 1, EFFECTIVE_TAB_WIDTH);
+        mInteractingGroupTitle.setBottomIndicatorWidth(initialBottomIndicatorWidth);
         mockTabInGroup(mStripTab2.getTabId());
+
         // Start reorder to set interacting view - interacting view gets trailing margin
         mStrategy.startReorderMode(
                 mStripViews, mStripTabs, mGroupTitles, mInteractingTab, DRAG_START_POINT);
@@ -347,6 +353,11 @@ public class ExternalViewDragDropReorderStrategyTest extends ReorderStrategyTest
                 mInteractingTab.getTrailingMargin() == 0);
         assertTrue(
                 "mStripTab2 should have trailing margin set", mStripTab2.getTrailingMargin() > 0);
+        assertEquals(
+                "Bottom indicator width should now account for trailing margin.",
+                initialBottomIndicatorWidth + mStripTab2.getTrailingMargin(),
+                mInteractingGroupTitle.getBottomIndicatorWidth(),
+                EPSILON);
     }
 
     @Test

@@ -16,6 +16,7 @@ import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import android.view.HapticFeedbackConstants;
 
@@ -23,10 +24,12 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
+import org.chromium.base.Token;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutGroupTitle;
@@ -34,6 +37,9 @@ import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutTab;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutUtils;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutView;
 import org.chromium.chrome.browser.compositor.overlays.strip.reorder.ReorderDelegate.ReorderType;
+import org.chromium.chrome.browser.tab.Tab;
+
+import java.util.List;
 
 /** Tests for {@link TabReorderStrategy}. */
 @Config(qualifiers = "sw600dp")
@@ -66,6 +72,8 @@ public class TabReorderStrategyTest extends ReorderStrategyTestBase {
     private StripLayoutTab mExpandedTab1;
     private StripLayoutTab mExpandedTab2;
     private StripLayoutTab mLastTab;
+
+    private StripLayoutGroupTitle mExpandedTitle;
 
     // Dependencies
     private final ObservableSupplierImpl<Boolean> mInReorderModeSupplier =
@@ -108,7 +116,7 @@ public class TabReorderStrategyTest extends ReorderStrategyTestBase {
         mCollapsedTab = buildStripTab(TAB_ID1, TAB_WIDTH);
         mUngroupedTab1 = buildStripTab(TAB_ID2, 2 * TAB_WIDTH);
         mUngroupedTab2 = buildStripTab(TAB_ID3, 3 * TAB_WIDTH);
-        StripLayoutGroupTitle groupTitle2 = buildGroupTitle(TAB_ID4, GROUP_ID2, 4 * TAB_WIDTH);
+        mExpandedTitle = buildGroupTitle(TAB_ID4, GROUP_ID2, 4 * TAB_WIDTH);
         mExpandedTab1 = buildStripTab(TAB_ID4, 5 * TAB_WIDTH);
         mExpandedTab2 = buildStripTab(TAB_ID5, 6 * TAB_WIDTH);
         mLastTab = buildStripTab(TAB_ID6, 7 * TAB_WIDTH);
@@ -118,7 +126,7 @@ public class TabReorderStrategyTest extends ReorderStrategyTestBase {
         mCollapsedTab.setCollapsed(/* collapsed= */ true);
 
         // Set indicator width for expanded group.
-        groupTitle2.setBottomIndicatorWidth(3 * TAB_WIDTH);
+        mExpandedTitle.setBottomIndicatorWidth(3 * TAB_WIDTH);
 
         // Populate state.
         mStripTabs =
@@ -130,14 +138,14 @@ public class TabReorderStrategyTest extends ReorderStrategyTestBase {
                     mExpandedTab2,
                     mLastTab
                 };
-        mGroupTitles = new StripLayoutGroupTitle[] {groupTitle1, groupTitle2};
+        mGroupTitles = new StripLayoutGroupTitle[] {groupTitle1, mExpandedTitle};
         mStripViews =
                 new StripLayoutView[] {
                     groupTitle1,
                     mCollapsedTab,
                     mUngroupedTab1,
                     mUngroupedTab2,
-                    groupTitle2,
+                    mExpandedTitle,
                     mExpandedTab1,
                     mExpandedTab2,
                     mLastTab
@@ -314,6 +322,42 @@ public class TabReorderStrategyTest extends ReorderStrategyTestBase {
     }
 
     @Test
+    public void testUpdateReorder_bottomIndicatorWidth_mergeToGroup() {
+        //                                                           <------
+        // [CollapsedGroup]  [Tab]  [Tab]  [ExpandedGroup]([Tab] [Tab])  [Tab]
+        mockMergeToGroup();
+        startReorderAndDragTab(mLastTab, -DRAG_INTO_GROUP_SUCCESS);
+
+        int expectedNumTabs = 3;
+        float expectedBottomIndicatorWidth =
+                StripLayoutUtils.calculateBottomIndicatorWidth(
+                        mExpandedTitle, expectedNumTabs, EFFECTIVE_TAB_WIDTH);
+        assertEquals(
+                "Unexpected bottom indicator width.",
+                expectedBottomIndicatorWidth,
+                mExpandedTitle.getBottomIndicatorWidth(),
+                EPSILON);
+    }
+
+    @Test
+    public void testUpdateReorder_bottomIndicatorWidth_unGroup() {
+        //                                                         ------>
+        // [CollapsedGroup]  [Tab]  [Tab]  [ExpandedGroup]([Tab] [Tab])  [Tab]
+        mockUnGroup();
+        startReorderAndDragTab(mExpandedTab2, DRAG_OUT_OF_GROUP_SUCCESS);
+
+        int expectedNumTabs = 1;
+        float expectedBottomIndicatorWidth =
+                StripLayoutUtils.calculateBottomIndicatorWidth(
+                        mExpandedTitle, expectedNumTabs, EFFECTIVE_TAB_WIDTH);
+        assertEquals(
+                "Unexpected bottom indicator width.",
+                expectedBottomIndicatorWidth,
+                mExpandedTitle.getBottomIndicatorWidth(),
+                EPSILON);
+    }
+
+    @Test
     public void testStopReorder() {
         // Start reorder and verify.
         startReorder(mUngroupedTab2);
@@ -403,5 +447,37 @@ public class TabReorderStrategyTest extends ReorderStrategyTestBase {
                         })
                 .when(mModel)
                 .moveTab(anyInt(), anyInt());
+    }
+
+    private void mockMergeToGroup() {
+        ArgumentCaptor<Integer> captor = ArgumentCaptor.forClass(Integer.class);
+        doAnswer(
+                        invocation -> {
+                            Tab tab = mModel.getTabById(captor.getValue());
+                            assert tab != null;
+                            Token tabGroupId = tab.getTabGroupId();
+                            int count = mTabGroupModelFilter.getTabCountForGroup(tabGroupId);
+                            when(mTabGroupModelFilter.getTabCountForGroup(tabGroupId))
+                                    .thenReturn(count + 1);
+                            return null;
+                        })
+                .when(mTabGroupModelFilter)
+                .mergeTabsToGroup(anyInt(), captor.capture(), anyBoolean());
+    }
+
+    private void mockUnGroup() {
+        @SuppressWarnings("unchecked")
+        ArgumentCaptor<List<Tab>> captor = ArgumentCaptor.forClass(List.class);
+        doAnswer(
+                        invocation -> {
+                            Tab tab = captor.getValue().get(0);
+                            Token tabGroupId = tab.getTabGroupId();
+                            int count = mTabGroupModelFilter.getTabCountForGroup(tabGroupId);
+                            when(mTabGroupModelFilter.getTabCountForGroup(tabGroupId))
+                                    .thenReturn(count - 1);
+                            return null;
+                        })
+                .when(mTabUnGrouper)
+                .ungroupTabs(captor.capture(), anyBoolean(), anyBoolean(), any());
     }
 }

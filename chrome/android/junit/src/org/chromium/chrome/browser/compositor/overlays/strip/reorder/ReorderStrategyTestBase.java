@@ -27,6 +27,7 @@ import org.chromium.chrome.browser.compositor.overlays.strip.AnimationHost;
 import org.chromium.chrome.browser.compositor.overlays.strip.ScrollDelegate;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutGroupTitle;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutTab;
+import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutUtils;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutView;
 import org.chromium.chrome.browser.compositor.overlays.strip.reorder.ReorderDelegate.StripUpdateDelegate;
 import org.chromium.chrome.browser.layouts.animation.CompositorAnimationHandler;
@@ -44,6 +45,8 @@ public abstract class ReorderStrategyTestBase {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     protected static final int TAB_WIDTH = 50;
+    protected static final float EFFECTIVE_TAB_WIDTH =
+            TAB_WIDTH - StripLayoutUtils.TAB_OVERLAP_WIDTH_DP;
     protected static final PointF DRAG_START_POINT = new PointF(70f, 20f); // Arbitrary value.
     protected static final float EPSILON = 0.001f;
     protected static final int INTERACTING_VIEW_ID = 10; // Arbitrary value.
