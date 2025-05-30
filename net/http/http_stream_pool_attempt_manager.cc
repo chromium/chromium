@@ -318,6 +318,10 @@ void HttpStreamPool::AttemptManager::Preconnect(Job* job) {
 }
 
 void HttpStreamPool::AttemptManager::OnServiceEndpointsUpdated() {
+  if (is_shutting_down()) {
+    return;
+  }
+
   TRACE_EVENT_INSTANT("net.stream", "AttemptManager::OnServiceEndpointsUpdated",
                       track_);
   net_log().AddEvent(
@@ -331,6 +335,10 @@ void HttpStreamPool::AttemptManager::OnServiceEndpointsUpdated() {
 }
 
 void HttpStreamPool::AttemptManager::OnServiceEndpointRequestFinished(int rv) {
+  if (is_shutting_down()) {
+    return;
+  }
+
   TRACE_EVENT_INSTANT("net.stream",
                       "AttemptManager::OnServiceEndpointRequestFinished",
                       track_, "result", rv);
@@ -1043,6 +1051,18 @@ void HttpStreamPool::AttemptManager::ResolveServiceEndpoint(
   }
 }
 
+void HttpStreamPool::AttemptManager::ResetServiceEndpointRequestLater() {
+  CHECK(is_shutting_down());
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(&AttemptManager::ResetServiceEndpointRequest,
+                                weak_ptr_factory_.GetWeakPtr()));
+}
+
+void HttpStreamPool::AttemptManager::ResetServiceEndpointRequest() {
+  CHECK(is_shutting_down());
+  service_endpoint_request_.reset();
+}
+
 void HttpStreamPool::AttemptManager::RestrictAllowedProtocols(
     NextProtoSet allowed_alpns) {
   allowed_alpns_ = base::Intersection(allowed_alpns_, allowed_alpns);
@@ -1491,7 +1511,7 @@ void HttpStreamPool::AttemptManager::HandleFinalError(int error) {
   CHECK(!final_error_to_notify_jobs_.has_value());
   final_error_to_notify_jobs_ = error;
   availability_state_ = AvailabilityState::kFailing;
-  service_endpoint_request_.reset();
+  ResetServiceEndpointRequestLater();
 
   net_log_.AddEvent(
       NetLogEventType::HTTP_STREAM_POOL_ATTEMPT_MANAGER_NOTIFY_FAILURE, [&] {
@@ -1656,7 +1676,7 @@ void HttpStreamPool::AttemptManager::MaybeStartDraining() {
   }
 
   availability_state_ = AvailabilityState::kDraining;
-  service_endpoint_request_.reset();
+  ResetServiceEndpointRequestLater();
 
   // Cancel in-flight TCP based attempts so that draining AttemptManager won't
   // have active connecting streams.

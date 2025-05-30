@@ -1176,12 +1176,24 @@ TEST_F(HttpStreamPoolAttemptManagerTest, RequestCanceledBeforeAttemptSuccess) {
 
   endpoint_request->add_endpoint(
       ServiceEndpointBuilder().add_v4("192.0.2.1").endpoint());
-  endpoint_request->CallOnServiceEndpointRequestFinished(OK);
+  endpoint_request->CallOnServiceEndpointsUpdated();
 
   // Reset the request to cancel. Associated AttemptManager and Group should
-  // complete.
+  // complete eventually.
   requester.ResetRequest();
   ASSERT_TRUE(requester.associated_attempt_manager()->is_shutting_down());
+
+  // Ensure invoking service endpoint callbacks does nothing on the associated
+  // AttemptManager.
+  CHECK(endpoint_request);
+  endpoint_request->add_endpoint(
+      ServiceEndpointBuilder().add_v4("192.0.2.2").endpoint());
+  endpoint_request->CallOnServiceEndpointsUpdated();
+  ASSERT_TRUE(requester.associated_attempt_manager()->is_shutting_down());
+
+  endpoint_request->CallOnServiceEndpointRequestFinished(OK);
+  ASSERT_TRUE(requester.associated_attempt_manager()->is_shutting_down());
+
   WaitForAttemptManagerComplete(requester.associated_attempt_manager().get());
   ASSERT_FALSE(pool().GetGroupForTesting(requester.GetStreamKey()));
 }
@@ -2932,18 +2944,19 @@ TEST_F(HttpStreamPoolAttemptManagerTest,
   StreamRequester requester_b;
   requester_b.set_destination("https://example.test").RequestStream(pool());
 
-  // Call CallOnServiceEndpointsUpdated(). The corresponding AttemptManager will
-  // destroy ServiceEndpointRequest.
+  // Call CallOnServiceEndpointsUpdated(). The AttemptManager should use the
+  // existing SPDY session.
   endpoint_request
       ->add_endpoint(
           ServiceEndpointBuilder().add_ip_endpoint(kCommonEndPoint).endpoint())
       .CallOnServiceEndpointsUpdated();
-  CHECK(!endpoint_request);
 
   requester_b.WaitForResult();
 
   EXPECT_THAT(requester_b.result(), Optional(IsOk()));
   ASSERT_EQ(pool().TotalActiveStreamCount(), 1u);
+  FastForwardUntilNoTasksRemain();
+  CHECK(!endpoint_request);
 }
 
 TEST_F(HttpStreamPoolAttemptManagerTest,
