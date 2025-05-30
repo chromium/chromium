@@ -68,7 +68,7 @@ bool TestAXPlatformTreeManagerDelegate::ShouldSuppressAXLoadComplete() {
 
 content::WebContentsAccessibility*
 TestAXPlatformTreeManagerDelegate::AccessibilityGetWebContentsAccessibility() {
-  return nullptr;
+  return web_contents_accessibility_;
 }
 
 bool TestAXPlatformTreeManagerDelegate::AccessibilityIsWebContentSource() {
