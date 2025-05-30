@@ -54,11 +54,11 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "url/gurl.h"
 
 namespace permissions {
 
 namespace {
-
 using ::base::TimeTicks;
 using ::base::test::FeatureRef;
 using ::base::test::FeatureRefAndParams;
@@ -70,10 +70,15 @@ using ::permissions::PredictionRequestFeatures;
 using ::permissions::PredictionService;
 using ::testing::_;
 using ::testing::AllOf;
+using ::testing::Combine;
 using ::testing::Eq;
+using ::testing::ExplainMatchResult;
 using ::testing::Field;
 using ::testing::Invoke;
+using ::testing::Truly;
+using ::testing::ValuesIn;
 using ::testing::WithArg;
+using ExperimentId = PredictionRequestFeatures::ExperimentId;
 
 constexpr OptimizationTarget kCpssV1OptTargetNotification =
     OptimizationTarget::OPTIMIZATION_TARGET_NOTIFICATION_PERMISSION_PREDICTIONS;
@@ -122,6 +127,9 @@ constexpr std::string_view kOneReturnAiv3Model = "aiv3_ret_1.tflite";
 
 // Non existing model file.
 constexpr std::string_view kNotExistingModel = "does_not_exist.tflite";
+
+constexpr std::string kNeverHoldBackProbability = "0";
+constexpr std::string kAlwaysHoldBackProbability = "1";
 
 base::FilePath ModelFilePath(std::string_view file_name) {
   base::FilePath source_root_dir;
@@ -191,6 +199,65 @@ class PermissionsAiv3HandlerFake : public PermissionsAiv3Handler {
   base::WeakPtrFactory<PermissionsAiv3HandlerFake> weak_ptr_factory_{this};
 };
 
+MATCHER_P(PredictionRequestFeatureEq, expected, "") {
+  using ActionCounts = PredictionRequestFeatures::ActionCounts;
+  auto ActionCountsEq = [&](std::string_view name, const ActionCounts& expected,
+                            const ActionCounts& got) {
+    *result_listener << "\n";
+    *result_listener << name << ": \n\t";
+    auto match = ExplainMatchResult(
+        AllOf(
+            Field("grants", &ActionCounts::grants, expected.grants),
+
+            Field("denies", &ActionCounts::denies, expected.denies),
+            Field("dismissals", &ActionCounts::dismissals, expected.dismissals),
+
+            Field("ignores", &ActionCounts::ignores, expected.ignores)),
+        got, result_listener);
+    *result_listener << "\n";
+    return match;
+  };
+
+  return ExplainMatchResult(
+      AllOf(Field("gesture", &PredictionRequestFeatures::gesture,
+                  expected.gesture),
+            Field("type", &PredictionRequestFeatures::type, expected.type),
+            Field("requested_permission_counts",
+                  &PredictionRequestFeatures::requested_permission_counts,
+                  Truly([&](const auto& actual) {
+                    return ActionCountsEq("requested_permission_counts",
+                                          expected.requested_permission_counts,
+                                          actual);
+                  })),
+            Field("all_permission_counts",
+                  &PredictionRequestFeatures::all_permission_counts,
+                  Truly([&](const auto& actual) {
+                    return ActionCountsEq("all_permission_counts",
+                                          expected.all_permission_counts,
+                                          actual);
+                  })),
+            Field("url", &PredictionRequestFeatures::url, expected.url),
+            Field("experiment_id", &PredictionRequestFeatures::experiment_id,
+                  expected.experiment_id),
+            Field("permission_relevance",
+                  &PredictionRequestFeatures::permission_relevance,
+                  expected.permission_relevance)),
+      arg, result_listener);
+}
+
+PredictionRequestFeatures BuildRequestFeatures(
+    RequestType request_type,
+    ExperimentId experiment_id,
+    PermissionRequestRelevance permission_relevance) {
+  return PredictionRequestFeatures{
+      .gesture = PermissionRequestGestureType::NO_GESTURE,
+      .type = request_type,
+      .requested_permission_counts = {},
+      .all_permission_counts = {},
+      .url = GURL("https://www.google.com"),
+      .experiment_id = experiment_id,
+      .permission_relevance = permission_relevance};
+}
 }  // namespace
 
 class PredictionServiceBrowserTestBase : public InProcessBrowserTest {
@@ -200,6 +267,8 @@ class PredictionServiceBrowserTestBase : public InProcessBrowserTest {
       const std::vector<FeatureRef>& disabled_features = {}) {
     scoped_feature_list_.InitWithFeaturesAndParameters(enabled_features,
                                                        disabled_features);
+    PredictionServiceFactory::GetInstance()->set_prediction_service_for_testing(
+        &prediction_service_);
   }
 
   ~PredictionServiceBrowserTestBase() override = default;
@@ -242,6 +311,10 @@ class PredictionServiceBrowserTestBase : public InProcessBrowserTest {
         ->GetPredictionModelHandler(RequestType::kNotifications);
   }
 
+  base::HistogramTester& histogram_tester() { return histogram_tester_; }
+
+  PredictionServiceMock& prediction_service() { return prediction_service_; }
+
   PredictionBasedPermissionUiSelector*
   prediction_based_permission_ui_selector() {
     return static_cast<PredictionBasedPermissionUiSelector*>(
@@ -283,8 +356,6 @@ class PredictionServiceBrowserTestBase : public InProcessBrowserTest {
     }
   }
 
-  base::HistogramTester& histogram_tester() { return histogram_tester_; }
-
  protected:
   OptimizationGuideKeyedService* opt_guide() {
     return OptimizationGuideKeyedServiceFactory::GetForProfile(
@@ -297,12 +368,129 @@ class PredictionServiceBrowserTestBase : public InProcessBrowserTest {
   std::unique_ptr<MockPermissionPromptFactory> mock_permission_prompt_factory_;
   base::test::ScopedFeatureList scoped_feature_list_;
   base::HistogramTester histogram_tester_;
+  PredictionServiceMock prediction_service_;
 };
+
+// ---------------------------------------------------------------------------
+// ------------------- Prediction Service CPSSv3 Server Side -----------------
+// ---------------------------------------------------------------------------
 
 IN_PROC_BROWSER_TEST_F(PredictionServiceBrowserTestBase,
                        PredictionServiceEnabled) {
   EXPECT_TRUE(prediction_model_handler());
 }
+
+struct PredictionServiceHoldbackProbabilityTestCase {
+  std::string test_name;
+  std::string holdback_probability;
+  bool should_expect_quiet_ui;
+  PermissionUmaUtil::PredictionGrantLikelihood prediction_service_likelihood;
+};
+
+class PredictionServiceHoldbackBrowserTest
+    : public PredictionServiceBrowserTestBase,
+      public testing::WithParamInterface<
+          PredictionServiceHoldbackProbabilityTestCase> {
+ public:
+  PredictionServiceHoldbackBrowserTest()
+      : PredictionServiceBrowserTestBase(/*enabled_features=*/
+                                         {
+                                             {permissions::features::
+                                                  kPermissionPredictionsV2,
+                                              {{permissions::feature_params::
+                                                    kPermissionPredictionsV2HoldbackChance
+                                                        .name,
+                                                GetParam()
+                                                    .holdback_probability}}},
+                                         },
+                                         /*disabled_features=*/
+                                         {permissions::features::
+                                              kPermissionOnDeviceNotificationPredictions,
+                                          permissions::features::
+                                              kPermissionsAIv1,
+                                          permissions::features::
+                                              kPermissionsAIv3,
+                                          permissions::features::
+                                              kPermissionsAIv3Geolocation}) {}
+
+  void SetUpOnMainThread() override {
+    PredictionServiceBrowserTestBase::SetUpOnMainThread();
+
+    browser()->profile()->GetPrefs()->SetBoolean(
+        unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled, true);
+  }
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    PredictionServiceHoldbackTest,
+    PredictionServiceHoldbackBrowserTest,
+    ValuesIn<PredictionServiceHoldbackProbabilityTestCase>({
+        {
+            /*test_name=*/"TestUnspecifiedLikelihoodAndNoHoldback"
+                          "ReturnsDefaultUI",
+            /*holdback_probability=*/kNeverHoldBackProbability,
+            /*should_expect_quiet_ui=*/false,
+            /*prediction_service_likelihood=*/kLikelihoodUnspecified,
+        },
+        {
+            /*test_name=*/"TestUnspecifiedLikelihoodAndHoldback"
+                          "ReturnsDefaultUI",
+            /*holdback_probability=*/kAlwaysHoldBackProbability,
+            /*should_expect_quiet_ui=*/false,
+            /*prediction_service_likelihood=*/kLikelihoodUnspecified,
+        },
+        {
+            /*test_name=*/"TestVeryLikelyAndNoHoldback"
+                          "ReturnsQuietUI",
+            /*holdback_probability=*/kNeverHoldBackProbability,
+            /*should_expect_quiet_ui=*/true,
+            /*prediction_service_likelihood=*/kLikelihoodVeryUnlikely,
+        },
+        {
+            /*test_name=*/"TestVeryLikelyAndHoldback"
+                          "ReturnsDefaultUI",
+            /*holdback_probability=*/kAlwaysHoldBackProbability,
+            /*should_expect_quiet_ui=*/false,
+            /*prediction_service_likelihood=*/kLikelihoodVeryUnlikely,
+        },
+    }),
+    /*name_generator=*/
+    [](const testing::TestParamInfo<
+        PredictionServiceHoldbackBrowserTest::ParamType>& info) {
+      return info.param.test_name;
+    });
+
+IN_PROC_BROWSER_TEST_P(PredictionServiceHoldbackBrowserTest,
+                       TestServerSideHoldbackWorkflow) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GeneratePredictionsResponse prediction_service_response;
+  prediction_service_response.mutable_prediction()
+      ->Add()
+      ->mutable_grant_likelihood()
+      ->set_discretized_likelihood(GetParam().prediction_service_likelihood);
+
+  std::string test_url = "test.a";
+  PredictionRequestFeatures expected_features = BuildRequestFeatures(
+      RequestType::kNotifications, ExperimentId::kNoExperimentId,
+      PermissionRequestRelevance::kUnspecified);
+  EXPECT_CALL(prediction_service(),
+              StartLookup(PredictionRequestFeatureEq(expected_features), _, _))
+      .WillRepeatedly(WithArg<2>(Invoke(
+          [&](PredictionService::LookupResponseCallback response_callback) {
+            std::move(response_callback)
+                .Run(/*lookup_successful=*/true,
+                     /*response_from_cache=*/true, prediction_service_response);
+          })));
+  TriggerPromptAndVerifyUi(test_url, PermissionAction::DISMISSED,
+                           RequestType::kNotifications,
+                           GetParam().should_expect_quiet_ui,
+                           /*expected_relevance=*/std::nullopt,
+                           GetParam().prediction_service_likelihood);
+}
+
+// -----------------------------------------------------------------------------
+// --------------------- Prediction Service On Device CPSSv1 -------------------
+// -----------------------------------------------------------------------------
 
 struct HoldbackProbabilityTestCase {
   std::string test_name;
@@ -369,7 +557,7 @@ class SignatureModelPredictionServiceBrowserTest
 INSTANTIATE_TEST_SUITE_P(
     HoldbackProbabilityTest,
     SignatureModelPredictionServiceBrowserTest,
-    testing::ValuesIn<HoldbackProbabilityTestCase>({
+    ValuesIn<HoldbackProbabilityTestCase>({
         {
             /*test_name=*/"TestUnspecifiedLikelihoodAndNoHoldback"
                           "ReturnsDefaultUI",
@@ -447,6 +635,10 @@ IN_PROC_BROWSER_TEST_P(SignatureModelPredictionServiceBrowserTest,
                                       /*expected_count=*/1);
 }
 
+// -----------------------------------------------------------------------------
+// --------------- Prediction Service On Device Permissions AIv3 ---------------
+// -----------------------------------------------------------------------------
+
 struct ModelMetadata {
   std::string test_name;
   std::string_view model_name;
@@ -498,10 +690,7 @@ class Aiv3ModelPredictionServiceBrowserTest
                                                   kPermissionsAIv3Geolocation,
                                               {}},
                                          },
-                                         /*disabled_features=*/{}) {
-    PredictionServiceFactory::GetInstance()->set_prediction_service_for_testing(
-        &prediction_service_);
-  }
+                                         /*disabled_features=*/{}) {}
 
   RequestType request_type() const { return get<1>(GetParam()).request_type; }
   OptimizationTarget optimization_target() const {
@@ -550,15 +739,11 @@ class Aiv3ModelPredictionServiceBrowserTest
         ->GetPermissionsAiv3Handler(request_type());
   }
 
-  PredictionServiceMock& prediction_service() { return prediction_service_; }
-
  private:
   PredictionModelHandlerProvider* model_handler_provider() {
     return PredictionModelHandlerProviderFactory::GetForBrowserContext(
         browser()->profile());
   }
-
-  PredictionServiceMock prediction_service_;
 };
 
 std::vector<ModelMetadata> model_data_testcase = {
@@ -623,8 +808,7 @@ std::vector<PermissionRequestMetadata> request_data_testcase = {
 INSTANTIATE_TEST_SUITE_P(
     Aiv3ModelTest,
     Aiv3ModelPredictionServiceBrowserTest,
-    ::testing::Combine(::testing::ValuesIn(model_data_testcase),
-                       ::testing::ValuesIn(request_data_testcase)),
+    Combine(ValuesIn(model_data_testcase), ValuesIn(request_data_testcase)),
     /*name_generator=*/
     [](const testing::TestParamInfo<
         Aiv3ModelPredictionServiceBrowserTest::ParamType>& info) {
@@ -654,20 +838,11 @@ IN_PROC_BROWSER_TEST_P(Aiv3ModelPredictionServiceBrowserTest,
       ->mutable_grant_likelihood()
       ->set_discretized_likelihood(test_case.prediction_service_likelihood);
 
-  // The server side model fetches a lot of history actions, but we are
-  // only interested in the permission relevance field, that is populated
-  // by the on-device model. We also check that the feature id is set
-  // correctly.
-  auto expected_relevance =
-      Field(&PredictionRequestFeatures::permission_relevance,
-            Eq(test_case.expected_relevance));
-  auto expected_experiment_id =
-      Field(&PredictionRequestFeatures::experiment_id,
-            PredictionRequestFeatures::ExperimentId::kAiV3ExperimentId);
-  auto expected_prediction_request_features =
-      AllOf(expected_relevance, expected_relevance);
+  PredictionRequestFeatures expected_features =
+      BuildRequestFeatures(request_type(), ExperimentId::kAiV3ExperimentId,
+                           test_case.expected_relevance);
   EXPECT_CALL(prediction_service(),
-              StartLookup(expected_prediction_request_features, _, _))
+              StartLookup(PredictionRequestFeatureEq(expected_features), _, _))
       .WillRepeatedly(WithArg<2>(Invoke(
           [&](PredictionService::LookupResponseCallback response_callback) {
             std::move(response_callback)

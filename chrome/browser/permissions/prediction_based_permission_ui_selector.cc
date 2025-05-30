@@ -454,19 +454,20 @@ PredictionBasedPermissionUiSelector::BuildPredictionRequestFeatures(
 
   features.experiment_id =
       PredictionRequestFeatures::ExperimentId::kNoExperimentId;
-  bool use_aiv1 =
-      base::FeatureList::IsEnabled(permissions::features::kPermissionsAIv1);
-  bool use_aiv3 =
-      base::FeatureList::IsEnabled(permissions::features::kPermissionsAIv3) ||
+
+  // Init `permission_relevance` here to avoid a crash during
+  // `ConvertToProtoRelevance` execution.
+  features.permission_relevance = PermissionRequestRelevance::kUnspecified;
+  // if both Aiv3 and Aiv1 are enabled, we want to chose Aiv3.
+  if (base::FeatureList::IsEnabled(permissions::features::kPermissionsAIv3) ||
       base::FeatureList::IsEnabled(
-          permissions::features::kPermissionsAIv3Geolocation);
-  if (use_aiv1 || use_aiv3) {
-    // Init `permission_relevance` here to avoid a crash during
-    // `ConvertToProtoRelevance` execution.
-    features.permission_relevance = PermissionRequestRelevance::kUnspecified;
+          permissions::features::kPermissionsAIv3Geolocation)) {
     features.experiment_id =
-        use_aiv1 ? PredictionRequestFeatures::ExperimentId::kAiV1ExperimentId
-                 : PredictionRequestFeatures::ExperimentId::kAiV3ExperimentId;
+        PredictionRequestFeatures::ExperimentId::kAiV3ExperimentId;
+  } else if (base::FeatureList::IsEnabled(
+                 permissions::features::kPermissionsAIv1)) {
+    features.experiment_id =
+        PredictionRequestFeatures::ExperimentId::kAiV1ExperimentId;
   }
 
   base::Time cutoff = base::Time::Now() - kPermissionActionCutoffAge;
