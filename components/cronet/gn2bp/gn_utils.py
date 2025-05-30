@@ -652,6 +652,8 @@ class GnParser:
             dep.transitive_jni_java_sources)
       elif dep.is_linker_unit_type():
         target.arch[arch].deps.add(dep.name)
+      elif dep.type == 'aidl_interface':
+        target.arch[arch].deps.add(dep.name)
       elif dep.type == "rust_executable":
         target.arch[arch].deps.add(dep.name)
       elif dep.type == 'java_library':
