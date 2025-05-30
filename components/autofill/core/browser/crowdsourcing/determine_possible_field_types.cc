@@ -290,35 +290,6 @@ void FindAndSetPossibleFieldTypesForField(
   field.set_possible_types(matching_types);
 }
 
-// For each `form` field, searches for the field value in profiles and credit
-// cards and sets the field's possible types accordingly. Special heuristics are
-// run for finding the CVC field.
-void FindAndSetPossibleFieldTypes(
-    base::span<const AutofillProfile> profiles,
-    base::span<const CreditCard> credit_cards,
-    base::span<const EntityInstance> entities,
-    base::span<const LoyaltyCard> loyalty_cards,
-    const std::set<FieldGlobalId> fields_that_match_state,
-    std::u16string_view last_unlocked_credit_card_cvc,
-    const std::string& app_locale,
-    FormStructure& form) {
-  for (const std::unique_ptr<AutofillField>& field : form.fields()) {
-    FindAndSetPossibleFieldTypesForField(*field, profiles, credit_cards,
-                                         entities, loyalty_cards,
-                                         fields_that_match_state, app_locale);
-  }
-
-  // As CVCs are not stored, run special heuristics to detect CVC-like values.
-  AutofillField* cvc_field =
-      GetBestPossibleCVCFieldForUpload(form, last_unlocked_credit_card_cvc);
-  if (cvc_field) {
-    FieldTypeSet possible_types = cvc_field->possible_types();
-    possible_types.erase(UNKNOWN_TYPE);
-    possible_types.insert(CREDIT_CARD_VERIFICATION_CODE);
-    cvc_field->set_possible_types(possible_types);
-  }
-}
-
 }  // namespace
 
 std::set<FieldGlobalId> PreProcessStateMatchingTypes(
@@ -372,9 +343,22 @@ void DeterminePossibleFieldTypesForUpload(
     // the values so that the first call does not affect later calls.
     field->set_possible_types({});
   }
-  FindAndSetPossibleFieldTypes(profiles, credit_cards, entities, loyalty_cards,
-                               fields_that_match_state,
-                               last_unlocked_credit_card_cvc, app_locale, form);
+
+  for (const std::unique_ptr<AutofillField>& field : form.fields()) {
+    FindAndSetPossibleFieldTypesForField(*field, profiles, credit_cards,
+                                         entities, loyalty_cards,
+                                         fields_that_match_state, app_locale);
+  }
+
+  // As CVCs are not stored, run special heuristics to detect CVC-like values.
+  if (AutofillField* cvc_field = GetBestPossibleCVCFieldForUpload(
+          form, last_unlocked_credit_card_cvc)) {
+    FieldTypeSet possible_types = cvc_field->possible_types();
+    possible_types.erase(UNKNOWN_TYPE);
+    possible_types.insert(CREDIT_CARD_VERIFICATION_CODE);
+    cvc_field->set_possible_types(possible_types);
+  }
+
   DisambiguatePossibleFieldTypes(form);
 }
 
