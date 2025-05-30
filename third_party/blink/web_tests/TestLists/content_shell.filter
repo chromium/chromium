@@ -211,7 +211,6 @@ external/wpt/css/css-flexbox/align-items-003.htm
 external/wpt/css/css-flexbox/anonymous-flex-item-004.html
 external/wpt/css/css-flexbox/content-height-with-scrollbars.html
 external/wpt/css/css-flexbox/flex-container*
-external/wpt/css/css-flexbox/flexbox_columns.html
 external/wpt/css/css-flexbox/flexbox_visibility-collapse.html
 external/wpt/css/css-flexbox/intrinsic-size/row-use-cases-001.html
 external/wpt/css/css-flexbox/scrollbars*
