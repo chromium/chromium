@@ -5,17 +5,27 @@
 #include "chrome/browser/ui/tabs/tab_strip_api/events/event_transformation.h"
 
 #include "base/strings/string_number_conversions.h"
+#include "chrome/browser/ui/tabs/tab_renderer_data.h"
+#include "chrome/browser/ui/tabs/tab_strip_api/converters/tab_converters.h"
 #include "chrome/browser/ui/tabs/tab_strip_api/tab_id.h"
 
 namespace tabs_api::events {
 
-mojom::OnTabsCreatedEventPtr ToEvent(
-    const TabStripModelChange::Insert& insert) {
+mojom::OnTabsCreatedEventPtr ToEvent(const TabStripModelChange::Insert& insert,
+                                     TabStripModel* tab_strip_model) {
   auto event = mojom::OnTabsCreatedEvent::New();
   for (auto& content : insert.contents) {
-    event->tabs.emplace_back(
-        TabId::Type::kContent,
-        base::NumberToString(content.tab->GetHandle().raw_value()));
+    auto tab_created = tabs_api::mojom::TabCreatedContainer::New();
+    auto pos = tabs_api::mojom::Position::New();
+    pos->index = content.index;
+    tab_created->position = std::move(pos);
+    auto renderer_data =
+        TabRendererData::FromTabInModel(tab_strip_model, content.index);
+    auto mojo_tab = tabs_api::converters::BuildMojoTab(content.tab->GetHandle(),
+                                                       renderer_data);
+
+    tab_created->tab = std::move(mojo_tab);
+    event->tabs.emplace_back(std::move(tab_created));
   }
   return event;
 }
@@ -27,6 +37,20 @@ mojom::OnTabsClosedEventPtr ToEvent(const TabStripModelChange::Remove& remove) {
     event->tabs.emplace_back(
         TabId::Type::kContent,
         base::NumberToString(content.tab->GetHandle().raw_value()));
+  }
+
+  return event;
+}
+
+mojom::OnTabDataChangedEventPtr ToEvent(tabs_api::TabStripModelAdapter* adapter,
+                                        size_t index,
+                                        TabChangeType change_type) {
+  auto event = mojom::OnTabDataChangedEvent::New();
+  auto tabs = adapter->GetTabs();
+  if (index < tabs.size()) {
+    auto& handle = tabs.at(index);
+    auto renderer_data = adapter->GetTabRendererData(index);
+    event->tab = tabs_api::converters::BuildMojoTab(handle, renderer_data);
   }
 
   return event;

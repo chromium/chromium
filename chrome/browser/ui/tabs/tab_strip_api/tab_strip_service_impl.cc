@@ -49,10 +49,10 @@ TabStripServiceImpl::TabStripServiceImpl(
     std::unique_ptr<tabs_api::BrowserAdapter> browser_adapter,
     std::unique_ptr<tabs_api::TabStripModelAdapter> tab_strip_model_adapter,
     std::unique_ptr<tabs_api::events::TabStripEventRecorder> recorder)
-
     : browser_adapter_(std::move(browser_adapter)),
       tab_strip_model_adapter_(std::move(tab_strip_model_adapter)),
       recorder_(std::move(recorder)) {
+  recorder_->SetTabStripModelAdapter(tab_strip_model_adapter_.get());
   recorder_->SetOnEventNotification(base::BindRepeating(
       &TabStripServiceImpl::BroadcastEvent, base::Unretained(this)));
   tab_strip_model_adapter_->AddObserver(recorder_.get());
@@ -244,7 +244,6 @@ void TabStripServiceImpl::ActivateTab(const tabs_api::TabId& id,
   tab_strip_model_adapter_->ActivateTab(maybe_idx.value());
   std::move(callback).Run(mojo_base::mojom::Empty::New());
 }
-
 
 void TabStripServiceImpl::Accept(
     mojo::PendingReceiver<tabs_api::mojom::TabStripService> client) {

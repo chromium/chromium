@@ -22,6 +22,10 @@ class EventVisitor {
     (*target_)->OnTabsClosed(event.Clone());
   }
 
+  void operator()(mojom::OnTabDataChangedEventPtr& event) {
+    (*target_)->OnTabDataChanged(event.Clone());
+  }
+
  private:
   raw_ptr<const mojo::AssociatedRemote<tabs_api::mojom::TabsObserver>> target_;
 };

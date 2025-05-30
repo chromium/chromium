@@ -28,21 +28,43 @@
 class TestTabStripClient : public tabs_api::mojom::TabsObserver {
  public:
   void OnTabsCreated(tabs_api::mojom::OnTabsCreatedEventPtr event) override {
-    for (auto& id : event->tabs) {
-      tabs.push_back(id);
+    for (auto& tab_created_container : event->tabs) {
+      auto& tab = tab_created_container->tab;
+      auto tab_id = tab->id;
+      tabs.push_back({tab_id, tab->url.spec()});
     }
   }
 
   void OnTabsClosed(tabs_api::mojom::OnTabsClosedEventPtr event) override {
     for (auto& id : event->tabs) {
-      if (auto found = std::find(tabs.begin(), tabs.end(), id);
-          found != tabs.end()) {
+      auto found = std::find_if(
+          tabs.begin(), tabs.end(),
+          [&](const std::pair<tabs_api::TabId, std::string>& element) {
+            return element.first == id;
+          });
+
+      if (found != tabs.end()) {
         tabs.erase(found);
       }
     }
   }
 
-  std::vector<tabs_api::TabId> tabs;
+  void OnTabDataChanged(
+      tabs_api::mojom::OnTabDataChangedEventPtr event) override {
+    auto& id = event->tab->id;
+    auto found = std::find_if(
+        tabs.begin(), tabs.end(),
+        [&](const std::pair<tabs_api::TabId, std::string>& element) {
+          return element.first == id;
+        });
+
+    if (found != tabs.end()) {
+      *found = {id, event->tab->url.spec()};
+    }
+  }
+
+  // Tabs is a vector containing a tab id and a url in the form of a string.
+  std::vector<std::pair<tabs_api::TabId, std::string>> tabs;
 };
 
 class TabStripServiceImplBrowserTest : public InProcessBrowserTest {
@@ -146,7 +168,13 @@ IN_PROC_BROWSER_TEST_F(TabStripServiceImplBrowserTest, Observation) {
   auto created_tab = std::move(result.value());
 
   ASSERT_EQ(1ul, client.tabs.size());
-  ASSERT_EQ(created_tab->id, client.tabs.at(0));
+  ASSERT_EQ(created_tab->id, client.tabs.at(0).first);
+
+  // Navigate to a new url which will modify the tab state.
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GURL("https://www.google.com/")));
+  receiver.FlushForTesting();
+  ASSERT_EQ(client.tabs[0].second, "https://www.google.com/");
 
   TabStripService::CloseTabsResult close_result;
   base::RunLoop close_tab_loop;

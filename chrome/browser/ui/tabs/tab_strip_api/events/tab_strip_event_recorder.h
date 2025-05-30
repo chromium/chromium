@@ -8,6 +8,8 @@
 #include <queue>
 
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
+#include "chrome/browser/ui/tabs/tab_strip_api/adapters/tab_strip_model_adapter.h"
 #include "chrome/browser/ui/tabs/tab_strip_api/events/event.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 
@@ -39,6 +41,12 @@ class TabStripEventRecorder : public TabStripModelObserver {
   // Whether or not the recorder has recorded events.
   bool HasRecordedEvents() const;
 
+  // Set the tabstrip model adapter.
+  void SetTabStripModelAdapter(
+      tabs_api::TabStripModelAdapter* tab_strip_model_adapter) {
+    tab_strip_model_adapter_ = tab_strip_model_adapter;
+  }
+
   ///////////////////////////////////////////////////////////////////////////
   // Integration points with external services.
 
@@ -47,6 +55,9 @@ class TabStripEventRecorder : public TabStripModelObserver {
       TabStripModel* tab_strip_model,
       const TabStripModelChange& change,
       const TabStripSelectionChange& selection) override;
+  void TabChangedAt(content::WebContents* contents,
+                    int index,
+                    TabChangeType change_type) override;
 
  protected:
   void Handle(Event event);
@@ -60,6 +71,7 @@ class TabStripEventRecorder : public TabStripModelObserver {
   Mode mode_ = Mode::kPassthrough;
   // Recorded events.
   std::queue<Event> recorded_;
+  raw_ptr<tabs_api::TabStripModelAdapter> tab_strip_model_adapter_;
 
   base::RepeatingCallback<void(Event&)> notification_;
 };

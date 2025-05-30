@@ -56,15 +56,23 @@ void TabStripEventRecorder::OnTabStripModelChanged(
     case TabStripModelChange::Type::kSelectionOnly:
       break;
     case TabStripModelChange::Type::kInserted:
-      Handle(ToEvent(*change.GetInsert()));
+      Handle(ToEvent(*change.GetInsert(), tab_strip_model));
       break;
     case TabStripModelChange::Type::kRemoved:
       Handle(ToEvent(*change.GetRemove()));
       break;
     case TabStripModelChange::Type::kMoved:
-      NOTREACHED() << "not implemented";
     case TabStripModelChange::Type::kReplaced:
       NOTREACHED() << "not implemented";
+  }
+}
+
+void TabStripEventRecorder::TabChangedAt(content::WebContents* contents,
+                                         int index,
+                                         TabChangeType change_type) {
+  // Do not handle the event if TabStripModelAdapter is not available.
+  if (tab_strip_model_adapter_) {
+    Handle(ToEvent(tab_strip_model_adapter_, index, change_type));
   }
 }
 

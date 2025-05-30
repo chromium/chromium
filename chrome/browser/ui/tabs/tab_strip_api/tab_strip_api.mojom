@@ -50,8 +50,6 @@ struct Tab {
 // identifier. It is purely used in this API to determine the position within
 // the TabstripModel.
 struct Position {
-  // TODO (crbug.com/412935316). Create a generic id that represents the parent
-  // collection id.
   uint32 index;
 };
 
@@ -86,8 +84,8 @@ struct TabCollection {
 };
 
 // The TabCollection tree has child nodes that can be a Tab or a
-// TabCollection. This container is used to represents the child nodes of a
-// TabCollection.
+// TabCollection. This container is used to represents the child nodes of the
+// tab strip tree.
 union Container {
   TabContainer tab_container;
   TabCollectionContainer tab_collection_container;
@@ -147,15 +145,28 @@ interface TabStripService {
       => result<mojo_base.mojom.Empty, mojo_base.mojom.Error>;
 };
 
-// TODO (crbug.com/411134070). Add in missing TabData.
+// When a Tab is created, it also needs to know the position.
+// Use this container to hold tab data as well as the position the tab was
+// created in.
+struct TabCreatedContainer {
+  Tab tab;
+  Position position;
+};
+
 struct OnTabsCreatedEvent {
   // Tab ids of the newly created tabs.
-  array<TabId> tabs;
+  array<TabCreatedContainer> tabs;
 };
 
 struct OnTabsClosedEvent {
   // Tab ids of the closed tabs.
   array<TabId> tabs;
+};
+
+struct OnTabDataChangedEvent {
+  // Tab data of the updated tab. For now just apply a broad update rather than
+  // granular tab data.
+  Tab tab;
 };
 
 // TODO (crbug.com/412955607)
@@ -168,4 +179,7 @@ interface TabsObserver {
 
   // When tabs have been closed on the tab strip.
   OnTabsClosed(OnTabsClosedEvent event);
+
+  // When tab data has been updated.
+  OnTabDataChanged(OnTabDataChangedEvent tab);
 };

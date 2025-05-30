@@ -15,6 +15,7 @@ namespace {
 
 class TestableRecorder : public TabStripEventRecorder {
  public:
+  TestableRecorder() : TabStripEventRecorder() {}
   void Handle(Event event) { TabStripEventRecorder::Handle(std::move(event)); }
 };
 
@@ -47,7 +48,8 @@ TEST(TabStripServiceEventRecorderTest, StoppingAndStartingNotification) {
   recorder.StopNotificationAndStartRecording();
 
   auto event = mojom::OnTabsCreatedEvent::New();
-  event->tabs.emplace_back(TabId::Type::kContent, "123");
+  auto container = tabs_api::mojom::TabCreatedContainer::New();
+  event->tabs.emplace_back(std::move(container));
 
   recorder.Handle(std::move(event));
 
