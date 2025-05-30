@@ -29,8 +29,7 @@ import org.chromium.components.segmentation_platform.Constants;
 import org.chromium.components.segmentation_platform.InputContext;
 import org.chromium.components.segmentation_platform.ProcessedValue;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
 
 /**
  * Central class for contextual page actions bridging between UI and backend. Registers itself with
@@ -71,14 +70,15 @@ public class ContextualPageActionController {
     private SignalAccumulator mSignalAccumulator;
 
     // The action provider backends.
-    protected final List<ActionProvider> mActionProviders = new ArrayList<>();
+    protected final HashMap<Integer, ActionProvider> mActionProviders = new HashMap<>();
 
     /**
      * Constructor.
+     *
      * @param profileSupplier The supplier for current profile.
      * @param tabSupplier The supplier of the current tab.
      * @param adaptiveToolbarButtonController The {@link AdaptiveToolbarButtonController} that
-     *         handles the logic to decide between multiple buttons to show.
+     *     handles the logic to decide between multiple buttons to show.
      */
     public ContextualPageActionController(
             ObservableSupplier<Profile> profileSupplier,
@@ -124,12 +124,18 @@ public class ContextualPageActionController {
             Supplier<ShoppingService> shoppingServiceSupplier,
             Supplier<BookmarkModel> bookmarkModelSupplier) {
         removeProviders();
-        mActionProviders.add(
+        mActionProviders.put(
+                AdaptiveToolbarButtonVariant.PRICE_TRACKING,
                 new PriceTrackingActionProvider(shoppingServiceSupplier, bookmarkModelSupplier));
-        mActionProviders.add(new ReaderModeActionProvider());
-        mActionProviders.add(new PriceInsightsActionProvider(shoppingServiceSupplier));
+        mActionProviders.put(
+                AdaptiveToolbarButtonVariant.READER_MODE, new ReaderModeActionProvider());
+        mActionProviders.put(
+                AdaptiveToolbarButtonVariant.PRICE_INSIGHTS,
+                new PriceInsightsActionProvider(shoppingServiceSupplier));
         if (AdaptiveToolbarFeatures.isDiscountsPageActionEnabled()) {
-            mActionProviders.add(new DiscountsActionProvider(shoppingServiceSupplier));
+            mActionProviders.put(
+                    AdaptiveToolbarButtonVariant.DISCOUNTS,
+                    new DiscountsActionProvider(shoppingServiceSupplier));
         }
     }
 
@@ -147,11 +153,13 @@ public class ContextualPageActionController {
      *     false.
      */
     public boolean hasPriceInsights() {
-        return mSignalAccumulator == null ? false : mSignalAccumulator.hasPriceInsights();
+        return mSignalAccumulator == null
+                ? false
+                : mSignalAccumulator.getSignal(AdaptiveToolbarButtonVariant.PRICE_INSIGHTS);
     }
 
     private void removeProviders() {
-        for (ActionProvider provider : mActionProviders) {
+        for (ActionProvider provider : mActionProviders.values()) {
             provider.destroy();
         }
         mActionProviders.clear();
@@ -188,16 +196,28 @@ public class ContextualPageActionController {
         InputContext inputContext = new InputContext();
         inputContext.addEntry(
                 Constants.CONTEXTUAL_PAGE_ACTIONS_PRICE_TRACKING_INPUT,
-                ProcessedValue.fromFloat(mSignalAccumulator.hasPriceTracking() ? 1.0f : 0.0f));
+                ProcessedValue.fromFloat(
+                        mSignalAccumulator.getSignal(AdaptiveToolbarButtonVariant.PRICE_TRACKING)
+                                ? 1.0f
+                                : 0.0f));
         inputContext.addEntry(
                 Constants.CONTEXTUAL_PAGE_ACTIONS_READER_MODE_INPUT,
-                ProcessedValue.fromFloat(mSignalAccumulator.hasReaderMode() ? 1.0f : 0.0f));
+                ProcessedValue.fromFloat(
+                        mSignalAccumulator.getSignal(AdaptiveToolbarButtonVariant.READER_MODE)
+                                ? 1.0f
+                                : 0.0f));
         inputContext.addEntry(
                 Constants.CONTEXTUAL_PAGE_ACTIONS_PRICE_INSIGHTS_INPUT,
-                ProcessedValue.fromFloat(mSignalAccumulator.hasPriceInsights() ? 1.0f : 0.0f));
+                ProcessedValue.fromFloat(
+                        mSignalAccumulator.getSignal(AdaptiveToolbarButtonVariant.PRICE_INSIGHTS)
+                                ? 1.0f
+                                : 0.0f));
         inputContext.addEntry(
                 Constants.CONTEXTUAL_PAGE_ACTIONS_DISCOUNTS_INPUT,
-                ProcessedValue.fromFloat(mSignalAccumulator.hasDiscounts() ? 1.0f : 0.0f));
+                ProcessedValue.fromFloat(
+                        mSignalAccumulator.getSignal(AdaptiveToolbarButtonVariant.DISCOUNTS)
+                                ? 1.0f
+                                : 0.0f));
         inputContext.addEntry("url", ProcessedValue.fromGURL(tab.getUrl()));
 
         ContextualPageActionControllerJni.get()
@@ -217,7 +237,7 @@ public class ContextualPageActionController {
     }
 
     private void showDynamicAction(@AdaptiveToolbarButtonVariant int action) {
-        for (ActionProvider actionProvider : mActionProviders) {
+        for (ActionProvider actionProvider : mActionProviders.values()) {
             actionProvider.onActionShown(mTabSupplier.get(), action);
         }
 

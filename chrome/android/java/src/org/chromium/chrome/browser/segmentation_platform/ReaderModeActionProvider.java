@@ -120,7 +120,6 @@ public class ReaderModeActionProvider implements ContextualPageActionController.
     private @Nullable GURL mLastSeenUrl;
 
     // ContextualPageActionController.ActionProvider implementation.
-
     @Override
     public void getAction(Tab tab, SignalAccumulator signalAccumulator) {
         if (mDistillabilityObserver != null) {
@@ -168,9 +167,7 @@ public class ReaderModeActionProvider implements ContextualPageActionController.
 
     private void notifyActionAvailable(
             Tab tab, boolean isDistillable, SignalAccumulator signalAccumulator) {
-        // TODO(shaktisahu): Can we merge these into a single method call?
-        signalAccumulator.setHasReaderMode(isDistillable);
-        signalAccumulator.notifySignalAvailable();
+        signalAccumulator.setSignal(AdaptiveToolbarButtonVariant.READER_MODE, isDistillable);
 
         long latency = System.currentTimeMillis() - signalAccumulator.getSignalStartTimeMs();
         boolean signalAvailable = !signalAccumulator.hasTimedOut();

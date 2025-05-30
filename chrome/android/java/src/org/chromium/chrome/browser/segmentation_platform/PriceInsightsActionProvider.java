@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.segmentation_platform;
 
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonVariant;
 import org.chromium.components.commerce.core.ShoppingService;
 import org.chromium.components.commerce.core.ShoppingService.PriceInsightsInfo;
 import org.chromium.components.embedder_support.util.UrlUtilities;
@@ -21,23 +22,22 @@ public class PriceInsightsActionProvider implements ContextualPageActionControll
     @Override
     public void getAction(Tab tab, SignalAccumulator signalAccumulator) {
         if (tab == null || tab.getUrl() == null || !UrlUtilities.isHttpOrHttps(tab.getUrl())) {
-            signalAccumulator.setHasPriceInsights(false);
-            signalAccumulator.notifySignalAvailable();
+            signalAccumulator.setSignal(AdaptiveToolbarButtonVariant.PRICE_INSIGHTS, false);
             return;
         }
 
         ShoppingService shoppingService = mShoppingServiceSupplier.get();
         if (!shoppingService.isPriceInsightsEligible()) {
-            signalAccumulator.setHasPriceInsights(false);
-            signalAccumulator.notifySignalAvailable();
+            signalAccumulator.setSignal(AdaptiveToolbarButtonVariant.PRICE_INSIGHTS, false);
             return;
         }
 
         shoppingService.getPriceInsightsInfoForUrl(
                 tab.getUrl(),
                 (url, info) -> {
-                    signalAccumulator.setHasPriceInsights(hasPriceInsightsInfoData(info));
-                    signalAccumulator.notifySignalAvailable();
+                    signalAccumulator.setSignal(
+                            AdaptiveToolbarButtonVariant.PRICE_INSIGHTS,
+                            hasPriceInsightsInfoData(info));
                 });
     }
 

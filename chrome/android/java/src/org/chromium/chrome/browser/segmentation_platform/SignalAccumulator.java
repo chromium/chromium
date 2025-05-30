@@ -6,13 +6,15 @@ package org.chromium.chrome.browser.segmentation_platform;
 
 import android.os.Handler;
 
+import org.chromium.base.Log;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.segmentation_platform.ContextualPageActionController.ActionProvider;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonVariant;
 import org.chromium.components.dom_distiller.core.DomDistillerFeatures;
 
-import java.util.List;
+import java.util.HashMap;
 
 /**
  * Convenient wrapper to keep track of the feature backend results and trigger the next step after
@@ -20,14 +22,11 @@ import java.util.List;
  */
 @NullMarked
 public class SignalAccumulator {
+    private static final String TAG = "SegmentationPlatform";
     private static final long DEFAULT_ACTION_PROVIDER_TIMEOUT_MS = 100;
 
-    // List of signals to query. Modify hasAllSignals() when adding signals to this list.
-    // TODO(crbug.com/40242243): Introduce a key set and directly populate InputContext.
-    private @Nullable Boolean mHasPriceTracking;
-    private @Nullable Boolean mHasReaderMode;
-    private @Nullable Boolean mHasPriceInsights;
-    private @Nullable Boolean mHasDiscounts;
+    // List of signals to query.
+    private final HashMap<Integer, Boolean> mSignals = new HashMap<>();
 
     // Whether the backends didn't respond within the time limit. Any further response from the
     // backends will be ignored.
@@ -42,7 +41,7 @@ public class SignalAccumulator {
     private @Nullable Runnable mCompletionCallback;
     private long mGetSignalsStartMs;
 
-    private final List<ActionProvider> mActionProviders;
+    private final HashMap<Integer, ActionProvider> mActionProviders;
     private final Tab mTab;
     private final Handler mHandler;
     private final long mActionProviderTimeout;
@@ -54,7 +53,8 @@ public class SignalAccumulator {
      * @param tab The given tab.
      * @param actionProviders List of action providers to get signals from.
      */
-    public SignalAccumulator(Handler handler, Tab tab, List<ActionProvider> actionProviders) {
+    public SignalAccumulator(
+            Handler handler, Tab tab, HashMap<Integer, ActionProvider> actionProviders) {
         mHandler = handler;
         mTab = tab;
         mActionProviders = actionProviders;
@@ -62,16 +62,19 @@ public class SignalAccumulator {
                 DomDistillerFeatures.enableCustomCpaTimeout()
                         ? DomDistillerFeatures.sReaderModeImprovementsCustomCpaTimeout.getValue()
                         : DEFAULT_ACTION_PROVIDER_TIMEOUT_MS;
+        for (var actionType : mActionProviders.keySet()) {
+            mSignals.put(actionType, null);
+        }
     }
 
     /**
      * Called to start getting signals from the respective action providers. The callback will be
      * invoked at the end of signal collection or timeout.
      */
-    public void getSignals(Runnable callback) {
+    void getSignals(Runnable callback) {
         mCompletionCallback = callback;
         mGetSignalsStartMs = System.currentTimeMillis();
-        for (ActionProvider actionProvider : mActionProviders) {
+        for (ActionProvider actionProvider : mActionProviders.values()) {
             actionProvider.getAction(mTab, this);
         }
         mHandler.postDelayed(
@@ -82,62 +85,38 @@ public class SignalAccumulator {
                 mActionProviderTimeout);
     }
 
-    /**
-     * Called to notify that one of the backends is ready and the controller can proceed to next
-     * step if it has all the signals.
-     */
-    public void notifySignalAvailable() {
-        proceedToNextStepIfReady();
-    }
-
     public boolean hasTimedOut() {
         return mHasTimedOut;
     }
 
     /**
-     * @return Whether the page is price tracking eligible. Default is false.
+     * Gets the value of a specific signal type.
+     *
+     * @param signalType Signal type to set, must belong to an ActionProvider given in the
+     *     constructor.
+     * @return Boolean signal value, or false if signal is not set.
      */
-    public Boolean hasPriceTracking() {
-        return mHasPriceTracking == null ? false : mHasPriceTracking;
-    }
-
-    /** Called to set whether the page can be price tracked. */
-    public void setHasPriceTracking(Boolean hasPriceTracking) {
-        mHasPriceTracking = hasPriceTracking;
-    }
-
-    /** @return Whether the page is reader mode eligible. Default is false. */
-    public Boolean hasReaderMode() {
-        return mHasReaderMode == null ? false : mHasReaderMode;
-    }
-
-    /** Called to set whether the page can be viewed in reader mode. */
-    public void setHasReaderMode(Boolean hasReaderMode) {
-        mHasReaderMode = hasReaderMode;
+    public boolean getSignal(@AdaptiveToolbarButtonVariant int signalType) {
+        if (!mSignals.containsKey(signalType)) {
+            Log.w(TAG, "Signal type not found: " + signalType);
+            return false;
+        }
+        var value = mSignals.get(signalType);
+        return value == null ? false : value.booleanValue();
     }
 
     /**
-     * @return Whether the page is price insights eligible. Default is false.
+     * Sets the value of a specific signal type and checks if the completion callback can be
+     * executed.
+     *
+     * @param signalType Signal type to set, must belong to an ActionProvider given in the
+     *     constructor.
+     * @param signalValue Signal value to set.
      */
-    public Boolean hasPriceInsights() {
-        return mHasPriceInsights == null ? false : mHasPriceInsights;
-    }
-
-    /** Called to set whether the page is price insights eligible. */
-    public void setHasPriceInsights(Boolean hasPriceInsights) {
-        mHasPriceInsights = hasPriceInsights;
-    }
-
-    /**
-     * @return Whether the page is discounts eligible. Default is false.
-     */
-    public Boolean hasDiscounts() {
-        return mHasDiscounts == null ? false : mHasDiscounts;
-    }
-
-    /** Called to set whether the page is discounts eligible. */
-    public void setHasDiscounts(Boolean hasDiscounts) {
-        mHasDiscounts = hasDiscounts;
+    public void setSignal(@AdaptiveToolbarButtonVariant int signalType, boolean signalValue) {
+        assert mSignals.containsKey(signalType) : "Signal type not found: " + signalType;
+        mSignals.put(signalType, signalValue);
+        proceedToNextStepIfReady();
     }
 
     /** Returns the time when the signal timeout started in milliseconds. */
@@ -154,10 +133,10 @@ public class SignalAccumulator {
     }
 
     private boolean hasAllSignals() {
-        return mHasPriceTracking != null
-                && mHasReaderMode != null
-                && mHasPriceInsights != null
-                && mHasDiscounts != null;
+        for (Boolean value : mSignals.values()) {
+            if (value == null) return false;
+        }
+        return true;
     }
 
     long getActionProviderTimeoutForTesting() {

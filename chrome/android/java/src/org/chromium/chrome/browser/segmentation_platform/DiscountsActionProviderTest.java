@@ -23,12 +23,14 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.segmentation_platform.ContextualPageActionController.ActionProvider;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonVariant;
 import org.chromium.components.commerce.core.DiscountInfo;
 import org.chromium.components.commerce.core.ShoppingService;
 import org.chromium.components.commerce.core.ShoppingService.DiscountInfoCallback;
 import org.chromium.url.JUnitTestGURLs;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 /** Unit tests for {@link DiscountsActionProvider} */
@@ -47,8 +49,8 @@ public class DiscountsActionProviderTest {
     }
 
     SignalAccumulator getSignalAccumulator() {
-        List<ActionProvider> providers = new ArrayList<>();
-        providers.add(mDiscountsActionProvider);
+        HashMap<Integer, ActionProvider> providers = new HashMap<>();
+        providers.put(AdaptiveToolbarButtonVariant.DISCOUNTS, mDiscountsActionProvider);
         return new SignalAccumulator(new Handler(), mMockTab, providers);
     }
 
@@ -59,7 +61,7 @@ public class DiscountsActionProviderTest {
 
         SignalAccumulator accumulator = getSignalAccumulator();
         mDiscountsActionProvider.getAction(mMockTab, accumulator);
-        Assert.assertFalse(accumulator.hasDiscounts());
+        Assert.assertFalse(accumulator.getSignal(AdaptiveToolbarButtonVariant.DISCOUNTS));
     }
 
     @Test
@@ -69,7 +71,7 @@ public class DiscountsActionProviderTest {
 
         SignalAccumulator accumulator = getSignalAccumulator();
         mDiscountsActionProvider.getAction(mMockTab, accumulator);
-        Assert.assertFalse(accumulator.hasDiscounts());
+        Assert.assertFalse(accumulator.getSignal(AdaptiveToolbarButtonVariant.DISCOUNTS));
     }
 
     @Test
@@ -92,7 +94,7 @@ public class DiscountsActionProviderTest {
 
         SignalAccumulator accumulator = getSignalAccumulator();
         mDiscountsActionProvider.getAction(mMockTab, accumulator);
-        Assert.assertTrue(accumulator.hasDiscounts());
+        Assert.assertTrue(accumulator.getSignal(AdaptiveToolbarButtonVariant.DISCOUNTS));
     }
 
     @Test
@@ -111,6 +113,6 @@ public class DiscountsActionProviderTest {
 
         SignalAccumulator accumulator = getSignalAccumulator();
         mDiscountsActionProvider.getAction(mMockTab, accumulator);
-        Assert.assertFalse(accumulator.hasDiscounts());
+        Assert.assertFalse(accumulator.getSignal(AdaptiveToolbarButtonVariant.DISCOUNTS));
     }
 }

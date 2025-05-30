@@ -36,6 +36,7 @@ import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.segmentation_platform.ContextualPageActionController.ActionProvider;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonVariant;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.ukm.UkmRecorder;
 import org.chromium.components.ukm.UkmRecorderJni;
@@ -44,8 +45,7 @@ import org.chromium.components.user_prefs.UserPrefsJni;
 import org.chromium.content_public.browser.NavigationController;
 import org.chromium.content_public.browser.WebContents;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
 import java.util.concurrent.TimeoutException;
 
 /** Unit tests for {@link ReaderModeActionProvider} */
@@ -95,15 +95,15 @@ public class ReaderModeActionProviderTest {
 
     @Test
     public void testIsDistillableInvokesCallback() throws TimeoutException {
-        List<ActionProvider> providers = new ArrayList<>();
+        HashMap<Integer, ActionProvider> providers = new HashMap<>();
         ReaderModeActionProvider provider = new ReaderModeActionProvider();
-        providers.add(provider);
+        providers.put(AdaptiveToolbarButtonVariant.READER_MODE, provider);
         SignalAccumulator accumulator = new SignalAccumulator(new Handler(), mMockTab, providers);
         setReaderModeBackendSignal(true);
         provider.getAction(mMockTab, accumulator);
         ShadowLooper.idleMainLooper();
 
-        Assert.assertTrue(accumulator.hasReaderMode());
+        Assert.assertTrue(accumulator.getSignal(AdaptiveToolbarButtonVariant.READER_MODE));
     }
 
     @Test
@@ -113,13 +113,12 @@ public class ReaderModeActionProviderTest {
         provider.getAction(mMockTab, mMockSignalAccumulator);
         ShadowLooper.idleMainLooper();
 
-        verify(mMockSignalAccumulator, never()).setHasReaderMode(anyBoolean());
-        verify(mMockSignalAccumulator, never()).notifySignalAvailable();
+        verify(mMockSignalAccumulator, never())
+                .setSignal(eq(AdaptiveToolbarButtonVariant.READER_MODE), anyBoolean());
 
         // We should wait for distillability before setting a signal.
         setReaderModeBackendSignal(true);
-        verify(mMockSignalAccumulator).setHasReaderMode(true);
-        verify(mMockSignalAccumulator).notifySignalAvailable();
+        verify(mMockSignalAccumulator).setSignal(AdaptiveToolbarButtonVariant.READER_MODE, true);
     }
 
     @Test
@@ -143,8 +142,7 @@ public class ReaderModeActionProviderTest {
         provider.getAction(mMockTab, mMockSignalAccumulator);
         ShadowLooper.idleMainLooper();
 
-        verify(mMockSignalAccumulator).setHasReaderMode(true);
-        verify(mMockSignalAccumulator).notifySignalAvailable();
+        verify(mMockSignalAccumulator).setSignal(AdaptiveToolbarButtonVariant.READER_MODE, true);
         watcher.assertExpected();
         verify(mUkmRecorderJniMock)
                 .recordEventWithMultipleMetrics(
@@ -172,8 +170,7 @@ public class ReaderModeActionProviderTest {
         provider.getAction(mMockTab, mMockSignalAccumulator);
         ShadowLooper.idleMainLooper();
 
-        verify(mMockSignalAccumulator).setHasReaderMode(true);
-        verify(mMockSignalAccumulator).notifySignalAvailable();
+        verify(mMockSignalAccumulator).setSignal(AdaptiveToolbarButtonVariant.READER_MODE, true);
         watcher.assertExpected();
     }
 
@@ -188,8 +185,7 @@ public class ReaderModeActionProviderTest {
         provider.getAction(mMockTab, mMockSignalAccumulator);
         ShadowLooper.idleMainLooper();
 
-        verify(mMockSignalAccumulator).setHasReaderMode(false);
-        verify(mMockSignalAccumulator).notifySignalAvailable();
+        verify(mMockSignalAccumulator).setSignal(AdaptiveToolbarButtonVariant.READER_MODE, false);
     }
 
     @Test
@@ -210,8 +206,7 @@ public class ReaderModeActionProviderTest {
         provider.getAction(mMockTab, mMockSignalAccumulator);
         ShadowLooper.idleMainLooper();
 
-        verify(mMockSignalAccumulator).setHasReaderMode(true);
-        verify(mMockSignalAccumulator).notifySignalAvailable();
+        verify(mMockSignalAccumulator).setSignal(AdaptiveToolbarButtonVariant.READER_MODE, true);
     }
 
     @Test
@@ -222,7 +217,7 @@ public class ReaderModeActionProviderTest {
         ShadowLooper.idleMainLooper();
 
         setReaderModeBackendSignal(true);
-        verify(mMockSignalAccumulator, never()).setHasReaderMode(anyBoolean());
-        verify(mMockSignalAccumulator, never()).notifySignalAvailable();
+        verify(mMockSignalAccumulator, never())
+                .setSignal(eq(AdaptiveToolbarButtonVariant.READER_MODE), anyBoolean());
     }
 }

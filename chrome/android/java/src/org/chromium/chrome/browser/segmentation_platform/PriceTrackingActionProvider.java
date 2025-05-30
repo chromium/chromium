@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.segmentation_platform;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonVariant;
 import org.chromium.components.commerce.core.CommerceFeatureUtils;
 import org.chromium.components.commerce.core.ShoppingService;
 import org.chromium.components.embedder_support.util.UrlUtilities;
@@ -28,8 +29,7 @@ public class PriceTrackingActionProvider implements ContextualPageActionControll
     public void getAction(Tab tab, SignalAccumulator signalAccumulator) {
 
         if (tab == null || tab.getUrl() == null || !UrlUtilities.isHttpOrHttps(tab.getUrl())) {
-            signalAccumulator.setHasPriceTracking(false);
-            signalAccumulator.notifySignalAvailable();
+            signalAccumulator.setSignal(AdaptiveToolbarButtonVariant.PRICE_TRACKING, false);
             return;
         }
 
@@ -41,8 +41,8 @@ public class PriceTrackingActionProvider implements ContextualPageActionControll
                     // If the user isn't allowed to have the shopping list feature, don't do any
                     // more work.
                     if (!CommerceFeatureUtils.isShoppingListEligible(shoppingService)) {
-                        signalAccumulator.setHasPriceTracking(false);
-                        signalAccumulator.notifySignalAvailable();
+                        signalAccumulator.setSignal(
+                                AdaptiveToolbarButtonVariant.PRICE_TRACKING, false);
                         return;
                     }
 
@@ -52,8 +52,8 @@ public class PriceTrackingActionProvider implements ContextualPageActionControll
                                 boolean canTrackPrice =
                                         info != null && info.productClusterId.isPresent();
 
-                                signalAccumulator.setHasPriceTracking(canTrackPrice);
-                                signalAccumulator.notifySignalAvailable();
+                                signalAccumulator.setSignal(
+                                        AdaptiveToolbarButtonVariant.PRICE_TRACKING, canTrackPrice);
                             });
                 });
     }
