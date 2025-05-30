@@ -16,6 +16,7 @@
 #include "media/media_buildflags.h"
 #include "net/base/mime_util.h"
 #include "third_party/blink/public/common/buildflags.h"
+#include "third_party/blink/public/common/features.h"
 
 #if !BUILDFLAG(IS_IOS)
 // iOS doesn't use and must not depend on //media
@@ -147,12 +148,21 @@ bool IsWasmMIMEType(std::string_view mime_type) {
   return net::MatchesMimeType("application/wasm", mime_type);
 }
 
-// TODO(crbug.com/362282752): Allow non-application `*/*+json` MIME types.
 // https://mimesniff.spec.whatwg.org/#json-mime-type
 bool IsJSONMimeType(std::string_view mime_type) {
-  return net::MatchesMimeType("application/json", mime_type) ||
-         net::MatchesMimeType("text/json", mime_type) ||
-         net::MatchesMimeType("application/*+json", mime_type);
+  if (net::MatchesMimeType("application/json", mime_type) ||
+      net::MatchesMimeType("text/json", mime_type)) {
+    return true;
+  }
+
+  if (base::FeatureList::IsEnabled(
+          blink::features::kSpecCompliantJsonMimeTypes)) {
+    return net::MatchesMimeType("*+json", mime_type,
+                                /*validate_mime_type=*/true);
+  }
+
+  return net::MatchesMimeType("application/*+json", mime_type,
+                              /*validate_mime_type=*/false);
 }
 
 // TODO(crbug.com/362282752): Allow other `*/*+xml` MIME types.

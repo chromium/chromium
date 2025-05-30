@@ -4599,6 +4599,13 @@
       name: "SpeakerSelection",
       status: "experimental",
     },
+    // Enables spec-compliant suffix matching for JSON MIME types
+    // (e.g., text/html+json, image/svg+json) by allowing *+json patterns.
+    // https://chromestatus.com/feature/5470594816278528
+    {
+      name: "SpecCompliantJsonMimeTypes",
+      status: "experimental",
+    },
     {
       name: "SpeculationRulesPointerDownHeuristics",
       base_feature_status: "enabled",
