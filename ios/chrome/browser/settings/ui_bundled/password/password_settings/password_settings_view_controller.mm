@@ -52,19 +52,6 @@ namespace {
 constexpr base::TimeDelta kReEnableTurnOnPasswordsInOtherAppsButtonDelay =
     base::Seconds(10);
 
-// Sections of the password settings UI.
-typedef NS_ENUM(NSInteger, SectionIdentifier) {
-  SectionIdentifierSavePasswordsSwitch = kSectionIdentifierEnumZero,
-  SectionIdentifierBulkMovePasswordsToAccount,
-  SectionIdentifierPasswordsInOtherApps,
-  SectionIdentifierAutomaticPasskeyUpgradesSwitch,
-  SectionIdentifierGooglePasswordManagerPin,
-  SectionIdentifierOnDeviceEncryption,
-  SectionIdentifierExportPasswordsButton,
-  SectionIdentifierImportPasswordsButton,
-  SectionIdentifierDeleteCredentialsButton,
-};
-
 // Items within the password settings UI.
 typedef NS_ENUM(NSInteger, ItemType) {
   ItemTypeSavePasswordsSwitch = kItemTypeEnumZero,
