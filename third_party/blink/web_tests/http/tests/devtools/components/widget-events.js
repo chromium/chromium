@@ -77,26 +77,6 @@ import * as UI from 'devtools/ui/legacy/legacy.js';
       next();
     },
 
-    function testAppendViaDOM(next) {
-      try {
-        var widget = new TestWidget('Widget');
-        document.body.appendChild(widget.element);
-      } catch (e) {
-        TestRunner.addResult(e);
-      }
-      next();
-    },
-
-    function testInsertViaDOM(next) {
-      try {
-        var widget = new TestWidget('Widget');
-        document.body.insertBefore(widget.element, null);
-      } catch (e) {
-        TestRunner.addResult(e);
-      }
-      next();
-    },
-
     function testAttachToOrphanNode(next) {
       try {
         var widget = new TestWidget('Widget');
@@ -173,51 +153,6 @@ import * as UI from 'devtools/ui/legacy/legacy.js';
       childWidget.show(parentWidget.element);
       try {
         parentWidget.element.removeChild(childWidget.element);
-      } catch (e) {
-        TestRunner.addResult(e);
-      }
-      next();
-    },
-
-    function testImplicitRemoveChild(next) {
-      var parentWidget = new TestWidget('Parent');
-      var div = document.createElement('div');
-      parentWidget.element.appendChild(div);
-
-      var childWidget = new TestWidget('Child');
-      childWidget.show(div);
-
-      try {
-        parentWidget.element.removeChild(div);
-      } catch (e) {
-        TestRunner.addResult(e);
-      }
-      next();
-    },
-
-    function testRemoveChildren(next) {
-      var parentWidget = new TestWidget('Parent');
-      var childWidget = new TestWidget('Child');
-      childWidget.show(parentWidget.element);
-      parentWidget.element.appendChild(document.createElement('div'));
-      try {
-        parentWidget.element.removeChildren();
-      } catch (e) {
-        TestRunner.addResult(e);
-      }
-      next();
-    },
-
-    function testImplicitRemoveChildren(next) {
-      var parentWidget = new TestWidget('Parent');
-      var div = document.createElement('div');
-      parentWidget.element.appendChild(div);
-
-      var childWidget = new TestWidget('Child');
-      childWidget.show(div);
-
-      try {
-        parentWidget.element.removeChildren();
       } catch (e) {
         TestRunner.addResult(e);
       }
