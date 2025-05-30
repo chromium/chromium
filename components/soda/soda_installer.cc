@@ -317,7 +317,8 @@ bool SodaInstaller::IsAnyFeatureUsingSodaEnabled(PrefService* prefs) {
          prefs->GetString(
              ash::prefs::kClassManagementToolsAvailabilitySetting) == "teacher";
 #else  // !BUILDFLAG(IS_CHROMEOS)
-  return prefs->GetBoolean(prefs::kLiveCaptionEnabled);
+  return prefs->GetBoolean(prefs::kLiveCaptionEnabled) ||
+         prefs->GetBoolean(prefs::kHeadlessCaptionEnabled);
 #endif
 }
 

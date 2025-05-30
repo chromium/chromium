@@ -49,6 +49,8 @@ class SodaInstallerImplTest : public testing::Test {
     soda_installer_impl_->RegisterLocalStatePrefs(pref_service_->registry());
     pref_service_->registry()->RegisterBooleanPref(prefs::kLiveCaptionEnabled,
                                                    true);
+    pref_service_->registry()->RegisterBooleanPref(
+        prefs::kHeadlessCaptionEnabled, false);
     pref_service_->registry()->RegisterStringPref(
         prefs::kLiveCaptionLanguageCode, kUsEnglishLocale);
   }
@@ -99,6 +101,11 @@ class SodaInstallerImplTest : public testing::Test {
 
   void SetLiveCaptionEnabled(bool enabled) {
     pref_service_->SetManagedPref(prefs::kLiveCaptionEnabled,
+                                  std::make_unique<base::Value>(enabled));
+  }
+
+  void SetHeadlessCaptionEnabled(bool enabled) {
+    pref_service_->SetManagedPref(prefs::kHeadlessCaptionEnabled,
                                   std::make_unique<base::Value>(enabled));
   }
 
@@ -252,6 +259,22 @@ TEST_F(SodaInstallerImplTest, ReinstallSoda) {
   ASSERT_FALSE(IsSodaInstalled());
 
   SetLiveCaptionEnabled(true);
+  Init();
+  ASSERT_TRUE(IsSodaInstalled());
+}
+
+// Tests that SODA is not installed if nothing is using it.
+TEST_F(SodaInstallerImplTest, NotInstalledIfNoConsumers) {
+  SetLiveCaptionEnabled(false);
+  SetHeadlessCaptionEnabled(false);
+  Init();
+  ASSERT_FALSE(IsSodaInstalled());
+}
+
+// Tests that headless captions installs SODA.
+TEST_F(SodaInstallerImplTest, InstalledForHeadlessCaption) {
+  SetLiveCaptionEnabled(false);
+  SetHeadlessCaptionEnabled(true);
   Init();
   ASSERT_TRUE(IsSodaInstalled());
 }
