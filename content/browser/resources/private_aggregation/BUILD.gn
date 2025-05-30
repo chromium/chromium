@@ -34,5 +34,4 @@ build_webui("build") {
       [ "//$private_aggregation_content_folder:mojo_bindings_ts__generator" ]
 
   grit_output_dir = "$root_gen_dir/content"
-  html_to_wrapper_template = "native"
 }

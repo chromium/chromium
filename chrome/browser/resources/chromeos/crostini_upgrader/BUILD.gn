@@ -16,7 +16,6 @@ build_webui("build") {
   mojo_files_deps = [ "//chrome/browser/ui/webui/ash/crostini_upgrader:mojo_bindings_ts__generator" ]
 
   webui_context_type = "trusted"
-  html_to_wrapper_template = "polymer"
 
   ts_deps = [
     "//ash/webui/common/resources/cr_elements:build_ts",

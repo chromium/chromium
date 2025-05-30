@@ -13,7 +13,6 @@ build_webui("build") {
     "ml/ml_table.ts",
     "ml/ml_ui.ts",
   ]
-  html_to_wrapper_template = "native"
 
   static_files = [
     "icon_tabs.svg",

@@ -143,7 +143,6 @@ build_webui("build") {
   ]
 
   icons_html_files = [ "ui/icons.html" ]
-  html_to_wrapper_template = "lit"
 
   ts_composite = true
   ts_definitions = [

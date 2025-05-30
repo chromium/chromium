@@ -43,8 +43,6 @@ build_webui("build") {
   ts_files = all_ts_files
   css_files = all_css_files
 
-  html_to_wrapper_template = "detect"
-
   mojo_files_deps = [
     "//chrome/browser/new_tab_page/modules/file_suggestion:mojo_bindings_ts__generator",
     "//chrome/browser/new_tab_page/modules/v2/authentication:mojo_bindings_ts__generator",

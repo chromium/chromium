@@ -82,7 +82,6 @@ build_webui("build") {
   ]
 
   icons_html_files = [ "icons.html" ]
-  html_to_wrapper_template = "lit"
 
   ts_deps = [
     "//third_party/lit/v3_0:build_ts",
