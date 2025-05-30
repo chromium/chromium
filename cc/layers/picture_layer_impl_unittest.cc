@@ -1990,7 +1990,7 @@ TEST_F(LegacySWPictureLayerImplTest, HighResRequiredIfActiveCantHaveTiles) {
   AssertAllTilesRequired(pending_layer()->HighResTiling());
 }
 
-TEST_F(LegacySWPictureLayerImplTest,
+TEST_F(NoLowResPictureLayerImplTest,
        HighResRequiredWhenActiveHasDifferentBounds) {
   gfx::Size pending_layer_bounds(400, 400);
   gfx::Size active_layer_bounds(200, 200);
@@ -2009,11 +2009,9 @@ TEST_F(LegacySWPictureLayerImplTest,
   pending_layer()->HighResTiling()->UpdateAllRequiredStateForTesting();
   EXPECT_FALSE(pending_layer()->LowResTiling());
   active_layer()->HighResTiling()->UpdateAllRequiredStateForTesting();
-  active_layer()->LowResTiling()->UpdateAllRequiredStateForTesting();
 
   AssertAllTilesRequired(pending_layer()->HighResTiling());
   AssertAllTilesRequired(active_layer()->HighResTiling());
-  AssertNoTilesRequired(active_layer()->LowResTiling());
 }
 
 TEST_F(LegacySWPictureLayerImplTest, ActivateUninitializedLayer) {
