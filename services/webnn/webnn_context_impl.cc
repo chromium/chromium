@@ -245,7 +245,7 @@ ContextProperties WebNNContextImpl::IntersectWithBaseProperties(
   backend_context_properties.data_type_limits.logical_output.RetainAll(
       DataTypeConstraint::kUint8);
   backend_context_properties.data_type_limits.abs_input.data_types.RetainAll(
-      DataTypeConstraint::kFloat16To32Int8To32);
+      DataTypeConstraint::kFloat16To32Int8To64);
   backend_context_properties.data_type_limits.ceil_input.data_types.RetainAll(
       DataTypeConstraint::kFloat16To32);
   backend_context_properties.data_type_limits.cos_input.data_types.RetainAll(
@@ -268,7 +268,7 @@ ContextProperties WebNNContextImpl::IntersectWithBaseProperties(
   backend_context_properties.data_type_limits.log_input.data_types.RetainAll(
       DataTypeConstraint::kFloat16To32);
   backend_context_properties.data_type_limits.neg_input.data_types.RetainAll(
-      DataTypeConstraint::kFloat16To32Int8To32);
+      DataTypeConstraint::kFloat16To32Int8To64);
   backend_context_properties.data_type_limits.reciprocal_input.data_types
       .RetainAll(DataTypeConstraint::kFloat16To32);
   backend_context_properties.data_type_limits.sign_input.data_types.RetainAll(
@@ -346,7 +346,7 @@ ContextProperties WebNNContextImpl::IntersectWithBaseProperties(
   backend_context_properties.data_type_limits.max_pool2d_input.IntersectWith(
       {SupportedDataTypes::All(), SupportedRanks::Exactly(4)});
   backend_context_properties.data_type_limits.prelu_input.data_types.RetainAll(
-      DataTypeConstraint::kFloat16To32Int8To32);
+      DataTypeConstraint::kFloat16To32Int8To64);
   backend_context_properties.data_type_limits.quantize_linear_input.data_types
       .RetainAll(DataTypeConstraint::kFloat16To32);
   backend_context_properties.data_type_limits.quantize_linear_zero_point
@@ -368,7 +368,7 @@ ContextProperties WebNNContextImpl::IntersectWithBaseProperties(
   backend_context_properties.data_type_limits.reduce_sum_square_input.data_types
       .RetainAll(DataTypeConstraint::kFloat16To32Ints32To64);
   backend_context_properties.data_type_limits.relu_input.data_types.RetainAll(
-      DataTypeConstraint::kFloat16To32Int8To32);
+      DataTypeConstraint::kFloat16To32Int8To64);
   backend_context_properties.data_type_limits.resample2d_input.IntersectWith(
       {DataTypeConstraint::kFloat16To32, SupportedRanks::Exactly(4)});
   backend_context_properties.data_type_limits.scatter_elements_input.ranks
