@@ -5,10 +5,13 @@
 #include "services/webnn/ort/context_impl_ort.h"
 
 #include "base/notimplemented.h"
+#include "services/webnn/ort/buffer_content_ort.h"
+#include "services/webnn/ort/tensor_impl_ort.h"
 #include "services/webnn/public/cpp/supported_data_types.h"
 #include "services/webnn/public/mojom/webnn_context_provider.mojom.h"
 #include "services/webnn/public/mojom/webnn_graph.mojom.h"
 #include "services/webnn/public/mojom/webnn_tensor.mojom.h"
+#include "services/webnn/queueable_resource_state.h"
 #include "services/webnn/webnn_constant_operand.h"
 #include "services/webnn/webnn_context_impl.h"
 #include "services/webnn/webnn_graph_impl.h"
@@ -190,8 +193,22 @@ void ContextImplOrt::CreateTensorImpl(
     mojo::PendingAssociatedReceiver<mojom::WebNNTensor> receiver,
     mojom::TensorInfoPtr tensor_info,
     CreateTensorImplCallback callback) {
-  // TODO(crbug.com/416539419): Implement TensorImpl for ORT backend.
-  NOTIMPLEMENTED();
+  // TODO(crbug.com/332350952): Implement constant tensors for ORT backend.
+  if (tensor_info->usage.Has(MLTensorUsageFlags::kGraphConstant)) {
+    std::move(callback).Run(base::unexpected(
+        mojom::Error::New(mojom::Error::Code::kNotSupportedError,
+                          "Creation of constant tensors is not supported.")));
+    return;
+  }
+
+  auto buffer_content =
+      std::make_unique<BufferContentOrt>(tensor_info->descriptor);
+  auto buffer_state =
+      base::MakeRefCounted<QueueableResourceState<BufferContentOrt>>(
+          std::move(buffer_content));
+  std::move(callback).Run(std::make_unique<TensorImplOrt>(
+      std::move(receiver), this, std::move(tensor_info),
+      std::move(buffer_state)));
 }
 
 }  // namespace webnn::ort

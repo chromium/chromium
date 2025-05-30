@@ -169,6 +169,8 @@ component("webnn_service") {
 
   if (is_win) {
     sources += [
+      "ort/buffer_content_ort.cc",
+      "ort/buffer_content_ort.h",
       "ort/context_impl_ort.cc",
       "ort/context_impl_ort.h",
       "ort/context_provider_ort.cc",
@@ -183,9 +185,13 @@ component("webnn_service") {
       "ort/ort_session_options.h",
       "ort/ort_status.cc",
       "ort/ort_status.h",
+      "ort/ort_tensor.cc",
+      "ort/ort_tensor.h",
       "ort/platform_functions_ort.cc",
       "ort/platform_functions_ort.h",
       "ort/scoped_ort_types.h",
+      "ort/tensor_impl_ort.cc",
+      "ort/tensor_impl_ort.h",
     ]
     deps += [ "//third_party/onnxruntime_headers" ]
   }
