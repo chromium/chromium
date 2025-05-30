@@ -62,7 +62,7 @@ void fct() {
   g += 1;  // buffer usage: leads g to be rewritten.
 
   // Expected rewrite:
-  // base::span<char> h = reinterpret_cast<char*>(g);
+  // base::span<char> h = base::as_writable_byte_span(g);
   char* h = reinterpret_cast<char*>(g);
   h[index] = 'x';
 }

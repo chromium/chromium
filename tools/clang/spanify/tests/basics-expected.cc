@@ -129,8 +129,8 @@ namespace cast_exprs {
 // void modify(base::span<int> buf)
 void modify(base::span<int> buf) {
   // expected rewrite:
-  // base::span<char> temp = reinterpret_cast<char*>(buf);
-  base::span<char> temp = reinterpret_cast<char*>(buf);
+  // base::span<char> temp = base::as_writable_byte_span(buf);
+  base::span<char> temp = base::as_writable_byte_span(buf);
   temp[2] = 'c';
 }
 
@@ -138,8 +138,8 @@ void fct() {
   int buf[10];
 
   // Expected rewrite:
-  // base::span<char> as_char;
-  base::span<char> as_char = reinterpret_cast<char*>(buf);
+  // base::span<char> as_char = base::as_writable_byte_span(buf);
+  base::span<char> as_char = base::as_writable_byte_span(buf);
 
   as_char[4] = 'c';
 

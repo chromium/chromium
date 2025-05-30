@@ -2250,8 +2250,48 @@ std::string GetLHS(const MatchFinder::MatchResult& result) {
   assert(false && "Unexpected match in getLHS()");
 }
 
-// Extracts the rhs node from the match result.
-std::string GetRHS(const MatchFinder::MatchResult& result) {
+// If we rewrite a node, we generally don't want `reinterpret_cast`
+// involved. We might replace it with
+// *  `base::as_byte_span()`.
+// *  some other spanification helper that computes a different-width
+//    "view" of the underlying type.
+// *  nothing, causing a compile error, letting a human deal with it.
+//
+// TODO(crbug.com/414914153): This currently only emits
+// `base::as_byte_span()`. Have it do the other stuff, too.
+void RemoveReinterpretCastExpr(const MatchFinder::MatchResult& result,
+                               std::string_view node_key) {
+  auto* cast_expr =
+      result.Nodes.getNodeAs<clang::CXXReinterpretCastExpr>("reinterpret_cast");
+  if (!cast_expr) {
+    return;
+  }
+
+  // Repurpose the parentheses of `reinterpret_cast()` for our edit,
+  // i.e. rewrite only this range:
+  //
+  // reinterpret_cast<T*>(...);
+  // |------------------|
+  const clang::SourceRange replacement_range = {
+      cast_expr->getBeginLoc(),
+      cast_expr->getAngleBrackets().getEnd().getLocWithOffset(1u)};
+
+  if (result.Nodes.getNodeAs<clang::QualType>("reinterpret_cast_to_bytes")) {
+    const bool target_type_is_const =
+        GetNodeOrCrash<clang::QualType>(
+            result, "target_type", "`reinterpret_cast` implies `target_type`")
+            ->isConstQualified();
+    std::string replacement = target_type_is_const
+                                  ? "base::as_byte_span"
+                                  : "base::as_writable_byte_span";
+
+    return EmitReplacement(
+        node_key, GetReplacementDirective(replacement_range, replacement,
+                                          *result.SourceManager));
+  }
+}
+
+std::string GetRHSImpl(const MatchFinder::MatchResult& result) {
   if (auto* type_loc =
           result.Nodes.getNodeAs<clang::PointerTypeLoc>("rhs_type_loc")) {
     return getNodeFromPointerTypeLoc(type_loc, result);
@@ -2311,6 +2351,13 @@ std::string GetRHS(const MatchFinder::MatchResult& result) {
                   "\n";
   DumpMatchResult(result);
   assert(false && "Unexpected match in getRHS()");
+}
+
+// Extracts the rhs node from the match result.
+std::string GetRHS(const MatchFinder::MatchResult& result) {
+  std::string node_key = GetRHSImpl(result);
+  RemoveReinterpretCastExpr(result, node_key);
+  return node_key;
 }
 
 // Called when it exist a dependency in between `lhs` and `rhs` nodes. To apply
@@ -2525,6 +2572,28 @@ class Spanifier {
                     .bind("address_expr_operand"))))
             .bind("address_expr");
 
+    // Used to look "outward" one layer from other expressions matched
+    // below s.t. we can remove `reinterpret_cast` from spanified
+    // things.
+    //
+    // Attached to matchers that compose into others, not just
+    // `rhs_expr_variations`.
+    //
+    // TODO(414914153): this ought to work when attached directly to
+    // `rhs_expr_variations`, but empirically we observe that it does
+    // not. Investigate?
+    const auto reinterpret_cast_wrapper = optionally(hasParent(
+        cxxReinterpretCastExpr(
+            cxxReinterpretCastExpr(hasDestinationType(qualType(pointsTo(
+                qualType(anyOf(qualType(asString("uint8_t"))
+                                   .bind("reinterpret_cast_to_bytes"),
+                               qualType(isAnyCharacter())
+                                   .bind("reinterpret_cast_to_bytes"),
+                               qualType(isInteger())
+                                   .bind("reinterpret_cast_to_integral_type")))
+                    .bind("target_type"))))))
+            .bind("reinterpret_cast")));
+
     // Defines nodes that contain size information, these include:
     //  - nullptr => size is zero
     //  - calls to new/new[n] => size is 1/n
@@ -2537,20 +2606,31 @@ class Spanifier {
     //                  exclusive. We rely here on the ordering of expressions
     //                  in the anyOf matcher to first match member_data_call
     //                  which is a subset of size_node.
-    auto size_node_matcher = expr(anyOf(
-        member_data_call,
-        expr(anyOf(callExpr(
-                       callee(functionDecl(unsafeFunctionToBeRewrittenToMacro())
-                                  .bind("unsafe_function_decl")))
-                       .bind("unsafe_function_call_expr"),
-                   callExpr(callee(functionDecl(
-                       hasReturnTypeLoc(pointerTypeLoc()),
-                       anyOf(raw_ptr_plugin::isInThirdPartyLocation(),
-                             isExpansionInSystemHeader(),
-                             raw_ptr_plugin::isInExternCContext())))),
-                   cxxNullPtrLiteralExpr().bind("nullptr_expr"), cxxNewExpr(),
-                   buff_address_from_container, buff_address_from_single_var))
-            .bind("size_node")));
+    //
+    // This is put under the `reinterpret_cast` wrapper to handle the
+    // case where we would end up with:
+    //
+    // base::span foo = reinterpret_cast<...>(bar.data());
+    //
+    // where `bar` has size information available, putting it under
+    // this matcher.
+    auto size_node_matcher = expr(
+        anyOf(
+            member_data_call,
+            expr(anyOf(callExpr(callee(functionDecl(
+                                           unsafeFunctionToBeRewrittenToMacro())
+                                           .bind("unsafe_function_decl")))
+                           .bind("unsafe_function_call_expr"),
+                       callExpr(callee(functionDecl(
+                           hasReturnTypeLoc(pointerTypeLoc()),
+                           anyOf(raw_ptr_plugin::isInThirdPartyLocation(),
+                                 isExpansionInSystemHeader(),
+                                 raw_ptr_plugin::isInExternCContext())))),
+                       cxxNullPtrLiteralExpr().bind("nullptr_expr"),
+                       cxxNewExpr(), buff_address_from_container,
+                       buff_address_from_single_var))
+                .bind("size_node")),
+        reinterpret_cast_wrapper);
 
     auto rhs_expr =
         expr(ignoringParenCasts(anyOf(
@@ -2580,7 +2660,8 @@ class Spanifier {
                      callee(cxxMethodDecl(ofClass(hasName("raw_ptr")))),
                      hasOperatorName("++"), hasArgument(0, rhs_expr))
                      .bind("raw_ptr_operator++"),
-                 get_calls_on_raw_ptr)))
+                 get_calls_on_raw_ptr)),
+             reinterpret_cast_wrapper)
             .bind("span_frontier");
 
     // This represents the forms under which an expr could appear on the right
