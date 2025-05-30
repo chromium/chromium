@@ -90,6 +90,16 @@ std::vector<blink::mojom::AILanguageModelPromptContentPtr> ToVector(
   return vector;
 }
 
+// Convert a list of strings to a AILanguageModelPromptContentPtr vector.
+std::vector<blink::mojom::AILanguageModelPromptContentPtr> ToContentVector(
+    std::initializer_list<std::string> texts) {
+  std::vector<blink::mojom::AILanguageModelPromptContentPtr> vector;
+  for (const std::string& text : texts) {
+    vector.push_back(blink::mojom::AILanguageModelPromptContent::NewText(text));
+  }
+  return vector;
+}
+
 optimization_guide::proto::FeatureTextSafetyConfiguration CreateSafetyConfig() {
   optimization_guide::proto::FeatureTextSafetyConfiguration safety_config;
   safety_config.set_feature(
@@ -101,17 +111,23 @@ optimization_guide::proto::FeatureTextSafetyConfiguration CreateSafetyConfig() {
 // Build a mojo prompt struct with the specified `role` and `text`
 blink::mojom::AILanguageModelPromptPtr MakePrompt(Role role,
                                                   const std::string& text) {
-  return blink::mojom::AILanguageModelPrompt::New(
-      role,
-      ToVector(blink::mojom::AILanguageModelPromptContent::NewText(text)));
+  return blink::mojom::AILanguageModelPrompt::New(role,
+                                                  ToContentVector({text}));
 }
 
-// Build a mojo prompt struct array holding a single piece of text.
+// Build a vector with a single prompt that has multiple user text contents.
+std::vector<blink::mojom::AILanguageModelPromptPtr> MakeInput(
+    std::initializer_list<std::string> texts) {
+  std::vector<blink::mojom::AILanguageModelPromptPtr> prompts;
+  prompts.push_back(blink::mojom::AILanguageModelPrompt::New(
+      Role::kUser, ToContentVector(std::move(texts))));
+  return prompts;
+}
+
+// Build a vector with a single prompt that has a single user text content.
 std::vector<blink::mojom::AILanguageModelPromptPtr> MakeInput(
     const std::string& text) {
-  std::vector<blink::mojom::AILanguageModelPromptPtr> prompts;
-  prompts.push_back(MakePrompt(Role::kUser, text));
-  return prompts;
+  return MakeInput({text});
 }
 
 // Construct a ContextItem with system prompt text.
@@ -375,6 +391,12 @@ class AILanguageModelTest : public AITestUtils::AITestBase {
   optimization_guide::FakeModelBroker fake_broker_;
 };
 
+TEST_F(AILanguageModelTest, Prompt) {
+  auto session = CreateSession();
+  EXPECT_THAT(Prompt(*session, MakeInput("foo")),
+              ElementsAreArray(FormatResponses({"UfooEM"})));
+}
+
 TEST_F(AILanguageModelTest, MultiplePrompts) {
   auto session = CreateSession();
   EXPECT_THAT(Prompt(*session, MakeInput("foo")),
@@ -386,11 +408,24 @@ TEST_F(AILanguageModelTest, MultiplePrompts) {
       ElementsAreArray(FormatResponses({"UfooEM", "UbarEM", "UbazEM"})));
 }
 
+TEST_F(AILanguageModelTest, PromptMultipleContents) {
+  auto session = CreateSession();
+  EXPECT_THAT(Prompt(*session, MakeInput({"foo", "bar"})),
+              ElementsAreArray(FormatResponses({"UfoobarEM"})));
+}
+
 TEST_F(AILanguageModelTest, Append) {
   auto session = CreateSession();
   Append(*session, MakeInput("foo"));
   EXPECT_THAT(Prompt(*session, MakeInput("bar")),
               ElementsAre("UfooE", "UbarEM"));
+}
+
+TEST_F(AILanguageModelTest, AppendMultipleContents) {
+  auto session = CreateSession();
+  Append(*session, MakeInput({"foo", "bar"}));
+  EXPECT_THAT(Prompt(*session, MakeInput("baz")),
+              ElementsAre("UfoobarE", "UbazEM"));
 }
 
 TEST_F(AILanguageModelTest, PromptTokenCounts) {
@@ -550,6 +585,15 @@ TEST_F(AILanguageModelTest, InitialPrompts) {
 
   EXPECT_THAT(Prompt(*session, MakeInput("foo")),
               ElementsAre("ShiEUbyeE", "UfooEM"));
+}
+
+TEST_F(AILanguageModelTest, InitialPromptsMultipleContents) {
+  auto options = blink::mojom::AILanguageModelCreateOptions::New();
+  options->initial_prompts = MakeInput({"foo", "bar"});
+  auto session = CreateSession(std::move(options));
+
+  EXPECT_THAT(Prompt(*session, MakeInput("baz")),
+              ElementsAre("UfoobarE", "UbazEM"));
 }
 
 TEST_F(AILanguageModelTest, InitialPromptsInstanceInfo) {

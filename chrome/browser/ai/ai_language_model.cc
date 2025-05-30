@@ -88,8 +88,8 @@ on_device_model::mojom::InputPtr ConvertToInput(
           input->pieces.push_back(std::move(audio_buffer));
           break;
       }
-      input->pieces.push_back(ml::Token::kEnd);
     }
+    input->pieces.push_back(ml::Token::kEnd);
   }
   return input;
 }
