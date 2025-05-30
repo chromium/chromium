@@ -1174,13 +1174,15 @@ void DesktopWindowTreeHostWin::HandleTouchEvent(ui::TouchEvent* event) {
     event_point.y = event->location().y();
     ::ClientToScreen(GetHWND(), &event_point);
     gfx::Point screen_point(event_point);
-    // Send equivalent mouse events, because Ole32 drag drop doesn't seem to
-    // handle pointer events.
+    // When dragging, Windows requires that touch pointer events are translated
+    // to mouse pointer events. The drag controller (`DesktopDragDropClientWin`)
+    // will manage gesture states until a drop happens.
     if (event->type() == ui::EventType::kTouchMoved) {
       ui::SendMouseEvent(screen_point, MOUSEEVENTF_MOVE);
     } else if (event->type() == ui::EventType::kTouchReleased) {
       FinishTouchDrag(screen_point);
     }
+    return;
   }
   // TODO(crbug.com/40312079) Calling ::SetCursorPos for
   // ui::EventType::kTouchPressed events here would fix web ui tab strip drags
