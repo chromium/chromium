@@ -70,10 +70,12 @@
   }
 </style>
 <div id="container" aria-hidden="true">
-  <img id="image" src="[[thumbnailUrl_]]"></img>
-  <div class="overlay">
-    <cr-icon-button id="remove" class="action-icon icon-clear"
-        on-click="onRemoveButtonClick_">
-    </cr-icon-button>
-  </div>
+  <img id="image" src="[[thumbnailUrl_]]"/>
+  <template is="dom-if" if="[[isDeletable_]]">
+    <div class="overlay">
+      <cr-icon-button id="remove" class="action-icon icon-clear"
+          on-click="onRemoveButtonClick_">
+      </cr-icon-button>
+    </div>
+  </template>
 </div>

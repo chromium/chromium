@@ -116,12 +116,14 @@ void LensSearchboxController::SetSearchboxThumbnail(
 
   if (side_panel_searchbox_handler_ &&
       side_panel_searchbox_handler_->IsRemoteBound()) {
-    side_panel_searchbox_handler_->SetThumbnail(thumbnail_uri);
+    side_panel_searchbox_handler_->SetThumbnail(
+        thumbnail_uri, /*is_deletable=*/!IsContextualSearchbox());
   }
 
   if (overlay_searchbox_handler_ &&
       overlay_searchbox_handler_->IsRemoteBound()) {
-    overlay_searchbox_handler_->SetThumbnail(thumbnail_uri);
+    overlay_searchbox_handler_->SetThumbnail(
+        thumbnail_uri, /*is_deletable=*/!IsContextualSearchbox());
   }
 }
 
@@ -240,13 +242,16 @@ LensSearchboxController::GetPageClassification() const {
   // 1) We are in the zero state with the overlay CSB showing.
   // 2) A user has made a contextual query and the live page is now showing.
   // TODO(crbug.com/404941800): Remove dependency on LensOverlayController.
-  // Instead, it should check if contextualization is currently active.
+  // Instead, it should check if contextualization is currently active. Which
+  // also requires disabling contextualization when the user goes down the
+  // visual search path.
   const LensOverlayController::State state =
       lens_search_controller_->lens_overlay_controller()->state();
   if (state == LensOverlayController::State::kLivePageAndResults ||
       state == LensOverlayController::State::kOverlay ||
-      lens_search_controller_->lens_search_contextualization_controller()
-          ->IsActive()) {
+      (state == LensOverlayController::State::kOff &&
+       lens_search_controller_->lens_search_contextualization_controller()
+           ->IsActive())) {
     return metrics::OmniboxEventProto::CONTEXTUAL_SEARCHBOX;
   }
   return init_data_->thumbnail_uri.empty()

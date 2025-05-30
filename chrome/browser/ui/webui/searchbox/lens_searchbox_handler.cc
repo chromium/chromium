@@ -264,8 +264,9 @@ void LensSearchboxHandler::SetInputText(const std::string& input_text) {
   page_->SetInputText(input_text);
 }
 
-void LensSearchboxHandler::SetThumbnail(const std::string& thumbnail_url) {
-  page_->SetThumbnail(thumbnail_url);
+void LensSearchboxHandler::SetThumbnail(const std::string& thumbnail_url,
+                                        bool is_deletable) {
+  page_->SetThumbnail(thumbnail_url, is_deletable);
 }
 
 void LensSearchboxHandler::OnThumbnailRemoved() {

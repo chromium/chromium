@@ -642,7 +642,8 @@ suite('NewTabPageRealboxTest', () => {
   test(
       'autocomplete triggers on focus on non-empty input with thumbnail',
       async () => {
-        testProxy.callbackRouterRemote.setThumbnail('foo.png');
+        testProxy.callbackRouterRemote.setThumbnail(
+            'foo.png', /*isDeletable=*/ true);
         await waitAfterNextRender(realbox);
         const thumbnail = realbox.$.inputWrapper.querySelector('#thumbnail');
         assertTrue(thumbnail !== null);
@@ -2507,7 +2508,8 @@ suite('NewTabPageRealboxTest', () => {
   test('thumbnail appears on page call from browser', async () => {
     assertTrue(
         realbox.$.inputWrapper.querySelector('#thumbnailContainer') === null);
-    testProxy.callbackRouterRemote.setThumbnail('foo.png');
+    testProxy.callbackRouterRemote.setThumbnail(
+        'foo.png', /*isDeletable=*/ true);
     await waitAfterNextRender(realbox);
     const thumbnailContainer =
         realbox.$.inputWrapper.querySelector('#thumbnailContainer');
@@ -2516,7 +2518,8 @@ suite('NewTabPageRealboxTest', () => {
   });
 
   test('thumbnail clicked deletion', async () => {
-    testProxy.callbackRouterRemote.setThumbnail('foo.png');
+    testProxy.callbackRouterRemote.setThumbnail(
+        'foo.png', /*isDeletable=*/ true);
     await waitAfterNextRender(realbox);
     const thumbnail = realbox.$.inputWrapper.querySelector('#thumbnail');
     assertTrue(thumbnail !== null);
@@ -2543,7 +2546,8 @@ suite('NewTabPageRealboxTest', () => {
 
   test('thumbnail keyboard deletion', async () => {
     realbox.$.input.value = '';
-    testProxy.callbackRouterRemote.setThumbnail('foo.png');
+    testProxy.callbackRouterRemote.setThumbnail(
+        'foo.png', /*isDeletable=*/ true);
     await waitAfterNextRender(realbox);
     const thumbnail = realbox.$.inputWrapper.querySelector('#thumbnail');
     assertTrue(thumbnail !== null);
@@ -2581,7 +2585,8 @@ suite('NewTabPageRealboxTest', () => {
   });
 
   test('keyboard deletion with non-empty input', async () => {
-    testProxy.callbackRouterRemote.setThumbnail('foo.png');
+    testProxy.callbackRouterRemote.setThumbnail(
+        'foo.png', /*isDeletable=*/ true);
     await waitAfterNextRender(realbox);
     const thumbnail = realbox.$.inputWrapper.querySelector('#thumbnail');
     assertTrue(thumbnail !== null);

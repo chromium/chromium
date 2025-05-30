@@ -44,10 +44,10 @@ class LensSearchboxHandler : public SearchboxHandler {
   void PopupElementSizeChanged(const gfx::Size& size) override {}
   void OnThumbnailRemoved() override;
 
-  // Invoked by LensOverlayController.
+  // Invoked by LensSearchboxController.
   void SetInputText(const std::string& input_text);
-  // Invoked by LensOverlayController.
-  void SetThumbnail(const std::string& thumbnail_url);
+  // Invoked by LensSearchboxController.
+  void SetThumbnail(const std::string& thumbnail_url, bool is_deletable);
 
   // AutocompleteController::Observer:
   void OnAutocompleteStopTimerTriggered(
