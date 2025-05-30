@@ -1897,8 +1897,6 @@
       'filepath': 'components/plus_addresses/'\
                   '|chrome/browser/plus_addresses/'\
                   '|chrome/browser/ui/plus_addresses/'\
-                  '|chrome/browser/ui/android/plus_addresses/'\
-                  '|chrome/browser/ui/views/plus_addresses/'\
                   '|components/plus_addresses_strings_grdp/'\
                   '|ios/chrome/browser/plus_addresses/'
     },
