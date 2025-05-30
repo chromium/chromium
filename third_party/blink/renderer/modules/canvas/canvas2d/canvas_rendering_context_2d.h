@@ -155,6 +155,11 @@ class MODULES_EXPORT CanvasRenderingContext2D final
   void DisableAcceleration() override;
   bool ShouldDisableAccelerationBecauseOfReadback() const override;
 
+  // CanvasRenderingContext implementation
+  int AllocatedBufferCountPerPixel() override {
+    return (Host() && Host()->ResourceProvider()) ? 1 : 0;
+  }
+
   int Width() const final;
   int Height() const final;
 

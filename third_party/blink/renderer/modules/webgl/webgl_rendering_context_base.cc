@@ -9031,7 +9031,7 @@ void WebGLRenderingContextBase::Trace(Visitor* visitor) const {
   CanvasRenderingContext::Trace(visitor);
 }
 
-int WebGLRenderingContextBase::ExternallyAllocatedBufferCountPerPixel() {
+int WebGLRenderingContextBase::AllocatedBufferCountPerPixel() {
   if (isContextLost())
     return 0;
 
@@ -9051,6 +9051,10 @@ int WebGLRenderingContextBase::ExternallyAllocatedBufferCountPerPixel() {
     } else if (attribs->depth() || attribs->stencil()) {
       buffer_count += 1;  // regular depth/stencil buffer
     }
+  }
+
+  if (Host()->ResourceProvider()) {
+    buffer_count++;
   }
 
   return buffer_count;

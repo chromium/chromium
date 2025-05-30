@@ -2109,7 +2109,6 @@ void HTMLCanvasElement::UpdateMemoryUsage() {
   if (!IsRenderingContext2D() && !IsWebGL())
     return;
   if (const CanvasResourceProvider* provider = ResourceProvider()) {
-    non_gpu_buffer_count++;
     if (provider->IsAccelerated()) {
       // The number of internal GPU buffers vary between one (stable
       // non-displayed state) and three (triple-buffered animations).
@@ -2123,8 +2122,8 @@ void HTMLCanvasElement::UpdateMemoryUsage() {
   // which point the context is not necessarily present (e.g., if
   // DiscardResourceProvider() is called due to an initial setSize() call on the
   // canvas).
-  if (context_ && IsWebGL()) {
-    non_gpu_buffer_count += context_->ExternallyAllocatedBufferCountPerPixel();
+  if (context_) {
+    non_gpu_buffer_count += context_->AllocatedBufferCountPerPixel();
   }
 
   // NOTE: All formats used by canvas are either 8-bit or 16-bit.
