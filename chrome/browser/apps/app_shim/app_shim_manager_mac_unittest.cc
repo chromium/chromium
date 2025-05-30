@@ -1887,21 +1887,22 @@ TEST_F(AppShimManagerTest, UpdateApplicationDockMenu) {
 
   // Create browser objects that can be passed via OnBrowserSetLastActive.
   std::string app_name = web_app::GenerateApplicationNameFromAppId(kTestAppIdA);
+  std::unique_ptr<BrowserWindow> browser_window_a, browser_window_b;
   std::unique_ptr<Browser> browser_profile_a, browser_profile_b;
 
   {
-    auto browser_window = std::make_unique<TestBrowserWindow>();
+    browser_window_a = std::make_unique<TestBrowserWindow>();
     Browser::CreateParams params = Browser::CreateParams::CreateForApp(
-        app_name, true, browser_window->GetBounds(), &profile_a_, true);
-    params.window = browser_window.get();
+        app_name, true, browser_window_a->GetBounds(), &profile_a_, true);
+    params.window = browser_window_a.get();
     browser_profile_a = std::unique_ptr<Browser>(Browser::Create(params));
   }
 
   {
-    auto browser_window = std::make_unique<TestBrowserWindow>();
+    browser_window_b = std::make_unique<TestBrowserWindow>();
     Browser::CreateParams params = Browser::CreateParams::CreateForApp(
-        app_name, true, browser_window->GetBounds(), &profile_b_, true);
-    params.window = browser_window.get();
+        app_name, true, browser_window_b->GetBounds(), &profile_b_, true);
+    params.window = browser_window_b.get();
     browser_profile_b = std::unique_ptr<Browser>(Browser::Create(params));
   }
 
