@@ -22,13 +22,9 @@ source_set("icon_transcoder") {
 source_set("browser_tests") {
   testonly = true
 
-  defines = [
-    "HAS_OUT_OF_PROC_TEST_RUNNER",
-  ]
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 
-  sources = [
-    "svg_icon_transcoder_browsertest.cc",
-  ]
+  sources = [ "svg_icon_transcoder_browsertest.cc" ]
 
   deps = [
     ":icon_transcoder",
