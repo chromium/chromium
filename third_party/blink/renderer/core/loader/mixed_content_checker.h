@@ -143,6 +143,11 @@ class CORE_EXPORT MixedContentChecker final {
       const KURL& main_resource_url,
       const KURL& mixed_content_url);
 
+  static ConsoleMessage*
+  CreateConsoleMessageAboutFetchLocalNetworkNoAutoupgrade(
+      const KURL& main_resource_url,
+      const KURL& mixed_content_url);
+
   // Upgrade the insecure requests.
   // https://w3c.github.io/webappsec-upgrade-insecure-requests/
   // Upgrading itself is done based on |fetch_client_settings_object|.
