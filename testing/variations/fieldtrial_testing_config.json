@@ -22537,18 +22537,18 @@
             ],
             "experiments": [
                 {
+                    "name": "JoinOnlyEnabled",
+                    "enable_features": [
+                        "DataSharingJoinOnly"
+                    ]
+                },
+                {
                     "name": "DataSharingEnabled",
                     "params": {
                         "show_send_feedback": "true"
                     },
                     "enable_features": [
                         "DataSharing",
-                        "DataSharingJoinOnly"
-                    ]
-                },
-                {
-                    "name": "JoinOnlyEnabled",
-                    "enable_features": [
                         "DataSharingJoinOnly"
                     ]
                 }
