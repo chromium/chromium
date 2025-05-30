@@ -1327,7 +1327,9 @@ void GlicWindowControllerImpl::PreloadFre() {
 
 void GlicWindowControllerImpl::Reload() {
   if (GetFreWebContents()) {
-    GetFreWebContents()->ReloadFocusedFrame();
+    GetFreWebContents()->GetController().Reload(
+        content::ReloadType::BYPASSING_CACHE,
+        /*check_for_repost=*/false);
   }
   if (auto* webui_contents = host().webui_contents()) {
     webui_contents->GetController().Reload(content::ReloadType::BYPASSING_CACHE,
