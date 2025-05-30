@@ -813,17 +813,6 @@ Color CanvasRenderingContext2D::GetCurrentColor() const {
 void CanvasRenderingContext2D::PageVisibilityChanged() {
   HTMLCanvasElement* const element = canvas();
 
-  // TODO(crbug.com/40280152): Merge OnPageVisibilityChangeWhenPaintable() into
-  // this method.
-  OnPageVisibilityChangeWhenPaintable();
-  if (!element->IsPageVisible()) {
-    PruneLocalFontCache(0);
-  }
-}
-
-void CanvasRenderingContext2D::OnPageVisibilityChangeWhenPaintable() {
-  HTMLCanvasElement* const element = canvas();
-
   bool page_is_visible = element->IsPageVisible();
   CanvasResourceProvider* resource_provider = element->ResourceProvider();
   if (resource_provider) {
@@ -865,6 +854,10 @@ void CanvasRenderingContext2D::OnPageVisibilityChangeWhenPaintable() {
 
   if (page_is_visible && element->IsHibernating()) {
     element->GetOrCreateCanvasResourceProvider();  // Rude awakening
+  }
+
+  if (!element->IsPageVisible()) {
+    PruneLocalFontCache(0);
   }
 }
 

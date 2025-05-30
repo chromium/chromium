@@ -259,9 +259,6 @@ class MODULES_EXPORT CanvasRenderingContext2D final
                            std::optional<double> dwidth,
                            std::optional<double> dheight,
                            ExceptionState& exceptionState);
-  // Handles a page visibility change that occurs when the canvas is paintable.
-  // TODO(crbug.com/40280152): Fold this method into PageVisibilityChanged().
-  void OnPageVisibilityChangeWhenPaintable();
 
   void PruneLocalFontCache(size_t target_size);
 
