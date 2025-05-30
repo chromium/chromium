@@ -61,6 +61,7 @@
 #include "ui/gl/gpu_switching_manager.h"
 
 #if BUILDFLAG(IS_WIN)
+#include "base/win/windows_version.h"
 #include "ui/gfx/win/physical_size.h"
 #endif
 
@@ -807,8 +808,22 @@ base::Value::Dict GpuMessageHandler::GetClientInfo() {
 #else
   dict.Set("command_line", command_line);
 #endif
+#if BUILDFLAG(IS_WIN)
+  const base::win::OSInfo& os_info = *base::win::OSInfo::GetInstance();
+  const base::win::OSInfo::VersionNumber os_version = os_info.version_number();
+  base::win::OSInfo::VersionNumber kernel32_version =
+      os_info.Kernel32VersionNumber();
+  dict.Set(
+      "operating_system",
+      base::StringPrintf("%s %u.%u.%u.%u (kernel32 %u.%u.%u.%u)",
+                         base::SysInfo::OperatingSystemName(), os_version.major,
+                         os_version.minor, os_version.build, os_version.patch,
+                         kernel32_version.major, kernel32_version.minor,
+                         kernel32_version.build, kernel32_version.patch));
+#else
   dict.Set("operating_system", base::SysInfo::OperatingSystemName() + " " +
                                    base::SysInfo::OperatingSystemVersion());
+#endif
   dict.Set("angle_commit_id", angle::GetANGLECommitHash());
   dict.Set("graphics_backend",
            std::string("Skia/" STRINGIZE(SK_MILESTONE) " " SKIA_COMMIT_HASH));
