@@ -46,6 +46,9 @@ public interface OfflineContentProvider {
     /** See OfflineContentProvider::ResumeDownload(...). */
     void resumeDownload(ContentId id);
 
+    /** See OfflineContentProvider::ValidateDangerousDownload(...). */
+    void validateDangerousDownload(ContentId id);
+
     /** See OfflineContentProvider::GetItemById(...). */
     void getItemById(ContentId id, Callback<OfflineItem> callback);
 

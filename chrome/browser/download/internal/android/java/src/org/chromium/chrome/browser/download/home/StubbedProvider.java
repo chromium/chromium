@@ -86,6 +86,9 @@ public class StubbedProvider {
         public void resumeDownload(ContentId id) {}
 
         @Override
+        public void validateDangerousDownload(ContentId id) {}
+
+        @Override
         public void cancelDownload(ContentId id) {}
 
         @Override

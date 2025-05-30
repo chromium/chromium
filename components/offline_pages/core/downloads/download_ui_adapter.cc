@@ -406,6 +406,10 @@ void DownloadUIAdapter::ResumeDownload(const ContentId& id) {
                      weak_ptr_factory_.GetWeakPtr(), id.id));
 }
 
+void DownloadUIAdapter::ValidateDangerousDownload(const ContentId& id) {
+  NOTREACHED();
+}
+
 void DownloadUIAdapter::ResumeDownloadContinuation(
     const std::string& guid,
     std::vector<std::unique_ptr<SavePageRequest>> requests) {

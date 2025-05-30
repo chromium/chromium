@@ -180,6 +180,16 @@ void OfflineContentAggregatorBridge::ResumeDownload(
       env, j_namespace, j_id));
 }
 
+void OfflineContentAggregatorBridge::ValidateDangerousDownload(
+    JNIEnv* env,
+    const JavaParamRef<jobject>& jobj,
+    const JavaParamRef<jstring>& j_namespace,
+    const JavaParamRef<jstring>& j_id) {
+  provider_->ValidateDangerousDownload(
+      JNI_OfflineContentAggregatorBridge_CreateContentId(env, j_namespace,
+                                                         j_id));
+}
+
 void OfflineContentAggregatorBridge::GetItemById(
     JNIEnv* env,
     const JavaParamRef<jobject>& jobj,

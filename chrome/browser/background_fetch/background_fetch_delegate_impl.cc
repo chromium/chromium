@@ -147,6 +147,11 @@ void BackgroundFetchDelegateImpl::ResumeDownload(
   BackgroundFetchDelegateBase::ResumeDownload(id.id);
 }
 
+void BackgroundFetchDelegateImpl::ValidateDangerousDownload(
+    const offline_items_collection::ContentId& id) {
+  NOTREACHED();
+}
+
 void BackgroundFetchDelegateImpl::GetItemById(
     const offline_items_collection::ContentId& id,
     SingleItemCallback callback) {

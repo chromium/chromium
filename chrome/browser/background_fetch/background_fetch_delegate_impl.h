@@ -55,6 +55,8 @@ class BackgroundFetchDelegateImpl
   void CancelDownload(const offline_items_collection::ContentId& id) override;
   void PauseDownload(const offline_items_collection::ContentId& id) override;
   void ResumeDownload(const offline_items_collection::ContentId& id) override;
+  void ValidateDangerousDownload(
+      const offline_items_collection::ContentId& id) override;
   void GetItemById(const offline_items_collection::ContentId& id,
                    SingleItemCallback callback) override;
   void GetAllItems(MultipleItemCallback callback) override;

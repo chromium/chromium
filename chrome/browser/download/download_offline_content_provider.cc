@@ -282,6 +282,21 @@ void DownloadOfflineContentProvider::ResumeDownload(const ContentId& id) {
     item->Resume(true /* user_resume */);
 }
 
+void DownloadOfflineContentProvider::ValidateDangerousDownload(
+    const ContentId& id) {
+  if (state_ == State::UNINITIALIZED) {
+    pending_actions_for_reduced_mode_.push_back(base::BindOnce(
+        &DownloadOfflineContentProvider::ValidateDangerousDownload,
+        weak_ptr_factory_.GetWeakPtr(), id));
+    return;
+  }
+
+  DownloadItem* item = GetDownload(id.id);
+  if (item && !item->IsDone() && item->IsDangerous()) {
+    item->ValidateDangerousDownload();
+  }
+}
+
 void DownloadOfflineContentProvider::GetItemById(
     const ContentId& id,
     OfflineContentProvider::SingleItemCallback callback) {

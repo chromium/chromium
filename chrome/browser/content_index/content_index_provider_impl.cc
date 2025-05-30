@@ -242,6 +242,10 @@ void ContentIndexProviderImpl::ResumeDownload(const ContentId& id) {
   NOTREACHED();
 }
 
+void ContentIndexProviderImpl::ValidateDangerousDownload(const ContentId& id) {
+  NOTREACHED();
+}
+
 void ContentIndexProviderImpl::GetItemById(const ContentId& id,
                                            SingleItemCallback callback) {
   auto components = GetEntryKeyComponents(id.id);

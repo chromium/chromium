@@ -48,6 +48,7 @@ class MockOfflineContentProvider : public OfflineContentProvider {
   MOCK_METHOD1(CancelDownload, void(const ContentId&));
   MOCK_METHOD1(PauseDownload, void(const ContentId&));
   MOCK_METHOD1(ResumeDownload, void(const ContentId&));
+  MOCK_METHOD1(ValidateDangerousDownload, void(const ContentId&));
   MOCK_METHOD3(GetVisualsForItem_,
                void(const ContentId&,
                     GetVisualsOptions,

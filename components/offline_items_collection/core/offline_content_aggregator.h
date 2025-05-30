@@ -74,6 +74,7 @@ class OfflineContentAggregator : public OfflineContentProvider,
   void CancelDownload(const ContentId& id) override;
   void PauseDownload(const ContentId& id) override;
   void ResumeDownload(const ContentId& id) override;
+  void ValidateDangerousDownload(const ContentId& id) override;
   void GetItemById(const ContentId& id, SingleItemCallback callback) override;
   void GetAllItems(MultipleItemCallback callback) override;
   void GetVisualsForItem(const ContentId& id,

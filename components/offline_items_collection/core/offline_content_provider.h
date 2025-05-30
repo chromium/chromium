@@ -118,6 +118,10 @@ class OfflineContentProvider {
   // Called to resume a paused download of an OfflineItem represented by |id|.
   virtual void ResumeDownload(const ContentId& id) = 0;
 
+  // Called to validate a dangerous download of an OfflineItem represented by
+  // |id|. Only applies to dangerous downloads, not insecure downloads.
+  virtual void ValidateDangerousDownload(const ContentId& id) = 0;
+
   // Requests for an OfflineItem represented by |id|. The implementer should
   // post any replies even if the result is available immediately to prevent
   // reentrancy and for consistent behavior.
