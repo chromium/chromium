@@ -264,7 +264,7 @@ bool VotesUploader::MaybeStartVoteUploadProcess(
             DeterminePossibleFieldTypesForUpload(
                 profiles, credit_cards, entities, loyalty_cards,
                 fields_that_match_state, last_unlocked_credit_card_cvc,
-                app_locale, *form);
+                dates_and_formats_by_field, app_locale, *form);
 
             EncodeUploadRequestOptions options;
             options.encoder = std::move(randomized_encoder);

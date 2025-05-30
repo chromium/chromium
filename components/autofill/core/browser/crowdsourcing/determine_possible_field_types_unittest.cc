@@ -331,7 +331,8 @@ TEST_P(ProfileMatchingTypesTest, DeterminePossibleFieldTypesForUpload) {
       profiles, credit_cards, std::vector<EntityInstance>(),
       std::vector<LoyaltyCard>(),
       /*fields_that_match_state=*/{},
-      /*last_unlocked_credit_card_cvc=*/u"", "en-us", *form_structure);
+      /*last_unlocked_credit_card_cvc=*/u"", /*dates_and_formats=*/{}, "en-us",
+      *form_structure);
 
   ASSERT_EQ(1U, form_structure->field_count());
 
@@ -348,6 +349,8 @@ class DeterminePossibleFieldTypesForUploadTest : public ::testing::Test {
   DeterminePossibleFieldTypesForUploadTest() {
     scoped_feature_list_.InitWithFeatures(
         {features::kAutofillAiWithDataSchema,
+         features::kAutofillAiVoteForFormatStringsFromSingleFields,
+         features::kAutofillAiVoteForFormatStringsFromMultipleFields,
          features::kAutofillEnableLoyaltyCardsFilling},
         {});
   }
@@ -390,7 +393,8 @@ TEST_F(DeterminePossibleFieldTypesForUploadTest, CrowdsourceCVCFieldByValue) {
       profiles, credit_cards, std::vector<EntityInstance>(),
       std::vector<LoyaltyCard>(),
       /*fields_that_match_state=*/{},
-      /*last_unlocked_credit_card_cvc=*/kCvc16, "en-us", *form_structure);
+      /*last_unlocked_credit_card_cvc=*/kCvc16, /*dates_and_formats=*/{},
+      "en-us", *form_structure);
 
   CheckThatOnlyFieldByIndexHasThisPossibleType(
       *form_structure, 2, CREDIT_CARD_VERIFICATION_CODE,
@@ -441,8 +445,8 @@ TEST_F(DeterminePossibleFieldTypesForUploadTest,
       profiles, credit_cards, std::vector<EntityInstance>(),
       std::vector<LoyaltyCard>(),
       /*fields_that_match_state=*/{},
-      /*last_unlocked_credit_card_cvc=*/std::u16string(), "en-us",
-      *form_structure);
+      /*last_unlocked_credit_card_cvc=*/std::u16string(),
+      /*dates_and_formats=*/{}, "en-us", *form_structure);
 
   CheckThatOnlyFieldByIndexHasThisPossibleType(*form_structure, 2,
                                                CREDIT_CARD_VERIFICATION_CODE,
@@ -493,8 +497,8 @@ TEST_F(DeterminePossibleFieldTypesForUploadTest,
       profiles, credit_cards, std::vector<EntityInstance>(),
       std::vector<LoyaltyCard>(),
       /*fields_that_match_state=*/{},
-      /*last_unlocked_credit_card_cvc=*/std::u16string(), "en-us",
-      *form_structure);
+      /*last_unlocked_credit_card_cvc=*/std::u16string(),
+      /*dates_and_formats=*/{}, "en-us", *form_structure);
 
   CheckThatOnlyFieldByIndexHasThisPossibleType(*form_structure, 2,
                                                CREDIT_CARD_VERIFICATION_CODE,
@@ -544,8 +548,8 @@ TEST_F(DeterminePossibleFieldTypesForUploadTest,
       profiles, credit_cards, std::vector<EntityInstance>(),
       std::vector<LoyaltyCard>(),
       /*fields_that_match_state=*/{},
-      /*last_unlocked_credit_card_cvc=*/std::u16string(), "en-us",
-      *form_structure);
+      /*last_unlocked_credit_card_cvc=*/std::u16string(),
+      /*dates_and_formats=*/{}, "en-us", *form_structure);
 
   CheckThatOnlyFieldByIndexHasThisPossibleType(*form_structure, 1,
                                                CREDIT_CARD_VERIFICATION_CODE,
@@ -595,8 +599,8 @@ TEST_F(DeterminePossibleFieldTypesForUploadTest,
       profiles, credit_cards, std::vector<EntityInstance>(),
       std::vector<LoyaltyCard>(),
       /*fields_that_match_state=*/{},
-      /*last_unlocked_credit_card_cvc=*/std::u16string(), "en-us",
-      *form_structure);
+      /*last_unlocked_credit_card_cvc=*/std::u16string(),
+      /*dates_and_formats=*/{}, "en-us", *form_structure);
   CheckThatNoFieldHasThisPossibleType(*form_structure,
                                       CREDIT_CARD_VERIFICATION_CODE);
 }
@@ -643,7 +647,8 @@ TEST_F(DeterminePossibleFieldTypesForUploadTest,
       profiles, credit_cards, std::vector<EntityInstance>(),
       std::vector<LoyaltyCard>(),
       /*fields_that_match_state=*/{},
-      /*last_unlocked_credit_card_cvc=*/u"", "en-us", *form_structure);
+      /*last_unlocked_credit_card_cvc=*/u"", /*dates_and_formats=*/{}, "en-us",
+      *form_structure);
 
   CheckThatNoFieldHasThisPossibleType(*form_structure,
                                       CREDIT_CARD_VERIFICATION_CODE);
@@ -678,7 +683,8 @@ TEST_F(DeterminePossibleFieldTypesForUploadTest, CrowdsourceLoyaltyCardField) {
       std::vector<AutofillProfile>(), std::vector<CreditCard>(),
       std::vector<EntityInstance>(), loyalty_cards,
       /*fields_that_match_state=*/{},
-      /*last_unlocked_credit_card_cvc=*/u"", "en-us", *form_structure);
+      /*last_unlocked_credit_card_cvc=*/u"", /*dates_and_formats=*/{}, "en-us",
+      *form_structure);
 
   CheckThatOnlyFieldByIndexHasThisPossibleType(*form_structure, 1,
                                                LOYALTY_MEMBERSHIP_ID,
@@ -696,6 +702,12 @@ TEST_F(DeterminePossibleFieldTypesForUploadTest, CrowdsourceAutofillAiTypes) {
       CreateTestFormField("number", "number", "1234567",
                           FormControlType::kInputText),
       CreateTestFormField("expiry-date", "expiry-date", "30/08/2019",
+                          FormControlType::kInputText),
+      CreateTestFormField("issue", "issue-day", "01",
+                          FormControlType::kInputText),
+      CreateTestFormField("issue", "issue-month", "09",
+                          FormControlType::kInputText),
+      CreateTestFormField("issue", "issue-year", "2010",
                           FormControlType::kInputText),
       CreateTestFormField("wrong-country", "wrong-country", "Finland",
                           FormControlType::kInputText),
@@ -715,7 +727,8 @@ TEST_F(DeterminePossibleFieldTypesForUploadTest, CrowdsourceAutofillAiTypes) {
       std::vector<AutofillProfile>(), std::vector<CreditCard>(),
       base::span_from_ref(entity), std::vector<LoyaltyCard>(),
       /*fields_that_match_state=*/{},
-      /*last_unlocked_credit_card_cvc=*/u"", "en-US", *form_structure);
+      /*last_unlocked_credit_card_cvc=*/u"",
+      ExtractDatesInFields(form_structure->fields()), "en-US", *form_structure);
 
   EXPECT_THAT(form_structure->fields()[0]->possible_types(),
               UnorderedElementsAre(PASSPORT_NAME_TAG, NAME_FIRST));
@@ -727,6 +740,12 @@ TEST_F(DeterminePossibleFieldTypesForUploadTest, CrowdsourceAutofillAiTypes) {
   EXPECT_THAT(form_structure->fields()[3]->possible_types(),
               UnorderedElementsAre(PASSPORT_EXPIRATION_DATE));
   EXPECT_THAT(form_structure->fields()[4]->possible_types(),
+              UnorderedElementsAre(PASSPORT_ISSUE_DATE));
+  EXPECT_THAT(form_structure->fields()[5]->possible_types(),
+              UnorderedElementsAre(PASSPORT_ISSUE_DATE));
+  EXPECT_THAT(form_structure->fields()[6]->possible_types(),
+              UnorderedElementsAre(PASSPORT_ISSUE_DATE));
+  EXPECT_THAT(form_structure->fields()[7]->possible_types(),
               UnorderedElementsAre(UNKNOWN_TYPE));
 }
 

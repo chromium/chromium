@@ -88,6 +88,7 @@ void DeterminePossibleFieldTypesForUpload(
     base::span<const LoyaltyCard> loyalty_cards,
     const std::set<FieldGlobalId>& fields_that_match_state,
     std::u16string_view last_unlocked_credit_card_cvc,
+    const std::map<FieldGlobalId, DatesAndFormats>& dates_and_formats,
     const std::string& app_locale,
     FormStructure& form);
 

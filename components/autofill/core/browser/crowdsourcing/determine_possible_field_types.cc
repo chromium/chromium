@@ -209,33 +209,16 @@ FieldTypeSet GetPossibleAutofillAiFieldTypes(
 
   std::u16string value =
       AutofillProfileComparator::NormalizeForComparison(value_u16);
-
-  auto date_matches = [&comparator, &value](const AttributeInstance& attribute,
-                                            FieldType field_type) {
-    return std::ranges::any_of(GetMatchingCompleteDateAndFormats(value),
-                               [&](const DateAndFormat& daf) {
-                                 return attribute.GetInfo(
-                                            field_type, comparator.app_locale(),
-                                            daf.format) == value;
-                               });
-  };
-
-  auto nondate_matches = [&comparator, &value](
-                             const AttributeInstance& attribute,
-                             FieldType field_type) {
-    return comparator.Compare(
-        value,
-        attribute.GetInfo(field_type, comparator.app_locale(), std::nullopt),
-        AutofillProfileComparator::DISCARD_WHITESPACE);
-  };
-
   FieldTypeSet types;
   for (const EntityInstance& entity : entities) {
     for (const AttributeInstance& attribute : entity.attributes()) {
       for (FieldType field_type : attribute.GetSupportedTypes()) {
-        if (IsDateFieldType(field_type)
-                ? date_matches(attribute, field_type)
-                : nondate_matches(attribute, field_type)) {
+        bool matches = comparator.Compare(
+            value,
+            attribute.GetInfo(field_type, comparator.app_locale(),
+                              std::nullopt),
+            AutofillProfileComparator::DISCARD_WHITESPACE);
+        if (matches) {
           types.insert(attribute.type().field_type());
           types.insert(field_type);
         }
@@ -243,6 +226,42 @@ FieldTypeSet GetPossibleAutofillAiFieldTypes(
     }
   }
   return types;
+}
+
+void FindAndSetPossibleDateFieldTypes(
+    base::span<const EntityInstance> entities,
+    const std::map<FieldGlobalId, DatesAndFormats>& dates_and_formats,
+    const std::string& app_locale,
+    FormStructure& form) {
+  std::map<data_util::Date, std::vector<AutofillField*>> date_to_field;
+  for (const auto& [field_id, dafs] : dates_and_formats) {
+    for (const data_util::Date& date : dafs.dates) {
+      if (AutofillField* field = form.GetFieldById(field_id)) {
+        date_to_field[date].push_back(field);
+      }
+    }
+  }
+
+  for (const EntityInstance& entity : entities) {
+    for (const AttributeInstance& attribute : entity.attributes()) {
+      for (const FieldType field_type : attribute.GetSupportedTypes()) {
+        if (!IsDateFieldType(field_type)) {
+          continue;
+        }
+        data_util::Date date;
+        if (data_util::ParseDate(attribute.GetCompleteInfo(app_locale),
+                                 u"YYYY-MM-DD", date)) {
+          if (auto it = date_to_field.find(date); it != date_to_field.end()) {
+            for (AutofillField* field : it->second) {
+              FieldTypeSet field_types = field->possible_types();
+              field_types.insert(field_type);
+              field->set_possible_types(field_types);
+            }
+          }
+        }
+      }
+    }
+  }
 }
 
 // Matches the value from `field` against the values stored in the given
@@ -285,6 +304,7 @@ FieldTypeSet GetPossibleFieldTypes(
     matching_types.insert_all(
         GetPossibleAutofillAiFieldTypes(entities, value_u16, app_locale));
   }
+
   return matching_types;
 }
 
@@ -342,13 +362,20 @@ void DeterminePossibleFieldTypesForUpload(
     base::span<const LoyaltyCard> loyalty_cards,
     const std::set<FieldGlobalId>& fields_that_match_state,
     std::u16string_view last_unlocked_credit_card_cvc,
+    const std::map<FieldGlobalId, DatesAndFormats>& dates_and_formats,
     const std::string& app_locale,
     FormStructure& form) {
+  // Most type detection happens in this loop.
   for (const std::unique_ptr<AutofillField>& field : form.fields()) {
     field->set_possible_types(GetPossibleFieldTypes(
         *field, profiles, credit_cards, entities, loyalty_cards,
         fields_that_match_state, app_locale));
   }
+
+  // Date detection is not part of the above loop because dates can span
+  // multiple fields.
+  FindAndSetPossibleDateFieldTypes(entities, dates_and_formats, app_locale,
+                                   form);
 
   // As CVCs are not stored, run special heuristics to detect CVC-like values.
   if (AutofillField* cvc_field = GetBestPossibleCVCFieldForUpload(
