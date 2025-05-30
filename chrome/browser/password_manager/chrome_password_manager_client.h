@@ -362,6 +362,10 @@ class ChromePasswordManagerClient
   // Observer for PasswordGenerationPopup events. Used for testing.
   void SetTestObserver(PasswordGenerationPopupObserver* observer);
 
+  static void BindCredentialManager(
+      content::RenderFrameHost* render_frame_host,
+      mojo::PendingReceiver<blink::mojom::CredentialManager> receiver);
+
   // A helper method to determine whether a save/update bubble can be shown
   // on this |url|.
   static bool CanShowBubbleOnURL(const GURL& url);
@@ -394,9 +398,6 @@ class ChromePasswordManagerClient
     return &credential_cache_;
   }
 #endif
-
-  credential_management::ContentCredentialManager*
-  GetContentCredentialManager();
 
  protected:
   // Callable for tests.

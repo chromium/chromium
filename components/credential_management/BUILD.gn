@@ -12,10 +12,8 @@ source_set("browser") {
 
   deps = [
     "//base",
-    "//components/back_forward_cache",
-    "//components/password_manager/core/browser",
+    "//components/password_manager/core/browser:browser",
     "//components/password_manager/core/common",
-    "//content/public/browser",
     "//content/public/common",
   ]
 }
@@ -26,7 +24,7 @@ source_set("unit_tests") {
   deps = [
     ":browser",
     "//base/test:test_support",
-    "//components/password_manager/core/common",
+    "//components/password_manager/core/common:common",
     "//testing/gmock",
   ]
 }
