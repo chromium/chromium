@@ -207,6 +207,13 @@ void UntrustedSource::StartDataRequest(
         IDR_NEW_TAB_PAGE_UNTRUSTED_ONE_GOOGLE_BAR_JS));
     return;
   }
+  if (path == "one_google_bar_api.js") {
+    ui::ResourceBundle& bundle = ui::ResourceBundle::GetSharedInstance();
+    std::move(callback).Run(bundle.LoadDataResourceBytes(
+        IDR_NEW_TAB_PAGE_UNTRUSTED_ONE_GOOGLE_BAR_API_JS));
+    return;
+  }
+  // TODO(romanarora): add support for one_google_bar_api.js?
   if (path == "image" && url_param.is_valid() &&
       (url_param.SchemeIs(url::kHttpsScheme) ||
        url_param.SchemeIs(content::kChromeUIUntrustedScheme))) {
@@ -290,8 +297,9 @@ bool UntrustedSource::ShouldServiceRequest(
   }
   const std::string path = url.path().substr(1);
   return path == "one-google-bar" || path == "one_google_bar.js" ||
-         path == "image" || path == "background_image" ||
-         path == "custom_background_image" || path == "background_image.js" ||
+         path == "one_google_bar_api.js" || path == "image" ||
+         path == "background_image" || path == "custom_background_image" ||
+         path == "background_image.js" ||
          base::Contains(path, "background.jpg");
 }
 

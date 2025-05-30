@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {createOneGoogleBarApi} from './one_google_bar_api.js';
+
 type MessageType = 'overlaysUpdated'|'click'|'loaded';
 
 // TODO(crbug.com/373569279): Post launch completion of OGB ABP integration,
@@ -25,123 +27,13 @@ function postMessage(messageType: MessageType, data?: object) {
       'chrome://new-tab-page');
 }
 
-interface Bar {
-  setDarkMode(matches: boolean): void;
-  setBackgroundColor(bgColor: string): void;
-  setForegroundStyle(style: number): void;
-}
-
-interface AsyncBar {
-  setDarkMode(matches: boolean): void;
-}
-
-type IndexableApi = Record<string, Function>;
-interface Gbar {
-  gbar?: {a: Record<string, () => IndexableApi>, P: () => void};
-}
+const oneGoogleBarApi = createOneGoogleBarApi(abp);
 
 if (abp) {
   window.addEventListener('gbar_a', () => {
-    postOneGoogleBarLoaded();
+    oneGoogleBarApi.processTaskQueue();
   });
 }
-
-const oneGoogleBarApi = (() => {
-  async function callApi(
-      apiName: string, fnName: string, ...args: any[]): Promise<unknown> {
-    const {gbar} = window as Window & Gbar;
-    if (!gbar) {
-      return;
-    }
-    const api = await gbar.a[apiName]!();
-    return api[fnName]!.apply(api, args);
-  }
-
-  async function callAsyncBarApi(
-      fnName: string, ...args: any[]): Promise<unknown> {
-    const {gbar} = window as Window & Gbar;
-    if (!gbar || !gbar.a) {
-      return Promise.resolve();
-    }
-
-    const barApi = await gbar.a['bf']!();
-    return barApi[fnName]!.apply(barApi, args);
-  }
-
-  interface Definition {
-    name: string;
-    apiName: string;
-    fns: Array<[string, string]>;
-  }
-
-  const api: {bar: Bar} = [
-    {
-      name: 'bar',
-      apiName: 'bf',
-      fns: [
-        ['setForegroundStyle', 'pc'],
-        ['setBackgroundColor', 'pd'],
-        ['setDarkMode', 'pp'],
-      ],
-    } as Definition,
-  ].reduce((topLevelApi, def) => {
-    (topLevelApi as Record<string, any>)[def.name] =
-        def.fns.reduce((apiPart, [name, fnName]) => {
-          apiPart[name] = callApi.bind(null, def.apiName, fnName);
-          return apiPart;
-        }, {} as IndexableApi);
-    return topLevelApi;
-  }, {} as {bar: Bar});
-
-  const asyncBar: AsyncBar =
-      [['setDarkMode', 'pp']].reduce((bar: any, [name, fnName]) => {
-        bar[name!] = callAsyncBarApi.bind(null, fnName!);
-        return bar;
-      }, {} as Bar);
-
-  async function updateDarkMode(): Promise<void> {
-    if (abp) {
-      await asyncBar.setDarkMode(
-          window.matchMedia('(prefers-color-scheme: dark)').matches);
-    } else {
-      await api.bar.setDarkMode(
-          window.matchMedia('(prefers-color-scheme: dark)').matches);
-      // |setDarkMode(toggle)| updates the background color and foreground
-      // style. The background color should always be 'transparent'.
-      api.bar.setBackgroundColor('transparent');
-      // The foreground style is set based on NTP theme and not dark mode.
-      api.bar.setForegroundStyle(foregroundLight ? 1 : 0);
-    }
-  }
-
-  let foregroundLight: boolean = false;
-
-  return {
-    /**
-     * Updates the foreground on the OneGoogleBar to provide contrast against
-     * the background.
-     */
-    setForegroundLight: (enabled: boolean) => {
-      if (abp) {
-        asyncBar.setDarkMode(enabled);
-      } else if (foregroundLight !== enabled) {
-        foregroundLight = enabled;
-        api.bar.setForegroundStyle(foregroundLight ? 1 : 0);
-      }
-    },
-
-    /**
-     * Updates the OneGoogleBar dark mode when called as well as any time dark
-     * mode is updated.
-     */
-    trackDarkModeChanges: async () => {
-      window.matchMedia('(prefers-color-scheme: dark)').addListener(() => {
-        updateDarkMode();
-      });
-      await updateDarkMode();
-    },
-  };
-})();
 
 /**
  * Object that exposes:
@@ -326,8 +218,8 @@ function postOneGoogleBarLoaded() {
   oneGoogleBarApi.trackDarkModeChanges();
 }
 
-if (!abp) {
-  document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', () => {
+  if (!abp) {
     document.body.style.margin = '0';
     // TODO(crbug.com/40667075): remove after OneGoogleBar links are updated.
     // Updates <a>'s so they load on the top frame instead of the iframe.
@@ -336,14 +228,8 @@ if (!abp) {
         el.target = '_top';
       }
     });
-
-    postOneGoogleBarLoaded();
-  });
-} else {
-  const {gbar} = window as Window & Gbar;
-  if (gbar && gbar.a) {
-    postOneGoogleBarLoaded();
   }
-}
+  postOneGoogleBarLoaded();
+});
 
 export {};
