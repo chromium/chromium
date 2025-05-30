@@ -6220,6 +6220,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5589" label="ClipboardChangeEventTypesAttribute"/>
   <int value="5590" label="SchedulerYieldNonTrivialInherit"/>
   <int value="5591" label="SchedulerYieldNonTrivialInheritCrossFrameIgnored"/>
+  <int value="5592" label="LocalNetworkAccessPrivateAliasUse"/>
   <int value="5593" label="V8URLPattern_Generate_Method"/>
 </enum>
 
