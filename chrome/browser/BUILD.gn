@@ -7704,6 +7704,7 @@ static_library("browser") {
     ]
     deps += [
       "//apps",
+      "//chrome/browser/ui/web_applications",
       "//chrome/browser/web_applications/extensions",
       "//chrome/common/apps/platform_apps",
       "//chrome/common/extensions/api",

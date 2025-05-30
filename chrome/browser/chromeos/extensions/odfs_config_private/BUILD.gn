@@ -39,6 +39,7 @@ source_set("browser_tests") {
     "//chrome/browser",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui/tabs:tab_strip",
+    "//chrome/browser/ui/web_applications",
     "//chrome/browser/web_applications:web_applications_test_support",
     "//chrome/test:test_support",
     "//chromeos/crosapi/mojom",

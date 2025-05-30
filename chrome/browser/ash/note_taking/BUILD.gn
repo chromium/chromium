@@ -122,6 +122,7 @@ source_set("browser_tests") {
     "//base/test:test_support",
     "//chrome/browser/ui",
     "//chrome/browser/ui:browser_navigator_params_headers",
+    "//chrome/browser/ui/web_applications",
     "//chrome/browser/web_applications",
     "//chrome/browser/web_applications:web_applications_test_support",
     "//chrome/browser/web_applications/mojom:mojom_web_apps_enum",

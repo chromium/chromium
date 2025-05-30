@@ -34,6 +34,7 @@ source_set("impl") {
     "//chrome/browser:browser_process",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui:browser_list",
+    "//chrome/browser/ui/web_applications",
     "//chrome/common:non_code_constants",
     "//components/prefs",
     "//ui/base",

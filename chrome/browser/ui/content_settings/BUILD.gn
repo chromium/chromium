@@ -30,6 +30,7 @@ source_set("content_settings") {
 
 source_set("impl") {
   sources = []
+  deps = []
 
   if (!is_android) {
     sources += [
@@ -37,11 +38,12 @@ source_set("impl") {
       "content_setting_image_model.cc",
       "content_setting_image_model_states.cc",
     ]
+    deps += [ "//chrome/browser/ui/web_applications" ]
   }
 
   public_deps = [ "//chrome/browser:browser_public_dependencies" ]
 
-  deps = [
+  deps += [
     ":content_settings",
     "//chrome/app:generated_resources",
     "//chrome/app/theme:theme_resources",
@@ -54,7 +56,6 @@ source_set("impl") {
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui:ui_features",
     "//chrome/browser/ui:url_identity",
-    "//chrome/browser/web_applications",
     "//chrome/browser/web_applications",
     "//chrome/common:non_code_constants",
     "//components/content_settings/core/browser",

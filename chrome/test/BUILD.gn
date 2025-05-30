@@ -426,6 +426,7 @@ static_library("test_support") {
     deps += [
       "//chrome/browser/apps/app_service",
       "//chrome/browser/ui/user_education",
+      "//chrome/browser/ui/web_applications",
       "//chrome/browser/web_applications:web_applications_test_support",
       "//chrome/renderer/extensions",
       "//components/media_router/browser:test_support",
@@ -2331,6 +2332,7 @@ if (!is_android) {
       "//chrome/browser/ui/permission_bubble:browser_tests",
       "//chrome/browser/ui/prefs:browser_tests",
       "//chrome/browser/ui/send_tab_to_self:browser_tests",
+      "//chrome/browser/ui/web_applications",
       "//chrome/browser/ui/webui/app_service_internals:browser_tests",
 
       # TODO(413315837): Remove this dependency when
@@ -10627,6 +10629,7 @@ if (!is_android) {
       "//chrome/browser/ui/signin",
       "//chrome/browser/ui/views/page_action:page_action",
       "//chrome/browser/ui/views/toolbar",
+      "//chrome/browser/ui/web_applications",
       "//chrome/browser/ui/webui",
       "//chrome/browser/ui/webui/app_management",
       "//chrome/browser/ui/webui/signin",
@@ -11069,6 +11072,7 @@ if (!is_android && !is_chromeos_device) {
       "//chrome/browser/profiles/keep_alive",
       "//chrome/browser/ui/toolbar",
       "//chrome/browser/ui/views/new_tab_footer:new_tab_footer",
+      "//chrome/browser/ui/web_applications",
       "//chrome/browser/ui/webui/access_code_cast:interactive_ui_tests",
 
       # TODO(413315837): Remove this dependency when

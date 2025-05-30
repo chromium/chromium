@@ -1192,6 +1192,7 @@ source_set("web_applications_browser_tests") {
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui:browser_navigator_params_headers",
     "//chrome/browser/ui/views/toolbar",
+    "//chrome/browser/ui/web_applications",
     "//chrome/browser/web_applications:features",
     "//chrome/common:chrome_features",
     "//chrome/test:test_support",
@@ -1257,6 +1258,7 @@ source_set("app_service_browser_tests") {
     "externally_managed_app_manager_browsertest.cc",
     "preinstalled_web_app_migration_browsertest.cc",
   ]
+  deps = []
 
   if (is_chromeos) {
     sources += [
@@ -1265,11 +1267,13 @@ source_set("app_service_browser_tests") {
       "app_service/web_apps_chromeos_browsertest.cc",
       "chromeos_web_app_experiments_browsertest.cc",
     ]
+
+    deps += [ "//chrome/browser/ui/web_applications" ]
   }
 
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 
-  deps = [
+  deps += [
     ":web_applications",
     ":web_applications_test_support",
     "//base",

@@ -168,6 +168,7 @@ source_set("browser_tests") {
     "//chrome/browser/apps/browser_instance",
     "//chrome/browser/apps/link_capturing:test_support",
     "//chrome/browser/ui:browser_navigator_params_headers",
+    "//chrome/browser/ui/web_applications",
     "//chrome/browser/ui/webui/ash/app_install",
     "//chrome/browser/ui/webui/ash/app_install:test_support",
     "//chrome/browser/web_applications",

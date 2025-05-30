@@ -111,6 +111,7 @@ source_set("browser_tests") {
     "//chrome/browser/ui",
     "//chrome/browser/ui/ash/shelf",
     "//chrome/browser/ui/ash/system_web_apps",
+    "//chrome/browser/ui/web_applications",
     "//chrome/browser/web_applications:web_applications_test_support",
     "//chrome/common",
     "//chrome/common:chrome_features",

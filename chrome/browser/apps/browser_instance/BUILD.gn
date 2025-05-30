@@ -28,6 +28,7 @@ source_set("browser_instance") {
     "//chrome/browser/ui/ash/shelf",
     "//chrome/browser/ui/tabs:tab_enums",
     "//chrome/browser/ui/tabs:tab_strip",
+    "//chrome/browser/ui/web_applications",
     "//chrome/browser/web_applications",
     "//components/app_constants",
     "//components/exo",
