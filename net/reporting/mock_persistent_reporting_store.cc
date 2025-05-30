@@ -88,11 +88,6 @@ bool operator==(const MockPersistentReportingStore::Command& lhs,
   return equal;
 }
 
-bool operator!=(const MockPersistentReportingStore::Command& lhs,
-                const MockPersistentReportingStore::Command& rhs) {
-  return !(lhs == rhs);
-}
-
 std::ostream& operator<<(std::ostream& out,
                          const MockPersistentReportingStore::Command& cmd) {
   switch (cmd.type) {

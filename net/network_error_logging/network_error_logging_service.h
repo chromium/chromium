@@ -52,9 +52,8 @@ class NET_EXPORT NetworkErrorLoggingService {
     NelPolicyKey(const NelPolicyKey& other);
     ~NelPolicyKey();
 
-    bool operator<(const NelPolicyKey& other) const;
-    bool operator==(const NelPolicyKey& other) const;
-    bool operator!=(const NelPolicyKey& other) const;
+    friend bool operator==(const NelPolicyKey&, const NelPolicyKey&) = default;
+    friend auto operator<=>(const NelPolicyKey&, const NelPolicyKey&) = default;
 
     // The NAK of the request this policy was received from. This will be used
     // for any requests uploading reports according to this policy. (Not

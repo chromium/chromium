@@ -900,23 +900,6 @@ NetworkErrorLoggingService::NelPolicyKey::NelPolicyKey(
 NetworkErrorLoggingService::NelPolicyKey::NelPolicyKey(
     const NelPolicyKey& other) = default;
 
-bool NetworkErrorLoggingService::NelPolicyKey::operator<(
-    const NelPolicyKey& other) const {
-  return std::tie(network_anonymization_key, origin) <
-         std::tie(other.network_anonymization_key, other.origin);
-}
-
-bool NetworkErrorLoggingService::NelPolicyKey::operator==(
-    const NelPolicyKey& other) const {
-  return std::tie(network_anonymization_key, origin) ==
-         std::tie(other.network_anonymization_key, other.origin);
-}
-
-bool NetworkErrorLoggingService::NelPolicyKey::operator!=(
-    const NelPolicyKey& other) const {
-  return !(*this == other);
-}
-
 NetworkErrorLoggingService::NelPolicyKey::~NelPolicyKey() = default;
 
 NetworkErrorLoggingService::WildcardNelPolicyKey::WildcardNelPolicyKey() =

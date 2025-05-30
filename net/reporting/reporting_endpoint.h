@@ -64,16 +64,16 @@ struct NET_EXPORT ReportingEndpointGroupKey {
     return target_type == ReportingTargetType::kEnterprise;
   }
 
-  // The NetworkAnonymizationKey the group is scoped to. Needed to prevent
-  // leaking third party contexts across sites. This is empty for
-  // enterprise groups.
-  NetworkAnonymizationKey network_anonymization_key;
-
   // Source token for the document or worker which configured this endpoint, if
   // this was configured with the Reporting-Endpoints header. For endpoint
   // groups configured with the Report-To header and enterprise endpoint groups,
   // this will be nullopt.
   std::optional<base::UnguessableToken> reporting_source;
+
+  // The NetworkAnonymizationKey the group is scoped to. Needed to prevent
+  // leaking third party contexts across sites. This is empty for enterprise
+  // groups.
+  NetworkAnonymizationKey network_anonymization_key;
 
   // Origin that configured this endpoint group. For enterprise endpoint groups,
   // this will be nullopt.
@@ -87,12 +87,13 @@ struct NET_EXPORT ReportingEndpointGroupKey {
   // reports aren’t sent to enterprise endpoints.
   ReportingTargetType target_type = ReportingTargetType::kDeveloper;
 
-  friend bool operator==(const ReportingEndpointGroupKey& lhs,
-                         const ReportingEndpointGroupKey& rhs) = default;
+  friend bool operator==(const ReportingEndpointGroupKey&,
+                         const ReportingEndpointGroupKey&) = default;
+
+  friend auto operator<=>(const ReportingEndpointGroupKey&,
+                          const ReportingEndpointGroupKey&) = default;
 };
 
-NET_EXPORT bool operator!=(const ReportingEndpointGroupKey& lhs,
-                           const ReportingEndpointGroupKey& rhs);
 NET_EXPORT bool operator<(const ReportingEndpointGroupKey& lhs,
                           const ReportingEndpointGroupKey& rhs);
 NET_EXPORT bool operator>(const ReportingEndpointGroupKey& lhs,
