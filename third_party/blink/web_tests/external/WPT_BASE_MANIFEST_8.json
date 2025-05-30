@@ -198525,6 +198525,19 @@
        {}
       ]
      ],
+     "image-max-width-and-height-behaves-as-auto.html": [
+      "dcb00ba6a5cdcc1c310e26792172da0490b927c4",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square-only.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "image-min-max-content-intrinsic-size-change-001.html": [
       "b7c57bb7abe161bf66cdec988953ba1d2c0035ab",
       [
@@ -271195,6 +271208,19 @@
        {}
       ]
      ],
+     "orthogonal-cell-001.html": [
+      "12e996ac902b138e53936f39f7c2237978f9a1ae",
+      [
+       null,
+       [
+        [
+         "/css/css-writing-modes/orthogonal-cell-001-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "orthogonal-child-with-border.html": [
       "877cce5a710f5f5e613c02f581c216070fdd0f41",
       [
@@ -312125,6 +312151,19 @@
      ],
      "image-modify-href-3.svg": [
       "533a28ebb2b3c7fa3f9fe084891aa5de9770f876",
+      [
+       null,
+       [
+        [
+         "/svg/embedded/reference/green-rect-100x100.svg",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "image-modify-href-4.svg": [
+      "f7e550e5defb0b1eba85edad430b0cef760223e6",
       [
        null,
        [
@@ -376469,6 +376508,10 @@
      ],
      "ortho-htb-alongside-vrl-floats-014-ref.xht": [
       "28f0e333282a714715f8e593ac810ff3704d029e",
+      []
+     ],
+     "orthogonal-cell-001-ref.html": [
+      "f50121ef16d240e2991a9626b1dfe4e72a893fb3",
       []
      ],
      "orthogonal-containing-block-height-changes-ref.html": [
@@ -642716,6 +642759,13 @@
          {}
         ]
        ],
+       "slot-element-default-display.html": [
+        "825efaa1a97d898c9cb2b7db1c18b3213c8ed214",
+        [
+         null,
+         {}
+        ]
+       ],
        "slot-element-focusable.tentative.html": [
         "b6d2449e890b31a9fc50712422c0dbca5e3e33a0",
         [
@@ -648223,7 +648273,7 @@
          ]
         ],
         "image-decode-path-changes-svg.tentative.html": [
-         "1bc53a1f18e56fbd2f586b91cf78e00c846eecbb",
+         "3ef59c37a8500f64bc60011174560f4aca0bea5d",
          [
           null,
           {
@@ -648259,7 +648309,7 @@
          ]
         ],
         "image-decode-with-quick-attach-svg.tentative.html": [
-         "0fc49e603606e9233d0b3ae59757aec149c8aaf2",
+         "fbc7143eceead959bc34270b55ad850044215ece",
          [
           null,
           {
