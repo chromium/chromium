@@ -517,6 +517,14 @@ class FakeWebNNContext : public blink_mojom::WebNNContext {
         blink_mojom::CreateTensorResult::NewSuccess(std::move(success)));
   }
 
+  void GenVerifiedSyncToken(GenVerifiedSyncTokenCallback callback) override {
+    NOTIMPLEMENTED();
+  }
+
+  void WaitSyncToken(const gpu::SyncToken& sync_token_fence) override {
+    NOTIMPLEMENTED();
+  }
+
   // TODO(crbug.com/354741414): Fix this dangling pointer.
   const raw_ref<MLGraphTest, DanglingUntriaged> helper_;
 

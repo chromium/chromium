@@ -18,6 +18,7 @@
 #include "base/types/expected.h"
 #include "base/types/optional_ref.h"
 #include "base/types/pass_key.h"
+#include "gpu/command_buffer/common/sync_token.h"
 #include "gpu/command_buffer/service/scheduler_task_runner.h"
 #include "mojo/public/cpp/base/big_buffer.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
@@ -153,6 +154,8 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextImpl
   void CreateTensor(mojom::TensorInfoPtr tensor_info,
                     mojo_base::BigBuffer tensor_data,
                     CreateTensorCallback callback) override;
+  void WaitSyncToken(const gpu::SyncToken& fence) override;
+  void GenVerifiedSyncToken(GenVerifiedSyncTokenCallback callback) override;
 
   // This method will be called by `CreateTensor()` after the tensor info is
   // validated. A backend subclass should implement this method to create and
@@ -214,6 +217,11 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextImpl
   const scoped_refptr<gpu::SchedulerTaskRunner> scheduler_task_runner_;
 
   mojo::Receiver<mojom::WebNNContext> receiver_;
+
+  // Marks the completion of previously scheduled tasks.
+  // Used to generate a SyncToken for the renderer which can be passed
+  // to another message pipe to wait on WebNN work.
+  uint64_t last_sync_token_release_id_ = 0;
 };
 
 }  // namespace webnn

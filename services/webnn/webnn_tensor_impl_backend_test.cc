@@ -435,6 +435,50 @@ TEST_F(WebNNTensorImplBackendTest, CreateContextImplManyTest) {
   EXPECT_FALSE(bad_message_helper.GetLastBadMessage().has_value());
 }
 
+TEST_F(WebNNTensorImplBackendTest, ContextImplSyncToken) {
+  BadMessageTestHelper bad_message_helper;
+
+  mojo::Remote<mojom::WebNNContext> webnn_context_remote;
+  base::expected<CreateContextSuccess, webnn::mojom::Error::Code>
+      context_result = CreateWebNNContext();
+  if (!context_result.has_value() &&
+      context_result.error() == mojom::Error::Code::kNotSupportedError) {
+    GTEST_SKIP() << "WebNN not supported on this platform.";
+  } else {
+    webnn_context_remote =
+        std::move(context_result.value().webnn_context_remote);
+  }
+
+  gpu::SyncToken last_sync_token_fence;
+  {
+    base::test::TestFuture<const gpu::SyncToken&> gen_sync_token_future;
+    webnn_context_remote->GenVerifiedSyncToken(
+        gen_sync_token_future.GetCallback());
+    last_sync_token_fence = gen_sync_token_future.Take();
+  }
+
+  EXPECT_EQ(last_sync_token_fence.release_count(), 1u);
+
+  // Tell WebNN IPC to flush itself by waiting on its own SyncToken it had
+  // previously generated.
+  webnn_context_remote->WaitSyncToken(last_sync_token_fence);
+
+  {
+    base::test::TestFuture<const gpu::SyncToken&> gen_sync_token_future;
+    webnn_context_remote->GenVerifiedSyncToken(
+        gen_sync_token_future.GetCallback());
+    last_sync_token_fence = gen_sync_token_future.Take();
+  }
+
+  EXPECT_EQ(last_sync_token_fence.release_count(), 2u);
+
+  // Waiting on the same SyncToken should nop.
+  webnn_context_remote->WaitSyncToken(last_sync_token_fence);
+  webnn_context_remote->WaitSyncToken(last_sync_token_fence);
+
+  EXPECT_FALSE(bad_message_helper.GetLastBadMessage().has_value());
+}
+
 // Testing for WebGPUInterop requires backend-specific APIs to
 // synchronize contents and simulate usage from another command queue.
 #if BUILDFLAG(IS_WIN)

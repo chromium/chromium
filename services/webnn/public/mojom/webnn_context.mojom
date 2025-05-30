@@ -4,6 +4,7 @@
 
 module webnn.mojom;
 
+import "gpu/ipc/common/sync_token.mojom";
 import "mojo/public/mojom/base/big_buffer.mojom";
 import "services/webnn/public/mojom/features.mojom";
 import "services/webnn/public/mojom/webnn_tensor.mojom";
@@ -43,4 +44,24 @@ interface WebNNContext {
   // Valid for tensor data to be empty when not being used as graph constants.
   CreateTensor(TensorInfo tensor_info, mojo_base.mojom.BigBuffer tensor_data)
     => (CreateTensorResult result);
+
+  // Called by the renderer process to generate a verified SyncToken. The
+  // token is released once all prior operations scheduled via
+  // WebNNContextImpl—this includes WebNNContext and its associated interfaces—
+  // have completed execution by the WebNN service.
+  //
+  // TODO(crbug.com/345352987): If the SyncPointGraphValidation feature is
+  // enabled, consider removing this callback. In that case, the release ID can
+  // be tracked directly from the renderer or converted to [Sync], since these
+  // operations do not involve actual GPU execution.
+  //
+  // See docs/gpu/sync_token_internals.md for SyncToken explainer.
+  GenVerifiedSyncToken() => (gpu.mojom.SyncToken release);
+
+  // Called by the renderer process to wait for the verified SyncToken to be
+  // released before performing further operations on this interface.
+  // Intended to be invoked from another non-WebNN Mojo interface.
+  // Implemented asynchronously by deferring WebNN execution until the fence
+  // is released.
+  WaitSyncToken(gpu.mojom.SyncToken fence);
 };
