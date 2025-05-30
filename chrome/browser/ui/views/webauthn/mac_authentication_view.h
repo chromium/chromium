@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_WEBAUTHN_MAC_AUTHENTICATION_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_WEBAUTHN_MAC_AUTHENTICATION_VIEW_H_
 
-#include <os/availability.h>
-
 #include <memory>
 #include <optional>
 #include <string>
@@ -23,7 +21,7 @@
 // MacAuthenticationView wraps an `LAAuthenticationView` such that it can be
 // used in Views. It shows a biometric UI on macOS that collects Touch ID, and
 // then triggers a callback.
-class API_AVAILABLE(macos(12)) MacAuthenticationView : public views::View {
+class MacAuthenticationView : public views::View {
   METADATA_HEADER(MacAuthenticationView, views::View)
 
  public:

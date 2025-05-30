@@ -31,7 +31,7 @@ constexpr float kErrorAnimationLength = 1;
 // with the animation.
 constexpr float kSuccessAnimationLength = 1.6;
 
-struct API_AVAILABLE(macos(12.0)) MacAuthenticationView::ObjCStorage {
+struct MacAuthenticationView::ObjCStorage {
   LAContext* __strong context;
   LAAuthenticationView* __strong auth_view;
 };
