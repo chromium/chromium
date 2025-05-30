@@ -862,13 +862,7 @@ void CanvasRenderingContext2D::PageVisibilityChanged() {
 }
 
 cc::Layer* CanvasRenderingContext2D::CcLayer() const {
-  bool can_get_cc_layer = canvas() != nullptr;
-
-  if (!can_get_cc_layer) {
-    return nullptr;
-  }
-
-  return canvas()->GetOrCreateCcLayerForCanvas2DIfNeeded();
+  return canvas() ? canvas()->GetOrCreateCcLayerForCanvas2DIfNeeded() : nullptr;
 }
 
 void CanvasRenderingContext2D::drawFocusIfNeeded(Element* element) {
