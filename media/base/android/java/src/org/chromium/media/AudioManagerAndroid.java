@@ -23,6 +23,7 @@ import com.google.common.collect.ImmutableMap;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ContextUtils;
@@ -56,12 +57,18 @@ class AudioManagerAndroid {
     // media::ChannelLayoutToChannelCount().
     private static final Map<Integer, Integer> LAYOUT_MASK_TO_CHANNEL_COUNT =
             ImmutableMap.of(
-                    ChannelLayout.LAYOUT_MONO, 1, // CHANNEL_LAYOUT_MONO
-                    ChannelLayout.LAYOUT_STEREO, 2, // CHANNEL_LAYOUT_STEREO
-                    ChannelLayout.LAYOUT_5_1, 6, // CHANNEL_LAYOUT_5_1
-                    ChannelLayout.LAYOUT_7_1, 8, // CHANNEL_LAYOUT_7_1
-                    ChannelLayout.LAYOUT_6_1, 7, // CHANNEL_LAYOUT_6_1
-                    ChannelLayout.LAYOUT_5_1_4_DOWNMIX, 6 // CHANNEL_LAYOUT_5_1_4 (downmixed to 5.1)
+                    ChannelLayout.LAYOUT_MONO,
+                    1, // CHANNEL_LAYOUT_MONO
+                    ChannelLayout.LAYOUT_STEREO,
+                    2, // CHANNEL_LAYOUT_STEREO
+                    ChannelLayout.LAYOUT_5_1,
+                    6, // CHANNEL_LAYOUT_5_1
+                    ChannelLayout.LAYOUT_7_1,
+                    8, // CHANNEL_LAYOUT_7_1
+                    ChannelLayout.LAYOUT_6_1,
+                    7, // CHANNEL_LAYOUT_6_1
+                    ChannelLayout.LAYOUT_5_1_4_DOWNMIX,
+                    6 // CHANNEL_LAYOUT_5_1_4 (downmixed to 5.1)
                     );
 
     /** Simple container for device information. */
@@ -82,7 +89,7 @@ class AudioManagerAndroid {
         }
 
         @CalledByNative("AudioDevice")
-        private @Nullable String name() {
+        private @JniType("std::optional<std::string>") @Nullable String name() {
             return mName;
         }
 

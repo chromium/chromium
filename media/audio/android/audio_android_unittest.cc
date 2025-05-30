@@ -5,6 +5,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <vector>
 
 #include "base/android/build_info.h"
 #include "base/compiler_specific.h"
@@ -35,6 +36,7 @@
 #include "media/audio/audio_features.h"
 #include "media/audio/audio_io.h"
 #include "media/audio/audio_unittest_util.h"
+#include "media/audio/fake_audio_log_factory.h"
 #include "media/audio/mock_audio_source_callback.h"
 #include "media/audio/test_audio_thread.h"
 #include "media/base/audio_glitch_info.h"
@@ -51,6 +53,8 @@ using ::testing::Invoke;
 using ::testing::NiceMock;
 using ::testing::NotNull;
 using ::testing::Return;
+using JniAudioDevice = media::AudioManagerAndroid::JniAudioDevice;
+using JniDelegate = media::AudioManagerAndroid::JniDelegate;
 
 namespace media {
 namespace {
@@ -64,6 +68,13 @@ ACTION_P4(CheckCountAndPostQuitTask, count, limit, task_runner, quit_closure) {
 constexpr float kCallbackTestTimeMs = 2000.0;
 constexpr size_t kBytesPerSample = 2;
 constexpr SampleFormat kSampleFormat = kSampleFormatS16;
+
+constexpr int kAudioDeviceTypeIntUnknown =
+    0;  // android.media.AudioDeviceInfo.TYPE_UNKNOWN
+constexpr int kAudioDeviceTypeIntBuiltinSpeaker =
+    2;  // android.media.AudioDeviceInfo.TYPE_BUILTIN_SPEAKER
+constexpr int kAudioDeviceTypeIntBuiltinMic =
+    15;  // android.media.AudioDeviceInfo.TYPE_BUILTIN_MIC
 
 // Converts AudioParameters::Format enumerator to readable string.
 std::string FormatToString(AudioParameters::Format format) {
@@ -100,41 +111,6 @@ double ExpectedTimeBetweenCallbacks(AudioParameters params) {
                              base::Time::kMicrosecondsPerSecond /
                              static_cast<double>(params.sample_rate())))
       .InMillisecondsF();
-}
-
-// Helper method which verifies that the device list starts with a valid
-// default device name followed by non-default device names.
-void CheckDeviceDescriptions(
-    const AudioDeviceDescriptions& device_descriptions) {
-  DVLOG(2) << "Got " << device_descriptions.size() << " audio devices.";
-  if (device_descriptions.empty()) {
-    // Log a warning so we can see the status on the build bots.  No need to
-    // break the test though since this does successfully test the code and
-    // some failure cases.
-    LOG(WARNING) << "No input devices detected";
-    return;
-  }
-
-  AudioDeviceDescriptions::const_iterator it = device_descriptions.begin();
-
-  // The first device in the list should always be the default device.
-  EXPECT_EQ(std::string(AudioDeviceDescription::kDefaultDeviceId),
-            it->unique_id);
-  ++it;
-
-  // Other devices should have non-empty name and id and should not contain
-  // default name or id.
-  while (it != device_descriptions.end()) {
-    EXPECT_FALSE(it->device_name.empty());
-    EXPECT_FALSE(it->unique_id.empty());
-    EXPECT_FALSE(it->group_id.empty());
-    DVLOG(2) << "Device ID(" << it->unique_id << "), label: " << it->device_name
-             << " group: " << it->group_id;
-    EXPECT_NE(AudioDeviceDescription::GetDefaultDeviceName(), it->device_name);
-    EXPECT_NE(std::string(AudioDeviceDescription::kDefaultDeviceId),
-              it->unique_id);
-    ++it;
-  }
 }
 
 // We clear the data bus to ensure that the test does not cause noise.
@@ -186,6 +162,32 @@ std::ostream& operator<<(std::ostream& os, const AudioApi& audio_api) {
   }
   return os;
 }
+
+class MockJniDelegate : public JniDelegate {
+ public:
+  MockJniDelegate() = default;
+
+  ~MockJniDelegate() override = default;
+
+  MOCK_METHOD(std::vector<JniAudioDevice>, GetDevices, (bool));
+  MOCK_METHOD(std::optional<std::vector<JniAudioDevice>>,
+              GetCommunicationDevices,
+              ());
+  MOCK_METHOD(bool, IsAudioSinkConnected, ());
+  MOCK_METHOD(int, GetMinInputFrameSize, (int sample_rate, int channels));
+  MOCK_METHOD(bool, AcousticEchoCancelerIsAvailable, ());
+  MOCK_METHOD(base::TimeDelta, GetOutputLatency, ());
+  MOCK_METHOD(void, SetCommunicationAudioModeOn, (bool on));
+  MOCK_METHOD(bool, SetCommunicationDevice, (std::string_view device_id));
+  MOCK_METHOD(bool, IsBluetoothScoOn, ());
+  MOCK_METHOD(void, MaybeSetBluetoothScoState, (bool state));
+  MOCK_METHOD(int, GetNativeOutputSampleRate, ());
+  MOCK_METHOD(bool, IsAudioLowLatencySupported, ());
+  MOCK_METHOD(int, GetAudioLowLatencyOutputFrameSize, ());
+  MOCK_METHOD(int, GetMinOutputFrameSize, (int sample_rate, int channels));
+  MOCK_METHOD(int, GetSinkAudioEncodingFormats, ());
+  MOCK_METHOD(int, GetLayoutWithMaxChannels, ());
+};
 
 // Gmock implementation of AudioInputStream::AudioInputCallback.
 class MockAudioInputCallback : public AudioInputStream::AudioInputCallback {
@@ -463,8 +465,9 @@ class AudioAndroidOutputTest : public testing::TestWithParam<AudioApi> {
   AudioAndroidOutputTest()
       : task_environment_(
             base::test::SingleThreadTaskEnvironment::MainThreadType::UI),
-        audio_manager_(AudioManager::CreateForTesting(
-            std::make_unique<TestAudioThread>())),
+        audio_manager_(std::make_unique<AudioManagerAndroid>(
+            std::make_unique<TestAudioThread>(),
+            &fake_audio_log_factory_)),
         audio_manager_device_info_(audio_manager_.get()),
         audio_output_stream_(nullptr) {
     // Flush the message loop to ensure that AudioManager is fully initialized.
@@ -484,7 +487,7 @@ class AudioAndroidOutputTest : public testing::TestWithParam<AudioApi> {
   }
 
  protected:
-  AudioManager* audio_manager() { return audio_manager_.get(); }
+  AudioManagerAndroid* audio_manager() { return audio_manager_.get(); }
   AudioDeviceInfoAccessorForTests* audio_manager_device_info() {
     return &audio_manager_device_info_;
   }
@@ -529,6 +532,14 @@ class AudioAndroidOutputTest : public testing::TestWithParam<AudioApi> {
          {features::kAAudioPerStreamDeviceSelection,
           enable_aaudio_per_stream_device_selection}});
     feature_list_.InitWithFeatureStates(feature_states);
+  }
+
+  MockJniDelegate& UseMockJniDelegate() {
+    std::unique_ptr<MockJniDelegate> jni_delegate =
+        std::make_unique<MockJniDelegate>();
+    MockJniDelegate& jni_delegate_ref = *jni_delegate;
+    audio_manager()->SetJniDelegateForTesting(std::move(jni_delegate));
+    return jni_delegate_ref;
   }
 
   // Synchronously runs the provided callback/closure on the audio thread.
@@ -707,7 +718,8 @@ class AudioAndroidOutputTest : public testing::TestWithParam<AudioApi> {
 
   base::test::ScopedFeatureList feature_list_;
   base::test::SingleThreadTaskEnvironment task_environment_;
-  std::unique_ptr<AudioManager> audio_manager_;
+  FakeAudioLogFactory fake_audio_log_factory_;
+  std::unique_ptr<AudioManagerAndroid> audio_manager_;
   AudioDeviceInfoAccessorForTests audio_manager_device_info_;
   AudioParameters audio_output_parameters_;
   raw_ptr<AudioOutputStream> audio_output_stream_;
@@ -865,9 +877,6 @@ class AudioAndroidInputTest : public AudioAndroidOutputTest {
   AudioParameters audio_input_parameters_;
 };
 
-// TODO(crbug.com/417671787): Add test doubles for the device list fetch path
-// and enhance and expand device list-dependent tests.
-
 // Get the default audio input parameters.
 TEST_F(AudioAndroidInputTest, GetDefaultInputStreamParameters) {
   AudioParameters params = GetDefaultInputStreamParametersOnAudioThread();
@@ -880,20 +889,131 @@ TEST_F(AudioAndroidOutputTest, GetDefaultOutputStreamParameters) {
   EXPECT_TRUE(params.IsValid());
 }
 
-// Verify input device enumeration.
-TEST_F(AudioAndroidInputTest, GetAudioInputDeviceDescriptions) {
-  ABORT_AUDIO_TEST_IF_NOT(audio_manager_device_info()->HasAudioInputDevices());
+// Verify input device enumeration when using communication devices.
+TEST_F(AudioAndroidInputTest,
+       GetAudioInputDeviceDescriptionsWithCommunicationDevices) {
+  InitFeatures(AudioApi::AAudioWithCommunicationDevices);
+  if (IsSkipped()) {
+    return;
+  }
+
+  MockJniDelegate& jni_delegate = UseMockJniDelegate();
+  EXPECT_CALL(jni_delegate, GetCommunicationDevices())
+      .WillOnce(Return(std::vector<JniAudioDevice>{
+          {/* id= */ 10, /* name= */ "In A",
+           /* type= */ kAudioDeviceTypeIntUnknown},
+          {/* id= */ 20, /* name= */ "In B",
+           /* type= */ kAudioDeviceTypeIntUnknown}}));
+
   AudioDeviceDescriptions devices =
       GetAudioInputDeviceDescriptionsOnAudioThread();
-  CheckDeviceDescriptions(devices);
+  ASSERT_EQ(devices.size(), 3u);
+
+  EXPECT_TRUE(AudioDeviceDescription::IsDefaultDevice(devices[0].unique_id));
+
+  EXPECT_EQ(devices[1].device_name, "In A");
+  EXPECT_EQ(devices[1].unique_id, "10");
+  EXPECT_NE(devices[1].group_id, "");
+
+  EXPECT_EQ(devices[2].device_name, "In B");
+  EXPECT_EQ(devices[2].unique_id, "20");
+  EXPECT_NE(devices[2].group_id, "");
 }
 
-// Verify output device enumeration.
-TEST_F(AudioAndroidOutputTest, GetAudioOutputDeviceDescriptions) {
-  ABORT_AUDIO_TEST_IF_NOT(audio_manager_device_info()->HasAudioOutputDevices());
+// Verify input device enumeration when using per-stream device selection.
+TEST_F(AudioAndroidInputTest,
+       GetAudioInputDeviceDescriptionsWithPerStreamDeviceSelection) {
+  InitFeatures(AudioApi::AAudioWithPerStreamDeviceSelection);
+  if (IsSkipped()) {
+    return;
+  }
+
+  MockJniDelegate& jni_delegate = UseMockJniDelegate();
+  EXPECT_CALL(jni_delegate, GetDevices(/* inputs= */ true))
+      .WillOnce(Return(std::vector<JniAudioDevice>{
+          {/* id= */ 10, /* name= */ "In A",
+           /* type= */ kAudioDeviceTypeIntUnknown},
+          {/* id= */ 0, /* name= */ "In B (default ID)",
+           /* type= */ kAudioDeviceTypeIntUnknown},
+          {/* id= */ 30, /* name= */ std::nullopt,
+           /* type= */ kAudioDeviceTypeIntUnknown},
+          {/* id= */ 40, /* name= */ std::nullopt,
+           /* type= */ kAudioDeviceTypeIntBuiltinMic}}));
+
+  AudioDeviceDescriptions devices =
+      GetAudioInputDeviceDescriptionsOnAudioThread();
+  ASSERT_EQ(devices.size(), 4u);
+
+  EXPECT_TRUE(AudioDeviceDescription::IsDefaultDevice(devices[0].unique_id));
+
+  EXPECT_EQ(devices[1].device_name, "In A");
+  EXPECT_EQ(devices[1].unique_id, "10");
+  EXPECT_NE(devices[1].group_id, "");
+
+  EXPECT_EQ(devices[2].device_name, "Nameless audio device (generic)");
+  EXPECT_EQ(devices[2].unique_id, "30");
+  EXPECT_NE(devices[2].group_id, "");
+
+  EXPECT_EQ(devices[3].device_name, "Nameless audio device (internal mic)");
+  EXPECT_EQ(devices[3].unique_id, "40");
+  EXPECT_NE(devices[3].group_id, "");
+}
+
+// Verify output device enumeration when using communication devices, in which
+// case only the default device should be returned.
+TEST_F(AudioAndroidOutputTest,
+       GetAudioOutputDeviceDescriptionsWithCommunicationDevices) {
+  InitFeatures(AudioApi::AAudioWithCommunicationDevices);
+  if (IsSkipped()) {
+    return;
+  }
+
+  UseMockJniDelegate();
+
   AudioDeviceDescriptions devices =
       GetAudioOutputDeviceDescriptionsOnAudioThread();
-  CheckDeviceDescriptions(devices);
+  ASSERT_EQ(devices.size(), 1u);
+  EXPECT_TRUE(AudioDeviceDescription::IsDefaultDevice(devices[0].unique_id));
+}
+
+// Verify output device enumeration when using per-stream device selection.
+TEST_F(AudioAndroidOutputTest,
+       GetAudioOutputDeviceDescriptionsWithPerStreamDeviceSelection) {
+  InitFeatures(AudioApi::AAudioWithPerStreamDeviceSelection);
+  if (IsSkipped()) {
+    return;
+  }
+
+  MockJniDelegate& jni_delegate = UseMockJniDelegate();
+  EXPECT_CALL(jni_delegate, GetDevices(/* inputs= */ false))
+      .WillOnce(Return(std::vector<JniAudioDevice>{
+          {/* id= */ 10, /* name= */ "Out A",
+           /* type= */ kAudioDeviceTypeIntUnknown},
+          {/* id= */ 0, /* name= */ "Out B (default ID)",
+           /* type= */ kAudioDeviceTypeIntUnknown},
+          {/* id= */ 30, /* name= */ std::nullopt,
+           /* type= */ kAudioDeviceTypeIntUnknown},
+          {/* id= */ 40, /* name= */ std::nullopt,
+           /* type= */ kAudioDeviceTypeIntBuiltinSpeaker},
+      }));
+
+  AudioDeviceDescriptions devices =
+      GetAudioOutputDeviceDescriptionsOnAudioThread();
+  ASSERT_EQ(devices.size(), 4u);
+
+  EXPECT_TRUE(AudioDeviceDescription::IsDefaultDevice(devices[0].unique_id));
+
+  EXPECT_EQ(devices[1].device_name, "Out A");
+  EXPECT_EQ(devices[1].unique_id, "10");
+  EXPECT_NE(devices[1].group_id, "");
+
+  EXPECT_EQ(devices[2].device_name, "Nameless audio device (generic)");
+  EXPECT_EQ(devices[2].unique_id, "30");
+  EXPECT_NE(devices[2].group_id, "");
+
+  EXPECT_EQ(devices[3].device_name, "Nameless audio device (internal speaker)");
+  EXPECT_EQ(devices[3].unique_id, "40");
+  EXPECT_NE(devices[3].group_id, "");
 }
 
 // Ensure that a default input stream can be created and closed.
