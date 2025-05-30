@@ -42,7 +42,6 @@
 #include "gpu/command_buffer/service/context_group.h"
 #include "gpu/command_buffer/service/gl_context_virtual.h"
 #include "gpu/command_buffer/service/gles2_cmd_decoder.h"
-#include "gpu/command_buffer/service/gpu_command_buffer_memory_tracker.h"
 #include "gpu/command_buffer/service/gpu_fence_manager.h"
 #include "gpu/command_buffer/service/gpu_tracer.h"
 #include "gpu/command_buffer/service/gr_shader_cache.h"
@@ -240,10 +239,10 @@ gpu::ContextResult InProcessCommandBuffer::InitializeOnGpuThread(
     const uint64_t client_tracing_id =
         base::trace_event::MemoryDumpManager::GetInstance()
             ->GetTracingProcessId();
-    memory_tracker = std::make_unique<GpuCommandBufferMemoryTracker>(
+    memory_tracker = std::make_unique<MemoryTracker>(
         GetCommandBufferID(), client_tracing_id,
-        base::SingleThreadTaskRunner::GetCurrentDefault(),
-        /* obserer=*/nullptr);
+        /*peak_memory_monitor=*/nullptr,
+        GpuPeakMemoryAllocationSource::COMMAND_BUFFER);
   }
 
   auto feature_info = base::MakeRefCounted<gles2::FeatureInfo>(
