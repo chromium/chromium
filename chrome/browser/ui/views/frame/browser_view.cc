@@ -849,17 +849,25 @@ class BrowserViewLayoutDelegateImpl : public BrowserViewLayoutDelegate {
   void UpdateSplitViewInsets() override {
     CHECK(browser_view_->multi_contents_view());
 
-    browser_view_->multi_contents_view()->start_contents_view_inset().set_left(
-        browser_view_->unified_side_panel()->GetVisible() &&
-                !browser_view_->unified_side_panel()->IsRightAligned()
-            ? 0
-            : MultiContentsView::kSplitViewContentInset);
+    bool side_panel_visible = browser_view_->unified_side_panel()->GetVisible();
+    bool right_aligned = browser_view_->unified_side_panel()->IsRightAligned();
+    bool infobar_visible = browser_view_->infobar_container()->GetVisible();
 
-    browser_view_->multi_contents_view()->end_contents_view_inset().set_right(
-        browser_view_->unified_side_panel()->GetVisible() &&
-                browser_view_->unified_side_panel()->IsRightAligned()
-            ? 0
-            : MultiContentsView::kSplitViewContentInset);
+    browser_view_->multi_contents_view()
+        ->start_contents_view_inset()
+        .set_left(side_panel_visible && !right_aligned
+                      ? 0
+                      : MultiContentsView::kSplitViewContentInset)
+        .set_top(!infobar_visible ? 0
+                                  : MultiContentsView::kSplitViewContentInset);
+
+    browser_view_->multi_contents_view()
+        ->end_contents_view_inset()
+        .set_right(side_panel_visible && right_aligned
+                       ? 0
+                       : MultiContentsView::kSplitViewContentInset)
+        .set_top(!infobar_visible ? 0
+                                  : MultiContentsView::kSplitViewContentInset);
   }
 
   ExclusiveAccessBubbleViews* GetExclusiveAccessBubble() const override {
