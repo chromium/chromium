@@ -567,43 +567,56 @@ public class TabWindowManagerImpl implements TabWindowManager {
     }
 
     @Override
-    public void keepAllTabModelsLoaded(MultiInstanceManager multiInstanceManager, Profile profile) {
+    public void keepAllTabModelsLoaded(
+            MultiInstanceManager multiInstanceManager, Profile profile, TabModelSelector selector) {
         if (mKeepAllTabModelsLoaded) return;
 
         mKeepAllTabModelsLoaded = true;
+
         List<TabModelSelector> tabModelSelectorList = new ArrayList<>();
-        for (InstanceInfo instanceInfo : multiInstanceManager.getInstanceInfo()) {
-            @WindowId int windowId = instanceInfo.instanceId;
-            if (!mWindowIdToSelectors.containsKey(windowId)) {
-                tabModelSelectorList.add(requestSelectorWithoutActivity(windowId, profile));
-            } else {
-                tabModelSelectorList.add(mWindowIdToSelectors.get(windowId));
+        List<InstanceInfo> instanceInfoList = multiInstanceManager.getInstanceInfo();
+        if (instanceInfoList.isEmpty()) {
+            tabModelSelectorList.add(selector);
+        } else {
+            for (InstanceInfo instanceInfo : instanceInfoList) {
+                @WindowId int windowId = instanceInfo.instanceId;
+                if (!mWindowIdToSelectors.containsKey(windowId)) {
+                    tabModelSelectorList.add(requestSelectorWithoutActivity(windowId, profile));
+                } else {
+                    tabModelSelectorList.add(mWindowIdToSelectors.get(windowId));
+                }
             }
         }
-
         TabModelUtils.runOnTabStateInitialized(
                 () -> {
-                    TabGroupSyncService tabGroupSyncService =
-                            TabGroupSyncServiceFactory.getForProfile(profile);
-                    if (tabGroupSyncService == null) return;
+                    TabModel model = tabModelSelectorList.get(0).getModel(/* incognito= */ false);
+                    model.broadcastSessionRestoreComplete();
 
-                    List<TabGroupModelFilter> filterList = new ArrayList<>();
-                    for (TabModelSelector selector : tabModelSelectorList) {
-                        // This process is async and it's possible something was shut down during
-                        // the wait for all these tab models to init. In that case, just bail and
-                        // try again next restart. This clean up is optional.
-                        if (!mSelectorsToWindowId.containsKey(selector)) {
-                            return;
-                        }
-
-                        filterList.add(
-                                selector.getTabGroupModelFilterProvider()
-                                        .getTabGroupModelFilter(/* isIncognito= */ false));
-                    }
-                    TabGroupSyncUtils.unmapLocalIdsNotInTabGroupModelFilterList(
-                            tabGroupSyncService, filterList);
+                    unmapOrphanedTabGroups(profile, tabModelSelectorList);
                 },
                 tabModelSelectorList.toArray(new TabModelSelector[0]));
+    }
+
+    private void unmapOrphanedTabGroups(
+            Profile profile, List<TabModelSelector> tabModelSelectorList) {
+        TabGroupSyncService tabGroupSyncService = TabGroupSyncServiceFactory.getForProfile(profile);
+        if (tabGroupSyncService == null) return;
+
+        List<TabGroupModelFilter> filterList = new ArrayList<>();
+        for (TabModelSelector selector : tabModelSelectorList) {
+            // This process is async and it's possible something was shut down during
+            // the wait for all these tab models to init. In that case, just bail and
+            // try again next restart. This clean up is optional.
+            if (!mSelectorsToWindowId.containsKey(selector)) {
+                return;
+            }
+
+            filterList.add(
+                    selector.getTabGroupModelFilterProvider()
+                            .getTabGroupModelFilter(/* isIncognito= */ false));
+        }
+        TabGroupSyncUtils.unmapLocalIdsNotInTabGroupModelFilterList(
+                tabGroupSyncService, filterList);
     }
 
     @Override

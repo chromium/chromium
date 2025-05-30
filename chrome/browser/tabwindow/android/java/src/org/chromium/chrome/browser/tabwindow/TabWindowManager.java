@@ -193,8 +193,11 @@ public interface TabWindowManager {
      *
      * @param multiInstanceManager Used to fetch window ids.
      * @param profile Used to scope access.
+     * @param selector The current selector for the caller, used as a fallback when window
+     *     information is not available.
      */
-    void keepAllTabModelsLoaded(MultiInstanceManager multiInstanceManager, Profile profile);
+    void keepAllTabModelsLoaded(
+            MultiInstanceManager multiInstanceManager, Profile profile, TabModelSelector selector);
 
     /**
      * Tries to discern the correct window id that contains a tab group. This may be a like activity

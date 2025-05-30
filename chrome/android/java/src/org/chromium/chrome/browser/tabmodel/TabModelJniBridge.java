@@ -116,7 +116,7 @@ public abstract class TabModelJniBridge implements TabModelInternal {
      */
     public abstract void completeInitialization();
 
-    /** Broadcast a native-side notification that all tabs are now loaded from storage. */
+    @Override
     public void broadcastSessionRestoreComplete() {
         assert isNativeInitialized();
         assert isInitializationComplete();
