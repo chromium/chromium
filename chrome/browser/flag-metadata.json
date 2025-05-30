@@ -4218,17 +4218,17 @@
   {
     "name": "enable-standard-device-bound-session-credentials",
     "owners": [ "drubery@chromium.org",  "thefrog@chromium.org"],
-    "expiry_milestone": 138
+    "expiry_milestone": 146
   },
   {
     "name": "enable-standard-device-bound-session-persistence",
     "owners": [ "anunoy@chromium.org", "drubery@chromium.org",  "thefrog@chromium.org"],
-    "expiry_milestone": 138
+    "expiry_milestone": 146
   },
   {
       "name": "enable-standard-device-bound-sesssion-refresh-quota",
     "owners": [ "drubery@chromium.org",  "thefrog@chromium.org"],
-    "expiry_milestone": 138
+    "expiry_milestone": 146
   },
   {
     "name": "enable-start-surface-return-time",
