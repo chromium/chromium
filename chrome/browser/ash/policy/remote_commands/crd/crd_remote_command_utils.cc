@@ -13,7 +13,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/ash/app_mode/isolated_web_app/kiosk_iwa_manager.h"
 #include "chrome/browser/ash/app_mode/kiosk_chrome_app_manager.h"
-#include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_manager.h"
+#include "chrome/browser/ash/app_mode/web_app/kiosk_web_app_manager.h"
 #include "chrome/browser/ash/policy/remote_commands/crd/crd_logging.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/ash/services/network_config/in_process_instance.h"
@@ -43,7 +43,7 @@ const ash::KioskAppManagerBase* GetKioskAppManager(
     return ash::KioskChromeAppManager::Get();
   }
   if (user_manager.IsLoggedInAsKioskWebApp()) {
-    return ash::WebKioskAppManager::Get();
+    return ash::KioskWebAppManager::Get();
   }
   if (user_manager.IsLoggedInAsKioskIWA()) {
     return ash::KioskIwaManager::Get();

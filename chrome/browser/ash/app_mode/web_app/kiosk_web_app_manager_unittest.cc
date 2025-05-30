@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_manager.h"
+#include "chrome/browser/ash/app_mode/web_app/kiosk_web_app_manager.h"
 
 #include <sys/types.h>
 
@@ -18,7 +18,7 @@
 #include "chrome/browser/apps/app_service/launch_result_type.h"
 #include "chrome/browser/apps/app_service/publishers/app_publisher.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_manager_observer.h"
-#include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_data.h"
+#include "chrome/browser/ash/app_mode/web_app/kiosk_web_app_data.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
 #include "chrome/browser/web_applications/test/web_app_icon_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
@@ -76,7 +76,7 @@ class FakePublisher final : public apps::AppPublisher {
     auto icon = std::make_unique<apps::IconValue>();
     icon->icon_type = apps::IconType::kUncompressed;
     icon->uncompressed = gfx::ImageSkia::CreateFrom1xBitmap(
-        web_app::CreateSquareIcon(WebKioskAppData::kIconSize, SK_ColorWHITE));
+        web_app::CreateSquareIcon(KioskWebAppData::kIconSize, SK_ColorWHITE));
     icon->is_placeholder_icon = false;
     std::move(callback).Run(std::move(icon));
   }
@@ -104,7 +104,7 @@ class FakeKioskAppManagerObserver : public KioskAppManagerObserver {
 
 }  // namespace
 
-class WebKioskAppManagerTest : public BrowserWithTestWindowTest {
+class KioskWebAppManagerTest : public BrowserWithTestWindowTest {
  public:
   void SetUp() override {
     BrowserWithTestWindowTest::SetUp();
@@ -122,7 +122,7 @@ class WebKioskAppManagerTest : public BrowserWithTestWindowTest {
     app_publisher_ =
         std::make_unique<FakePublisher>(app_service_, apps::AppType::kWeb);
 
-    app_manager_ = std::make_unique<WebKioskAppManager>();
+    app_manager_ = std::make_unique<KioskWebAppManager>();
 
     app_manager()->StartObservingAppUpdate(profile(), account_id());
     app_manager()->AddObserver(&app_manager_observer_);
@@ -152,7 +152,7 @@ class WebKioskAppManagerTest : public BrowserWithTestWindowTest {
 
   apps::AppServiceTest& app_service_test() { return app_service_test_; }
 
-  WebKioskAppManager* app_manager() { return app_manager_.get(); }
+  KioskWebAppManager* app_manager() { return app_manager_.get(); }
 
   web_app::WebAppProvider* web_app_provider() {
     return web_app::WebAppProvider::GetForTest(profile());
@@ -162,7 +162,7 @@ class WebKioskAppManagerTest : public BrowserWithTestWindowTest {
     return web_app_provider()->sync_bridge_unsafe();
   }
 
-  const WebKioskAppData* app_data() {
+  const KioskWebAppData* app_data() {
     return app_manager_->GetAppByAccountId(account_id_);
   }
 
@@ -192,12 +192,12 @@ class WebKioskAppManagerTest : public BrowserWithTestWindowTest {
 
   std::unique_ptr<FakePublisher> app_publisher_;
 
-  std::unique_ptr<WebKioskAppManager> app_manager_;
+  std::unique_ptr<KioskWebAppManager> app_manager_;
 
   FakeKioskAppManagerObserver app_manager_observer_;
 };
 
-TEST_F(WebKioskAppManagerTest, ShouldUpdateAppInfoWhenReady) {
+TEST_F(KioskWebAppManagerTest, ShouldUpdateAppInfoWhenReady) {
   apps::AppPtr app = CreateTestApp();
   app->name = kAppTitle;
   app->publisher_id = kAppLaunchUrl;
@@ -206,13 +206,13 @@ TEST_F(WebKioskAppManagerTest, ShouldUpdateAppInfoWhenReady) {
   UpdateWebApp(app_service(), app);
   WaitForAppDataChange();
 
-  EXPECT_EQ(app_data()->status(), WebKioskAppData::Status::kInstalled);
+  EXPECT_EQ(app_data()->status(), KioskWebAppData::Status::kInstalled);
   EXPECT_EQ(app_data()->name(), kAppTitle);
   EXPECT_EQ(app_data()->launch_url(), kAppLaunchUrl);
   EXPECT_TRUE(app_data()->icon().isNull());
 }
 
-TEST_F(WebKioskAppManagerTest, ShouldUpdateAppInfoOnConsecutiveChanges) {
+TEST_F(KioskWebAppManagerTest, ShouldUpdateAppInfoOnConsecutiveChanges) {
   apps::AppPtr app = CreateTestApp();
   app->name = "initial-name";
 
@@ -230,7 +230,7 @@ TEST_F(WebKioskAppManagerTest, ShouldUpdateAppInfoOnConsecutiveChanges) {
   EXPECT_EQ(app_data()->launch_url(), GURL("http://new-launch-url.com"));
 }
 
-TEST_F(WebKioskAppManagerTest, ShouldUpdateAppInfoWithIconWhenReady) {
+TEST_F(KioskWebAppManagerTest, ShouldUpdateAppInfoWithIconWhenReady) {
   // Initial app info without icon.
   apps::AppPtr app = CreateTestApp();
   app->icon_key = std::nullopt;
@@ -244,11 +244,11 @@ TEST_F(WebKioskAppManagerTest, ShouldUpdateAppInfoWithIconWhenReady) {
   WaitForAppDataChange();
 
   EXPECT_FALSE(app_data()->icon().isNull());
-  EXPECT_EQ(app_data()->icon().width(), WebKioskAppData::kIconSize);
-  EXPECT_EQ(app_data()->icon().height(), WebKioskAppData::kIconSize);
+  EXPECT_EQ(app_data()->icon().width(), KioskWebAppData::kIconSize);
+  EXPECT_EQ(app_data()->icon().height(), KioskWebAppData::kIconSize);
 }
 
-TEST_F(WebKioskAppManagerTest, ShouldNotUpdateAppInfoWhenNotReady) {
+TEST_F(KioskWebAppManagerTest, ShouldNotUpdateAppInfoWhenNotReady) {
   apps::AppPtr app = CreateTestApp();
   app->name = "<new-name>";
 
@@ -257,11 +257,11 @@ TEST_F(WebKioskAppManagerTest, ShouldNotUpdateAppInfoWhenNotReady) {
   UpdateWebApp(app_service(), app);
 
   ExpectNoAppDataChange();
-  EXPECT_EQ(app_data()->status(), WebKioskAppData::Status::kInit);
+  EXPECT_EQ(app_data()->status(), KioskWebAppData::Status::kInit);
   EXPECT_NE(app_data()->name(), "<new-name>");
 }
 
-TEST_F(WebKioskAppManagerTest, ShouldNotUpdateAppInfoForNonWebApps) {
+TEST_F(KioskWebAppManagerTest, ShouldNotUpdateAppInfoForNonWebApps) {
   apps::AppPtr app = CreateTestApp();
   app->name = "<new-name>";
 
@@ -270,11 +270,11 @@ TEST_F(WebKioskAppManagerTest, ShouldNotUpdateAppInfoForNonWebApps) {
   UpdateWebApp(app_service(), app);
 
   ExpectNoAppDataChange();
-  EXPECT_EQ(app_data()->status(), WebKioskAppData::Status::kInit);
+  EXPECT_EQ(app_data()->status(), KioskWebAppData::Status::kInit);
   EXPECT_NE(app_data()->name(), "<new-name>");
 }
 
-TEST_F(WebKioskAppManagerTest, ShouldNotUpdateAppInfoForNonKioskApps) {
+TEST_F(KioskWebAppManagerTest, ShouldNotUpdateAppInfoForNonKioskApps) {
   apps::AppPtr app = CreateTestApp();
   app->name = "<new-name>";
 
@@ -283,11 +283,11 @@ TEST_F(WebKioskAppManagerTest, ShouldNotUpdateAppInfoForNonKioskApps) {
   UpdateWebApp(app_service(), app);
 
   ExpectNoAppDataChange();
-  EXPECT_EQ(app_data()->status(), WebKioskAppData::Status::kInit);
+  EXPECT_EQ(app_data()->status(), KioskWebAppData::Status::kInit);
   EXPECT_NE(app_data()->name(), "<new-name>");
 }
 
-TEST_F(WebKioskAppManagerTest, ShouldNotUpdateAppInfoForPlaceholders) {
+TEST_F(KioskWebAppManagerTest, ShouldNotUpdateAppInfoForPlaceholders) {
   // Install app as placeholder.
   auto app_info = web_app::WebAppInstallInfo::CreateWithStartUrlForTesting(
       GURL(kAppLaunchUrl));

@@ -48,7 +48,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "base/test/scoped_command_line.h"
-#include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_manager.h"
+#include "chrome/browser/ash/app_mode/web_app/kiosk_web_app_manager.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/common/chrome_switches.h"
 #include "components/user_manager/scoped_user_manager.h"
@@ -603,7 +603,7 @@ class DeviceAPIServiceWithKioskUserTest : public DeviceAPIServiceParamTest {
     DeviceAPIServiceParamTest::SetUp();
     command_line_.GetProcessCommandLine()->AppendSwitch(
         switches::kForceAppMode);
-    app_manager_ = std::make_unique<ash::WebKioskAppManager>();
+    app_manager_ = std::make_unique<ash::KioskWebAppManager>();
   }
 
   void TearDown() override {
@@ -621,12 +621,12 @@ class DeviceAPIServiceWithKioskUserTest : public DeviceAPIServiceParamTest {
     return fake_user_manager_.Get();
   }
 
-  ash::WebKioskAppManager* app_manager() const { return app_manager_.get(); }
+  ash::KioskWebAppManager* app_manager() const { return app_manager_.get(); }
 
  private:
   user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
       fake_user_manager_;
-  std::unique_ptr<ash::WebKioskAppManager> app_manager_;
+  std::unique_ptr<ash::KioskWebAppManager> app_manager_;
   base::test::ScopedCommandLine command_line_;
 };
 

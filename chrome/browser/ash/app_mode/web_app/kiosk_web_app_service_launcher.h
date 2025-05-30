@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ASH_APP_MODE_WEB_APP_WEB_KIOSK_APP_SERVICE_LAUNCHER_H_
-#define CHROME_BROWSER_ASH_APP_MODE_WEB_APP_WEB_KIOSK_APP_SERVICE_LAUNCHER_H_
+#ifndef CHROME_BROWSER_ASH_APP_MODE_WEB_APP_KIOSK_WEB_APP_SERVICE_LAUNCHER_H_
+#define CHROME_BROWSER_ASH_APP_MODE_WEB_APP_KIOSK_WEB_APP_SERVICE_LAUNCHER_H_
 
 #include <optional>
 
@@ -20,11 +20,11 @@ class Profile;
 
 namespace ash {
 
-class WebKioskAppData;
+class KioskWebAppData;
 
 // Responsible of installing and launching web kiosk app using App Service. It's
 // destroyed upon successful app launch.
-class WebKioskAppServiceLauncher : public KioskWebAppLauncherBase {
+class KioskWebAppServiceLauncher : public KioskWebAppLauncherBase {
  public:
   // Histogram to log the installed web app is a placeholder.
   static constexpr char kWebAppIsPlaceholderUMA[] =
@@ -34,14 +34,14 @@ class WebKioskAppServiceLauncher : public KioskWebAppLauncherBase {
   static constexpr char kWebAppInstallResultUMA[] =
       "Kiosk.AppService.WebApp.InstallResult";
 
-  WebKioskAppServiceLauncher(
+  KioskWebAppServiceLauncher(
       Profile* profile,
       const AccountId& account_id,
       KioskAppLauncher::NetworkDelegate* network_delegate);
-  WebKioskAppServiceLauncher(const WebKioskAppServiceLauncher&) = delete;
-  WebKioskAppServiceLauncher& operator=(const WebKioskAppServiceLauncher&) =
+  KioskWebAppServiceLauncher(const KioskWebAppServiceLauncher&) = delete;
+  KioskWebAppServiceLauncher& operator=(const KioskWebAppServiceLauncher&) =
       delete;
-  ~WebKioskAppServiceLauncher() override;
+  ~KioskWebAppServiceLauncher() override;
 
   // `KioskAppLauncher`:
   void Initialize() override;
@@ -52,16 +52,16 @@ class WebKioskAppServiceLauncher : public KioskWebAppLauncherBase {
   void OnInstallComplete(const std::optional<webapps::AppId>& app_id);
 
   // Get the current web application to be launched in the session.
-  const WebKioskAppData* GetCurrentApp() const;
+  const KioskWebAppData* GetCurrentApp() const;
 
   void CheckAppInstallState() override;
   const webapps::AppId& GetInstalledWebAppId() override;
 
   std::optional<webapps::AppId> installed_app_id_;
 
-  base::WeakPtrFactory<WebKioskAppServiceLauncher> weak_ptr_factory_{this};
+  base::WeakPtrFactory<KioskWebAppServiceLauncher> weak_ptr_factory_{this};
 };
 
 }  // namespace ash
 
-#endif  // CHROME_BROWSER_ASH_APP_MODE_WEB_APP_WEB_KIOSK_APP_SERVICE_LAUNCHER_H_
+#endif  // CHROME_BROWSER_ASH_APP_MODE_WEB_APP_KIOSK_WEB_APP_SERVICE_LAUNCHER_H_

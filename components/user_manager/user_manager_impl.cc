@@ -185,7 +185,7 @@ UserList UserManagerImpl::FindLoginAllowedUsersFrom(
   for (User* user : users) {
     // Skip kiosk apps for login screen user list. Kiosk apps as pods (aka new
     // kiosk UI) is currently disabled and it gets the apps directly from
-    // KioskChromeAppManager and WebKioskAppManager.
+    // KioskChromeAppManager and KioskWebAppManager.
     if (user->IsKioskType()) {
       continue;
     }

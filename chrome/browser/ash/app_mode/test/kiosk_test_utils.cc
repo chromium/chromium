@@ -30,7 +30,7 @@
 #include "chrome/browser/ash/app_mode/kiosk_controller.h"
 #include "chrome/browser/ash/app_mode/kiosk_system_session.h"
 #include "chrome/browser/ash/app_mode/kiosk_test_helper.h"
-#include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_manager.h"
+#include "chrome/browser/ash/app_mode/web_app/kiosk_web_app_manager.h"
 #include "chrome/browser/ash/login/test/oobe_screen_waiter.h"
 #include "chrome/browser/chromeos/app_mode/kiosk_web_app_install_util.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -73,7 +73,7 @@ class SessionInitializedWaiter : public KioskAppManagerObserver {
  public:
   SessionInitializedWaiter() {
     observation_.AddObservation(KioskChromeAppManager::Get());
-    observation_.AddObservation(WebKioskAppManager::Get());
+    observation_.AddObservation(KioskWebAppManager::Get());
     observation_.AddObservation(KioskIwaManager::Get());
   }
   SessionInitializedWaiter(const SessionInitializedWaiter&) = delete;

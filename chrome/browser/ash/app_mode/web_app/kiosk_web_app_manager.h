@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ASH_APP_MODE_WEB_APP_WEB_KIOSK_APP_MANAGER_H_
-#define CHROME_BROWSER_ASH_APP_MODE_WEB_APP_WEB_KIOSK_APP_MANAGER_H_
+#ifndef CHROME_BROWSER_ASH_APP_MODE_WEB_APP_KIOSK_WEB_APP_MANAGER_H_
+#define CHROME_BROWSER_ASH_APP_MODE_WEB_APP_KIOSK_WEB_APP_MANAGER_H_
 
 #include <memory>
 #include <string>
@@ -25,10 +25,10 @@ struct WebAppInstallInfo;
 
 namespace ash {
 
-class WebKioskAppData;
+class KioskWebAppData;
 
 // Does the management of web kiosk apps.
-class WebKioskAppManager : public KioskAppManagerBase {
+class KioskWebAppManager : public KioskAppManagerBase {
  public:
   static const char kWebKioskDictionaryName[];
 
@@ -36,17 +36,17 @@ class WebKioskAppManager : public KioskAppManagerBase {
   static bool IsInitialized();
 
   // Will return the manager instance or will crash if it not yet initiazlied.
-  static WebKioskAppManager* Get();
-  WebKioskAppManager();
-  WebKioskAppManager(const WebKioskAppManager&) = delete;
-  WebKioskAppManager& operator=(const WebKioskAppManager&) = delete;
-  ~WebKioskAppManager() override;
+  static KioskWebAppManager* Get();
+  KioskWebAppManager();
+  KioskWebAppManager(const KioskWebAppManager&) = delete;
+  KioskWebAppManager& operator=(const KioskWebAppManager&) = delete;
+  ~KioskWebAppManager() override;
 
   // Registers kiosk app entries in local state.
   static void RegisterPrefs(PrefRegistrySimple* registry);
 
   // Create app instance by app data.
-  static KioskAppManagerBase::App CreateAppByData(const WebKioskAppData& data);
+  static KioskAppManagerBase::App CreateAppByData(const KioskWebAppData& data);
 
   // `KioskAppManagerBase` implementation.
   std::vector<App> GetApps() const override;
@@ -58,7 +58,7 @@ class WebKioskAppManager : public KioskAppManagerBase {
   const AccountId& GetAutoLaunchAccountId() const;
 
   // Obtains an app associated with given `account_id`.
-  const WebKioskAppData* GetAppByAccountId(const AccountId& account_id) const;
+  const KioskWebAppData* GetAppByAccountId(const AccountId& account_id) const;
 
   // Updates app by the data obtained during installation.
   void UpdateAppFromInstallInfo(const AccountId& account_id,
@@ -84,16 +84,16 @@ class WebKioskAppManager : public KioskAppManagerBase {
   // Updates `apps_` based on CrosSettings.
   void UpdateAppsFromPolicy() override;
 
-  std::vector<std::unique_ptr<WebKioskAppData>> apps_;
+  std::vector<std::unique_ptr<KioskWebAppData>> apps_;
   AccountId auto_launch_account_id_;
 
   // Observes web Kiosk app updates. Persists through the whole web Kiosk
   // session.
   std::unique_ptr<chromeos::KioskWebAppUpdateObserver> app_update_observer_;
 
-  base::WeakPtrFactory<WebKioskAppManager> weak_ptr_factory_{this};
+  base::WeakPtrFactory<KioskWebAppManager> weak_ptr_factory_{this};
 };
 
 }  // namespace ash
 
-#endif  // CHROME_BROWSER_ASH_APP_MODE_WEB_APP_WEB_KIOSK_APP_MANAGER_H_
+#endif  // CHROME_BROWSER_ASH_APP_MODE_WEB_APP_KIOSK_WEB_APP_MANAGER_H_

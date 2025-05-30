@@ -17,8 +17,8 @@
 #include "chrome/browser/ash/app_mode/kiosk_test_helper.h"
 #include "chrome/browser/ash/app_mode/test/kiosk_test_utils.h"
 #include "chrome/browser/ash/app_mode/test/scoped_device_settings.h"
-#include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_data.h"
-#include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_manager.h"
+#include "chrome/browser/ash/app_mode/web_app/kiosk_web_app_data.h"
+#include "chrome/browser/ash/app_mode/web_app/kiosk_web_app_manager.h"
 #include "chrome/browser/ash/login/demo_mode/demo_mode_test_utils.h"
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
 #include "chrome/browser/ash/login/existing_user_controller.h"
@@ -49,9 +49,9 @@
 
 namespace {
 namespace em = enterprise_management;
+using ash::KioskWebAppManager;
 using ash::LoginScreenTestApi;
 using ash::ScopedDeviceSettings;
-using ash::WebKioskAppManager;
 using ash::kiosk::test::WaitKioskLaunched;
 using testing::InvokeWithoutArgs;
 using StructuredEventProto = metrics::StructuredEventProto;
@@ -315,7 +315,7 @@ class MetadataProcessorTest : public policy::DevicePolicyCrosBrowserTest,
 
   bool LaunchApp() {
     return LoginScreenTestApi::LaunchApp(
-        WebKioskAppManager::Get()->GetAppByAccountId(account_id_2_)->app_id());
+        KioskWebAppManager::Get()->GetAppByAccountId(account_id_2_)->app_id());
   }
 
   void StartKioskApp() {

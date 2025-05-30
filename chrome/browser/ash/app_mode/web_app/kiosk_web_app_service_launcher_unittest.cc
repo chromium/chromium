@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_service_launcher.h"
+#include "chrome/browser/ash/app_mode/web_app/kiosk_web_app_service_launcher.h"
 
 #include <sys/types.h>
 
@@ -18,8 +18,8 @@
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/app_service_test.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_launch_error.h"
-#include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_data.h"
-#include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_manager.h"
+#include "chrome/browser/ash/app_mode/web_app/kiosk_web_app_data.h"
+#include "chrome/browser/ash/app_mode/web_app/kiosk_web_app_manager.h"
 #include "chrome/browser/extensions/extension_special_storage_policy.h"
 #include "chrome/browser/ui/web_applications/web_app_launch_process.h"
 #include "chrome/browser/web_applications/external_install_options.h"
@@ -102,7 +102,7 @@ const char16_t kAppTitle[] = u"app";
 
 }  // namespace
 
-class WebKioskAppServiceLauncherTest : public BrowserWithTestWindowTest {
+class KioskWebAppServiceLauncherTest : public BrowserWithTestWindowTest {
  public:
   void SetUp() override {
     BrowserWithTestWindowTest::SetUp();
@@ -117,11 +117,11 @@ class WebKioskAppServiceLauncherTest : public BrowserWithTestWindowTest {
     static_cast<web_app::FakeWebAppUiManager*>(&web_app_provider().ui_manager())
         ->SetOnLaunchWebAppCallback(app_launch_future_.GetRepeatingCallback());
 
-    app_manager_ = std::make_unique<WebKioskAppManager>();
+    app_manager_ = std::make_unique<KioskWebAppManager>();
     account_id_ = AccountId::FromUserEmail(kAppEmail);
     app_manager_->AddAppForTesting(account_id_, GURL(kAppInstallUrl));
 
-    launcher_ = std::make_unique<WebKioskAppServiceLauncher>(
+    launcher_ = std::make_unique<KioskWebAppServiceLauncher>(
         profile(), AccountId::FromUserEmail(kAppEmail), &delegate_);
     launcher_->AddObserver(&observer_);
   }
@@ -196,7 +196,7 @@ class WebKioskAppServiceLauncherTest : public BrowserWithTestWindowTest {
 
   MockAppLauncherDelegate& delegate() { return delegate_; }
   MockAppLauncherObserver& observer() { return observer_; }
-  WebKioskAppServiceLauncher& launcher() { return *launcher_; }
+  KioskWebAppServiceLauncher& launcher() { return *launcher_; }
 
  private:
   apps::AppServiceProxy* app_service() {
@@ -236,14 +236,14 @@ class WebKioskAppServiceLauncherTest : public BrowserWithTestWindowTest {
 
   apps::AppServiceTest app_service_test_;
 
-  std::unique_ptr<WebKioskAppManager> app_manager_;
+  std::unique_ptr<KioskWebAppManager> app_manager_;
 
   MockAppLauncherDelegate delegate_;
   MockAppLauncherObserver observer_;
-  std::unique_ptr<WebKioskAppServiceLauncher> launcher_;
+  std::unique_ptr<KioskWebAppServiceLauncher> launcher_;
 };
 
-TEST_F(WebKioskAppServiceLauncherTest,
+TEST_F(KioskWebAppServiceLauncherTest,
        AppNotInstalledShouldInvokeInitializeNetwork) {
   // Do not preinstall the app
 
@@ -251,7 +251,7 @@ TEST_F(WebKioskAppServiceLauncherTest,
                          InitializeNetwork());
 }
 
-TEST_F(WebKioskAppServiceLauncherTest,
+TEST_F(KioskWebAppServiceLauncherTest,
        PlaceholderInstalledShouldInvokeInitializeNetwork) {
   InstallAppAsPlaceholder();
 
@@ -259,7 +259,7 @@ TEST_F(WebKioskAppServiceLauncherTest,
                          InitializeNetwork());
 }
 
-TEST_F(WebKioskAppServiceLauncherTest,
+TEST_F(KioskWebAppServiceLauncherTest,
        ShouldNotInvokeInitializeNetworkWhenAppIsSuccessfullyInstalled) {
   InstallApp();
 
@@ -268,7 +268,7 @@ TEST_F(WebKioskAppServiceLauncherTest,
 }
 
 TEST_F(
-    WebKioskAppServiceLauncherTest,
+    KioskWebAppServiceLauncherTest,
     ShouldInvokeInitializeNetworkWhenAppIsSuccessfullyInstalledButNotOfflineEnabled) {
   profile()->GetPrefs()->SetBoolean(::prefs::kKioskWebAppOfflineEnabled, false);
   InstallApp();
@@ -278,14 +278,14 @@ TEST_F(
   EXPECT_CALL(observer(), OnAppPrepared()).Times(0);
 }
 
-TEST_F(WebKioskAppServiceLauncherTest,
+TEST_F(KioskWebAppServiceLauncherTest,
        InitializeShouldInvokeAppPreparedIfAppAlreadyInstalled) {
   InstallApp();
 
   EXEC_AND_WAIT_FOR_CALL(launcher().Initialize(), observer(), OnAppPrepared());
 }
 
-TEST_F(WebKioskAppServiceLauncherTest,
+TEST_F(KioskWebAppServiceLauncherTest,
        ContinueWithNetworkReadyShouldInvokeOnAppInstalling) {
   // Do not preinstall the app
 
@@ -295,7 +295,7 @@ TEST_F(WebKioskAppServiceLauncherTest,
                          OnAppInstalling());
 }
 
-TEST_F(WebKioskAppServiceLauncherTest, ShouldAlwaysInstallPlaceholder) {
+TEST_F(KioskWebAppServiceLauncherTest, ShouldAlwaysInstallPlaceholder) {
   // Do not preinstall the app and do not set up a valid web app
 
   EXEC_AND_WAIT_FOR_CALL(launcher().Initialize(), delegate(),
@@ -306,14 +306,14 @@ TEST_F(WebKioskAppServiceLauncherTest, ShouldAlwaysInstallPlaceholder) {
   EXPECT_TRUE(IsAppInstalledAsPlaceholder());
 }
 
-TEST_F(WebKioskAppServiceLauncherTest, LaunchAppShouldInvokeOnAppLaunched) {
+TEST_F(KioskWebAppServiceLauncherTest, LaunchAppShouldInvokeOnAppLaunched) {
   InstallApp();
   launcher().Initialize();
 
   EXEC_AND_WAIT_FOR_CALL(launcher().LaunchApp(), observer(), OnAppLaunched());
 }
 
-TEST_F(WebKioskAppServiceLauncherTest,
+TEST_F(KioskWebAppServiceLauncherTest,
        KioskOriginShouldGetUnlimitedStorageGrantedDuringInstallFlow) {
   launcher().Initialize();
 
@@ -321,7 +321,7 @@ TEST_F(WebKioskAppServiceLauncherTest,
       GURL(kAppInstallUrl)));
 }
 
-TEST_F(WebKioskAppServiceLauncherTest,
+TEST_F(KioskWebAppServiceLauncherTest,
        KioskOriginShouldGetUnlimitedStorageGrantedIfAppAlreadyInstalled) {
   InstallApp();
   launcher().Initialize();
@@ -330,7 +330,7 @@ TEST_F(WebKioskAppServiceLauncherTest,
       GURL(kAppInstallUrl)));
 }
 
-TEST_F(WebKioskAppServiceLauncherTest,
+TEST_F(KioskWebAppServiceLauncherTest,
        InstallUrlShouldBeSetAsOverrideUrlInLaunchParams) {
   InstallApp();
   launcher().Initialize();
@@ -339,7 +339,7 @@ TEST_F(WebKioskAppServiceLauncherTest,
   EXPECT_EQ(WaitForWebAppLaunch().override_url, GURL(kAppInstallUrl));
 }
 
-TEST_F(WebKioskAppServiceLauncherTest, FullFlowNotInstalled) {
+TEST_F(KioskWebAppServiceLauncherTest, FullFlowNotInstalled) {
   // Do not preinstall teh app
 
   base::HistogramTester histogram;
@@ -360,11 +360,11 @@ TEST_F(WebKioskAppServiceLauncherTest, FullFlowNotInstalled) {
   histogram.ExpectTotalCount(
       chromeos::KioskAppServiceLauncher::kLaunchAppReadinessUMA, 1);
   histogram.ExpectUniqueSample(
-      WebKioskAppServiceLauncher::kWebAppInstallResultUMA,
+      KioskWebAppServiceLauncher::kWebAppInstallResultUMA,
       webapps::InstallResultCode::kSuccessNewInstall, 1);
 }
 
-TEST_F(WebKioskAppServiceLauncherTest, FullFlowAlreadyInstalled) {
+TEST_F(KioskWebAppServiceLauncherTest, FullFlowAlreadyInstalled) {
   base::HistogramTester histogram;
 
   InstallApp();
@@ -378,10 +378,10 @@ TEST_F(WebKioskAppServiceLauncherTest, FullFlowAlreadyInstalled) {
   histogram.ExpectTotalCount(
       chromeos::KioskAppServiceLauncher::kLaunchAppReadinessUMA, 1);
   histogram.ExpectTotalCount(
-      WebKioskAppServiceLauncher::kWebAppInstallResultUMA, 0);
+      KioskWebAppServiceLauncher::kWebAppInstallResultUMA, 0);
 }
 
-TEST_F(WebKioskAppServiceLauncherTest, FullFlowPlaceholderReplaced) {
+TEST_F(KioskWebAppServiceLauncherTest, FullFlowPlaceholderReplaced) {
   base::HistogramTester histogram;
 
   InstallAppAsPlaceholder();
@@ -401,10 +401,10 @@ TEST_F(WebKioskAppServiceLauncherTest, FullFlowPlaceholderReplaced) {
   histogram.ExpectTotalCount(
       chromeos::KioskAppServiceLauncher::kLaunchAppReadinessUMA, 1);
   histogram.ExpectUniqueSample(
-      WebKioskAppServiceLauncher::kWebAppInstallResultUMA,
+      KioskWebAppServiceLauncher::kWebAppInstallResultUMA,
       webapps::InstallResultCode::kSuccessNewInstall, 1);
   histogram.ExpectUniqueSample(
-      WebKioskAppServiceLauncher::kWebAppIsPlaceholderUMA, true, 1);
+      KioskWebAppServiceLauncher::kWebAppIsPlaceholderUMA, true, 1);
 }
 
 }  // namespace ash

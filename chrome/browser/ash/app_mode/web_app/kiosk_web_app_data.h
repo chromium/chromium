@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ASH_APP_MODE_WEB_APP_WEB_KIOSK_APP_DATA_H_
-#define CHROME_BROWSER_ASH_APP_MODE_WEB_APP_WEB_KIOSK_APP_DATA_H_
+#ifndef CHROME_BROWSER_ASH_APP_MODE_WEB_APP_KIOSK_WEB_APP_DATA_H_
+#define CHROME_BROWSER_ASH_APP_MODE_WEB_APP_KIOSK_WEB_APP_DATA_H_
 
 #include <memory>
 #include <optional>
@@ -27,7 +27,7 @@ namespace ash {
 
 class KioskAppDataDelegate;
 
-class WebKioskAppData : public KioskAppDataBase {
+class KioskWebAppData : public KioskAppDataBase {
  public:
   // Size of a kiosk web app icon in pixels.
   static constexpr int kIconSize = 128;
@@ -40,15 +40,15 @@ class WebKioskAppData : public KioskAppDataBase {
                  // without them.
   };
 
-  WebKioskAppData(KioskAppDataDelegate& delegate,
+  KioskWebAppData(KioskAppDataDelegate& delegate,
                   const std::string& app_id,
                   const AccountId& account_id,
                   const GURL url,
                   const std::string& title,
                   const GURL icon_url);
-  WebKioskAppData(const WebKioskAppData&) = delete;
-  WebKioskAppData& operator=(const WebKioskAppData&) = delete;
-  ~WebKioskAppData() override;
+  KioskWebAppData(const KioskWebAppData&) = delete;
+  KioskWebAppData& operator=(const KioskWebAppData&) = delete;
+  ~KioskWebAppData() override;
 
   // Loads the locally cached data. Returns true on success.
   bool LoadFromCache();
@@ -99,9 +99,9 @@ class WebKioskAppData : public KioskAppDataBase {
 
   base::OnceClosure on_loaded_closure_for_testing_;
 
-  base::WeakPtrFactory<WebKioskAppData> weak_ptr_factory_{this};
+  base::WeakPtrFactory<KioskWebAppData> weak_ptr_factory_{this};
 };
 
 }  // namespace ash
 
-#endif  // CHROME_BROWSER_ASH_APP_MODE_WEB_APP_WEB_KIOSK_APP_DATA_H_
+#endif  // CHROME_BROWSER_ASH_APP_MODE_WEB_APP_KIOSK_WEB_APP_DATA_H_

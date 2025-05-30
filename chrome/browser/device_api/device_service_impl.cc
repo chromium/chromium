@@ -39,8 +39,8 @@
 #include "ash/constants/ash_features.h"
 #include "chrome/browser/ash/app_mode/isolated_web_app/kiosk_iwa_data.h"
 #include "chrome/browser/ash/app_mode/isolated_web_app/kiosk_iwa_manager.h"
-#include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_data.h"
-#include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_manager.h"
+#include "chrome/browser/ash/app_mode/web_app/kiosk_web_app_data.h"
+#include "chrome/browser/ash/app_mode/web_app/kiosk_web_app_manager.h"
 #include "chrome/common/url_constants.h"
 #include "components/user_manager/user_manager.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
@@ -65,9 +65,9 @@ bool IsIwaKiosk() {
 url::Origin GetWebKioskOrigin() {
   const AccountId& account_id =
       user_manager::UserManager::Get()->GetPrimaryUser()->GetAccountId();
-  CHECK(ash::WebKioskAppManager::IsInitialized());
-  const ash::WebKioskAppData* app_data =
-      ash::WebKioskAppManager::Get()->GetAppByAccountId(account_id);
+  CHECK(ash::KioskWebAppManager::IsInitialized());
+  const ash::KioskWebAppData* app_data =
+      ash::KioskWebAppManager::Get()->GetAppByAccountId(account_id);
   return url::Origin::Create(CHECK_DEREF(app_data).install_url());
 }
 

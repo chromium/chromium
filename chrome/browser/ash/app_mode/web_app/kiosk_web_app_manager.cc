@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_manager.h"
+#include "chrome/browser/ash/app_mode/web_app/kiosk_web_app_manager.h"
 
 #include <map>
 #include <memory>
@@ -19,7 +19,7 @@
 #include "chrome/browser/ash/app_mode/kiosk_app_types.h"
 #include "chrome/browser/ash/app_mode/kiosk_cryptohome_remover.h"
 #include "chrome/browser/ash/app_mode/kiosk_system_session.h"
-#include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_data.h"
+#include "chrome/browser/ash/app_mode/web_app/kiosk_web_app_data.h"
 #include "chrome/browser/ash/policy/core/device_local_account.h"
 #include "chrome/browser/chromeos/app_mode/kiosk_web_app_update_observer.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
@@ -33,48 +33,48 @@ namespace ash {
 
 namespace {
 // This class is owned by `ChromeBrowserMainPartsAsh`.
-static WebKioskAppManager* g_web_kiosk_app_manager = nullptr;
+static KioskWebAppManager* g_web_kiosk_app_manager = nullptr;
 }  // namespace
 
 // static
-const char WebKioskAppManager::kWebKioskDictionaryName[] = "web-kiosk";
+const char KioskWebAppManager::kWebKioskDictionaryName[] = "web-kiosk";
 
 // static
-void WebKioskAppManager::RegisterPrefs(PrefRegistrySimple* registry) {
+void KioskWebAppManager::RegisterPrefs(PrefRegistrySimple* registry) {
   registry->RegisterDictionaryPref(kWebKioskDictionaryName);
 }
 
 // static
-bool WebKioskAppManager::IsInitialized() {
+bool KioskWebAppManager::IsInitialized() {
   return g_web_kiosk_app_manager;
 }
 
 // static
-WebKioskAppManager* WebKioskAppManager::Get() {
+KioskWebAppManager* KioskWebAppManager::Get() {
   CHECK(g_web_kiosk_app_manager);
   return g_web_kiosk_app_manager;
 }
 
 // static
-KioskAppManagerBase::App WebKioskAppManager::CreateAppByData(
-    const WebKioskAppData& data) {
+KioskAppManagerBase::App KioskWebAppManager::CreateAppByData(
+    const KioskWebAppData& data) {
   auto app = KioskAppManagerBase::App(data);
   app.url = data.install_url();
   return app;
 }
 
-WebKioskAppManager::WebKioskAppManager()
+KioskWebAppManager::KioskWebAppManager()
     : auto_launch_account_id_(EmptyAccountId()) {
   CHECK(!g_web_kiosk_app_manager);  // Only one instance is allowed.
   g_web_kiosk_app_manager = this;
   UpdateAppsFromPolicy();
 }
 
-WebKioskAppManager::~WebKioskAppManager() {
+KioskWebAppManager::~KioskWebAppManager() {
   g_web_kiosk_app_manager = nullptr;
 }
 
-std::vector<WebKioskAppManager::App> WebKioskAppManager::GetApps() const {
+std::vector<KioskWebAppManager::App> KioskWebAppManager::GetApps() const {
   std::vector<App> apps;
   apps.reserve(apps_.size());
   for (const auto& manager_app : apps_) {
@@ -85,17 +85,17 @@ std::vector<WebKioskAppManager::App> WebKioskAppManager::GetApps() const {
   return apps;
 }
 
-void WebKioskAppManager::LoadIcons() {
+void KioskWebAppManager::LoadIcons() {
   for (auto& web_app : apps_) {
     web_app->LoadIcon();
   }
 }
 
-const AccountId& WebKioskAppManager::GetAutoLaunchAccountId() const {
+const AccountId& KioskWebAppManager::GetAutoLaunchAccountId() const {
   return auto_launch_account_id_;
 }
 
-const WebKioskAppData* WebKioskAppManager::GetAppByAccountId(
+const KioskWebAppData* KioskWebAppManager::GetAppByAccountId(
     const AccountId& account_id) const {
   for (const auto& web_app : apps_) {
     if (web_app->account_id() == account_id) {
@@ -105,7 +105,7 @@ const WebKioskAppData* WebKioskAppManager::GetAppByAccountId(
   return nullptr;
 }
 
-void WebKioskAppManager::UpdateAppFromInstallInfo(
+void KioskWebAppManager::UpdateAppFromInstallInfo(
     const AccountId& account_id,
     const web_app::WebAppInstallInfo& app_info) {
   for (auto& web_app : apps_) {
@@ -117,7 +117,7 @@ void WebKioskAppManager::UpdateAppFromInstallInfo(
   NOTREACHED();
 }
 
-void WebKioskAppManager::UpdateApp(const AccountId& account_id,
+void KioskWebAppManager::UpdateApp(const AccountId& account_id,
                                    const std::string& title,
                                    const GURL& start_url,
                                    const web_app::IconBitmaps& icon_bitmaps) {
@@ -130,24 +130,24 @@ void WebKioskAppManager::UpdateApp(const AccountId& account_id,
   NOTREACHED();
 }
 
-void WebKioskAppManager::AddAppForTesting(const AccountId& account_id,
+void KioskWebAppManager::AddAppForTesting(const AccountId& account_id,
                                           const GURL& install_url) {
   const std::string app_id =
       web_app::GenerateAppId(/*manifest_id_path=*/std::nullopt, install_url);
-  apps_.push_back(std::make_unique<WebKioskAppData>(
+  apps_.push_back(std::make_unique<KioskWebAppData>(
       *this, app_id, account_id, install_url, /*title*/ std::string(),
       /*icon_url*/ GURL()));
   NotifyKioskAppsChanged();
 }
 
-void WebKioskAppManager::OnKioskSessionStarted(const KioskAppId& app_id) {
+void KioskWebAppManager::OnKioskSessionStarted(const KioskAppId& app_id) {
   NotifySessionInitialized();
 }
 
-void WebKioskAppManager::UpdateAppsFromPolicy() {
+void KioskWebAppManager::UpdateAppsFromPolicy() {
   // Store current apps. We will compare old and new apps to determine which
   // apps are new, and which were deleted.
-  std::map<std::string, std::unique_ptr<WebKioskAppData>> old_apps;
+  std::map<std::string, std::unique_ptr<KioskWebAppData>> old_apps;
   for (auto& app : apps_) {
     old_apps[app->app_id()] = std::move(app);
   }
@@ -187,7 +187,7 @@ void WebKioskAppManager::UpdateAppsFromPolicy() {
       apps_.push_back(std::move(old_it->second));
       old_apps.erase(old_it);
     } else {
-      apps_.push_back(std::make_unique<WebKioskAppData>(
+      apps_.push_back(std::make_unique<KioskWebAppData>(
           *this, app_id, account_id, std::move(url), title,
           std::move(icon_url)));
       apps_.back()->LoadFromCache();
@@ -204,11 +204,11 @@ void WebKioskAppManager::UpdateAppsFromPolicy() {
   NotifyKioskAppsChanged();
 }
 
-void WebKioskAppManager::StartObservingAppUpdate(Profile* profile,
+void KioskWebAppManager::StartObservingAppUpdate(Profile* profile,
                                                  const AccountId& account_id) {
   app_update_observer_ = std::make_unique<chromeos::KioskWebAppUpdateObserver>(
-      profile, account_id, WebKioskAppData::kIconSize,
-      base::BindRepeating(&WebKioskAppManager::UpdateApp,
+      profile, account_id, KioskWebAppData::kIconSize,
+      base::BindRepeating(&KioskWebAppManager::UpdateApp,
                           weak_ptr_factory_.GetWeakPtr()));
 }
 
