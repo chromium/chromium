@@ -3,11 +3,35 @@
 // found in the LICENSE file.
 
 #include "sql/statement_id.h"
+
+#include <string>
+
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace sql {
 
 namespace {
+
+TEST(SqlStatementIdComparisonTest, FilenameComparedByValue) {
+  std::string filename1 = "foo";
+  std::string filename2(filename1);
+  EXPECT_NE(filename1.data(), filename2.data());
+
+  StatementID id1({filename1, 123});
+  StatementID id2({filename2, 123});
+
+  // Despite being constructed from distinct pointers, the two `StatementID`s
+  // compare equal.
+  EXPECT_EQ(id1, id2);
+}
+
+// If a caller inadvertently uses `SQL_FROM_HERE` twice on the same line, they
+// might be surprised that they get two `StatementID`s that compare equal. This
+// might be solvable with the `__COUNTER__` macro.
+TEST(SqlStatementIdComparisonTest, MacrosOnSameLineCompareEqual) {
+  // This test documents a sharp edge. Ideally, these IDs would *not* be equal.
+  EXPECT_EQ(SQL_FROM_HERE, SQL_FROM_HERE);
+}
 
 class SqlStatementIdTest : public testing::Test {
  protected:
