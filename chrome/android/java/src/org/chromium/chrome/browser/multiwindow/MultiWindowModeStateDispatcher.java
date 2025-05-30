@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.multiwindow;
 import android.app.Activity;
 import android.content.Intent;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 
 /**
@@ -16,6 +17,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
  * Also contains methods related to multi-window/multi-instance support that require interaction
  * with the backing activity.
  */
+@NullMarked
 public interface MultiWindowModeStateDispatcher {
     /** An observer to be notified when multi-window mode changes. */
     interface MultiWindowModeObserver {

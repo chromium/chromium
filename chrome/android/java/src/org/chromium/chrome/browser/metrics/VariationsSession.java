@@ -8,14 +8,17 @@ import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Callback;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 /**
  * Sets up communication with the VariationsService. This is primarily used for
  * triggering seed fetches on application startup.
  */
+@NullMarked
 public class VariationsSession {
     private boolean mRestrictModeFetchStarted;
-    private String mRestrictMode;
+    private @Nullable String mRestrictMode;
 
     public void initializeWithNative() {
         // No-op, but overridden by the internal subclass for extra logic.
@@ -85,7 +88,7 @@ public class VariationsSession {
     @NativeMethods
     interface Natives {
         void startVariationsSession(
-                VariationsSession caller, @JniType("std::string") String restrictMode);
+                VariationsSession caller, @JniType("std::string") @Nullable String restrictMode);
 
         @JniType("std::string")
         String getLatestCountry(VariationsSession caller);

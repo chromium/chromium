@@ -4,8 +4,12 @@
 
 package org.chromium.chrome.browser.modules;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Context;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
@@ -18,11 +22,12 @@ import org.chromium.ui.widget.Toast;
  * UI informing the user about the status of installing a dynamic feature module. The UI consists of
  * toast for install start and success UI and an infobar in the failure case.
  */
+@NullMarked
 public class ModuleInstallUi {
     private final Delegate mDelegate;
     private final int mModuleTitleStringId;
     private final FailureUiListener mFailureUiListener;
-    private Toast mInstallStartToast;
+    private @Nullable Toast mInstallStartToast;
 
     /**
      * Delegate holding methods getting the {@link WindowAndroid} and {@link Context} used to
@@ -110,14 +115,14 @@ public class ModuleInstallUi {
                         text,
                         new SnackbarController() {
                             @Override
-                            public void onAction(Object actionData) {
+                            public void onAction(@Nullable Object actionData) {
                                 if (mFailureUiListener != null) {
                                     mFailureUiListener.onFailureUiResponse(true);
                                 }
                             }
 
                             @Override
-                            public void onDismissNoAction(Object actionData) {
+                            public void onDismissNoAction(@Nullable Object actionData) {
                                 if (mFailureUiListener != null) {
                                     mFailureUiListener.onFailureUiResponse(false);
                                 }
@@ -129,6 +134,7 @@ public class ModuleInstallUi {
         snackbar.setSingleLine(false);
         snackbar.setDuration(SnackbarManager.DEFAULT_SNACKBAR_DURATION_LONG_MS);
         SnackbarManager snackbarManager = SnackbarManagerProvider.from(windowAndroid);
+        assumeNonNull(snackbarManager);
         snackbarManager.showSnackbar(snackbar);
     }
 }

@@ -4,11 +4,15 @@
 
 package org.chromium.chrome.browser.new_tab_url;
 
-import androidx.annotation.Nullable;
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.build.annotations.MonotonicNonNull;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -25,12 +29,13 @@ import org.chromium.components.search_engines.TemplateUrlService.TemplateUrlServ
  * search engine isn't Google. It holds a reference of {@link TemplateUrlService} and observes the
  * DSE changes to update the cached values in the SharedPreference.
  */
+@NullMarked
 public class DseNewTabUrlManager {
     private ObservableSupplier<Profile> mProfileSupplier;
-    private Callback<Profile> mProfileCallback;
-    private RegionalCapabilitiesService mRegionalCapabilities;
-    private TemplateUrlService mTemplateUrlService;
-    private TemplateUrlServiceObserver mTemplateUrlServiceObserver;
+    private @Nullable Callback<Profile> mProfileCallback;
+    private @MonotonicNonNull RegionalCapabilitiesService mRegionalCapabilities;
+    private @MonotonicNonNull TemplateUrlService mTemplateUrlService;
+    private @MonotonicNonNull TemplateUrlServiceObserver mTemplateUrlServiceObserver;
 
     public DseNewTabUrlManager(ObservableSupplier<Profile> profileSupplier) {
         mProfileSupplier = profileSupplier;
@@ -38,6 +43,7 @@ public class DseNewTabUrlManager {
         mProfileSupplier.addObserver(mProfileCallback);
     }
 
+    @SuppressWarnings("NullAway")
     public void destroy() {
         mRegionalCapabilities = null;
         if (mProfileSupplier != null && mProfileCallback != null) {
@@ -76,8 +82,7 @@ public class DseNewTabUrlManager {
      * 3. Returns the default search engine's URL if the DSE doesn't provide a new Tab Url.
      * @param templateUrlService The instance of {@link TemplateUrlService}.
      */
-    @Nullable
-    public static String getDSENewTabUrl(TemplateUrlService templateUrlService) {
+    public static @Nullable String getDSENewTabUrl(TemplateUrlService templateUrlService) {
         if (templateUrlService == null) {
             return ChromeSharedPreferences.getInstance()
                     .readString(ChromePreferenceKeys.DSE_NEW_TAB_URL, null);
@@ -101,11 +106,14 @@ public class DseNewTabUrlManager {
             mTemplateUrlService.addObserver(mTemplateUrlServiceObserver);
         }
         onTemplateURLServiceChanged();
+        assumeNonNull(mProfileCallback);
         mProfileSupplier.removeObserver(mProfileCallback);
         mProfileCallback = null;
     }
 
     private void onTemplateURLServiceChanged() {
+        assumeNonNull(mRegionalCapabilities);
+        assumeNonNull(mTemplateUrlService);
         boolean isDSEGoogle = mTemplateUrlService.isDefaultSearchEngineGoogle();
         ChromeSharedPreferences.getInstance()
                 .writeBoolean(ChromePreferenceKeys.IS_DSE_GOOGLE, isDSEGoogle);
@@ -123,7 +131,7 @@ public class DseNewTabUrlManager {
         }
     }
 
-    public TemplateUrlService getTemplateUrlServiceForTesting() {
+    public @Nullable TemplateUrlService getTemplateUrlServiceForTesting() {
         return mTemplateUrlService;
     }
 
