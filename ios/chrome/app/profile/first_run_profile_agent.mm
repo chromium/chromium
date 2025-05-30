@@ -305,6 +305,7 @@ const char kGuidedTourStepDidFinishHistogram[] = "IOS.GuidedTour.DidFinishStep";
 - (void)guidedTourCompleted {
   _displayLock.reset();
   _scopedForceOrientation.reset();
+  _firstRunUIBlocker.reset();
   [self.profileState removeAgent:self];
 }
 
@@ -375,13 +376,14 @@ const char kGuidedTourStepDidFinishHistogram[] = "IOS.GuidedTour.DidFinishStep";
 
 - (void)didFinishFirstRun {
   DCHECK_EQ(self.profileState.initStage, ProfileInitStage::kFirstRun);
-  _firstRunUIBlocker.reset();
   ProceduralBlock completion;
   if (IsBestOfAppGuidedTourEnabled()) {
     __weak FirstRunProfileAgent* weakSelf = self;
     completion = ^{
       [weakSelf showGuidedTourPrompt];
     };
+  } else {
+    _firstRunUIBlocker.reset();
   }
   [_firstRunCoordinator stopWithCompletion:completion];
   _firstRunCoordinator = nil;
