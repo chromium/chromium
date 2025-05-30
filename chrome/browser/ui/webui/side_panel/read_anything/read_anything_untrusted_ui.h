@@ -51,7 +51,7 @@ class ReadAnythingUntrustedUI
       mojo::PendingReceiver<read_anything::mojom::UntrustedPageHandlerFactory>
           receiver);
 
-  static constexpr std::string GetWebUIName() {
+  static constexpr std::string_view GetWebUIName() {
     return "ReadAnythingUntrusted";
   }
 

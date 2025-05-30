@@ -98,7 +98,7 @@ WebUIContentsWrapper::WebUIContentsWrapper(const GURL& webui_url,
                                            bool webui_resizes_host,
                                            bool esc_closes_ui,
                                            bool supports_draggable_regions,
-                                           const std::string& webui_name)
+                                           std::string_view webui_name)
     : webui_resizes_host_(webui_resizes_host),
       esc_closes_ui_(esc_closes_ui),
       supports_draggable_regions_(supports_draggable_regions) {

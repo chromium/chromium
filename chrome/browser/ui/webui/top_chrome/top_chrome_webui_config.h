@@ -40,7 +40,7 @@ class TopChromeWebUIConfig : public content::WebUIConfig {
   // Common Top Chrome WebUI properties -------------------------------
 
   // Returns the WebUI name used for logging metrics.
-  virtual std::string GetWebUIName() = 0;
+  virtual std::string_view GetWebUIName() = 0;
 
   // Returns true if the host should automatically resize to fit the page size.
   virtual bool ShouldAutoResizeHost() = 0;
@@ -88,7 +88,7 @@ class DefaultTopChromeWebUIConfig : public TopChromeWebUIConfig {
   }
 
   // TopChromeWebUIConfig:
-  std::string GetWebUIName() override { return T::GetWebUIName(); }
+  std::string_view GetWebUIName() override { return T::GetWebUIName(); }
   bool ShouldAutoResizeHost() override { return false; }
   std::unique_ptr<content::WebUIController> CreateWebUIController(
       content::WebUI* web_ui,

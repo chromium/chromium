@@ -43,7 +43,7 @@ class NewTabFooterUI
   explicit NewTabFooterUI(content::WebUI* web_ui);
   ~NewTabFooterUI() override;
 
-  static constexpr std::string GetWebUIName() { return "NewTabFooter"; }
+  static constexpr std::string_view GetWebUIName() { return "NewTabFooter"; }
 
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
 

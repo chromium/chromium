@@ -74,8 +74,9 @@ base::TimeDelta GetBackgroundTime(
 }  // namespace
 
 NonTabPageLoadMetricsObserver::NonTabPageLoadMetricsObserver(
-    const std::string& webui_name)
-    : page_load_metrics::PageLoadMetricsObserver(), webui_name_(webui_name) {
+    std::string webui_name)
+    : page_load_metrics::PageLoadMetricsObserver(),
+      webui_name_(std::move(webui_name)) {
   base::trace_event::EmitNamedTrigger("non-tab-webui-creation");
 }
 

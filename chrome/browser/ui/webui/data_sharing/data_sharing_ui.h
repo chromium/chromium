@@ -71,7 +71,9 @@ class DataSharingUI : public UntrustedTopChromeWebUIController,
 
   DataSharingPageHandler* page_handler() { return page_handler_.get(); }
 
-  static constexpr std::string GetWebUIName() { return "DataSharingBubble"; }
+  static constexpr std::string_view GetWebUIName() {
+    return "DataSharingBubble";
+  }
 
   void SetDelegate(Delegate* delegate) { delegate_ = delegate; }
 

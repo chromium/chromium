@@ -41,7 +41,7 @@ class ZeroStatePromoController
                      custom_help_bubble::mojom::CustomHelpBubbleHandlerFactory>
                          pending_receiver);
 
-  static constexpr std::string GetWebUIName() {
+  static constexpr std::string_view GetWebUIName() {
     return "ExtensionsWebStoreZeroStatePromo";
   }
 

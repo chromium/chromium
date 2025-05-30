@@ -71,7 +71,7 @@ class RecorderAppUI
   void BindInterface(
       mojo::PendingReceiver<crosapi::mojom::StructuredMetricsService> receiver);
 
-  static constexpr std::string GetWebUIName() { return "RecorderApp"; }
+  static constexpr std::string_view GetWebUIName() { return "RecorderApp"; }
 
  private:
   using OnDeviceModelService =

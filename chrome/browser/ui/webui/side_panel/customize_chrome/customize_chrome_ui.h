@@ -125,7 +125,7 @@ class CustomizeChromeUI
           side_panel::customize_chrome::mojom::CustomizeToolbarHandlerFactory>
           receiver);
 
-  static constexpr std::string GetWebUIName() { return "CustomizeChrome"; }
+  static constexpr std::string_view GetWebUIName() { return "CustomizeChrome"; }
 
  private:
   // side_panel::mojom::CustomizeChromePageHandlerFactory

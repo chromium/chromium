@@ -79,7 +79,9 @@ class LensOverlayUntrustedUI
       mojo::PendingReceiver<help_bubble::mojom::HelpBubbleHandlerFactory>
           pending_receiver);
 
-  static constexpr std::string GetWebUIName() { return "LensOverlayUntrusted"; }
+  static constexpr std::string_view GetWebUIName() {
+    return "LensOverlayUntrusted";
+  }
 
  private:
   LensSearchController& GetLensSearchController();

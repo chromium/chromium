@@ -235,7 +235,7 @@ class TestTopChromeWebUIController : public TopChromeWebUIController {
  public:
   explicit TestTopChromeWebUIController(content::WebUI* web_ui)
       : TopChromeWebUIController(web_ui) {}
-  static std::string GetWebUIName() { return "Test"; }
+  static std::string_view GetWebUIName() { return "Test"; }
 };
 
 class TestTopChromeWebUIConfig

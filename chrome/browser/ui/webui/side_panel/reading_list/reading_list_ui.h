@@ -58,7 +58,7 @@ class ReadingListUI : public TopChromeWebUIController,
 
   void SetActiveTabURL(const GURL& url);
 
-  static constexpr std::string GetWebUIName() { return "ReadingList"; }
+  static constexpr std::string_view GetWebUIName() { return "ReadingList"; }
 
  private:
   // reading_list::mojom::PageHandlerFactory:

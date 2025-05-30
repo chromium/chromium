@@ -88,8 +88,8 @@ bool IsNonTabWebUI(content::BrowserContext* browser_context, const GURL& url) {
   return TopChromeWebUIConfig::From(browser_context, url) != nullptr;
 }
 
-std::string GetNonTabWebUIName(content::BrowserContext* browser_context,
-                               const GURL& url) {
+std::string_view GetNonTabWebUIName(content::BrowserContext* browser_context,
+                                    const GURL& url) {
   CHECK(IsNonTabWebUI(browser_context, url));
   return TopChromeWebUIConfig::From(browser_context, url)->GetWebUIName();
 }
@@ -150,9 +150,9 @@ void PageLoadMetricsEmbedder::RegisterObservers(
 #if !BUILDFLAG(IS_ANDROID)
   if (IsNonTabWebUI(navigation_handle->GetURL())) {
     // This embedder is for a non-tab chrome:// page.
-    tracker->AddObserver(
-        std::make_unique<NonTabPageLoadMetricsObserver>(GetNonTabWebUIName(
-            web_contents()->GetBrowserContext(), navigation_handle->GetURL())));
+    tracker->AddObserver(std::make_unique<NonTabPageLoadMetricsObserver>(
+        std::string(GetNonTabWebUIName(web_contents()->GetBrowserContext(),
+                                       navigation_handle->GetURL()))));
     return;
   }
 #endif

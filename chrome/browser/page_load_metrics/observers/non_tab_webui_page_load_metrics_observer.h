@@ -16,7 +16,7 @@ extern const char kNonTabWebUIRequestToLCPHistogramName[];
 class NonTabPageLoadMetricsObserver
     : public page_load_metrics::PageLoadMetricsObserver {
  public:
-  explicit NonTabPageLoadMetricsObserver(const std::string& webui_name);
+  explicit NonTabPageLoadMetricsObserver(std::string webui_name);
 
   // page_load_metrics::PageLoadMetricsObserver:
   void OnFirstContentfulPaintInPage(

@@ -58,7 +58,7 @@ class TabSearchUI : public TopChromeWebUIController,
     return page_handler_.get();
   }
 
-  static constexpr std::string GetWebUIName() { return "TabSearch"; }
+  static constexpr std::string_view GetWebUIName() { return "TabSearch"; }
 
   void set_page_handler_creation_callback_for_testing(
       base::OnceClosure callback) {

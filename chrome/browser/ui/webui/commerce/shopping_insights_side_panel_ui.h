@@ -71,7 +71,7 @@ class ShoppingInsightsSidePanelUI
           commerce::price_insights::mojom::PriceInsightsHandlerFactory>
           receiver);
 
-  static constexpr std::string GetWebUIName() {
+  static constexpr std::string_view GetWebUIName() {
     return "ShoppingInsightsSidePanel";
   }
 

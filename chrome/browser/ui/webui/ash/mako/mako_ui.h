@@ -51,7 +51,7 @@ class MakoUntrustedUI : public UntrustedTopChromeWebUIController {
       mojo::PendingReceiver<lobster::mojom::UntrustedLobsterPageHandler>
           pending_receiver);
 
-  static constexpr std::string GetWebUIName() { return "MakoUntrusted"; }
+  static constexpr std::string_view GetWebUIName() { return "MakoUntrusted"; }
 
  private:
   WEB_UI_CONTROLLER_TYPE_DECL();
