@@ -14,10 +14,12 @@ import org.chromium.content_public.browser.WebContents;
 /**
  * Supplier of a boolean indicating whether an editable node is focused in the currently active
  * WebContents. Changes to the WebContents considered active must be reflected with calls to
- * onWebContentsChanged; this class does not attempt to track these changes.
+ * onWebContentsChanged; this class does not attempt to track these changes directly. This class
+ * also allows limited interaction with the current
  */
 @NullMarked
-class FormFieldFocusedSupplier extends ObservableSupplierImpl<Boolean> implements ImeEventObserver {
+public class FormFieldFocusedSupplier extends ObservableSupplierImpl<Boolean>
+        implements ImeEventObserver {
     private @Nullable WebContents mWebContents;
     private @Nullable ImeAdapter mImeAdapter;
 
@@ -51,5 +53,17 @@ class FormFieldFocusedSupplier extends ObservableSupplierImpl<Boolean> implement
     @Override
     public void onNodeAttributeUpdated(boolean editable, boolean password) {
         super.set(editable);
+    }
+
+    public boolean getAsBoolean() {
+        return hasValue() ? get() : false;
+    }
+
+    /**
+     * See {@link ImeAdapter#resetAndHideKeyboard()}. Does nothing if there is no active ImeAdapter
+     * for the current web contents.
+     */
+    public void resetAndHideKeyboard() {
+        if (mImeAdapter != null) mImeAdapter.resetAndHideKeyboard();
     }
 }
