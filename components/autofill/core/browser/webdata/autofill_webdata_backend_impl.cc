@@ -121,10 +121,9 @@ enum class Result {
   kUpdateServerIbanMetadata_Failure = 275,
   kClearAllCreditCardBenefits_Success = 276,
   kClearAllCreditCardBenefits_Failure = 277,
-  kAddEntityInstance_Success = 280,
-  kAddEntityInstance_Failure = 281,
-  kUpdateEntityInstance_Success = 290,
-  kUpdateEntityInstance_Failure = 291,
+  // Adding-but-not-updating entity instances (280, 281) is deprecated.
+  kAddOrUpdateEntityInstance_Success = 290,
+  kAddOrUpdateEntityInstance_Failure = 291,
   kRemoveEntityInstance_Success = 300,
   kRemoveEntityInstance_Failure = 301,
   kRemoveEntityInstancesModifiedBetween_Success = 310,
@@ -490,7 +489,7 @@ WebDatabase::State AutofillWebDataBackendImpl::AddOrUpdateEntityInstance(
   DCHECK(owning_task_runner()->RunsTasksInCurrentSequence());
   EntityTable* table = EntityTable::FromWebDatabase(db);
   if (!table->AddOrUpdateEntityInstance(entity)) {
-    ReportResult(Result::kUpdateEntityInstance_Failure);
+    ReportResult(Result::kAddOrUpdateEntityInstance_Failure);
     return WebDatabase::COMMIT_NOT_NEEDED;
   }
   base::Uuid guid = entity.guid();
@@ -499,7 +498,7 @@ WebDatabase::State AutofillWebDataBackendImpl::AddOrUpdateEntityInstance(
       base::BindOnce(std::move(on_success),
                      EntityInstanceChange(EntityInstanceChange::UPDATE,
                                           std::move(guid), std::move(entity))));
-  ReportResult(Result::kUpdateEntityInstance_Success);
+  ReportResult(Result::kAddOrUpdateEntityInstance_Success);
   return WebDatabase::COMMIT_NEEDED;
 }
 
