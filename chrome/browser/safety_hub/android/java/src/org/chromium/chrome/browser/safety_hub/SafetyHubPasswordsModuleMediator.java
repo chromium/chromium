@@ -6,6 +6,9 @@ package org.chromium.chrome.browser.safety_hub;
 
 import android.content.Context;
 
+import org.chromium.base.CallbackController;
+import org.chromium.base.task.PostTask;
+import org.chromium.base.task.TaskTraits;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -30,10 +33,20 @@ public class SafetyHubPasswordsModuleMediator
 
     private final SafetyHubAccountPasswordsDataSource mAccountPasswordsDataSource;
     private final SafetyHubLocalPasswordsDataSource mLocalPasswordsDataSource;
+
     private @Nullable SafetyHubModuleHelper mModuleHelper;
 
     private boolean mAccountPasswordsReturned;
     private boolean mLocalPasswordsReturned;
+
+    private @IndicatorState int mIndicatorState = IndicatorState.IDLE;
+    // Callback when the minimum time showing the loading indicator has elapsed.
+    private @Nullable CallbackController mMinLoadingCallbackController;
+    // Callback when the maximum time showing the loading indicator has elapsed.
+    private @Nullable CallbackController mMaxLoadingCallbackController;
+
+    private boolean mStateChangedCalled;
+    private boolean mOrderUpdated;
 
     SafetyHubPasswordsModuleMediator(
             SafetyHubExpandablePreference preference,
@@ -62,24 +75,85 @@ public class SafetyHubPasswordsModuleMediator
         mAccountPasswordsDataSource.setUp();
         mLocalPasswordsDataSource.setUp();
 
-        // TODO(crbug.com/407927786): Add loading UI if check is triggered.
-        mAccountPasswordsDataSource.maybeTriggerPasswordCheckup();
-        mLocalPasswordsDataSource.maybeTriggerPasswordCheckup();
+        boolean accountPasswordsCheckupTriggered =
+                mAccountPasswordsDataSource.maybeTriggerPasswordCheckup();
+        boolean localPasswordsCheckupTriggered =
+                mLocalPasswordsDataSource.maybeTriggerPasswordCheckup();
+
+        if (accountPasswordsCheckupTriggered || localPasswordsCheckupTriggered) {
+            mIndicatorState = IndicatorState.SHOWING_INDICATOR;
+            mModuleHelper =
+                    new SafetyHubPasswordsCheckingModuleHelper(
+                            mPreference.getContext(), /* onlyLoadingLocalPasswords= */ false);
+
+            mMinLoadingCallbackController = new CallbackController();
+            PostTask.postDelayedTask(
+                    TaskTraits.UI_DEFAULT,
+                    mMinLoadingCallbackController.makeCancelable(this::onMinimumLoadingTimeElapsed),
+                    LOADING_MIN_TIME_MS);
+
+            mMaxLoadingCallbackController = new CallbackController();
+            PostTask.postDelayedTask(
+                    TaskTraits.UI_DEFAULT,
+                    mMaxLoadingCallbackController.makeCancelable(this::onMaxLoadingTimeElapsed),
+                    getLoadingMaxTime());
+        }
     }
 
     @Override
     public void destroy() {
-        mAccountPasswordsDataSource.destroy();
-        mLocalPasswordsDataSource.destroy();
-        mModuleHelper = null;
+        if (mMinLoadingCallbackController != null) {
+            mMinLoadingCallbackController.destroy();
+            mMinLoadingCallbackController = null;
+        }
+        maybeCancelMaxLoadingCallback();
+
+        if (mAccountPasswordsDataSource != null) {
+            mAccountPasswordsDataSource.destroy();
+        }
+        if (mLocalPasswordsDataSource != null) {
+            mLocalPasswordsDataSource.destroy();
+        }
     }
 
     @Override
     public void updateModule() {
+        if (isLoading()) {
+            updatePreference();
+            return;
+        }
         mAccountPasswordsReturned = false;
         mLocalPasswordsReturned = false;
         mAccountPasswordsDataSource.updateState();
         mLocalPasswordsDataSource.updateState();
+    }
+
+    private void maybeCancelMaxLoadingCallback() {
+        if (mMaxLoadingCallbackController != null) {
+            mMaxLoadingCallbackController.destroy();
+            mMaxLoadingCallbackController = null;
+        }
+    }
+
+    private void onMinimumLoadingTimeElapsed() {
+        mIndicatorState = IndicatorState.WAITING_FOR_RESULTS;
+        if (mStateChangedCalled) {
+            mAccountPasswordsDataSource.updateState();
+            mLocalPasswordsDataSource.updateState();
+        }
+    }
+
+    private void onMaxLoadingTimeElapsed() {
+        // The callback that triggers this method is canceled if any result is returned. As such,
+        // the UI will always be in the loading state when this method is ran.
+        assert isLoading();
+
+        // As the max loading time has elapsed, then show the user that no checkup is possible to be
+        // performed at this time.
+        localPasswordsStateChanged(
+                SafetyHubLocalPasswordsDataSource.ModuleType.UNAVAILABLE_PASSWORDS);
+        accountPasswordsStateChanged(
+                SafetyHubAccountPasswordsDataSource.ModuleType.UNAVAILABLE_PASSWORDS);
     }
 
     private SafetyHubModuleHelper getModuleHelper(
@@ -165,7 +239,13 @@ public class SafetyHubPasswordsModuleMediator
             @SafetyHubAccountPasswordsDataSource.ModuleType int accountModuleType,
             @SafetyHubLocalPasswordsDataSource.ModuleType int localModuleType) {
         mModuleHelper = getModuleHelper(accountModuleType, localModuleType);
+        updatePreference();
+    }
 
+    private void updatePreference() {
+        if (mModuleHelper == null) {
+            return;
+        }
         mModel.set(SafetyHubModuleProperties.TITLE, mModuleHelper.getTitle());
         mModel.set(SafetyHubModuleProperties.SUMMARY, mModuleHelper.getSummary());
         mModel.set(
@@ -181,8 +261,14 @@ public class SafetyHubPasswordsModuleMediator
                 SafetyHubModuleProperties.SECONDARY_BUTTON_LISTENER,
                 mModuleHelper.getSecondaryButtonListener());
 
-        mModel.set(SafetyHubModuleProperties.ORDER, getOrder());
         mModel.set(SafetyHubModuleProperties.ICON, getIcon(mPreference.getContext()));
+        mModel.set(SafetyHubModuleProperties.HAS_PROGRESS_BAR, isLoading());
+
+        // Only update the order one time to avoid the module jumping.
+        if (!mOrderUpdated) {
+            mOrderUpdated = true;
+            mModel.set(SafetyHubModuleProperties.ORDER, getOrder());
+        }
     }
 
     @Override
@@ -226,6 +312,18 @@ public class SafetyHubPasswordsModuleMediator
         if (!mAccountPasswordsReturned || !mLocalPasswordsReturned) {
             return;
         }
+
+        mStateChangedCalled = true;
+        // As a result is available, cancel the callback for when the maximum time showing the
+        // loading indicator has elapsed.
+        maybeCancelMaxLoadingCallback();
+
+        // Loading indicator has not been shown long enough, delay showing the results until a later
+        // date.
+        if (mIndicatorState == IndicatorState.SHOWING_INDICATOR) {
+            return;
+        }
+        mIndicatorState = IndicatorState.IDLE;
 
         updateModule(
                 mAccountPasswordsDataSource.getModuleType(),

@@ -11,18 +11,23 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.safety_hub.SafetyHubModuleMediator.ModuleState;
 
-/** Helper for the {@link SafetyHubLocalPasswordsModule} for when the checkup is being performed. */
+/** Helper for the {@link SafetyHubPasswordsModule} for when the checkup is being performed. */
 @NullMarked
-public class SafetyHubLocalPasswordsCheckingModuleHelper implements SafetyHubModuleHelper {
+public class SafetyHubPasswordsCheckingModuleHelper implements SafetyHubModuleHelper {
     private final Context mContext;
+    private final boolean mOnlyLoadingLocalPasswords;
 
-    SafetyHubLocalPasswordsCheckingModuleHelper(Context context) {
+    SafetyHubPasswordsCheckingModuleHelper(Context context, boolean onlyLoadingLocalPasswords) {
         mContext = context;
+        mOnlyLoadingLocalPasswords = onlyLoadingLocalPasswords;
     }
 
     @Override
     public String getTitle() {
-        return mContext.getString(R.string.safety_hub_local_passwords_checking_title);
+        if (mOnlyLoadingLocalPasswords) {
+            return mContext.getString(R.string.safety_hub_local_passwords_checking_title);
+        }
+        return mContext.getString(R.string.safety_hub_passwords_checking_title);
     }
 
     @Override

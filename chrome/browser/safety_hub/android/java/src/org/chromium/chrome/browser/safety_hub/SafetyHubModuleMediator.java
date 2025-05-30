@@ -12,6 +12,7 @@ import androidx.annotation.IntDef;
 import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 
 import java.lang.annotation.Retention;
@@ -66,6 +67,31 @@ interface SafetyHubModuleMediator {
         int NOTIFICATION_REVIEW = 6;
         int NUM_ENTRIES = 7;
     }
+
+    /**
+     * State machine for the loading indicator.
+     *
+     * <p>On idle, no indicator is being shown. On showing indicator, the loading indicator is being
+     * shown and cannot be removed from the UI, to avoid flashing. On waiting for results, the
+     * loading indicator is being shown but can be removed as soon as a state change occurs.
+     */
+    @IntDef({
+        IndicatorState.IDLE,
+        IndicatorState.SHOWING_INDICATOR,
+        IndicatorState.WAITING_FOR_RESULTS
+    })
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface IndicatorState {
+        int IDLE = 0;
+        int SHOWING_INDICATOR = 1;
+        int WAITING_FOR_RESULTS = 2;
+    }
+
+    public static final int LOADING_MIN_TIME_MS = 1000;
+
+    static final int DEFAULT_LOADING_MAX_TIME_MS = 10000;
+    static final String LOADING_MAX_TIME_PARAM_NAME =
+            "safety-hub-local-passwords-module-loading-timeout-ms";
 
     @Initializer
     public void setUpModule();
@@ -154,5 +180,13 @@ interface SafetyHubModuleMediator {
 
     default boolean isLoading() {
         return getModuleState() == ModuleState.LOADING;
+    }
+
+    // Returns the max loading time in milliseconds.
+    default int getLoadingMaxTime() {
+        return ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
+                ChromeFeatureList.SAFETY_HUB_LOCAL_PASSWORDS_MODULE,
+                LOADING_MAX_TIME_PARAM_NAME,
+                DEFAULT_LOADING_MAX_TIME_MS);
     }
 }

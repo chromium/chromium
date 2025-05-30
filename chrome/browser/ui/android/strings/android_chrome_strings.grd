@@ -1796,6 +1796,9 @@ Your Google account may have other forms of browsing history like searches and a
       <message name="IDS_SAFETY_HUB_LOCAL_PASSWORDS_CHECKING_TITLE" desc="Title for the local password check row in the Safety Check page indicating that the check is in progress.">
         Checking passwords on this device…
       </message>
+      <message name="IDS_SAFETY_HUB_PASSWORDS_CHECKING_TITLE" desc="Title for the password check row in the Safety Check page indicating that the check is in progress.">
+        Checking passwords…
+      </message>
       <message name="IDS_SAFETY_HUB_PASSWORDS_COMPROMISED_TITLE" desc="Title for the password check row in the Safety Check page indicating that the user has account and local passwords which have been compromised.">
         {NUM_PASSWORDS, plural,
         =1 {1 compromised password}

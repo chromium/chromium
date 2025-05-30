@@ -1247,6 +1247,12 @@ public final class SafetyHubTest {
                                 R.plurals.safety_hub_passwords_compromised_title,
                                 totalCompromisedPasswordsCount,
                                 totalCompromisedPasswordsCount);
+
+        // Wait for the loading to disappear and the final state to be shown.
+        onViewWaiting(withText(compromisedPasswordsTitle)).check(matches(isDisplayed()));
+
+        // Verify that unified passwords module which is in the warning state is expanded by
+        // default.
         scrollToExpandedPreference(compromisedPasswordsTitle);
         verifyButtonsNextToTextVisibility(compromisedPasswordsTitle, true);
 
@@ -1762,10 +1768,14 @@ public final class SafetyHubTest {
         mSafetyHubFragmentTestRule.startSettingsActivity();
         SafetyHubFragment safetyHubFragment = mSafetyHubFragmentTestRule.getFragment();
 
-        // Verify that unified passwords module which is in the unavailable state is expanded by
-        // default.
         String unavailablePasswordsTitle =
                 safetyHubFragment.getString(R.string.safety_hub_password_check_unavailable_title);
+
+        // Wait for the loading to disappear and the final state to be shown.
+        onViewWaiting(withText(unavailablePasswordsTitle)).check(matches(isDisplayed()));
+
+        // Verify that unified passwords module which is in the unavailable state is expanded by
+        // default.
         scrollToExpandedPreference(unavailablePasswordsTitle);
         verifyButtonsNextToTextVisibility(unavailablePasswordsTitle, true);
 
@@ -1796,10 +1806,14 @@ public final class SafetyHubTest {
         mSafetyHubFragmentTestRule.startSettingsActivity();
         SafetyHubFragment safetyHubFragment = mSafetyHubFragmentTestRule.getFragment();
 
-        // Verify that unified passwords module which is in the info state is expanded by
-        // default.
         String noAccountAndLocalPasswords =
                 safetyHubFragment.getString(R.string.safety_hub_no_passwords_title);
+
+        // Wait for the loading to disappear and the final state to be shown.
+        onViewWaiting(withText(noAccountAndLocalPasswords)).check(matches(isDisplayed()));
+
+        // Verify that unified passwords module which is in the info state is expanded by
+        // default.
         scrollToExpandedPreference(noAccountAndLocalPasswords);
         verifyButtonsNextToTextVisibility(noAccountAndLocalPasswords, true);
 
@@ -1834,10 +1848,14 @@ public final class SafetyHubTest {
         mSafetyHubFragmentTestRule.startSettingsActivity();
         SafetyHubFragment safetyHubFragment = mSafetyHubFragmentTestRule.getFragment();
 
-        // Verify that unified passwords module which is in the unavailable state is expanded by
-        // default.
         String unavailableTitle =
                 safetyHubFragment.getString(R.string.safety_hub_password_check_unavailable_title);
+
+        // Wait for the loading to disappear and the final state to be shown.
+        onViewWaiting(withText(unavailableTitle)).check(matches(isDisplayed()));
+
+        // Verify that unified passwords module which is in the unavailable state is expanded by
+        // default.
         scrollToExpandedPreference(unavailableTitle);
         verifyButtonsNextToTextVisibility(unavailableTitle, true);
 
