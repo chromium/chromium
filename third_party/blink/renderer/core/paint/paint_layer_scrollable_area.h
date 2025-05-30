@@ -874,7 +874,7 @@ class CORE_EXPORT PaintLayerScrollableArea final
 
    private:
     String DebugName() const final;
-    DOMNodeId OwnerNodeId() const final;
+    DOMNodeId OwnerNodeId(bool is_internal_content = false) const final;
 
     Member<const PaintLayerScrollableArea> scrollable_area_;
   };
@@ -894,7 +894,7 @@ class CORE_EXPORT PaintLayerScrollableArea final
 
    private:
     String DebugName() const final;
-    DOMNodeId OwnerNodeId() const final;
+    DOMNodeId OwnerNodeId(bool is_internal_content = false) const final;
 
     Member<const PaintLayerScrollableArea> scrollable_area_;
   };

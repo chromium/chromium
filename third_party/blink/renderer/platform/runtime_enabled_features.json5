@@ -2610,6 +2610,15 @@
       status: "test",
     },
     {
+      // When enabled, specifies visual affordances for printing such as headers,
+      // footers and page numbers, to be PDF annotations.
+      // See section 14.8.2.2.1 here for info:
+      // https://opensource.adobe.com/dc-acrobat-sdk-docs/pdfstandards/PDF32000_2008.pdf
+      name: "HTMLPrintingArtifactAnnotations",
+      status: "stable",
+    },
+
+    {
       name: "HTMLSelectElementShowPicker",
       status: "stable",
     },

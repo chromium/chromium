@@ -593,7 +593,7 @@ void PaintController::CheckNewChunk() {
 void PaintController::RecordDebugInfo(const DisplayItemClient& client) {
   if (record_debug_info_) {
     new_paint_artifact_->RecordDebugInfo(client.Id(), client.DebugName(),
-                                         client.OwnerNodeId());
+                                         client.OwnerNodeId(false));
   }
 }
 

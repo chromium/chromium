@@ -75,6 +75,9 @@ struct WebPrintParams {
   // Specifies whether paginated layout needs to be applied.
   bool use_paginated_layout = true;
 
+  // True if we're printing the internally-generated headers and footers.
+  bool printing_internal_headers_and_footers = false;
+
   // Specifies how many pages per sheet. This parameter is for N-up mode.
   size_t pages_per_sheet = 1;
 

@@ -364,6 +364,10 @@ class ChromePrintContext : public PrintContext {
     GraphicsContext& context = builder.Context();
     context.SetPrintingMetafile(canvas->GetPrintingMetafile());
     context.SetPrinting(true);
+    if (frame_->GetDocument()->Printing()) {
+      context.SetPrintingInternalHeadersAndFooters(
+          frame_->GetPrintParams().printing_internal_headers_and_footers);
+    }
     context.BeginRecording();
     SpoolPage(context, page_index);
     canvas->drawPicture(context.EndRecording());
@@ -378,6 +382,8 @@ class ChromePrintContext : public PrintContext {
     GraphicsContext& context = builder.Context();
     context.SetPrintingMetafile(canvas->GetPrintingMetafile());
     context.SetPrinting(true);
+    context.SetPrintingInternalHeadersAndFooters(
+        frame_->GetPrintParams().printing_internal_headers_and_footers);
     context.BeginRecording();
 
     // Fill the whole background by white.

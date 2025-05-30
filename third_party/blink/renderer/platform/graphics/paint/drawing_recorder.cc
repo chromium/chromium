@@ -29,7 +29,8 @@ DrawingRecorder::DrawingRecorder(GraphicsContext& context,
   context.BeginRecording();
 
   if (context.NeedsDOMNodeId()) {
-    DOMNodeId dom_node_id = display_item_client.OwnerNodeId();
+    DOMNodeId dom_node_id = display_item_client.OwnerNodeId(
+        context.PrintingInternalHeadersAndFooters());
     if (dom_node_id != kInvalidDOMNodeId) {
       dom_node_id_to_restore_ = context.GetDOMNodeId();
       context.SetDOMNodeId(dom_node_id);

@@ -262,8 +262,9 @@ String PaintLayer::DebugName() const {
   return GetLayoutObject().DebugName();
 }
 
-DOMNodeId PaintLayer::OwnerNodeId() const {
-  return static_cast<const DisplayItemClient&>(GetLayoutObject()).OwnerNodeId();
+DOMNodeId PaintLayer::OwnerNodeId(bool) const {
+  return static_cast<const DisplayItemClient&>(GetLayoutObject())
+      .OwnerNodeId(false);
 }
 
 bool PaintLayer::PaintsWithFilters() const {

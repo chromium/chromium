@@ -225,5 +225,11 @@
     // common media types
     "text/html",
     "application/xml",
+
+    // Internal-only identifiers on the `id` attribute. These may appear
+    // multiple times in the same page.
+    "-internal-print-header",
+    "-internal-print-footer",
+    "-internal-print-page-number",
   ],
 }

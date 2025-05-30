@@ -4058,7 +4058,7 @@ bool LocalFrame::ScriptEnabled() {
 
 const WebPrintParams& LocalFrame::GetPrintParams() const {
   // If this fails, it's probably because nobody called StartPrinting().
-  DCHECK(GetDocument()->Printing());
+  CHECK(GetDocument()->Printing());
 
   return print_params_;
 }

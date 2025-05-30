@@ -226,7 +226,7 @@ void LayoutTextFragment::UpdateHitTestResult(
   result.SetInnerNode(GetFirstLetterPseudoElement());
 }
 
-DOMNodeId LayoutTextFragment::OwnerNodeId() const {
+DOMNodeId LayoutTextFragment::OwnerNodeId(bool) const {
   NOT_DESTROYED();
   Node* node = AssociatedTextNode();
   return node ? node->GetDomNodeId() : kInvalidDOMNodeId;

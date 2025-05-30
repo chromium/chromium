@@ -178,7 +178,7 @@ class CORE_EXPORT PaintLayer : public GarbageCollected<PaintLayer>,
 
   // DisplayItemClient methods
   String DebugName() const final;
-  DOMNodeId OwnerNodeId() const final;
+  DOMNodeId OwnerNodeId(bool is_internal_content = false) const final;
 
   LayoutBoxModelObject& GetLayoutObject() const { return *layout_object_; }
   LayoutBox* GetLayoutBox() const {
