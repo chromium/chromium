@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_STYLE_STYLE_CACHED_DATA_H_
 
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/style/applied_text_decoration.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
@@ -20,6 +21,7 @@ class CORE_EXPORT StyleCachedData final
  public:
   void Trace(Visitor* visitor) const {
     visitor->Trace(pseudo_element_styles_);
+    visitor->Trace(applied_text_decorations_);
   }
 
  private:
@@ -52,8 +54,7 @@ class CORE_EXPORT StyleCachedData final
   // If this style is a "decorating box" stores the list of applied text
   // decorations (with the most recent decoration from this box being at the
   // end of the Vector).
-  scoped_refptr<base::RefCountedData<Vector<AppliedTextDecoration, 1>>>
-      applied_text_decorations_;
+  Member<AppliedTextDecorationVector> applied_text_decorations_;
 };
 
 }  // namespace blink

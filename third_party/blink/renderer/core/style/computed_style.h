@@ -311,8 +311,8 @@ class ComputedStyle final : public ComputedStyleBase {
   Vector<AtomicString>* GetVariableNamesCache() const;
   Vector<AtomicString>& EnsureVariableNamesCache() const;
 
-  CORE_EXPORT base::RefCountedData<Vector<AppliedTextDecoration, 1>>*
-  EnsureAppliedTextDecorationsCache() const;
+  CORE_EXPORT AppliedTextDecorationVector* EnsureAppliedTextDecorationsCache()
+      const;
 
  private:
   // TODO(sashab): Move these private members to the bottom of ComputedStyle.
@@ -1805,16 +1805,10 @@ class ComputedStyle final : public ComputedStyleBase {
   // Text decoration utility functions.
   bool TextDecorationVisualOverflowChanged(const ComputedStyle& o) const;
   CORE_EXPORT TextDecorationLine TextDecorationsInEffect() const;
-  CORE_EXPORT const Vector<AppliedTextDecoration, 1>& AppliedTextDecorations()
-      const;
-  CORE_EXPORT base::RefCountedData<Vector<AppliedTextDecoration, 1>>*
-  AppliedTextDecorationData() const {
+  CORE_EXPORT const AppliedTextDecorationVector& AppliedTextDecorations() const;
+  CORE_EXPORT AppliedTextDecorationVector* AppliedTextDecorationData() const {
     return IsDecoratingBox() ? EnsureAppliedTextDecorationsCache()
-                             : BaseTextDecorationDataInternal().get();
-  }
-  const Vector<AppliedTextDecoration, 1>* BaseAppliedTextDecorations() const {
-    const auto base = BaseTextDecorationDataInternal();
-    return base ? &base->data : nullptr;
+                             : BaseTextDecorationData();
   }
 
   // Returns true if this a "decorating box".
@@ -1834,8 +1828,8 @@ class ComputedStyle final : public ComputedStyleBase {
     if (IsDecoratingBox()) {
       return true;
     }
-    if (BaseTextDecorationDataInternal()) {
-      DCHECK(!BaseTextDecorationDataInternal()->data.empty());
+    if (BaseTextDecorationData()) {
+      DCHECK(!BaseTextDecorationData()->empty());
       return true;
     }
     return false;
