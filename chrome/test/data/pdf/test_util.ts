@@ -772,7 +772,7 @@ export function createTextBox() {
             id: 0,
             pageNumber: 0,
           },
-          pageCoordinates: {x: 10, y: 3},
+          pageDimensions: {x: 10, y: 3, width: 390, height: 490},
         },
       }));
 }

@@ -18,7 +18,7 @@ export interface ViewportParams {
 
 export interface TextBoxInit {
   annotation: TextAnnotation;
-  pageCoordinates: Point;
+  pageDimensions: ViewportRect;
 }
 
 export const DEFAULT_TEXTBOX_WIDTH: number = 222;
@@ -252,7 +252,7 @@ export class Ink2Manager extends EventTarget {
     this.dispatchEvent(new CustomEvent('initialize-text-box', {
       detail: {
         annotation,
-        pageCoordinates: {x: pageDimensions.x, y: pageDimensions.y},
+        pageDimensions,
       },
     }));
 

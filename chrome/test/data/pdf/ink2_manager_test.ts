@@ -352,8 +352,10 @@ chrome.test.runTests([
     chrome.test.assertEq(
         DEFAULT_TEXTBOX_WIDTH, initEvent.detail.annotation.textBoxRect.width);
     chrome.test.assertEq(0, initEvent.detail.annotation.pageNumber);
-    chrome.test.assertEq(55, initEvent.detail.pageCoordinates.x);
-    chrome.test.assertEq(3, initEvent.detail.pageCoordinates.y);
+    chrome.test.assertEq(55, initEvent.detail.pageDimensions.x);
+    chrome.test.assertEq(3, initEvent.detail.pageDimensions.y);
+    chrome.test.assertEq(390, initEvent.detail.pageDimensions.width);
+    chrome.test.assertEq(490, initEvent.detail.pageDimensions.height);
 
     // Zoom to 2.0. Now, the new annotation should be centered on the visible
     // portion of the page.
@@ -381,8 +383,10 @@ chrome.test.runTests([
     chrome.test.assertEq(
         DEFAULT_TEXTBOX_WIDTH, initEvent.detail.annotation.textBoxRect.width);
     chrome.test.assertEq(0, initEvent.detail.annotation.pageNumber);
-    chrome.test.assertEq(10, initEvent.detail.pageCoordinates.x);
-    chrome.test.assertEq(6, initEvent.detail.pageCoordinates.y);
+    chrome.test.assertEq(10, initEvent.detail.pageDimensions.x);
+    chrome.test.assertEq(6, initEvent.detail.pageDimensions.y);
+    chrome.test.assertEq(780, initEvent.detail.pageDimensions.width);
+    chrome.test.assertEq(980, initEvent.detail.pageDimensions.height);
 
     // Zoom to 0.5. The new box should still be centered on the page, even
     // though it is not centered in the viewport.
@@ -413,8 +417,10 @@ chrome.test.runTests([
         initEvent.detail.annotation.textBoxRect.locationY);
     chrome.test.assertEq(195, initEvent.detail.annotation.textBoxRect.width);
     chrome.test.assertEq(0, initEvent.detail.annotation.pageNumber);
-    chrome.test.assertEq(152.5, initEvent.detail.pageCoordinates.x);
-    chrome.test.assertEq(1.5, initEvent.detail.pageCoordinates.y);
+    chrome.test.assertEq(152.5, initEvent.detail.pageDimensions.x);
+    chrome.test.assertEq(1.5, initEvent.detail.pageDimensions.y);
+    chrome.test.assertEq(195, initEvent.detail.pageDimensions.width);
+    chrome.test.assertEq(245, initEvent.detail.pageDimensions.height);
 
     // Reset zoom and annotation id for next test.
     viewport.setZoom(1.0);
@@ -508,8 +514,8 @@ chrome.test.runTests([
       // horizontally, it is as wide as the viewport, so it uses the minimum
       // 5px margin for pageX.
       chrome.test.assertEq(
-          rotation % 2 === 0 ? 55 : 5, initData.pageCoordinates.x);
-      chrome.test.assertEq(3, initData.pageCoordinates.y);
+          rotation % 2 === 0 ? 55 : 5, initData.pageDimensions.x);
+      chrome.test.assertEq(3, initData.pageDimensions.y);
       chrome.test.assertEq('attributes-changed', eventsDispatched[1]!.name);
       assertDeepEquals(attributes, eventsDispatched[1]!.detail);
       eventsDispatched = [];
@@ -677,8 +683,10 @@ chrome.test.runTests([
     const testAnnotation = getTestAnnotation(0);
     assertDeepEquals(testAnnotation, initData.annotation);
     // Still using the 400x500 page from the previous test.
-    chrome.test.assertEq(55, initData.pageCoordinates.x);
-    chrome.test.assertEq(3, initData.pageCoordinates.y);
+    chrome.test.assertEq(55, initData.pageDimensions.x);
+    chrome.test.assertEq(3, initData.pageDimensions.y);
+    chrome.test.assertEq(390, initData.pageDimensions.width);
+    chrome.test.assertEq(490, initData.pageDimensions.height);
     chrome.test.assertEq('attributes-changed', eventsDispatched[1]!.name);
     assertDeepEquals(
         testAnnotation.textAttributes, eventsDispatched[1]!.detail);

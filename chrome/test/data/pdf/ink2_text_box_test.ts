@@ -54,7 +54,9 @@ function initializeBox(
   manager.dispatchEvent(new CustomEvent('initialize-text-box', {
     detail: {
       annotation,
-      pageCoordinates: {x: 10, y: 3},
+      // Large width and height so we don't need to worry about size clamping
+      // in tests where we don't want to explicitly validate it.
+      pageDimensions: {x: 10, y: 3, width: 1000, height: 1000},
     },
   }));
 }
@@ -369,6 +371,88 @@ chrome.test.runTests([
     chrome.test.succeed();
   },
 
+  async function testResizeClampedToPageBoundaries() {
+    // Initialize to a 100x100 box at 400, 300.
+    initializeBox(100, 100, 400, 300);
+    await microtasksFinished();
+    assertPositionAndSize(textbox, '124px', '120px', '383px', '285px');
+
+    // Test left edge. First resize with the left handle and ensure that the
+    // box size clamps at the start of the page. Then try dragging the top left
+    // and bottom left handles further left and ensure they don't resize the
+    // box to the left either.
+    const left = getRequiredElement(textbox, '.handle.left.center');
+    await dragHandle(left, -500, 0);
+    // pageX = 10, so edge of the text is at 10 and the box is at -7.
+    // This means we increased the width by 400 - 10 = 390.
+    assertPositionAndSize(textbox, '514px', '120px', '-7px', '285px');
+    const topLeft = getRequiredElement(textbox, '.handle.left.top');
+    await dragHandle(topLeft, -50, -50);
+    assertPositionAndSize(textbox, '514px', '170px', '-7px', '235px');
+    const bottomLeft = getRequiredElement(textbox, '.handle.left.bottom');
+    await dragHandle(bottomLeft, -50, -50);
+    assertPositionAndSize(textbox, '514px', '120px', '-7px', '235px');
+
+    // Test top edge. First resize with the top left handle and ensure that the
+    // box size clamps at the top of the page. Then try dragging the top center
+    // and top right handles further up, and ensure they don't resize the box
+    // upward.
+    await dragHandle(topLeft, -50, -300);
+    // pageY = 3, so edge of the text is at 3 and the box is at -12.
+    // This means we increased the height by 250 - 3 = 247. Note that the left
+    // motion is also ignored, as we are at the page corner.
+    assertPositionAndSize(textbox, '514px', '367px', '-7px', '-12px');
+    const top = getRequiredElement(textbox, '.handle.top.center');
+    await dragHandle(top, -50, -50);
+    assertPositionAndSize(textbox, '514px', '367px', '-7px', '-12px');
+    const topRight = getRequiredElement(textbox, '.handle.top.right');
+    await dragHandle(topRight, -50, -50);
+    assertPositionAndSize(textbox, '464px', '367px', '-7px', '-12px');
+
+    // Use the top left handle to ensure the box can be moved off of the top
+    // left corner.
+    await dragHandle(topLeft, 200, 200);
+    assertPositionAndSize(textbox, '264px', '167px', '193px', '188px');
+
+    // Test the right edge. First resize with the bottom right handle and ensure
+    // that the box clamps at the right edge of the page. Then try dragging the
+    // right center and top right handles, and ensure they don't resize the box
+    // to the right.
+    const bottomRight = getRequiredElement(textbox, '.handle.bottom.right');
+    await dragHandle(bottomRight, 600, 100);
+    // Right page edge is at 1000 + 10 = 1010 and the left edge of the text is
+    // at 193 + 17 = 210. This means the maximum width is 800px for the text, or
+    // 824px for the box.
+    assertPositionAndSize(textbox, '824px', '267px', '193px', '188px');
+    const right = getRequiredElement(textbox, '.handle.right.center');
+    await dragHandle(right, 100, 0);
+    assertPositionAndSize(textbox, '824px', '267px', '193px', '188px');
+    await dragHandle(topRight, 100, 100);
+    assertPositionAndSize(textbox, '824px', '167px', '193px', '288px');
+
+    // Use the left handle to narrow the box.
+    await dragHandle(left, 500, 0);
+    assertPositionAndSize(textbox, '324px', '167px', '693px', '288px');
+
+    // Test the bottom edge. Use the bottom handle and ensure the box clamps
+    // at the bottom of the page, then ensure the bottom left and bottom right
+    // handles can't move it down from there.
+    const bottom = getRequiredElement(textbox, '.handle.bottom.center');
+    await dragHandle(bottom, 20, 800);
+    // Bottom edge of the page is at 1000 + 3 = 1003 and the top edge of the
+    // text is at 288 + 15 = 303. This means the maximum height is 700px for
+    // the text, or 720px for the box.
+    assertPositionAndSize(textbox, '324px', '720px', '693px', '288px');
+    // Both directions are ignored for the bottom right handle since the box
+    // is in the bottom right corner.
+    await dragHandle(bottomRight, 100, 100);
+    assertPositionAndSize(textbox, '324px', '720px', '693px', '288px');
+    await dragHandle(bottomLeft, 100, 100);
+    assertPositionAndSize(textbox, '224px', '720px', '793px', '288px');
+
+    chrome.test.succeed();
+  },
+
   async function testMove() {
     // Initialize to a 100x100 box at 400, 300.
     initializeBox(100, 100, 400, 300);
@@ -388,6 +472,39 @@ chrome.test.runTests([
     chrome.test.succeed();
   },
 
+  async function testMoveToPageBoundaries() {
+    // Initialize to a 100x100 box at 400, 300.
+    initializeBox(100, 100, 400, 300);
+    await microtasksFinished();
+    assertPositionAndSize(textbox, '124px', '120px', '383px', '285px');
+
+    // Drag the box past the top left corner and ensure it stops moving.
+    // Default pageX and pageY are 10 and 3. The top left corner of the text
+    // should be there, which puts the box at -7, -12
+    // x: 10px UX padding + 2px border + 5px outer padding = 17px offset
+    // y: 8px UX padding + 2px border + 5px outer padding = 15px offset
+    await dragHandle(textbox, -500, -500);
+    assertPositionAndSize(textbox, '124px', '120px', '-7px', '-12px');
+
+    // Drag the box past the top right corner and ensure it stops moving. The
+    // right page edge is at pageX + pageWidth = 1010, so the left edge of
+    // the text is at 1010 - 100 = 910, putting the box edge at 893.
+    await dragHandle(textbox, 1100, -100);
+    assertPositionAndSize(textbox, '124px', '120px', '893px', '-12px');
+
+    // Drag the box past the bottom left corner and ensure it stops moving. The
+    // bottom page edge is at pageY + pageHeight = 1003, so the top edge of
+    // the text is at 1003 - 100 = 903, putting the box edge at 888.
+    await dragHandle(textbox, -1200, 1200);
+    assertPositionAndSize(textbox, '124px', '120px', '-7px', '888px');
+
+    // Drag the box past the bottom right corner and ensure it stops moving.
+    await dragHandle(textbox, 1200, 200);
+    assertPositionAndSize(textbox, '124px', '120px', '893px', '888px');
+
+    chrome.test.succeed();
+  },
+
   async function testViewportChanges() {
     // Initialize to a 100x100 box at 410, 303.
     initializeBox(100, 100, 410, 303);
@@ -403,7 +520,7 @@ chrome.test.runTests([
     manager.dispatchEvent(new CustomEvent('viewport-changed', {
       detail: {
         clockwiseRotations: 0,
-        pageDimensions: {x: 30, y: 1.5, width: 45, height: 45},
+        pageDimensions: {x: 30, y: 1.5, width: 500, height: 500},
         zoom: 0.5,
       },
     }));
@@ -418,7 +535,7 @@ chrome.test.runTests([
     manager.dispatchEvent(new CustomEvent('viewport-changed', {
       detail: {
         clockwiseRotations: 0,
-        pageDimensions: {x: 10, y: 6, width: 180, height: 180},
+        pageDimensions: {x: 10, y: 6, width: 2000, height: 2000},
         zoom: 2.0,
       },
     }));
@@ -432,7 +549,7 @@ chrome.test.runTests([
     manager.dispatchEvent(new CustomEvent('viewport-changed', {
       detail: {
         clockwiseRotations: 0,
-        pageDimensions: {x: 100, y: 100, width: 90, height: 90},
+        pageDimensions: {x: 100, y: 100, width: 1000, height: 1000},
         zoom: 1.0,
       },
     }));
@@ -446,7 +563,7 @@ chrome.test.runTests([
     manager.dispatchEvent(new CustomEvent('viewport-changed', {
       detail: {
         clockwiseRotations: 0,
-        pageDimensions: {x: -100, y: -100, width: 90, height: 90},
+        pageDimensions: {x: -100, y: -100, width: 1000, height: 1000},
         zoom: 1.0,
       },
     }));
@@ -460,7 +577,7 @@ chrome.test.runTests([
     manager.dispatchEvent(new CustomEvent('viewport-changed', {
       detail: {
         clockwiseRotations: 0,
-        pageDimensions: {x: -500, y: -500, width: 90, height: 90},
+        pageDimensions: {x: -500, y: -500, width: 1000, height: 1000},
         zoom: 1.0,
       },
     }));
@@ -497,7 +614,7 @@ chrome.test.runTests([
             id: 0,
             pageNumber: 0,
           },
-          pageCoordinates: orientation % 2 === 0 ? {x: 15, y: 3} : {x: 5, y: 3},
+          pageDimensions: orientation % 2 === 0 ? {x: 15, y: 3} : {x: 5, y: 3},
         },
       }));
     }

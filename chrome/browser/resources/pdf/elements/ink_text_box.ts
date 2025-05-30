@@ -102,6 +102,8 @@ export class InkTextBoxElement extends InkTextBoxElementBase {
   private id_: number = -1;
   private keyDownCount_: number = -1;
   private pageNumber_: number = -1;
+  private pageHeight_: number = 0;
+  private pageWidth_: number = 0;
   private pageX_: number = 0;
   private pageY_: number = 0;
   private pointerStart_: {x: number, y: number}|null = null;
@@ -144,11 +146,15 @@ export class InkTextBoxElement extends InkTextBoxElementBase {
     const changedPrivateProperties =
         changedProperties as Map<PropertyKey, unknown>;
     if (changedPrivateProperties.has('minHeight_')) {
-      this.height_ = Math.max(this.height_, this.minHeight_);
+      this.height_ = Math.min(
+          this.pageHeight_ + this.pageY_ - this.locationY_,
+          Math.max(this.height_, this.minHeight_));
     }
 
     if (changedPrivateProperties.has('minWidth_')) {
-      this.width_ = Math.max(this.width_, this.minWidth_);
+      this.width_ = Math.min(
+          this.pageWidth_ + this.pageX_ - this.locationX_,
+          Math.max(this.width_, this.minWidth_));
     }
 
     if (changedPrivateProperties.has('state_')) {
@@ -326,8 +332,10 @@ export class InkTextBoxElement extends InkTextBoxElementBase {
     }
 
     // Update is in screen coordinates.
-    this.pageX_ = data.pageCoordinates.x;
-    this.pageY_ = data.pageCoordinates.y;
+    this.pageX_ = data.pageDimensions.x;
+    this.pageY_ = data.pageDimensions.y;
+    this.pageWidth_ = data.pageDimensions.width;
+    this.pageHeight_ = data.pageDimensions.height;
     this.width_ = data.annotation.textBoxRect.width;
     this.height_ = data.annotation.textBoxRect.height;
     this.minHeight_ = MIN_TEXTBOX_SIZE_PX;
@@ -386,6 +394,8 @@ export class InkTextBoxElement extends InkTextBoxElementBase {
     this.zoom_ = update.zoom;
     this.pageX_ = update.pageDimensions.x;
     this.pageY_ = update.pageDimensions.y;
+    this.pageWidth_ = update.pageDimensions.width;
+    this.pageHeight_ = update.pageDimensions.height;
   }
 
   private onDocumentKeyDown_(e: KeyboardEvent) {
@@ -514,29 +524,41 @@ export class InkTextBoxElement extends InkTextBoxElementBase {
     assert(this.startPosition_);
     if (!target.classList.contains('handle')) {
       // User is dragging the box itself.
-      this.locationX_ = this.startPosition_.locationX + moveX;
-      this.locationY_ = this.startPosition_.locationY + moveY;
+      this.locationX_ = Math.min(
+          this.pageX_ + this.pageWidth_ - this.width_,
+          Math.max(this.pageX_, this.startPosition_.locationX + moveX));
+      this.locationY_ = Math.min(
+          this.pageY_ + this.pageHeight_ - this.height_,
+          Math.max(this.pageY_, this.startPosition_.locationY + moveY));
       return;
     }
 
     if (target.classList.contains('left')) {
-      const deltaX =
-          Math.min(moveX, this.startPosition_.width - this.minWidth_);
+      const deltaX = Math.max(
+          this.pageX_ - this.startPosition_.locationX,
+          Math.min(moveX, this.startPosition_.width - this.minWidth_));
       this.locationX_ = this.startPosition_.locationX + deltaX;
       this.width_ = this.startPosition_.width - deltaX;
     } else if (target.classList.contains('right')) {
-      const deltaX =
-          Math.max(moveX, -1 * this.startPosition_.width + this.minWidth_);
+      const maxDeltaX = this.pageX_ + this.pageWidth_ -
+          (this.startPosition_.locationX + this.startPosition_.width);
+      const deltaX = Math.min(
+          maxDeltaX,
+          Math.max(moveX, -1 * this.startPosition_.width + this.minWidth_));
       this.width_ = this.startPosition_.width + deltaX;
     }
     if (target.classList.contains('top')) {
-      const deltaY =
-          Math.min(moveY, this.startPosition_.height - this.minHeight_);
-      this.height_ = this.startPosition_.height - deltaY;
+      const deltaY = Math.max(
+          this.pageY_ - this.startPosition_.locationY,
+          Math.min(moveY, this.startPosition_.height - this.minHeight_));
       this.locationY_ = this.startPosition_.locationY + deltaY;
+      this.height_ = this.startPosition_.height - deltaY;
     } else if (target.classList.contains('bottom')) {
-      const deltaY =
-          Math.max(moveY, -1 * this.startPosition_.height + this.minHeight_);
+      const maxDeltaY = this.pageHeight_ + this.pageY_ -
+          (this.startPosition_.locationY + this.startPosition_.height);
+      const deltaY = Math.min(
+          maxDeltaY,
+          Math.max(moveY, -1 * this.startPosition_.height + this.minHeight_));
       this.height_ = this.startPosition_.height + deltaY;
     }
   }
