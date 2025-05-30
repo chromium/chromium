@@ -6273,6 +6273,27 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.WebView.CacheSize{ExceedsOrWithin}Quota" units="KiB"
+    expires_after="2025-12-31">
+  <owner>abhijithnair@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <summary>
+    Records by how much the cache size {ExceedsOrWithin} the cache quota alloted
+    to the app by the framework.
+
+    This is logged only once per session in a delayed background task
+    approximately 5 seconds after WebView completes its main startup tasks. The
+    measurement may be expensive, so it is only performed if the
+    WebViewRecordAppCacheHistograms feature is enabled.
+
+    Only recorded in AndroidWebView.
+  </summary>
+  <token key="ExceedsOrWithin">
+    <variant name="Exceeds" summary="exceeds"/>
+    <variant name="Within" summary="is within"/>
+  </token>
+</histogram>
+
 <histogram name="Android.WebView.Callback.Counts" enum="WebViewCallbackType"
     expires_after="2025-11-16">
   <owner>ntfschr@chromium.org</owner>
