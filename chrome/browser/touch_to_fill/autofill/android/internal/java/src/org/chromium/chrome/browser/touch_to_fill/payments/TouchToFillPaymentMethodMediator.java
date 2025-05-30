@@ -31,6 +31,7 @@ import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaym
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ItemType.IBAN;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ItemType.LOYALTY_CARD;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ItemType.TERMS_LABEL;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.LoyaltyCardProperties.LOYALTY_CARD_ICON;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.LoyaltyCardProperties.LOYALTY_CARD_NUMBER;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.LoyaltyCardProperties.MERCHANT_NAME;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.LoyaltyCardProperties.NON_TRANSFORMING_LOYALTY_CARD_KEYS;
@@ -245,7 +246,8 @@ class TouchToFillPaymentMethodMediator {
         RecordHistogram.recordCount100Histogram(TOUCH_TO_FILL_NUMBER_OF_IBANS_SHOWN, mIbans.size());
     }
 
-    public void showLoyaltyCards(List<LoyaltyCard> loyaltyCards) {
+    public void showLoyaltyCards(
+            List<LoyaltyCard> loyaltyCards, Function<GURL, Drawable> valuableImageFunction) {
         mInputProtector.markShowTime();
 
         assert loyaltyCards != null;
@@ -257,7 +259,7 @@ class TouchToFillPaymentMethodMediator {
         sheetItems.clear();
 
         for (LoyaltyCard loyaltyCard : mLoyaltyCards) {
-            final PropertyModel model = createLoyaltyCardModel(loyaltyCard);
+            final PropertyModel model = createLoyaltyCardModel(loyaltyCard, valuableImageFunction);
             sheetItems.add(new ListItem(LOYALTY_CARD, model));
         }
 
@@ -406,9 +408,14 @@ class TouchToFillPaymentMethodMediator {
         return ibanModelBuilder.build();
     }
 
-    private PropertyModel createLoyaltyCardModel(LoyaltyCard loyaltyCard) {
+    private PropertyModel createLoyaltyCardModel(
+            LoyaltyCard loyaltyCard, Function<GURL, Drawable> valuableImageFunction) {
         PropertyModel.Builder loyaltyCardModelBuilder =
                 new PropertyModel.Builder(NON_TRANSFORMING_LOYALTY_CARD_KEYS)
+                        .withTransformingKey(
+                                LOYALTY_CARD_ICON,
+                                valuableImageFunction,
+                                loyaltyCard.getProgramLogo())
                         .with(LOYALTY_CARD_NUMBER, loyaltyCard.getLoyaltyCardNumber())
                         .with(MERCHANT_NAME, loyaltyCard.getMerchantName())
                         .with(

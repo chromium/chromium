@@ -61,7 +61,7 @@ found in the LICENSE file.
     <dimen name="square_card_icon_corner_radius">3dp</dimen>
 
     <!-- Google Wallet valuable icon (like loyalty card icon, etc.) -->
-    <dimen name="large_valuable_icon_size">40dp</dimen>
+    <dimen name="large_valuable_icon_size">28dp</dimen>
     <dimen name="small_valuable_icon_size">@dimen/chip_icon_size</dimen>
 
     <!-- Local credit card editor -->

@@ -23,6 +23,7 @@ import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaym
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.IbanProperties.IBAN_NICKNAME;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.IbanProperties.IBAN_VALUE;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.IbanProperties.ON_IBAN_CLICK_ACTION;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.LoyaltyCardProperties.LOYALTY_CARD_ICON;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.LoyaltyCardProperties.LOYALTY_CARD_NUMBER;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.LoyaltyCardProperties.MERCHANT_NAME;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.LoyaltyCardProperties.ON_LOYALTY_CARD_CLICK_ACTION;
@@ -241,6 +242,9 @@ class TouchToFillPaymentMethodViewBinder {
             TextView merchantName = view.findViewById(R.id.merchant_name);
             merchantName.setText(model.get(MERCHANT_NAME));
             merchantName.setVisibility(View.VISIBLE);
+        } else if (propertyKey == LOYALTY_CARD_ICON) {
+            ImageView loyaltyCardIcon = view.findViewById(R.id.loyalty_card_icon);
+            loyaltyCardIcon.setImageDrawable(model.get(LOYALTY_CARD_ICON));
         } else if (propertyKey == ON_LOYALTY_CARD_CLICK_ACTION) {
             view.setOnClickListener(unusedView -> model.get(ON_LOYALTY_CARD_CLICK_ACTION).run());
         } else {
@@ -311,7 +315,8 @@ class TouchToFillPaymentMethodViewBinder {
                 || propertyKey == ITEM_COLLECTION_INFO
                 || propertyKey == APPLY_DEACTIVATED_STYLE
                 || propertyKey == LOYALTY_CARD_NUMBER
-                || propertyKey == MERCHANT_NAME) {
+                || propertyKey == MERCHANT_NAME
+                || propertyKey == LOYALTY_CARD_ICON) {
             // Skip, because none of these changes affect the button
         } else {
             assert false : "Unhandled update to property:" + propertyKey;
