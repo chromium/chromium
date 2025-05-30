@@ -70,6 +70,9 @@ constexpr char kCleanupDemoAccountRequestResult[] =
     "DemoMode.SignedIn.Request.CleanupResult";
 constexpr char kAppUsageTimeHistogramPrefix[] = "DemoMode.AppUsageTime.";
 
+constexpr char kCloudPolicyConnectionTimeoutAction[] =
+    "DemoMode.CloudPolicyConnectionTimeout";
+
 struct AppHistogramSuffix {
   const DemoModeApp app_type;
   const std::string name;
@@ -497,6 +500,12 @@ void DemoSessionMetricsRecorder::SetCurrentSessionType(
 // static
 SessionType DemoSessionMetricsRecorder::GetCurrentSessionTypeForTesting() {
   return current_session_type;
+}
+
+// static
+void DemoSessionMetricsRecorder::RecordCloudPolicyConnectionTimeout() {
+  base::RecordAction(
+      base::UserMetricsAction(kCloudPolicyConnectionTimeoutAction));
 }
 
 DemoSessionMetricsRecorder::DemoSessionMetricsRecorder(

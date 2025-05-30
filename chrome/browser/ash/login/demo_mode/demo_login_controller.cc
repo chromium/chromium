@@ -16,6 +16,10 @@
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/logging.h"
+#include "base/strings/stringprintf.h"
+#include "base/syslog_logging.h"
+#include "base/task/single_thread_task_runner.h"
+#include "base/time/time.h"
 #include "base/uuid.h"
 #include "base/values.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
@@ -76,6 +80,8 @@ constexpr int kMaxResponseSize = 1024 * 1024;
 const char kErrorCodePath[] = "error.code";
 const char kErrorMessagePath[] = "error.message";
 const char kErrorStatusPath[] = "error.status";
+
+constexpr base::TimeDelta kConnectPolicyManagerTimeout = base::Seconds(5);
 
 // Server may return a 200 for setup demo account request with Quota exhuasted
 // error. Sample response:
@@ -361,6 +367,14 @@ DemoLoginController::DemoLoginController(
   // connected.
   if (!is_policy_manager_connected_) {
     observation_.Observe(cloud_policy_manager);
+
+    // `DemoLoginController::OnDeviceCloudPolicyManagerConnected` might not be
+    // triggered if there is a network issue.
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+        FROM_HERE,
+        base::BindOnce(&DemoLoginController::OnPolicyManagerConnectionTimeOut,
+                       weak_ptr_factory_.GetWeakPtr()),
+        kConnectPolicyManagerTimeout);
   }
 
   is_feature_eligiblity_loaded_ = features::IsDemoModeSignInEnabled();
@@ -735,16 +749,36 @@ void DemoLoginController::OnCampaignsLoaded() {
 
 void DemoLoginController::MaybeTriggerAutoLogin() {
   CHECK_EQ(State::kLoadingAvailibility, state_);
+
+  bool is_policy_manager_loading_finished =
+      is_policy_manager_connected_ || is_loading_policy_manager_timeout_;
   bool is_loading_finished =
-      is_policy_manager_connected_ && is_feature_eligiblity_loaded_;
+      is_policy_manager_loading_finished && is_feature_eligiblity_loaded_;
+
   if (!is_loading_finished) {
     return;
   }
+
   bool is_sign_in_enable = demo_mode::IsDemoAccountSignInEnabled();
-  state_ = is_sign_in_enable ? State::kReadyForLoginWithDemoAccount
-                             : State::kLoginToMGS;
+  state_ = is_sign_in_enable && is_policy_manager_connected_
+               ? State::kReadyForLoginWithDemoAccount
+               : State::kLoginToMGS;
 
   configure_auto_login_callback_.Run();
+}
+
+void DemoLoginController::OnPolicyManagerConnectionTimeOut() {
+  if (is_policy_manager_connected_) {
+    return;
+  }
+
+  is_loading_policy_manager_timeout_ = true;
+  observation_.Reset();
+
+  DemoSessionMetricsRecorder::RecordCloudPolicyConnectionTimeout();
+  SYSLOG(INFO) << "Timeout for waiting cloud policy manager connected. Login "
+                  "to managed guest session.";
+  MaybeTriggerAutoLogin();
 }
 
 }  // namespace ash
