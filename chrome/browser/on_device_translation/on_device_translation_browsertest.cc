@@ -173,7 +173,7 @@ void WriteFakeDictionaryDataAndSetCommandLine(LanguagePackKey key,
                     ",", dict_dir_path.AsUTF8Unsafe()}));
 }
 
-// Returns a string representation of the result of CanCreateTranslator().
+// Returns a string representation of the result of TranslationAvailable().
 std::string_view GetCanCreateTranslatorResultString(
     CanCreateTranslatorResult result) {
   switch (result) {
@@ -270,7 +270,7 @@ class OnDeviceTranslationBrowserTest : public InProcessBrowserTest {
                               const std::string_view targetLang,
                               CanCreateTranslatorResult expected_result) {
     NavigateToEmptyPage();
-    // Call CanCreateTranslator() via mojo interface to verify the detailed
+    // Call TranslationAvailable() via mojo interface to verify the detailed
     // result.
     mojo::Remote<blink::mojom::TranslationManager> remote;
     TestSupportsUserData fake_user_data;
@@ -297,12 +297,24 @@ class OnDeviceTranslationBrowserTest : public InProcessBrowserTest {
         GetCanCreateTranslatorResultString(expected_result));
   }
 
-  content::EvalJsResult EvalJs(std::string_view script,
-                               Browser* target_browser = nullptr) {
+  content::EvalJsResult EvalJs(
+      std::string_view script,
+      Browser* target_browser = nullptr,
+      int options = content::EXECUTE_SCRIPT_DEFAULT_OPTIONS) {
     return content::EvalJs((target_browser ? target_browser : browser())
                                ->tab_strip_model()
                                ->GetActiveWebContents(),
-                           script);
+                           script, options);
+  }
+
+  testing::AssertionResult ExecJs(
+      std::string_view script,
+      Browser* target_browser = nullptr,
+      int options = content::EXECUTE_SCRIPT_DEFAULT_OPTIONS) {
+    return content::ExecJs((target_browser ? target_browser : browser())
+                               ->tab_strip_model()
+                               ->GetActiveWebContents(),
+                           script, options);
   }
 
   // Evaluates the given script and returns the result string. If the script
@@ -310,8 +322,10 @@ class OnDeviceTranslationBrowserTest : public InProcessBrowserTest {
   // When `target_browser` is not nullptr, the script is evaluated in the
   // context of the given browser, otherwise the script is evaluated in the
   // context of the default browser.
-  std::string EvalJsCatchingError(std::string_view script,
-                                  Browser* target_browser = nullptr) {
+  std::string EvalJsCatchingError(
+      std::string_view script,
+      Browser* target_browser = nullptr,
+      int options = content::EXECUTE_SCRIPT_DEFAULT_OPTIONS) {
     return EvalJs(base::StringPrintf(R"(
       (async () => {
         try {
@@ -322,7 +336,7 @@ class OnDeviceTranslationBrowserTest : public InProcessBrowserTest {
       })();
     )",
                                      script),
-                  target_browser)
+                  target_browser, options)
         .ExtractString();
   }
 
@@ -1238,27 +1252,51 @@ IN_PROC_BROWSER_TEST_F(
   // site.
   mock_component_manager.InstallMockLanguagePack(LanguagePackKey::kEn_Ja);
 
+  EXPECT_TRUE(ExecJs("self.createPromises = [];"));
+
+  std::string create_translator_script = R"(
+    self.createPromises.push(
+        Translator.create({sourceLanguage: 'en', targetLanguage: 'ja'}));
+  )";
+
   // The added delay should be triggered twice, once for each translator
   // creation.
   EXPECT_CALL(manager, GetTranslatorDownloadDelay()).Times(2);
-  ASSERT_EQ(EvalJs(base::StringPrintf(R"(
-  (async () => {
-    const sourceLanguage = '%s';
-    const targetLanguage = '%s';
-    try {
-      await Promise.all([
-        Translator.create({sourceLanguage, targetLanguage}),
-        Translator.create({sourceLanguage, targetLanguage}),
-      ]);
-      return 'OK';
-    } catch (e) {
-      return e.toString();
-    }
-  })();
-  )",
-                                      "en", "ja"))
-                .ExtractString(),
+
+  // Each call to `Translator.create` must be in a separate `ExecJs` call.
+  // `Translator.create` consumes user activation if not english or preferred,
+  // and `ExecJs` provides an initial user activation on each call.
+  EXPECT_TRUE(ExecJs(create_translator_script));
+  EXPECT_TRUE(ExecJs(create_translator_script));
+  ASSERT_EQ(EvalJsCatchingError(R"(
+    await Promise.all(self.createPromises);
+    return 'OK';
+  )"),
             "OK");
+}
+
+// `Translator.create` should still require user activation if the language pair
+// is readily available but the site hasn't created a Translator for the
+// language pair yet.
+IN_PROC_BROWSER_TEST_F(OnDeviceTranslationV1BrowserTest,
+                       CreateRequiresUserActivationWhenDownloadedButMasked) {
+  SetSelectedLanguages("es");
+  MockComponentManager mock_component_manager(GetTempDir());
+  mock_component_manager.InstallMockTranslateKitComponent();
+  NavigateToEmptyPage();
+
+  // Simulate the download of an additional language pack (Japanese) by another
+  // site.
+  mock_component_manager.InstallMockLanguagePack(LanguagePackKey::kEn_Ja);
+
+  ASSERT_EQ(
+      EvalJsCatchingError(R"(
+    await Translator.create({sourceLanguage: 'en', targetLanguage: 'ja'});
+    return 'OK';
+  )",
+                          browser(), content::EXECUTE_SCRIPT_NO_USER_GESTURE),
+      "NotAllowedError: Requires a user gesture when availability is "
+      "\"downloading\" or \"downloadable\".");
 }
 
 // No delay is triggered for a "downloadable" translation between English +
@@ -1454,8 +1492,7 @@ IN_PROC_BROWSER_TEST_F(OnDeviceTranslationBrowserTest,
   run_loop_for_register_language_pack.Run();
 
   // Deletes the iframe after the browser process receives the request.
-  EXPECT_TRUE(ExecJs(browser()->tab_strip_model()->GetActiveWebContents(),
-                     "document.body.removeChild(window._testIframe);"));
+  EXPECT_TRUE(ExecJs("document.body.removeChild(window._testIframe);"));
 
   // Install the mock TranslateKit component.
   mock_component_manager.InstallMockTranslateKitComponent();

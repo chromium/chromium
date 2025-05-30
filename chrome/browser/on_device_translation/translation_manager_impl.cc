@@ -165,34 +165,6 @@ void TranslationManagerImpl::SetInitializedTranslation(
       std::move(initialized_translations_value));
 }
 
-void TranslationManagerImpl::CanCreateTranslator(
-    TranslatorLanguageCodePtr source_lang,
-    TranslatorLanguageCodePtr target_lang,
-    CanCreateTranslatorCallback callback) {
-  const std::string source_language =
-      SwitchLanguageCodeToIwIfHe(source_lang->code);
-  const std::string target_language =
-      SwitchLanguageCodeToIwIfHe(target_lang->code);
-
-  RecordTranslationAPICallForLanguagePair("CanTranslate", source_language,
-                                          target_language);
-
-  if (!IsTranslatorAllowed(browser_context())) {
-    std::move(callback).Run(CanCreateTranslatorResult::kNoDisallowedByPolicy);
-    return;
-  }
-
-  if (!PassAcceptLanguagesCheck(GetAcceptLanguages(browser_context()),
-                                source_language, target_language)) {
-    std::move(callback).Run(
-        CanCreateTranslatorResult::kNoAcceptLanguagesCheckFailed);
-    return;
-  }
-
-  GetServiceController().CanTranslate(source_language, target_language,
-                                      std::move(callback));
-}
-
 base::TimeDelta TranslationManagerImpl::GetTranslatorDownloadDelay() {
   return base::RandTimeDelta(base::Seconds(2), base::Seconds(3));
 }
