@@ -443,7 +443,7 @@ public class FeedV2NewTabPageTest {
     @Test
     @MediumTest
     @Feature({"NewTabPage", "FeedNewTabPage"})
-    @DisableFeatures("NewTabPageCustomization")
+    @DisableFeatures({"NewTabPageCustomization", "FeedHeaderRemoval"})
     @ParameterAnnotations.UseMethodParameter(SigninPromoParams.class)
     public void testArticleSectionHeaderWithMenu(boolean disableSigninPromoCard) throws Exception {
         openNewTabPage();
