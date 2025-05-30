@@ -121,7 +121,14 @@ class CORE_EXPORT SoftNavigationHeuristics
   void ReportSoftNavigationToMetrics(LocalFrame*, SoftNavigationContext*) const;
   void SetIsTrackingSoftNavigationHeuristicsOnDocument(bool value) const;
 
-  SoftNavigationContext* GetSoftNavigationContextForCurrentTask();
+  // We can grab a context from the "running task", or sometimes from other
+  // scheduling sources-- but these can leak across windows.
+  // Any time we retrieve a context, we should check to ensure that these were
+  // created for this window (i.e. by this SNH instance).
+  SoftNavigationContext* EnsureContextForCurrentWindow(
+      SoftNavigationContext*) const;
+  SoftNavigationContext* GetSoftNavigationContextForCurrentTask() const;
+
   void ResetPaintTimingsIfNeeded();
   void CommitPreviousPaintTimings(LocalFrame*);
   bool EmitSoftNavigationEntryIfAllConditionsMet(SoftNavigationContext*);
