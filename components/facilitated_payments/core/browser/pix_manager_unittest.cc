@@ -21,7 +21,6 @@
 #include "components/autofill/core/browser/data_model/payments/bank_account.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "components/autofill/core/common/autofill_prefs.h"
-#include "components/facilitated_payments/core/browser/ewallet_manager.h"
 #include "components/facilitated_payments/core/browser/facilitated_payments_client.h"
 #include "components/facilitated_payments/core/browser/mock_facilitated_payments_api_client.h"
 #include "components/facilitated_payments/core/browser/mock_facilitated_payments_client.h"

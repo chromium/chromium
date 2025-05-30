@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_FACILITATED_PAYMENTS_CORE_BROWSER_EWALLET_MANAGER_H_
-#define COMPONENTS_FACILITATED_PAYMENTS_CORE_BROWSER_EWALLET_MANAGER_H_
+#ifndef COMPONENTS_FACILITATED_PAYMENTS_CORE_BROWSER_PAYMENT_LINK_MANAGER_H_
+#define COMPONENTS_FACILITATED_PAYMENTS_CORE_BROWSER_PAYMENT_LINK_MANAGER_H_
 
 #include <cstdint>
 #include <memory>
@@ -39,36 +39,36 @@ class FacilitatedPaymentsClient;
 class FacilitatedPaymentsInitiatePaymentResponseDetails;
 enum class AvailableEwalletsConfiguration;
 
-// A cross-platform interface that manages the eWallet push payment flow. It is
-// owned by `FacilitatedPaymentsDriver`.
-class EwalletManager {
+// A cross-platform interface that manages the push payment flow triggered by
+// payment links. It is owned by `FacilitatedPaymentsDriver`.
+class PaymentLinkManager {
  public:
-  EwalletManager(
+  PaymentLinkManager(
       FacilitatedPaymentsClient* client,
       FacilitatedPaymentsApiClientCreator api_client_creator,
       optimization_guide::OptimizationGuideDecider* optimization_guide_decider);
-  EwalletManager(const EwalletManager&) = delete;
-  EwalletManager& operator=(const EwalletManager&) = delete;
-  virtual ~EwalletManager();
+  PaymentLinkManager(const PaymentLinkManager&) = delete;
+  PaymentLinkManager& operator=(const PaymentLinkManager&) = delete;
+  virtual ~PaymentLinkManager();
 
-  // Initiates the eWallet push payment flow for a given payment link in a
+  // Initiates the payment link push payment flow for a given payment link in a
   // certain page. The `payment_link_url` contains all the information to
   // initialize a payment. And the `page_url` is the url of a page where the
   // payment link is detected. More details on payment links can be found at
   // https://github.com/aneeshali/paymentlink/blob/main/docs/explainer.md.
-  virtual void TriggerEwalletPushPayment(const GURL& payment_link_url,
-                                         const GURL& page_url,
-                                         ukm::SourceId ukm_source_id);
+  virtual void TriggerPaymentLinkPushPayment(const GURL& payment_link_url,
+                                             const GURL& page_url,
+                                             ukm::SourceId ukm_source_id);
 
   // Resets `this` to initial state.
   void Reset();
 
  private:
-  friend class EwalletManagerTestApi;
+  friend class PaymentLinkManagerTestApi;
 
   // Lazily initializes an API client and returns a pointer to it. Returns a
   // pointer to the existing API client, if one is already initialized. The
-  // EwalletManager owns this API client. This method can return
+  // PaymentLinkManager owns this API client. This method can return
   // `nullptr` if the API client fails to initialize, e.g., if the
   // `RenderFrameHost` has been destroyed.
   FacilitatedPaymentsApiClient* GetApiClient();
@@ -149,8 +149,9 @@ class EwalletManager {
   // available eWallets based on their support for the given payment link.
   //
   // It will be empty:
-  //  * Before TriggerEwalletPushPayment() is called.
-  //  * If TriggerEwalletPushPayment() is called with an invalid or unsupported
+  //  * Before TriggerPaymentLinkPushPayment() is called.
+  //  * If TriggerPaymentLinkPushPayment() is called with an invalid or
+  //  unsupported
   //    payment link.
   //  * After a call to Reset().
   std::vector<autofill::Ewallet> supported_ewallets_;
@@ -188,7 +189,7 @@ class EwalletManager {
   // state via a callback.
   UiState ui_state_ = UiState::kHidden;
 
-  // Stores the time when eWallet payment flow is triggered.
+  // Stores the time when payment link payment flow is triggered.
   base::TimeTicks payment_flow_triggered_timestamp_;
 
   // True indicates that the eWallet selected by the user is bound to the
@@ -201,9 +202,9 @@ class EwalletManager {
   // Strike database used to check whether to prompt the FOP selector or not.
   std::unique_ptr<PaymentLinkSuggestionStrikeDatabase> strike_database_;
 
-  base::WeakPtrFactory<EwalletManager> weak_ptr_factory_{this};
+  base::WeakPtrFactory<PaymentLinkManager> weak_ptr_factory_{this};
 };
 
 }  // namespace payments::facilitated
 
-#endif  // COMPONENTS_FACILITATED_PAYMENTS_CORE_BROWSER_EWALLET_MANAGER_H_
+#endif  // COMPONENTS_FACILITATED_PAYMENTS_CORE_BROWSER_PAYMENT_LINK_MANAGER_H_

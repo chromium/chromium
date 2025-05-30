@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/facilitated_payments/core/browser/ewallet_manager.h"
+#include "components/facilitated_payments/core/browser/payment_link_manager.h"
 
 #include <cstdint>
 #include <optional>
@@ -16,13 +16,13 @@
 #include "components/autofill/core/browser/strike_databases/payments/test_strike_database.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "components/autofill/core/common/autofill_prefs.h"
-#include "components/facilitated_payments/core/browser/ewallet_manager.h"
-#include "components/facilitated_payments/core/browser/ewallet_manager_test_api.h"
 #include "components/facilitated_payments/core/browser/facilitated_payments_client.h"
 #include "components/facilitated_payments/core/browser/mock_facilitated_payments_api_client.h"
 #include "components/facilitated_payments/core/browser/mock_facilitated_payments_client.h"
 #include "components/facilitated_payments/core/browser/network_api/facilitated_payments_initiate_payment_response_details.h"
 #include "components/facilitated_payments/core/browser/network_api/mock_facilitated_payments_network_interface.h"
+#include "components/facilitated_payments/core/browser/payment_link_manager.h"
+#include "components/facilitated_payments/core/browser/payment_link_manager_test_api.h"
 #include "components/facilitated_payments/core/browser/strike_databases/payment_link_suggestion_strike_database.h"
 #include "components/facilitated_payments/core/metrics/facilitated_payments_metrics.h"
 #include "components/facilitated_payments/core/utils/facilitated_payments_ui_utils.h"
@@ -58,10 +58,10 @@ SecurePayload CreateSecurePayload() {
 
 }  // namespace
 
-class EwalletManagerTest : public testing::Test {
+class PaymentLinkManagerTest : public testing::Test {
  public:
-  EwalletManagerTest()
-      : ewallet_manager_(std::make_unique<EwalletManager>(
+  PaymentLinkManagerTest()
+      : payment_link_manager_(std::make_unique<PaymentLinkManager>(
             &client_, /*api_client_creator=*/
             base::BindRepeating(
                 &MockFacilitatedPaymentsApiClient::CreateApiClient),
@@ -88,12 +88,12 @@ class EwalletManagerTest : public testing::Test {
                 testing::A<optimization_guide::OptimizationMetadata*>()))
         .WillByDefault(testing::Return(
             optimization_guide::OptimizationGuideDecision::kTrue));
-    test_api(*ewallet_manager_)
+    test_api(*payment_link_manager_)
         .set_scheme(PaymentLinkValidator::Scheme::kShopeePay);
 
     // `initiate_payment_request_details_` is lazy initialized in the
     // implementation. Initialize it here so tests depending on it won't crash.
-    test_api(*ewallet_manager_)
+    test_api(*payment_link_manager_)
         .set_initiate_payment_request_details(
             std::make_unique<
                 FacilitatedPaymentsInitiatePaymentRequestDetails>());
@@ -105,7 +105,7 @@ class EwalletManagerTest : public testing::Test {
 
   MockFacilitatedPaymentsApiClient& GetApiClient() {
     return *static_cast<MockFacilitatedPaymentsApiClient*>(
-        test_api(*ewallet_manager_).GetApiClient());
+        test_api(*payment_link_manager_).GetApiClient());
   }
 
  protected:
@@ -113,9 +113,9 @@ class EwalletManagerTest : public testing::Test {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   MockFacilitatedPaymentsClient client_;
   optimization_guide::MockOptimizationGuideDecider optimization_guide_decider_;
-  // Order matters here because `ewallet_manager_` keeps a reference
+  // Order matters here because `payment_link_manager_` keeps a reference
   // to `client_` and `optimization_guide_decider_`.
-  std::unique_ptr<EwalletManager> ewallet_manager_;
+  std::unique_ptr<PaymentLinkManager> payment_link_manager_;
   std::unique_ptr<PrefService> pref_service_;
   syncer::TestSyncService sync_service_;
   autofill::TestPaymentsDataManager payments_data_manager_;
@@ -126,13 +126,13 @@ class EwalletManagerTest : public testing::Test {
 
 // Verify that metrics are logged correctly when a supported payment link is
 // detected.
-TEST_F(EwalletManagerTest, LogPaymentLinkDetected) {
+TEST_F(PaymentLinkManagerTest, LogPaymentLinkDetected) {
   base::HistogramTester histogram_tester;
   GURL supported_payment_link(
       "shopeepay://shopeepay.com.my?code=https://shopeepay.com.my/"
       "281011051692389958586862838?merchant=Walmart&amount=101&currency=usd");
 
-  ewallet_manager_->TriggerEwalletPushPayment(
+  payment_link_manager_->TriggerPaymentLinkPushPayment(
       supported_payment_link, GURL("https://www.example.com"),
       ukm::UkmRecorder::GetNewSourceID());
 
@@ -149,7 +149,7 @@ TEST_F(EwalletManagerTest, LogPaymentLinkDetected) {
 }
 
 // The manager checks for API availability after payment link validation.
-TEST_F(EwalletManagerTest, ApiClientCheckedForAvailability) {
+TEST_F(PaymentLinkManagerTest, ApiClientCheckedForAvailability) {
   payments_data_manager_.AddEwalletForTest(
       autofill::Ewallet(/*instrument_id=*/100, u"nickname",
                         /*display_icon_url=*/GURL("http://www.example.com"),
@@ -164,14 +164,14 @@ TEST_F(EwalletManagerTest, ApiClientCheckedForAvailability) {
 
   EXPECT_CALL(GetApiClient(), IsAvailable(testing::_));
 
-  ewallet_manager_->TriggerEwalletPushPayment(
+  payment_link_manager_->TriggerPaymentLinkPushPayment(
       supported_payment_link, GURL("https://www.example.com"),
       ukm::UkmRecorder::GetNewSourceID());
 }
 
 // API availability is not invoked if payment link is not supported by available
 // eWallet accounts.
-TEST_F(EwalletManagerTest,
+TEST_F(PaymentLinkManagerTest,
        Unsupported_payment_link_ApiClientNotCheckedForAvailability) {
   payments_data_manager_.AddEwalletForTest(
       autofill::Ewallet(/*instrument_id=*/100, u"nickname",
@@ -186,13 +186,13 @@ TEST_F(EwalletManagerTest,
 
   EXPECT_CALL(GetApiClient(), IsAvailable(testing::_)).Times(0);
 
-  ewallet_manager_->TriggerEwalletPushPayment(
+  payment_link_manager_->TriggerPaymentLinkPushPayment(
       unsupported_payment_link, GURL("https://www.example.com"),
       ukm::UkmRecorder::GetNewSourceID());
 }
 
 // API availability is not invoked if payment link is invalid.
-TEST_F(EwalletManagerTest,
+TEST_F(PaymentLinkManagerTest,
        InvalidPaymentLink_ApiClientNotCheckedForAvailability) {
   base::HistogramTester histogram_tester;
   payments_data_manager_.AddEwalletForTest(
@@ -207,7 +207,7 @@ TEST_F(EwalletManagerTest,
 
   EXPECT_CALL(GetApiClient(), IsAvailable(testing::_)).Times(0);
 
-  ewallet_manager_->TriggerEwalletPushPayment(
+  payment_link_manager_->TriggerPaymentLinkPushPayment(
       invalidPaymentLink, GURL("https://www.example.com"),
       ukm::UkmRecorder::GetNewSourceID());
 
@@ -222,7 +222,7 @@ TEST_F(EwalletManagerTest,
 }
 
 // API availability is not invoked if there is no linked account.
-TEST_F(EwalletManagerTest,
+TEST_F(PaymentLinkManagerTest,
        NoEwalletAccount_ApiClientNotCheckedForAvailability) {
   base::HistogramTester histogram_tester;
   GURL supported_payment_link(
@@ -231,7 +231,7 @@ TEST_F(EwalletManagerTest,
 
   EXPECT_CALL(GetApiClient(), IsAvailable(testing::_)).Times(0);
 
-  ewallet_manager_->TriggerEwalletPushPayment(
+  payment_link_manager_->TriggerPaymentLinkPushPayment(
       supported_payment_link, GURL("https://www.example.com"),
       ukm::UkmRecorder::GetNewSourceID());
 
@@ -246,7 +246,8 @@ TEST_F(EwalletManagerTest,
 }
 
 // API availability is not invoked if in landscape mode.
-TEST_F(EwalletManagerTest, InLandscapeMode_ApiClientNotCheckedForAvailability) {
+TEST_F(PaymentLinkManagerTest,
+       InLandscapeMode_ApiClientNotCheckedForAvailability) {
   base::HistogramTester histogram_tester;
   payments_data_manager_.AddEwalletForTest(
       autofill::Ewallet(/*instrument_id=*/100, u"nickname",
@@ -265,7 +266,7 @@ TEST_F(EwalletManagerTest, InLandscapeMode_ApiClientNotCheckedForAvailability) {
       .WillOnce(testing::Return(true));
   EXPECT_CALL(GetApiClient(), IsAvailable(testing::_)).Times(0);
 
-  ewallet_manager_->TriggerEwalletPushPayment(
+  payment_link_manager_->TriggerPaymentLinkPushPayment(
       supported_payment_link, GURL("https://www.example.com"),
       ukm::UkmRecorder::GetNewSourceID());
 
@@ -280,7 +281,7 @@ TEST_F(EwalletManagerTest, InLandscapeMode_ApiClientNotCheckedForAvailability) {
 }
 
 // API availability is not invoked if payments data manager is not available.
-TEST_F(EwalletManagerTest,
+TEST_F(PaymentLinkManagerTest,
        PaymentsDataManagerUnavailable_ApiClientNotCheckedForAvailability) {
   payments_data_manager_.AddEwalletForTest(
       autofill::Ewallet(/*instrument_id=*/100, u"nickname",
@@ -299,14 +300,15 @@ TEST_F(EwalletManagerTest,
       .WillOnce(testing::Return(nullptr));
   EXPECT_CALL(GetApiClient(), IsAvailable(testing::_)).Times(0);
 
-  ewallet_manager_->TriggerEwalletPushPayment(
+  payment_link_manager_->TriggerPaymentLinkPushPayment(
       supported_payment_link, GURL("https://www.example.com"),
       ukm::UkmRecorder::GetNewSourceID());
 }
 
 // API availability is not invoked if the user has opted out of the eWallet
 // flow.
-TEST_F(EwalletManagerTest, UserOptedOut_ApiClientNotCheckedForAvailability) {
+TEST_F(PaymentLinkManagerTest,
+       UserOptedOut_ApiClientNotCheckedForAvailability) {
   base::HistogramTester histogram_tester;
   payments_data_manager_.AddEwalletForTest(
       autofill::Ewallet(/*instrument_id=*/100, u"nickname",
@@ -324,7 +326,7 @@ TEST_F(EwalletManagerTest, UserOptedOut_ApiClientNotCheckedForAvailability) {
 
   EXPECT_CALL(GetApiClient(), IsAvailable(testing::_)).Times(0);
 
-  ewallet_manager_->TriggerEwalletPushPayment(
+  payment_link_manager_->TriggerPaymentLinkPushPayment(
       supported_payment_link, GURL("https://www.example.com"),
       ukm::UkmRecorder::GetNewSourceID());
 
@@ -339,7 +341,7 @@ TEST_F(EwalletManagerTest, UserOptedOut_ApiClientNotCheckedForAvailability) {
 }
 
 // API availability is not invoked if in foldable devices.
-TEST_F(EwalletManagerTest, IsFoldable_ApiClientNotCheckedForAvailability) {
+TEST_F(PaymentLinkManagerTest, IsFoldable_ApiClientNotCheckedForAvailability) {
   base::HistogramTester histogram_tester;
   payments_data_manager_.AddEwalletForTest(
       autofill::Ewallet(/*instrument_id=*/100, u"nickname",
@@ -356,7 +358,7 @@ TEST_F(EwalletManagerTest, IsFoldable_ApiClientNotCheckedForAvailability) {
   EXPECT_CALL(client_, IsFoldable).Times(1).WillOnce(testing::Return(true));
   EXPECT_CALL(GetApiClient(), IsAvailable(testing::_)).Times(0);
 
-  ewallet_manager_->TriggerEwalletPushPayment(
+  payment_link_manager_->TriggerPaymentLinkPushPayment(
       supported_payment_link, GURL("https://www.example.com"),
       ukm::UkmRecorder::GetNewSourceID());
 
@@ -372,7 +374,8 @@ TEST_F(EwalletManagerTest, IsFoldable_ApiClientNotCheckedForAvailability) {
 
 // If the facilitated payment API is available, then the manager shows the
 // eWallet payment prompt.
-TEST_F(EwalletManagerTest, ShowsEwalletPaymentPromptWhenApiClientAvailable) {
+TEST_F(PaymentLinkManagerTest,
+       ShowsEwalletPaymentPromptWhenApiClientAvailable) {
   base::HistogramTester histogram_tester;
   autofill::Ewallet ewallet(
       /*instrument_id=*/100, u"nickname",
@@ -387,7 +390,7 @@ TEST_F(EwalletManagerTest, ShowsEwalletPaymentPromptWhenApiClientAvailable) {
       "shopeepay://shopeepay.com.my?code=https://shopeepay.com.my/"
       "281011051692389958586862838?merchant=Walmart&amount=101&currency=usd");
 
-  ewallet_manager_->TriggerEwalletPushPayment(
+  payment_link_manager_->TriggerPaymentLinkPushPayment(
       supported_payment_link, GURL("https://www.example.com"),
       ukm::UkmRecorder::GetNewSourceID());
 
@@ -395,7 +398,7 @@ TEST_F(EwalletManagerTest, ShowsEwalletPaymentPromptWhenApiClientAvailable) {
               ShowEwalletPaymentPrompt(
                   testing::UnorderedElementsAreArray({ewallet}), testing::_));
 
-  test_api(*ewallet_manager_)
+  test_api(*payment_link_manager_)
       .OnApiAvailabilityReceived(base::TimeTicks::Now() - base::Seconds(2),
                                  /*is_api_available=*/true);
 
@@ -411,12 +414,12 @@ TEST_F(EwalletManagerTest, ShowsEwalletPaymentPromptWhenApiClientAvailable) {
 
 // If the facilitated payment API is not available, then the manager doesn't
 // show the eWallet payment prompt.
-TEST_F(EwalletManagerTest,
+TEST_F(PaymentLinkManagerTest,
        NotShowEwalletPaymentPromptWhenApiClientNotAvailable) {
   base::HistogramTester histogram_tester;
   EXPECT_CALL(client_, ShowEwalletPaymentPrompt).Times(0);
 
-  test_api(*ewallet_manager_)
+  test_api(*payment_link_manager_)
       .OnApiAvailabilityReceived(base::TimeTicks::Now() - base::Seconds(2),
                                  false);
   histogram_tester.ExpectUniqueSample(
@@ -440,7 +443,7 @@ TEST_F(EwalletManagerTest,
 
 // If the user selects an eWallet account in the payment prompt, request for
 // risk data is made, and progress screen is shown.
-TEST_F(EwalletManagerTest,
+TEST_F(PaymentLinkManagerTest,
        EwalletPaymentPromptAccepted_LoadRiskDataTriggered_ProgressScreenShown) {
   payments_data_manager_.AddEwalletForTest(
       autofill::Ewallet(/*instrument_id=*/100, u"nickname",
@@ -454,17 +457,17 @@ TEST_F(EwalletManagerTest,
       "shopeepay://shopeepay.com.my?code=https://shopeepay.com.my/"
       "281011051692389958586862838?merchant=Walmart&amount=101&currency=usd");
 
-  ewallet_manager_->TriggerEwalletPushPayment(
+  payment_link_manager_->TriggerPaymentLinkPushPayment(
       supported_payment_link, GURL("https://www.example.com"),
       ukm::UkmRecorder::GetNewSourceID());
   EXPECT_CALL(client_, LoadRiskData(testing::_));
   EXPECT_CALL(client_, ShowProgressScreen());
 
-  test_api(*ewallet_manager_)
+  test_api(*payment_link_manager_)
       .OnEwalletAccountSelected(/*selected_instrument_id=*/100L);
 }
 
-TEST_F(EwalletManagerTest, DeviceIsBound) {
+TEST_F(PaymentLinkManagerTest, DeviceIsBound) {
   payments_data_manager_.AddEwalletForTest(
       autofill::Ewallet(/*instrument_id=*/100, u"nickname",
                         /*display_icon_url=*/GURL("http://www.example.com"),
@@ -477,16 +480,16 @@ TEST_F(EwalletManagerTest, DeviceIsBound) {
       "shopeepay://shopeepay.com.my?code=https://shopeepay.com.my/"
       "281011051692389958586862838?merchant=Walmart&amount=101&currency=usd");
 
-  ewallet_manager_->TriggerEwalletPushPayment(
+  payment_link_manager_->TriggerPaymentLinkPushPayment(
       supported_payment_link, GURL("https://www.example.com"),
       ukm::UkmRecorder::GetNewSourceID());
-  test_api(*ewallet_manager_)
+  test_api(*payment_link_manager_)
       .OnEwalletAccountSelected(/*selected_instrument_id=*/100L);
 
-  EXPECT_TRUE(test_api(*ewallet_manager_).is_device_bound());
+  EXPECT_TRUE(test_api(*payment_link_manager_).is_device_bound());
 }
 
-TEST_F(EwalletManagerTest, DeviceIsNotBound) {
+TEST_F(PaymentLinkManagerTest, DeviceIsNotBound) {
   payments_data_manager_.AddEwalletForTest(
       autofill::Ewallet(/*instrument_id=*/100, u"nickname",
                         /*display_icon_url=*/GURL("http://www.example.com"),
@@ -499,25 +502,25 @@ TEST_F(EwalletManagerTest, DeviceIsNotBound) {
       "shopeepay://shopeepay.com.my?code=https://shopeepay.com.my/"
       "281011051692389958586862838?merchant=Walmart&amount=101&currency=usd");
 
-  ewallet_manager_->TriggerEwalletPushPayment(
+  payment_link_manager_->TriggerPaymentLinkPushPayment(
       supported_payment_link, GURL("https://www.example.com"),
       ukm::UkmRecorder::GetNewSourceID());
-  test_api(*ewallet_manager_)
+  test_api(*payment_link_manager_)
       .OnEwalletAccountSelected(/*selected_instrument_id=*/100L);
 
-  EXPECT_FALSE(test_api(*ewallet_manager_).is_device_bound());
+  EXPECT_FALSE(test_api(*payment_link_manager_).is_device_bound());
 }
 
 // If the risk data is empty, then the manager does not retrieve a client token
 // from the facilitated payments API client.
-TEST_F(EwalletManagerTest,
+TEST_F(PaymentLinkManagerTest,
        RiskDataEmpty_GetClientTokenNotCalled_ErrorScreenShown) {
   base::HistogramTester histogram_tester;
 
   EXPECT_CALL(GetApiClient(), GetClientToken(testing::_)).Times(0);
   EXPECT_CALL(client_, ShowErrorScreen);
 
-  test_api(*ewallet_manager_)
+  test_api(*payment_link_manager_)
       .OnRiskDataLoaded(base::TimeTicks::Now() - base::Seconds(2),
                         /*risk_data=*/"");
 
@@ -533,12 +536,12 @@ TEST_F(EwalletManagerTest,
 
 // If the risk data is not empty, then the manager retrieves a client token from
 // the facilitated payments API client.
-TEST_F(EwalletManagerTest, RiskDataNotEmpty_GetClientTokenCalled) {
+TEST_F(PaymentLinkManagerTest, RiskDataNotEmpty_GetClientTokenCalled) {
   base::HistogramTester histogram_tester;
 
   EXPECT_CALL(GetApiClient(), GetClientToken(testing::_));
 
-  test_api(*ewallet_manager_)
+  test_api(*payment_link_manager_)
       .OnRiskDataLoaded(base::TimeTicks::Now() - base::Seconds(2),
                         /*risk_data=*/"fake risk data");
 
@@ -553,12 +556,13 @@ TEST_F(EwalletManagerTest, RiskDataNotEmpty_GetClientTokenCalled) {
 }
 
 // If the client token is empty, an error screen will be shown.
-TEST_F(EwalletManagerTest, OnGetClientToken_ClientTokenEmpty_ErrorScreenShown) {
+TEST_F(PaymentLinkManagerTest,
+       OnGetClientToken_ClientTokenEmpty_ErrorScreenShown) {
   base::HistogramTester histogram_tester;
 
   EXPECT_CALL(client_, ShowErrorScreen);
 
-  test_api(*ewallet_manager_)
+  test_api(*payment_link_manager_)
       .OnGetClientToken(base::TimeTicks::Now() - base::Seconds(2),
                         std::vector<uint8_t>{});
 
@@ -573,11 +577,11 @@ TEST_F(EwalletManagerTest, OnGetClientToken_ClientTokenEmpty_ErrorScreenShown) {
 }
 
 // Test that GetClientToken related metrics are logged correctly.
-TEST_F(EwalletManagerTest, LogGetClientTokenResultAndLatency) {
+TEST_F(PaymentLinkManagerTest, LogGetClientTokenResultAndLatency) {
   for (bool get_client_token_result : {true, false}) {
     base::HistogramTester histogram_tester;
 
-    test_api(*ewallet_manager_)
+    test_api(*payment_link_manager_)
         .OnGetClientToken(base::TimeTicks::Now() - base::Seconds(2),
                           get_client_token_result
                               ? std::vector<uint8_t>{'t', 'o', 'k', 'e', 'n'}
@@ -601,7 +605,7 @@ TEST_F(EwalletManagerTest, LogGetClientTokenResultAndLatency) {
 // Test that SendInitiatePaymentRequest doesn't initiates payment when
 // FacilitatedPaymentsNetworkInterface is not available.
 TEST_F(
-    EwalletManagerTest,
+    PaymentLinkManagerTest,
     SendInitiatePaymentRequest_PaymentsNetworkInterfaceNotAvailable_InitiatePaymentNotTriggered) {
   EXPECT_CALL(client_, GetFacilitatedPaymentsNetworkInterface)
       .Times(1)
@@ -612,16 +616,16 @@ TEST_F(
       .Times(0);
   EXPECT_CALL(client_, ShowErrorScreen);
 
-  test_api(*ewallet_manager_).SendInitiatePaymentRequest();
+  test_api(*payment_link_manager_).SendInitiatePaymentRequest();
 }
 
 // Test that LogInitiatePaymentAttempt is logged correctly.
-TEST_F(EwalletManagerTest, LogInitiatePaymentAttempt) {
+TEST_F(PaymentLinkManagerTest, LogInitiatePaymentAttempt) {
   base::HistogramTester histogram_tester;
   EXPECT_CALL(payments_network_interface_,
               InitiatePayment(testing::_, testing::_, testing::_));
 
-  test_api(*ewallet_manager_).SendInitiatePaymentRequest();
+  test_api(*payment_link_manager_).SendInitiatePaymentRequest();
 
   histogram_tester.ExpectUniqueSample(
       "FacilitatedPayments.Ewallet.InitiatePayment.Attempt",
@@ -636,7 +640,7 @@ TEST_F(EwalletManagerTest, LogInitiatePaymentAttempt) {
 // Test that if the response from
 // `FacilitatedPaymentsNetworkInterface::InitiatePayment` call has failure
 // result, purchase action is not invoked. Instead, an error message is shown.
-TEST_F(EwalletManagerTest,
+TEST_F(PaymentLinkManagerTest,
        OnInitiatePaymentResponseReceived_FailureResponse_ErrorScreenShown) {
   base::HistogramTester histogram_tester;
 
@@ -646,7 +650,7 @@ TEST_F(EwalletManagerTest,
   auto response_details =
       std::make_unique<FacilitatedPaymentsInitiatePaymentResponseDetails>();
   response_details->secure_payload_ = CreateSecurePayload();
-  test_api(*ewallet_manager_)
+  test_api(*payment_link_manager_)
       .OnInitiatePaymentResponseReceived(
           base::TimeTicks::Now() - base::Seconds(2),
           autofill::payments::PaymentsAutofillClient::PaymentsRpcResult::
@@ -674,7 +678,7 @@ TEST_F(EwalletManagerTest,
 // Test that if the response from
 // `FacilitatedPaymentsNetworkInterface::InitiatePayment` has empty action
 // token, purchase action is not invoked. Instead, an error message is shown.
-TEST_F(EwalletManagerTest,
+TEST_F(PaymentLinkManagerTest,
        OnInitiatePaymentResponseReceived_NoActionToken_ErrorScreenShown) {
   base::HistogramTester histogram_tester;
 
@@ -683,7 +687,7 @@ TEST_F(EwalletManagerTest,
 
   auto response_details =
       std::make_unique<FacilitatedPaymentsInitiatePaymentResponseDetails>();
-  test_api(*ewallet_manager_)
+  test_api(*payment_link_manager_)
       .OnInitiatePaymentResponseReceived(
           base::TimeTicks::Now() - base::Seconds(2),
           autofill::payments::PaymentsAutofillClient::PaymentsRpcResult::
@@ -710,7 +714,7 @@ TEST_F(EwalletManagerTest,
 
 // Test that if the core account is std::nullopt, purchase action is not
 // invoked. Instead, an error message is shown.
-TEST_F(EwalletManagerTest,
+TEST_F(PaymentLinkManagerTest,
        OnInitiatePaymentResponseReceived_NoCoreAccountInfo_ErrorScreenShown) {
   base::HistogramTester histogram_tester;
 
@@ -724,7 +728,7 @@ TEST_F(EwalletManagerTest,
   auto response_details =
       std::make_unique<FacilitatedPaymentsInitiatePaymentResponseDetails>();
   response_details->secure_payload_ = CreateSecurePayload();
-  test_api(*ewallet_manager_)
+  test_api(*payment_link_manager_)
       .OnInitiatePaymentResponseReceived(
           base::TimeTicks::Now() - base::Seconds(2),
           autofill::payments::PaymentsAutofillClient::PaymentsRpcResult::
@@ -751,7 +755,7 @@ TEST_F(EwalletManagerTest,
 
 // Test that if the user is logged out, purchase action is not invoked. Instead,
 // an error message is shown.
-TEST_F(EwalletManagerTest,
+TEST_F(PaymentLinkManagerTest,
        OnInitiatePaymentResponseReceived_LoggedOutProfile_ErrorScreenShown) {
   base::HistogramTester histogram_tester;
   ON_CALL(client_, GetCoreAccountInfo)
@@ -763,7 +767,7 @@ TEST_F(EwalletManagerTest,
   auto response_details =
       std::make_unique<FacilitatedPaymentsInitiatePaymentResponseDetails>();
   response_details->secure_payload_ = CreateSecurePayload();
-  test_api(*ewallet_manager_)
+  test_api(*payment_link_manager_)
       .OnInitiatePaymentResponseReceived(
           base::TimeTicks::Now() - base::Seconds(2),
           autofill::payments::PaymentsAutofillClient::PaymentsRpcResult::
@@ -782,7 +786,7 @@ TEST_F(EwalletManagerTest,
 
 // Test that the puchase action is invoked after receiving a success response
 // from the `FacilitatedPaymentsNetworkInterface::InitiatePayment` call.
-TEST_F(EwalletManagerTest,
+TEST_F(PaymentLinkManagerTest,
        OnInitiatePaymentResponseReceived_InvokePurchaseActionTriggered) {
   base::HistogramTester histogram_tester;
 
@@ -791,7 +795,7 @@ TEST_F(EwalletManagerTest,
   auto response_details =
       std::make_unique<FacilitatedPaymentsInitiatePaymentResponseDetails>();
   response_details->secure_payload_ = CreateSecurePayload();
-  test_api(*ewallet_manager_)
+  test_api(*payment_link_manager_)
       .OnInitiatePaymentResponseReceived(
           base::TimeTicks::Now() - base::Seconds(2),
           autofill::payments::PaymentsAutofillClient::PaymentsRpcResult::
@@ -817,8 +821,8 @@ TEST_F(EwalletManagerTest,
 }
 
 // Test that API availability is invoked for websites in the allowlist.
-TEST_F(EwalletManagerTest,
-       TriggerEwalletPushPayment_UrlInAllowlist_ApiAvailabilityInvoked) {
+TEST_F(PaymentLinkManagerTest,
+       TriggerPaymentLinkPushPayment_UrlInAllowlist_ApiAvailabilityInvoked) {
   GURL page_url("https://example.com/");
   payments_data_manager_.AddEwalletForTest(autofill::Ewallet(
       /*instrument_id=*/100, u"nickname",
@@ -842,14 +846,15 @@ TEST_F(EwalletManagerTest,
           optimization_guide::OptimizationGuideDecision::kTrue));
   EXPECT_CALL(GetApiClient(), IsAvailable);
 
-  ewallet_manager_->TriggerEwalletPushPayment(
+  payment_link_manager_->TriggerPaymentLinkPushPayment(
       supported_payment_link, page_url, ukm::UkmRecorder::GetNewSourceID());
 }
 
 // Test that API availability is not invoked for webpages not in the
 // allowlist.
-TEST_F(EwalletManagerTest,
-       TriggerEwalletPushPayment_UrlNotInAllowlist_ApiAvailabilityNotInvoked) {
+TEST_F(
+    PaymentLinkManagerTest,
+    TriggerPaymentLinkPushPayment_UrlNotInAllowlist_ApiAvailabilityNotInvoked) {
   base::HistogramTester histogram_tester;
   GURL page_url("https://example.com/");
   payments_data_manager_.AddEwalletForTest(
@@ -875,7 +880,7 @@ TEST_F(EwalletManagerTest,
           optimization_guide::OptimizationGuideDecision::kFalse));
   EXPECT_CALL(GetApiClient(), IsAvailable).Times(0);
 
-  ewallet_manager_->TriggerEwalletPushPayment(
+  payment_link_manager_->TriggerPaymentLinkPushPayment(
       supported_payment_link, page_url, ukm::UkmRecorder::GetNewSourceID());
 
   histogram_tester.ExpectUniqueSample(
@@ -891,8 +896,8 @@ TEST_F(EwalletManagerTest,
 // Test that API availability is not invoked if the allowlist is not
 // yet available
 TEST_F(
-    EwalletManagerTest,
-    TriggerEwalletPushPayment_AllowlistNotAvailable_ApiAvailabilityNotInvoked) {
+    PaymentLinkManagerTest,
+    TriggerPaymentLinkPushPayment_AllowlistNotAvailable_ApiAvailabilityNotInvoked) {
   GURL page_url("https://example.com/");
   payments_data_manager_.AddEwalletForTest(
       autofill::Ewallet(/*instrument_id=*/100, u"nickname",
@@ -917,13 +922,14 @@ TEST_F(
           optimization_guide::OptimizationGuideDecision::kUnknown));
   EXPECT_CALL(GetApiClient(), IsAvailable).Times(0);
 
-  ewallet_manager_->TriggerEwalletPushPayment(
+  payment_link_manager_->TriggerPaymentLinkPushPayment(
       supported_payment_link, page_url, ukm::UkmRecorder::GetNewSourceID());
 }
 
 // Test that when the eWallet FOP selector is shown, the latency UMA and FOP
 // selector shown UKM metrics are logged.
-TEST_F(EwalletManagerTest, FopSelectorShown_LatencyHistogramAndShownUkmLogged) {
+TEST_F(PaymentLinkManagerTest,
+       FopSelectorShown_LatencyHistogramAndShownUkmLogged) {
   base::HistogramTester histogram_tester;
   autofill::Ewallet supported_ewallet(
       /*instrument_id=*/100, u"nickname",
@@ -940,14 +946,14 @@ TEST_F(EwalletManagerTest, FopSelectorShown_LatencyHistogramAndShownUkmLogged) {
       "281011051692389958586862838?merchant=Walmart&amount=101&currency=usd");
 
   // Simulate eWallet payment flow is triggered.
-  ewallet_manager_->TriggerEwalletPushPayment(
+  payment_link_manager_->TriggerPaymentLinkPushPayment(
       supported_payment_link, page_url, ukm::UkmRecorder::GetNewSourceID());
   // Fully mocked time, does not advance by itself.
   FastForwardBy(base::Seconds(2));
   // Simulate that the FOP selector was shown successfully.
-  test_api(*ewallet_manager_)
+  test_api(*payment_link_manager_)
       .ShowEwalletPaymentPrompt({supported_ewallet}, base::DoNothing());
-  test_api(*ewallet_manager_).OnUiEvent(UiEvent::kNewScreenShown);
+  test_api(*payment_link_manager_).OnUiEvent(UiEvent::kNewScreenShown);
 
   // Verify that when the eWallet FOP selector is shown, latency histogram is
   // logged.
@@ -971,27 +977,27 @@ TEST_F(EwalletManagerTest, FopSelectorShown_LatencyHistogramAndShownUkmLogged) {
   EXPECT_EQ(ukm_entries[0].metrics.at("Shown"), true);
 }
 
-class EwalletManagerTestForUiScreens
-    : public EwalletManagerTest,
+class PaymentLinkManagerTestForUiScreens
+    : public PaymentLinkManagerTest,
       public testing::WithParamInterface<UiState> {
  public:
   void SetUp() override {
     // Default state.
-    EXPECT_EQ(test_api(*ewallet_manager_).ui_state(), UiState::kHidden);
+    EXPECT_EQ(test_api(*payment_link_manager_).ui_state(), UiState::kHidden);
 
     switch (ui_state()) {
       case UiState::kFopSelector: {
         const std::vector<autofill::Ewallet> ewallets = {
             autofill::test::CreateEwalletAccount(100L)};
-        test_api(*ewallet_manager_)
+        test_api(*payment_link_manager_)
             .ShowEwalletPaymentPrompt(std::move(ewallets), base::DoNothing());
         break;
       }
       case UiState::kProgressScreen:
-        test_api(*ewallet_manager_).ShowProgressScreen();
+        test_api(*payment_link_manager_).ShowProgressScreen();
         break;
       case UiState::kErrorScreen:
-        test_api(*ewallet_manager_).ShowErrorScreen();
+        test_api(*payment_link_manager_).ShowErrorScreen();
         break;
       case UiState::kHidden:
         NOTREACHED();
@@ -1001,22 +1007,22 @@ class EwalletManagerTestForUiScreens
   UiState ui_state() { return GetParam(); }
 };
 
-INSTANTIATE_TEST_SUITE_P(EwalletManagerTest,
-                         EwalletManagerTestForUiScreens,
+INSTANTIATE_TEST_SUITE_P(PaymentLinkManagerTest,
+                         PaymentLinkManagerTestForUiScreens,
                          testing::Values(UiState::kFopSelector,
                                          UiState::kProgressScreen,
                                          UiState::kErrorScreen));
 
 // Test that when a new screen is shown, UI state reflects the current UI being
 // shown.
-TEST_P(EwalletManagerTestForUiScreens, NewScreenShown) {
+TEST_P(PaymentLinkManagerTestForUiScreens, NewScreenShown) {
   base::HistogramTester histogram_tester;
 
   // Simulate new screen was shown successfully.
-  test_api(*ewallet_manager_).OnUiEvent(UiEvent::kNewScreenShown);
+  test_api(*payment_link_manager_).OnUiEvent(UiEvent::kNewScreenShown);
 
   // Verify feature has updated the UI state.
-  EXPECT_EQ(test_api(*ewallet_manager_).ui_state(), ui_state());
+  EXPECT_EQ(test_api(*payment_link_manager_).ui_state(), ui_state());
 
   histogram_tester.ExpectUniqueSample(
       "FacilitatedPayments.Ewallet.UiScreenShown",
@@ -1029,14 +1035,14 @@ TEST_P(EwalletManagerTestForUiScreens, NewScreenShown) {
 }
 
 // Test that when a new screen could not be shown, UI state is updated.
-TEST_P(EwalletManagerTestForUiScreens, NewScreenCouldNotBeShown) {
+TEST_P(PaymentLinkManagerTestForUiScreens, NewScreenCouldNotBeShown) {
   base::HistogramTester histogram_tester;
 
   // Simulate new screen could not be shown.
-  test_api(*ewallet_manager_).OnUiEvent(UiEvent::kScreenClosedNotByUser);
+  test_api(*payment_link_manager_).OnUiEvent(UiEvent::kScreenClosedNotByUser);
 
   // Verify that the UI state is hidden.
-  EXPECT_EQ(test_api(*ewallet_manager_).ui_state(), UiState::kHidden);
+  EXPECT_EQ(test_api(*payment_link_manager_).ui_state(), UiState::kHidden);
 
   histogram_tester.ExpectUniqueSample(
       "FacilitatedPayments.Ewallet.PayflowExitedReason",
@@ -1050,16 +1056,16 @@ TEST_P(EwalletManagerTestForUiScreens, NewScreenCouldNotBeShown) {
 
 // Test that when the UI screen is closed, but it was not due to a user action,
 // the feature updates the UI state.
-TEST_P(EwalletManagerTestForUiScreens, ScreenClosedNotByUser) {
+TEST_P(PaymentLinkManagerTestForUiScreens, ScreenClosedNotByUser) {
   base::HistogramTester histogram_tester;
 
   // Simulate new screen was shown successfully.
-  test_api(*ewallet_manager_).OnUiEvent(UiEvent::kNewScreenShown);
+  test_api(*payment_link_manager_).OnUiEvent(UiEvent::kNewScreenShown);
   // Simulate UI screen was closed, but it was not due to a user action.
-  test_api(*ewallet_manager_).OnUiEvent(UiEvent::kScreenClosedNotByUser);
+  test_api(*payment_link_manager_).OnUiEvent(UiEvent::kScreenClosedNotByUser);
 
   // Verify that the UI state is hidden.
-  EXPECT_EQ(test_api(*ewallet_manager_).ui_state(), UiState::kHidden);
+  EXPECT_EQ(test_api(*payment_link_manager_).ui_state(), UiState::kHidden);
 
   histogram_tester.ExpectUniqueSample(
       "FacilitatedPayments.Ewallet.PayflowExitedReason",
@@ -1073,16 +1079,16 @@ TEST_P(EwalletManagerTestForUiScreens, ScreenClosedNotByUser) {
 
 // Test that when the UI screen is closed by the user, the feature updates the
 // UI state.
-TEST_P(EwalletManagerTestForUiScreens, ScreenClosedByUser) {
+TEST_P(PaymentLinkManagerTestForUiScreens, ScreenClosedByUser) {
   base::HistogramTester histogram_tester;
 
   // Simulate new screen was shown successfully.
-  test_api(*ewallet_manager_).OnUiEvent(UiEvent::kNewScreenShown);
+  test_api(*payment_link_manager_).OnUiEvent(UiEvent::kNewScreenShown);
   // Simulate UI screen was closed by the user.
-  test_api(*ewallet_manager_).OnUiEvent(UiEvent::kScreenClosedByUser);
+  test_api(*payment_link_manager_).OnUiEvent(UiEvent::kScreenClosedByUser);
 
   // Verify that the UI state is hidden.
-  EXPECT_EQ(test_api(*ewallet_manager_).ui_state(), UiState::kHidden);
+  EXPECT_EQ(test_api(*payment_link_manager_).ui_state(), UiState::kHidden);
 
   histogram_tester.ExpectUniqueSample(
       "FacilitatedPayments.Ewallet.PayflowExitedReason",
@@ -1096,53 +1102,53 @@ TEST_P(EwalletManagerTestForUiScreens, ScreenClosedByUser) {
 
 // Test that when Chrome fails to invoke purchase action, the error screen is
 // shown.
-TEST_F(EwalletManagerTest,
+TEST_F(PaymentLinkManagerTest,
        OnTransactionResult_CouldNotInvoke_ErrorScreenShown) {
   EXPECT_CALL(client_, ShowErrorScreen);
 
-  test_api(*ewallet_manager_)
+  test_api(*payment_link_manager_)
       .OnTransactionResult(base::TimeTicks::Now() - base::Seconds(2),
                            PurchaseActionResult::kCouldNotInvoke);
 }
 
 // Test that when Chrome is successful in invoking the purchase action, the UI
 // screen is dismissed.
-TEST_F(EwalletManagerTest, OnTransactionResult_ResultOk_UiScreenDismissed) {
+TEST_F(PaymentLinkManagerTest, OnTransactionResult_ResultOk_UiScreenDismissed) {
   // `DismissPrompt` is called once when the purchase action result is
   // received, and again when the test fixture destroys the `manager_`.
   EXPECT_CALL(client_, DismissPrompt).Times(2);
 
-  test_api(*ewallet_manager_)
+  test_api(*payment_link_manager_)
       .OnTransactionResult(base::TimeTicks::Now() - base::Seconds(2),
                            PurchaseActionResult::kResultOk);
 }
 
 // Test that when Chrome is successful in invoking the purchase action, the UI
 // screen is dismissed.
-TEST_F(EwalletManagerTest,
+TEST_F(PaymentLinkManagerTest,
        OnTransactionResult_ResultCanceled_UiScreenDismissed) {
   // `DismissPrompt` is called once when the purchase action result is
   // received, and again when the test fixture destroys the `manager_`.
   EXPECT_CALL(client_, DismissPrompt).Times(2);
 
-  test_api(*ewallet_manager_)
+  test_api(*payment_link_manager_)
       .OnTransactionResult(base::TimeTicks::Now() - base::Seconds(2),
                            PurchaseActionResult::kResultCanceled);
 }
 
-class EwalletManagerOnTransactionResultLoggingTest
+class PaymentLinkManagerOnTransactionResultLoggingTest
     : public testing::TestWithParam<std::tuple<PurchaseActionResult, bool>> {
  public:
-  EwalletManagerOnTransactionResultLoggingTest()
-      : ewallet_manager_(std::make_unique<EwalletManager>(
+  PaymentLinkManagerOnTransactionResultLoggingTest()
+      : payment_link_manager_(std::make_unique<PaymentLinkManager>(
             &client_, /*api_client_creator=*/
             base::BindRepeating(
                 &MockFacilitatedPaymentsApiClient::CreateApiClient),
             &optimization_guide_decider_)) {
-    test_api(*ewallet_manager_)
+    test_api(*payment_link_manager_)
         .set_scheme(PaymentLinkValidator::Scheme::kShopeePay);
   }
-  ~EwalletManagerOnTransactionResultLoggingTest() = default;
+  ~PaymentLinkManagerOnTransactionResultLoggingTest() = default;
 
   PurchaseActionResult purchase_action_result() const {
     return std::get<0>(GetParam());
@@ -1168,14 +1174,14 @@ class EwalletManagerOnTransactionResultLoggingTest
  protected:
   MockFacilitatedPaymentsClient client_;
   optimization_guide::MockOptimizationGuideDecider optimization_guide_decider_;
-  // Order matters here because `ewallet_manager_` keeps a reference
+  // Order matters here because `payment_link_manager_` keeps a reference
   // to `client_` and `optimization_guide_decider_`.
-  std::unique_ptr<EwalletManager> ewallet_manager_;
+  std::unique_ptr<PaymentLinkManager> payment_link_manager_;
 };
 
 INSTANTIATE_TEST_SUITE_P(
-    EwalletManagerTest,
-    EwalletManagerOnTransactionResultLoggingTest,
+    PaymentLinkManagerTest,
+    PaymentLinkManagerOnTransactionResultLoggingTest,
     testing::Combine(testing::Values(PurchaseActionResult::kResultOk,
                                      PurchaseActionResult::kCouldNotInvoke,
                                      PurchaseActionResult::kResultCanceled),
@@ -1183,12 +1189,12 @@ INSTANTIATE_TEST_SUITE_P(
 
 // Test that when records for LogInitiatePurchaseActionResultAndLatency is
 // correct when device is bounded.
-TEST_P(EwalletManagerOnTransactionResultLoggingTest,
+TEST_P(PaymentLinkManagerOnTransactionResultLoggingTest,
        LogInitiatePurchaseActionResultAndLatency) {
   base::HistogramTester histogram_tester;
-  test_api(*ewallet_manager_)
+  test_api(*payment_link_manager_)
       .set_is_device_bound(/*is_device_bound=*/is_device_bound());
-  test_api(*ewallet_manager_)
+  test_api(*payment_link_manager_)
       .OnTransactionResult(base::TimeTicks::Now() - base::Seconds(2),
                            purchase_action_result());
 
@@ -1206,7 +1212,7 @@ TEST_P(EwalletManagerOnTransactionResultLoggingTest,
       /*expected_count=*/1);
 }
 
-TEST_F(EwalletManagerTest,
+TEST_F(PaymentLinkManagerTest,
        OnEwalletAccountSelected_HistogramLogged_SingleBound) {
   base::HistogramTester histogram_tester;
   payments_data_manager_.AddEwalletForTest(
@@ -1223,10 +1229,10 @@ TEST_F(EwalletManagerTest,
 
   EXPECT_CALL(GetApiClient(), IsAvailable(testing::_));
 
-  ewallet_manager_->TriggerEwalletPushPayment(
+  payment_link_manager_->TriggerPaymentLinkPushPayment(
       supportedPaymentLink, GURL("https://www.example.com"),
       ukm::UkmRecorder::GetNewSourceID());
-  test_api(*ewallet_manager_)
+  test_api(*payment_link_manager_)
       .OnEwalletAccountSelected(/*selected_instrument_id=*/100L);
 
   histogram_tester.ExpectUniqueSample(
@@ -1235,7 +1241,7 @@ TEST_F(EwalletManagerTest,
       /*expected_bucket_count=*/1);
 }
 
-TEST_F(EwalletManagerTest,
+TEST_F(PaymentLinkManagerTest,
        OnEwalletAccountSelected_HistogramLogged_SingleUnboundEwallet) {
   base::HistogramTester histogram_tester;
   payments_data_manager_.AddEwalletForTest(
@@ -1252,10 +1258,10 @@ TEST_F(EwalletManagerTest,
 
   EXPECT_CALL(GetApiClient(), IsAvailable(testing::_));
 
-  ewallet_manager_->TriggerEwalletPushPayment(
+  payment_link_manager_->TriggerPaymentLinkPushPayment(
       supportedPaymentLink, GURL("https://www.example.com"),
       ukm::UkmRecorder::GetNewSourceID());
-  test_api(*ewallet_manager_)
+  test_api(*payment_link_manager_)
       .OnEwalletAccountSelected(/*selected_instrument_id=*/100L);
 
   histogram_tester.ExpectUniqueSample(
@@ -1264,7 +1270,7 @@ TEST_F(EwalletManagerTest,
       /*expected_bucket_count=*/1);
 }
 
-TEST_F(EwalletManagerTest,
+TEST_F(PaymentLinkManagerTest,
        OnEwalletAccountSelected_HistogramLogged_MultipleEwallets) {
   base::HistogramTester histogram_tester;
   payments_data_manager_.AddEwalletForTest(
@@ -1289,10 +1295,10 @@ TEST_F(EwalletManagerTest,
 
   EXPECT_CALL(GetApiClient(), IsAvailable(testing::_));
 
-  ewallet_manager_->TriggerEwalletPushPayment(
+  payment_link_manager_->TriggerPaymentLinkPushPayment(
       supportedPaymentLink, GURL("https://www.example.com"),
       ukm::UkmRecorder::GetNewSourceID());
-  test_api(*ewallet_manager_)
+  test_api(*payment_link_manager_)
       .OnEwalletAccountSelected(/*selected_instrument_id=*/100L);
 
   histogram_tester.ExpectUniqueSample(
@@ -1301,7 +1307,7 @@ TEST_F(EwalletManagerTest,
       /*expected_bucket_count=*/1);
 }
 
-TEST_F(EwalletManagerTest, OnPaymentPromptResult_FopSelectorAccepted) {
+TEST_F(PaymentLinkManagerTest, OnPaymentPromptResult_FopSelectorAccepted) {
   payments_data_manager_.AddEwalletForTest(
       autofill::Ewallet(/*instrument_id=*/100, u"nickname",
                         /*display_icon_url=*/GURL("http://www.example.com"),
@@ -1314,14 +1320,14 @@ TEST_F(EwalletManagerTest, OnPaymentPromptResult_FopSelectorAccepted) {
       "shopeepay://shopeepay.com.my?code=https://shopeepay.com.my/"
       "281011051692389958586862838?merchant=Walmart&amount=101&currency=usd");
 
-  ewallet_manager_->TriggerEwalletPushPayment(
+  payment_link_manager_->TriggerPaymentLinkPushPayment(
       supported_payment_link, GURL("https://www.example.com"),
       ukm::UkmRecorder::GetNewSourceID());
 
   EXPECT_CALL(client_, LoadRiskData(testing::_));
   EXPECT_CALL(client_, ShowProgressScreen());
 
-  test_api(*ewallet_manager_)
+  test_api(*payment_link_manager_)
       .OnEwalletAccountSelected(/*selected_instrument_id=*/100L);
 
   auto ukm_entries = ukm_recorder_.GetEntries(
@@ -1335,15 +1341,15 @@ TEST_F(EwalletManagerTest, OnPaymentPromptResult_FopSelectorAccepted) {
   EXPECT_EQ(ukm_entries[0].metrics.at("Scheme"), 2);
 }
 
-TEST_F(EwalletManagerTest, ScreenClosedByUser_FopSelectorRejected) {
+TEST_F(PaymentLinkManagerTest, ScreenClosedByUser_FopSelectorRejected) {
   const std::vector<autofill::Ewallet> ewallets = {
       autofill::test::CreateEwalletAccount(100L)};
-  test_api(*ewallet_manager_)
+  test_api(*payment_link_manager_)
       .ShowEwalletPaymentPrompt(std::move(ewallets), base::DoNothing());
   // Simulate new screen was shown successfully.
-  test_api(*ewallet_manager_).OnUiEvent(UiEvent::kNewScreenShown);
+  test_api(*payment_link_manager_).OnUiEvent(UiEvent::kNewScreenShown);
   // Simulate UI screen was closed by the user.
-  test_api(*ewallet_manager_).OnUiEvent(UiEvent::kScreenClosedByUser);
+  test_api(*payment_link_manager_).OnUiEvent(UiEvent::kScreenClosedByUser);
 
   auto ukm_entries = ukm_recorder_.GetEntries(
       ukm::builders::FacilitatedPayments_Ewallet_FopSelectorResult::kEntryName,
@@ -1356,17 +1362,17 @@ TEST_F(EwalletManagerTest, ScreenClosedByUser_FopSelectorRejected) {
   EXPECT_EQ(ukm_entries[0].metrics.at("Scheme"), 2);
 }
 
-TEST_F(EwalletManagerTest,
+TEST_F(PaymentLinkManagerTest,
        ProgressScreenAutoDismissedAfterInvokingPurchaseAction) {
   // When purchase action is invoked, the progress screen would be showing.
-  test_api(*ewallet_manager_).ShowProgressScreen();
+  test_api(*payment_link_manager_).ShowProgressScreen();
 
   EXPECT_CALL(GetApiClient(), InvokePurchaseAction);
 
   auto response_details =
       std::make_unique<FacilitatedPaymentsInitiatePaymentResponseDetails>();
   response_details->secure_payload_ = CreateSecurePayload();
-  test_api(*ewallet_manager_)
+  test_api(*payment_link_manager_)
       .OnInitiatePaymentResponseReceived(
           base::TimeTicks::Now() - base::Seconds(2),
           autofill::payments::PaymentsAutofillClient::PaymentsRpcResult::
@@ -1375,25 +1381,26 @@ TEST_F(EwalletManagerTest,
 
   // The progress screen is persisted for a short duration after invoking the
   // purchase action for a smooth transition to the platform screen.
-  EXPECT_EQ(test_api(*ewallet_manager_).ui_state(), UiState::kProgressScreen);
+  EXPECT_EQ(test_api(*payment_link_manager_).ui_state(),
+            UiState::kProgressScreen);
 
   FastForwardBy(base::Seconds(1));
 
   // The progress screen should be dismissed after a short delay.
-  EXPECT_EQ(test_api(*ewallet_manager_).ui_state(), UiState::kHidden);
+  EXPECT_EQ(test_api(*payment_link_manager_).ui_state(), UiState::kHidden);
 }
 
-TEST_F(EwalletManagerTest,
+TEST_F(PaymentLinkManagerTest,
        ErrorScreenNotAutoDismissedAfterInvokingPurchaseAction) {
   // When purchase action is invoked, the progress screen would be showing.
-  test_api(*ewallet_manager_).ShowProgressScreen();
+  test_api(*payment_link_manager_).ShowProgressScreen();
 
   EXPECT_CALL(GetApiClient(), InvokePurchaseAction);
 
   auto response_details =
       std::make_unique<FacilitatedPaymentsInitiatePaymentResponseDetails>();
   response_details->secure_payload_ = CreateSecurePayload();
-  test_api(*ewallet_manager_)
+  test_api(*payment_link_manager_)
       .OnInitiatePaymentResponseReceived(
           base::TimeTicks::Now() - base::Seconds(2),
           autofill::payments::PaymentsAutofillClient::PaymentsRpcResult::
@@ -1402,18 +1409,18 @@ TEST_F(EwalletManagerTest,
 
   // If the purchase action could not be invoked, the `PurchaseActionResult` is
   // returned immediately. The error screen is shown.
-  test_api(*ewallet_manager_)
+  test_api(*payment_link_manager_)
       .OnTransactionResult(base::TimeTicks::Now() - base::Seconds(2),
                            PurchaseActionResult::kCouldNotInvoke);
   FastForwardBy(base::Seconds(1));
 
   // The error screen shouldn't be auto-dismissed.
-  EXPECT_EQ(test_api(*ewallet_manager_).ui_state(), UiState::kErrorScreen);
+  EXPECT_EQ(test_api(*payment_link_manager_).ui_state(), UiState::kErrorScreen);
 }
 
 // Test that API availability is invoked if strike limitation is not reached.
-TEST_F(EwalletManagerTest,
-       TriggerEwalletPushPayment_NotEnoughStrike_ApiAvailabilityInvoked) {
+TEST_F(PaymentLinkManagerTest,
+       TriggerPaymentLinkPushPayment_NotEnoughStrike_ApiAvailabilityInvoked) {
   GURL page_url("https://example.com/");
   payments_data_manager_.AddEwalletForTest(autofill::Ewallet(
       /*instrument_id=*/100, u"nickname",
@@ -1431,13 +1438,13 @@ TEST_F(EwalletManagerTest,
 
   EXPECT_CALL(GetApiClient(), IsAvailable);
 
-  ewallet_manager_->TriggerEwalletPushPayment(
+  payment_link_manager_->TriggerPaymentLinkPushPayment(
       supported_payment_link, page_url, ukm::UkmRecorder::GetNewSourceID());
 }
 
 // Test that API availability is not invoked if strike limitation is reached.
-TEST_F(EwalletManagerTest,
-       TriggerEwalletPushPayment_MaxStrike_ApiAvailabilityNotInvoked) {
+TEST_F(PaymentLinkManagerTest,
+       TriggerPaymentLinkPushPayment_MaxStrike_ApiAvailabilityNotInvoked) {
   base::HistogramTester histogram_tester;
   GURL page_url("https://example.com/");
   payments_data_manager_.AddEwalletForTest(
@@ -1457,7 +1464,7 @@ TEST_F(EwalletManagerTest,
 
   EXPECT_CALL(GetApiClient(), IsAvailable).Times(0);
 
-  ewallet_manager_->TriggerEwalletPushPayment(
+  payment_link_manager_->TriggerPaymentLinkPushPayment(
       supported_payment_link, page_url, ukm::UkmRecorder::GetNewSourceID());
 
   histogram_tester.ExpectUniqueSample(
@@ -1466,7 +1473,7 @@ TEST_F(EwalletManagerTest,
       /*expected_bucket_count=*/1);
 }
 
-TEST_F(EwalletManagerTest,
+TEST_F(PaymentLinkManagerTest,
        OnPaymentPromptResult_FopSelectorAccepted_ClearsStrikes) {
   payments_data_manager_.AddEwalletForTest(
       autofill::Ewallet(/*instrument_id=*/100, u"nickname",
@@ -1483,10 +1490,10 @@ TEST_F(EwalletManagerTest,
       PaymentLinkSuggestionStrikeDatabase(test_strike_database_.get());
   strike_database.AddStrikes(2);
 
-  ewallet_manager_->TriggerEwalletPushPayment(
+  payment_link_manager_->TriggerPaymentLinkPushPayment(
       supported_payment_link, GURL("https://www.example.com"),
       ukm::UkmRecorder::GetNewSourceID());
-  test_api(*ewallet_manager_)
+  test_api(*payment_link_manager_)
       .OnEwalletAccountSelected(/*selected_instrument_id=*/100L);
 
   EXPECT_EQ(0, strike_database.GetStrikes());

@@ -9,7 +9,6 @@
 #include "base/functional/bind.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/test_future.h"
-#include "components/facilitated_payments/core/browser/ewallet_manager.h"
 #include "components/facilitated_payments/core/browser/facilitated_payments_api_client.h"
 #include "components/facilitated_payments/core/browser/facilitated_payments_client.h"
 #include "components/facilitated_payments/core/browser/mock_facilitated_payments_api_client.h"

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/facilitated_payments/core/browser/ewallet_manager.h"
+#include "components/facilitated_payments/core/browser/payment_link_manager.h"
 
 #include <algorithm>
 
@@ -38,7 +38,7 @@ static constexpr base::TimeDelta kProgressScreenDismissDelay = base::Seconds(1);
 
 }  // namespace
 
-EwalletManager::EwalletManager(
+PaymentLinkManager::PaymentLinkManager(
     FacilitatedPaymentsClient* client,
     FacilitatedPaymentsApiClientCreator api_client_creator,
     optimization_guide::OptimizationGuideDecider* optimization_guide_decider)
@@ -46,13 +46,14 @@ EwalletManager::EwalletManager(
       api_client_creator_(api_client_creator),
       optimization_guide_decider_(CHECK_DEREF(optimization_guide_decider)) {}
 
-EwalletManager::~EwalletManager() {
+PaymentLinkManager::~PaymentLinkManager() {
   DismissPrompt();
 }
 
-void EwalletManager::TriggerEwalletPushPayment(const GURL& payment_link_url,
-                                               const GURL& page_url,
-                                               ukm::SourceId ukm_source_id) {
+void PaymentLinkManager::TriggerPaymentLinkPushPayment(
+    const GURL& payment_link_url,
+    const GURL& page_url,
+    ukm::SourceId ukm_source_id) {
   payment_flow_triggered_timestamp_ = base::TimeTicks::Now();
   ukm_source_id_ = ukm_source_id;
   LogPaymentLinkDetected(ukm_source_id_);
@@ -132,14 +133,14 @@ void EwalletManager::TriggerEwalletPushPayment(const GURL& payment_link_url,
   initiate_payment_request_details_->payment_link_ = payment_link_url.spec();
 
   client_->SetUiEventListener(base::BindRepeating(
-      &EwalletManager::OnUiEvent, weak_ptr_factory_.GetWeakPtr()));
+      &PaymentLinkManager::OnUiEvent, weak_ptr_factory_.GetWeakPtr()));
 
   GetApiClient()->IsAvailable(
-      base::BindOnce(&EwalletManager::OnApiAvailabilityReceived,
+      base::BindOnce(&PaymentLinkManager::OnApiAvailabilityReceived,
                      weak_ptr_factory_.GetWeakPtr(), base::TimeTicks::Now()));
 }
 
-void EwalletManager::Reset() {
+void PaymentLinkManager::Reset() {
   supported_ewallets_.clear();
   ukm_source_id_ = ukm::kInvalidSourceId;
   initiate_payment_request_details_.reset();
@@ -147,7 +148,7 @@ void EwalletManager::Reset() {
   weak_ptr_factory_.InvalidateWeakPtrs();
 }
 
-FacilitatedPaymentsApiClient* EwalletManager::GetApiClient() {
+FacilitatedPaymentsApiClient* PaymentLinkManager::GetApiClient() {
   if (!api_client_) {
     if (api_client_creator_) {
       api_client_ = api_client_creator_.Run();
@@ -157,8 +158,8 @@ FacilitatedPaymentsApiClient* EwalletManager::GetApiClient() {
   return api_client_.get();
 }
 
-void EwalletManager::OnApiAvailabilityReceived(base::TimeTicks start_time,
-                                               bool is_api_available) {
+void PaymentLinkManager::OnApiAvailabilityReceived(base::TimeTicks start_time,
+                                                   bool is_api_available) {
   LogApiAvailabilityCheckResultAndLatency(kPaymentsType, is_api_available,
                                           (base::TimeTicks::Now() - start_time),
                                           scheme_);
@@ -174,11 +175,12 @@ void EwalletManager::OnApiAvailabilityReceived(base::TimeTicks start_time,
 
   ShowEwalletPaymentPrompt(
       supported_ewallets_,
-      base::BindOnce(&EwalletManager::OnEwalletAccountSelected,
+      base::BindOnce(&PaymentLinkManager::OnEwalletAccountSelected,
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
-void EwalletManager::OnEwalletAccountSelected(int64_t selected_instrument_id) {
+void PaymentLinkManager::OnEwalletAccountSelected(
+    int64_t selected_instrument_id) {
   if (auto* strike_database = GetOrCreateStrikeDatabase()) {
     strike_database->ClearStrikes();
   }
@@ -198,13 +200,13 @@ void EwalletManager::OnEwalletAccountSelected(int64_t selected_instrument_id) {
   is_device_bound_for_logging_ =
       (*iter_ewallet).payment_instrument().is_fido_enrolled();
 
-  client_->LoadRiskData(base::BindOnce(&EwalletManager::OnRiskDataLoaded,
+  client_->LoadRiskData(base::BindOnce(&PaymentLinkManager::OnRiskDataLoaded,
                                        weak_ptr_factory_.GetWeakPtr(),
                                        base::TimeTicks::Now()));
 }
 
-void EwalletManager::OnRiskDataLoaded(base::TimeTicks start_time,
-                                      const std::string& risk_data) {
+void PaymentLinkManager::OnRiskDataLoaded(base::TimeTicks start_time,
+                                          const std::string& risk_data) {
   LogLoadRiskDataResultAndLatency(kPaymentsType,
                                   /*was_successful=*/!risk_data.empty(),
                                   base::TimeTicks::Now() - start_time, scheme_);
@@ -218,12 +220,12 @@ void EwalletManager::OnRiskDataLoaded(base::TimeTicks start_time,
   initiate_payment_request_details_->risk_data_ = risk_data;
 
   GetApiClient()->GetClientToken(
-      base::BindOnce(&EwalletManager::OnGetClientToken,
+      base::BindOnce(&PaymentLinkManager::OnGetClientToken,
                      weak_ptr_factory_.GetWeakPtr(), base::TimeTicks::Now()));
 }
 
-void EwalletManager::OnGetClientToken(base::TimeTicks start_time,
-                                      std::vector<uint8_t> client_token) {
+void PaymentLinkManager::OnGetClientToken(base::TimeTicks start_time,
+                                          std::vector<uint8_t> client_token) {
   LogGetClientTokenResultAndLatency(kPaymentsType, !client_token.empty(),
                                     (base::TimeTicks::Now() - start_time),
                                     scheme_);
@@ -238,7 +240,7 @@ void EwalletManager::OnGetClientToken(base::TimeTicks start_time,
   SendInitiatePaymentRequest();
 }
 
-void EwalletManager::SendInitiatePaymentRequest() {
+void PaymentLinkManager::SendInitiatePaymentRequest() {
   FacilitatedPaymentsNetworkInterface* payments_network_interface =
       client_->GetFacilitatedPaymentsNetworkInterface();
 
@@ -250,12 +252,12 @@ void EwalletManager::SendInitiatePaymentRequest() {
   LogInitiatePaymentAttempt(kPaymentsType, scheme_);
   payments_network_interface->InitiatePayment(
       std::move(initiate_payment_request_details_),
-      base::BindOnce(&EwalletManager::OnInitiatePaymentResponseReceived,
+      base::BindOnce(&PaymentLinkManager::OnInitiatePaymentResponseReceived,
                      weak_ptr_factory_.GetWeakPtr(), base::TimeTicks::Now()),
       client_->GetPaymentsDataManager()->app_locale());
 }
 
-void EwalletManager::OnInitiatePaymentResponseReceived(
+void PaymentLinkManager::OnInitiatePaymentResponseReceived(
     base::TimeTicks start_time,
     autofill::payments::PaymentsAutofillClient::PaymentsRpcResult result,
     std::unique_ptr<FacilitatedPaymentsInitiatePaymentResponseDetails>
@@ -293,17 +295,17 @@ void EwalletManager::OnInitiatePaymentResponseReceived(
   LogInitiatePurchaseActionAttempt(kPaymentsType, scheme_);
   GetApiClient()->InvokePurchaseAction(
       account_info.value(), response_details->secure_payload_,
-      base::BindOnce(&EwalletManager::OnTransactionResult,
+      base::BindOnce(&PaymentLinkManager::OnTransactionResult,
                      weak_ptr_factory_.GetWeakPtr(), base::TimeTicks::Now()));
 
   // Close the progress screen just after the platform screen appears.
   ui_timer_.Start(FROM_HERE, kProgressScreenDismissDelay,
-                  base::BindOnce(&EwalletManager::DismissProgressScreen,
+                  base::BindOnce(&PaymentLinkManager::DismissProgressScreen,
                                  weak_ptr_factory_.GetWeakPtr()));
 }
 
-void EwalletManager::OnTransactionResult(base::TimeTicks start_time,
-                                         PurchaseActionResult result) {
+void PaymentLinkManager::OnTransactionResult(base::TimeTicks start_time,
+                                             PurchaseActionResult result) {
   switch (result) {
     case PurchaseActionResult::kCouldNotInvoke:
       ShowErrorScreen();
@@ -320,7 +322,7 @@ void EwalletManager::OnTransactionResult(base::TimeTicks start_time,
       is_device_bound_for_logging_);
 }
 
-void EwalletManager::OnUiEvent(UiEvent ui_event_type) {
+void PaymentLinkManager::OnUiEvent(UiEvent ui_event_type) {
   switch (ui_event_type) {
     case UiEvent::kNewScreenShown: {
       CHECK_NE(ui_state_, UiState::kHidden);
@@ -358,12 +360,12 @@ void EwalletManager::OnUiEvent(UiEvent ui_event_type) {
   }
 }
 
-void EwalletManager::DismissPrompt() {
+void PaymentLinkManager::DismissPrompt() {
   ui_state_ = UiState::kHidden;
   client_->DismissPrompt();
 }
 
-void EwalletManager::ShowEwalletPaymentPrompt(
+void PaymentLinkManager::ShowEwalletPaymentPrompt(
     base::span<const autofill::Ewallet> ewallet_suggestions,
     base::OnceCallback<void(int64_t)> on_ewallet_account_selected) {
   ui_state_ = UiState::kFopSelector;
@@ -371,18 +373,18 @@ void EwalletManager::ShowEwalletPaymentPrompt(
                                     std::move(on_ewallet_account_selected));
 }
 
-void EwalletManager::ShowProgressScreen() {
+void PaymentLinkManager::ShowProgressScreen() {
   ui_state_ = UiState::kProgressScreen;
   client_->ShowProgressScreen();
 }
 
-void EwalletManager::ShowErrorScreen() {
+void PaymentLinkManager::ShowErrorScreen() {
   ui_state_ = UiState::kErrorScreen;
   client_->ShowErrorScreen();
 }
 
 AvailableEwalletsConfiguration
-EwalletManager::GetAvailableEwalletsConfiguration() {
+PaymentLinkManager::GetAvailableEwalletsConfiguration() {
   if (supported_ewallets_.size() == 1) {
     return supported_ewallets_[0].payment_instrument().is_fido_enrolled()
                ? AvailableEwalletsConfiguration::kSingleBoundEwallet
@@ -391,14 +393,14 @@ EwalletManager::GetAvailableEwalletsConfiguration() {
   return AvailableEwalletsConfiguration::kMultipleEwallets;
 }
 
-void EwalletManager::DismissProgressScreen() {
+void PaymentLinkManager::DismissProgressScreen() {
   if (ui_state_ == UiState::kProgressScreen) {
     DismissPrompt();
   }
 }
 
 PaymentLinkSuggestionStrikeDatabase*
-EwalletManager::GetOrCreateStrikeDatabase() {
+PaymentLinkManager::GetOrCreateStrikeDatabase() {
   if (!strike_database_) {
     if (auto* strike_database = client_->GetStrikeDatabase()) {
       strike_database_ = std::make_unique<PaymentLinkSuggestionStrikeDatabase>(
