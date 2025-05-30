@@ -4742,15 +4742,23 @@ StyleRecalcChange Element::RecalcOwnStyle(
   if (!child_change.ReattachLayoutTree() &&
       (GetForceReattachLayoutTree() || NeedsReattachLayoutTree() ||
        ComputedStyle::NeedsReattachLayoutTree(*this, old_style, new_style))) {
-    if (style_recalc_context.anchor_evaluator) {
+    if (style_recalc_context.anchor_evaluator == nullptr) {
+      child_change = child_change.ForceReattachLayoutTree();
+    } else {
       // position-try-fallbacks should not have style changes that causes layout
       // tree changes. If they do, it is probably the ComputedStyle diff in
       // NeedsReattachLayoutTree() that incorrectly detects a diff without an
-      // actual computed value change. Without the NOTREACHED() here could end
-      // up accessing a destroyed LayoutObject in layout.
-      NOTREACHED();
+      // actual computed value change. If we ForceReattachLayoutTree() on the
+      // child_change here, we could end up accessing a destroyed LayoutObject
+      // in layout.
+      //
+      // Ideally, this should have been a NOTREACHED(), but if we have
+      // StyleImage with ErrorOccurred(), or if the resource is not allowed to
+      // be cached, the diffing of the content property will return true for
+      // NeedsReattachLayoutTree() even if the computed value is the same.
+      CHECK(!GetForceReattachLayoutTree());
+      CHECK(!NeedsReattachLayoutTree());
     }
-    child_change = child_change.ForceReattachLayoutTree();
   }
 
   if (diff == ComputedStyle::Difference::kEqual) {
