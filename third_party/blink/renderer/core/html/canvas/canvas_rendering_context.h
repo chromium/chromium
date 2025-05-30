@@ -289,6 +289,11 @@ class CORE_EXPORT CanvasRenderingContext
 
   virtual int AllocatedBufferCountPerPixel() { NOTREACHED(); }
 
+  bool DrawsViaGpu() {
+    return Host() && Host()->ResourceProvider() &&
+           Host()->ResourceProvider()->IsAccelerated();
+  }
+
   // OffscreenCanvas-specific methods.
   virtual bool PushFrame() { return false; }
   virtual ImageBitmap* TransferToImageBitmap(ScriptState* script_state,

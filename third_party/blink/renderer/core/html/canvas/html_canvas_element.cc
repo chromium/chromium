@@ -2108,14 +2108,12 @@ void HTMLCanvasElement::UpdateMemoryUsage() {
 
   if (!IsRenderingContext2D() && !IsWebGL())
     return;
-  if (const CanvasResourceProvider* provider = ResourceProvider()) {
-    if (provider->IsAccelerated()) {
-      // The number of internal GPU buffers vary between one (stable
-      // non-displayed state) and three (triple-buffered animations).
-      // Adding 2 is a pessimistic but relevant estimate.
-      // Note: These buffers might be allocated in GPU memory.
-      gpu_buffer_count += 2;
-    }
+  if (context_ && context_->DrawsViaGpu()) {
+    // The number of internal GPU buffers vary between one (stable
+    // non-displayed state) and three (triple-buffered animations).
+    // Adding 2 is a pessimistic but relevant estimate.
+    // Note: These buffers might be allocated in GPU memory.
+    gpu_buffer_count += 2;
   }
 
   // NOTE: One of the callsites of this method is DiscardResourceProvider(), at
