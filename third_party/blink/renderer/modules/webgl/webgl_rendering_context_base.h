@@ -713,6 +713,11 @@ class MODULES_EXPORT WebGLRenderingContextBase
   CanvasResourceProvider* PaintRenderingResultsToCanvas(
       SourceDrawingBuffer) override;
   void ClearMarkedCanvasDirty() override { marked_canvas_dirty_ = false; }
+  scoped_refptr<CanvasResource> PaintRenderingResultsToResource(
+      bool was_dirty,
+      bool has_dispatcher,
+      SourceDrawingBuffer source_buffer,
+      FlushReason reason) override;
 
   bool CopyRenderingResultsToVideoFrame(
       WebGraphicsContext3DVideoFramePool*,

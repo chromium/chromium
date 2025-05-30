@@ -212,8 +212,15 @@ class CORE_EXPORT CanvasRenderingContext
       SourceDrawingBuffer source_buffer,
       FlushReason reason);
 
-  // WebGL-specific method
+  // WebGL-specific methods
   virtual void ClearMarkedCanvasDirty() {}
+  virtual scoped_refptr<CanvasResource> PaintRenderingResultsToResource(
+      bool was_dirty,
+      bool has_dispatcher,
+      SourceDrawingBuffer source_buffer,
+      FlushReason reason) {
+    NOTREACHED();
+  }
 
   // Copy the contents of the rendering context to a media::VideoFrame created
   // using `frame_pool`, with color space specified by `dst_color_space`. If
