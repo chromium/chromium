@@ -415,9 +415,10 @@ void ExpectContextMenuHistoryEntryActionsHistogram(int count,
   [ChromeCoordinatorAppInterface reset];
 }
 
+// TODO(crbug.com/421326848): Test fails on asan bot.
 // Tests display and selection of "Share" in the context menu for a history
 // entry.
-- (void)testContextMenuShare {
+- (void)DISABLED_testContextMenuShare {
   // At the beginning of the test, the Context Menu History Entry Actions metric
   // should be empty.
   ExpectContextMenuHistoryEntryActionsHistogram(
