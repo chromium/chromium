@@ -928,7 +928,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Startup.GPU.LoadTime.ApplicationStartToGpuInitialized"
     units="ms" expires_after="2025-10-19">
-  <owner>spvw@chromium.org</owner>
+  <owner>spvm@chromium.org</owner>
   <owner>etienneb@chromium.org</owner>
   <summary>
     Time from when the application started to when the GPU finishes its
@@ -951,7 +951,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Startup.GPU.LoadTime.ChromeMainToGpuInitialized" units="ms"
     expires_after="2025-10-26">
-  <owner>spvw@chromium.org</owner>
+  <owner>spvm@chromium.org</owner>
   <owner>etienneb@chromium.org</owner>
   <summary>
     Time from when ChromeMain was entered in the GPU process to when the GPU
@@ -965,7 +965,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Startup.GPU.LoadTime.ProcessCreationToGpuInitialized"
     units="ms" expires_after="2025-10-19">
-  <owner>spvw@chromium.org</owner>
+  <owner>spvm@chromium.org</owner>
   <owner>etienneb@chromium.org</owner>
   <summary>
     Time from when the GPU process was created according to the OS, to when the
@@ -1045,7 +1045,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Startup.LoadTime.RecordedProcessCreation" enum="Boolean"
     expires_after="2024-12-30">
-  <owner>spvw@chromium.org</owner>
+  <owner>spvm@chromium.org</owner>
   <owner>fdoray@chromium.org</owner>
   <summary>
     Whether Process::Current().CreationTime() was able to acquire the process
@@ -1072,7 +1072,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Startup.PrefetchOverrideErrorCode" enum="WinGetLastError"
     expires_after="2025-03-30">
-  <owner>spvw@chromium.org</owner>
+  <owner>spvm@chromium.org</owner>
   <owner>etienneb@chromium.org</owner>
   <summary>
     Error code returned by ::SetProcessInformation() when overriding the
@@ -1097,7 +1097,7 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="Startup.Renderer.LoadTime.ApplicationStartToRendererStartRunLoop"
     units="ms" expires_after="2025-11-16">
-  <owner>spvw@chromium.org</owner>
+  <owner>spvm@chromium.org</owner>
   <owner>etienneb@chromium.org</owner>
   <summary>
     Time from application start to renderer run loop start.
@@ -1114,7 +1114,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Startup.Renderer.LoadTime.ChromeMainToRendererStartRunLoop"
     units="ms" expires_after="2025-11-16">
-  <owner>spvw@chromium.org</owner>
+  <owner>spvm@chromium.org</owner>
   <owner>etienneb@chromium.org</owner>
   <summary>
     Time from when ChromeMain in the renderer process was entered to when the
@@ -1129,7 +1129,7 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="Startup.Renderer.LoadTime.ProcessCreationToRendererStartRunLoop"
     units="ms" expires_after="2025-11-16">
-  <owner>spvw@chromium.org</owner>
+  <owner>spvm@chromium.org</owner>
   <owner>etienneb@chromium.org</owner>
   <summary>
     Time from when the renderer process was created (CreateProcess call) to when
@@ -1215,7 +1215,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Startup.{Process}.LoadTime.PreReadFile" units="ms"
     expires_after="2025-11-16">
-  <owner>spvw@chromium.org</owner>
+  <owner>spvm@chromium.org</owner>
   <owner>fdoray@chromium.org</owner>
   <owner>etienneb@chromium.org</owner>
   <summary>
