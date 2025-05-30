@@ -487,9 +487,48 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, TypeTool_NonExistentNode) {
 
   TestFuture<mojom::ActionResultPtr> result;
   actor_coordinator().Act(action, result.GetCallback());
-  ExpectErrorResult(result, mojom::ActionResultCode::kError);
+  ExpectErrorResult(result, mojom::ActionResultCode::kInvalidDomNodeId);
   EXPECT_EQ("",
             EvalJs(web_contents(), "document.getElementById('input').value"));
+}
+
+// TypeTool fails when target is disabled or readonly input.
+IN_PROC_BROWSER_TEST_F(ActorToolsTest, TypeTool_DisabledInput) {
+  const GURL url = embedded_test_server()->GetURL("/actor/input.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+
+  ASSERT_TRUE(ExecJs(web_contents(),
+                     "document.getElementById('input').disabled = true"));
+
+  std::string typed_string = "test";
+  std::optional<int> input_id = GetDOMNodeId(*main_frame(), "#input");
+  ASSERT_TRUE(input_id);
+  BrowserAction action = MakeType(*main_frame(), input_id.value(), typed_string,
+                                  /*follow_by_enter=*/true);
+
+  {
+    TestFuture<mojom::ActionResultPtr> result;
+    actor_coordinator().Act(action, result.GetCallback());
+    ExpectErrorResult(result, mojom::ActionResultCode::kElementDisabled);
+    EXPECT_EQ("",
+              EvalJs(web_contents(), "document.getElementById('input').value"));
+  }
+
+  // Reenable the input and set it to readOnly, the action should also fail
+  // disabled in this case.
+
+  ASSERT_TRUE(ExecJs(web_contents(),
+                     "document.getElementById('input').disabled = false"));
+  ASSERT_TRUE(ExecJs(web_contents(),
+                     "document.getElementById('input').readOnly = true"));
+
+  {
+    TestFuture<mojom::ActionResultPtr> result;
+    actor_coordinator().Act(action, result.GetCallback());
+    ExpectErrorResult(result, mojom::ActionResultCode::kElementDisabled);
+    EXPECT_EQ("",
+              EvalJs(web_contents(), "document.getElementById('input').value"));
+  }
 }
 
 // Ensure type tool sends the expected events to an input box.
@@ -880,7 +919,7 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, TypeTool_DomNodeIdTargetsNonFocusable) {
                                   /*follow_by_enter=*/false);
   TestFuture<mojom::ActionResultPtr> result;
   actor_coordinator().Act(action, result.GetCallback());
-  ExpectErrorResult(result, mojom::ActionResultCode::kError);
+  ExpectErrorResult(result, mojom::ActionResultCode::kTypeTargetNotFocusable);
   EXPECT_EQ("", EvalJs(web_contents(), "input_event_log.join(',')"));
 }
 

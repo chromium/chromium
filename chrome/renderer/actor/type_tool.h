@@ -7,12 +7,15 @@
 
 #include <cstdint>
 #include <string>
+#include <variant>
 
 #include "base/memory/raw_ref.h"
+#include "base/types/expected.h"
 #include "chrome/common/actor.mojom.h"
 #include "chrome/renderer/actor/tool_base.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/platform/web_input_event_result.h"
+#include "third_party/blink/public/web/web_element.h"
 
 namespace content {
 class RenderFrame;
@@ -50,12 +53,27 @@ class TypeTool : public ToolBase {
     char unmodified_text = '\0';
   };
 
-  KeyParams GetEnterKeyParams();
-  std::optional<KeyParams> GetKeyParamsForChar(char c);
+  struct TargetAndKeys {
+    TargetAndKeys(const gfx::PointF& coordinate,
+                  std::vector<KeyParams> key_sequence);
+    TargetAndKeys(const blink::WebElement& element,
+                  std::vector<KeyParams> key_sequence);
+    ~TargetAndKeys();
+    TargetAndKeys(const TargetAndKeys&);
+    TargetAndKeys& operator=(const TargetAndKeys&);
+
+    std::variant<gfx::PointF, blink::WebElement> target;
+    std::vector<KeyParams> key_sequence;
+  };
+  using ValidatedResult = base::expected<TargetAndKeys, mojom::ActionResultPtr>;
+  ValidatedResult Validate() const;
+
+  KeyParams GetEnterKeyParams() const;
+  std::optional<KeyParams> GetKeyParamsForChar(char c) const;
   blink::WebInputEventResult CreateAndDispatchKeyEvent(
       blink::WebInputEvent::Type type,
       KeyParams key_params);
-  bool SimulateKeyPress(TypeTool::KeyParams params);
+  mojom::ActionResultPtr SimulateKeyPress(TypeTool::KeyParams params);
 
   // Raw ref since this is owned by ToolExecutor whose lifetime is tied to
   // RenderFrame.
