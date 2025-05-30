@@ -162,14 +162,14 @@ public class SplitCompatApplication extends Application {
 
         Log.i(
                 TAG,
-                "version=%s (%s) minSdkVersion=%s isBundle=%s processName=%s isIsolatedProcess=%s",
+                "version=%s (%s) minSdkVersion=%s processName=%s isIsolatedProcess=%s splits=%s",
                 VersionConstants.PRODUCT_VERSION,
                 BuildConfig.VERSION_CODE,
                 BuildConfig.MIN_SDK_VERSION,
-                // BundleUtils uses getApplicationContext, so logging after we init it.
-                BundleUtils.isBundle(),
                 ContextUtils.getProcessName(),
-                isIsolatedProcess);
+                isIsolatedProcess,
+                // BundleUtils uses getApplicationContext, so logging after we init it.
+                BundleUtils.getInstalledSplitNamesForLogging());
 
         if (isBrowserProcess) {
             // This must come as early as possible to avoid early loading of the native library from

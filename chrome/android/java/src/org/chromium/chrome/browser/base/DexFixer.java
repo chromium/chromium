@@ -83,7 +83,7 @@ public class DexFixer {
             try {
                 StringBuilder cmdBuilder =
                         new StringBuilder("/system/bin/cmd package compile -r shared ");
-                if (reason == DexFixerReason.NOT_READABLE && BundleUtils.isBundle()) {
+                if (reason == DexFixerReason.NOT_READABLE && BundleUtils.hasAnyInstalledSplits()) {
                     // Isolated processes need only access the base split.
                     String apkBaseName = new File(appInfo.sourceDir).getName();
                     cmdBuilder.append("--split ").append(apkBaseName).append(" ");

@@ -158,7 +158,7 @@ public class Module<T> {
     private ModuleDescriptor getModuleDescriptor() {
         ModuleDescriptor ret = mModuleDescriptor;
         if (ret == null) {
-            if (BundleUtils.isBundle()) {
+            if (BundleUtils.isIsolatedSplitInstalled(mName)) {
                 ret =
                         (ModuleDescriptor)
                                 instantiateReflectively(

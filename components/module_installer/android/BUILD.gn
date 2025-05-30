@@ -12,7 +12,6 @@ android_library("module_installer_java") {
     "java/src/org/chromium/components/module_installer/builder/Module.java",
     "java/src/org/chromium/components/module_installer/builder/ModuleDescriptor.java",
     "java/src/org/chromium/components/module_installer/builder/ModuleEngine.java",
-    "java/src/org/chromium/components/module_installer/engine/ApkEngine.java",
     "java/src/org/chromium/components/module_installer/engine/EngineFactory.java",
     "java/src/org/chromium/components/module_installer/engine/InstallEngine.java",
     "java/src/org/chromium/components/module_installer/engine/InstallListener.java",
@@ -43,7 +42,6 @@ robolectric_binary("module_installer_junit_tests") {
   sources = [
     "junit/src/org/chromium/components/module_installer/builder/ModuleEngineTest.java",
     "junit/src/org/chromium/components/module_installer/builder/ModuleTest.java",
-    "junit/src/org/chromium/components/module_installer/engine/ApkEngineTest.java",
     "junit/src/org/chromium/components/module_installer/engine/SplitCompatEngineTest.java",
     "junit/src/org/chromium/components/module_installer/observer/ActivityObserverTest.java",
   ]

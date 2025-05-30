@@ -76,7 +76,7 @@ class NonSwitchableAudioRendererSink
       return;
     is_initialized_ = true;
 
-    if (!(base::android::BundleUtils::IsBundle() ||
+    if (!(base::android::BundleUtils::HasAnyInstalledSplits() ||
           base::FeatureList::IsEnabled(kEnableCastAudioOutputDevice)) ||
         params.IsBitstreamFormat()) {
       output_device_ =
