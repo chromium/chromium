@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/highlight/highlight_registry.h"
 
+#include "third_party/blink/renderer/bindings/core/v8/v8_highlight_hit_result.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_highlights_from_point_options.h"
 #include "third_party/blink/renderer/core/dom/abstract_range.h"
 #include "third_party/blink/renderer/core/dom/static_range.h"
@@ -312,18 +313,18 @@ HighlightRegistry::CreateIterationSource(ScriptState*, ExceptionState&) {
   return MakeGarbageCollected<IterationSource>(*this);
 }
 
-HeapVector<Member<Highlight>> HighlightRegistry::highlightsFromPoint(
+HeapVector<Member<HighlightHitResult>> HighlightRegistry::highlightsFromPoint(
     float x,
     float y,
     const HighlightsFromPointOptions* options) {
   Document* document = frame_->GetDocument();
   if (!document || !document->GetLayoutView()) {
-    return HeapVector<Member<Highlight>>();
+    return HeapVector<Member<HighlightHitResult>>();
   }
 
   Node* hit_node = HitTestInDocument(document, x, y).InnerNode();
   if (!hit_node || !hit_node->IsTextNode()) {
-    return HeapVector<Member<Highlight>>();
+    return HeapVector<Member<HighlightHitResult>>();
   }
 
   // If the node hit is in a shadow tree whose root is not in |options|, we
@@ -331,55 +332,67 @@ HeapVector<Member<Highlight>> HighlightRegistry::highlightsFromPoint(
   if (hit_node->IsInShadowTree() &&
       (!options || !options->hasShadowRoots() ||
        !options->shadowRoots().Contains(hit_node->GetTreeScope()))) {
-    return HeapVector<Member<Highlight>>();
+    return HeapVector<Member<HighlightHitResult>>();
   }
 
+  auto active_highlights_in_node_iterator =
+      active_highlights_in_node_.find(To<Text>(hit_node));
+  if (active_highlights_in_node_iterator == active_highlights_in_node_.end()) {
+    return HeapVector<Member<HighlightHitResult>>();
+  }
+  Vector<AtomicString> highlight_names_at_hit_node(
+      active_highlights_in_node_iterator->value);
+  std::sort(highlight_names_at_hit_node.begin(),
+            highlight_names_at_hit_node.end(),
+            [this](const AtomicString& highlight_name1,
+                   const AtomicString& highlight_name2) {
+              return CompareOverlayStackingPosition(highlight_name1,
+                                                    highlight_name2) ==
+                     kOverlayStackingPositionAbove;
+            });
+
   // |x| and |y| are in CSS pixels, which need to be converted to physical
-  // pixels to determine if they're inside Highlight markers layout rectangles.
+  // pixels to determine if they're inside layout rectangles.
   gfx::PointF hit_point(x, y);
   hit_point.Scale(frame_->DevicePixelRatio());
 
-  DocumentMarkerVector highlight_markers_at_hit_node =
-      document->Markers().MarkersFor(
-          *(To<Text>(hit_node)),
-          DocumentMarker::MarkerTypes::CustomHighlight());
-  DocumentMarkerVector highlight_markers_at_point;
+  HeapVector<Member<HighlightHitResult>> highlight_hit_results;
+  for (const AtomicString& highlight_name : highlight_names_at_hit_node) {
+    auto highlights_iterator = GetMapIterator(highlight_name);
+    CHECK(highlights_iterator != highlights_.end());
+    Highlight* highlight = highlights_iterator->Get()->highlight;
+    HeapVector<Member<AbstractRange>> highlight_ranges_hit;
+    for (auto& abstract_range : highlight->GetRanges()) {
+      // If the range starts and ends in a different tree scope than the hit
+      // node (i.e., the range encloses a shadow tree), do not return it when
+      // the hit is on a node inside that shadow tree. Only consider ranges
+      // within the same tree scope as the hit node.
+      if (abstract_range->startContainer()->GetTreeScope() !=
+          hit_node->GetTreeScope()) {
+        continue;
+      }
 
-  for (const auto& marker : highlight_markers_at_hit_node) {
-    Position marker_start_position = Position(hit_node, marker->StartOffset());
-    Position marker_end_position = Position(hit_node, marker->EndOffset());
-    EphemeralRange range(marker_start_position, marker_end_position);
-    gfx::RectF rect = ComputeTextRectF(range);
+      if (IsAbstractRangePaintable(abstract_range, document)) {
+        EphemeralRange ephemeral_range(abstract_range);
+        Vector<gfx::QuadF> quads = ComputeTextBounds(ephemeral_range);
+        for (const auto& quad : quads) {
+          if (quad.Contains(hit_point)) {
+            highlight_ranges_hit.push_back(abstract_range);
+            break;
+          }
+        }
+      }
+    }
 
-    if (rect.Contains(hit_point)) {
-      highlight_markers_at_point.push_back(marker);
+    if (highlight_ranges_hit.size()) {
+      HighlightHitResult* highlight_hit_result =
+          MakeGarbageCollected<HighlightHitResult>();
+      highlight_hit_result->setHighlight(highlight);
+      highlight_hit_result->setRanges(highlight_ranges_hit);
+      highlight_hit_results.push_back(highlight_hit_result);
     }
   }
 
-  std::sort(
-      highlight_markers_at_point.begin(), highlight_markers_at_point.end(),
-      [this](const DocumentMarker* marker1, const DocumentMarker* marker2) {
-        const CustomHighlightMarker* highlight_marker1 =
-            To<CustomHighlightMarker>(marker1);
-        const CustomHighlightMarker* highlight_marker2 =
-            To<CustomHighlightMarker>(marker2);
-        return CompareOverlayStackingPosition(
-                   highlight_marker1->GetHighlightName(),
-                   highlight_marker2->GetHighlightName()) ==
-               OverlayStackingPosition::kOverlayStackingPositionAbove;
-      });
-
-  HeapVector<Member<Highlight>> highlights_at_point;
-  highlights_at_point.ReserveInitialCapacity(highlight_markers_at_point.size());
-  for (const DocumentMarker* marker : highlight_markers_at_point) {
-    const CustomHighlightMarker* highlight_marker =
-        To<CustomHighlightMarker>(marker);
-    auto highlights_iterator =
-        GetMapIterator(highlight_marker->GetHighlightName());
-    CHECK(highlights_iterator != highlights_.end());
-    highlights_at_point.push_back(highlights_iterator->Get()->highlight);
-  }
-
-  return highlights_at_point;
+  return highlight_hit_results;
 }
 }  // namespace blink

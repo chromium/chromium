@@ -1436,7 +1436,7 @@ PositionInFlatTree SkipWhitespace(const PositionInFlatTree& position) {
 }
 
 template <typename Strategy>
-static Vector<gfx::QuadF> ComputeTextBounds(
+Vector<gfx::QuadF> ComputeTextBounds(
     const EphemeralRangeTemplate<Strategy>& range) {
   const PositionTemplate<Strategy>& start_position = range.StartPosition();
   const PositionTemplate<Strategy>& end_position = range.EndPosition();
