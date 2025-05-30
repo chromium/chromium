@@ -27,8 +27,6 @@ component("printing") {
   sources = [
     "cups_printer_status.cc",
     "cups_printer_status.h",
-    "epson_driver_matching.cc",
-    "epson_driver_matching.h",
     "ppd_cache.cc",
     "ppd_cache.h",
     "ppd_line_reader.cc",
@@ -68,7 +66,6 @@ source_set("unit_tests") {
   ]
   sources = [
     "cups_printer_status_unittest.cc",
-    "epson_driver_matching_unittest.cc",
     "fake_printer_config_cache.cc",
     "fake_printer_config_cache.h",
     "ppd_cache_unittest.cc",

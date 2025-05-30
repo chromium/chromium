@@ -24,7 +24,6 @@
 #include "base/task/thread_pool.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "base/time/time.h"
-#include "chromeos/printing/epson_driver_matching.h"
 #include "chromeos/printing/ppd_cache.h"
 #include "chromeos/printing/ppd_metadata_manager.h"
 #include "chromeos/printing/printer_config_cache.h"
@@ -40,10 +39,6 @@ namespace {
 // Age limit for time-sensitive API calls. Typically denotes "Please
 // respond with data no older than kMaxDataAge." Arbitrarily chosen.
 constexpr base::TimeDelta kMaxDataAge = base::Minutes(30LL);
-
-// Effective-make-and-model string that describes a printer capable of
-// using the generic Epson PPD.
-const char kEpsonGenericEmm[] = "epson generic escpr printer";
 
 bool PpdReferenceIsWellFormed(const Printer::PpdReference& reference) {
   int filled_fields = 0;
@@ -122,9 +117,6 @@ class PpdProviderImpl : public PpdProvider {
   //    effective-make-and-model strings from forward index metadata.
   // 2. |search_data|::usb_*_id - we seek out a device with a matching
   //    ID from USB index metadata.
-  // 3. |search_data|::make_and_model - we check if any among these
-  //    effective-make-and-model strings describe a printer for which
-  //    we can use the generic Epson PPD.
   //
   // *  This method observes and honors PPD restrictions (furnished by
   //    forward index metadata) and will ignore PPDs that are not
@@ -392,48 +384,6 @@ class PpdProviderImpl : public PpdProvider {
                                                  /*manufacturer=*/"");
   }
 
-  // Continues a prior call to ResolvePpdReference() (step 3).
-  // This callback is fed to
-  // PpdMetadataManager::FindAllEmmsAvailableInIndex(), as we treat the
-  // hardcoded generic Epson effective-make-and-model string like any
-  // other emm, duly verifying its presence in forward index metadata
-  // and that it is not restricted from running in this |version_|.
-  void OnForwardIndicesSearchedForGenericEpsonEmm(
-      ResolvePpdReferenceContext context,
-      const base::flat_map<std::string, ParsedIndexValues>&
-          forward_index_results) {
-    const ParsedIndexLeaf* const index_leaf =
-        FirstAllowableParsedIndexLeaf(kEpsonGenericEmm, forward_index_results);
-    if (index_leaf) {
-      SuccessfullyResolvePpdReferenceWithEmm(kEpsonGenericEmm,
-                                             std::move(context.cb));
-      return;
-    }
-
-    // This really shouldn't happen, but we couldn't build a
-    // PpdReference that would point to the generic Epson PPD.
-    // (This might mean that the serving root is badly messed up in a
-    // way that escaped the attention of the Chrome OS printing team.)
-    FailToResolvePpdReference(std::move(context));
-  }
-
-  // Continues a prior call to ResolvePpdReference() (step 3).
-  void TryToResolvePpdReferenceWithGenericEpsonPpd(
-      ResolvePpdReferenceContext context) {
-    if (CanUseEpsonGenericPPD(context.search_data)) {
-      auto callback = base::BindOnce(
-          &PpdProviderImpl::OnForwardIndicesSearchedForGenericEpsonEmm,
-          weak_factory_.GetWeakPtr(), std::move(context));
-      metadata_manager_->FindAllEmmsAvailableInIndex(
-          {kEpsonGenericEmm}, kMaxDataAge, std::move(callback));
-      return;
-    }
-
-    // At this point, we couldn't build a PpdReference using the
-    // generic Epson PPD. ResolvePpdReference() can only fail now.
-    FailToResolvePpdReference(std::move(context));
-  }
-
   // Continues a prior call to ResolvePpdReference() (step 2).
   // This callback is fed to
   // PpdMetadataManager::FindAllEmmsAvailableInIndex().
@@ -452,8 +402,8 @@ class PpdProviderImpl : public PpdProvider {
 
     // At this point, we couldn't build a PpdReference from the
     // effective-make-and-model string sourced from the USB index.
-    // ResolvePpdReference() continues to its next step.
-    TryToResolvePpdReferenceWithGenericEpsonPpd(std::move(context));
+    // ResolvePpdReference() can only fail now.
+    FailToResolvePpdReference(std::move(context));
   }
 
   // Continues a prior call to ResolvePpdReference() (step 2).
@@ -471,8 +421,8 @@ class PpdProviderImpl : public PpdProvider {
     }
 
     // At this point, we couldn't build a PpdReference from a USB index
-    // search. ResolvePpdReference() continues to its next step.
-    TryToResolvePpdReferenceWithGenericEpsonPpd(std::move(context));
+    // search. ResolvePpdReference() can only fail now.
+    FailToResolvePpdReference(std::move(context));
   }
 
   // Continues a prior call to ResolvePpdReference() (step 2).
@@ -490,8 +440,8 @@ class PpdProviderImpl : public PpdProvider {
     }
 
     // At this point, we couldn't use |search_data| to search USB indices.
-    // ResolvePpdReference() continues to its next step.
-    TryToResolvePpdReferenceWithGenericEpsonPpd(std::move(context));
+    // ResolvePpdReference() can only fail now.
+    FailToResolvePpdReference(std::move(context));
   }
 
   // Continues a prior call to ResolvePpdReference() (step 1).
