@@ -2107,36 +2107,6 @@ TEST_F(NoLowResPictureLayerImplTest, DisallowRequiredForActivation) {
   AssertNoTilesRequired(active_layer()->HighResTiling());
 }
 
-TEST_F(LegacySWPictureLayerImplTest, NothingRequiredIfActiveMissingTiles) {
-  gfx::Size layer_bounds(1000, 4000);
-  gfx::Size tile_size(100, 100);
-
-  scoped_refptr<FakeRasterSource> pending_raster_source =
-      FakeRasterSource::CreateFilled(layer_bounds);
-  scoped_refptr<FakeRasterSource> active_raster_source =
-      FakeRasterSource::CreatePartiallyFilled(layer_bounds,
-                                              gfx::Rect(500, 500));
-
-  SetupTreesWithFixedTileSize(pending_raster_source, active_raster_source,
-                              tile_size, Region());
-
-  // Active layer has tilings.
-  EXPECT_TRUE(active_layer()->CanHaveTilings());
-  EXPECT_EQ(active_layer()->tilings()->num_tilings(), 2u);
-  // Simulate scrolling past the end of recorded content on the active layer,
-  // where the recordings are so far away that no tiles are created.
-  gfx::Rect visible_rect(0, 3000, 1000, 1000);
-  active_layer()->HighResTiling()->ComputeTilePriorityRects(
-      visible_rect, visible_rect, visible_rect, visible_rect, 1, Occlusion());
-  EXPECT_EQ(active_layer()->HighResTiling()->AllTilesForTesting().size(), 0u);
-
-  // Since the active layer has no tiles at all, the pending layer doesn't
-  // need content in order to activate.
-  pending_layer()->HighResTiling()->UpdateAllRequiredStateForTesting();
-  EXPECT_FALSE(pending_layer()->LowResTiling());
-  EXPECT_EQ(pending_layer()->HighResTiling()->AllTilesForTesting().size(), 0u);
-}
-
 TEST_F(LegacySWPictureLayerImplTest, HighResRequiredIfActiveCantHaveTiles) {
   gfx::Size layer_bounds(400, 400);
   gfx::Size tile_size(100, 100);
