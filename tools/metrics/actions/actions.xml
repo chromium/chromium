@@ -36028,6 +36028,10 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Settings.FingerprintingProtection.Enabled">
+  <obsolete>
+    Deprecated 05/2025. Replaced with the
+    Settings.TrackingProtections.FingerprintingProtection.Enabled action.
+  </obsolete>
   <owner>dembski@google.com</owner>
   <owner>koilos@google.com</owner>
   <description>
