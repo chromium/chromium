@@ -103,15 +103,10 @@ const std::unordered_map<char, KeyInfo>& GetKeyInfoMap() {
   return *key_info_map;
 }
 
-bool PrepareTargetForMode(WebLocalFrame& frame,
-                          mojom::TypeAction::Mode mode,
-                          bool is_target_editable) {
-  // Skip prepration if target is not editable.
-  if (is_target_editable) {
-    // TODO(crbug.com/409570203): Use DELETE_EXISTING regardless of `mode` but
-    // we'll have to implement the different insertion modes.
-    frame.ExecuteCommand(WebString::FromUTF8("SelectAll"));
-  }
+bool PrepareTargetForMode(WebLocalFrame& frame, mojom::TypeAction::Mode mode) {
+  // TODO(crbug.com/409570203): Use DELETE_EXISTING regardless of `mode` but
+  // we'll have to implement the different insertion modes.
+  frame.ExecuteCommand(WebString::FromUTF8("SelectAll"));
   return true;
 }
 
@@ -286,23 +281,17 @@ void TypeTool::Execute(ToolFinishedCallback callback) {
       return;
     }
 
-    // Validate Node is an editable element
-    // TODO(crbug.com/414398425): This seems too restrictive for non-input
-    // cases.
     if (!node.IsElementNode()) {
       ACTOR_LOG() << "Target node " << node << " is not an element.";
       std::move(callback).Run(MakeErrorResult());
       return;
     }
+
     WebElement element = node.To<WebElement>();
-    if (!element.IsEditable()) {
-      ACTOR_LOG() << "Target element " << element << " is not editable.";
-      std::move(callback).Run(MakeErrorResult());
-      return;
-    }
+    is_target_editable = element.IsEditable();
 
     // Check and set focus if needed.
-    if (!IsNodeFocused(frame_.get(), node)) {
+    if (!IsNodeFocused(frame_.get(), element)) {
       if (element.IsFocusable()) {
         element.Focus();
       } else {
@@ -312,15 +301,20 @@ void TypeTool::Execute(ToolFinishedCallback callback) {
         return;
       }
     }
-    is_target_editable = true;
   }
 
-  if (!PrepareTargetForMode(*frame_->GetWebFrame(), action_->mode,
-                            is_target_editable)) {
-    ACTOR_LOG() << "Failed to prepare target element based on mode: "
-                << action_->mode;
-    std::move(callback).Run(MakeErrorResult());
-    return;
+  if (is_target_editable) {
+    if (!PrepareTargetForMode(*frame_->GetWebFrame(), action_->mode)) {
+      ACTOR_LOG() << "Failed to prepare target element based on mode: "
+                  << action_->mode;
+      std::move(callback).Run(MakeErrorResult());
+      return;
+    }
+  } else {
+    // TODO(crbug.com/421133798): If the target isn't editable, the existing
+    // TypeAction modes don't make sense.
+    ACTOR_LOG() << "Warning: TypeAction::Mode cannot be applied when targeting "
+                   "a non-editable. https://crbug.com/421133798.";
   }
 
   // Note: Focus and preparing the target performs actions which lead to

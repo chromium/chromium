@@ -835,6 +835,55 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, TypeTool_SentToOffScreenCoordinates) {
   EXPECT_EQ("", EvalJs(web_contents(), "input_event_log.join(',')"));
 }
 
+// Ensure the type tool can send a type action to a DOMNodeId that isn't
+// an editable.
+IN_PROC_BROWSER_TEST_F(ActorToolsTest, TypeTool_DomNodeIdTargetsNonEditable) {
+  const GURL url = embedded_test_server()->GetURL("/actor/type_non_input.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+
+  // The log starts empty.
+  ASSERT_EQ("", EvalJs(web_contents(), "input_event_log.join(',')"));
+
+  // The focusable div is not an editable context
+  std::string typed_string = "abc";
+  std::optional<int> input_id = GetDOMNodeId(*main_frame(), "#focusableDiv");
+  ASSERT_TRUE(input_id);
+  BrowserAction action = MakeType(*main_frame(), input_id.value(), typed_string,
+                                  /*follow_by_enter=*/false);
+
+  TestFuture<mojom::ActionResultPtr> result;
+  actor_coordinator().Act(action, result.GetCallback());
+  ExpectOkResult(result);
+
+  EXPECT_EQ(
+      // a
+      "keydown[a],keypress[a],keyup[a],"
+      // b
+      "keydown[b],keypress[b],keyup[b],"
+      // c
+      "keydown[c],keypress[c],keyup[c]",
+      EvalJs(web_contents(), "input_event_log.join(',')"));
+}
+
+// Ensure the type tool fails if targeting a non-focusable DOMNodeId.
+IN_PROC_BROWSER_TEST_F(ActorToolsTest, TypeTool_DomNodeIdTargetsNonFocusable) {
+  const GURL url = embedded_test_server()->GetURL("/actor/type_non_input.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+
+  // The log starts empty.
+  ASSERT_EQ("", EvalJs(web_contents(), "input_event_log.join(',')"));
+
+  std::string typed_string = "abc";
+  std::optional<int> input_id = GetDOMNodeId(*main_frame(), "#unfocusableDiv");
+  ASSERT_TRUE(input_id);
+  BrowserAction action = MakeType(*main_frame(), input_id.value(), typed_string,
+                                  /*follow_by_enter=*/false);
+  TestFuture<mojom::ActionResultPtr> result;
+  actor_coordinator().Act(action, result.GetCallback());
+  ExpectErrorResult(result, mojom::ActionResultCode::kError);
+  EXPECT_EQ("", EvalJs(web_contents(), "input_event_log.join(',')"));
+}
+
 // ===============================================
 // Mouse Move Tool
 // ===============================================
