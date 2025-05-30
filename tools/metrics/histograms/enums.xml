@@ -1647,52 +1647,6 @@ uploading your change for review.  These are checked by presubmit scripts.
   <int value="9" label="INTERACTION_COMPLETE"/>
 </enum>
 
-<enum name="BrotliFilterDecodingStatus">
-  <int value="0" label="In progress"/>
-  <int value="1" label="Done"/>
-  <int value="2" label="Error"/>
-</enum>
-
-<enum name="BrotliFilterErrorCode">
-  <int value="0" label="NO_ERROR"/>
-  <int value="1" label="FORMAT_EXUBERANT_NIBBLE"/>
-  <int value="2" label="FORMAT_RESERVED"/>
-  <int value="3" label="FORMAT_EXUBERANT_META_NIBBLE"/>
-  <int value="4" label="FORMAT_SIMPLE_HUFFMAN_ALPHABET"/>
-  <int value="5" label="FORMAT_SIMPLE_HUFFMAN_SAME"/>
-  <int value="6" label="FORMAT_CL_SPACE"/>
-  <int value="7" label="FORMAT_HUFFMAN_SPACE"/>
-  <int value="8" label="FORMAT_CONTEXT_MAP_REPEAT"/>
-  <int value="9" label="FORMAT_BLOCK_LENGTH_1"/>
-  <int value="10" label="FORMAT_BLOCK_LENGTH_2"/>
-  <int value="11" label="FORMAT_TRANSFORM"/>
-  <int value="12" label="FORMAT_DICTIONARY"/>
-  <int value="13" label="FORMAT_WINDOW_BITS"/>
-  <int value="14" label="FORMAT_PADDING_1"/>
-  <int value="15" label="FORMAT_PADDING_2"/>
-  <int value="16" label="Reserved (16)"/>
-  <int value="17" label="Reserved (17)"/>
-  <int value="18" label="Reserved (18)"/>
-  <int value="19" label="Reserved (19)"/>
-  <int value="20" label="Reserved (20)"/>
-  <int value="21" label="ALLOC_CONTEXT_MODES"/>
-  <int value="22" label="ALLOC_TREE_GROUPS"/>
-  <int value="23" label="Reserved (23)"/>
-  <int value="24" label="Reserved (24)"/>
-  <int value="25" label="ALLOC_CONTEXT_MAP"/>
-  <int value="26" label="ALLOC_RING_BUFFER_1"/>
-  <int value="27" label="ALLOC_RING_BUFFER_2"/>
-  <int value="28" label="Reserved (28)"/>
-  <int value="29" label="Reserved (29)"/>
-  <int value="30" label="ALLOC_BLOCK_TYPE_TREES"/>
-  <int value="31" label="UNREACHABLE_1"/>
-  <int value="32" label="UNREACHABLE_2"/>
-  <int value="33" label="UNREACHABLE_3"/>
-  <int value="34" label="UNREACHABLE_4"/>
-  <int value="35" label="UNREACHABLE_5"/>
-  <int value="36" label="UNREACHABLE_6"/>
-</enum>
-
 <enum name="BrowserProfileType">
   <int value="0" label="Regular"/>
   <int value="1" label="Incognito"/>

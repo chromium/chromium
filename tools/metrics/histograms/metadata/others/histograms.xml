@@ -3142,30 +3142,6 @@ chromium-metrics-reviews@google.com.
   <summary>Compressed/Decompressed size ratio.</summary>
 </histogram>
 
-<histogram name="BrotliFilter.ErrorCode" enum="BrotliFilterErrorCode"
-    expires_after="M115">
-  <owner>eustas@chromium.org</owner>
-  <summary>
-    Error code observed after failing to decode a Brotli-compressed response
-    stream from the network. Recorded for each layer of Brotli compression, as
-    indicated using Content-Encoding header values, part of an HTTP response
-    where a decoding error occurs.
-
-    Warning: this histogram was expired from M85 to M110; data may be missing.
-  </summary>
-</histogram>
-
-<histogram name="BrotliFilter.Status" enum="BrotliFilterDecodingStatus"
-    expires_after="2025-03-09">
-  <owner>eustas@chromium.org</owner>
-  <summary>
-    The final state of the BrotliFilter. Recorded during the decoding process as
-    bytes are consumed from a Brotli-compressed response stream.
-
-    Warning: this histogram was expired from M81 to M110; data may be missing.
-  </summary>
-</histogram>
-
 <histogram name="CertificateType2{CertificateTypeBRValidity2}" units="units"
     expires_after="never">
 <!-- expires-never: histograms are used to assess policy -->
