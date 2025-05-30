@@ -628,6 +628,8 @@ source_set("memory_buffer_sources") {
       "ca_layer_params.h",
       "gpu_memory_buffer.cc",
       "gpu_memory_buffer.h",
+      "gpu_memory_buffer_handle.cc",
+      "gpu_memory_buffer_handle.h",
     ]
   }
 
