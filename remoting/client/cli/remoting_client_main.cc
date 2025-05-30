@@ -10,6 +10,7 @@
 #include "base/logging.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/run_loop.h"
+#include "base/strings/string_split.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/single_thread_task_executor.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
@@ -17,6 +18,7 @@
 #include "net/url_request/url_request_context_getter.h"
 #include "remoting/base/url_request_context_getter.h"
 #include "remoting/client/cli/logging_frame_consumer.h"
+#include "remoting/client/common/logging.h"
 #include "remoting/client/common/remoting_client.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/transitional_url_loader_factory_owner.h"
@@ -44,17 +46,22 @@ int main(int argc, char const* argv[]) {
     LOG(ERROR) << kUserEmailSwitch << " arg is missing";
   }
 
-  auto support_access_code =
-      command_line->GetSwitchValueASCII(kSupportAccessCodeSwitch);
+  std::vector<std::string> support_access_codes = base::SplitString(
+      command_line->GetSwitchValueASCII(kSupportAccessCodeSwitch), ",",
+      base::KEEP_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
   auto access_token = command_line->GetSwitchValueASCII(kAccessTokenSwitch);
   auto user_email = command_line->GetSwitchValueASCII(kUserEmailSwitch);
 
-  if (support_access_code.empty() || access_token.empty() ||
+  if (support_access_codes.empty() || access_token.empty() ||
       user_email.empty()) {
     return -1;
-  } else if (support_access_code.length() != 12) {
-    LOG(ERROR) << kSupportAccessCodeSwitch << " value must be 12 digits long.";
-    return -1;
+  }
+  for (auto& code : support_access_codes) {
+    if (code.length() != 12) {
+      LOG(ERROR) << "Invalid support access code found (must be 12 digits): "
+                 << code;
+      return -1;
+    }
   }
 
   // Need to prime the client OS version value for linux to prevent IO on the
@@ -70,26 +77,33 @@ int main(int argc, char const* argv[]) {
   network::TransitionalURLLoaderFactoryOwner url_loader_factory_owner(
       url_request_context_getter, /*is_trusted=*/false);
 
-  base::RunLoop run_loop;
+  for (auto& code : support_access_codes) {
+    CLIENT_LOG << "Creating remoting client for support host: " << code;
 
-  remoting::LoggingFrameConsumer frame_consumer;
+    base::RunLoop run_loop;
 
-  remoting::RemotingClient remoting_client(
-      base::BindPostTask(io_task_executor.task_runner(),
-                         run_loop.QuitClosure()),
-      &frame_consumer, url_loader_factory_owner.GetURLLoaderFactory());
+    remoting::LoggingFrameConsumer frame_consumer;
 
-  remoting_client.StartSession(support_access_code, {access_token, user_email});
+    remoting::RemotingClient remoting_client(
+        base::BindPostTask(io_task_executor.task_runner(),
+                           run_loop.QuitClosure()),
+        &frame_consumer, url_loader_factory_owner.GetURLLoaderFactory());
 
-  // Allow the client to remain connected for a while before disconnecting.
-  io_task_executor.task_runner()->PostDelayedTask(
-      FROM_HERE,
-      base::BindOnce(&remoting::RemotingClient::StopSession,
-                     base::Unretained(&remoting_client)),
-      base::Seconds(20));
+    CLIENT_LOG << "Starting session for support host: " << code;
+    remoting_client.StartSession(code, {access_token, user_email});
 
-  run_loop.Run();
+    // Allow the client to remain connected for a while before disconnecting.
+    io_task_executor.task_runner()->PostDelayedTask(
+        FROM_HERE,
+        base::BindOnce(&remoting::RemotingClient::StopSession,
+                       remoting_client.GetWeakPtr()),
+        base::Seconds(20));
 
+    CLIENT_LOG << "Running the session for up to 20 seconds...";
+    run_loop.Run();
+
+    CLIENT_LOG << "Tearing down remoting client for support host: " << code;
+  }
   // Block until tasks blocking shutdown have completed their execution.
   base::ThreadPoolInstance::Get()->Shutdown();
 

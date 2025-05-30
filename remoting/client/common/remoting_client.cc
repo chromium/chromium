@@ -200,6 +200,10 @@ void RemotingClient::StopSession() {
   return;
 }
 
+base::WeakPtr<RemotingClient> RemotingClient::GetWeakPtr() {
+  return weak_factory_.GetWeakPtr();
+}
+
 void RemotingClient::SetCapabilities(
     const protocol::Capabilities& capabilities) {
   NOTIMPLEMENTED();
