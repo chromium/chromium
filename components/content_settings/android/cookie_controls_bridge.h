@@ -48,6 +48,8 @@ class CookieControlsBridge : public CookieControlsObserver {
   void SetThirdPartyCookieBlockingEnabledForSite(JNIEnv* env,
                                                  bool block_cookies);
 
+  void SetTrackingProtectionsPausedForSite(JNIEnv* env, bool pause_protections);
+
   void OnUiClosing(JNIEnv* env);
 
   void OnEntryPointAnimated(JNIEnv* env);

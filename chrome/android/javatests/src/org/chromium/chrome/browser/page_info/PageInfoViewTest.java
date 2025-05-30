@@ -1398,6 +1398,12 @@ public class PageInfoViewTest {
         String description =
                 context.getString(expectedDescriptionResId).replaceAll("<link>|</link>", "");
         onView(withText(description)).check(matches(isDisplayed()));
+        onViewWaiting(
+                allOf(
+                        withText(R.string.tracking_protections_bubble_pause_protections_label),
+                        isDisplayed()));
+        int resId = R.string.tracking_protections_bubble_active_protections_description;
+        onViewWaiting(allOf(withText(resId), isDisplayed()));
         mRenderTestRule.render(getPageInfoView(), renderId);
     }
 
@@ -1413,6 +1419,11 @@ public class PageInfoViewTest {
                     getCookiesController().onStatusChanged(CookieControlsState.PAUSED_TP, 0, 0, 0L);
                 });
         onView(withId(R.id.page_info_cookies_row)).perform(click());
+        Context context = ApplicationProvider.getApplicationContext();
+        int resId = R.string.tracking_protections_bubble_paused_protections_description_android;
+        String description = context.getString(resId).replaceAll("<link>|</link>", "");
+
+        onViewWaiting(allOf(withText(description), isDisplayed()));
         mRenderTestRule.render(getPageInfoView(), "PageInfo_PrivacySubpage_ProtectionsPaused");
     }
 

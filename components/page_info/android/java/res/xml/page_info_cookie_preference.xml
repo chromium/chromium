@@ -43,4 +43,9 @@ found in the LICENSE file.
         android:title="@string/page_info_cookies_third_party_cookies_label"
         app:allowDividerAbove="false" />
 
+    <org.chromium.components.browser_ui.settings.ButtonPreference
+        android:key="tracking_protections_button"
+        android:persistent="false"
+        app:allowDividerAbove="false" />
+
 </PreferenceScreen>

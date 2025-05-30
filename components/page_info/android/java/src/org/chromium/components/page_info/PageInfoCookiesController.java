@@ -104,6 +104,8 @@ public class PageInfoCookiesController extends PageInfoPreferenceSubpageControll
                 new PageInfoCookiesSettings.PageInfoCookiesViewParams(
                         /* onThirdPartyCookieToggleChanged= */ this
                                 ::onThirdPartyCookieToggleChanged,
+                        /* onTrackingProtectionsButtonPressed= */ this
+                                ::onTrackingProtectionsButtonPressed,
                         /* onClearCallback= */ this::onClearCookiesClicked,
                         /* onCookieSettingsLinkClicked= */ delegate::showCookieSettings,
                         /* onIncognitoSettingsLinkClicked */ delegate
@@ -158,6 +160,13 @@ public class PageInfoCookiesController extends PageInfoPreferenceSubpageControll
                             ? PageInfoAction.PAGE_INFO_COOKIES_BLOCKED_FOR_SITE
                             : PageInfoAction.PAGE_INFO_COOKIES_ALLOWED_FOR_SITE);
             mBridge.setThirdPartyCookieBlockingEnabledForSite(block);
+        }
+    }
+
+    private void onTrackingProtectionsButtonPressed(boolean pauseProtections) {
+        if (mBridge != null) {
+            // TODO(crbug.com/388294499): Add metrics for toggling protections.
+            mBridge.setTrackingProtectionsPausedForSite(pauseProtections);
         }
     }
 
