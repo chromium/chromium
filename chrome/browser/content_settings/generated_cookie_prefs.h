@@ -37,6 +37,7 @@ class GeneratedCookieDefaultContentSettingPref
   explicit GeneratedCookieDefaultContentSettingPref(Profile* profile);
   ~GeneratedCookieDefaultContentSettingPref() override;
 
+  // content_settings::Observer:
   void OnContentSettingChanged(
       const ContentSettingsPattern& primary_pattern,
       const ContentSettingsPattern& secondary_pattern,
@@ -55,8 +56,7 @@ class GeneratedCookieDefaultContentSettingPref
 };
 
 class GeneratedThirdPartyCookieBlockingSettingPref
-    : public extensions::settings_private::GeneratedPref,
-      public content_settings::Observer {
+    : public extensions::settings_private::GeneratedPref {
  public:
   explicit GeneratedThirdPartyCookieBlockingSettingPref(Profile* profile);
   ~GeneratedThirdPartyCookieBlockingSettingPref() override;
