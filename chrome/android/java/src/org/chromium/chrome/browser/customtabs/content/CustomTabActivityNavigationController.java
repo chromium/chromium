@@ -69,14 +69,18 @@ import java.util.function.Predicate;
 /** Responsible for navigating to new pages and going back to previous pages. */
 public class CustomTabActivityNavigationController
         implements StartStopWithNativeObserver, BackPressHandler, OnSystemNavigationObserver {
+    static final String HISTOGRAM_FINISH_REASON = "CustomTabs.Navigation.FinishReason";
+
     private static final String TAG = "CTANavigationCtrl";
 
+    // LINT.IfChange(FinishReason)
     @IntDef({
         FinishReason.USER_NAVIGATION,
         FinishReason.REPARENTING,
         FinishReason.OTHER,
         FinishReason.OPEN_IN_BROWSER,
-        FinishReason.HANDLED_BY_OS
+        FinishReason.HANDLED_BY_OS,
+        FinishReason.NUM_TYPES
     })
     @Target(ElementType.TYPE_USE)
     @Retention(RetentionPolicy.SOURCE)
@@ -88,7 +92,10 @@ public class CustomTabActivityNavigationController
         // The web page is opened in the default browser by starting a new activity.
         int OPEN_IN_BROWSER = 3;
         int HANDLED_BY_OS = 4;
+        int NUM_TYPES = 5;
     }
+
+    // LINT.ThenChange(//tools/metrics/histograms/metadata/custom_tabs/enums.xml:FinishReason)
 
     /** A handler of back presses. */
     public interface BackHandler {
@@ -428,6 +435,10 @@ public class CustomTabActivityNavigationController
         if (mIsFinishing) return;
         mIsFinishing = true;
         mFinishReason = reason;
+
+        RecordHistogram.recordEnumeratedHistogram(
+                HISTOGRAM_FINISH_REASON, mFinishReason, FinishReason.NUM_TYPES);
+
         // Closing the activity destroys the renderer as well. Re-create a spare renderer some
         // time after, so that we have one ready for the next tab open. This does not increase
         // memory consumption, as the current renderer goes away. We create a renderer as a lot

@@ -203,6 +203,18 @@ chromium-metrics-reviews@google.com.
   <int value="6" label="Wrong referrer, invalid session"/>
 </enum>
 
+<!-- LINT.IfChange(FinishReason) -->
+
+<enum name="FinishReason">
+  <int value="0" label="User Navigation"/>
+  <int value="1" label="Reparenting"/>
+  <int value="2" label="Other"/>
+  <int value="3" label="Open in Browser"/>
+  <int value="4" label="Handled by OS"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/android/java/src/org/chromium/chrome/browser/customtabs/content/CustomTabActivityNavigationController.java:FinishReason) -->
+
 <enum name="GoogleBottomBarButtonEvent">
   <int value="0" label="Unknown button"/>
   <int value="1" label="Chrome Page Insights button"/>

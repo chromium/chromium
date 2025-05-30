@@ -139,6 +139,9 @@ public class CustomTabActivityNavigationControllerTest {
                                 MinimizeAppAndCloseTabBackPressHandler
                                         .getCustomTabSameTaskHistogramNameForTesting(),
                                 MinimizeAppAndCloseTabType.MINIMIZE_APP_AND_CLOSE_TAB)
+                        .expectIntRecord(
+                                CustomTabActivityNavigationController.HISTOGRAM_FINISH_REASON,
+                                FinishReason.USER_NAVIGATION)
                         .expectNoRecords(
                                 BackPressManager.getCustomTabSeparateTaskHistogramForTesting())
                         .expectNoRecords(BackPressManager.getCustomTabSameTaskHistogramForTesting())
@@ -179,6 +182,9 @@ public class CustomTabActivityNavigationControllerTest {
                                 MinimizeAppAndCloseTabBackPressHandler
                                         .getCustomTabSameTaskHistogramNameForTesting(),
                                 MinimizeAppAndCloseTabType.MINIMIZE_APP_AND_CLOSE_TAB)
+                        .expectIntRecord(
+                                CustomTabActivityNavigationController.HISTOGRAM_FINISH_REASON,
+                                FinishReason.USER_NAVIGATION)
                         .expectNoRecords(
                                 BackPressManager.getCustomTabSeparateTaskHistogramForTesting())
                         .expectNoRecords(BackPressManager.getCustomTabSameTaskHistogramForTesting())
@@ -345,10 +351,18 @@ public class CustomTabActivityNavigationControllerTest {
 
     @Test
     public void whenCallbackInvoked_FinishesWithReasonHandledByOS() {
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                CustomTabActivityNavigationController.HISTOGRAM_FINISH_REASON,
+                                FinishReason.HANDLED_BY_OS)
+                        .expectNoRecords(BackPressManager.getHistogramForTesting())
+                        .build();
         when(mTabController.onlyOneTabRemaining()).thenReturn(true);
         when(mTabController.dispatchBeforeUnloadIfNeeded()).thenReturn(true);
         CustomTabActivityNavigationController.enablePredictiveBackGestureForTesting();
         mNavigationController.onSystemNavigation();
+        histogramWatcher.assertExpected();
 
         verify(mFinishHandler).onFinish(FinishReason.HANDLED_BY_OS, true);
     }
