@@ -3265,6 +3265,10 @@ def create_cc_defaults_module():
       # https://crrev.com/c/6396655/7/build/config/compiler/BUILD.gn
       # https://crbug.com/406704769
       '-Wno-nullability-completeness',
+      # Stops warning about unknown options. This usually happens when
+      # Chromium uses a newer version of Clang that supports a flag which
+      # Android's clang does not know about.
+      '-Wno-unknown-warning-option'
   ]
   defaults.build_file_path = ""
   defaults.include_build_directory = False
