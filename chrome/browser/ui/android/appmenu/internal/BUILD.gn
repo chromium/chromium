@@ -112,7 +112,7 @@ android_resources("test_java_resources") {
     "test/java/res/layout/test_app_menu_activity_layout.xml",
     "test/java/res/layout/test_menu_footer.xml",
     "test/java/res/layout/test_menu_header.xml",
-    "test/java/res/menu/test_menu.xml",
+    "test/java/res/values/ids.xml",
   ]
   deps = [
     ":java_resources",

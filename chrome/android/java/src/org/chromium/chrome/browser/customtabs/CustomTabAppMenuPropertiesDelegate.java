@@ -5,16 +5,12 @@
 package org.chromium.chrome.browser.customtabs;
 
 import android.content.Context;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.view.Menu;
 import android.view.View;
 import android.widget.TextView;
 
 import androidx.annotation.IdRes;
 import androidx.annotation.VisibleForTesting;
-import androidx.appcompat.content.res.AppCompatResources;
-import androidx.core.graphics.drawable.DrawableCompat;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.supplier.ObservableSupplier;
@@ -39,7 +35,6 @@ import org.chromium.chrome.browser.toolbar.ToolbarManager;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuHandler;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuItemProperties;
 import org.chromium.components.embedder_support.util.UrlConstants;
-import org.chromium.components.webapps.WebappsUtils;
 import org.chromium.content_public.browser.ContentFeatureList;
 import org.chromium.content_public.browser.ContentFeatureMap;
 import org.chromium.ui.modelutil.MVCListAdapter;
@@ -118,13 +113,8 @@ public class CustomTabAppMenuPropertiesDelegate extends AppMenuPropertiesDelegat
     }
 
     @Override
-    public int getAppMenuLayoutId() {
-        return R.menu.custom_tabs_menu;
-    }
-
-    @Override
     @VisibleForTesting
-    public MVCListAdapter.ModelList getMenuItemsForMenu(Menu menu, AppMenuHandler handler) {
+    public MVCListAdapter.ModelList buildMenuModelList(AppMenuHandler handler) {
         MVCListAdapter.ModelList modelList = new MVCListAdapter.ModelList();
 
         Tab currentTab = mActivityTabProvider.get();
@@ -224,71 +214,25 @@ public class CustomTabAppMenuPropertiesDelegate extends AppMenuPropertiesDelegat
                         || url.getScheme().equals(UrlConstants.DATA_SCHEME))) {
             openInChromeItemVisible = false;
         }
-        if (isNativePage || isFileScheme || isContentScheme || url.isEmpty()) {
-            addToHomeScreenVisible = false;
-        }
-
-        if (!WebappsUtils.isAddToHomeIntentSupported()) {
-            addToHomeScreenVisible = false;
-        }
+        addToHomeScreenVisible &=
+                shouldShowHomeScreenMenuItem(
+                        isNativePage, isFileScheme, isContentScheme, mIsOffTheRecord, url);
 
         // --- Icon Row ---
         if (iconRowVisible) {
             List<PropertyModel> iconModels = new ArrayList<>();
-            PropertyModel forwardButton =
-                    buildModelForIcon(
-                            R.id.forward_menu_id,
-                            R.string.accessibility_menu_forward,
-                            R.string.menu_forward,
-                            R.drawable.btn_forward);
-            forwardButton.set(AppMenuItemProperties.ENABLED, currentTab.canGoForward());
-            iconModels.add(forwardButton);
+            iconModels.add(buildForwardActionModel(currentTab));
 
             if (bookmarkItemVisible) {
-                PropertyModel bookmarkButton =
-                        buildModelForIcon(
-                                R.id.bookmark_this_page_id,
-                                R.string.accessibility_menu_bookmark,
-                                R.string.menu_bookmark,
-                                0);
-                updateBookmarkMenuItemShortcut(null, bookmarkButton, currentTab);
-                iconModels.add(bookmarkButton);
+                iconModels.add(buildBookmarkActionModel(currentTab));
             }
 
             if (downloadItemVisible) {
-                PropertyModel downloadButton =
-                        buildModelForIcon(
-                                R.id.offline_page_id,
-                                R.string.download_page,
-                                R.string.menu_download,
-                                R.drawable.ic_file_download_white_24dp);
-                downloadButton.set(
-                        AppMenuItemProperties.ENABLED, shouldEnableDownloadPage(currentTab));
-                iconModels.add(downloadButton);
+                iconModels.add(buildDownloadActionModel(currentTab));
             }
 
-            PropertyModel pageInfoButton =
-                    buildModelForIcon(
-                            R.id.info_menu_id,
-                            R.string.accessibility_menu_info,
-                            R.string.menu_page_info,
-                            R.drawable.btn_info);
-            iconModels.add(pageInfoButton);
-
-            PropertyModel reloadButton =
-                    buildModelForIcon(
-                            R.id.reload_menu_id,
-                            R.string.accessibility_btn_refresh,
-                            R.string.refresh,
-                            0);
-            Drawable icon = AppCompatResources.getDrawable(mContext, R.drawable.btn_reload_stop);
-            DrawableCompat.setTintList(
-                    icon,
-                    AppCompatResources.getColorStateList(
-                            mContext, R.color.default_icon_color_tint_list));
-            reloadButton.set(AppMenuItemProperties.ICON, icon);
-            updateReloadPropertyModel(reloadButton, currentTab.isLoading());
-            iconModels.add(reloadButton);
+            iconModels.add(buildPageInfoModel(currentTab));
+            iconModels.add(buildReloadModel(currentTab));
 
             modelList.add(
                     new MVCListAdapter.ListItem(
@@ -361,13 +305,7 @@ public class CustomTabAppMenuPropertiesDelegate extends AppMenuPropertiesDelegat
 
         // --- Reader Mode Prefs ---
         if (readerModePrefsVisible) {
-            modelList.add(
-                    new MVCListAdapter.ListItem(
-                            AppMenuHandler.AppMenuItemType.STANDARD,
-                            buildModelForStandardMenuItem(
-                                    R.id.reader_mode_prefs_id,
-                                    R.string.menu_reader_mode_prefs,
-                                    R.drawable.reader_mode_prefs_icon)));
+            modelList.add(buildReaderModePrefsItem());
         }
 
         // --- Price Tracking / Price Insights ---
@@ -404,20 +342,12 @@ public class CustomTabAppMenuPropertiesDelegate extends AppMenuPropertiesDelegat
 
         // --- Translate ---
         if (shouldShowTranslateMenuItem(currentTab)) {
-            modelList.add(
-                    new MVCListAdapter.ListItem(
-                            AppMenuHandler.AppMenuItemType.STANDARD,
-                            buildModelForStandardMenuItem(
-                                    R.id.translate_id, R.string.menu_translate, 0)));
+            modelList.add(buildTranslateMenuItem(currentTab, false));
         }
 
         // --- Open with ---
-        if (currentTab.isNativePage() && currentTab.getNativePage().isPdf()) {
-            modelList.add(
-                    new MVCListAdapter.ListItem(
-                            AppMenuHandler.AppMenuItemType.STANDARD,
-                            buildModelForStandardMenuItem(
-                                    R.id.open_with_id, R.string.menu_open_with, 0)));
+        if (shouldShowOpenWithItem(currentTab)) {
+            modelList.add(buildOpenWithItem(currentTab, false));
         }
 
         // --- Open in browser ---
@@ -436,12 +366,6 @@ public class CustomTabAppMenuPropertiesDelegate extends AppMenuPropertiesDelegat
                                     .build()));
         }
         return modelList;
-    }
-
-    @Override
-    public void prepareMenu(Menu menu, AppMenuHandler handler) {
-        // TODO(crbug.com/40145539): Remove once Tabbed activity has migrated away from XML
-        //     inflation.
     }
 
     /**

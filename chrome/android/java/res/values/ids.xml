@@ -117,6 +117,60 @@ found in the LICENSE file.
     <item type="id" name="ntp_feed_header_menu_item_learn" />
     <item type="id" name="ntp_feed_header_menu_item_toggle_switch" />
 
+    <!-- App Menu -->
+    <item type="id" name="icon_row_menu_id" />
+    <item type="id" name="forward_menu_id" />
+    <item type="id" name="bookmark_this_page_id" />
+    <item type="id" name="offline_page_id" />
+    <item type="id" name="info_menu_id" />
+    <item type="id" name="reload_menu_id" />
+    <item type="id" name="update_menu_id" />
+    <item type="id" name="new_tab_menu_id" />
+    <item type="id" name="new_incognito_tab_menu_id" />
+    <item type="id" name="add_to_group_menu_id" />
+    <item type="id" name="new_window_menu_id" />
+    <item type="id" name="move_to_other_window_menu_id" />
+    <item type="id" name="manage_all_windows_menu_id" />
+    <item type="id" name="divider_line_id" />
+    <item type="id" name="open_history_menu_id" />
+    <item type="id" name="tinker_tank_menu_id" />
+    <item type="id" name="quick_delete_menu_id" />
+    <item type="id" name="quick_delete_divider_line_id" />
+    <item type="id" name="downloads_menu_id" />
+    <item type="id" name="all_bookmarks_menu_id" />
+    <item type="id" name="recent_tabs_menu_id" />
+    <item type="id" name="page_zoom_id" />
+    <item type="id" name="share_menu_id" />
+    <item type="id" name="direct_share_menu_id" />
+    <item type="id" name="download_page_id" />
+    <item type="id" name="enable_price_tracking_menu_id" />
+    <item type="id" name="disable_price_tracking_menu_id" />
+    <item type="id" name="ai_web_menu_id" />
+    <item type="id" name="ai_pdf_menu_id" />
+    <item type="id" name="find_in_page_id" />
+    <item type="id" name="translate_id" />
+    <item type="id" name="readaloud_menu_id" />
+    <item type="id" name="reader_mode_menu_id" />
+    <item type="id" name="open_with_id" />
+    <item type="id" name="universal_install" />
+    <item type="id" name="open_webapk_id" />
+    <item type="id" name="request_desktop_site_id" />
+    <item type="id" name="request_desktop_site_check_id" />
+    <item type="id" name="auto_dark_web_contents_id" />
+    <item type="id" name="auto_dark_web_contents_check_id" />
+    <item type="id" name="paint_preview_show_id" />
+    <item type="id" name="get_image_descriptions_id" />
+    <item type="id" name="reader_mode_prefs_id" />
+    <item type="id" name="preferences_id" />
+    <item type="id" name="ntp_customization_id" />
+    <item type="id" name="help_id" />
+    <item type="id" name="managed_by_divider_line_id" />
+    <item type="id" name="managed_by_menu_id" />
+    <item type="id" name="new_tab_group_menu_id" />
+    <item type="id" name="close_all_tabs_menu_id" />
+    <item type="id" name="close_all_incognito_tabs_menu_id" />
+    <item type="id" name="menu_select_tabs" />
+
     <!-- Custom Tabs -->
     <item type="id" name="view_id_tag_key" />
     <item type="id" name="custom_tabs_toolbar_tintable" />
@@ -127,5 +181,7 @@ found in the LICENSE file.
     <item type="id" name="custom_tabs_app_menu_item_id_4" />
     <item type="id" name="custom_tabs_app_menu_item_id_5" />
     <item type="id" name="custom_tabs_app_menu_item_id_6" />
+    <item type="id" name="open_in_browser_id" />
+    <item type="id" name="price_insights_menu_id" />
 
 </resources>

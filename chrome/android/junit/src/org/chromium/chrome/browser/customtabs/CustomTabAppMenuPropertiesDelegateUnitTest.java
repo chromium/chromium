@@ -238,7 +238,7 @@ public class CustomTabAppMenuPropertiesDelegateUnitTest {
         // Verify the following 5 menu items are hidden.
         assertFalse(isMenuItemPresent(modelList, R.id.bookmark_this_page_id));
         assertFalse(isMenuItemPresent(modelList, R.id.offline_page_id));
-        assertFalse(isMenuItemPresent(modelList, R.id.share_row_menu_id));
+        assertFalse(isMenuItemPresent(modelList, R.id.share_menu_id));
         assertFalse(isMenuItemPresent(modelList, R.id.universal_install));
         assertFalse(isMenuItemPresent(modelList, R.id.open_in_browser_id));
     }
@@ -279,7 +279,7 @@ public class CustomTabAppMenuPropertiesDelegateUnitTest {
         assertFalse(isMenuItemPresent(modelList, R.id.bookmark_this_page_id));
         assertFalse(isMenuItemPresent(modelList, R.id.offline_page_id));
         assertFalse(isMenuItemPresent(modelList, R.id.universal_install));
-        assertFalse(isMenuItemPresent(modelList, R.id.request_desktop_site_row_menu_id));
+        assertFalse(isMenuItemPresent(modelList, R.id.request_desktop_site_id));
         assertFalse(isMenuItemPresent(modelList, R.id.readaloud_menu_id));
     }
 }

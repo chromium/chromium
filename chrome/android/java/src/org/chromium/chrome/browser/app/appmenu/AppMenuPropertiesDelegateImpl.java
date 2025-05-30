@@ -11,11 +11,8 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.util.Pair;
-import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.PopupMenu;
 
 import androidx.annotation.ColorRes;
 import androidx.annotation.DrawableRes;
@@ -26,6 +23,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.content.res.AppCompatResources;
+import androidx.core.graphics.drawable.DrawableCompat;
 
 import com.google.common.primitives.UnsignedLongs;
 
@@ -64,7 +62,6 @@ import org.chromium.chrome.browser.ui.appmenu.AppMenuHandler;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuHandler.AppMenuItemType;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuItemProperties;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuPropertiesDelegate;
-import org.chromium.chrome.browser.ui.appmenu.AppMenuUtil;
 import org.chromium.chrome.browser.util.BrowserUiUtils;
 import org.chromium.chrome.browser.util.BrowserUiUtils.ModuleTypeOnStartAndNtp;
 import org.chromium.chrome.browser.webapps.WebappRegistry;
@@ -226,13 +223,6 @@ public abstract class AppMenuPropertiesDelegateImpl implements AppMenuProperties
     }
 
     /**
-     * @return The resource id for the menu to use in {@link AppMenu}.
-     */
-    protected int getAppMenuLayoutId() {
-        return R.menu.main_menu;
-    }
-
-    /**
      * @return Whether the app menu for a web page should be shown.
      */
     @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
@@ -278,16 +268,15 @@ public abstract class AppMenuPropertiesDelegateImpl implements AppMenuProperties
     }
 
     @Override
-    public ModelList getMenuItems(AppMenuHandler handler) {
+    public final ModelList getMenuItems(AppMenuHandler handler) {
         mReadAloudPos = -1;
-        PopupMenu popup = new PopupMenu(mContext, mDecorView);
-        Menu menu = popup.getMenu();
-        MenuInflater inflater = popup.getMenuInflater();
-        inflater.inflate(getAppMenuLayoutId(), menu);
-
-        mModelList = getMenuItemsForMenu(menu, handler);
+        mModelList = buildMenuModelList(handler);
         return mModelList;
     }
+
+    /** Construct the ModelList for the appropriate current state of the menu. */
+    @VisibleForTesting
+    public abstract ModelList buildMenuModelList(AppMenuHandler handler);
 
     /**
      * Builds a property model for a divider item type.
@@ -476,133 +465,31 @@ public abstract class AppMenuPropertiesDelegateImpl implements AppMenuProperties
     }
 
     /**
-     * Return the item type for the given menu item ID, and the default value is {@link
-     * AppMenuItemType#STANDARD}.
-     */
-    protected int getItemTypeForId(@IdRes int menuItemId) {
-        return AppMenuItemType.STANDARD;
-    }
-
-    /** Build and return the appropriate type/model ListItem for the given MenuItem. */
-    // TODO(crbug.com/40145539): Delete this method after inflation from XML is removed.
-    protected MVCListAdapter.ListItem buildPropertyModelForMenuItem(MenuItem item) {
-        PropertyModel propertyModel;
-        @AppMenuItemType int menuType;
-        if (item.getItemId() == R.id.icon_row_menu_id) {
-            menuType = AppMenuItemType.BUTTON_ROW;
-
-            ModelList subList = new ModelList();
-            assert item.getSubMenu().size() <= 5 : "At most 5 buttons currently supported.";
-            for (int j = 0; j < item.getSubMenu().size(); j++) {
-                MenuItem subitem = item.getSubMenu().getItem(j);
-                if (!subitem.isVisible()) continue;
-
-                PropertyModel subModel = AppMenuUtil.buildPropertyModelForIcon(subitem);
-                subList.add(new MVCListAdapter.ListItem(0, subModel));
-                if (subitem.getItemId() == R.id.reload_menu_id) {
-                    Tab currentTab = mActivityTabProvider.get();
-                    updateReloadPropertyModel(
-                            subModel, currentTab != null && currentTab.isLoading());
-                }
-            }
-            propertyModel =
-                    new PropertyModel.Builder(AppMenuItemProperties.ALL_KEYS)
-                            .with(AppMenuItemProperties.MENU_ITEM_ID, item.getItemId())
-                            .with(AppMenuItemProperties.ADDITIONAL_ICONS, subList)
-                            .with(AppMenuItemProperties.MENU_ICON_AT_START, isMenuIconAtStart())
-                            .build();
-        } else if (item.getItemId() == R.id.divider_line_id
-                || item.getItemId() == R.id.managed_by_divider_line_id
-                || item.getItemId() == R.id.quick_delete_divider_line_id) {
-            menuType = AppMenuItemType.DIVIDER;
-            propertyModel =
-                    new PropertyModel.Builder(AppMenuItemProperties.ALL_KEYS)
-                            .with(AppMenuItemProperties.MENU_ITEM_ID, item.getItemId())
-                            .with(AppMenuItemProperties.SUPPORT_ENTER_ANIMATION, true)
-                            .build();
-        } else {
-            boolean isTitleButtonType = item.hasSubMenu() && item.getSubMenu().size() == 2;
-            MenuItem textItem = item;
-            if (isTitleButtonType) {
-                menuType = AppMenuItemType.TITLE_BUTTON;
-                textItem = item.getSubMenu().getItem(0);
-            } else {
-                menuType = getItemTypeForId(item.getItemId());
-            }
-
-            propertyModel = AppMenuUtil.menuItemToPropertyModel(textItem);
-            propertyModel.set(
-                    AppMenuItemProperties.ICON_COLOR_RES,
-                    getMenuItemIconColorRes(textItem.getItemId()));
-            propertyModel.set(
-                    AppMenuItemProperties.ICON_SHOW_BADGE,
-                    shouldShowBadgeOnMenuItemIcon(textItem.getItemId()));
-            propertyModel.set(AppMenuItemProperties.SUPPORT_ENTER_ANIMATION, true);
-            propertyModel.set(AppMenuItemProperties.MENU_ICON_AT_START, isMenuIconAtStart());
-            propertyModel.set(
-                    AppMenuItemProperties.TITLE_CONDENSED,
-                    getContentDescription(textItem.getItemId()));
-            propertyModel.set(
-                    AppMenuItemProperties.MANAGED, isMenuItemManaged(textItem.getItemId()));
-
-            if (isTitleButtonType) {
-                ModelList subList = new ModelList();
-                MenuItem subitem = item.getSubMenu().getItem(1);
-                assert subitem.isVisible();
-                PropertyModel subModel = AppMenuUtil.buildPropertyModelForIcon(subitem);
-                subList.add(new MVCListAdapter.ListItem(0, subModel));
-                propertyModel.set(AppMenuItemProperties.ADDITIONAL_ICONS, subList);
-            }
-        }
-        return new MVCListAdapter.ListItem(menuType, propertyModel);
-    }
-
-    // TODO(crbug.com/40145539): Delete this method after inflation from XML is removed.
-    @VisibleForTesting
-    public ModelList getMenuItemsForMenu(Menu menu, AppMenuHandler handler) {
-        ModelList modelList = new ModelList();
-        prepareMenu(menu, handler);
-        // TODO(crbug.com/40145539): Programmatically create menu item's PropertyModel instead of
-        // converting from MenuItems.
-        int visibleBeforeReadAloudCount = 0;
-        for (int i = 0; i < menu.size(); ++i) {
-            MenuItem item = menu.getItem(i);
-            if (!item.isVisible()) {
-                if (item.getItemId() == R.id.readaloud_menu_id) {
-                    mReadAloudPos = visibleBeforeReadAloudCount;
-                }
-                continue;
-            }
-            visibleBeforeReadAloudCount++;
-
-            modelList.add(buildPropertyModelForMenuItem(item));
-        }
-        int lastIndex = modelList.size() - 1;
-        if (modelList.get(lastIndex).type == AppMenuItemType.DIVIDER) {
-            modelList.removeAt(lastIndex);
-        }
-        return modelList;
-    }
-
-    @Override
-    public abstract void prepareMenu(Menu menu, AppMenuHandler handler);
-
-    /**
      * @param currentTab The currentTab for which the app menu is showing.
      * @return Whether the reader mode preferences menu item should be displayed.
      */
     @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
-    public boolean shouldShowReaderModePrefs(@NonNull Tab currentTab) {
-        return DomDistillerUrlUtils.isDistilledPage(currentTab.getUrl());
+    public boolean shouldShowReaderModePrefs(@Nullable Tab currentTab) {
+        return currentTab != null && DomDistillerUrlUtils.isDistilledPage(currentTab.getUrl());
+    }
+
+    /** Construct the reader mode preferences menu item. */
+    protected ListItem buildReaderModePrefsItem() {
+        return new MVCListAdapter.ListItem(
+                AppMenuHandler.AppMenuItemType.STANDARD,
+                buildModelForStandardMenuItem(
+                        R.id.reader_mode_prefs_id,
+                        R.string.menu_reader_mode_prefs,
+                        R.drawable.reader_mode_prefs_icon));
     }
 
     /**
      * @param currentTab The currentTab for which the app menu is showing.
      * @return Whether the {@code currentTab} may be downloaded, indicating whether the download
-     *         page menu item should be enabled.
+     *     page menu item should be enabled.
      */
     @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
-    public boolean shouldEnableDownloadPage(@NonNull Tab currentTab) {
+    public boolean shouldEnableDownloadPage(@Nullable Tab currentTab) {
         return DownloadUtils.isAllowedToDownloadPage(currentTab);
     }
 
@@ -630,18 +517,6 @@ public abstract class AppMenuPropertiesDelegateImpl implements AppMenuProperties
         return mIsTablet;
     }
 
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    public boolean isAutoDarkWebContentsEnabled() {
-        Profile profile = mTabModelSelector.getCurrentModel().getProfile();
-        assert profile != null;
-        boolean isFlagEnabled =
-                ChromeFeatureList.isEnabled(
-                        ChromeFeatureList.DARKEN_WEBSITES_CHECKBOX_IN_THEMES_SETTING);
-        boolean isFeatureEnabled =
-                WebContentsDarkModeController.isFeatureEnabled(mContext, profile);
-        return isFlagEnabled && isFeatureEnabled;
-    }
-
     /**
      * @param currentTab The currentTab for which the app menu is showing.
      * @return Whether the currentTab should show an app menu item that requires a webContents. This
@@ -658,8 +533,37 @@ public abstract class AppMenuPropertiesDelegateImpl implements AppMenuProperties
      * @return Whether the translate menu item should be displayed.
      */
     @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
-    public boolean shouldShowTranslateMenuItem(@NonNull Tab currentTab) {
-        return TranslateUtils.canTranslateCurrentTab(currentTab, true);
+    public boolean shouldShowTranslateMenuItem(@Nullable Tab currentTab) {
+        return currentTab != null && TranslateUtils.canTranslateCurrentTab(currentTab, true);
+    }
+
+    /** Construct the translate menu item for the given tab. */
+    protected ListItem buildTranslateMenuItem(Tab currentTab, boolean showIcon) {
+        assert shouldShowTranslateMenuItem(currentTab);
+        return new MVCListAdapter.ListItem(
+                AppMenuHandler.AppMenuItemType.STANDARD,
+                buildModelForStandardMenuItem(
+                        R.id.translate_id,
+                        R.string.menu_translate,
+                        showIcon ? R.drawable.ic_translate : 0));
+    }
+
+    /** Return whether the current tab should show the "Open with..." item. */
+    protected boolean shouldShowOpenWithItem(@Nullable Tab currentTab) {
+        return currentTab != null
+                && currentTab.isNativePage()
+                && currentTab.getNativePage().isPdf();
+    }
+
+    /** Construct the "Open with..." item for the given tab. */
+    protected ListItem buildOpenWithItem(Tab currentTab, boolean showIcon) {
+        assert shouldShowOpenWithItem(currentTab);
+        return new MVCListAdapter.ListItem(
+                AppMenuHandler.AppMenuItemType.STANDARD,
+                buildModelForStandardMenuItem(
+                        R.id.open_with_id,
+                        R.string.menu_open_with,
+                        showIcon ? R.drawable.ic_open_in_new : 0));
     }
 
     /**
@@ -695,16 +599,8 @@ public abstract class AppMenuPropertiesDelegateImpl implements AppMenuProperties
     }
 
     /**
-     * @param currentTab Current tab being displayed.
-     * @return Whether the "Managed by your organization" menu item should be displayed.
-     */
-    protected boolean shouldShowManagedByMenuItem(Tab currentTab) {
-        return false;
-    }
-
-    /**
-     * @param currentTab Current tab being displayed.
-     * Returns whether the "Download page" menu item should be displayed.
+     * @param currentTab Current tab being displayed. Returns whether the "Download page" menu item
+     *     should be displayed.
      */
     protected boolean shouldShowDownloadPageMenuItem(Tab currentTab) {
         return ChromeFeatureList.sHideTabletToolbarDownloadButton.isEnabled()
@@ -712,42 +608,72 @@ public abstract class AppMenuPropertiesDelegateImpl implements AppMenuProperties
                 && shouldEnableDownloadPage(currentTab);
     }
 
-    /** Sets the visibility and labels of the "Add to Home screen" and "Open WebAPK" menu items. */
-    // TODO(crbug.com/40145539): Delete this method after inflation from XML is removed.
-    protected void prepareAddToHomescreenMenuItem(
-            Menu menu, Tab currentTab, boolean shouldShowHomeScreenMenuItem) {
-        MenuItem universalInstallItem = menu.findItem(R.id.universal_install);
-        MenuItem openWebApkItem = menu.findItem(R.id.open_webapk_id);
+    /** Build the PropertyModel for the forward navigation action. */
+    protected PropertyModel buildForwardActionModel(@Nullable Tab currentTab) {
+        PropertyModel forwardButton =
+                buildModelForIcon(
+                        R.id.forward_menu_id,
+                        R.string.accessibility_menu_forward,
+                        R.string.menu_forward,
+                        R.drawable.btn_forward);
+        forwardButton.set(
+                AppMenuItemProperties.ENABLED, currentTab != null && currentTab.canGoForward());
+        return forwardButton;
+    }
 
-        universalInstallItem.setVisible(false);
-        openWebApkItem.setVisible(false);
+    /** Build the PropertyModel for the bookmark this page action. */
+    protected PropertyModel buildBookmarkActionModel(@Nullable Tab currentTab) {
+        PropertyModel bookmarkButton =
+                buildModelForIcon(
+                        R.id.bookmark_this_page_id,
+                        R.string.accessibility_menu_bookmark,
+                        R.string.menu_bookmark,
+                        0);
+        updateBookmarkMenuItemShortcut(bookmarkButton, currentTab);
+        return bookmarkButton;
+    }
 
-        if (currentTab == null || !shouldShowHomeScreenMenuItem) {
-            return;
-        }
+    /** Build the PropertyModel for the download this page action. */
+    protected PropertyModel buildDownloadActionModel(@Nullable Tab currentTab) {
+        PropertyModel downloadButton =
+                buildModelForIcon(
+                        R.id.offline_page_id,
+                        R.string.download_page,
+                        R.string.menu_download,
+                        R.drawable.ic_file_download_white_24dp);
+        downloadButton.set(AppMenuItemProperties.ENABLED, shouldEnableDownloadPage(currentTab));
+        return downloadButton;
+    }
 
-        long addToHomeScreenStart = SystemClock.elapsedRealtime();
-        ResolveInfo resolveInfo = queryWebApkResolveInfo(mContext, currentTab);
-        RecordHistogram.recordTimesHistogram(
-                "Android.PrepareMenu.OpenWebApkVisibilityCheck",
-                SystemClock.elapsedRealtime() - addToHomeScreenStart);
+    /** Build the PropertyModel for the page info action. */
+    protected PropertyModel buildPageInfoModel(@Nullable Tab currentTab) {
+        PropertyModel pageInfoButton =
+                buildModelForIcon(
+                        R.id.info_menu_id,
+                        R.string.accessibility_menu_info,
+                        R.string.menu_page_info,
+                        R.drawable.btn_info);
+        pageInfoButton.set(AppMenuItemProperties.ENABLED, currentTab != null);
+        return pageInfoButton;
+    }
 
-        // When Universal Install is active, we only show this menu item if we are browsing
-        // the root page of an already installed app.
-        boolean openWebApkItemVisible =
-                resolveInfo != null
-                        && resolveInfo.activityInfo.packageName != null
-                        && "/".equals(currentTab.getUrl().getPath());
-
-        if (openWebApkItemVisible) {
-            // This is the 'webapp is already installed' case, so we offer to open the webapp.
-            String appName = resolveInfo.loadLabel(mContext.getPackageManager()).toString();
-            openWebApkItem.setTitle(mContext.getString(R.string.menu_open_webapk, appName));
-            openWebApkItem.setVisible(true);
-            return;
-        }
-
-        universalInstallItem.setVisible(true);
+    /** Build the PropertyModel for the reload/stop action. */
+    protected PropertyModel buildReloadModel(@Nullable Tab currentTab) {
+        PropertyModel reloadButton =
+                buildModelForIcon(
+                        R.id.reload_menu_id,
+                        R.string.accessibility_btn_refresh,
+                        R.string.refresh,
+                        0);
+        Drawable icon = AppCompatResources.getDrawable(mContext, R.drawable.btn_reload_stop);
+        DrawableCompat.setTintList(
+                icon,
+                AppCompatResources.getColorStateList(
+                        mContext, R.color.default_icon_color_tint_list));
+        reloadButton.set(AppMenuItemProperties.ICON, icon);
+        reloadButton.set(AppMenuItemProperties.ENABLED, currentTab != null);
+        if (currentTab != null) updateReloadPropertyModel(reloadButton, currentTab.isLoading());
+        return reloadButton;
     }
 
     /**
@@ -818,20 +744,6 @@ public abstract class AppMenuPropertiesDelegateImpl implements AppMenuProperties
     @Override
     public Bundle getBundleForMenuItem(int itemId) {
         return null;
-    }
-
-    /** Sets the visibility of the "Translate" menu item. */
-    protected void prepareTranslateMenuItem(Menu menu, @Nullable Tab currentTab) {
-        boolean isTranslateVisible = currentTab != null && shouldShowTranslateMenuItem(currentTab);
-        menu.findItem(R.id.translate_id).setVisible(isTranslateVisible);
-    }
-
-    /** Sets visibility of the "Listen to this page" menu item. */
-    protected void prepareReadAloudMenuItem(Menu menu, @Nullable Tab currentTab) {
-        boolean visible = isTabReadable(currentTab);
-        observeReadabilityUpdates(currentTab);
-        mHasReadAloudInserted = visible;
-        menu.findItem(R.id.readaloud_menu_id).setVisible(visible);
     }
 
     private void observeReadabilityUpdates(Tab currentTab) {
@@ -1055,121 +967,38 @@ public abstract class AppMenuPropertiesDelegateImpl implements AppMenuProperties
     /**
      * Updates the bookmark item's visibility.
      *
-     * @param bookmarkMenuItemShortcut {@link MenuItem} for adding/editing the bookmark.
-     *     TODO(crbug.com/40145539): Remove this param and only pass in a non-null property model.
      * @param bookmarkMenuModel The {@link PropertyModel} associated with the bookmark item being
      *     updated.
      * @param currentTab Current tab being displayed.
      */
     protected void updateBookmarkMenuItemShortcut(
-            @Nullable MenuItem bookmarkMenuItemShortcut,
-            @Nullable PropertyModel bookmarkMenuModel,
-            @Nullable Tab currentTab) {
+            PropertyModel bookmarkMenuModel, @Nullable Tab currentTab) {
         if (!mBookmarkModelSupplier.hasValue() || currentTab == null) {
             // If the BookmarkModel still isn't available, assume the bookmark menu item is not
             // editable.
-            if (bookmarkMenuItemShortcut != null) {
-                bookmarkMenuItemShortcut.setEnabled(false);
-            }
-            if (bookmarkMenuModel != null) {
-                bookmarkMenuModel.set(AppMenuItemProperties.ENABLED, false);
-            }
+            bookmarkMenuModel.set(AppMenuItemProperties.ENABLED, false);
         } else {
-            if (bookmarkMenuItemShortcut != null) {
-                bookmarkMenuItemShortcut.setEnabled(
-                        mBookmarkModelSupplier.get().isEditBookmarksEnabled());
-            } else if (bookmarkMenuModel != null) {
-                bookmarkMenuModel.set(
-                        AppMenuItemProperties.ENABLED,
-                        mBookmarkModelSupplier.get().isEditBookmarksEnabled());
-            }
+            bookmarkMenuModel.set(
+                    AppMenuItemProperties.ENABLED,
+                    mBookmarkModelSupplier.get().isEditBookmarksEnabled());
         }
 
         if (currentTab != null && shouldCheckBookmarkStar(currentTab)) {
-            if (bookmarkMenuItemShortcut != null) {
-                bookmarkMenuItemShortcut.setIcon(R.drawable.btn_star_filled);
-                bookmarkMenuItemShortcut.setChecked(true);
-                bookmarkMenuItemShortcut.setTitleCondensed(
-                        mContext.getString(R.string.edit_bookmark));
-            } else if (bookmarkMenuModel != null) {
-                bookmarkMenuModel.set(
-                        AppMenuItemProperties.ICON,
-                        AppCompatResources.getDrawable(mContext, R.drawable.btn_star_filled));
-                bookmarkMenuModel.set(AppMenuItemProperties.CHECKED, true);
-                bookmarkMenuModel.set(
-                        AppMenuItemProperties.TITLE_CONDENSED,
-                        mContext.getString(R.string.edit_bookmark));
-            }
+            bookmarkMenuModel.set(
+                    AppMenuItemProperties.ICON,
+                    AppCompatResources.getDrawable(mContext, R.drawable.btn_star_filled));
+            bookmarkMenuModel.set(AppMenuItemProperties.CHECKED, true);
+            bookmarkMenuModel.set(
+                    AppMenuItemProperties.TITLE_CONDENSED,
+                    mContext.getString(R.string.edit_bookmark));
         } else {
-            if (bookmarkMenuItemShortcut != null) {
-                bookmarkMenuItemShortcut.setIcon(R.drawable.star_outline_24dp);
-                bookmarkMenuItemShortcut.setChecked(false);
-                bookmarkMenuItemShortcut.setTitleCondensed(
-                        mContext.getString(R.string.menu_bookmark));
-            } else if (bookmarkMenuModel != null) {
-                bookmarkMenuModel.set(
-                        AppMenuItemProperties.ICON,
-                        AppCompatResources.getDrawable(mContext, R.drawable.star_outline_24dp));
-                bookmarkMenuModel.set(AppMenuItemProperties.CHECKED, false);
-                bookmarkMenuModel.set(
-                        AppMenuItemProperties.TITLE_CONDENSED,
-                        mContext.getString(R.string.menu_bookmark));
-            }
-        }
-    }
-
-    /**
-     * Updates the price-tracking menu item visibility.
-     *
-     * @param startPriceTrackingMenuItem The menu item to start price tracking.
-     * @param stopPriceTrackingMenuItem The menu item to stop price tracking.
-     * @param currentTab Current tab being displayed.
-     */
-    // TODO(crbug.com/40145539): Delete this method after inflation from XML is removed.
-    protected void updatePriceTrackingMenuItemRow(
-            @NonNull MenuItem startPriceTrackingMenuItem,
-            @NonNull MenuItem stopPriceTrackingMenuItem,
-            @Nullable Tab currentTab) {
-        if (currentTab == null || currentTab.getWebContents() == null) {
-            startPriceTrackingMenuItem.setVisible(false);
-            stopPriceTrackingMenuItem.setVisible(false);
-            return;
-        }
-
-        Profile profile = currentTab.getProfile();
-        ShoppingService service = ShoppingServiceFactory.getForProfile(profile);
-        ShoppingService.ProductInfo info = null;
-        if (service != null) {
-            info = service.getAvailableProductInfoForUrl(currentTab.getUrl());
-        }
-
-        // If price tracking isn't enabled or the page isn't eligible, then hide both items.
-        if (!CommerceFeatureUtils.isShoppingListEligible(service)
-                || !PowerBookmarkUtils.isPriceTrackingEligible(currentTab)
-                || !mBookmarkModelSupplier.hasValue()) {
-            startPriceTrackingMenuItem.setVisible(false);
-            stopPriceTrackingMenuItem.setVisible(false);
-            return;
-        }
-
-        boolean editEnabled = mBookmarkModelSupplier.get().isEditBookmarksEnabled();
-        startPriceTrackingMenuItem.setEnabled(editEnabled);
-        stopPriceTrackingMenuItem.setEnabled(editEnabled);
-
-        if (info != null && info.productClusterId.isPresent()) {
-            CommerceSubscription sub =
-                    new CommerceSubscription(
-                            SubscriptionType.PRICE_TRACK,
-                            IdentifierType.PRODUCT_CLUSTER_ID,
-                            UnsignedLongs.toString(info.productClusterId.get()),
-                            ManagementType.USER_MANAGED,
-                            null);
-            boolean isSubscribed = service.isSubscribedFromCache(sub);
-            startPriceTrackingMenuItem.setVisible(!isSubscribed);
-            stopPriceTrackingMenuItem.setVisible(isSubscribed);
-        } else {
-            startPriceTrackingMenuItem.setVisible(true);
-            stopPriceTrackingMenuItem.setVisible(false);
+            bookmarkMenuModel.set(
+                    AppMenuItemProperties.ICON,
+                    AppCompatResources.getDrawable(mContext, R.drawable.star_outline_24dp));
+            bookmarkMenuModel.set(AppMenuItemProperties.CHECKED, false);
+            bookmarkMenuModel.set(
+                    AppMenuItemProperties.TITLE_CONDENSED,
+                    mContext.getString(R.string.menu_bookmark));
         }
     }
 
@@ -1229,52 +1058,6 @@ public abstract class AppMenuPropertiesDelegateImpl implements AppMenuProperties
     }
 
     /**
-     * Updates the request desktop site item's state.
-     *
-     * @param menu {@link Menu} for request desktop site.
-     * @param currentTab Current tab being displayed.
-     * @param canShowRequestDesktopSite If the request desktop site menu item should show or not.
-     * @param isNativePage Whether the current tab is a native page.
-     */
-    // TODO(crbug.com/40145539): Delete this method after inflation from XML is removed.
-    protected void updateRequestDesktopSiteMenuItem(
-            Menu menu,
-            @Nullable Tab currentTab,
-            boolean canShowRequestDesktopSite,
-            boolean isNativePage) {
-        MenuItem requestMenuRow = menu.findItem(R.id.request_desktop_site_row_menu_id);
-        MenuItem requestMenuLabel = menu.findItem(R.id.request_desktop_site_id);
-        MenuItem requestMenuCheck = menu.findItem(R.id.request_desktop_site_check_id);
-
-        // Hide request desktop site on all native pages. Also hide it for desktop Android, which
-        // always requests desktop sites.
-        boolean itemVisible =
-                currentTab != null
-                        && canShowRequestDesktopSite
-                        && !isNativePage
-                        && !shouldShowReaderModePrefs(currentTab)
-                        && currentTab.getWebContents() != null
-                        && !BuildConfig.IS_DESKTOP_ANDROID;
-
-        requestMenuRow.setVisible(itemVisible);
-        if (!itemVisible) return;
-
-        boolean isRequestDesktopSite =
-                currentTab.getWebContents().getNavigationController().getUseDesktopUserAgent();
-        requestMenuLabel.setTitle(R.string.menu_request_desktop_site);
-        requestMenuCheck.setVisible(true);
-        // Mark the checkbox if RDS is activated on this page.
-        requestMenuCheck.setChecked(isRequestDesktopSite);
-
-        // This title doesn't seem to be displayed by Android, but it is used to set up
-        // accessibility text in {@link AppMenuAdapter#setupMenuButton}.
-        requestMenuLabel.setTitleCondensed(
-                isRequestDesktopSite
-                        ? mContext.getString(R.string.menu_request_desktop_site_on)
-                        : mContext.getString(R.string.menu_request_desktop_site_off));
-    }
-
-    /**
      * Builds the appropriate RDS menu item for the current tab (if any).
      *
      * @param currentTab The currently selected tab.
@@ -1317,40 +1100,34 @@ public abstract class AppMenuPropertiesDelegateImpl implements AppMenuProperties
         return new ListItem(AppMenuItemType.TITLE_BUTTON, model);
     }
 
-    /**
-     * Updates the auto dark menu item's state.
-     *
-     * @param menu {@link Menu} for auto dark.
-     * @param currentTab Current tab being displayed.
-     * @param isNativePage Whether the current tab is a native page.
-     */
-    protected void updateAutoDarkMenuItem(
-            Menu menu, @Nullable Tab currentTab, boolean isNativePage) {
-        MenuItem autoDarkMenuRow = menu.findItem(R.id.auto_dark_web_contents_row_menu_id);
-        MenuItem autoDarkMenuCheck = menu.findItem(R.id.auto_dark_web_contents_check_id);
+    /** Return whether auto darkening is enabled for the current Tab. */
+    @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
+    public boolean shouldShowAutoDarkItem(@Nullable Tab currentTab, boolean isNativePage) {
+        Profile profile = mTabModelSelector.getCurrentModel().getProfile();
+        assert profile != null;
+        boolean isFlagEnabled =
+                ChromeFeatureList.isEnabled(
+                        ChromeFeatureList.DARKEN_WEBSITES_CHECKBOX_IN_THEMES_SETTING);
+        boolean isFeatureEnabled =
+                WebContentsDarkModeController.isFeatureEnabled(mContext, profile);
 
-        // Hide app menu item if on non-NTP chrome:// page or auto dark not enabled.
-        boolean isAutoDarkEnabled = isAutoDarkWebContentsEnabled();
-        boolean itemVisible = currentTab != null && !isNativePage && isAutoDarkEnabled;
-        autoDarkMenuRow.setVisible(itemVisible);
-        if (!itemVisible) return;
+        return currentTab != null && !isNativePage && isFlagEnabled && isFeatureEnabled;
+    }
 
-        // Set text based on if site is blocked or not.
+    /** Construct the ListItem for the auto darkening menu item. */
+    protected ListItem buildAutoDarkItem(Tab currentTab, boolean isNativePage, boolean showIcon) {
+        assert shouldShowAutoDarkItem(currentTab, isNativePage);
         boolean isEnabled =
                 WebContentsDarkModeController.isEnabledForUrl(
                         mTabModelSelector.getCurrentModel().getProfile(), currentTab.getUrl());
-        autoDarkMenuCheck.setChecked(isEnabled);
-    }
-
-    protected void updateManagedByMenuItem(Menu menu, @Nullable Tab currentTab) {
-        MenuItem managedByDividerLine = menu.findItem(R.id.managed_by_divider_line_id);
-        MenuItem managedByMenuItem = menu.findItem(R.id.managed_by_menu_id);
-
-        boolean managedByMenuItemVisible =
-                currentTab != null && shouldShowManagedByMenuItem(currentTab);
-
-        managedByDividerLine.setVisible(managedByMenuItemVisible);
-        managedByMenuItem.setVisible(managedByMenuItemVisible);
+        return new ListItem(
+                AppMenuItemType.TITLE_BUTTON,
+                buildModelForMenuItemWithCheckbox(
+                        R.id.auto_dark_web_contents_id,
+                        R.string.menu_auto_dark_web_contents,
+                        showIcon ? R.drawable.ic_brightness_medium_24dp : 0,
+                        R.id.auto_dark_web_contents_check_id,
+                        isEnabled));
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
@@ -1377,24 +1154,6 @@ public abstract class AppMenuPropertiesDelegateImpl implements AppMenuProperties
             return R.color.default_icon_color_accent1_tint_list;
         }
         return R.color.default_icon_color_secondary_tint_list;
-    }
-
-    /**
-     * Set the icon and the title for the menu item used for direct share.
-     *
-     * @param item The menu item that is used for direct share.
-     */
-    // TODO(crbug.com/40145539): Delete this method after inflation from XML is removed.
-    protected void updateDirectShareMenuItem(MenuItem item) {
-        Pair<Drawable, CharSequence> directShare = ShareHelper.getShareableIconAndNameForText();
-        Drawable directShareIcon = directShare.first;
-        CharSequence directShareTitle = directShare.second;
-
-        item.setIcon(directShareIcon);
-        if (directShareTitle != null) {
-            item.setTitle(
-                    mContext.getString(R.string.accessibility_menu_share_via, directShareTitle));
-        }
     }
 
     /**
