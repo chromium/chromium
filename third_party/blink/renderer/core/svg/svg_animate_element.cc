@@ -75,12 +75,12 @@ String ComputeCSSPropertyValue(SVGElement* element, CSSPropertyID id) {
   return value ? value->CssText() : "";
 }
 
-AnimatedPropertyValueType PropertyValueType(bool is_css_property,
+AnimatedPropertyValueType PropertyValueType(const QualifiedName& attribute_name,
                                             const String& value) {
   DEFINE_STATIC_LOCAL(const AtomicString, inherit, ("inherit"));
-  if (!is_css_property || value.empty() || value != inherit) {
+  if (value.empty() || value != inherit ||
+      !SVGElement::IsAnimatableCSSProperty(attribute_name))
     return kRegularPropertyValue;
-  }
   return kInheritValue;
 }
 
@@ -557,11 +557,9 @@ void SVGAnimateElement::CalculateFromAndToValues(const String& from_string,
                                                  const String& to_string) {
   DCHECK(targetElement());
   from_property_ = ParseValue(from_string);
-  from_property_value_type_ =
-      PropertyValueType(IsAnimatingCSSProperty(), from_string);
+  from_property_value_type_ = PropertyValueType(AttributeName(), from_string);
   to_property_ = ParseValue(to_string);
-  to_property_value_type_ =
-      PropertyValueType(IsAnimatingCSSProperty(), to_string);
+  to_property_value_type_ = PropertyValueType(AttributeName(), to_string);
 }
 
 void SVGAnimateElement::CalculateFromAndByValues(const String& from_string,
@@ -573,11 +571,9 @@ void SVGAnimateElement::CalculateFromAndByValues(const String& from_string,
   DCHECK(!IsA<SVGSetElement>(*this));
 
   from_property_ = ParseValue(from_string);
-  from_property_value_type_ =
-      PropertyValueType(IsAnimatingCSSProperty(), from_string);
+  from_property_value_type_ = PropertyValueType(AttributeName(), from_string);
   to_property_ = ParseValue(by_string);
-  to_property_value_type_ =
-      PropertyValueType(IsAnimatingCSSProperty(), by_string);
+  to_property_value_type_ = PropertyValueType(AttributeName(), by_string);
   to_property_->Add(from_property_, targetElement());
 }
 
@@ -590,8 +586,7 @@ SVGPropertyBase* SVGAnimateElement::CreateUnderlyingValueForAnimation() const {
   DCHECK(IsAnimatingCSSProperty());
   // Presentation attributes that have an SVG DOM representation should use
   // the "SVG DOM" code-path (above.)
-  DCHECK_NE(SVGElement::AnimatedPropertyTypeForCSSAttribute(AttributeName()),
-            kAnimatedUnknown);
+  DCHECK(SVGElement::IsAnimatableCSSProperty(AttributeName()));
 
   // CSS properties animation code-path.
   String base_value =

@@ -595,6 +595,10 @@ SVGAnimatedPropertyBase* SVGElement::PropertyFromAttribute(
   }
 }
 
+bool SVGElement::IsAnimatableCSSProperty(const QualifiedName& attr_name) {
+  return AnimatedPropertyTypeForCSSAttribute(attr_name) != kAnimatedUnknown;
+}
+
 bool SVGElement::IsPresentationAttribute(const QualifiedName& name) const {
   return name.Matches(xml_names::kLangAttr) || name == svg_names::kLangAttr;
 }
