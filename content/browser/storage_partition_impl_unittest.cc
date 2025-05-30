@@ -945,16 +945,12 @@ TEST_F(StoragePartitionImplTest, QuotaClientTypesGeneration) {
           StoragePartition::REMOVE_DATA_MASK_FILE_SYSTEMS),
       testing::UnorderedElementsAre(storage::QuotaClientType::kFileSystem));
   EXPECT_THAT(StoragePartitionImpl::GenerateQuotaClientTypes(
-                  StoragePartition::REMOVE_DATA_MASK_WEBSQL),
-              testing::ElementsAre(storage::QuotaClientType::kDatabase));
-  EXPECT_THAT(StoragePartitionImpl::GenerateQuotaClientTypes(
                   StoragePartition::REMOVE_DATA_MASK_INDEXEDDB),
               testing::ElementsAre(storage::QuotaClientType::kIndexedDatabase));
   EXPECT_THAT(
       StoragePartitionImpl::GenerateQuotaClientTypes(kAllQuotaRemoveMask),
       testing::UnorderedElementsAre(
           storage::QuotaClientType::kFileSystem,
-          storage::QuotaClientType::kDatabase,
           storage::QuotaClientType::kIndexedDatabase));
 }
 

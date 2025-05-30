@@ -797,9 +797,6 @@ storage::QuotaClientTypes StoragePartitionImpl::GenerateQuotaClientTypes(
   if (remove_mask & StoragePartition::REMOVE_DATA_MASK_FILE_SYSTEMS) {
     quota_client_types.insert(storage::QuotaClientType::kFileSystem);
   }
-  if (remove_mask & StoragePartition::REMOVE_DATA_MASK_WEBSQL) {
-    quota_client_types.insert(storage::QuotaClientType::kDatabase);
-  }
   if (remove_mask & StoragePartition::REMOVE_DATA_MASK_INDEXEDDB) {
     quota_client_types.insert(storage::QuotaClientType::kIndexedDatabase);
   }
