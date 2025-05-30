@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] reduceL1 float32 1D constant tensor empty axes
+  assert_less_than_equal: assert_array_approx_equals_ulp: test reduceL1 float32 actual -5.50882625579834 should be close enough to expected 5.50882625579834 by ULP distance: expected a number less than or equal to 1n but got 2170589340n
+[FAIL] reduceL1 uint32 4D tensor options.axes with options.keepDimensions=false
+  promise_test: Unhandled rejection with value: object "TypeError: Unsupported data type, input 'input' data type uint32 must be one of [float32,float16,int32]."
+Harness: the test ran to completion.
+

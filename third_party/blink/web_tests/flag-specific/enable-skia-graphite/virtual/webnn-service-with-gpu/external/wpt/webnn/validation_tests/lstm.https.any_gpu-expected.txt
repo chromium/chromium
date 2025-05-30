@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] [lstm] TypeError is expected if the data type is not one of the floating point types
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'input' on 'MLGraphBuilder': Unsupported data type uint32 for input operand named 'input', must be one of [float32, float16, int32]."
+[FAIL] [lstm] TypeError is expected if the dataType of options.initialHiddenState is incorrect
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'input' on 'MLGraphBuilder': Unsupported data type uint64 for input operand named 'initialHiddenState', must be one of [float32, float16, int32]."
+Harness: the test ran to completion.
+

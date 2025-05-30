@@ -1,0 +1,13 @@
+This is a testharness.js-based test.
+[FAIL] [gruCell] Throw if the data type of the inputs is not one of the floating point types
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'input' on 'MLGraphBuilder': Unsupported data type uint32 for input operand named 'input', must be one of [float32, float16, int32]."
+[FAIL] [gruCell] Throw if data type of weight is not one of the floating point types
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'input' on 'MLGraphBuilder': Unsupported data type int8 for input operand named 'weight', must be one of [float32, float16, int32]."
+[FAIL] [gruCell] Throw if data type of hiddenState is not one of the floating point types
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'input' on 'MLGraphBuilder': Unsupported data type uint32 for input operand named 'hiddenState', must be one of [float32, float16, int32]."
+[FAIL] [gruCell] Throw if data type of options.bias is not one of the floating point types
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'input' on 'MLGraphBuilder': Unsupported data type uint8 for input operand named 'bias', must be one of [float32, float16, int32]."
+[FAIL] [gruCell] Throw if data type of options.recurrentBias is not one of the floating point types
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'input' on 'MLGraphBuilder': Unsupported data type int8 for input operand named 'recurrentBias', must be one of [float32, float16, int32]."
+Harness: the test ran to completion.
+

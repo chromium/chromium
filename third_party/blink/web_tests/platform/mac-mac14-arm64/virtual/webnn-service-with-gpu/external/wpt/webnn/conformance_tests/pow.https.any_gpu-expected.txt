@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] pow float32 5D base tensor and 5D integer exponent tensor
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'pow' on 'MLGraphBuilder': Unsupported rank 5 for argument a (must be at most 4)."
+[FAIL] pow float16 5D base tensor and 5D integer exponent tensor
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'pow' on 'MLGraphBuilder': Unsupported rank 5 for argument a (must be at most 4)."
+Harness: the test ran to completion.
+

@@ -1,0 +1,9 @@
+This is a testharness.js-based test.
+[FAIL] gru float32 tensors steps=2 with options.bias, options.recurrentBias, options.direction='backward', options.activations=['relu', 'relu'] and options.returnSequence=true
+  assert_less_than_equal: assert_array_approx_equals_ulp: test gru float32 actual -0.25 should be close enough to expected -0.24974998831748962 by ULP distance: expected a number less than or equal to 6n but got 16778n
+[FAIL] gru float32 tensors steps=2 with options.bias, options.recurrentBias, options.direction='both' and options.returnSequence=true
+  assert_less_than_equal: assert_array_approx_equals_ulp: test gru float32 actual -0.375 should be close enough to expected -0.28068751096725464 by ULP distance: expected a number less than or equal to 6n but got 3164602n
+[FAIL] gru float32 tensors steps=2 with all options
+  assert_less_than_equal: assert_array_approx_equals_ulp: test gru float32 actual -0.25 should be close enough to expected -0.24974998831748962 by ULP distance: expected a number less than or equal to 6n but got 16778n
+Harness: the test ran to completion.
+

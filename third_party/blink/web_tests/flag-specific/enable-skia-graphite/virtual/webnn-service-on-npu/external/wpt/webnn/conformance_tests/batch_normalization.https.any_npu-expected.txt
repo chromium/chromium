@@ -1,0 +1,15 @@
+This is a testharness.js-based test.
+[FAIL] batchNormalization float32 2D tensor (mean and variance are non-constant) default options
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'batchNormalization' on 'MLGraphBuilder': Unsupported rank 2 for argument input (must be at least 3)."
+[FAIL] batchNormalization float32 2D constant tensors default options
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'batchNormalization' on 'MLGraphBuilder': Unsupported rank 2 for argument input (must be at least 3)."
+[FAIL] batchNormalization float32 2D tensor default options
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'batchNormalization' on 'MLGraphBuilder': Unsupported rank 2 for argument input (must be at least 3)."
+[FAIL] batchNormalization float16 2D tensor (mean and variance are non-constant) default options
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'batchNormalization' on 'MLGraphBuilder': Unsupported rank 2 for argument input (must be at least 3)."
+[FAIL] batchNormalization float16 2D constant tensors default options
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'batchNormalization' on 'MLGraphBuilder': Unsupported rank 2 for argument input (must be at least 3)."
+[FAIL] batchNormalization float16 2D tensor default options
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'batchNormalization' on 'MLGraphBuilder': Unsupported rank 2 for argument input (must be at least 3)."
+Harness: the test ran to completion.
+

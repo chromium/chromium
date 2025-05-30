@@ -1,0 +1,13 @@
+This is a testharness.js-based test.
+[FAIL] gather float32 1D tensor and uint32 0D scalar indices default options
+  promise_test: Unhandled rejection with value: object "TypeError: Unsupported data type, input 'indices' data type uint32 must be one of [int32]."
+[FAIL] gather float32 1D tensor and int64 0D scalar indices default options
+  promise_test: Unhandled rejection with value: object "TypeError: Unsupported data type, constant 'indices' data type int64 must be one of [float32,float16,int32,uint32,int8,uint8,int4,uint4]."
+[FAIL] gather float32 2D tensor and int32 0D out-of-bound positive indices default options
+  assert_less_than_equal: assert_array_approx_equals_ulp: test gather float32 actual -66.05901336669922 should be close enough to expected 90.2870101928711 by ULP distance: expected a number less than or equal to 0n but got 2235085098n
+[FAIL] gather float16 1D tensor and uint32 0D scalar indices default options
+  promise_test: Unhandled rejection with value: object "TypeError: Unsupported data type, input 'indices' data type uint32 must be one of [int32]."
+[FAIL] gather float16 1D tensor and int64 0D scalar indices default options
+  promise_test: Unhandled rejection with value: object "TypeError: Unsupported data type, constant 'indices' data type int64 must be one of [float32,float16,int32,uint32,int8,uint8,int4,uint4]."
+Harness: the test ran to completion.
+

@@ -1,0 +1,13 @@
+This is a testharness.js-based test.
+[FAIL] sub int8 4D tensors
+  promise_test: Unhandled rejection with value: object "TypeError: Unsupported data type, input 'a' data type int8 must be one of [float32,float16,int32]."
+[FAIL] sub uint8 4D tensors
+  promise_test: Unhandled rejection with value: object "TypeError: Unsupported data type, input 'a' data type uint8 must be one of [float32,float16,int32]."
+[FAIL] sub uint32 4D tensors
+  promise_test: Unhandled rejection with value: object "TypeError: Unsupported data type, input 'a' data type uint32 must be one of [float32,float16,int32]."
+[FAIL] sub int64 4D tensors
+  promise_test: Unhandled rejection with value: object "TypeError: Unsupported data type, input 'a' data type int64 must be one of [float32,float16,int32]."
+[FAIL] sub uint64 4D tensors
+  promise_test: Unhandled rejection with value: object "TypeError: Unsupported data type, input 'a' data type uint64 must be one of [float32,float16,int32]."
+Harness: the test ran to completion.
+
