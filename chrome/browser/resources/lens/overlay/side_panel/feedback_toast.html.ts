@@ -20,8 +20,9 @@ export function getHtml(this: FeedbackToastElement) {
     <cr-button id="sendFeedbackButton" @click="${this.onSendFeedbackClick}">
       ${loadTimeData.getString('sendFeedbackButtonText')}
     </cr-button>
-    <cr-icon-button id="closeFeedbackToastButton" iron-icon="cr:close"
-                    @click="${this.onHideFeedbackToastClick}">
+    <cr-icon-button id="closeFeedbackToastButton"
+        aria-label="${loadTimeData.getString('close')}"
+        iron-icon="cr:close" @click="${this.onHideFeedbackToastClick}">
     </cr-icon-button>
   </div>
 </cr-toast>`;

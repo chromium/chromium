@@ -39,6 +39,7 @@ LensSidePanelUntrustedUI::LensSidePanelUntrustedUI(content::WebUI* web_ui)
           web_ui->GetWebContents()->GetBrowserContext(),
           chrome::kChromeUILensUntrustedSidePanelURL);
   html_source->AddLocalizedString("backButton", IDS_ACCNAME_BACK);
+  html_source->AddLocalizedString("close", IDS_CLOSE);
   html_source->AddLocalizedString("dismiss",
                                   IDS_LENS_OVERLAY_TOAST_DISMISS_MESSAGE);
   html_source->AddLocalizedString(
